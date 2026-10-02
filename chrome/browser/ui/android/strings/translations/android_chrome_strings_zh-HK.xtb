@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">來自 <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">另存網頁…</translation>
 <translation id="2328474416100889417">所有人將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，而所有邀請連結亦將會關閉</translation>
-<translation id="2329500425421091035">為你介紹 Chrome 版 AI 模式</translation>
 <translation id="2330186936255788117">更多書籤</translation>
 <translation id="2330243730505117832">閂咗「選擇裝置」。</translation>
 <translation id="2332515770639153015">已啟用「強化安全瀏覽」功能</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回「Google 密碼管理工具」。<ph name="BEGIN_LINK" />查閱完整指示<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3435914367318771664">將分頁加入新群組</translation>
-<translation id="3436118221454753036">詢問 AI 模式</translation>
 <translation id="3439276997620616816">最近開啟的分頁會在這裡顯示</translation>
 <translation id="3443221991560634068">重新載入目前網頁</translation>
 <translation id="3444179773590444986">要就網站深色主題提供意見嗎？</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">讓 <ph name="ORIGIN" /> 驗證您的身份</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3542235761944717775">可用空間：<ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">使用「AI 模式」搜尋</translation>
 <translation id="3549537543136628349">由於預先載入的頁面經過加密，且連至這些頁面的網站或應用程式為 Google 網站或應用程式，因此以私密方式預先載入這些頁面時，Google 伺服器不會接收新資料。</translation>
 <translation id="3549657413697417275">搜尋您的記錄</translation>
 <translation id="3557336313807607643">新增至通訊錄</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">Chrome 實例的數量已超出上限。</translation>
 <translation id="4890973535105146893">Google 帳戶中沒有儲存密碼</translation>
 <translation id="490375751687810070">垂直</translation>
-<translation id="4905823827770127520">加入頁面的連結</translation>
 <translation id="4910889077668685004">付款應用程式</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，歡迎回來！</translation>
 <translation id="4913169188695071480">停止重新整理</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">已儲存的密碼</translation>
 <translation id="5870416898561279542">重複或閒置 <ph name="DAYS_INACTIVE" /> 天的分頁和群組會移到這裡，<ph name="AUTODELETE_SECTION" />。你可隨時在「<ph name="DECLUTTER_SETTINGS_TITLE" />」中變更此設定。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> 此網站不安全，因此 Chrome 已移除有關權限</translation>
+<translation id="5895138241574237353">重新啟動</translation>
 <translation id="5896944002928653773">閂咗企業訊號免責聲明頁底面板</translation>
 <translation id="5899667542927581604">冇密鑰嘅工作表已經閂咗</translation>
 <translation id="5907542076239273525">書籤已儲存至「<ph name="FOLDER_NAME" />」</translation>
@@ -1958,6 +1955,7 @@
 <translation id="860282621117673749">降價快訊</translation>
 <translation id="8611922158252451755">任何擁有連結的人均可編輯所有分頁，因此分享時緊記要謹慎。連結將在 48 小時後失效。</translation>
 <translation id="8616006591992756292">您的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
+<translation id="8622145666696249878">Google 搜尋 AI 模式和連結的應用程式</translation>
 <translation id="8626572875733549102">翻譯成<ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">開啟 Chrome 選單 &gt; [設定]</translation>
 <translation id="8634050254805484913">在較窄的螢幕隱藏</translation>
@@ -2049,7 +2047,6 @@
 <translation id="9001604755921395912">在 Chrome 無痕式分頁中開啟</translation>
 <translation id="9010094279589497751">需要時快速開啟 Gemini</translation>
 <translation id="9012585441087414258">對已知的危險網站、下載檔案及擴充程式提供保護功能。如果頁面作出可疑行為，系統會將網址和部分網頁內容傳送至「Google 安全瀏覽」功能。</translation>
-<translation id="9014097371980259227">部分工具已移動，方便你使用「AI 模式」搜尋</translation>
 <translation id="9015111999662965458">為確保可安全使用此裝置，機構可能要查看裝置的作業系統、瀏覽器和設定的相關資料，以及裝置上安裝的軟件</translation>
 <translation id="9019199799064251516">要在不鎖定汽車設定檔的情況下繼續嗎？</translation>
 <translation id="9022774213089566801">經常瀏覽</translation>

@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">من جهاز "<ph name="DEVICE_NAME" />"</translation>
 <translation id="232757965409810352">حفظ الصفحة باسم…</translation>
 <translation id="2328474416100889417">سيفقد جميع المستخدمين على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم إيقاف جميع روابط الدعوة</translation>
-<translation id="2329500425421091035">‏نقدّم لك "وضع AI" في Chrome</translation>
 <translation id="2330186936255788117">المزيد من الإشارات المرجعية</translation>
 <translation id="2330243730505117832">تم إغلاق بطاقة "اختيار جهاز".</translation>
 <translation id="2332515770639153015">ميزة "الحماية المُحسَّنة للتصفّح الآمن" مفعَّلة</translation>
@@ -603,7 +602,6 @@
 <translation id="3435575784518354875">‏للحفاظ على إمكانية الوصول إلى كلمات المرور، عليك تصديرها الآن وتحديث "خدمات Google Play" ثمّ استيرادها مرة أخرى إلى "مدير كلمات المرور في Google". <ph name="BEGIN_LINK" />الاطّلاع على التعليمات الكاملة<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">أمن المعلومات</translation>
 <translation id="3435914367318771664">الإضافة إلى مجموعة جديدة</translation>
-<translation id="3436118221454753036">‏اسأل في "وضع AI"</translation>
 <translation id="3439276997620616816">ستظهر لك هنا علامات التبويب الأخيرة.</translation>
 <translation id="3443221991560634068">إعادة تحميل الصفحة الحالية</translation>
 <translation id="3444179773590444986">هل تريد مشاركة ملاحظاتك وآرائك حول وضع "المظهر الداكن" للمواقع الإلكترونية؟</translation>
@@ -630,7 +628,6 @@
 <translation id="3524334353996115845">السماح للموقع الإلكتروني <ph name="ORIGIN" /> بإثبات هويّتك</translation>
 <translation id="3527085408025491307">المجلد</translation>
 <translation id="3542235761944717775">تتوفر مساحة <ph name="KILOBYTES" /> كيلوبايت</translation>
-<translation id="3547933853190131743">‏البحث باستخدام "وضع AI"</translation>
 <translation id="3549537543136628349">‏بما أنّ الصفحات التي يتم تحميلها مُسبقًا تكون مشفّرة وأنّ المواقع الإلكترونية أو التطبيقات المرتبطة بالصفحات مصمَّمة باستخدام أدوات Google، لا تتلقَّى خوادم Google معلومات جديدة عند تحميل هذه الصفحات مُسبقًا بسريّة تامة.</translation>
 <translation id="3549657413697417275">البحث في السجل</translation>
 <translation id="3557336313807607643">إضافة إلى جهات الاتصال</translation>
@@ -984,7 +981,6 @@
 <translation id="4885273946141277891">‏عدد نسخ Chrome غير متوافق.</translation>
 <translation id="4890973535105146893">‏ما مِن كلمات مرور محفوظة في حسابك على Google</translation>
 <translation id="490375751687810070">عمودي</translation>
-<translation id="4905823827770127520">تضمين رابط يؤدي إلى هذه الصفحة</translation>
 <translation id="4910889077668685004">تطبيقات الدفع</translation>
 <translation id="4911042367886397055">مرحبًا بك من جديد، <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">إيقاف إعادة التحميل</translation>
@@ -1215,6 +1211,7 @@
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
 <translation id="5870416898561279542">يتم نقل علامات التبويب والمجموعات المكرّرة أو غير المستخدَمة لمدة <ph name="DAYS_INACTIVE" /> يوم إلى هنا <ph name="AUTODELETE_SECTION" />. يمكنك تعديل هذا الإعداد في أي وقت من خلال <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ هذا الموقع الإلكتروني خطير</translation>
+<translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="5896944002928653773">تم إغلاق البطاقة السفلية لبيان إخلاء المسؤولية بشأن الإشارات المؤسسية</translation>
 <translation id="5899667542927581604">تمّ إغلاق صفحة "ما من مفاتيح مرور"</translation>
 <translation id="5907542076239273525">تم حفظ الإشارة المرجعية في "<ph name="FOLDER_NAME" />"</translation>
@@ -1962,6 +1959,7 @@
 <translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>
 <translation id="8611922158252451755">بإمكان أي مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند مشاركته. ويُرجى العِلم بأنّ صلاحية الرابط تنتهي بعد 48 ساعة.</translation>
 <translation id="8616006591992756292">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">‏"وضع AI" في "بحث Google" والتطبيقات المرتبطة</translation>
 <translation id="8626572875733549102">الترجمة إلى <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">‏افتح قائمة Chrome &gt; "الإعدادات"</translation>
 <translation id="8634050254805484913">هذا الشريط مخفي على الشاشات الضيقة</translation>
@@ -2053,7 +2051,6 @@
 <translation id="9001604755921395912">‏فتح في Chrome (التصفح المتخفي)</translation>
 <translation id="9010094279589497751">‏يمكنك فتح Gemini بسرعة متى احتجت إليه</translation>
 <translation id="9012585441087414258">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيّن أنها ضارة. فإذا تم رصد نشاط مريب في إحدى الصفحات، يتم إرسال عناوين URL وأجزاء من محتوى الصفحة إلى ميزة "التصفّح الآمن من Google".</translation>
-<translation id="9014097371980259227">‏تم نقل بعض الأدوات لمساعدتك في البحث باستخدام "وضع AI"</translation>
 <translation id="9015111999662965458">للتأكُّد من إمكانية استخدام هذا الجهاز بأمان، قد تحتاج مؤسستك إلى الاطّلاع على معلومات حول نظام التشغيل والمتصفّح والإعدادات والبرامج المثبَّتة على الجهاز.</translation>
 <translation id="9019199799064251516">هل تريد المتابعة بدون قفل للملف الشخصي في السيارة؟</translation>
 <translation id="9022774213089566801">المواقع الإلكترونية التي تزورها بشكلٍ متكرر</translation>

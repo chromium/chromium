@@ -329,7 +329,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Gardar páxina como…</translation>
 <translation id="2328474416100889417">Todas as persoas perderán inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />"; ademais, desactivaranse todas as ligazóns de invitación</translation>
-<translation id="2329500425421091035">Presentamos o modo IA en Chrome</translation>
 <translation id="2330186936255788117">Máis marcadores</translation>
 <translation id="2330243730505117832">Pechouse Escolle un dispositivo.</translation>
 <translation id="2332515770639153015">Está activada a función Navegación segura mellorada</translation>
@@ -602,7 +601,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Seguranza</translation>
 <translation id="3435914367318771664">Engadir pestana ao grupo novo</translation>
-<translation id="3436118221454753036">Pregunta co modo IA</translation>
 <translation id="3439276997620616816">Aquí atoparás as pestanas recentes</translation>
 <translation id="3443221991560634068">Volver cargar a páxina actual</translation>
 <translation id="3444179773590444986">Queres compartir comentarios sobre o tema escuro para os sitios?</translation>
@@ -629,7 +627,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique a túa identidade</translation>
 <translation id="3527085408025491307">Cartafol</translation>
 <translation id="3542235761944717775">Almacenamento dispoñible: <ph name="KILOBYTES" /> kB</translation>
-<translation id="3547933853190131743">Buscar co modo IA</translation>
 <translation id="3549537543136628349">Como as páxinas precargadas están encriptadas e o sitio ou aplicación á que están vinculadas é de Google, os nosos servidores non reciben información nova cando as precargan de forma privada.</translation>
 <translation id="3549657413697417275">Buscar no historial</translation>
 <translation id="3557336313807607643">Engadir a contactos</translation>
@@ -778,6 +775,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, pestana con gravación en curso fixada e multiseleccionada</translation>
 <translation id="4137746084635924146">Idioma actual do dispositivo</translation>
 <translation id="414128724510021958">Os sitios para ordenadores solicítanse de forma predeterminada</translation>
+<translation id="4150837143272125910">Descargouse unha actualización</translation>
 <translation id="4162867837470729563">A lista de opcións para compartir está aberta a pantalla completa.</translation>
 <translation id="4164642020717536140">Navega pola Web de maneira rápida e segura</translation>
 <translation id="4165077084524712774">Máis ferramentas</translation>
@@ -983,7 +981,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4885273946141277891">Non se admite este número de instancias de Chrome.</translation>
 <translation id="4890973535105146893">Non hai ningún contrasinal gardado na túa Conta de Google</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Incluír unha ligazón á páxina</translation>
 <translation id="4910889077668685004">Aplicacións de pagos</translation>
 <translation id="4911042367886397055">Dámosche a benvida de novo, <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">Deter a actualización</translation>
@@ -1214,6 +1211,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5870416898561279542">As pestanas e grupos duplicados ou os que non se usen durante <ph name="DAYS_INACTIVE" /> días moveranse aquí<ph name="AUTODELETE_SECTION" />. Podes cambiar esta opción cando queiras en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque este sitio é perigoso</translation>
+<translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896944002928653773">Panel inferior da sección de exención de responsabilidade polas sinais de empresa pechado</translation>
 <translation id="5899667542927581604">Non se pechou ningunha folla de claves de acceso</translation>
 <translation id="5907542076239273525">O marcador gardouse en <ph name="FOLDER_NAME" /></translation>
@@ -1243,6 +1241,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6039379616847168523">Saltar á seguinte pestana</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="604124094241169006">Automático</translation>
+<translation id="6041959688070413372">Xestiona a conexión entre os servizos de busca e as aplicacións de Google Workspace, como Google Drive</translation>
 <translation id="6042308850641462728">Máis</translation>
 <translation id="6047066316630165190">Abre o selector de pestanas en grade</translation>
 <translation id="604996488070107836">Produciuse un problema coa descarga de <ph name="FILE_NAME" /> debido a un erro descoñecido.</translation>
@@ -1403,6 +1402,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6565959834589222080">Úsase a conexión wifi cando está dispoñible</translation>
 <translation id="657177046675873214">Activa na configuración a opción Marcadores para poder acceder a eles en todos os teus dispositivos</translation>
 <translation id="6573096386450695060">Permitir sempre</translation>
+<translation id="657480975869429144">Hai unha nova versión de Chrome dispoñible</translation>
 <translation id="658099107946526506">Protexe a túa navegación privada cun PIN para evitar o acceso non desexado</translation>
 <translation id="6583199322650523874">Engadir aos marcadores a páxina actual</translation>
 <translation id="6588043302623806746">Usar DNS seguro</translation>
@@ -1958,6 +1958,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="860282621117673749">Alertas de baixada de prezos</translation>
 <translation id="8611922158252451755">Calquera persoa que teña a ligazón poderá editar todas as pestanas, polo que che recomendamos que teñas coidado ao compartila. A ligazón caduca ás 48 horas.</translation>
 <translation id="8616006591992756292">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Modo IA da Busca de Google e aplicacións conectadas</translation>
 <translation id="8626572875733549102">Traducir ao <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Abre Menú de Chrome &gt; Configuración</translation>
 <translation id="8634050254805484913">Oculta en pantallas estreitas</translation>
@@ -2049,7 +2050,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9001604755921395912">Abrir en incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre rapidamente Gemini cando o necesites</translation>
 <translation id="9012585441087414258">Protéxete contra os sitios, as descargas e as extensións que se consideren perigosos. Se algunha páxina leva a cabo unha acción sospeitosa, os URL e algúns fragmentos do contido da páxina enviaranse a Navegación segura de Google.</translation>
-<translation id="9014097371980259227">Algunhas ferramentas cambiaron de lugar para axudarche a facer buscas co modo IA</translation>
 <translation id="9015111999662965458">Para garantir que este dispositivo se use de maneira segura, pode que a túa organización necesite consultar a información sobre o seu sistema operativo, o navegador e a configuración, así como o software instalado no aparello</translation>
 <translation id="9019199799064251516">Queres continuar sen un bloqueo de perfil do coche?</translation>
 <translation id="9022774213089566801">Visitas frecuentes</translation>

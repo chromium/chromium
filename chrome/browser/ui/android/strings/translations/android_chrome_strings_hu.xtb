@@ -329,7 +329,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2327445548174191329">Forrás: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Oldal mentése másként…</translation>
 <translation id="2328474416100889417">Mindenki azonnal el fogja veszíteni a hozzáférését a(z) „<ph name="GROUP_NAME" />” lapcsoporthoz, és a rendszer az összes meghívólinket ki fogja kapcsolni.</translation>
-<translation id="2329500425421091035">Bemutatjuk az AI-módot a Chrome-ban</translation>
 <translation id="2330186936255788117">További könyvjelzők</translation>
 <translation id="2330243730505117832">Az „Eszköz kiválasztása” bezárva.</translation>
 <translation id="2332515770639153015">A Biztonságos Böngészés fokozott védelemmel funkció be van kapcsolva</translation>
@@ -602,7 +601,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3435575784518354875">Ha továbbra is hozzá szeretne férni jelszavaihoz, exportálja őket haladéktalanul, majd frissítse a Google Play-szolgáltatásokat, és importálja őket vissza a Google Jelszókezelőbe. <ph name="BEGIN_LINK" />Részletes utasítások<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Biztonság</translation>
 <translation id="3435914367318771664">Lap hozzáadása új csoporthoz</translation>
-<translation id="3436118221454753036">Kérdezés az AI-módtól</translation>
 <translation id="3439276997620616816">Itt láthatja majd a legutóbb megnyitott lapjait</translation>
 <translation id="3443221991560634068">Az aktuális oldal újratöltése</translation>
 <translation id="3444179773590444986">Megosztja velünk véleményét a webhelyeknél használt sötét témával kapcsolatban?</translation>
@@ -629,7 +627,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3524334353996115845">A(z) <ph name="ORIGIN" /> segítségével igazolja személyazonosságát</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB szabad</translation>
-<translation id="3547933853190131743">Keresés AI módban</translation>
 <translation id="3549537543136628349">Mivel az előre betöltött oldalak titkosítottak, az oldalakra hivatkozó webhely vagy alkalmazás pedig Google-webhely vagy -alkalmazás, a Google-szerverek nem kapnak új információt a szóban forgó oldalak privát módon való előzetes betöltésekor.</translation>
 <translation id="3549657413697417275">Keresés az előzményekben</translation>
 <translation id="3557336313807607643">Hozzáadás a névjegyekhez</translation>
@@ -983,7 +980,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4885273946141277891">Ilyen sok Chrome-példány nem futhat egyszerre.</translation>
 <translation id="4890973535105146893">Nincsenek mentett jelszavak a Google-fiókjában</translation>
 <translation id="490375751687810070">Függőleges</translation>
-<translation id="4905823827770127520">Az oldalra mutató link hozzáfűzése</translation>
 <translation id="4910889077668685004">Fizetési alkalmazások</translation>
 <translation id="4911042367886397055">Üdvözöljük ismét, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Frissítés leállítása</translation>
@@ -1214,6 +1210,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5870416898561279542">Az ismétlődő lapok és csoportok, valamint a(z) <ph name="DAYS_INACTIVE" /> napja nem használt lapok ide kerülnek,<ph name="AUTODELETE_SECTION" /> A <ph name="DECLUTTER_SETTINGS_TITLE" /> között ez bármikor módosítható.</translation>
 <translation id="5885378508678660271">Értesítések <ph name="SEPARATOR" /> A Chrome eltávolította ezeket az engedélyeket, mert ez a webhely veszélyes</translation>
+<translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5896944002928653773">A vállalati jelekre vonatkozó felelősségkizárás alsó lapja bezárva</translation>
 <translation id="5899667542927581604">„Nincs azonosítókulcs” munkalap bezárva</translation>
 <translation id="5907542076239273525">Könyvjelző mentve ide: <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7630202231528827509">Szolgáltatói URL</translation>
 <translation id="7638584964844754484">Hibás összetett jelszó</translation>
 <translation id="764047009170754705">A Chrome Keresés funkciójára való feliratkozás bezárva</translation>
+<translation id="7645712301713737707">Személyre szabhatja a lapok elrendezését, hogy a böngésző tetején vagy oldalán jelenjenek meg.</translation>
 <translation id="7646499124171960488">Figyelmeztetést kap a nem biztonságos nyilvános webhelyekről</translation>
 <translation id="7655240423373329753">az utóbbi 7 nap</translation>
 <translation id="7656721520530864426">Nincsenek webhelyek</translation>
@@ -1957,6 +1955,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="860282621117673749">Árcsökkenési értesítések</translation>
 <translation id="8611922158252451755">A link birtokában bárki szerkesztheti az összes lapot, ezért legyen körültekintő a megosztáskor. A link 48 óra múlva lejár.</translation>
 <translation id="8616006591992756292">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen.</translation>
+<translation id="8622145666696249878">A Google Kereső AI-módja és az összekapcsolt alkalmazások</translation>
 <translation id="8626572875733549102">Fordítás <ph name="LANGUAGE" /> nyelvre</translation>
 <translation id="8629093325209491835">Nyissa meg a Chrome-menü Beállítások szakaszát.</translation>
 <translation id="8634050254805484913">Elrejtve keskeny képernyőkön</translation>
@@ -2048,7 +2047,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="9001604755921395912">Megnyitás Chrome inkognitó lapon</translation>
 <translation id="9010094279589497751">Gyorsan megnyithatja a Geminit, amikor szüksége van rá</translation>
 <translation id="9012585441087414258">Védelmet nyújt az ismert veszélyes webhelyekkel, letöltésekkel és bővítményekkel szemben. Ha valamelyik oldalon gyanús műveletet észlel, akkor a böngésző elküldi az URL-eket és az oldal tartalmának egyes részeit a Google Biztonságos Böngészésnek.</translation>
-<translation id="9014097371980259227">Egyes eszközök át lettek helyezve, hogy segítsenek az AI-móddal végzett keresésben</translation>
 <translation id="9015111999662965458">Az eszköz biztonságos használata érdekében előfordulhat, hogy szervezetének szüksége van bizonyos információkra az eszköz által használt operációs rendszerről, böngészőről és beállításokról, valamint az eszközre telepített szoftverekről.</translation>
 <translation id="9019199799064251516">Folytatja autóprofil-zárolás nélkül?</translation>
 <translation id="9022774213089566801">Gyakran látogatott webhelyek</translation>

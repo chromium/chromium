@@ -986,7 +986,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1755601632425835748">Dimensioni testo</translation>
 <translation id="1756963401828337401">Scegli uno schermo da condividere con Gemini</translation>
 <translation id="17584710573359123">Visualizza nel Chrome Web Store</translation>
-<translation id="1758845021884209593">Usa la scorciatoia nelle app del sistema operativo</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> rimappato a <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Account di <ph name="NAME" /></translation>
 <translation id="176272781006230109">suggerimenti per gli acquisti</translation>
@@ -1559,7 +1558,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2198712775285959645">Modifica</translation>
 <translation id="2199298570273670671">Errore</translation>
 <translation id="2199546617947317537">Per recuperare la cronologia dagli altri tuoi dispositivi, accedi e sincronizza la cronologia e le schede con <ph name="EMAIL" />. Potrai anche usare le password e altri dati su tutti i tuoi dispositivi. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
-<translation id="220006241671843310">Scegli se Chrome deve utilizzare modelli di AI che vengono eseguiti direttamente sul tuo dispositivo</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Log di sistema ChromeOS</translation>
 <translation id="2202391868799679245">Attiva scorciatoia da tastiera</translation>
@@ -2076,6 +2074,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2599048253926156421">Nome utente copiato negli appunti</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 estensione non sicura disattivata}other{{NUM_SITES} estensioni non sicure disattivate}}</translation>
 <translation id="2603121359676416582">Per questa pagina</translation>
+<translation id="2603656971249947488">Tabstrip</translation>
 <translation id="2604129989323098489">Generalmente i siti chiedono informazioni sui tuoi schermi per poter aprire e posizionare le finestre in modo intelligente, ad esempio per mostrare documenti o contenuti a schermo intero affiancati</translation>
 <translation id="2604255671529671813">Errore di connessione alla rete</translation>
 <translation id="2604805099836652105">Modulo per l'indirizzo <ph name="ADDRESS_LABEL" /> compilato.</translation>
@@ -2287,6 +2286,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="274362947316498129">Un'app sta tentando di accedere alla <ph name="DEVICE_NAME" />. Disattiva l'opzione relativa alla privacy della <ph name="DEVICE_NAME" /> per consentire l'accesso.</translation>
 <translation id="2744221223678373668">Condivise</translation>
+<translation id="2744919074068076548">Apri visualizzazione divisa</translation>
 <translation id="2745080116229976798">Subordinazione qualificata Microsoft</translation>
 <translation id="2749756011735116528">Accedi a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -3365,6 +3365,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3562655211539199254">Visualizza le schede recenti di Chrome dal tuo telefono</translation>
 <translation id="356268274299520831">Modifica sul sito</translation>
 <translation id="3563392617245068355">Umore</translation>
+<translation id="3564327838471533677">Visualizzazione divisa chiusa di recente</translation>
 <translation id="3564456410937306182">Scopri di più sulla ricarica adattiva.</translation>
 <translation id="3564659095423213915">Questa cartella è salvata solo su questo dispositivo. Se la salvi in "<ph name="ACCOUNT_FOLDER" />", la cartella verrà salvata anche nel tuo account.</translation>
 <translation id="3564848315152754834">Token di sicurezza USB</translation>
@@ -4269,7 +4270,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4241140145060464825">Contenuti dell'app</translation>
 <translation id="4241224519481557898">Categoria</translation>
 <translation id="4242245038391716252">Download eseguito dall'estensione: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Ora puoi espandere le schede passandovi sopra il mouse. Per attivare questa opzione, fai clic con il tasto destro del mouse qui.</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="4242825475818569385">Il tuo <ph name="BEGIN_LINK" />browser e il tuo profilo sono gestiti<ph name="END_LINK" /> da <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Inserisci passphrase</translation>
@@ -4434,7 +4434,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4360738659108163902">Fai clic con il tasto destro del mouse</translation>
 <translation id="4361745360460842907">Apri in una scheda</translation>
 <translation id="4362459470237309049">Usa il carattere "." per rilasciare un pulsante del mouse</translation>
-<translation id="4362871358537270439">Mostra le schede di altri dispositivi nel riquadro laterale</translation>
 <translation id="4363262124589131906">La sincronizzazione automatica con questo Chromebook dei nuovi file in Il mio Drive verrà interrotta</translation>
 <translation id="4364129298304269786">I siti potrebbero utilizzare un servizio di protezione dei contenuti per riprodurre contenuti protetti da copyright</translation>
 <translation id="4364327530094270451">Melone</translation>
@@ -5170,6 +5169,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4913573660390710463">Accedi ad applicazioni web in pacchetto con funzionalità avanzate. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Impossibile trovare i dati dell'app</translation>
 <translation id="4915961947098019832">Possono mostrare immagini</translation>
+<translation id="4916140032692201190">&amp;Traduci selezione</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vuole comunicare con l'estensione "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Accetto</translation>
 <translation id="4918762404810341788">Copia e apri</translation>
@@ -5822,6 +5822,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5436211819997237281">Estensione corrente che gestisce la pagina Nuova scheda</translation>
 <translation id="5436492226391861498">In attesa del tunnel proxy...</translation>
 <translation id="5436510242972373446">Cerca su <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Accedi come <ph name="EMAIL" /> per compilare automaticamente e salvare le password su tutti i tuoi dispositivi</translation>
 <translation id="5438014818441491616">Larghezza della finestra di <ph name="WINDOW_SIDE" />: <ph name="WINDOW_SIZE_PERCENT" />, larghezza del riquadro di <ph name="PANE_SIDE" />: <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Trova &amp;estensioni</translation>
 <translation id="5440240650630588012">Usa una riga o una finestra di lettura per aiutarti a mantenere la concentrazione. Premi ⌥L o vai a Impostazioni.</translation>
@@ -6233,7 +6234,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5776571780337000608">Puoi aprire e modificare i file supportati con questa app dal tuo browser di file o con altre app. Per stabilire quali file aprire per impostazione predefinita in questa app, <ph name="BEGIN_LINK" />scopri come impostare app predefinite sul dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Apri Chrome</translation>
 <translation id="5778491106820461378">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere ai dati del tuo account, puoi accedere al tuo dispositivo <ph name="DEVICE_TYPE" /> come ospite.</translation>
-<translation id="5779636902585836564">&amp;Traduci</translation>
 <translation id="5780011244986845107">La cartella che hai selezionato contiene file sensibili. Vuoi concedere a "<ph name="APP_NAME" />" accesso di lettura permanente a questa cartella?</translation>
 <translation id="5780973441651030252">Priorità processo</translation>
 <translation id="5781120434102258025">Sposta i dati dell'account della scuola nel tuo account personale</translation>
@@ -6889,6 +6889,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="6273677812470008672">Qualità</translation>
 <translation id="6274089201566806618">Connessione a <ph name="HOST_DEVICE_NAME" /> in corso</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">Accedi come <ph name="EMAIL" /> per ritrovare rapidamente i tuoi siti preferiti utilizzando i preferiti di tutti i tuoi dispositivi</translation>
 <translation id="6277105963844135994">Timeout di rete</translation>
 <translation id="6277518330158259200">&amp;Acquisisci screenshot</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7310,6 +7311,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6607831829715835317">A&amp;ltri strumenti</translation>
 <translation id="6608166463665411119">Reimposta eSIM</translation>
 <translation id="660846213831377756">Tasti del mouse</translation>
+<translation id="6608725880745776452">Trova le password e altri dati dal <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">I dati di accesso verranno memorizzati su questo dispositivo quando uscirai dalla modalità Incognito. Potrai accedere di nuovo a questo sito web con il tuo dispositivo in un secondo momento.</translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> scheda</translation>
@@ -8073,7 +8075,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7188755083797868960">Apri la modalità Lettura più velocemente con una scorciatoia. Premi Alt + Maiusc + R per attivare/disattivare la modalità Lettura.</translation>
 <translation id="7189234443051076392">Assicurati di avere spazio sufficiente sul dispositivo</translation>
-<translation id="7189558282078169397">Schede di altri dispositivi</translation>
 <translation id="7189965711416741966">Impronta digitale aggiunta.</translation>
 <translation id="7190921792980745354">Bloccare <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Alcuni link supportati saranno comunque aperti in <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> e altre <ph name="NUMBER_OF_OTHER_APPS" /> app.</translation>
@@ -8491,6 +8492,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7501957181231305652">oppure</translation>
 <translation id="7502220299952823578">Aggiungi all'elenco "mantieni questi siti sempre attivi"</translation>
 <translation id="7502528909759062987">Metti in pausa la trasmissione della scheda su <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Torna a Gemini</translation>
 <translation id="7502804472671406749">È possibile scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="750314150962284310">Selezione riga</translation>
 <translation id="7503191893372251637">Tipo di certificato Netscape</translation>
@@ -8732,6 +8734,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7684718995427157417">Per creare e testare le tue app, attiva Android Debug Bridge (ADB). Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
 <translation id="7684803937028953000">La tua organizzazione ha bloccato il download locale di questo file.</translation>
 <translation id="7684913007876670600">Per una visualizzazione semplificata di questa pagina, apri il riquadro laterale e seleziona la modalità Lettura</translation>
+<translation id="7684957383619170952">Trova i tuoi preferiti e altri dati dal <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Impossibile trasmettere</translation>
 <translation id="7685049629764448582">Memoria JavaScript</translation>
 <translation id="7685087414635069102">PIN obbligatorio</translation>
@@ -9258,6 +9261,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
 <translation id="8082132721957920509">La tua carta è stata salvata</translation>
 <translation id="8082390128630131497">La disattivazione del debug ADB ripristinerà le impostazioni di fabbrica di questo <ph name="DEVICE_TYPE" />. Tutti gli account utente e i dati locali verranno resettati.</translation>
+<translation id="8082737802704584539">La tua organizzazione ha disattivato il salvataggio della cronologia nel tuo Account Google</translation>
 <translation id="8084114998886531721">Password salvata</translation>
 <translation id="8084417885464859041">Usa Gemini in modo sicuro</translation>
 <translation id="8084429490152575036">Impostazioni APN rete mobile</translation>
@@ -9773,6 +9777,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>
 <translation id="8477446666255316832">Accedi più velocemente la prossima volta</translation>
+<translation id="8477548388161793571">&amp;Traduci selezione</translation>
 <translation id="8478346767369317046">Lavoro</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>
 <translation id="8480869669560681089">Dispositivo sconosciuto di <ph name="VENDOR_NAME" /></translation>

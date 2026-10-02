@@ -329,7 +329,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2327445548174191329">Från <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Spara sida som …</translation>
 <translation id="2328474416100889417">Alla förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och alla inbjudningslänkar inaktiveras</translation>
-<translation id="2329500425421091035">Vi presenterar AI-läget i Chrome</translation>
 <translation id="2330186936255788117">Fler bokmärken</translation>
 <translation id="2330243730505117832">Välj en enhet är stängt.</translation>
 <translation id="2332515770639153015">Förbättrad säker webbsökning har aktiverats</translation>
@@ -602,7 +601,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3435914367318771664">Lägg till fliken i en ny grupp</translation>
-<translation id="3436118221454753036">Fråga AI-läget</translation>
 <translation id="3439276997620616816">Du hittar dina senaste flikar här</translation>
 <translation id="3443221991560634068">Läs in den aktuella sidan igen</translation>
 <translation id="3444179773590444986">Vill du dela feedback om mörkt tema för webbplatser?</translation>
@@ -629,7 +627,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3524334353996115845">Tillåt att <ph name="ORIGIN" /> verifierar din identitet</translation>
 <translation id="3527085408025491307">Mapp</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB tillgängligt</translation>
-<translation id="3547933853190131743">Sök med AI-läge</translation>
 <translation id="3549537543136628349">Google får ingen ny information när de här sidorna läses in privat i förväg, eftersom de förinlästa sidorna är krypterade och webbplatsen eller appen som länkar till sidorna är en Google-webbplats eller -app.</translation>
 <translation id="3549657413697417275">Sök i historik</translation>
 <translation id="3557336313807607643">Lägg till i kontakter</translation>
@@ -984,7 +981,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4885273946141277891">Fler Chrome-förekomster än det finns stöd för.</translation>
 <translation id="4890973535105146893">Inga sparade lösenord i Google-kontot</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905823827770127520">Ta med en länk till sidan</translation>
 <translation id="4910889077668685004">Betalningsappar</translation>
 <translation id="4911042367886397055">Välkommen tillbaka <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Sluta uppdatera</translation>
@@ -1215,6 +1211,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="5870416898561279542">Dubbla eller oanvända flikar som inte har använts på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom den här webbplatsen är farlig</translation>
+<translation id="5895138241574237353">Starta om</translation>
 <translation id="5896944002928653773">Arket för ansvarsfriskrivning för företagssignaler på nedre delen av skärmen har stängts</translation>
 <translation id="5899667542927581604">Inget nyckelark har stängts</translation>
 <translation id="5907542076239273525">Bokmärket har sparats i <ph name="FOLDER_NAME" /></translation>
@@ -1959,6 +1956,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="860282621117673749">Aviseringar om prissänkning</translation>
 <translation id="8611922158252451755">Alla som har länken kan redigera alla flikar, så tänk efter innan du delar. Länken löper ut om 48 timmar.</translation>
 <translation id="8616006591992756292">Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI-läget i Google Sök och anslutna appar</translation>
 <translation id="8626572875733549102">Översätt till <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Öppna Chrome-menyn &gt; Inställningar</translation>
 <translation id="8634050254805484913">Dold på smala skärmar</translation>
@@ -2050,7 +2048,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9001604755921395912">Öppna i Chrome-inkognitoflik</translation>
 <translation id="9010094279589497751">Öppna Gemini snabbt när du behöver den</translation>
 <translation id="9012585441087414258">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. Om något misstänkt händer på en sida skickas webbadresser och delar av sidinnehållet till Google Säker webbsökning.</translation>
-<translation id="9014097371980259227">Vissa verktyg har flyttats så att du kan söka med AI-läget</translation>
 <translation id="9015111999662965458">Organisationen behöver kanske se information om operativsystem, webbläsare och inställningar samt vilken mjukvara som är installerad på enheten för att säkerställa att enheten kan användas på ett säkert sätt</translation>
 <translation id="9019199799064251516">Vill du fortsätta utan ett profillås i bilen?</translation>
 <translation id="9022774213089566801">Mest besökta</translation>

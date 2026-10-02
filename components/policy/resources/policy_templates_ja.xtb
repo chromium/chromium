@@ -903,7 +903,6 @@ URL は「http://example.com」、「https://example.com」のような標準的
 <translation id="1625700732886306811">すべての IP アドレスのデバイスに接続することを <ph name="PRODUCT_NAME" /> に許可する</translation>
 <translation id="1626379196197114720">バックフォワード キャッシュの使用を許可する</translation>
 <translation id="1628974048137236820">新しいタブページにカードを表示しない</translation>
-<translation id="1628984674324273832">Gemini による検索と自動入力を許可しない。</translation>
 <translation id="163200210584085447">このリストに指定されているパターンと、リクエスト元 URL の
       セキュリティ オリジンが照合されます。一致するものが見つかった場合は、
       動画キャプチャ デバイスへのアクセスが SAML ログインページで許可されます。
@@ -1661,7 +1660,6 @@ accounts.google.com など一部の URL は認証に必要です。オンライ�
 <translation id="2107601598727098402">
         このポリシーは M72 でサポート終了となりました。代わりに CloudManagementEnrollmentToken を使用してください。
         </translation>
-<translation id="2111355600078097861">Gemini による検索と自動入力を許可し、AI モデルの改善は許可しない。</translation>
 <translation id="2112656109118682849">ログイン画面でのシステム情報の表示の切り替えをユーザーに許可する</translation>
 <translation id="2113068765175018713">自動再起動を行ってデバイスの稼働時間を制限する</translation>
 <translation id="211386002920955760">企業ユーザーが Chrome のタブグループ共有機能にアクセスできるかどうかを制御します。
@@ -5388,6 +5386,11 @@ URL パターンは、<ph name="CONTROLLED_FRAME_BLOCKED_FOR_URLS_POLICY_NAME" /
 <translation id="4561940244682063697">画面の動画ストリームの共有をユーザーに求めることをサイトに許可しない</translation>
 <translation id="4562165737444703281">Crostini ポート転送の [有効化 / 設定] をユーザーに許可する</translation>
 <translation id="456450545863578630">企業の管理者がリモート サポート接続でファイルを転送できるようにする</translation>
+<translation id="4567614489737189156">このポリシーを有効に設定すると、<ph name="PRODUCT_OS_NAME" /> から Google に、使用状況に関する統計情報と診断データが送信されます。このポリシーを無効に設定すると、統計情報と診断データは送信されません。
+
+管理対象デバイスの場合、このポリシーを未設定のままにすると、統計情報と診断データの送信がデフォルトで有効になります。
+
+管理対象外のデバイスの場合、このポリシーは適用されず、ユーザーは、デバイスのセットアップ時または後から設定で統計情報と診断データを送信するかどうかを選択できます。</translation>
 <translation id="4570859815763368584">M68 でサポートを終了します。代わりに DefaultPopupsSetting を使用してください。
 
       詳しくは、https://www.chromestatus.com/feature/5675755719622656 をご覧ください。
@@ -6182,7 +6185,6 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
 
 生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
-<translation id="5070539335358964387">Gemini による検索と自動入力、および AI モデルの改善を許可する。</translation>
 <translation id="5071303485174858500">制限付き管理対象ゲスト セッションを無効にする</translation>
 <translation id="5073788301065423829">このポリシーでは、ChromeOS の「文書作成サポート」を有効または無効にできます。
 
@@ -9495,7 +9497,6 @@ SkyVault ユーザーのみ、つまり LocalUserFilesAllowed が false の場�
 <translation id="7136237405361383549">フィールド トライアルの設定に基づくデフォルトのレンダラを使用する。</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() 関数の最小タイムアウトを管理します。</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API の通常のサポート終了タイムラインに従います</translation>
-<translation id="7140755255968613921">Gemini による検索と自動入力の設定</translation>
 <translation id="7140760943584613237">Microsoft® のクラウド ID プロバイダ</translation>
 <translation id="714219487865269980">キーボード フォーカスによるハイライト表示を有効にする</translation>
 <translation id="7144022711746703451">
@@ -9863,19 +9864,6 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
 <translation id="7402257017733669351">ブラウザ プロセスで動的コードが作成されないようにする</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
 <translation id="7406276857470642718">外部 IdP を使用して SAML で認証されたユーザーの設定を管理する</translation>
-<translation id="7407431811343706437">ユーザーが <ph name="PRODUCT_NAME" /> で「Gemini で検索して自動入力する」機能を使用できるかどうかを制御します。
-
-0 = この機能の使用と、Google が AI モデルを改善する目的で関連データを使用することを許可します。関連データには、機能に応じてプロンプト、入力内容、出力内容、ソース資料、フィードバックの文面などが含まれます。以下に記載している場合を除き、0 がデフォルト値です。
-
-1 = この機能の使用を許可しますが、Google がモデルを改善する目的でユーザーのコンテンツ（プロンプト、入力内容、出力内容、ソース資料、フィードバックの文面など）を使用することは許可しません。1 は、<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> で管理されている企業ユーザーと、<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> で管理されている教育機関向けアカウントのデフォルト値です。
-
-2 = この機能を許可しません。
-
-Gemini アプリが無効になっている場合、このポリシーは無視されます。たとえば、Gemini アプリは <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで無効にできます。
-
-このポリシーを未設定のままにした場合、動作は <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> ポリシーによって決まります。
-
-生成 AI 機能のデータ処理について詳しくは、https://support.google.com/chrome/a?p=generative_ai_settings をご覧ください。</translation>
 <translation id="7407441173422042771">このポリシーでは、<ph name="PRODUCT_NAME" /> でのネットワーク予測を制御します。DNS のプリフェッチ、TCP、SSL の事前接続、ウェブページの事前レンダリングを制御できます。
 
       このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、ネットワーク予測は有効になりますが、ユーザーはこの設定を変更できます。</translation>
@@ -9884,11 +9872,6 @@ Gemini アプリが無効になっている場合、このポリシーは無視�
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> にリモートホストからプロキシ送信される　WebAuthn API リクエストの実行を許可します。</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 周辺機器のデータアクセスを有効にします</translation>
 <translation id="7414890119082492552">設定なし。</translation>
-<translation id="7416222110012824615">このポリシーでは、XSLT 機能（XSLTProcessor JavaScript API と XSL 処理命令）を使用できるかどうかを制御します。
-このポリシーを有効に設定した場合、ブラウザでの XSLT 機能のデフォルトの状態に関係なく、この機能を使用できます。
-このポリシーを無効に設定した場合、ブラウザでの XSLT 機能のデフォルトの状態に関係なく、この機能は使用できません。
-このポリシーを未設定のままにした場合、XSLT を使用できるかどうかはブラウザのデフォルト設定とフィールド トライアルによって決まります。
-このポリシーは一時的なもので、M164 で削除される予定です。</translation>
 <translation id="7417438464912687020">このパソコンへのリモート アクセス接続を許可する</translation>
 <translation id="7417972229667085380">プレゼンテーション モードでのアイドル時間に掛ける倍率（サポート終了）</translation>
 <translation id="7421230730436851224">音声処理をサンドボックス化しない</translation>
@@ -10177,10 +10160,6 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
       このポリシーを False に設定するか未設定のままにした場合、レポートはオフになります。
       DataLeakPreventionRulesList で ALLOW レベルの制限とともに定義されたルールについては、どちらの場合でもイベントはレポートされません。</translation>
 <translation id="7648907905084499629">すべてのサイトの Cookie に <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 動作を使用する</translation>
-<translation id="7649831723389657756">このポリシーでは、<ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーの設定にかかわらず、<ph name="PRODUCT_NAME" /> でサポートする HTTP 認証スキームをすべて許可するオリジンを指定します。
-
-      こちらの形式（<ph name="URL_SCHEME_FORMAT_LINK" />）に沿って、オリジンのパターンを指定します。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> で最大 1,000 件の例外を指定できます。
-      ホスト コンポーネントでは、ワイルドカードを使用できます（例: 「*:8000」と指定すると、ポート 8000 のすべてのホストが許可されます）。すべてのスキームまたはすべてのポートを許可するには、コンポーネントを完全に省略します（例: 「example.com」と指定すると、任意のスキームおよびポートが許可されます）。ホスト名（例: 「example.com」）を指定すると、そのサブドメインも許可されます。ホストだけを許可して、そのサブドメインを除外するには、ホスト名の前にドットを付けます（例: 「.example.com」）。すべてのオリジンを許可するには、アスタリスク（*）を 1 つ指定します。</translation>
 <translation id="7652330587655863759">認証のタイプ。
 
 * 「none」: 認証は行われません。
@@ -10932,6 +10911,7 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="8164687848393015214">このポリシーを有効に設定すると、監視ネットワーク パケット（<ph name="HEARTBEATS_TERM" />）が管理サーバーに送信されてオンライン ステータスがモニタリングされ、デバイスがオフラインかどうかをサーバーが検出できるようになります。
 
       このポリシーを無効にするか、未設定のままにすると、パケットは送信されません。</translation>
+<translation id="8165152191100365965">管理対象デバイスでは統計情報を Google に送信し、管理対象外デバイスではユーザーが決定できるようにする</translation>
 <translation id="8168359201203671567">虹色のキーボード バックライト</translation>
 <translation id="8169452762291746260">デバイスの稼働状況の監視を無効にする</translation>
 <translation id="8170359860920320269">アダルト コンテンツのサイトを除外する</translation>
@@ -12287,6 +12267,7 @@ M119 よりデフォルトで無効になります）。
       URI テンプレートに <ph name="HTTP_VARIABLE_DNS" /> 変数が含まれている場合、リゾルバのリクエストでは <ph name="HTTP_METHOD_GET" /> が使用されます。それ以外の場合、リクエストでは <ph name="HTTP_METHOD_POST" /> が使用されます。
 
       不適切な形式のテンプレートは無視されます。</translation>
+<translation id="9066972193987544412">このポリシーを有効に設定するか未設定のままにした場合、ユーザーはブックマークを追加、削除、変更、アップロードできます。このポリシーを無効に設定した場合、ユーザーはブックマークを追加、削除、変更、アップロードできません。既存のブックマークは引き続き使用できます。</translation>
 <translation id="9068629430243705879">ポート 6566（ブロックの解除は 2021 年 10 月 15 日まで可能）</translation>
 <translation id="9069432851455606924">位置情報の設定</translation>
 <translation id="9069503402414011061">このポリシーでは、認証データのキャッシュ期間（時間単位）を指定できます。キャッシュには、マシンのレルムにより信頼されているレルム（関連レルム）に関するデータが保存されます。したがって、認証データのキャッシュを使うことでログインがスピーディーになります。ユーザー固有のデータや関連のないレルムに関するデータはキャッシュされません。
@@ -12359,6 +12340,21 @@ M119 よりデフォルトで無効になります）。
 <translation id="9122865885571719292"><ph name="PRODUCT_OS_NAME" /> でログイン時に最後のセッションを復元するかどうかとその方法を制御します。
 このポリシーは、<ph name="FULL_RESTORE_ENABLED_NAME" /> ポリシーが true に設定されている場合にのみ有効になります。</translation>
 <translation id="9123464369663964441">混合コンテンツを許可する例外をユーザーが追加できるようにする</translation>
+<translation id="9123738611041078443"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
+
+<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> を構成するには、管理者は次のいずれかを指定する必要があります。
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーションの URL（<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />）または
+* 3 つのレガシー パラメータ（<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />）すべてURL を指定せずに、これら 3 つのパラメータの一部のみを指定した場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータは、HTTPS スキームを使用する有効な URL で、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ドメインを指し、ユーザー名やパスワードを含まないものである必要があります。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータとレガシー パラメータの両方を指定した場合は、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータが優先されます。
+
+このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
+
+このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
+
+なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="9124770007620653639">Google にドメインの信頼性データを送信しない</translation>
 <translation id="9126331659955304300">ローカル ファイルシステム、カメラ、Google プロフィールからユーザーのアバターを選択できるようにする</translation>
 <translation id="9126694586349976283">組み込みの AI API の使用を許可する。</translation>
@@ -12536,6 +12532,13 @@ HTTPS 優先モードは、初期設定では厳格モードまたはバラン�
 このポリシーを True に設定するか未設定のままにした場合、ユーザーは UI でクレジット カードの自動入力候補を制御できます。
 
 このポリシーを False に設定した場合、クレジット カード情報が候補として表示されたり、自動入力されたりすることはありません。また、ユーザーがウェブの利用中にクレジット カード情報を送信した場合もその情報が追加で保存されることはありません。</translation>
+<translation id="963375545567956229">このポリシーは非推奨になっており、M145 以降では無視されます。セーフ ブラウジングの詳細レポートは <ph name="PRODUCT_NAME" /> から削除されたため、このポリシーの設定に関係なく、<ph name="PRODUCT_NAME" /> から送信されなくなり、対応する設定もユーザーに表示されなくなります。
+
+      <ph name="PRODUCT_NAME" /> から追加情報が送信されるようにしてセーフ ブラウジングの改善に役立てるには、代わりに <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> ポリシーで保護強化機能を有効にしてください。
+
+      M145 以前では、このポリシーを有効に設定すると、<ph name="PRODUCT_NAME" /> でセーフ ブラウジングの詳細レポートが有効になり、危険なアプリやサイトの検出に役立てる目的でシステム情報の一部やページのコンテンツが Google サーバーに送信されます。このポリシーを無効に設定した場合、レポートは送信されません。このポリシーを設定した場合、ユーザーはその設定を変更できず、未設定のままにした場合、ユーザーはレポートを送信するかどうかを決定できます。
+
+      セーフ ブラウジングについて詳しくは、https://developers.google.com/safe-browsing をご覧ください。</translation>
 <translation id="966425658642788645">デフォルトの動作を適用する</translation>
 <translation id="971677226939413180">ユーザーは「画像として印刷する」オプションを選択できない。</translation>
 <translation id="974349541138387272">希望の DNS-over-HTTPS リゾルバの URI テンプレートを指定する</translation>

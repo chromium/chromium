@@ -986,7 +986,6 @@
 <translation id="1755601632425835748">Metin boyutu</translation>
 <translation id="1756963401828337401">Ekran görüntüsünü alacağınız ekranı seçin</translation>
 <translation id="17584710573359123">Chrome Web Mağazası'nda göster</translation>
-<translation id="1758845021884209593">Kısayolu işletim sistemi uygulamalarında kullan</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />, <ph name="REMAPPING_OPTION" /> olarak yeniden eşlendi.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> kullanıcısının hesapları</translation>
 <translation id="176272781006230109">alışveriş önerileri</translation>
@@ -1559,7 +1558,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2198625180564913276">Profil ekleniyor. Bu işlem birkaç dakika sürebilir.</translation>
 <translation id="2198712775285959645">Düzenle</translation>
 <translation id="2199298570273670671">Hata</translation>
-<translation id="220006241671843310">Chrome'un doğrudan cihazınızda çalışan yapay zeka modellerini kullanıp kullanmayacağını seçin</translation>
+<translation id="2199546617947317537">Diğer cihazlarınızdaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="2200094388063410062">E-posta</translation>
 <translation id="2200781749203116929">ChromeOS Sistem Günlükleri</translation>
 <translation id="2202391868799679245">Klavye kısayolunu aç</translation>
@@ -2076,6 +2075,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2599048253926156421">Kullanıcı adı panoya kopyalandı</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Güvenli olmayan 1 uzantı devre dışı bırakıldı}other{Güvenli olmayan {NUM_SITES} uzantı devre dışı bırakıldı}}</translation>
 <translation id="2603121359676416582">Bu sayfa için</translation>
+<translation id="2603656971249947488">Sekme şeridi</translation>
 <translation id="2604129989323098489">Siteler, pencereleri akıllıca açıp yerleştirebilmek için (ör. dokümanları veya tam ekran içerikleri yan yana göstermek) genellikle ekranlarınız hakkında bilgi ister</translation>
 <translation id="2604255671529671813">Ağ bağlantısı hatası</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> adres formu dolduruldu.</translation>
@@ -2287,6 +2287,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2743387203779672305">Panoya kopyala</translation>
 <translation id="274362947316498129">Bir uygulama <ph name="DEVICE_NAME" /> cihazına erişmeye çalışıyor. Erişime izin vermek için <ph name="DEVICE_NAME" /> gizlilik anahtarını kapatın.</translation>
 <translation id="2744221223678373668">Paylaşıldı</translation>
+<translation id="2744919074068076548">Bölünmüş görünümü aç</translation>
 <translation id="2745080116229976798">Microsoft Nitelikli Yardımlaşma</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> uygulamasında oturum aç...</translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2338,6 +2339,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2777525873368474674">Resim bağlantısı yapıştırın</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Çok sayıda bildirim gönderen 1 site bulundu}other{Çok sayıda bildirim gönderen {NUM_SITES} site bulundu}}</translation>
 <translation id="2778471504622896352">ChromeOS başlatıcıya uzaktan uygulama ekleme</translation>
+<translation id="2781037472881921606">Diğer cihazlarınızdaki geçmişinize ulaşmak için geçmişi senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Güvenlik anahtarınızı <ph name="APP_NAME" /> ile kullanın</translation>
@@ -2400,6 +2402,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2826576843404243001">Güvenli bağlantıları desteklemeyen siteleri ziyaret etmeden önce uyarı alın. Gelişmiş Koruma'yı etkinleştirdiğiniz için bu ayarı değiştiremezsiniz.</translation>
 <translation id="2828375943530438449">Oturum açma sayfasından önceki sayfaya dön</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> yer açıldı</translation>
+<translation id="2828851448902426206">Diğer cihazlarınızdaki sekmeleri görmek için oturum açın ve geçmişi senkronize edin. Ayrıca, kayıtlı bilgilerinize ve diğer öğelere tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="2833144527504272627">Metin imleciyle gezinin</translation>
 <translation id="2833727845850279275">Bu dosya kötü amaçlı yazılım içeriyor veya şüpheli bir siteden geliyor.</translation>
 <translation id="2835177225987815960">Atanmış anahtarlar ve otomatik tarama hızı tercihleriniz dahil olmak üzere mevcut tarama kurulumunuz sıfırlanır.</translation>
@@ -2766,6 +2769,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3102309003841389927">Logo güncellemesini inceleyin</translation>
 <translation id="310297983047869047">Önceki slayt</translation>
 <translation id="3103451787721578293">Lütfen bu verileri yükleme nedeninizi girin:</translation>
+<translation id="3105253709809514429">Diğer cihazlarınızdaki sekmeleri görmek için oturum açın ve geçmişi senkronize edin. Ayrıca, uzantılarınıza ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="3105339775057145050">Son Başarısız Güncelleme</translation>
 <translation id="3105796011181310544">Google’a geri dönmek ister misiniz?</translation>
 <translation id="3105820656234755131">Şifre Güncellendi</translation>
@@ -2777,6 +2781,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3109206895301430738">Kayıtlı Sekme Grupları</translation>
 <translation id="3109724472072898302">Daraltılmış</translation>
 <translation id="3112292765614504292">Uygulama boyutu: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Diğer cihazlarınızdaki sekmeleri görmek için oturum açın ve geçmişi senkronize edin. Ayrıca, yer işaretlerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="311347022006935575">Bu sekme eklendi</translation>
 <translation id="311394601889664316">Sitelerin cihazımdaki dosya veya klasörleri düzenlemesine izin verme</translation>
 <translation id="3113970906450647715">Düğmenin sabitlemesi kaldırıldı</translation>
@@ -3282,6 +3287,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3498138244916757538">Mikrofon ayarlarında yapılan değişiklik, <ph name="SPECIFIC_NAME" /> öğesinin kapatılmasını gerektirir. Devam etmek için <ph name="SPECIFIC_NAME" /> öğesini kapatın.</translation>
 <translation id="3500417806337761827">Paylaşım eklenirken hata oluştu. Halihazırda eklenmiş çok fazla SMB paylaşımı var.</translation>
 <translation id="3500764001796099683">Yalıtılmış web uygulamalarını etkinleştirin</translation>
+<translation id="3501134531169168291"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için oturum açıp geçmişi senkronize edin. Ayrıca, uzantılarınıza ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="3505100368357440862">Alışveriş önerileri</translation>
 <translation id="3507650052590605702">Şifreyi yönetin</translation>
 <translation id="3507888235492474624">Bluetooth cihazları yeniden tara</translation>
@@ -3358,6 +3364,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3562655211539199254">Son Chrome sekmelerini telefonunuzda görüntüleyin</translation>
 <translation id="356268274299520831">Sitede değiştir</translation>
 <translation id="3563392617245068355">Ruh hali</translation>
+<translation id="3564327838471533677">Son kapatılan bölünmüş görünüm</translation>
 <translation id="3564456410937306182">Uyarlanabilir Şarj hakkında daha fazla bilgi edinin.</translation>
 <translation id="3564659095423213915">Bu klasör yalnızca bu cihaza kaydedilir. "<ph name="ACCOUNT_FOLDER" />" klasörüne kaydederseniz bu klasör hesabınıza da kaydedilir.</translation>
 <translation id="3564848315152754834">USB güvenlik anahtarı</translation>
@@ -3769,6 +3776,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3838085852053358637">Uzantı yüklenemedi</translation>
 <translation id="3838486795898716504">Diğer <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Yakınlaştırılmış veya uzaklaştırılmış herhangi bir site yok</translation>
+<translation id="3839108710633244251">Diğer cihazlarınızdaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, kayıtlı bilgilerinize ve diğer öğelere tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="3839516600093027468"><ph name="HOST" /> sitesinin panoyu görmesini her zaman engelle</translation>
 <translation id="3840096463915153852">Görüşme geçmişi</translation>
 <translation id="3841319830220785495">Varsayılan doğal ses</translation>
@@ -4261,7 +4269,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4241140145060464825">Uygulama İçeriği</translation>
 <translation id="4241224519481557898">Kategori</translation>
 <translation id="4242245038391716252">Uzantı tarafından indirildi: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Artık sekmelerinizin üzerine gelerek onları genişletebilirsiniz. Bu özelliği etkinleştirmek için burayı sağ tıklayın.</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Tarayıcınız ve profiliniz<ph name="END_LINK" /> <ph name="DOMAIN" /> tarafından yönetiliyor</translation>
 <translation id="424315890655130736">Parolayı Girin</translation>
@@ -4292,6 +4299,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Grubu tut}other{Grupları tut}}</translation>
 <translation id="4261429981378979799">Uzantı izinleri</translation>
 <translation id="4262004481148703251">Uyarıyı kapat</translation>
+<translation id="4262060800239714974"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4263470758446311292">Maksimum bellek tasarrufu sağlar. Sekmeleriniz daha kısa süre sonra devre dışı kalır.</translation>
 <translation id="4263824086525632">Kuzey ışıkları</translation>
 <translation id="4265096510956307240">Kimliğinizi doğrulayın</translation>
@@ -4425,7 +4433,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4360738659108163902">Fareyi sağ tıkla</translation>
 <translation id="4361745360460842907">Sekme olarak aç</translation>
 <translation id="4362459470237309049">Bir fare düğmesini bırakmak için "." tuşunu kullanın</translation>
-<translation id="4362871358537270439">Diğer cihazlardaki sekmeleri yan panelde göster</translation>
 <translation id="4363262124589131906">Drive'ım bölümündeki yeni dosyalar artık bu Chromebook ile otomatik olarak senkronize edilmeyecek</translation>
 <translation id="4364129298304269786">Siteler, telif hakkıyla korunan içerikleri oynatmak için içerik koruma hizmeti kullanabilir</translation>
 <translation id="4364327530094270451">Kavun</translation>
@@ -4928,8 +4935,10 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4750185073185658673">Birkaç izni daha incelemek için telefonunuza gidin. Telefonunuzdaki Bluetooth ve kablosuz bağlantının açık olduğundan emin olun.</translation>
 <translation id="4750394297954878236">Öneriler</translation>
 <translation id="475088594373173692">İlk kullanıcı</translation>
+<translation id="4751925628341802838">Diğer cihazlarınızdaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, uzantılarınıza ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4753084533826742808">En az 1 karakter olmalıdır</translation>
 <translation id="4754590344707355551">Uzantıları kullanarak tarayıcınızı geliştirin</translation>
+<translation id="4756130875344525429"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, kayıtlı bilgilerinize ve diğer öğelere tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4756378406049221019">Durdur/Tekrar yükle</translation>
 <translation id="4756388243121344051">&amp;Geçmiş</translation>
 <translation id="4756627014339714615">Yönlendir</translation>
@@ -5160,6 +5169,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="4913573660390710463">Gelişmiş özelliklere sahip paket halindeki web uygulamalarına erişin. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi edinin<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="4913695564084524048">Uygulama verileri bulunamadı</translation>
 <translation id="4915961947098019832">Resim göstermesine izin verilenler</translation>
+<translation id="4916140032692201190">Seçimi &amp;çevir</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" />, "<ph name="EXTENSION_NAME" />" uzantısıyla iletişim kurmak istiyor</translation>
 <translation id="4918086044614829423">Kabul et</translation>
 <translation id="4918762404810341788">Kopyala ve aç</translation>
@@ -5241,6 +5251,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="497403230787583386">Güvenlik kontrolleri tamamlandı. Dokümanınız yazdırılacak.</translation>
 <translation id="4974442344472293753">Güncelleme Sonucu</translation>
 <translation id="4975771730019223894">Uygulama rozeti ekleme</translation>
+<translation id="4976647810464861866">Diğer cihazlarınızdaki sekmeleri görmek için oturum açın ve geçmişi senkronize edin. Ayrıca, tüm cihazlarınızdaki okuma listenize ve diğer öğelere de erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Erişimi Onaylayın</translation>
 <translation id="4979263087381759787">Geliştirici Seçenekleri</translation>
@@ -5413,6 +5424,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="511313294362309725">Hızlı Eşleme özelliğini aç</translation>
 <translation id="5113992879909788634">Chrome otomatik gezinme hakkında daha fazla bilgi</translation>
 <translation id="51143538739122961">Güvenlik anahtarınızı takın ve anahtara dokunun</translation>
+<translation id="5114635223409082546"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için oturum açıp geçmişi senkronize edin. Ayrıca, yer işaretlerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="5115338116365931134">TOA</translation>
 <translation id="5116628073786783676">Sesi Farklı Kay&amp;det...</translation>
 <translation id="5117139026559873716">Telefonunuzun <ph name="DEVICE_TYPE" /> cihazınızla olan bağlantısını kesin. Bundan böyle otomatik olarak bağlanmazlar.</translation>
@@ -5809,6 +5821,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5436211819997237281">Yeni sekme sayfanızı yöneten mevcut uzantı</translation>
 <translation id="5436492226391861498">Proxy tüneli bekleniyor...</translation>
 <translation id="5436510242972373446">Ara <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Şifrelerinizi cihazlarınızda otomatik olarak doldurmak ve kaydetmek için <ph name="EMAIL" /> hesabında oturum açın</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> pencere artık <ph name="WINDOW_SIZE_PERCENT" /> genişliğinde, <ph name="PANE_SIDE" /> bölme ise <ph name="PANE_SIZE_PERCENT" /> genişliğinde.</translation>
 <translation id="5438060324827306856">&amp;Uzantılar'ı Bul</translation>
 <translation id="5440240650630588012">Daha kolay odaklanmak için okuma satırı veya penceresi uygulayın. ⌥L tuşlarına basın veya Ayarlar'a gidin.</translation>
@@ -5838,6 +5851,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5457795687441958389">Oturumu kapalı tut</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Çok sayıda yanlış PIN girdiniz. Şifre anahtarlarınıza ve şifrelerinize erişmek için PIN'inizi değiştirin.</translation>
+<translation id="5459251585760045919"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, uzantılarınıza ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="5459470938885464873">Sertifika içe aktarılırken hata oluştu</translation>
 <translation id="5459864179070366255">Yüklemeye devam et</translation>
 <translation id="5460861858595506978">İlham</translation>
@@ -6009,6 +6023,7 @@ Bu işleme birden fazla anahtar atayabilirsiniz.</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
 <translation id="5584088138253955452">Kullanıcı adı kaydedilsin mi?</translation>
 <translation id="5585019845078534178">Kartlar</translation>
+<translation id="5585064628683466904">Diğer cihazlarınızdaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, tüm cihazlarınızdaki okuma listenize ve diğer öğelere de erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="5585118885427931890">Yer işareti klasörü oluşturulamadı.</translation>
 <translation id="558563010977877295">Belirli bir sayfayı veya sayfa grubunu aç</translation>
 <translation id="5587592231724900065">Bu ayarı bir uzantı kontrol ediyor</translation>
@@ -6221,7 +6236,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5776571780337000608">Bu uygulamayı kullanarak, desteklenen dosyaları dosya tarayıcınızdan veya diğer uygulamalardan açıp düzenleyebilirsiniz. Bu uygulamada varsayılan olarak hangi dosyaların açılacağını kontrol etmek için <ph name="BEGIN_LINK" />cihazınızda varsayılan uygulamaları nasıl ayarlayacağınızı öğrenin<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Chrome'u aç</translation>
 <translation id="5778491106820461378">Oturum açılmış Google Hesaplarınızı <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'dan yönetebilirsiniz. Web sitelerine ve uygulamalara verdiğiniz izinler, tüm hesaplar için geçerli olabilir. Sitelerin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız <ph name="DEVICE_TYPE" /> cihazınızda misafir olarak oturum açabilirsiniz.</translation>
-<translation id="5779636902585836564">&amp;Çevir</translation>
 <translation id="5780011244986845107">Seçtiğiniz klasör hassas dosyalar içeriyor. "<ph name="APP_NAME" />" uygulamasına bu klasör için kalıcı okuma erişimi vermek istediğinizden emin misiniz?</translation>
 <translation id="5780973441651030252">Süreç önceliği</translation>
 <translation id="5781120434102258025">Okul hesabı verilerinizi kişisel hesabınıza taşıyın</translation>
@@ -6748,6 +6762,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6175910054050815932">Bağlantı alın</translation>
 <translation id="6177478397823976397">Hiçbir cihaz bulunamadı. Yardım merkezi makalesini yeni sekmede açın</translation>
 <translation id="6177779807714496775">Bağlantıyı sol görünümde aç</translation>
+<translation id="6178186430790239237">Diğer cihazlarınızdaki sekmelerinize ulaşmak için geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="6178664161104547336">Sertifika seç</translation>
 <translation id="6178682841350631965">Oturum açma verileriniz güncellendi</translation>
 <translation id="6179830757749383456">Tarayıcı, <ph name="BROWSER_DOMAIN" /> tarafından; profil, <ph name="PROFILE_DOMAIN" /> tarafından yönetiliyor</translation>
@@ -6877,6 +6892,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6273677812470008672">Kalite</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> bağlantısı yapılıyor</translation>
 <translation id="6274202259872570803">Ekran video kaydı</translation>
+<translation id="6276246115230302286">Cihazlarınızdaki yer işaretlerini kullanarak favori sitelerinize hızlıca erişmek için <ph name="EMAIL" /> hesabıyla oturum açın</translation>
 <translation id="6277105963844135994">Ağ zaman aşımı</translation>
 <translation id="6277518330158259200">Ekr&amp;an Görüntüsü Al</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7058,6 +7074,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6430202563517028640">Bağlantıyı okuma listesine ekle</translation>
 <translation id="6430814529589430811">Base64 kodlu ASCII, tek sertifika</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> bu bilgisayarın tüm kullanıcıları için otomatik güncellemeleri ayarlar.</translation>
+<translation id="6431970976661940755"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için oturum açıp geçmişi senkronize edin. Ayrıca, tüm cihazlarınızdaki okuma listenize ve diğer öğelere de erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="6434104957329207050">Nokta tarama hızı</translation>
 <translation id="6434309073475700221">Kapat</translation>
 <translation id="6434755719322447931">Kaotik</translation>
@@ -7222,6 +7239,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6556903358015358733">Tema ve Duvar Kağıdı</translation>
 <translation id="6557199166823345360">Aramanızı daraltmak için daha fazla ayrıntı ekleyin veya seçiminizle ilgili soru sorun.</translation>
 <translation id="6557290421156335491">Kısayollarım</translation>
+<translation id="655745275895381718"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için oturum açıp geçmişi senkronize edin. Ayrıca, kayıtlı bilgilerinize ve diğer öğelere tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="6558098963164662391">&amp;Sözlükten Kaldır</translation>
 <translation id="6560061709899140565">Diğer yayınlama oturumlarını göster</translation>
 <translation id="656065428026159829">Daha fazla göster</translation>
@@ -7296,6 +7314,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6607831829715835317">Diğer araç&amp;lar</translation>
 <translation id="6608166463665411119">eSIM'i sıfırla</translation>
 <translation id="660846213831377756">Fare tuşları</translation>
+<translation id="6608725880745776452"><ph name="DEVICE" /> cihazındaki şifrelerinize ve diğer öğelere erişin</translation>
 <translation id="6609478180749378879">Gizli moddan çıktıktan sonra oturum açma verileriniz bu cihazda saklanır. Daha sonra cihazınızla bu web sitesinde tekrar oturum açabilirsiniz.</translation>
 <translation id="6610002944194042868">Çeviri Seçenekleri</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> sekme</translation>
@@ -7909,6 +7928,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{<ph name="USER_EMAIL" /> için 1 şifre <ph name="BRAND" /> hizmetine aktarıldı}other{<ph name="USER_EMAIL" /> için {NUM_PASSWORDS} şifre <ph name="BRAND" /> hizmetine aktarıldı}}</translation>
 <translation id="7065534935986314333">Sistem Hakkında</translation>
 <translation id="706626672220389329">Paylaşım eklenirken hata oluştu. Belirtilen paylaşım zaten eklenmiş.</translation>
+<translation id="7066357648902789011"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7067396782363924830">Ortam renkleri</translation>
 <translation id="7067725467529581407">Bunu bir daha gösterme.</translation>
 <translation id="7068539819344620805">Artık Chrome'u Özelleştir menüsünden istediğiniz zaman tarayıcınıza yeni bir görünüm kazandırabilirsiniz</translation>
@@ -8058,7 +8078,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
 <translation id="7188755083797868960">Kısayol kullanarak okuma modunu daha hızlı açın. Okuma modunu açıp kapatmak için Alt + üst karakter + R tuşlarına basın.</translation>
 <translation id="7189234443051076392">Cihazınızda yeterli alan bulunduğundan emin olun</translation>
-<translation id="7189558282078169397">Diğer Cihazlardan Sekmeler</translation>
 <translation id="7189965711416741966">Parmak izi eklendi.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> engellensin mi?</translation>
 <translation id="7191063546666816478">Bazı desteklenen bağlantılar <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> ve diğer <ph name="NUMBER_OF_OTHER_APPS" /> uygulamada açılmaya devam eder.</translation>
@@ -8094,6 +8113,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7214047272988222011">İzin veriliyor – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem kamera erişimini<ph name="LINK_END" /> açın.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{1 Sekmede Yeni Sekme}other{# Sekmede Yeni Sekme}}</translation>
 <translation id="721490496276866468">Şifreleri içe aktar</translation>
+<translation id="7216638029417040861">Diğer cihazlarınızdaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, yer işaretlerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7217208603285112910">Seçim <ph name="LANGUAGE" /> değil</translation>
 <translation id="7217317914610152390">Yeni "Metin ek açıklamaları" aracını kullanarak metin, yorum ve not ekleyin</translation>
 <translation id="7219254577985949841">Site verileri silinsin mi?</translation>
@@ -8104,6 +8124,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7222232353993864120">E-posta Adresi</translation>
 <translation id="7222335051802562841">Güncellemeyi tamamla</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, tüm cihazlarınızdaki okuma listenize ve diğer öğelere de erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7223027547122518521">Bu sitenin okuyabileceği bir dosya seçin</translation>
 <translation id="7223952304612664117">Sisteme ait hizmetler, bu işlemden sonra konumunuzu belirlemek için Konum Doğruluğu'nu kullanabilir. Konum Doğruluğu, cihaz konumunu tahmin etmek için kablosuz sinyaller ve sensörler hakkındaki bilgileri kullanır.</translation>
 <translation id="7225082563376899794">Şifreleri doldururken Windows Hello'yu kullan</translation>
@@ -8473,6 +8494,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7501957181231305652">veya</translation>
 <translation id="7502220299952823578">"Her zaman etkin kalacak siteler" listesine ekleyin</translation>
 <translation id="7502528909759062987">Sekmeyi <ph name="DEVICE_NAME" /> adlı cihazda yayınlamayı duraklatın</translation>
+<translation id="750275011730776314">Gemini'a geri dön</translation>
 <translation id="7502804472671406749">Paylaşılan sekmeler kaydırılabilir ve yakınlaştırılabilir</translation>
 <translation id="750314150962284310">Satıra odaklan</translation>
 <translation id="7503191893372251637">Netscape Sertifika Türü</translation>
@@ -8714,6 +8736,7 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7684718995427157417">Uygulama oluşturup test etmek için Android Debug Bridge'i (ADB) etkinleştirin. Bu işlemin Google tarafından doğrulanmamış Android uygulamasının yüklenmesine izin verdiğini ve devre dışı bırakmak için fabrika ayarlarına sıfırlama işlemi yapılması gerektirdiğini unutmayın.</translation>
 <translation id="7684803937028953000">Kuruluşunuz bu dosyanın yerel olarak indirilmesini engelledi.</translation>
 <translation id="7684913007876670600">Bu sayfanın basitleştirilmiş bir görünümünü göstermek için yan paneli açıp Okuma modu'nu seçin</translation>
+<translation id="7684957383619170952"><ph name="DEVICE" /> cihazındaki yer işaretlerinize ve diğer öğelere erişin</translation>
 <translation id="7685038817958445325">Yayınlanamıyor</translation>
 <translation id="7685049629764448582">JavaScript belleği</translation>
 <translation id="7685087414635069102">PIN gerekli</translation>
@@ -8991,6 +9014,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Kurulumu iptal et</translation>
 <translation id="7912974581251770345">Çeviri</translation>
+<translation id="7913805372428124107"><ph name="DEVICE" /> cihazındaki sekmelerinize ulaşmak için oturum açıp geçmişi senkronize edin. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7914399737746719723">Uygulama yüklendi</translation>
 <translation id="7915457674565721553">Ebeveyn denetimlerini kurmak için internete bağlanın</translation>
 <translation id="7916364730877325865">Kuruluşunuz bu hesapta senkronizasyonu açmanıza izin vermiyor</translation>
@@ -9239,6 +9263,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8081989000209387414">ADB hata ayıklama işlevi devre dışı bırakılsın mı?</translation>
 <translation id="8082132721957920509">Kartınız kayıtlı</translation>
 <translation id="8082390128630131497">ADB hata ayıklama işlevini devre dışı bırakmak bu <ph name="DEVICE_TYPE" /> cihazını fabrika ayarlarına sıfırlar. Tüm kullanıcı hesapları ve yerel veriler silinir.</translation>
+<translation id="8082737802704584539">Kuruluşunuz, geçmişi Google Hesabınıza kaydetmeyi devre dışı bıraktı</translation>
 <translation id="8084114998886531721">Kayıtlı şifre</translation>
 <translation id="8084417885464859041">Gemini'ı güvenli bir şekilde kullanın</translation>
 <translation id="8084429490152575036">Hücresel APN ayarları</translation>
@@ -9271,6 +9296,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="810362914482827094">Geçiş anahtarı arama</translation>
 <translation id="8104088837833760645">eSIM profili indir</translation>
 <translation id="8104388155778519213">Google Lens ile ekranınızdakileri paylaşın</translation>
+<translation id="8104412594956510627"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için geçmişi senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="8104778744208707085">İşlem yapmanız gerekiyor</translation>
 <translation id="8105273883928376822">Devam etmek için lütfen oturum açın.</translation>
 <translation id="8106114112474206597">Bir fare düğmesine basmak için "i" tuşunu kullanın</translation>
@@ -9301,6 +9327,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8124313775439841391">Yönetilen ONC</translation>
 <translation id="8125651784723647184">Şifre paylaşımı, yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8126355825906412872">Gülümseyin</translation>
+<translation id="8126498026310640675"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için oturum açıp geçmişinizi ve sekmelerinizi <ph name="EMAIL" /> ile senkronize edin. Ayrıca, yer işaretlerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8133297578569873332">Kabul Edilebilir Düzeyde-FM</translation>
@@ -9752,6 +9779,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8477241577829954800">Geçersiz kılındı</translation>
 <translation id="8477384620836102176">&amp;Genel</translation>
 <translation id="8477446666255316832">Bir dahaki sefere daha hızlı oturum açın</translation>
+<translation id="8477548388161793571">Seçimi &amp;Çevir</translation>
 <translation id="8478346767369317046">İş</translation>
 <translation id="8479176401914456949">Geçersiz kod. Lütfen tekrar deneyin.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> firmasından bilinmeyen cihaz</translation>

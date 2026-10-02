@@ -995,7 +995,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1755601632425835748">Cỡ chữ</translation>
 <translation id="1756963401828337401">Chọn một màn hình để chụp</translation>
 <translation id="17584710573359123">Xem trong Cửa hàng Chrome trực tuyến</translation>
-<translation id="1758845021884209593">Sử dụng phím tắt trên mọi ứng dụng của hệ điều hành</translation>
 <translation id="1761402971842586829">Đã liên kết lại <ph name="BUTTON_NAME" /> với <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Tài khoản của <ph name="NAME" /></translation>
 <translation id="176272781006230109">các đề xuất mua sắm</translation>
@@ -1570,7 +1569,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2198712775285959645">Chỉnh sửa</translation>
 <translation id="2199298570273670671">Lỗi</translation>
 <translation id="2199546617947317537">Để truy cập vào nhật ký của bạn trên những thiết bị khác, hãy đăng nhập cũng như đồng bộ hoá nhật ký và thẻ của bạn với <ph name="EMAIL" />. Bạn cũng có thể sử dụng mật khẩu và nhiều dữ liệu khác trên mọi thiết bị của mình. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
-<translation id="220006241671843310">Chọn xem bạn có muốn Chrome sử dụng các mô hình AI chạy trực tiếp trên thiết bị của bạn hay không</translation>
 <translation id="2200094388063410062">Email</translation>
 <translation id="2200781749203116929">Nhật ký hệ thống ChromeOS</translation>
 <translation id="2202391868799679245">Bật phím tắt</translation>
@@ -2090,6 +2088,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2599048253926156421">Đã sao chép tên người dùng vào bảng nhớ tạm</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Đã tắt 1 tiện ích không an toàn}other{Đã tắt {NUM_SITES} tiện ích không an toàn}}</translation>
 <translation id="2603121359676416582">Dành cho trang này</translation>
+<translation id="2603656971249947488">Dải thẻ</translation>
 <translation id="2604129989323098489">Các trang web thường yêu cầu thông tin về màn hình của bạn để có thể mở và sắp xếp các cửa sổ một cách thông minh, chẳng hạn như hiển thị các tài liệu hoặc nội dung toàn màn hình cạnh nhau</translation>
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
 <translation id="2604805099836652105">Đã điền biểu mẫu địa chỉ <ph name="ADDRESS_LABEL" />.</translation>
@@ -2301,6 +2300,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="274362947316498129">Một ứng dụng đang cố truy cập vào <ph name="DEVICE_NAME" />. Hãy tắt nút chuyển quyền riêng tư của <ph name="DEVICE_NAME" /> để cho phép truy cập.</translation>
 <translation id="2744221223678373668">Được chia sẻ</translation>
+<translation id="2744919074068076548">Mở màn hình chia đôi</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -3379,6 +3379,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3562655211539199254">Xem các thẻ Chrome mở gần đây trên điện thoại</translation>
 <translation id="356268274299520831">Đổi mật khẩu trên trang web</translation>
 <translation id="3563392617245068355">Tâm trạng</translation>
+<translation id="3564327838471533677">Màn hình chia đôi đã đóng gần đây</translation>
 <translation id="3564456410937306182">Tìm hiểu thêm về tính năng Sạc thích ứng.</translation>
 <translation id="3564659095423213915">Thư mục này chỉ được lưu trên thiết bị này. Nếu được lưu vào "<ph name="ACCOUNT_FOLDER" />", thư mục này cũng sẽ được lưu vào tài khoản của bạn.</translation>
 <translation id="3564848315152754834">Khóa bảo mật USB</translation>
@@ -4283,7 +4284,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4241140145060464825">Nội dung ứng dụng</translation>
 <translation id="4241224519481557898">Danh mục</translation>
 <translation id="4242245038391716252">Được tải xuống bằng tiện ích: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Giờ đây, bạn có thể mở rộng các thẻ bằng cách di chuột lên thẻ. Để bật tính năng này, hãy nhấp chuột phải vào đây.</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Trình duyệt và hồ sơ của bạn<ph name="END_LINK" /> đều do <ph name="DOMAIN" /> quản lý</translation>
 <translation id="424315890655130736">Nhập cụm mật khẩu</translation>
@@ -4448,7 +4448,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4360738659108163902">Nhấp chuột phải</translation>
 <translation id="4361745360460842907">Mở dưới dạng thẻ</translation>
 <translation id="4362459470237309049">Dùng dấu "." để nhả nút chuột</translation>
-<translation id="4362871358537270439">Hiện các thẻ từ các thiết bị khác trong bảng điều khiển bên</translation>
 <translation id="4363262124589131906">Các tệp mới trong Drive của tôi sẽ tự động dừng đồng bộ hoá với Chromebook này</translation>
 <translation id="4364129298304269786">Các trang web có thể sử dụng dịch vụ bảo vệ nội dung để phát nội dung được bảo hộ bản quyền</translation>
 <translation id="4364327530094270451">Quả dưa</translation>
@@ -5185,6 +5184,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4913573660390710463">Truy cập các ứng dụng web được đóng gói có các chức năng nâng cao. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Không tìm thấy dữ liệu ứng dụng</translation>
 <translation id="4915961947098019832">Được phép hiển thị hình ảnh</translation>
+<translation id="4916140032692201190">&amp;Dịch văn bản đã chọn</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> muốn giao tiếp với tiện ích "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Chấp nhận</translation>
 <translation id="4918762404810341788">Sao chép và mở</translation>
@@ -5837,6 +5837,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5436211819997237281">Tiện ích hiện đang quản lý trang thẻ mới</translation>
 <translation id="5436492226391861498">Chờ đường hầm proxy...</translation>
 <translation id="5436510242972373446">Tìm kiếm <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Để tự động điền và lưu mật khẩu trên các thiết bị, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616">Cửa sổ <ph name="WINDOW_SIDE" /> hiện rộng <ph name="WINDOW_SIZE_PERCENT" />, ngăn <ph name="PANE_SIDE" /> hiện rộng <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Tìm kiếm &amp;tiện ích</translation>
 <translation id="5440240650630588012">Áp dụng dòng hoặc cửa sổ đọc để giúp bạn tập trung. Nhấn ⌥L hoặc chuyển đến phần Cài đặt.</translation>
@@ -6250,7 +6251,6 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5776571780337000608">Bạn có thể dùng ứng dụng này trên trình duyệt tệp hoặc các ứng dụng khác để mở và chỉnh sửa các tệp được hỗ trợ. Để kiểm soát loại tệp mở được ứng dụng này theo mặc định, hãy <ph name="BEGIN_LINK" />tìm hiểu cách đặt ứng dụng mặc định trên thiết bị<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Mở Chrome</translation>
 <translation id="5778491106820461378">Bạn có thể quản lý các Tài khoản Google đã đăng nhập trong phần <ph name="LINK_BEGIN" />Cài đặt<ph name="LINK_END" />. Những quyền mà bạn đã cấp cho các trang web và ứng dụng có thể áp dụng cho tất cả tài khoản. Nếu không muốn các trang web hoặc ứng dụng truy cập vào thông tin tài khoản của bạn, bạn có thể đăng nhập vào <ph name="DEVICE_TYPE" /> ở chế độ khách.</translation>
-<translation id="5779636902585836564">&amp;Dịch</translation>
 <translation id="5780011244986845107">Thư mục bạn đã chọn chứa các tệp nhạy cảm. Bạn có chắc chắn muốn cấp cho "<ph name="APP_NAME" />" quyền đọc thư mục này vĩnh viễn không?</translation>
 <translation id="5780973441651030252">Mức độ ưu tiên tiến trình</translation>
 <translation id="5781120434102258025">Chuyển dữ liệu từ tài khoản trường học sang tài khoản cá nhân</translation>
@@ -6907,6 +6907,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6273677812470008672">Chất lượng</translation>
 <translation id="6274089201566806618">Đang kết nối với <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Video ghi lại chuyển động trên màn hình</translation>
+<translation id="6276246115230302286">Để truy cập nhanh vào các trang web bạn yêu thích bằng dấu trang trên mọi thiết bị, hãy đăng nhập bằng tài khoản <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">Hết thời gian chờ mạng</translation>
 <translation id="6277518330158259200">Chụp ảnh màn hình</translation>
 <translation id="6278428485366576908">Chủ đề</translation>
@@ -7328,6 +7329,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6607831829715835317">Côn&amp;g cụ khác</translation>
 <translation id="6608166463665411119">Đặt lại eSIM</translation>
 <translation id="660846213831377756">Phím chuột</translation>
+<translation id="6608725880745776452">Sử dụng mật khẩu và nhiều dữ liệu khác trên <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Dữ liệu đăng nhập sẽ được lưu trữ trên thiết bị này sau khi bạn thoát khỏi Chế độ ẩn danh. Bạn sẽ có thể đăng nhập lại vào trang web này vào lúc khác bằng thiết bị của mình.</translation>
 <translation id="6610002944194042868">Tùy chọn dịch</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> thẻ</translation>
@@ -8093,7 +8095,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7188755083797868960">Sử dụng lối tắt để mở chế độ đọc nhanh hơn. Nhấn tổ hợp phím Alt + Shift + R để bật/tắt chế độ đọc.</translation>
 <translation id="7189234443051076392">Hãy đảm bảo thiết bị của bạn có đủ dung lượng</translation>
-<translation id="7189558282078169397">Thẻ từ các thiết bị khác</translation>
 <translation id="7189965711416741966">Đã thêm vân tay.</translation>
 <translation id="7190921792980745354">Chặn <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Một số đường liên kết được hỗ trợ vẫn sẽ mở trong <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> và <ph name="NUMBER_OF_OTHER_APPS" /> ứng dụng khác.</translation>
@@ -8511,6 +8512,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7501957181231305652">hoặc</translation>
 <translation id="7502220299952823578">Thêm vào danh sách "luôn duy trì các trang web này ở trạng thái hoạt động"</translation>
 <translation id="7502528909759062987">Tạm dừng truyền thẻ tới <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Quay lại Gemini</translation>
 <translation id="7502804472671406749">Có thể cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="750314150962284310">Hiệu ứng đánh dấu dòng</translation>
 <translation id="7503191893372251637">Loại Chứng chỉ Netscape</translation>
@@ -8752,6 +8754,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7684718995427157417">Để tạo và thử nghiệm ứng dụng của bạn, hãy bật Cầu gỡ lỗi Android (Android Debug Bridge – ADB). Xin lưu ý rằng thao tác này sẽ cho phép cài đặt các ứng dụng Android mà Google chưa xác minh. Để tắt ADB, bạn cần phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="7684803937028953000">Tổ chức của bạn đã chặn việc tải tệp này xuống thiết bị.</translation>
 <translation id="7684913007876670600">Để hiển thị chế độ xem đơn giản của trang này, hãy mở bảng điều khiển bên rồi chọn Chế độ đọc</translation>
+<translation id="7684957383619170952">Sử dụng dấu trang và nhiều dữ liệu khác trên <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Không truyền được</translation>
 <translation id="7685049629764448582">Bộ nhớ JavaScript</translation>
 <translation id="7685087414635069102">Cần có mã PIN</translation>
@@ -9278,6 +9281,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8081989000209387414">Tắt tùy chọn gỡ lỗi ADB?</translation>
 <translation id="8082132721957920509">Thẻ của bạn đã được lưu</translation>
 <translation id="8082390128630131497">Thao tác tắt tùy chọn gỡ lỗi ADB sẽ đặt lại <ph name="DEVICE_TYPE" /> này về trạng thái ban đầu. Tất cả tài khoản người dùng và dữ liệu trên máy đều sẽ bị xóa.</translation>
+<translation id="8082737802704584539">Tổ chức của bạn đã tắt tính năng lưu nhật ký vào Tài khoản Google</translation>
 <translation id="8084114998886531721">Mật khẩu đã lưu</translation>
 <translation id="8084417885464859041">Sử dụng Gemini một cách an toàn</translation>
 <translation id="8084429490152575036">Chế độ cài đặt APN của mạng di động</translation>
@@ -9793,6 +9797,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8477241577829954800">Đã thay thế</translation>
 <translation id="8477384620836102176">&amp;Chung</translation>
 <translation id="8477446666255316832">Đăng nhập nhanh hơn vào lần tới</translation>
+<translation id="8477548388161793571">&amp;Dịch văn bản đã chọn</translation>
 <translation id="8478346767369317046">Công việc</translation>
 <translation id="8479176401914456949">Mã không hợp lệ. Vui lòng thử lại.</translation>
 <translation id="8480869669560681089">Thiết bị không xác định từ <ph name="VENDOR_NAME" /></translation>

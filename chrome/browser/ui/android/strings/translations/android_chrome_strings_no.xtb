@@ -329,7 +329,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Lagre side som …</translation>
 <translation id="2328474416100889417">Alle mister tilgangen til fanegruppen «<ph name="GROUP_NAME" />» umiddelbart, og alle invitasjonslinker deaktiveres</translation>
-<translation id="2329500425421091035">Vi presenterer AI-modus i Chrome</translation>
 <translation id="2330186936255788117">Flere bokmerker</translation>
 <translation id="2330243730505117832">«Velg en enhet» er lukket.</translation>
 <translation id="2332515770639153015">Safe Browsing med økt beskyttelse er påslått</translation>
@@ -602,7 +601,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3435914367318771664">Legg fanen til i en ny gruppe</translation>
-<translation id="3436118221454753036">Spør AI-modus</translation>
 <translation id="3439276997620616816">Her finner du de nylige fanene dine</translation>
 <translation id="3443221991560634068">Last inn den aktive siden på nytt</translation>
 <translation id="3444179773590444986">Vil du dele tilbakemeldinger om mørkt tema for nettsteder?</translation>
@@ -629,7 +627,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3524334353996115845">La <ph name="ORIGIN" /> bekrefte at det er deg</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB er tilgjengelig</translation>
-<translation id="3547933853190131743">Søk med AI-modus</translation>
 <translation id="3549537543136628349">Siden de forhåndslastede sidene er krypterte og nettstedet eller appen som linker til sidene, er et Google-nettsted eller en Google-app, får ikke Googles tjenere noen ny informasjon ved privat forhåndslasting av disse sidene.</translation>
 <translation id="3549657413697417275">Søk i loggen</translation>
 <translation id="3557336313807607643">Legg til i kontakter</translation>
@@ -983,7 +980,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4885273946141277891">For mange Chrome-forekomster.</translation>
 <translation id="4890973535105146893">Ingen lagrede passord i Google-kontoen din</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905823827770127520">Inkluder en link til siden</translation>
 <translation id="4910889077668685004">Betalingsapper</translation>
 <translation id="4911042367886397055">Velkommen tilbake, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Slutt å laste inn på nytt</translation>
@@ -1214,6 +1210,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="5870416898561279542">Dupliserte faner og grupper eller faner og grupper som ikke er brukt på <ph name="DAYS_INACTIVE" /> dager, flyttes hit<ph name="AUTODELETE_SECTION" />. Du kan når som helst endre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi dette nettstedet er farlig</translation>
+<translation id="5895138241574237353">Start på nytt</translation>
 <translation id="5896944002928653773">Feltet nederst med ansvarsfraskrivelsen for Enterprise-signaler er lukket</translation>
 <translation id="5899667542927581604">Arket for ingen passnøkler er lukket</translation>
 <translation id="5907542076239273525">Bokmerket er lagret i <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7630202231528827509">Leverandørens nettadresse</translation>
 <translation id="7638584964844754484">Feil passordfrase</translation>
 <translation id="764047009170754705">Chrome Finds-registreringen er stengt</translation>
+<translation id="7645712301713737707">Tilpass faneoppsettet slik at det vises øverst eller langs siden av nettleseren.</translation>
 <translation id="7646499124171960488">Advarer deg om usikre offentlige nettsteder</translation>
 <translation id="7655240423373329753">de siste 7 dagene</translation>
 <translation id="7656721520530864426">Ingen nettsteder</translation>
@@ -1957,6 +1955,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="860282621117673749">Varsler om avslag</translation>
 <translation id="8611922158252451755">Alle som har linken, kan endre alle fanene, så tenk deg om før du deler. Linken utløper om 48 timer.</translation>
 <translation id="8616006591992756292">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI-modus i Google Søk og tilknyttede apper</translation>
 <translation id="8626572875733549102">Oversett til <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Åpne Chrome-menyen &gt; Innstillinger</translation>
 <translation id="8634050254805484913">Skjult på smale skjermer</translation>
@@ -2048,7 +2047,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="9001604755921395912">Åpne på Chrome-inkognitofane</translation>
 <translation id="9010094279589497751">Åpne Gemini raskt når du trenger det</translation>
 <translation id="9012585441087414258">Beskytter mot nettsteder, nedlastinger og utvidelser som anses som farlige. Hvis en side gjør noe mistenkelig, blir nettadresser og deler av sideinnholdet sendt til Google Safe Browsing.</translation>
-<translation id="9014097371980259227">Noen verktøy er flyttet for å hjelpe deg med å søke med AI-modus</translation>
 <translation id="9015111999662965458">For å sikre at denne enheten kan brukes på en trygg måte, kan det hende organisasjonen din trenger å se informasjon om operativsystemet, nettleseren og innstillingene, samt hvilken programvare som er installert på enheten</translation>
 <translation id="9019199799064251516">Vil du fortsette uten profillås for bilen?</translation>
 <translation id="9022774213089566801">Ofte besøkte</translation>

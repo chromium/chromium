@@ -348,7 +348,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8390323835464055390">Login dengan sandi &amp; kunci sandi tersimpan dari aplikasi apa pun menggunakan Chromium untuk Isi Otomatis</translation>
 <translation id="8409374867500149834">Anda memiliki keamanan terkuat Chromium terhadap situs berbahaya</translation>
 <translation id="8428449554948979733">Sembunyikan Gunakan Chromium sebagai Default</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}other{Hal ini terjadi jika Chromium tidak digunakan selama {THRESHOLD} menit. Data yang hanya disimpan ke perangkat ini saat Anda login akan dihapus. Data ini dapat mencakup histori dan sandi.}}</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8602103377623855616">Halaman Chromium</translation>
 <translation id="865600487977764604">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login.</translation>

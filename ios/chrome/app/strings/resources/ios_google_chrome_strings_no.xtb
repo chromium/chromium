@@ -251,7 +251,6 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="6646696210740573446">Sender en obfuskert del av nettadressen til Google via en personverntjener som skjuler IP-adressen din. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Google.</translation>
 <translation id="6647304104688527905">Åpner en ny fane i Chrome.</translation>
 <translation id="6684809838922667136">Gjør Chrome bedre</translation>
-<translation id="6695698548122852044">{THRESHOLD,plural, =1{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutt. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}other{Dette skjer når Chrome ikke har vært i bruk på {THRESHOLD} minutter. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}}</translation>
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="6820553595690137150">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
 

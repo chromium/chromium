@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Carian</translation>
 <translation id="138618066238211776">Teruskan sebagai <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Pilihan untuk menyimpan kad</translation>
+<translation id="138810468159004008">Benarkan semasa laman dilawati</translation>
 <translation id="1396260204083880024">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Buka menu akaun.</translation>
 <translation id="1397144142234474689">Sembunyikan Sejarah</translation>
 <translation id="1399268420835656394">Jika anda bukan kanak-kanak, anda mungkin mahu menyemak umur dalam Akaun Apple pada peranti ini. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@
 <translation id="188237709236611317">Bar menu isih pintar</translation>
 <translation id="1883255238294161206">Runtuhkan senarai</translation>
 <translation id="1883898928879467646">Tab dialih keluar</translation>
+<translation id="188779312703122101">Sedang dijalankan</translation>
 <translation id="1888854257756214946">Pilih kata laluan…</translation>
 <translation id="1890237935065108104">Tetapan ini tidak tersedia.</translation>
 <translation id="1894023287452300670">Jejaki harga di sini</translation>
@@ -469,7 +471,6 @@
 <translation id="2393230427496852974">Baca ulasan pengguna</translation>
 <translation id="2394659309569789395">Buka Laman Juga</translation>
 <translation id="2403129868389095715">Pakej anda tidak dapat dihantar</translation>
-<translation id="2408318953009664750">Benarkan Sekali</translation>
 <translation id="2410754283952462441">Pilih akaun</translation>
 <translation id="2422174748424038845">Jika anda memadamkan kumpulan, semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />" dengan serta-merta dan kumpulan akan dipadamkan daripada semua peranti.</translation>
 <translation id="2424805048070062787">Teruskan dengan tab ini</translation>
@@ -601,7 +602,6 @@
 <translation id="2816149645002567541">Muat Turun Dijeda</translation>
 <translation id="2816489851009559785">Menu → Tetapan → Penyemak imbas lalai</translation>
 <translation id="2818821771744632548">Anda telah dilog keluar daripada akaun anda, <ph name="USER_NAME" />, sebagai sebahagian daripada tetapan semula iPhone anda. Untuk log masuk semula, ketik "Teruskan" di bawah.</translation>
-<translation id="2819667972867209401">Apabila dihidupkan, data disimpan pada Google Account anda. Apabila dimatikan, data akan disimpan hanya pada peranti ini dan akan dipadamkan jika anda log keluar.</translation>
 <translation id="2827760117436553203">Simpan data berasingan?</translation>
 <translation id="2829172210806130158">Cari pada skrin anda</translation>
 <translation id="2831109159746537587">Cuba membulatkan atau mengetik gambar untuk mencari</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 kaedah pembayaran}other{# kaedah Pembayaran}}</translation>
 <translation id="3831560640878483188">Ketepikan amaran?</translation>
 <translation id="3832419617903252251">Kata laluan hanya disimpan pada peranti ini</translation>
-<translation id="3835016165506903031">Benarkan Semasa Melawat</translation>
 <translation id="3835964409414434850">Pergi ke Tab Seterusnya</translation>
 <translation id="3838691874161539578">Semak kata laluan anda yang disimpan untuk mengukuhkan keselamatan anda dan kekal lebih selamat dalam talian</translation>
 <translation id="3838985624086228724">Penurunan harga pada produk yang dijejaki, daripada <ph name="PREVIOUS_PRICE" /> kepada <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Perkara Baharu</translation>
 <translation id="4289309730265289297">Pustaka Foto</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab pada Kumpulan}other{Tambahkan Tab pada Kumpulan}}</translation>
+<translation id="4290920330097335010">Jangan sekali-kali benarkan</translation>
 <translation id="4294506173142861371">Log masuk sebagai <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Tetapkan kedudukan</translation>
 <translation id="4304713468139749426">Pengurus Kata Laluan</translation>
@@ -1146,6 +1146,7 @@
 <translation id="4647758699119474035">Log masuk sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ralat Google Account. Buka menu akaun.</translation>
 <translation id="4650125387981512669">Teruskan sebagai <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Sembunyikan selepas 1 minit}other{Sembunyikan selepas {count} minit}}</translation>
+<translation id="4652266463001779298">Tidak dibenarkan</translation>
 <translation id="4652817563047461855">Pastikan kata laluan anda selamat, pastikan jika kata laluan anda telah terjejas dan dapatkan nasihat untuk melindungi diri anda dalam talian. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Hidupkan perkongsian tab</translation>
 <translation id="4658335131052370646">Simpan</translation>
@@ -2317,7 +2318,6 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8233237502828137700">Tutup promosi sepanduk</translation>
 <translation id="823339794112333264">Hidupkan mikrofon</translation>
 <translation id="8240217649914883113">Tambahkan perkara ini pada kalendar saya</translation>
-<translation id="824379025871762038">Jangan Benarkan</translation>
 <translation id="8244387390464017490">Sesuaikan halaman tab baharu</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="8258734532103758067">Saya telah mengeksport data saya</translation>
@@ -2338,6 +2338,7 @@ Anda boleh memulakan semula pada bila-bila masa.</translation>
 <translation id="8282657446819506217">Buka dalam Kumpulan Tab</translation>
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab pada Kumpulan Baharu}other{Tambahkan Tab pada Kumpulan Baharu}}</translation>
 <translation id="8283172974887967105">Tetapkan…</translation>
+<translation id="8287009018010202411">Produktiviti</translation>
 <translation id="8289930144142009940">Pemberitahuan <ph name="FEATURE_NAME" /> dimatikan</translation>
 <translation id="8292893224181644074">Muat Turun Selesai</translation>
 <translation id="8299417921174340354">Untuk menggunakan kata laluan, anda mesti menetapkan kod laluan pada peranti anda dahulu.</translation>

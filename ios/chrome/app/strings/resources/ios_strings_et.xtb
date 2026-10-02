@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="138618066238211776">Jätkake kasutajana <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Kaardi salvestamise võimalused</translation>
+<translation id="138810468159004008">Luba saidi külastamise ajal</translation>
 <translation id="1396260204083880024">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Avage kontomenüü.</translation>
 <translation id="1397144142234474689">Peida valik Ajalugu</translation>
 <translation id="1399268420835656394">Kui te pole laps, võiksite kontrollida selles seadmes kasutataval Apple'i kontol seadistatud vanust. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Lugege inimeste hinnanguid</translation>
 <translation id="2394659309569789395">Ava sait ikkagi</translation>
 <translation id="2403129868389095715">Teie saadetist ei saa kohale toimetada</translation>
-<translation id="2408318953009664750">Luba üks kord</translation>
 <translation id="2410754283952462441">Konto valimine</translation>
 <translation id="2422174748424038845">Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest.</translation>
 <translation id="2424805048070062787">Jätka selle vahelehega</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Allalaadimine peatatud</translation>
 <translation id="2816489851009559785">Menüü → Seaded → Vaikebrauser</translation>
 <translation id="2818821771744632548">Teid logiti iPhone'i lähtestamise raames teie kontolt <ph name="USER_NAME" /> välja. Uuesti sisselogimiseks puudutage allpool nuppu „Jätka”.</translation>
-<translation id="2819667972867209401">Kui see on sees, salvestatakse andmed teie Google'i kontole. Kui see on väljas, salvestatakse andmed ainult sellesse seadmesse ja kustutatakse väljalogimisel.</translation>
 <translation id="2827760117436553203">Kas hoida andmed eraldi?</translation>
 <translation id="2829172210806130158">Ekraanilt otsimine</translation>
 <translation id="2831109159746537587">Otsimiseks proovige pildile ring ümber tõmmata või seda puudutada</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25. oktoober 2023</translation>
 <translation id="3416904994126232207">„Parooli salvestamine“ on lõpule viidud!</translation>
 <translation id="3419787211763835342">Aidake täiustatud automaattäidet täiustada</translation>
+<translation id="3422958112451181446">Vajutage pikalt, et kinnitada siia oma lemmiktööriist.</translation>
 <translation id="3430407169377889553">Olge Gemini kasutamisel tähelepanelik ja vajaduse korral sekkuge. Teie vastutate Gemini toimingute eest ülesannete täitmisel.</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3441673211568148613">Hoidke oma sirvimine privaatsena</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 makseviis}other{# makseviisi}}</translation>
 <translation id="3831560640878483188">Kas loobuda hoiatusest?</translation>
 <translation id="3832419617903252251">Parool salvestati ainult selles seadmes</translation>
-<translation id="3835016165506903031">Luba külastamise ajal</translation>
 <translation id="3835964409414434850">Järgmisele vahelehele liikumine</translation>
 <translation id="3838691874161539578">Turvalisuse ja veebiohutuse suurendamiseks kontrollige oma salvestatud paroole</translation>
 <translation id="3838985624086228724">Jälgitava toote hinnalangus hinnalt <ph name="PREVIOUS_PRICE" /> hinnale <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Mis on uut?</translation>
 <translation id="4289309730265289297">Fotokogu</translation>
 <translation id="429074084062258019">{count,plural, =1{Vahelehe lisamine gruppi}other{Vahelehtede lisamine gruppi}}</translation>
+<translation id="4290920330097335010">Ära luba kunagi</translation>
 <translation id="4294506173142861371">Kas logite sisse kasutajana <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Määra asukoht</translation>
 <translation id="4304713468139749426">Paroolihaldur</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Tühista grupeerimine</translation>
 <translation id="446314443268698477">Ostke, tõlkige ja tuvastage, mida näete, kasutades oma kaamerat või fotosid.</translation>
 <translation id="4469324811108161144">Märkmetesse saab salvestada kuni <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
+<translation id="4470766488397113689">Mida soovite teha?</translation>
 <translation id="4471472356135655769">Paroole ei saa eksportida</translation>
 <translation id="4472575034687746823">Alustage</translation>
 <translation id="4473565697543262065">See kustutab valitud teabe, mis on salvestatud sellesse seadmesse ja teie Google'i kontole <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Põhjalikud kontrollid kahtlaste allalaadimiste korral.</translation>
 <translation id="4606247758155004938">Teie brauserit haldab teie organisatsioon.</translation>
 <translation id="4607887340472970274">Hindade jälgimine</translation>
+<translation id="4614482404958079763">Proovige piiratud aja jooksul saadaolevat pühadeteemat koos kohandatud illustratsioonide ja animatsioonidega.</translation>
 <translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4621768135601674446">Ava lugemisrežiimi valikud</translation>
 <translation id="4627107755957573804">Lubab saitidel ja rakendustel olemasolevad kontod pääsuvõtmetele üle viia</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google'i konto viga. Avage kontomenüü.</translation>
 <translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Peida 1 minuti möödudes}other{Peida {count} minuti möödudes}}</translation>
+<translation id="4652266463001779298">Pole lubatud</translation>
 <translation id="4652817563047461855">Saate veenduda, et teie paroolid oleksid kaitstud, kontrollida, kas need pole ohustatud, ja saada nõu, kuidas end veebis kaitsta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Lülitage vahelehtede jagamine sisse</translation>
 <translation id="4658335131052370646">Salvesta</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Pääsuvõtmed salvestatakse järgmise konto Google'i paroolihaldurisse:</translation>
 <translation id="510580293474170715">Midagi ei imporditud</translation>
 <translation id="5113960131843706315">Teie asjade toomine …</translation>
+<translation id="5116347248003317626">Ära luba saitidel kasutada minu asukohta</translation>
 <translation id="5118462200606189584">Konto lisamine …</translation>
 <translation id="5118764316110575523">Väljas</translation>
 <translation id="5119329531859909472">Toote jälgimiseks puudutage valikut Jälgi</translation>
@@ -2009,6 +2013,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> protsenti on alla laaditud</translation>
 <translation id="7345061034321640811">Importimine pole lubatud</translation>
+<translation id="7346922058131593019">Mida soovite teha, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importige paroole, ajalugu, järjehoidjaid ja muud.</translation>
 <translation id="7352651011704765696">Midagi läks valesti</translation>
 <translation id="7357999308187750900">Kuva kõik</translation>
@@ -2065,6 +2070,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7491131399623468277">Avage menüü Seaded …</translation>
 <translation id="7491161827858509164">Varem allalaaditud failide nägemiseks avage rakendus <ph name="BEGIN_LINK" />Failid<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Jätka muutmist</translation>
+<translation id="7498557042323380380">Määrake oma uuele vahelehele hooajaline ilme</translation>
 <translation id="7500244509706269886">Täida vorm automaatselt</translation>
 <translation id="750493650310597496">0 valitud</translation>
 <translation id="7505402981231763928">Gemini kasutamiseks peate sisse logima</translation>
@@ -2102,6 +2108,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="760667371114328991">Lülitage ohutuskontrolli märguanded välja</translation>
 <translation id="7612619742409846846">Google'isse sisse logitud kasutajana</translation>
 <translation id="7612849887607288481">Avage AI prototüübi loomise menüü</translation>
+<translation id="7618220760967055820">Valige, milline nupp tööriistaribal kuvada</translation>
 <translation id="7620522820075868385">Tühista</translation>
 <translation id="762078666799342162">Varasemaid allalaadimisi saate vaadata rakenduses <ph name="BEGIN_LINK" />Failid<ph name="END_LINK" />.</translation>
 <translation id="7638584964844754484">Vale parool</translation>
@@ -2311,7 +2318,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8233237502828137700">Promobänneri sulgemine</translation>
 <translation id="823339794112333264">Lülita mikrofon sisse</translation>
 <translation id="8240217649914883113">Lisa see minu kalendrisse</translation>
-<translation id="824379025871762038">Ära luba kunagi</translation>
 <translation id="8244387390464017490">Uue vahelehe kohandamine</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
 <translation id="8258734532103758067">Olen oma andmed eksportinud</translation>
@@ -2332,6 +2338,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8282657446819506217">Ava vahelehegrupis</translation>
 <translation id="828291969289324795">{count,plural, =1{Vahelehe lisamine uude gruppi}other{Vahelehtede lisamine uude gruppi}}</translation>
 <translation id="8283172974887967105">Määra …</translation>
+<translation id="8287009018010202411">Produktiivsus</translation>
 <translation id="8289930144142009940">Kanali <ph name="FEATURE_NAME" /> märguanded on välja lülitatud</translation>
 <translation id="8292893224181644074">Allalaadimine lõpetatud</translation>
 <translation id="8299417921174340354">Paroolide kasutamiseks peate oma seadmes esmalt pääsukoodi seadistama.</translation>

@@ -251,7 +251,6 @@ Datele tale sunt criptate cu expresia de acces. Introdu-o pentru a folosi și a 
 <translation id="6646696210740573446">Trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site încearcă să îți fure parola sau descarci un fișier dăunător, Chrome poate să trimită la Google și adresele URL, inclusiv fragmente din conținutul paginilor.</translation>
 <translation id="6647304104688527905">Deschide o filă nouă în Chrome.</translation>
 <translation id="6684809838922667136">Contribuie la îmbunătățirea Chrome</translation>
-<translation id="6695698548122852044">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minut. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}few{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aceasta ar putea include istoricul și parolele.}other{Acest lucru se întâmplă când Chrome nu este folosit timp de {THRESHOLD} de minute. Datele salvate numai pe acest dispozitiv în timp ce erai conectat(ă) se vor șterge. Aici pot fi incluse istoricul și parolele.}}</translation>
 <translation id="6709398533399187136">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole Google îți recomandă să schimbi parola acum.</translation>
 <translation id="6820553595690137150">Criptarea cu expresie de acces nu include metodele de plată și adresele.
 
@@ -370,7 +369,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="8796490717897731471"><ph name="EMAIL" />. Chrome este gestionat.</translation>
 <translation id="880967149107462122">Accesează setările Chrome</translation>
-<translation id="8840947648682778034">Tema Chrome pentru iPhone și iPad</translation>
+<translation id="8840947648682778034">Tema din Chrome pentru iPhone și iPad</translation>
 <translation id="8842132678697187091">Poți deschide Google Lens aici.</translation>
 <translation id="8850736900032787670">Pentru a primi conținut personalizat în funcție de interesele tale, conectează-te la Chrome.</translation>
 <translation id="8855781063981781621">Pentru a dezactiva modul Blocare în Chrome, dezactivează-l pe iPad.</translation>

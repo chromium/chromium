@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Sök</translation>
 <translation id="138618066238211776">Fortsätt som <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Alternativ för att spara kort</translation>
+<translation id="138810468159004008">Tillåt vid besök på webbplatsen</translation>
 <translation id="1396260204083880024">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="1397144142234474689">Dölj historik</translation>
 <translation id="1399268420835656394">Om du inte är ett barn kan du kontrollera åldern i Apple-kontot på den här enheten. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" />.</translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Läs vad andra säger</translation>
 <translation id="2394659309569789395">Öppna webbplatsen ändå</translation>
 <translation id="2403129868389095715">Det går inte att leverera paketet</translation>
-<translation id="2408318953009664750">Tillåt en gång</translation>
 <translation id="2410754283952462441">Välj ett konto</translation>
 <translation id="2422174748424038845">Om du raderar den förlorar alla omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den tas bort från alla enheter.</translation>
 <translation id="2424805048070062787">Fortsätt med den här fliken</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Nedladdningen har pausats</translation>
 <translation id="2816489851009559785">Meny → Inställningar → Standardwebbläsare</translation>
 <translation id="2818821771744632548">Du har loggats ut från ditt konto, <ph name="USER_NAME" />, som en del av återställningen av din iPhone. Tryck på Fortsätt nedan om du vill logga in igen.</translation>
-<translation id="2819667972867209401">När detta är aktiverat sparas data i Google-kontot. När inställningen är inaktiverad sparas data endast på den här enheten och raderas när du loggar ut.</translation>
 <translation id="2827760117436553203">Vill du hålla data åtskild?</translation>
 <translation id="2829172210806130158">Sök på skärmen</translation>
 <translation id="2831109159746537587">Testa att ringa in eller trycka på bilden för att söka</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 okt 2023</translation>
 <translation id="3416904994126232207">Spara ett lösenord har slutförts.</translation>
 <translation id="3419787211763835342">Hjälp till att göra förbättrad autofyll bättre</translation>
+<translation id="3422958112451181446">Håll ditt favoritverktyg nedtryckt för att fästa det här</translation>
 <translation id="3430407169377889553">Använd Gemini med försiktighet och ta kontrollen om det behövs. Du ansvarar för det Gemini gör när den utför uppgifter.</translation>
 <translation id="3435738964857648380">Säkerhet</translation>
 <translation id="3441673211568148613">Håll ditt surfande privat</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betalningsmetod}other{# betalningsmetoder}}</translation>
 <translation id="3831560640878483188">Vill du ignorera varningen?</translation>
 <translation id="3832419617903252251">Lösenordet har bara sparats på den här enheten</translation>
-<translation id="3835016165506903031">Tillåt vid besök</translation>
 <translation id="3835964409414434850">Öppna nästa flik</translation>
 <translation id="3838691874161539578">Kontrollera dina sparade lösenord och öka säkerheten online</translation>
 <translation id="3838985624086228724">Prissänkning på den bevakade produkten, från <ph name="PREVIOUS_PRICE" /> till <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Nyheter</translation>
 <translation id="4289309730265289297">Fotobibliotek</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
+<translation id="4290920330097335010">Tillåt aldrig</translation>
 <translation id="4294506173142861371">Vill du logga in som <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Ta bort grupp</translation>
 <translation id="446314443268698477">Köp, översätt och identifiera det du ser med kameran eller foton.</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
+<translation id="4470766488397113689">Vad vill du jobba med?</translation>
 <translation id="4471472356135655769">Det gick inte att exportera lösenord</translation>
 <translation id="4472575034687746823">Kom igång</translation>
 <translation id="4473565697543262065">Detta raderar vald information som har sparats på den här enheten och i Google-kontot <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Ingående genomsökningar efter misstänkta nedladdningar.</translation>
 <translation id="4606247758155004938">Webbläsaren hanteras av din organisation.</translation>
 <translation id="4607887340472970274">Prisbevakning</translation>
+<translation id="4614482404958079763">Testa ett tidsbegränsat festligt tema med anpassade illustrationer och animationer</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4621768135601674446">Öppna alternativen för Läsläge</translation>
 <translation id="4627107755957573804">Tillåt att webbplatser och appar uppgraderar befintliga konton till att använda nycklar</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fel i Google-konto. Öppna kontomenyn</translation>
 <translation id="4650125387981512669">Fortsätt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Dölj efter 1 minut}other{Dölj efter {count} minuter}}</translation>
+<translation id="4652266463001779298">Tillåts inte</translation>
 <translation id="4652817563047461855">Se till att dina lösenord är säkra, ta reda på om de har utsatts för intrång och få råd om hur du skyddar dig online. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Aktivera flikdelning</translation>
 <translation id="4658335131052370646">Sparad</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Nycklar sparas i Google Lösenordshantering för</translation>
 <translation id="510580293474170715">Ingenting har importerats</translation>
 <translation id="5113960131843706315">Hämtar dina grejer …</translation>
+<translation id="5116347248003317626">Tillåt inte att webbplatser använder din plats</translation>
 <translation id="5118462200606189584">Lägg till konto …</translation>
 <translation id="5118764316110575523">Av</translation>
 <translation id="5119329531859909472">Tryck på Bevaka för att bevaka produkten</translation>
@@ -2009,6 +2013,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent har laddats ned</translation>
 <translation id="7345061034321640811">Import tillåts inte</translation>
+<translation id="7346922058131593019">Vad vill du jobba med, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importera lösenord, historik, bokmärken med mera</translation>
 <translation id="7352651011704765696">Något gick fel</translation>
 <translation id="7357999308187750900">Visa alla</translation>
@@ -2065,6 +2070,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7491131399623468277">Öppna Inställningar …</translation>
 <translation id="7491161827858509164">Du kan se filer du har laddat ned tidigare i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Fortsätt redigera</translation>
+<translation id="7498557042323380380">Ge sidan Ny flik ett säsongsbetonat utseende</translation>
 <translation id="7500244509706269886">Autofyll formulär</translation>
 <translation id="750493650310597496">0 valda</translation>
 <translation id="7505402981231763928">Du måste logga in för att använda Gemini</translation>
@@ -2102,6 +2108,7 @@ Du kan starta om när som helst.</translation>
 <translation id="760667371114328991">Inaktivera aviseringar från säkerhetskontroll</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612849887607288481">Öppna menyn för AI-prototyp</translation>
+<translation id="7618220760967055820">Välj vilken knapp som ska visas i verktygsfältet</translation>
 <translation id="7620522820075868385">Avbryt</translation>
 <translation id="762078666799342162">Du kan se dina tidigare nedladdningar i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
@@ -2311,7 +2318,6 @@ Du kan starta om när som helst.</translation>
 <translation id="8233237502828137700">Stäng bannerkampanj</translation>
 <translation id="823339794112333264">Slå på mikrofonen</translation>
 <translation id="8240217649914883113">Lägg till detta i min kalender</translation>
-<translation id="824379025871762038">Tillåt aldrig</translation>
 <translation id="8244387390464017490">Anpassa sidan Ny flik</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8258734532103758067">Jag har exporterat min data</translation>
@@ -2332,6 +2338,7 @@ Du kan starta om när som helst.</translation>
 <translation id="8282657446819506217">Öppna i flikgrupp</translation>
 <translation id="828291969289324795">{count,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="8283172974887967105">Ange …</translation>
+<translation id="8287009018010202411">Produktivitet</translation>
 <translation id="8289930144142009940">Aviseringar för <ph name="FEATURE_NAME" /> har inaktiverats</translation>
 <translation id="8292893224181644074">Nedladdningen är klar</translation>
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>

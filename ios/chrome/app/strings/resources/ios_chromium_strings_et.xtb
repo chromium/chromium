@@ -348,7 +348,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8390323835464055390">Logige mis tahes rakenduses sisse oma salvestatud paroolide ja pääsuvõtmetega, kasutades funktsiooni Chromium automaattäite jaoks</translation>
 <translation id="8409374867500149834">Teil on Chromiumi tugevaim kaitse ohtlike veebisaitide vastu</translation>
 <translation id="8428449554948979733">Peida valik „Kasuta Chromiumi vaikebrauserina“</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}other{See juhtub siis, kui Chromiumi ei kasutata {THRESHOLD} minuti jooksul. Väljalogimisel kustutatakse kõik seadmesse salvestatud andmed. See võib hõlmata ajalugu ja paroole.}}</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8602103377623855616">Chromiumi leht</translation>
 <translation id="865600487977764604">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>

@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Søg</translation>
 <translation id="138618066238211776">Fortsæt som <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Valgmuligheder for at gemme kort</translation>
+<translation id="138810468159004008">Tillad, mens du besøger websitet</translation>
 <translation id="1396260204083880024">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
 <translation id="1397144142234474689">Skjul historik</translation>
 <translation id="1399268420835656394">Hvis du ikke er barn, kan du tjekke alderen på den Apple-konto, der er angivet på denne enhed. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Læs, hvad andre mener</translation>
 <translation id="2394659309569789395">Åbn website alligevel</translation>
 <translation id="2403129868389095715">Din pakke kan ikke leveres</translation>
-<translation id="2408318953009664750">Tillad én gang</translation>
 <translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="2422174748424038845">Hvis du sletter den, mister alle øjeblikkeligt adgangen til fanegruppen "<ph name="GROUP_NAME" />", og den slettes fra alle enheder.</translation>
 <translation id="2424805048070062787">Fortsæt med denne fane</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Downloaden er sat på pause</translation>
 <translation id="2816489851009559785">Menu → Indstillinger → Standardbrowser</translation>
 <translation id="2818821771744632548">Du blev logget ud af din konto, <ph name="USER_NAME" />, som en del af nulstillingen af din iPhone. Tryk på "Fortsæt" nedenfor for at logge ind igen.</translation>
-<translation id="2819667972867209401">Når denne indstilling er aktiveret, gemmes data på din Google-konto. Når indstillingen er deaktiveret, gemmes data kun på denne enhed, og dataene slettes, hvis du logger ud.</translation>
 <translation id="2827760117436553203">Vil du holde dataene adskilt?</translation>
 <translation id="2829172210806130158">Søg på skærmen</translation>
 <translation id="2831109159746537587">Prøv at tegne en cirkel om eller trykke på billedet for at søge</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25. okt. 2023</translation>
 <translation id="3416904994126232207">"Gem en adgangskode" er fuldført.</translation>
 <translation id="3419787211763835342">Hjælp med at forbedre forbedret autofyld</translation>
+<translation id="3422958112451181446">Hold fingeren nede for at fastgøre dit foretrukne værktøj her</translation>
 <translation id="3430407169377889553">Brug Gemini med omtanke, og overtag styringen, hvis det er nødvendigt. Du er ansvarlig for de handlinger, Gemini foretager under opgaver.</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3441673211568148613">Hold din browsing privat</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betalingsmetode}one{# betalingsmetode}other{# betalingsmetoder}}</translation>
 <translation id="3831560640878483188">Vil du afvise advarslen?</translation>
 <translation id="3832419617903252251">Adgangskoden er kun gemt på denne enhed</translation>
-<translation id="3835016165506903031">Tillad, mens du besøger websitet</translation>
 <translation id="3835964409414434850">Gå til næste fane</translation>
 <translation id="3838691874161539578">Tjek dine gemte adgangskoder for at forbedre sikkerheden og beskytte dig selv online</translation>
 <translation id="3838985624086228724">Prisfald på det produkt, du holder øje med, fra <ph name="PREVIOUS_PRICE" /> til <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Nyheder</translation>
 <translation id="4289309730265289297">Billedsamling</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
+<translation id="4290920330097335010">Tillad aldrig</translation>
 <translation id="4294506173142861371">Vil du logge ind som <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangskode­administrator</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Ophæv gruppering</translation>
 <translation id="446314443268698477">Køb, oversæt og identificer det, du ser, ved hjælp af dit kamera eller dine billeder.</translation>
 <translation id="4469324811108161144">Noter kan indeholde op til <ph name="CHARACTER_LIMIT" /> tegn</translation>
+<translation id="4470766488397113689">Hvad vil du arbejde på?</translation>
 <translation id="4471472356135655769">Der kan ikke eksporteres adgangskoder</translation>
 <translation id="4472575034687746823">Kom godt i gang</translation>
 <translation id="4473565697543262065">Denne handling sletter de valgte oplysninger, der er gemt på denne enhed og på din Google-konto <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Grundige scanninger efter mistænkelige downloads.</translation>
 <translation id="4606247758155004938">Din browser administreres af din organisation.</translation>
 <translation id="4607887340472970274">Prissporing</translation>
+<translation id="4614482404958079763">Prøv et stemningsfuldt tidsbegrænset tema med tilpassede illustrationer og animationer</translation>
 <translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4621768135601674446">Åbn indstillinger for Læsetilstand</translation>
 <translation id="4627107755957573804">Tillad, at websites og apps opgraderer eksisterende konti for at bruge adgangsnøgler</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google-kontofejl. Åbn kontomenu.</translation>
 <translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Skjul efter 1 minut}one{Skjul efter {count} minut}other{Skjul efter {count} minutter}}</translation>
+<translation id="4652266463001779298">Ikke tilladt</translation>
 <translation id="4652817563047461855">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Aktivér fannedeling</translation>
 <translation id="4658335131052370646">Gem</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Adgangsnøgler gemmes i Google Adgangskodeadministrator for</translation>
 <translation id="510580293474170715">Der er ikke importeret noget</translation>
 <translation id="5113960131843706315">Henter dine ting…</translation>
+<translation id="5116347248003317626">Tillad ikke, at websites anvender din lokation</translation>
 <translation id="5118462200606189584">Tilføj konto…</translation>
 <translation id="5118764316110575523">Fra</translation>
 <translation id="5119329531859909472">Tryk på Overvåg for at overvåge produktet</translation>
@@ -2009,6 +2013,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent er downloadet</translation>
 <translation id="7345061034321640811">Import er ikke tilladt</translation>
+<translation id="7346922058131593019">Hvad vil du arbejde på, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importér adgangskoder, historik, bogmærker m.m.</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
 <translation id="7357999308187750900">Se alle</translation>
@@ -2065,6 +2070,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7491131399623468277">Gå til Indstillinger…</translation>
 <translation id="7491161827858509164">Hvis du vil se filer, du har downloadet før, kan du åbne <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Fortsæt redigering</translation>
+<translation id="7498557042323380380">Giv siden Ny fane et udseende, der passer til årstiden</translation>
 <translation id="7500244509706269886">Udfyld formularen automatisk</translation>
 <translation id="750493650310597496">0 valgt</translation>
 <translation id="7505402981231763928">Du skal logge ind for at bruge Gemini</translation>
@@ -2102,6 +2108,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="760667371114328991">Deaktiver Notifikationer om Sikkerhedstjek</translation>
 <translation id="7612619742409846846">Du er logget ind på Google som</translation>
 <translation id="7612849887607288481">Åbn menuen for AI-prototyper</translation>
+<translation id="7618220760967055820">Vælg, hvilken knap der skal vises på værktøjslinjen</translation>
 <translation id="7620522820075868385">Annuller</translation>
 <translation id="762078666799342162">Du kan se dine tidligere downloads i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
@@ -2311,7 +2318,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8233237502828137700">Luk bannerpromovering</translation>
 <translation id="823339794112333264">Aktivér mikrofon</translation>
 <translation id="8240217649914883113">Føj dette til min kalender</translation>
-<translation id="824379025871762038">Tillad aldrig</translation>
 <translation id="8244387390464017490">Tilpas siden Ny fane</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8258734532103758067">Jeg har eksporteret mine data</translation>
@@ -2332,6 +2338,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8282657446819506217">Åbn i fanegruppe</translation>
 <translation id="828291969289324795">{count,plural, =1{Føj fane til ny gruppe}one{Føj fane til ny gruppe}other{Føj faner til ny gruppe}}</translation>
 <translation id="8283172974887967105">Angiv…</translation>
+<translation id="8287009018010202411">Produktivitet</translation>
 <translation id="8289930144142009940">Notifikationer for <ph name="FEATURE_NAME" /> er deaktiveret</translation>
 <translation id="8292893224181644074">Downloaden er fuldført</translation>
 <translation id="8299417921174340354">Før du kan bruge adgangskoder, skal du angive en adgangskode på din enhed.</translation>

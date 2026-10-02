@@ -986,7 +986,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1755601632425835748">Taille du texte</translation>
 <translation id="1756963401828337401">Choisissez un écran à capturer</translation>
 <translation id="17584710573359123">Afficher sur le Chrome Web Store</translation>
-<translation id="1758845021884209593">Utiliser le raccourci dans les applis de l'OS</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> remappé sur <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Comptes appartenant à <ph name="NAME" /></translation>
 <translation id="176272781006230109">les suggestions d'achat</translation>
@@ -1559,7 +1558,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2198625180564913276">Ajout du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="2198712775285959645">Modifier</translation>
 <translation id="2199298570273670671">Erreur</translation>
-<translation id="220006241671843310">Indiquez si Chrome peut utiliser des modèles d'IA qui s'exécutent directement sur votre appareil</translation>
+<translation id="2199546617947317537">Pour accéder à votre historique sur vos autres appareils, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Journaux système ChromeOS</translation>
 <translation id="2202391868799679245">Activer le raccourci clavier</translation>
@@ -2076,6 +2075,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2599048253926156421">Nom d'utilisateur copié dans le presse-papiers</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 extension non sécurisée désactivée}one{{NUM_SITES} extension non sécurisée désactivée}other{{NUM_SITES} extensions non sécurisées désactivées}}</translation>
 <translation id="2603121359676416582">Pour cette page</translation>
+<translation id="2603656971249947488">Barre d'onglets</translation>
 <translation id="2604129989323098489">Les sites demandent généralement des informations concernant vos écrans afin de pouvoir ouvrir et placer intelligemment les fenêtres, par exemple pour afficher des documents ou des contenus en plein écran côte à côte</translation>
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2604805099836652105">Formulaire d'adresse <ph name="ADDRESS_LABEL" /> rempli.</translation>
@@ -2287,6 +2287,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="274362947316498129">Une appli tente d'accéder à la <ph name="DEVICE_NAME" />. Désactivez l'option de confidentialité de la <ph name="DEVICE_NAME" /> pour accorder l'accès.</translation>
 <translation id="2744221223678373668">Partagés</translation>
+<translation id="2744919074068076548">Ouvrir la vue fractionnée</translation>
 <translation id="2745080116229976798">Subordination qualifiée Microsoft</translation>
 <translation id="2749756011735116528">Connexion à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2338,6 +2339,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2777525873368474674">Collez le lien de l'image</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 site avec de nombreuses notifications trouvé}one{{NUM_SITES} site avec de nombreuses notifications trouvé}other{{NUM_SITES} sites avec de nombreuses notifications trouvés}}</translation>
 <translation id="2778471504622896352">Ajouter des applications distantes au lanceur d'applications ChromeOS</translation>
+<translation id="2781037472881921606">Pour accéder à votre historique sur vos autres appareils, synchronisez votre historique. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Utilisez votre clé de sécurité avec <ph name="APP_NAME" /></translation>
@@ -2400,6 +2402,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2826576843404243001">Recevoir un avertissement avant d'accéder aux sites qui ne prennent pas en charge les connexions sécurisées. Vous ne pouvez pas modifier ce paramètre, car la Protection Avancée est activée.</translation>
 <translation id="2828375943530438449">Retour depuis l'interface de connexion</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> libérés</translation>
+<translation id="2828851448902426206">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="2833144527504272627">Parcourir avec le curseur de saisie</translation>
 <translation id="2833727845850279275">Ce fichier contient un logiciel malveillant ou provient d'un site suspect.</translation>
 <translation id="2835177225987815960">La configuration actuelle définie pour l'exploration sera réinitialisée, y compris les préférences concernant les contacteurs et la vitesse d'exploration automatique.</translation>
@@ -2766,6 +2769,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3102309003841389927">Examiner les modifications apportées au logo</translation>
 <translation id="310297983047869047">Diapositive précédente</translation>
 <translation id="3103451787721578293">Veuillez indiquer la raison pour laquelle vous importez ces données :</translation>
+<translation id="3105253709809514429">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos extensions et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3105339775057145050">Échec de la dernière mise à jour</translation>
 <translation id="3105796011181310544">Revenir à Google ?</translation>
 <translation id="3105820656234755131">Mot de passe modifié</translation>
@@ -2777,6 +2781,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3109206895301430738">Groupes d'onglets enregistrés</translation>
 <translation id="3109724472072898302">Réduit</translation>
 <translation id="3112292765614504292">Taille de l'appli : <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos favoris et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="311347022006935575">A ajouté cet onglet</translation>
 <translation id="311394601889664316">Ne pas autoriser les sites à modifier les fichiers ni les dossiers sur votre appareil</translation>
 <translation id="3113970906450647715">Bouton retiré</translation>
@@ -3282,6 +3287,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3498138244916757538">La modification du paramètre du micro nécessite l'arrêt de <ph name="SPECIFIC_NAME" />. Arrêtez <ph name="SPECIFIC_NAME" /> pour continuer.</translation>
 <translation id="3500417806337761827">Échec lors du montage du partage. Un trop grand nombre de partages SMB sont déjà montés.</translation>
 <translation id="3500764001796099683">Activer les applications Web isolées</translation>
+<translation id="3501134531169168291">Pour accéder à vos onglets sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos extensions et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3505100368357440862">Suggestions d'achat</translation>
 <translation id="3507650052590605702">Gérer le mot de passe</translation>
 <translation id="3507888235492474624">Relancer la recherche d'appareils Bluetooth</translation>
@@ -3358,6 +3364,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3562655211539199254">Affichez les onglets Chrome récents de votre téléphone</translation>
 <translation id="356268274299520831">Le modifier sur le site</translation>
 <translation id="3563392617245068355">Humeur</translation>
+<translation id="3564327838471533677">Vue fractionnée récemment fermée</translation>
 <translation id="3564456410937306182">En savoir plus sur la recharge adaptative.</translation>
 <translation id="3564659095423213915">Ce dossier n'est enregistré que sur cet appareil. Si vous l'enregistrez dans "<ph name="ACCOUNT_FOLDER" />", ce dossier sera également enregistré dans votre compte.</translation>
 <translation id="3564848315152754834">Clé de sécurité USB</translation>
@@ -3769,6 +3776,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
 <translation id="3838486795898716504">Plus de pages <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Vous n'avez fait de zoom avant ou arrière sur aucun site</translation>
+<translation id="3839108710633244251">Pour accéder à votre historique sur vos autres appareils, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="3839516600093027468">Toujours empêcher <ph name="HOST" /> de voir le contenu du presse-papiers</translation>
 <translation id="3840096463915153852">Historique des conversations</translation>
 <translation id="3841319830220785495">Voix naturelle par défaut</translation>
@@ -4261,7 +4269,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4241140145060464825">Contenu de l'appli</translation>
 <translation id="4241224519481557898">Catégorie</translation>
 <translation id="4242245038391716252">Téléchargé par l'extension : &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Vous pouvez désormais développer vos onglets en pointant dessus. Pour activer cette option, effectuez un clic droit ici.</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Votre navigateur et votre profil sont gérés<ph name="END_LINK" /> par <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Saisir la phrase secrète</translation>
@@ -4292,6 +4299,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Conserver le groupe}one{Conserver le groupe}other{Conserver les groupes}}</translation>
 <translation id="4261429981378979799">Autorisations de l'extension</translation>
 <translation id="4262004481148703251">Ignorer l'avertissement</translation>
+<translation id="4262060800239714974">Pour accéder à vos onglets sur <ph name="DEVICE" />, synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4263470758446311292">Économies de mémoire maximales. Les onglets deviennent inactifs après une courte période.</translation>
 <translation id="4263824086525632">Aurore boréale</translation>
 <translation id="4265096510956307240">Confirmer votre identité</translation>
@@ -4425,7 +4433,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4360738659108163902">Effectuer un clic droit sur la souris</translation>
 <translation id="4361745360460842907">Ouvrir dans un onglet</translation>
 <translation id="4362459470237309049">Utiliser "." pour relâcher un bouton de la souris</translation>
-<translation id="4362871358537270439">Afficher les onglets d'autres appareils dans le panneau latéral</translation>
 <translation id="4363262124589131906">Les nouveaux fichiers de Mon Drive ne se synchroniseront plus automatiquement avec ce Chromebook</translation>
 <translation id="4364129298304269786">Les sites peuvent utiliser un service de protection de contenu pour lire du contenu protégé par des droits d'auteur</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -4928,8 +4935,10 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4750185073185658673">Consultez d'autres autorisations sur votre téléphone. Assurez-vous que le Bluetooth et le Wi-Fi y sont activés.</translation>
 <translation id="4750394297954878236">Suggestions</translation>
 <translation id="475088594373173692">Premier utilisateur</translation>
+<translation id="4751925628341802838">Pour accéder à votre historique sur vos autres appareils, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos extensions et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4753084533826742808">Doit comporter au moins un caractère</translation>
 <translation id="4754590344707355551">Améliorez votre navigateur avec des extensions</translation>
+<translation id="4756130875344525429">Pour accéder à votre historique sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4756378406049221019">Arrêter/Actualiser</translation>
 <translation id="4756388243121344051">&amp;Historique</translation>
 <translation id="4756627014339714615">Rediriger</translation>
@@ -5159,6 +5168,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4913573660390710463">Accédez aux applications Web empaquetées avec des fonctionnalités avancées. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Données de l'application introuvables</translation>
 <translation id="4915961947098019832">Autorisé à afficher des images</translation>
+<translation id="4916140032692201190">&amp;Traduire la sélection</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> souhaite communiquer avec l'extension "<ph name="EXTENSION_NAME" />".</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918762404810341788">Copier et ouvrir</translation>
@@ -5240,6 +5250,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="497403230787583386">Les contrôles de sécurité sont terminés. Votre document va être imprimé.</translation>
 <translation id="4974442344472293753">Résultat de la mise à jour</translation>
 <translation id="4975771730019223894">Afficher un badge sur l'application</translation>
+<translation id="4976647810464861866">Pour accéder à vos onglets sur vos autres appareils, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmer l'accès</translation>
 <translation id="4979263087381759787">Options pour les développeurs</translation>
@@ -5412,6 +5423,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="511313294362309725">Activer l'Association express</translation>
 <translation id="5113992879909788634">En savoir plus sur la navigation automatique dans Chrome</translation>
 <translation id="51143538739122961">Insérez votre clé de sécurité et appuyez dessus</translation>
+<translation id="5114635223409082546">Pour accéder à vos onglets sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos favoris et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">En&amp;registrer le fichier audio sous...</translation>
 <translation id="5117139026559873716">Déconnectez votre téléphone de votre <ph name="DEVICE_TYPE" />. Ils ne se connecteront plus automatiquement.</translation>
@@ -5808,6 +5820,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5436211819997237281">Extension actuelle qui gère votre page "Nouvel onglet"</translation>
 <translation id="5436492226391861498">En attente du tunnel proxy...</translation>
 <translation id="5436510242972373446">Rechercher sur <ph name="SITE_NAME" /> :</translation>
+<translation id="5437406591808823366">Pour saisir automatiquement et enregistrer vos mots de passe sur vos différents appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616">La fenêtre de <ph name="WINDOW_SIDE" /> a désormais une largeur de <ph name="WINDOW_SIZE_PERCENT" />, et le volet de <ph name="PANE_SIDE" /> a désormais une largeur de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Rechercher des &amp;extensions</translation>
 <translation id="5440240650630588012">Appliquer une ligne ou une fenêtre de lecture pour vous aider à vous concentrer. Appuyer sur ⌥L ou accéder à Paramètres.</translation>
@@ -5837,6 +5850,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5457795687441958389">Rester déconnecté</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Vous avez saisi trop de codes incorrects. Pour accéder à vos clés d'accès et à vos mots de passe, modifiez votre code.</translation>
+<translation id="5459251585760045919">Pour accéder à votre historique sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos extensions et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5459470938885464873">Erreur d'importation du certificat</translation>
 <translation id="5459864179070366255">Poursuivre l'installation</translation>
 <translation id="5460861858595506978">Inspiration</translation>
@@ -6008,6 +6022,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5583640892426849032">Retour</translation>
 <translation id="5584088138253955452">Enregistrer le nom d'utilisateur ?</translation>
 <translation id="5585019845078534178">Cartes</translation>
+<translation id="5585064628683466904">Pour accéder à votre historique sur vos autres appareils, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="5585118885427931890">Impossible de créer le dossier de favoris.</translation>
 <translation id="558563010977877295">Ouvrir une page ou un ensemble de pages spécifiques</translation>
 <translation id="5587592231724900065">Une extension contrôle ce paramètre</translation>
@@ -6220,7 +6235,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5776571780337000608">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis le navigateur de fichiers ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Ouvrir Chrome</translation>
 <translation id="5778491106820461378">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous accordez aux sites et aux applis peuvent s'appliquer à tous ces comptes. Si vous ne voulez pas que les sites ou applis que vous utilisez aient accès aux infos de votre compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> en tant qu'invité.</translation>
-<translation id="5779636902585836564">&amp;Traduire</translation>
 <translation id="5780011244986845107">Le dossier que vous avez sélectionné contient des fichiers sensibles. Voulez-vous vraiment accorder à "<ph name="APP_NAME" />" un accès en lecture permanent à ce dossier ?</translation>
 <translation id="5780973441651030252">Priorité de traitement</translation>
 <translation id="5781120434102258025">Transférez les données de votre compte scolaire vers votre compte personnel</translation>
@@ -6747,6 +6761,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6175910054050815932">Obtenir un lien</translation>
 <translation id="6177478397823976397">Aucun appareil détecté. Ouvrir un article du centre d'aide dans un nouvel onglet.</translation>
 <translation id="6177779807714496775">Ouvrir le lien dans la vue de gauche</translation>
+<translation id="6178186430790239237">Pour accéder à vos onglets sur vos autres appareils, synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
 <translation id="6179830757749383456">Navigateur géré par <ph name="BROWSER_DOMAIN" />, profil géré par <ph name="PROFILE_DOMAIN" /></translation>
@@ -6876,6 +6891,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6273677812470008672">Qualité</translation>
 <translation id="6274089201566806618">Connexion à <ph name="HOST_DEVICE_NAME" />…</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">Pour accéder rapidement à vos sites préférés à l'aide des favoris de tous vos appareils, connectez-vous en tant que <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">Délai d'expiration du réseau dépassé.</translation>
 <translation id="6277518330158259200">F&amp;aire une capture d'écran</translation>
 <translation id="6278428485366576908">Thème</translation>
@@ -7057,6 +7073,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6430202563517028640">Ajouter le lien à la liste de lecture</translation>
 <translation id="6430814529589430811">Certificat unique codé Base 64 ASCII</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configurer les mises à jour automatiques pour tous les utilisateurs de cet ordinateur.</translation>
+<translation id="6431970976661940755">Pour accéder à vos onglets sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6434104957329207050">Vitesse de l'exploration par position</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434755719322447931">Chaotique</translation>
@@ -7221,6 +7238,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6556903358015358733">Thème et fond d'écran</translation>
 <translation id="6557199166823345360">Ajoutez des détails ou posez une question sur votre sélection pour affiner votre recherche</translation>
 <translation id="6557290421156335491">Mes raccourcis</translation>
+<translation id="655745275895381718">Pour accéder à vos onglets sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="6558098963164662391">&amp;Retirer du dictionnaire</translation>
 <translation id="6560061709899140565">Voir les autres sessions Cast</translation>
 <translation id="656065428026159829">Voir plus</translation>
@@ -7297,6 +7315,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6607831829715835317">Plus d'outi&amp;ls</translation>
 <translation id="6608166463665411119">Réinitialiser l'eSIM</translation>
 <translation id="660846213831377756">Touches pour la souris</translation>
+<translation id="6608725880745776452">Accédez à vos mots de passe et bien plus depuis <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Les données de connexion seront stockées sur l'appareil lorsque vous quitterez le mode navigation privée. Vous pourrez vous reconnecter à ce site Web avec votre appareil plus tard.</translation>
 <translation id="6610002944194042868">Options de traduction</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> onglet</translation>
@@ -7910,6 +7929,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 mot de passe importé dans le <ph name="BRAND" /> pour <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} mot de passe importé dans le <ph name="BRAND" /> pour <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} mots de passe importés dans le <ph name="BRAND" /> pour <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">À propos du système</translation>
 <translation id="706626672220389329">Erreur lors de l'installation du partage. Le partage indiqué est déjà installé.</translation>
+<translation id="7066357648902789011">Pour accéder à votre historique sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7067396782363924830">Couleurs ambiantes</translation>
 <translation id="7067725467529581407">Ne plus afficher</translation>
 <translation id="7068539819344620805">Vous pouvez maintenant modifier l'apparence de votre navigateur à tout moment depuis le menu "Personnaliser Chrome"</translation>
@@ -8059,7 +8079,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7188508872042490670">Données des sites sur l'appareil</translation>
 <translation id="7188755083797868960">Ouvrir le mode Lecture plus rapidement avec un raccourci. Appuyer sur Alt+Maj+R pour activer/désactiver le mode Lecture.</translation>
 <translation id="7189234443051076392">Assurez-vous de disposer de suffisamment d'espace sur votre appareil</translation>
-<translation id="7189558282078169397">Onglets d'autres appareils</translation>
 <translation id="7189965711416741966">Empreinte digitale ajoutée.</translation>
 <translation id="7190921792980745354">Bloquer <ph name="MEMBER_FULL_NAME" /> ?</translation>
 <translation id="7191063546666816478">Certains liens compatibles continueront à s'ouvrir dans <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> et <ph name="NUMBER_OF_OTHER_APPS" /> autres applis.</translation>
@@ -8095,6 +8114,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7214047272988222011">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l‘<ph name="LINK_BEGIN" />accès à l'appareil photo du système<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nouvel onglet dans 1 onglet}one{Nouvel onglet dans # onglet}other{Nouvel onglet dans # onglets}}</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
+<translation id="7216638029417040861">Pour accéder à votre historique sur vos autres appareils, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos favoris et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7217208603285112910">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Ajoutez du texte, des commentaires et des notes avec le nouvel outil "Annotations de texte"</translation>
 <translation id="7219254577985949841">Supprimer les données du site ?</translation>
@@ -8105,6 +8125,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7222232353993864120">Adresse e-mail</translation>
 <translation id="7222335051802562841">Terminer la mise à jour</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Pour accéder à votre historique sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à votre liste de lecture et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7223027547122518521">Sélectionnez un fichier que ce site peut lire</translation>
 <translation id="7223952304612664117">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des informations concernant les signaux sans fil et les capteurs pour estimer la position de l'appareil.</translation>
 <translation id="7225082563376899794">Utiliser Windows Hello pour saisir les mots de passe</translation>
@@ -8475,6 +8496,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502220299952823578">Ajouter à la liste "Toujours laisser ces sites actifs"</translation>
 <translation id="7502528909759062987">Suspendre la diffusion de l'onglet sur <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Revenir à Gemini</translation>
 <translation id="7502804472671406749">Le site peut faire défiler les onglets partagés et zoomer dessus</translation>
 <translation id="750314150962284310">Sélection de la ligne</translation>
 <translation id="7503191893372251637">Type de certificat Netscape</translation>
@@ -8716,6 +8738,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7684718995427157417">Pour créer et tester vos applications, activez Android Debug Bridge (ADB). Notez que cette action autorise l'installation d'applications Android non vérifiées par Google et ne pourra être désactivée qu'en rétablissant la configuration d'usine.</translation>
 <translation id="7684803937028953000">Votre organisation a bloqué le téléchargement local de ce fichier.</translation>
 <translation id="7684913007876670600">Pour afficher une vue simplifiée de cette page, ouvrez le panneau latéral et sélectionnez le mode Lecture</translation>
+<translation id="7684957383619170952">Accédez à vos favoris et à d'autres contenus de <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Impossible de caster</translation>
 <translation id="7685049629764448582">Mémoire JavaScript </translation>
 <translation id="7685087414635069102">Veuillez saisir un code</translation>
@@ -8993,6 +9016,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Annuler la configuration</translation>
 <translation id="7912974581251770345">Traduction</translation>
+<translation id="7913805372428124107">Pour accéder à vos onglets sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique. Vous pourrez aussi accéder à vos mots de passe et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7914399737746719723">Appli installée</translation>
 <translation id="7915457674565721553">Connectez-vous à Internet pour configurer le contrôle parental</translation>
 <translation id="7916364730877325865">Votre organisation ne vous permet pas d'activer la synchronisation avec ce compte</translation>
@@ -9241,6 +9265,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8081989000209387414">Désactiver le débogage ADB ?</translation>
 <translation id="8082132721957920509">Votre carte est enregistrée</translation>
 <translation id="8082390128630131497">La désactivation du débogage ADB rétablira la configuration d'usine de <ph name="DEVICE_TYPE" />. Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
+<translation id="8082737802704584539">Votre organisation a désactivé l'enregistrement de l'historique dans votre compte Google</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
 <translation id="8084417885464859041">Utilisation sécurisée de Gemini</translation>
 <translation id="8084429490152575036">Paramètres de l'APN mobile</translation>
@@ -9273,6 +9298,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="810362914482827094">Rechercher des clés d'accès</translation>
 <translation id="8104088837833760645">Télécharger le profil eSIM</translation>
 <translation id="8104388155778519213">Partagez le contenu à l'écran avec Google Lens</translation>
+<translation id="8104412594956510627">Pour accéder à votre historique sur <ph name="DEVICE" />, synchronisez votre historique. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="8104778744208707085">Requiert votre attention</translation>
 <translation id="8105273883928376822">Connectez-vous pour continuer</translation>
 <translation id="8106114112474206597">Utiliser "I" pour appuyer sur un bouton de la souris</translation>
@@ -9303,6 +9329,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8124313775439841391">ONC géré</translation>
 <translation id="8125651784723647184">Le partage des mots de passe est géré par votre administrateur</translation>
 <translation id="8126355825906412872">Sourire</translation>
+<translation id="8126498026310640675">Pour accéder à votre historique sur <ph name="DEVICE" />, connectez-vous et synchronisez votre historique et vos onglets avec <ph name="EMAIL" />. Vous pourrez aussi accéder à vos favoris et à d'autres données sur tous vos appareils. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8133297578569873332">Acceptable – FM</translation>
@@ -9754,6 +9781,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8477241577829954800">Remplacé</translation>
 <translation id="8477384620836102176">&amp;Général</translation>
 <translation id="8477446666255316832">Connectez-vous plus vite la prochaine fois</translation>
+<translation id="8477548388161793571">&amp;Traduire la sélection</translation>
 <translation id="8478346767369317046">Professionnel</translation>
 <translation id="8479176401914456949">Code non valide. Veuillez réessayer.</translation>
 <translation id="8480869669560681089">Appareil de <ph name="VENDOR_NAME" /> inconnu</translation>

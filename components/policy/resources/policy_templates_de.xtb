@@ -937,7 +937,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" /> erlauben, Verbindungen zu Geräten unter allen IP-Adressen herzustellen</translation>
 <translation id="1626379196197114720">Verwendung des Back-Forward-Cache zulassen</translation>
 <translation id="1628974048137236820">Die „Neuer Tab“-Seite zeigt keine Karten an</translation>
-<translation id="1628984674324273832">„Mit Gemini suchen und ausfüllen“ nicht zulassen.</translation>
 <translation id="163200210584085447">Muster in dieser Liste werden mit der Sicherheitsherkunft
       der anfragenden URL abgeglichen. Bei einer Übereinstimmung wird der Zugriff
       auf Videoaufnahmegeräte auf SAML-Log-in-Seiten gestattet. Wird keine Übereinstimmung
@@ -1705,7 +1704,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="2107601598727098402">
         Diese Richtlinie wird in M72 eingestellt. Verwenden sie stattdessen CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">„Mit Gemini suchen und ausfüllen“ zulassen, ohne KI-Modelle zu verbessern.</translation>
 <translation id="2112656109118682849">Nutzern erlauben, das Einblenden von Systeminformationen auf dem Anmeldebildschirm ein- oder auszuschalten</translation>
 <translation id="2113068765175018713">Betriebsdauer der Geräte durch automatische Neustarts begrenzen</translation>
 <translation id="211386002920955760">Damit lässt sich festlegen, ob ein Nutzer in einer Unternehmensumgebung auf die Chrome-Funktion zum Teilen von Tabgruppen zugreifen kann.
@@ -6373,7 +6371,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
 
 Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">„Mit Gemini suchen und ausfüllen“ zulassen und KI-Modelle verbessern.</translation>
 <translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
 <translation id="5073788301065423829">Mit dieser Richtlinie wird „Formuliere für mich“ für ChromeOS aktiviert oder deaktiviert.
 
@@ -9798,7 +9795,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="7136237405361383549">Standard-Renderer basierend auf der Konfiguration des Feldtests verwenden.</translation>
 <translation id="7138762292550697459">Mindestzeitlimit für JavaScript-Funktion setTimeout() steuern.</translation>
 <translation id="7138792262152376158">Die für die Einstellung der PrefixedVideoFullscreen API vorgesehene Zeitfenster werden eingehalten</translation>
-<translation id="7140755255968613921">Einstellungen für „Mit Gemini suchen und ausfüllen“</translation>
 <translation id="7140760943584613237">Microsoft®-Cloud-Identitätsanbieter</translation>
 <translation id="714219487865269980">„Objekt mit Tastaturfokus hervorheben“ aktivieren</translation>
 <translation id="7144022711746703451">
@@ -10207,19 +10203,6 @@ Tatsächliche Werte sensibler Daten (z. B. Cookies oder Eingabewerte) werden NI
 <translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7406039009275722824">Wenn du die <ph name="CHROME_SYNC_NAME" /> deaktivierst, funktioniert der Android-Dienst „Sichern und wiederherstellen“ nicht mehr richtig.</translation>
 <translation id="7406276857470642718">Legt die Einstellungen für Nutzer fest, die über SAML mit einer externen IdP authentifiziert sind</translation>
-<translation id="7407431811343706437">Steuert, ob Nutzer die Funktion „Mit Gemini suchen und ausfüllen“ in <ph name="PRODUCT_NAME" /> verwenden können.
-
-„0“ = Die Funktion darf verwendet werden und Google darf relevante Daten nutzen, um seine KI-Modelle zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben, Quellenmaterial und schriftliches Feedback sein. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion darf verwendet werden, Google darf aber keine Modelle mithilfe von Nutzerinhalten (einschließlich Prompts, Eingaben, Ausgaben, Quellenmaterial und schriftlichen Feedbacks) verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, sowie für Konten von Bildungseinrichtungen, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion darf nicht verwendet werden.
-
-Diese Richtlinie hat keine Auswirkungen, wenn die Gemini App deaktiviert ist. Beispielsweise kann die Gemini App durch die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ deaktiviert werden.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
-
-Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Mit dieser Richtlinie wird die Netzwerkvorhersage bei <ph name="PRODUCT_NAME" /> gesteuert. Mit ihr werden der DNS-Vorabruf, die TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, wird die Netzwerkvorhersage aktiviert, aber sie kann von Nutzern nicht geändert werden.</translation>
@@ -10228,11 +10211,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="7410074797376205571">Zulassen, dass <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-Anfragen ausführt, die von einem Remote-Host über einen Proxy weitergeleitet werden.</translation>
 <translation id="7412456346709338637">Datenzugriff von Thunderbolt/USB4-Peripheriegeräten aktivieren</translation>
 <translation id="7414890119082492552">Keine Präferenz.</translation>
-<translation id="7416222110012824615">Mit dieser Richtlinie wird die Verfügbarkeit der XSLT-Funktion (XSLTProcessor JavaScript API und XSL-Verarbeitungsanweisung) gesteuert.
-Wenn diese Richtlinie aktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser verfügbar.
-Wenn diese Richtlinie deaktiviert ist, ist XSLT unabhängig vom Standardstatus der Funktion im Browser nicht verfügbar.
-Wenn diese Richtlinie nicht konfiguriert ist, wird die Verfügbarkeit von XSLT durch die Standardeinstellungen des Browsers und Field Trials bestimmt.
-Diese Richtlinie ist eine vorübergehende Maßnahme und wird in M164 entfernt.</translation>
 <translation id="7417438464912687020">Verbindungen zu diesem Computer per Remote-Zugriff erlauben</translation>
 <translation id="7417972229667085380">Prozentsatz für die Skalierung der Inaktivitätsspanne im Präsentationsmodus (veraltet)</translation>
 <translation id="7421230730436851224">Audiovorgang nie in einer Sandbox ausführen</translation>
@@ -10533,10 +10511,6 @@ Richtlinien, die zusammengeführt werden müssen, müssen außerdem entweder in 
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Berichterstellung deaktiviert.
       Regeln, die in DataLeakPreventionRulesList mit ALLOW-Ebene-Beschränkungen definiert sind, melden in beiden Fällen keine Ereignisse.</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
-<translation id="7649831723389657756">Mit dieser Richtlinie wird festgelegt, für welche Ursprünge alle HTTP-Authentifizierungsschemas zulässig sind, die von <ph name="PRODUCT_NAME" /> unterstützt werden, unabhängig von der Richtlinie „<ph name="AUTH_SCHEMES_POLICY_NAME" />“.
-
-      Für das Ursprungsmuster muss folgendes Format verwendet werden: <ph name="URL_SCHEME_FORMAT_LINK" />. In „<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ können bis zu 1.000 Ausnahmen definiert werden.
-      Für die Hostkomponente sind Platzhalter zulässig (z. B. „*:8000“ passt für alle Hosts auf Port 8000). Wenn alle Schemas oder alle Ports passen sollen, kannst du die Komponente vollständig weglassen (z. B. passt „beispiel.de“ für jedes Schema und jeden Port). Ein Hostname (z. B. „beispiel.de“) stimmt auch mit seinen Subdomains überein. Wenn ein Host genau passen soll und seine Subdomains ausgeschlossen werden sollen, stell ihm einen Punkt voran (z. B. „.beispiel.de“). Verwende ein einzelnes Sternchen („*“), damit alle Ursprünge passen.</translation>
 <translation id="7652330587655863759">Der Authentifizierungstyp.
 
 * „none“: Es wird keine Authentifizierung durchgeführt.
@@ -12682,6 +12656,9 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_NAME" /> dies
       Wenn die URI-Vorlage eine <ph name="HTTP_VARIABLE_DNS" />-Variable enthält, verwenden Anfragen an den Resolver <ph name="HTTP_METHOD_GET" />; andernfalls verwenden Anfragen <ph name="HTTP_METHOD_POST" />.
 
       Inkorrekt formatierte Vorlagen werden ignoriert.</translation>
+<translation id="9066972193987544412">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Lesezeichen hinzufügen, entfernen, ändern oder hochladen.
+
+      Ist sie deaktiviert, können Nutzer keine Lesezeichen hinzufügen, entfernen, ändern oder hochladen. Sie können aber weiterhin bestehende Lesezeichen verwenden.</translation>
 <translation id="9068629430243705879">Port 6566 (Blockierung kann bis 15.10.2021 aufgehoben werden)</translation>
 <translation id="9069432851455606924">Einstellungen für die Standortbestimmung</translation>
 <translation id="9069503402414011061">Wenn die Richtlinie konfiguriert ist, wird die Cache-Lebensdauer für Authentifizierungsdaten in Stunden festgelegt. Im Cache befinden sich Daten zu Bereichen, die der Computer als vertrauenswürdig einstuft, d. h. verwandte Bereiche. Das Speichern von Authentifizierungsdaten im Cache beschleunigt die Anmeldung. Im Cache werden keine nutzerspezifischen Daten und auch keine Daten zu nicht verwandten Bereichen gespeichert.

@@ -348,7 +348,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8390323835464055390">Sign in with your saved passwords and passkeys from any app using Chromium for Autofill</translation>
 <translation id="8409374867500149834">You have Chromium's strongest security against harmful websites</translation>
 <translation id="8428449554948979733">Hide Use Chromium as default</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium page</translation>
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>

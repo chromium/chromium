@@ -329,7 +329,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="2327445548174191329">O <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Cadw'r dudalen fel…</translation>
 <translation id="2328474416100889417">Bydd pawb yn colli mynediad at y grŵp tabiau "<ph name="GROUP_NAME" />" ar unwaith, a bydd yr holl ddolenni gwahoddiad yn cael eu diffodd</translation>
-<translation id="2329500425421091035">Cyflwyno Dull AI yn Chrome</translation>
 <translation id="2330186936255788117">Rhagor o nodau tudalen</translation>
 <translation id="2330243730505117832">Mae "Dewiswch ddyfais" ar gau.</translation>
 <translation id="2332515770639153015">Mae Gwell Pori'n Ddiogel ymlaen</translation>
@@ -603,7 +602,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3435575784518354875">Er mwyn cadw mynediad at eich cyfrineiriau, allforiwch nhw nawr, diweddarwch Google Play Services, ac yna eu mewnforio yn ôl i Reolwr Cyfrineiriau Google. <ph name="BEGIN_LINK" />Gweld y cyfarwyddiadau llawn<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
 <translation id="3435914367318771664">Ychwanegu'r tab at grŵp newydd</translation>
-<translation id="3436118221454753036">Modd Gofyn i AI</translation>
 <translation id="3439276997620616816">Byddwch yn gweld eich tabiau diweddar yma</translation>
 <translation id="3443221991560634068">Ail-lwytho'r dudalen bresennol</translation>
 <translation id="3444179773590444986">Rhannu adborth am y thema dywyll ar gyfer gwefannau?</translation>
@@ -630,7 +628,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3524334353996115845">Gadael i <ph name="ORIGIN" /> wirio mai chi sydd yno</translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3542235761944717775">Mae <ph name="KILOBYTES" /> KB ar gael</translation>
-<translation id="3547933853190131743">Chwilio gyda'r Dull AI</translation>
 <translation id="3549537543136628349">Oherwydd bod y tudalennau sydd wedi'u rhaglwytho wedi'u hamgryptio, a bod y wefan neu'r ap sy'n cysylltu â'r tudalennau yn wefan neu ap Google, nid yw gweinyddion Google yn derbyn gwybodaeth newydd wrth raglwytho'r tudalennau hyn yn breifat.</translation>
 <translation id="3549657413697417275">Chwilio eich hanes</translation>
 <translation id="3557336313807607643">Ychwanegu at gysylltiadau</translation>
@@ -984,7 +981,6 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="4885273946141277891">Nifer o achosion Chrome na chefnogir.</translation>
 <translation id="4890973535105146893">Dim cyfrineiriau sydd wedi'u cadw yn eich Cyfrif Google</translation>
 <translation id="490375751687810070">Fertigol</translation>
-<translation id="4905823827770127520">Cynhwyswch ddolen i'r dudalen</translation>
 <translation id="4910889077668685004">Apiau talu</translation>
 <translation id="4911042367886397055">Croeso'n ôl <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Stopio ail-lwytho</translation>
@@ -1215,6 +1211,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5869522115854928033">Cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="5870416898561279542">Mae tabiau a grwpiau dyblyg neu'r rhai sydd heb eu defnyddio ers <ph name="DAYS_INACTIVE" /> o ddiwrnodau yn cael eu symud yma<ph name="AUTODELETE_SECTION" />. Gallwch newid hyn unrhyw bryd yn <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Hysbysiadau <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd bod y wefan yn beryglus</translation>
+<translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="5896944002928653773">Mae taflen waelod ymwadiad signalau Enterprise ar gau</translation>
 <translation id="5899667542927581604">Cafodd y ddalen dim codau pas ei chau</translation>
 <translation id="5907542076239273525">Wedi cadw nod tudalen i <ph name="FOLDER_NAME" /></translation>
@@ -1959,6 +1956,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="860282621117673749">Hysbysiadau gostyngiadau prisiau</translation>
 <translation id="8611922158252451755">Gall unrhyw un sydd â'r ddolen olygu pob tab, felly rhannwch yn ddoeth. Dolen yn darfod mewn 48 awr.</translation>
 <translation id="8616006591992756292">Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Dull AI Google Search ac apiau cysylltiedig</translation>
 <translation id="8626572875733549102">Cyfieithu i <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Agorwch Ddewislen Chrome &gt; Gosodiadau</translation>
 <translation id="8634050254805484913">Wedi'i guddio ar sgriniau cul</translation>
@@ -2050,7 +2048,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="9001604755921395912">Agor mewn tab Anhysbys Chrome</translation>
 <translation id="9010094279589497751">Agor Gemini yn gyflym pan fydd ei angen arnoch</translation>
 <translation id="9012585441087414258">Yn amddiffyn rhag gwefannau, lawrlwythiadau ac estyniadau y gwyddys eu bod yn beryglus. Os yw tudalen yn gwneud rhywbeth amheus, anfonir cyfeiriadau URL a darnau o gynnwys tudalen i Bori'n Ddiogel gyda Google.</translation>
-<translation id="9014097371980259227">Mae rhai offer wedi symud i'ch helpu i chwilio gyda'r Dull AI</translation>
 <translation id="9015111999662965458">Er mwyn sicrhau y gellir defnyddio'r ddyfais hon yn ddiogel, mae'n bosib y bydd angen i'ch sefydliad weld gwybodaeth am ei system weithredu, porwr, gosodiadau, a pha feddalwedd sydd wedi'i gosod ar y ddyfais</translation>
 <translation id="9019199799064251516">Parhau heb glo proffil car?</translation>
 <translation id="9022774213089566801">Ymwelir yn aml</translation>

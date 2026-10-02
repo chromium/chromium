@@ -348,7 +348,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8390323835464055390">Inicia la sessió amb les teves contrasenyes i claus d'accés desades des de qualsevol aplicació amb Chromium per a Emplenament automàtic</translation>
 <translation id="8409374867500149834">Tens la seguretat més efectiva de Chromium contra llocs web perillosos</translation>
 <translation id="8428449554948979733">Amaga Utilitza Chromium com a predeterminat</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="8602103377623855616">Pàgina de Chromium</translation>
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>

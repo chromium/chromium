@@ -348,7 +348,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8390323835464055390">Accedi con le tue password e passkey salvate da qualsiasi app utilizzando Chromium per la compilazione automatica</translation>
 <translation id="8409374867500149834">Disponi della misura di sicurezza più efficace di Chromium contro siti web pericolosi</translation>
 <translation id="8428449554948979733">Nascondi Usa Chromium come browser predefinito</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuto. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}other{Questo accade quando Chromium non viene utilizzato per {THRESHOLD} minuti. I dati salvati solo su questo dispositivo mentre avevi eseguito l'accesso verranno eliminati. Potrebbero essere incluse cronologia e password.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8602103377623855616">Pagina di Chromium</translation>
 <translation id="865600487977764604">Ti protegge su Chromium e potrebbe essere utilizzata per migliorare la tua sicurezza in altre app Google se hai eseguito l'accesso.</translation>

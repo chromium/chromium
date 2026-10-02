@@ -329,7 +329,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2327445548174191329">送信元: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">名前を付けてページを保存…</translation>
 <translation id="2328474416100889417">全員が「<ph name="GROUP_NAME" />」タブグループに直ちにアクセスできなくなり、招待リンクはすべて無効になります</translation>
-<translation id="2329500425421091035">Chrome の AI モードのご紹介</translation>
 <translation id="2330186936255788117">その他のブックマーク</translation>
 <translation id="2330243730505117832">[デバイスの選択] が閉じられました。</translation>
 <translation id="2332515770639153015">セーフ ブラウジング保護強化機能はオンになっています</translation>
@@ -602,7 +601,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3435575784518354875">パスワードを引き続き使用できるようにするには、今すぐパスワードをエクスポートし、Google Play 開発者サービスを更新してから、Google パスワード マネージャーに再度インポートしてください。<ph name="BEGIN_LINK" />詳細な手順はこちらをご覧ください<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3435914367318771664">新しいグループに追加</translation>
-<translation id="3436118221454753036">AI モードに質問</translation>
 <translation id="3439276997620616816">最近使ったタブがここに表示されます</translation>
 <translation id="3443221991560634068">現在のページを再読み込みする</translation>
 <translation id="3444179773590444986">サイトのダークモードに関するフィードバックを共有しますか？</translation>
@@ -629,7 +627,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3524334353996115845"><ph name="ORIGIN" /> で本人確認を行います</translation>
 <translation id="3527085408025491307">フォルダ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB の空き</translation>
-<translation id="3547933853190131743">AI モードで検索</translation>
 <translation id="3549537543136628349">プリロードされたページが暗号化されており、ページへリンクしているサイトまたはアプリが Google のサイトまたはアプリであるため、これらのページを非公開でプリロードする際に Google サーバーは新しい情報を受信しません。</translation>
 <translation id="3549657413697417275">履歴を検索</translation>
 <translation id="3557336313807607643">連絡先に追加</translation>
@@ -983,7 +980,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4885273946141277891">Chrome のインスタンス数の上限を超えています。</translation>
 <translation id="4890973535105146893">Google アカウントに保存されているパスワードはありません</translation>
 <translation id="490375751687810070">縦</translation>
-<translation id="4905823827770127520">このページへのリンクを含める</translation>
 <translation id="4910889077668685004">お支払いアプリ</translation>
 <translation id="4911042367886397055">おかえりなさい、<ph name="USER_NAME" /> さん</translation>
 <translation id="4913169188695071480">更新を停止</translation>
@@ -1214,6 +1210,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5870416898561279542">重複しているタブとグループや <ph name="DAYS_INACTIVE" /> 日間使用していないタブとグループはここに移動され、<ph name="AUTODELETE_SECTION" />。これは [<ph name="DECLUTTER_SETTINGS_TITLE" />] でいつでも変更できます。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> このサイトは危険なため、権限を削除しました</translation>
+<translation id="5895138241574237353">再起動</translation>
 <translation id="5896944002928653773">Enterprise シグナルに関する免責事項のボトムシートは閉じています</translation>
 <translation id="5899667542927581604">閉じられたパスキー シートはありません</translation>
 <translation id="5907542076239273525">ブックマークを <ph name="FOLDER_NAME" /> に保存しました</translation>
@@ -1958,6 +1955,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="860282621117673749">値下げアラート</translation>
 <translation id="8611922158252451755">リンクを知っているユーザーは誰でも、すべてのタブを編集できます。共有は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
 <translation id="8616006591992756292">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります。</translation>
+<translation id="8622145666696249878">Google 検索の AI モードと接続されたアプリ</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" />に翻訳</translation>
 <translation id="8629093325209491835">Chrome メニュー &gt; [設定] を開く</translation>
 <translation id="8634050254805484913">画面が狭い場合は非表示にします</translation>
@@ -2049,7 +2047,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="9001604755921395912">シークレット モードの Chrome タブで開く</translation>
 <translation id="9010094279589497751">必要なときに Gemini をすばやく開くことができます</translation>
 <translation id="9012585441087414258">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ページで不審な動作が検出された場合、URL と一部のページ コンテンツが Google セーフ ブラウジングに送信されます。</translation>
-<translation id="9014097371980259227">一部のツールが移動し、AI モードで検索できるようになりました</translation>
 <translation id="9015111999662965458">デバイスを安全に使用できるようにするため、組織で必要に応じてオペレーティング システム、ブラウザ、設定、デバイスにインストールされているソフトウェアに関する情報を確認する場合があります。</translation>
 <translation id="9019199799064251516">車のプロフィールをロックせずに続行しますか？</translation>
 <translation id="9022774213089566801">よく使用するサイト</translation>

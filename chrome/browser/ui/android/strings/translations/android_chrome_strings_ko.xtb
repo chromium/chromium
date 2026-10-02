@@ -329,7 +329,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2327445548174191329">출처: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">페이지를 다른 이름으로 저장…</translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
-<translation id="2329500425421091035">Chrome의 AI 모드 소개</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
 <translation id="2330243730505117832">'기기 선택'이 닫혔습니다.</translation>
 <translation id="2332515770639153015">향상된 세이프 브라우징 사용 설정됨</translation>
@@ -602,7 +601,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3435575784518354875">비밀번호에 대한 액세스를 유지하려면 지금 비밀번호를 내보내고 Google Play 서비스를 업데이트한 후 Google 비밀번호 관리자로 다시 가져오세요. <ph name="BEGIN_LINK" />전체 안내 보기<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3435914367318771664">새 그룹에 탭 추가</translation>
-<translation id="3436118221454753036">AI 모드로 검색하기</translation>
 <translation id="3439276997620616816">여기에서 최근 탭을 확인할 수 있습니다.</translation>
 <translation id="3443221991560634068">현재 페이지 새로고침</translation>
 <translation id="3444179773590444986">사이트의 어두운 테마에 관한 의견을 공유할까요?</translation>
@@ -629,7 +627,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3524334353996115845"><ph name="ORIGIN" />에서 본인 여부를 확인하도록 허용합니다.</translation>
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" />KB 사용 가능</translation>
-<translation id="3547933853190131743">AI 모드로 검색</translation>
 <translation id="3549537543136628349">미리 로드된 페이지는 암호화되어 있으며, 페이지로 연결하는 사이트 또는 앱이 Google 사이트 또는 앱이므로 이러한 페이지를 비공개로 미리 로드할 때 Google 서버에 새로운 정보가 수신되지 않습니다.</translation>
 <translation id="3549657413697417275">방문 기록 검색</translation>
 <translation id="3557336313807607643">주소록에 추가</translation>
@@ -983,7 +980,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4885273946141277891">지원되지 않는 Chrome 인스턴스 수입니다.</translation>
 <translation id="4890973535105146893">Google 계정에 저장된 비밀번호 없음</translation>
 <translation id="490375751687810070">세로</translation>
-<translation id="4905823827770127520">페이지 링크 포함</translation>
 <translation id="4910889077668685004">결제 앱</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />님, 다시 방문해 주셔서 감사합니다</translation>
 <translation id="4913169188695071480">새로고침 중지</translation>
@@ -1214,6 +1210,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5869522115854928033">저장된 비밀번호</translation>
 <translation id="5870416898561279542">중복되거나 <ph name="DAYS_INACTIVE" />일 동안 사용하지 않은 탭 및 그룹은 여기로 이동되며<ph name="AUTODELETE_SECTION" />. 언제든지 <ph name="DECLUTTER_SETTINGS_TITLE" />에서 변경할 수 있습니다.</translation>
 <translation id="5885378508678660271">알림 <ph name="SEPARATOR" /> 위험한 사이트이므로 Chrome에서 이러한 권한을 삭제했습니다.</translation>
+<translation id="5895138241574237353">다시 시작</translation>
 <translation id="5896944002928653773">엔터프라이즈 신호 면책 조항 하단 시트가 닫힘</translation>
 <translation id="5899667542927581604">닫힌 패스키 시트 없음</translation>
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />에 북마크가 저장되었습니다.</translation>
@@ -1958,6 +1955,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="860282621117673749">가격 인하 알림</translation>
 <translation id="8611922158252451755">링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 공유하세요. 링크는 48시간 후에 만료됩니다.</translation>
 <translation id="8616006591992756292">Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 사용 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
+<translation id="8622145666696249878">Google 검색 AI 모드 및 연결된 앱</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" />로 번역</translation>
 <translation id="8629093325209491835">Chrome 메뉴 &gt; 설정을 엽니다.</translation>
 <translation id="8634050254805484913">좁은 화면에서 숨기기</translation>
@@ -2049,7 +2047,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="9001604755921395912">시크릿 모드 Chrome 탭에서 열기</translation>
 <translation id="9010094279589497751">필요할 때 빠르게 Gemini를 여세요.</translation>
 <translation id="9012585441087414258">위험한 것으로 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 보호합니다. 페이지에서 의심스러운 작업을 수행하면 URL 및 페이지 콘텐츠 일부가 Google 세이프 브라우징으로 전송됩니다.</translation>
-<translation id="9014097371980259227">AI 모드로 검색할 수 있도록 일부 도구가 이동되었습니다</translation>
 <translation id="9015111999662965458">기기를 안전하게 사용하기 위해 조직에서 운영체제, 브라우저, 설정, 기기에 설치된 소프트웨어에 관한 정보를 확인해야 할 수 있습니다.</translation>
 <translation id="9019199799064251516">자동차 프로필 잠금 없이 계속하시겠습니까?</translation>
 <translation id="9022774213089566801">자주 방문한 웹사이트</translation>

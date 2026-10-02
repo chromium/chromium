@@ -329,7 +329,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Anomena i desa la pàgina…</translation>
 <translation id="2328474416100889417">Tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i es desactivaran tots els enllaços d'invitació</translation>
-<translation id="2329500425421091035">Presentem el mode IA a Chrome</translation>
 <translation id="2330186936255788117">Més adreces d'interès</translation>
 <translation id="2330243730505117832">S'ha tancat Tria un dispositiu.</translation>
 <translation id="2332515770639153015">La funció Navegació segura millorada està activada</translation>
@@ -602,7 +601,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3435575784518354875">Per mantenir l'accés a les contrasenyes, exporta-les ara, actualitza Serveis de Google Play i, a continuació, importa-les al gestor de contrasenyes de Google. <ph name="BEGIN_LINK" />Mostra les instruccions completes<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3435914367318771664">Afegeix la pestanya a un grup nou</translation>
-<translation id="3436118221454753036">Pregunta al mode IA</translation>
 <translation id="3439276997620616816">Trobaràs les teves pestanyes recents aquí</translation>
 <translation id="3443221991560634068">Torna a carregar la pàgina actual</translation>
 <translation id="3444179773590444986">Vols compartir suggeriments sobre el tema fosc per als llocs web?</translation>
@@ -629,7 +627,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3524334353996115845">Permet que <ph name="ORIGIN" /> verifiqui la teva identitat</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibles</translation>
-<translation id="3547933853190131743">Cerca amb el mode IA</translation>
 <translation id="3549537543136628349">Com que les pàgines precarregades estan encriptades, i l'aplicació o el lloc web que hi enllaça és una aplicació o un lloc de Google, els servidors de Google no reben informació nova quan aquestes pàgines es precarreguen de manera privada.</translation>
 <translation id="3549657413697417275">Cerca a l'historial</translation>
 <translation id="3557336313807607643">Afegeix als contactes</translation>
@@ -983,7 +980,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4885273946141277891">No s'admet aquest nombre d'instàncies de Chrome.</translation>
 <translation id="4890973535105146893">No hi ha cap contrasenya desada al teu Compte de Google</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Inclou un enllaç a la pàgina</translation>
 <translation id="4910889077668685004">Aplicacions de pagament</translation>
 <translation id="4911042367886397055">Et donem la benvinguda de nou, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Deixa d'actualitzar</translation>
@@ -1214,6 +1210,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5870416898561279542">Les pestanyes i els grups duplicats o els que no hagis utilitzat durant <ph name="DAYS_INACTIVE" /> dies es mouran aquí <ph name="AUTODELETE_SECTION" />. Pots canviar-ho en qualsevol moment a <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificacions <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè aquest lloc web és perillós</translation>
+<translation id="5895138241574237353">Reinicia</translation>
 <translation id="5896944002928653773">El full inferior de l'avís d'exempció de responsabilitat dels senyals d'Enterprise està tancat</translation>
 <translation id="5899667542927581604">No s'ha tancat cap full de claus d'accés</translation>
 <translation id="5907542076239273525">S'ha desat l'adreça d'interès a <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7630202231528827509">URL del proveïdor</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
 <translation id="764047009170754705">S'ha tancat el full d'activació de les troballes de Chrome</translation>
+<translation id="7645712301713737707">Personalitza el disseny de les pestanyes perquè es mostrin a la part superior o al lateral del navegador.</translation>
 <translation id="7646499124171960488">T'avisa de llocs web públics no segurs</translation>
 <translation id="7655240423373329753">7 darrers dies</translation>
 <translation id="7656721520530864426">Cap lloc web</translation>
@@ -1957,6 +1955,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="860282621117673749">Alertes de baixada de preu</translation>
 <translation id="8611922158252451755">Tothom que tingui l'enllaç podrà editar totes les pestanyes, així que comparteix el grup amb seny. L'enllaç caducarà d'aquí a 48 hores.</translation>
 <translation id="8616006591992756292">A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google.</translation>
+<translation id="8622145666696249878">Mode IA de la Cerca de Google i aplicacions connectades</translation>
 <translation id="8626572875733549102">Tradueix a <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Obre el menú de Chrome &gt; Configuració</translation>
 <translation id="8634050254805484913">S'amaga en pantalles estretes</translation>
@@ -2048,7 +2047,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="9001604755921395912">Obre en una pestanya d'incògnit</translation>
 <translation id="9010094279589497751">Obre Gemini ràpidament quan el necessitis</translation>
 <translation id="9012585441087414258">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Si una pàgina fa res sospitós, els URL i els fragments de contingut de les pàgines s'envien a Navegació segura de Google.</translation>
-<translation id="9014097371980259227">Algunes eines s'han mogut per ajudar-te a fer cerques amb el mode IA</translation>
 <translation id="9015111999662965458">Per assegurar-se que aquest dispositiu es pot utilitzar de manera segura, és possible que la teva organització necessiti veure informació sobre el sistema operatiu, el navegador, la configuració i el programari que hi ha instal·lat al dispositiu</translation>
 <translation id="9019199799064251516">Vols continuar sense un bloqueig de perfil del cotxe?</translation>
 <translation id="9022774213089566801">Visitats amb freqüència</translation>

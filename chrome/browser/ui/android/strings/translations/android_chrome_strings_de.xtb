@@ -329,7 +329,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="2327445548174191329">Von <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Seite speichern unter…</translation>
 <translation id="2328474416100889417">Alle Mitglieder verlieren dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und alle Einladungslinks werden deaktiviert</translation>
-<translation id="2329500425421091035">Jetzt neu: KI-Modus in Chrome</translation>
 <translation id="2330186936255788117">Weitere Lesezeichen</translation>
 <translation id="2330243730505117832">„Gerät auswählen“ ist geschlossen.</translation>
 <translation id="2332515770639153015">Erweitertes Safe Browsing ist aktiviert</translation>
@@ -602,7 +601,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3435575784518354875">Wenn du weiterhin auf deine Passwörter zugreifen möchtest, exportiere sie jetzt, aktualisiere die Google Play-Dienste und importiere sie dann wieder in den Google Passwortmanager. <ph name="BEGIN_LINK" />Vollständige Anleitung<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3435914367318771664">Tab zu neuer Gruppe hinzufügen</translation>
-<translation id="3436118221454753036">Im KI-Modus fragen</translation>
 <translation id="3439276997620616816">Hier werden deine kürzlich geschlossenen Tabs angezeigt</translation>
 <translation id="3443221991560634068">Aktuelle Seite neu laden</translation>
 <translation id="3444179773590444986">Feedback zu dunklem Design für Websites teilen?</translation>
@@ -629,7 +627,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3524334353996115845"><ph name="ORIGIN" /> deine Identität bestätigen lassen</translation>
 <translation id="3527085408025491307">Ordner</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB verfügbar</translation>
-<translation id="3547933853190131743">Mit KI-Modus suchen</translation>
 <translation id="3549537543136628349">Da die vorab geladenen Seiten verschlüsselt sind und es sich bei der Website oder App, die zu den Seiten verlinkt, um eine Google-Website oder ‑App handelt, erhalten die Google-Server beim privaten Vorabladen dieser Seiten keine neuen Informationen.</translation>
 <translation id="3549657413697417275">Im Verlauf suchen</translation>
 <translation id="3557336313807607643">Zu Kontakten hinzufügen</translation>
@@ -983,7 +980,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4885273946141277891">Nicht unterstützte Anzahl von Chrome-Instanzen</translation>
 <translation id="4890973535105146893">Keine gespeicherten Passwörter in deinem Google-Konto</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905823827770127520">Link zur Seite hinzufügen</translation>
 <translation id="4910889077668685004">Zahlungs-Apps</translation>
 <translation id="4911042367886397055">Willkommen zurück, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Aktualisierung anhalten</translation>
@@ -1214,6 +1210,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5870416898561279542">Doppelte Tabs und Tabgruppen oder solche, die <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet wurden, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst diese Einstellung jederzeit in den <ph name="DECLUTTER_SETTINGS_TITLE" /> ändern.</translation>
 <translation id="5885378508678660271">Benachrichtigungen <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil diese Website gefährlich ist</translation>
+<translation id="5895138241574237353">Neu starten</translation>
 <translation id="5896944002928653773">Ansicht mit Haftungsausschluss für Unternehmenssignale am unteren Rand ist geschlossen</translation>
 <translation id="5899667542927581604">Die Ansicht „Keine Passkeys“ wurde geschlossen</translation>
 <translation id="5907542076239273525">Lesezeichen in „<ph name="FOLDER_NAME" />“ gespeichert</translation>
@@ -1958,6 +1955,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="860282621117673749">Benachrichtigungen bei Preisnachlässen</translation>
 <translation id="8611922158252451755">Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, wem du den Link sendest. Der Link läuft in 48 Stunden ab.</translation>
 <translation id="8616006591992756292">Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert.</translation>
+<translation id="8622145666696249878">KI-Modus der Google Suche und verbundene Apps</translation>
 <translation id="8626572875733549102">Zielsprache: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Öffne das Chrome-Menü &gt; Einstellungen</translation>
 <translation id="8634050254805484913">Auf schmalen Displays ausgeblendet</translation>
@@ -2049,7 +2047,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="9001604755921395912">In Chrome-Inkognitotab öffnen</translation>
 <translation id="9010094279589497751">Gemini jederzeit schnell öffnen</translation>
 <translation id="9012585441087414258">Schützt vor Websites, Downloads und Erweiterungen, die als schädlich bekannt sind. Wenn sich eine Seite verdächtig verhält, werden URLs und Teile von Seiteninhalten an Google Safe Browsing gesendet.</translation>
-<translation id="9014097371980259227">Einige Tools wurden verschoben, damit du mit dem KI-Modus suchen kannst</translation>
 <translation id="9015111999662965458">Damit dieses Gerät sicher verwendet werden kann, muss deine Organisation möglicherweise Informationen zu Betriebssystem, Browser und Einstellungen sowie zu der Software abrufen, die auf dem Gerät installiert ist.</translation>
 <translation id="9019199799064251516">Ohne Autoprofilsperre fortfahren?</translation>
 <translation id="9022774213089566801">Häufig besucht</translation>

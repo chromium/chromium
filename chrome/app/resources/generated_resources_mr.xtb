@@ -995,7 +995,6 @@
 <translation id="1755601632425835748">मजकुराचा आकार</translation>
 <translation id="1756963401828337401">कॅप्चर करण्यासाठी स्क्रीन निवडा</translation>
 <translation id="17584710573359123">Chrome वेब स्टोअरमध्ये पहा</translation>
-<translation id="1758845021884209593">सर्व OS अ‍ॅप्सवर शॉर्टकट वापरा</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> हे <ph name="REMAPPING_OPTION" /> वर पुन्हा मॅप केले.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> ची खाती</translation>
 <translation id="176272781006230109">खरेदीशी संबंधित शिफारशी</translation>
@@ -1570,7 +1569,6 @@
 <translation id="2198712775285959645">संपादित करा</translation>
 <translation id="2199298570273670671">एरर</translation>
 <translation id="2199546617947317537">तुमच्या इतर डिव्हाइसवरील तुमचा इतिहास मिळवण्यासाठी, साइन इन करा आणि तुमचा इतिहास व टॅब <ph name="EMAIL" /> वर सिंक करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळेल. तुम्ही सेटिंग्जमध्ये सिंक करणे कधीही थांबवू शकता. Google तुमच्या इतिहासाच्या आधारे शोधा आणि इतर सेवा पर्सनलाइझ करू शकते.</translation>
-<translation id="220006241671843310">Chrome हे थेट तुमच्या डिव्हाइसवर रन होणारी AI मॉडेल वापरते का हे निवडा</translation>
 <translation id="2200094388063410062">ईमेल</translation>
 <translation id="2200781749203116929">ChromeOS सिस्टीम लॉग</translation>
 <translation id="2202391868799679245">कीबोर्ड शॉर्टकट सुरू करा</translation>
@@ -2090,6 +2088,7 @@
 <translation id="2599048253926156421">वापरकर्ता नाव क्लिपबोर्डवर कॉपी केले</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{सुरक्षित नसलेले १ एक्स्टेंशन बंद केले आहे}other{सुरक्षित नसलेली {NUM_SITES} एक्स्टेंशन बंद केली आहेत}}</translation>
 <translation id="2603121359676416582">या पेजसाठी</translation>
+<translation id="2603656971249947488">टॅब स्ट्रिप</translation>
 <translation id="2604129989323098489">साइट सामान्यतः तुमच्या डिस्प्लेबद्दल माहिती विचारतात, जेणेकरून त्या दस्तऐवज किंवा फुल-स्क्रीन आशय बाजूबाजूला दाखवण्यासारखे बुद्धिमानपणे विंडो उघडू आणि ठेवू शकतात</translation>
 <translation id="2604255671529671813">नेटवर्क कनेक्शन एरर</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> पत्त्याचा फॉर्म भरला आहे.</translation>
@@ -2301,6 +2300,7 @@
 <translation id="2743387203779672305">क्लिपबोर्डवर कॉपी करा</translation>
 <translation id="274362947316498129">अ‍ॅप <ph name="DEVICE_NAME" /> अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेसला अनुमती देण्यासाठी <ph name="DEVICE_NAME" /> चा गोपनीयता स्विच बंद करा.</translation>
 <translation id="2744221223678373668">शेअर</translation>
+<translation id="2744919074068076548">विभाजित दृश्य उघडा</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> मध्ये साइन इन करा</translation>
 <translation id="2749836841884031656">सिम</translation>
@@ -3379,6 +3379,7 @@
 <translation id="3562655211539199254">तुमच्या फोनमधील अलीकडील Chrome टॅब पहा</translation>
 <translation id="356268274299520831">तो साइटवर बदला</translation>
 <translation id="3563392617245068355">मूड</translation>
+<translation id="3564327838471533677">अलीकडे बंद केलेले विभाजित दृश्य</translation>
 <translation id="3564456410937306182">अडॅप्टिव्ह चार्जिंगबद्दल अधिक जाणून घ्या.</translation>
 <translation id="3564659095423213915">हे फोल्डर फक्त या डिव्हाइसवर सेव्ह केले आहे. तुम्ही ते “<ph name="ACCOUNT_FOLDER" />” वर सेव्ह केल्यास, हे फोल्डर तुमच्या खात्यामध्येदेखील सेव्ह केले जाईल.</translation>
 <translation id="3564848315152754834">USB सिक्युरिटी की</translation>
@@ -4281,7 +4282,6 @@
 <translation id="4241140145060464825">ॲप आशय</translation>
 <translation id="4241224519481557898">वर्गवारी</translation>
 <translation id="4242245038391716252">एक्स्टेंशनद्वारे डाउनलोड केलेली: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">तुम्ही आता तुमच्या टॅबवर कर्सर फिरवून त्यांचा विस्तार करू शकता. हे सुरू करण्यासाठी, इथे राइट-क्लिक करा.</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> तुमचा <ph name="BEGIN_LINK" />ब्राउझर आणि प्रोफाइल व्यवस्थापित करणे<ph name="END_LINK" /> हे करते</translation>
 <translation id="424315890655130736">सांकेतिक पासफ्रेझ एंटर करा</translation>
@@ -4446,7 +4446,6 @@
 <translation id="4360738659108163902">माउसवर राइट-क्लिक करा</translation>
 <translation id="4361745360460842907">टॅब म्हणून उघडा</translation>
 <translation id="4362459470237309049">माउस बटण रिलीझ करण्यासाठी “.” वापरा</translation>
-<translation id="4362871358537270439">साइड पॅनलमध्ये इतर डिव्हाइसवरील टॅब दाखवा</translation>
 <translation id="4363262124589131906">माझे ड्राइव्ह मधील नवीन फाइल या Chromebook वर आपोआप सिंक करणे थांबवतील</translation>
 <translation id="4364129298304269786">कॉपीराइटद्वारे संरक्षित केलेला आशय प्ले करण्यासाठी साइट आशय संरक्षण सेवा वापरू शकतात</translation>
 <translation id="4364327530094270451">खरबूज</translation>
@@ -5183,6 +5182,7 @@
 <translation id="4913573660390710463">वर्धित क्षमता असलेली पॅकेज स्वरूपातील वेब अ‍ॅप्लिकेशन अ‍ॅक्सेस करा. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">अ‍ॅप डेटा शोधता आला नाही</translation>
 <translation id="4915961947098019832">इमेज दाखवण्याची अनुमती आहे</translation>
+<translation id="4916140032692201190">&amp;निवडलेल्या मजकुराचे भाषांतर करा</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> एक्स्टेंशनशी कम्युनिकेट करू इच्छित आहे "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">स्वीकारा</translation>
 <translation id="4918762404810341788">कॉपी करा आणि उघडा</translation>
@@ -5835,6 +5835,7 @@
 <translation id="5436211819997237281">सद्य एक्स्टेंशन तुमचे नवीन टॅब पेज व्यवस्थापित करत आहे</translation>
 <translation id="5436492226391861498">प्रॉक्झी टनलसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> शोधा:</translation>
+<translation id="5437406591808823366">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड ऑटोफिल करण्यासाठी आणि सेव्ह करण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> विंडो आता <ph name="WINDOW_SIZE_PERCENT" /> रूंद आहे, <ph name="PANE_SIDE" /> पेन आता <ph name="PANE_SIZE_PERCENT" /> रूंद आहे.</translation>
 <translation id="5438060324827306856">शोधा आणि एक्स्टेंशन</translation>
 <translation id="5440240650630588012">फोकस करण्यात मदत व्हावी, यासाठी वाचनाची ओळ किंवा विंडो लागू करा. ⌥L प्रेस करा किंवा सेटिंग्ज वर जा.</translation>
@@ -6248,7 +6249,6 @@
 <translation id="5776571780337000608">तुम्ही सपोर्ट असलेल्या फाइल या अ‍ॅपद्वारे तुमच्या फाइल ब्राउझर किंवा इतर अ‍ॅप्समध्ये उघडू शकता आणि संपादित करू शकता. या ॲपमध्ये कोणत्या फाइल बाय डीफॉल्ट उघडल्या जाव्यात हे नियंत्रित करण्यासाठी, <ph name="BEGIN_LINK" />तुमच्या डिव्हाइसवर डीफॉल्ट अ‍ॅप्स कशी सेट करायची ते जाणून घ्या<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Chrome उघडा</translation>
 <translation id="5778491106820461378">तुम्ही <ph name="LINK_BEGIN" />सेटिंग्ज<ph name="LINK_END" /> मधून साइन इन केलेली Google खाती व्यवस्थापित करू शकता. तुम्ही वेबसाइट आणि अ‍ॅप्सना दिलेल्या परवानग्या सर्व खात्यांना लागू होऊ शकतात. तुमची खाते माहिती साइट किंवा ॲप्स यांनी ॲक्सेस करू नये असे तुम्हाला वाटत असल्यास, तुम्ही तुमच्या <ph name="DEVICE_TYPE" /> मध्ये अतिथी म्हणून साइन इन करू शकता.</translation>
-<translation id="5779636902585836564">&amp;भाषांतर करा</translation>
 <translation id="5780011244986845107">तुम्ही निवडलेल्या फोल्डरमध्ये संवेदनशील फाइल आहेत. तुम्हाला नक्की "<ph name="APP_NAME" />" ला या फोल्डरचा कायमचा रीड अ‍ॅक्सेस द्यायचा आहे का?</translation>
 <translation id="5780973441651030252">प्रक्रिया प्राधान्य</translation>
 <translation id="5781120434102258025">तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवा</translation>
@@ -7329,6 +7329,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6607831829715835317">अधिक साध&amp;ने</translation>
 <translation id="6608166463665411119">eSIM रीसेट करा</translation>
 <translation id="660846213831377756">माउस की</translation>
+<translation id="6608725880745776452"><ph name="DEVICE" /> वरून तुमचे पासवर्ड आणि आणखी बरेच काही मिळवा</translation>
 <translation id="6609478180749378879">तुम्ही गुप्त मोड यामधून बाहेर पडल्यानंतर साइन इन डेटा या डिव्हाइसवर सेव्ह केला जाईल. तुम्हाला नंतर पुन्हा तुमचे डिव्हाइस वापरून या वेबसाइटवर साइन करता येईल.</translation>
 <translation id="6610002944194042868">भाषांतराचे पर्याय</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> टॅब</translation>
@@ -8092,7 +8093,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
 <translation id="7188755083797868960">शॉर्टकट वापरून वाचन मोड अधिक जलद उघडा. वाचन मोड टॉगल करण्यासाठी Alt + Shift + R प्रेस करा.</translation>
 <translation id="7189234443051076392">तुमच्या डिव्हाइसवर पुरेशी जागा असल्याची खात्री करा</translation>
-<translation id="7189558282078169397">इतर डिव्हाइसमधील टॅब</translation>
 <translation id="7189965711416741966">फिंगरप्रिंट जोडले.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> यांना ब्लॉक करायचे आहे का?</translation>
 <translation id="7191063546666816478">सपोर्ट असलेल्या काही लिंक तरीही <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> आणि आणखी <ph name="NUMBER_OF_OTHER_APPS" /> अ‍ॅप्स मध्ये उघडतील.</translation>
@@ -9795,6 +9795,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8477241577829954800">अधिग्रहित</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
 <translation id="8477446666255316832">पुढील वेळेस आणखी जलद साइन इन करा</translation>
+<translation id="8477548388161793571">&amp;निवडलेल्या मजकुराचे भाषांतर करा</translation>
 <translation id="8478346767369317046">ऑफिस</translation>
 <translation id="8479176401914456949">कोड चुकीचा आहे. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>

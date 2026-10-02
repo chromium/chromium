@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opções para guardar o cartão</translation>
+<translation id="138810468159004008">Permitir ao visitar o site</translation>
 <translation id="1396260204083880024">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abra o menu da conta.</translation>
 <translation id="1397144142234474689">Ocultar Histórico</translation>
 <translation id="1399268420835656394">Se não for uma criança, é recomendável que verifique a idade na conta Apple neste dispositivo. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Leia o que as pessoas estão a dizer</translation>
 <translation id="2394659309569789395">Abrir site mesmo assim</translation>
 <translation id="2403129868389095715">Não é possível entregar o seu pacote</translation>
-<translation id="2408318953009664750">Permitir 1 vez</translation>
 <translation id="2410754283952462441">Selecione uma conta</translation>
 <translation id="2422174748424038845">Se o eliminar, todas as pessoas vão perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />" e este vai ser eliminado de todos os dispositivos.</translation>
 <translation id="2424805048070062787">Continue com este separador</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Transferência pausada</translation>
 <translation id="2816489851009559785">Menu → Definições → Navegador predefinido</translation>
 <translation id="2818821771744632548">Como parte da reposição do iPhone, a sua sessão na conta <ph name="USER_NAME" /> foi terminada. Para voltar a iniciar sessão, toque em "Continuar" abaixo.</translation>
-<translation id="2819667972867209401">Quando esta opção está ativada, os dados são guardados na sua Conta Google. Quando esta opção está desativada, os dados são guardados apenas neste dispositivo e são eliminados se terminar sessão.</translation>
 <translation id="2827760117436553203">Manter os dados separados?</translation>
 <translation id="2829172210806130158">Pesquise no ecrã</translation>
 <translation id="2831109159746537587">Experimente circundar ou tocar na imagem para pesquisar</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
 <translation id="3416904994126232207">Tarefa "Guarde uma palavra-passe" concluída!</translation>
 <translation id="3419787211763835342">Ajude a melhorar o preenchimento automático melhorado</translation>
+<translation id="3422958112451181446">Prima sem soltar para afixar a sua ferramenta favorita aqui</translation>
 <translation id="3430407169377889553">Use o Gemini com cuidado e assuma o controlo, se necessário. É responsável pelas ações do Gemini durante as tarefas.</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3441673211568148613">Mantenha a sua navegação privada</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 método de pagamento}other{# métodos de pagamento}}</translation>
 <translation id="3831560640878483188">Ignorar o aviso?</translation>
 <translation id="3832419617903252251">Palavra-passe guardada apenas neste dispositivo</translation>
-<translation id="3835016165506903031">Permitir durante a visita</translation>
 <translation id="3835964409414434850">Aceder ao separador seguinte</translation>
 <translation id="3838691874161539578">Verifique as suas palavras-passe guardadas para reforçar a sua segurança, nomeadamente online</translation>
 <translation id="3838985624086228724">Queda de preço do seu produto acompanhado, de <ph name="PREVIOUS_PRICE" /> para <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Novidades</translation>
 <translation id="4289309730265289297">Fototeca</translation>
 <translation id="429074084062258019">{count,plural, =1{Adicionar separador a grupo}other{Adicionar separadores a grupo}}</translation>
+<translation id="4290920330097335010">Nunca permitir</translation>
 <translation id="4294506173142861371">Iniciar sessão como <ph name="FIRST_NAME" /></translation>
 <translation id="4302061870579014542">Definir posição</translation>
 <translation id="4304713468139749426">Gestor de palavras-passe</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compre, traduza e identifique o que vê com a câmara ou as fotos.</translation>
 <translation id="4469324811108161144">As notas podem ter até <ph name="CHARACTER_LIMIT" /> carateres.</translation>
+<translation id="4470766488397113689">Em que quer trabalhar?</translation>
 <translation id="4471472356135655769">Não é possível exportar palavras-passe</translation>
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4473565697543262065">Esta ação elimina as informações selecionadas guardadas neste dispositivo e na sua Conta Google <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Análises detalhadas de transferências suspeitas.</translation>
 <translation id="4606247758155004938">O seu navegador é gerido pela sua organização.</translation>
 <translation id="4607887340472970274">Acompanhamento de preço</translation>
+<translation id="4614482404958079763">Experimente um tema festivo por tempo limitado, com ilustrações e animações personalizadas</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4621768135601674446">Abrir opções do Modo de leitura</translation>
 <translation id="4627107755957573804">Permitir que os sites e as apps atualizem as contas existentes para usarem chaves de acesso</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Com sessão iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erro da Conta Google. Abra o menu da conta.</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ocultar após 1 minuto}other{Ocultar após {count} minutos}}</translation>
+<translation id="4652266463001779298">Não permitida</translation>
 <translation id="4652817563047461855">Certifique-se de que as suas palavras-passe estão seguras, saiba se ficaram comprometidas e obtenha conselhos para se proteger online. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Ative a partilha de separadores</translation>
 <translation id="4658335131052370646">Guardar</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">As chaves de acesso são guardadas no Gestor de Palavras-passe da Google para</translation>
 <translation id="510580293474170715">Nada importado</translation>
 <translation id="5113960131843706315">A aceder ao seu conteúdo…</translation>
+<translation id="5116347248003317626">Não permitir que os sites usem a sua localização</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
 <translation id="5118764316110575523">Desativado</translation>
 <translation id="5119329531859909472">Para acompanhar o produto, toque em Acompanhar</translation>
@@ -2009,6 +2013,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> por cento transferido</translation>
 <translation id="7345061034321640811">Importação não permitida</translation>
+<translation id="7346922058131593019">Em que quer trabalhar, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importe palavras-passe, histórico, marcadores e muito mais</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
 <translation id="7357999308187750900">Ver tudo</translation>
@@ -2065,6 +2070,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7491131399623468277">Aceder às Definições…</translation>
 <translation id="7491161827858509164">Para ver os ficheiros que transferiu anteriormente, abra a app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continuar a editar</translation>
+<translation id="7498557042323380380">Defina um aspeto sazonal para a página Novo separador</translation>
 <translation id="7500244509706269886">Preencher automaticamente formulário</translation>
 <translation id="750493650310597496">0 selecionados</translation>
 <translation id="7505402981231763928">Tem de iniciar sessão para usar o Gemini</translation>
@@ -2102,6 +2108,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="760667371114328991">Desative as notificações da verificação de segurança</translation>
 <translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612849887607288481">Abrir menu Criar protótipo de IA</translation>
+<translation id="7618220760967055820">Escolha o botão que é apresentado na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Pode ver as transferências anteriores na app <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
@@ -2311,7 +2318,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8233237502828137700">Fechar promoção de faixa</translation>
 <translation id="823339794112333264">Ativar microfone</translation>
 <translation id="8240217649914883113">Adiciona isto ao meu calendário</translation>
-<translation id="824379025871762038">Nunca permitir</translation>
 <translation id="8244387390464017490">Person. pág. Novo separador</translation>
 <translation id="8250920743982581267">Docs</translation>
 <translation id="8258734532103758067">Exportei os meus dados</translation>
@@ -2332,6 +2338,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8282657446819506217">Abrir no grupo de separadores</translation>
 <translation id="828291969289324795">{count,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
+<translation id="8287009018010202411">Produtividade</translation>
 <translation id="8289930144142009940">Notificações de <ph name="FEATURE_NAME" /> desativadas</translation>
 <translation id="8292893224181644074">Transferência concluída</translation>
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>

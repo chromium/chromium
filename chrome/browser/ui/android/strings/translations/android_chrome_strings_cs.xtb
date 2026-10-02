@@ -329,7 +329,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2327445548174191329">Ze zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Uložit stránku jako…</translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
-<translation id="2329500425421091035">Představujeme režim AI v Chromu</translation>
 <translation id="2330186936255788117">Další záložky</translation>
 <translation id="2330243730505117832">Výběr zařízení je zavřený.</translation>
 <translation id="2332515770639153015">Vylepšené Bezpečné prohlížení je zapnuté</translation>
@@ -602,7 +601,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3435575784518354875">Pokud chcete zachovat přístup ke svým heslům, exportujte je, aktualizujte Služby Google Play a poté je importujte zpět do Správce hesel Google. <ph name="BEGIN_LINK" />Zobrazit úplné pokyny<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3435914367318771664">Přidat kartu do nové skupiny</translation>
-<translation id="3436118221454753036">Zeptat se v režimu AI</translation>
 <translation id="3439276997620616816">Zde najdete své nedávno zavřené karty</translation>
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
 <translation id="3444179773590444986">Poskytnout zpětnou vazbu k tmavému motivu pro weby?</translation>
@@ -629,7 +627,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3524334353996115845">Umožnit webu <ph name="ORIGIN" /> ověřit vaši totožnost</translation>
 <translation id="3527085408025491307">Složka</translation>
 <translation id="3542235761944717775">Dostupné místo: <ph name="KILOBYTES" /> kB</translation>
-<translation id="3547933853190131743">Vyhledávání v režimu AI</translation>
 <translation id="3549537543136628349">Protože jsou předběžně načítané stránky zašifrované a weby nebo aplikace, které na ně odkazují, jsou weby nebo aplikace Google, servery Google při soukromém předběžném načítání těchto stránek neobdrží nové informace.</translation>
 <translation id="3549657413697417275">Prohledávat historii</translation>
 <translation id="3557336313807607643">Přidat do kontaktů</translation>
@@ -983,7 +980,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4885273946141277891">Nepodporovaný počet instancí Chromu.</translation>
 <translation id="4890973535105146893">V účtu Google nemáte uložená žádná hesla</translation>
 <translation id="490375751687810070">Na výšku</translation>
-<translation id="4905823827770127520">Zahrnout odkaz na stránku</translation>
 <translation id="4910889077668685004">Platební aplikace</translation>
 <translation id="4911042367886397055">Vítejte zpět, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Zastavit obnovování</translation>
@@ -1214,6 +1210,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5869522115854928033">Uložená hesla</translation>
 <translation id="5870416898561279542">Sem se přesouvají duplicitní karty a skupiny nebo ty, které po dobu <ph name="DAYS_INACTIVE" /> dní nebyly použity<ph name="AUTODELETE_SECTION" />. V <ph name="DECLUTTER_SETTINGS_TITLE" /> to můžete kdykoli změnit.</translation>
 <translation id="5885378508678660271">Oznámení <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože tento web je nebezpečný</translation>
+<translation id="5895138241574237353">Restartovat</translation>
 <translation id="5896944002928653773">Spodní panel s odmítnutím odpovědnosti za podnikové signály je zavřený</translation>
 <translation id="5899667542927581604">Tabulka s oznámením, že nejsou k dispozici žádné přístupové klíče, byla zavřena</translation>
 <translation id="5907542076239273525">Záložka byla uložena do složky <ph name="FOLDER_NAME" />.</translation>
@@ -1696,6 +1693,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7630202231528827509">Adresa URL poskytovatele</translation>
 <translation id="7638584964844754484">Nesprávná heslová fráze</translation>
 <translation id="764047009170754705">Přihlášení k funkci Chrome Finds bylo zavřeno</translation>
+<translation id="7645712301713737707">Přizpůsobte si rozvržení karet tak, aby se zobrazovaly v horní části nebo po straně prohlížeče.</translation>
 <translation id="7646499124171960488">Varuje vás před nezabezpečenými veřejnými weby</translation>
 <translation id="7655240423373329753">posledních 7 dní</translation>
 <translation id="7656721520530864426">Žádné weby</translation>
@@ -1957,6 +1955,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="860282621117673749">Upozornění na pokles ceny</translation>
 <translation id="8611922158252451755">Kdokoli s odkazem může upravovat všechny karty, proto sdílejte s rozmyslem. Platnost odkazu vyprší za 48 hodin.</translation>
 <translation id="8616006591992756292">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
+<translation id="8622145666696249878">Režim AI ve Vyhledávání Google a připojené aplikace</translation>
 <translation id="8626572875733549102">Přeložit do jazyka <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Otevřete nabídku Chrome &gt; Nastavení</translation>
 <translation id="8634050254805484913">Na úzkých obrazovkách skryto</translation>
@@ -2048,7 +2047,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9001604755921395912">Otevřít na anonymní kartě v Chromu</translation>
 <translation id="9010094279589497751">Rychle Gemini otevřete, kdykoli potřebujete</translation>
 <translation id="9012585441087414258">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Pokud stránka provede něco podezřelého, odešlou se adresy URL a části obsahu stránky do Bezpečného prohlížení Google.</translation>
-<translation id="9014097371980259227">Některé nástroje byly přesunuty, aby vám pomohly vyhledávat pomocí režimu AI</translation>
 <translation id="9015111999662965458">Kvůli ověření, jestli je tohle zařízení možné bezpečně používat, může vaše organizace potřebovat přístup k informacím o jeho operačním systému, prohlížeči a nastaveních a také o tom, jaký software je v něm nainstalován</translation>
 <translation id="9019199799064251516">Pokračovat bez zámku profilu auta?</translation>
 <translation id="9022774213089566801">Často navštěvované</translation>

@@ -329,7 +329,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="2327445548174191329">De <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Guardar página como…</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
-<translation id="2329500425421091035">Presentamos el Modo IA en Chrome</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
 <translation id="2330243730505117832">Se cerró "Elige un dispositivo".</translation>
 <translation id="2332515770639153015">Se activó la Navegación segura mejorada</translation>
@@ -602,7 +601,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3435575784518354875">Para mantener el acceso a tus contraseñas, expórtalas ahora, actualiza los Servicios de Google Play y, luego, vuelve a importarlas al Administrador de contraseñas de Google. <ph name="BEGIN_LINK" />Consulta las instrucciones completas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3435914367318771664">Agregar pestaña a un grupo nuevo</translation>
-<translation id="3436118221454753036">Preguntarle al Modo IA</translation>
 <translation id="3439276997620616816">Aquí encontrarás tus pestañas recientes</translation>
 <translation id="3443221991560634068">Volver a cargar la página actual</translation>
 <translation id="3444179773590444986">¿Deseas compartir comentarios sobre el Tema oscuro para los sitios?</translation>
@@ -629,7 +627,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3524334353996115845">Permite que <ph name="ORIGIN" /> verifique tu identidad.</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3542235761944717775">KB disponibles: <ph name="KILOBYTES" /></translation>
-<translation id="3547933853190131743">Buscar con el Modo IA</translation>
 <translation id="3549537543136628349">Debido a que las páginas precargadas están encriptadas, y que la app o el sitio vinculado a las páginas es una app o un sitio de Google, los servidores de Google no recibirán información nueva cuando se precarguen estas páginas de forma privada.</translation>
 <translation id="3549657413697417275">Buscar en el historial</translation>
 <translation id="3557336313807607643">Agregar a contactos</translation>
@@ -983,7 +980,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4885273946141277891">Cantidad de instancias de Chrome no admitidas</translation>
 <translation id="4890973535105146893">No hay contraseñas guardadas en tu Cuenta de Google</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Incluir un vínculo a la página</translation>
 <translation id="4910889077668685004">Apps de pago</translation>
 <translation id="4911042367886397055">Te damos la bienvenida nuevamente, <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">Detener actualización</translation>
@@ -1214,6 +1210,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5869522115854928033">Contraseñas almacenadas</translation>
 <translation id="5870416898561279542">Las pestañas y los grupos duplicados o que no se usaron durante <ph name="DAYS_INACTIVE" /> días se mueven aquí<ph name="AUTODELETE_SECTION" />. Puedes cambiar este parámetro cuando lo desees en <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificaciones <ph name="SEPARATOR" /> Chrome quitó estos permisos porque este sitio es peligroso</translation>
+<translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896944002928653773">Se cerró la hoja inferior de la advertencia de los indicadores empresariales</translation>
 <translation id="5899667542927581604">No se cerró ninguna hoja de llaves de acceso</translation>
 <translation id="5907542076239273525">Se guardó el favorito en <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7630202231528827509">URL del proveedor</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
 <translation id="764047009170754705">Se cerró la opción de habilitar Chrome finds</translation>
+<translation id="7645712301713737707">Personaliza el diseño de las pestañas para que aparezcan en la parte superior o lateral del navegador.</translation>
 <translation id="7646499124171960488">Te advierte sobre sitios públicos no seguros</translation>
 <translation id="7655240423373329753">los últimos 7 días</translation>
 <translation id="7656721520530864426">Ningún sitio</translation>
@@ -1957,6 +1955,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="860282621117673749">Alertas de descuentos</translation>
 <translation id="8611922158252451755">Cualquier persona que tenga el vínculo puede editar todas las pestañas, así que compártelo con cuidado. El vínculo vence dentro de 48 horas.</translation>
 <translation id="8616006591992756292">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Modo IA de la Búsqueda de Google y apps conectadas</translation>
 <translation id="8626572875733549102">Traducir al <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Abre el menú de Chrome &gt; Configuración.</translation>
 <translation id="8634050254805484913">Oculta en pantallas angostas</translation>
@@ -2038,7 +2037,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8969796057708736017">La descarga se completará si el archivo cumple con las políticas de tu organización</translation>
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8972098258593396643">¿Deseas descargarlo a la carpeta predeterminada?</translation>
-<translation id="8987736167266086032">Retoma la sesión desde donde la dejaste</translation>
+<translation id="8987736167266086032">Retoma tu sesión</translation>
 <translation id="8992769679401294069">Tus datos se encriptan con tu frase de contraseña. Ingrésala para usar y guardar datos de Chrome en tu Cuenta de Google.</translation>
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
 <translation id="8995521496079646922">Las apps que elegiste se usarán de forma predeterminada. Si una app no está en este dispositivo, se descargará en breve.</translation>
@@ -2048,7 +2047,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9001604755921395912">Abrir en Incógnito en Chrome</translation>
 <translation id="9010094279589497751">Abre Gemini rápidamente cuando lo necesites</translation>
 <translation id="9012585441087414258">Te protege contra descargas, extensiones y sitios que se sabe que son peligrosos. Si una página realiza alguna acción sospechosa, las URLs y los bits del contenido de la página se envían a la Navegación segura de Google.</translation>
-<translation id="9014097371980259227">Se movieron algunas herramientas para ayudarte a buscar con el Modo IA</translation>
 <translation id="9015111999662965458">Para garantizar que este dispositivo se pueda usar de forma segura, es posible que tu organización deba consultar información sobre el sistema operativo, el navegador, la configuración y el software instalado en el dispositivo</translation>
 <translation id="9019199799064251516">¿Quieres continuar sin un bloqueo de perfil en el automóvil?</translation>
 <translation id="9022774213089566801">Visitados con frecuencia</translation>

@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">از <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">ذخیره کردن صفحه به‌عنوان…</translation>
 <translation id="2328474416100889417">همه دسترسی به گروه زبانه «<ph name="GROUP_NAME" />» را فوراً ازدست می‌دهند و همه پیوندهای دعوت غیرفعال می‌شود</translation>
-<translation id="2329500425421091035">‏معرفی «حالت هوشواره‌ای» در Chrome</translation>
 <translation id="2330186936255788117">نشانک‌های بیشتر</translation>
 <translation id="2330243730505117832">«انتخاب دستگاه» بسته شد.</translation>
 <translation id="2332515770639153015">«مرور ایمن پیشرفته» روشن است</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">‏برای اینکه دسترسی‌تان به گذرواژه‌ها حفظ شود، اکنون آن‌ها را صادر کنید، «خدمات Google Play» را به‌روز کنید، و سپس آن‌ها را دوباره به «مدیر گذرواژه Google» وارد کنید. <ph name="BEGIN_LINK" />کل دستورالعمل‌ها را ببینید<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">امنیت</translation>
 <translation id="3435914367318771664">افزودن زبانه به گروه جدید</translation>
-<translation id="3436118221454753036">از «حالت هوشواره‌ای» بپرسید</translation>
 <translation id="3439276997620616816">برگه‌های اخیر را اینجا خواهید دید</translation>
 <translation id="3443221991560634068">بار کردن مجدد صفحه کنونی</translation>
 <translation id="3444179773590444986">مایلید بازخوردتان را درباره زمینه تاریک برای سایت‌ها هم‌رسانی کنید؟</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> مجاز می‌شود هویت شما را تأیید کند</translation>
 <translation id="3527085408025491307">پوشه</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> کیلوبایت دردسترس است</translation>
-<translation id="3547933853190131743">جستجو با «حالت هوشواره‌ای»</translation>
 <translation id="3549537543136628349">‏ازآنجایی‌که صفحه‌های پیش‌بارگیری‌شده رمزگذاری می‌شوند و سایت یا برنامه پیونددهنده به آن صفحه‌ها یک برنامه یا سایت Google است، سرورهای Google هنگام پیش‌بارگیری خصوصی این صفحه‌ها اطلاعات جدیدی دریافت نمی‌کنند.</translation>
 <translation id="3549657413697417275">جستجو در سابقه</translation>
 <translation id="3557336313807607643">افزودن به مخاطبین</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">‏این تعداد از نسخه‌های Chrome پشتیبانی نمی‌شود.</translation>
 <translation id="4890973535105146893">‏گذرواژه ذخیره‌شده‌ای در «حساب Google» شما نیست</translation>
 <translation id="490375751687810070">عمودی</translation>
-<translation id="4905823827770127520">افزودن پیوند صفحه</translation>
 <translation id="4910889077668685004">برنامه‌های پرداخت</translation>
 <translation id="4911042367886397055">بازگشتتان را خوشامد می‌گوییم <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">توقف تازه‌سازی</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">گذرواژه‌های ذخیره‌شده</translation>
 <translation id="5870416898561279542">زبانه‌ها و گروه‌های تکراری یا مواردی که <ph name="DAYS_INACTIVE" /> روز استفاده نشده‌اند به اینجا منتقل می‌شوند <ph name="AUTODELETE_SECTION" />. همیشه می‌توانید این گزینه را در <ph name="DECLUTTER_SETTINGS_TITLE" /> تغییر دهید.</translation>
 <translation id="5885378508678660271">‏اعلان‌ها <ph name="SEPARATOR" /> Chrome این اجازه‌ها را برداشت زیرا این سایت خطرناک است</translation>
+<translation id="5895138241574237353">راه‌اندازی مجدد</translation>
 <translation id="5896944002928653773">برگ زیرین سلب مسئولیت سیگنال‌های سازمانی بسته است</translation>
 <translation id="5899667542927581604">برگ گذرکلیدی وجود ندارد بسته شد</translation>
 <translation id="5907542076239273525">نشانک در «<ph name="FOLDER_NAME" />» ذخیره شد</translation>
@@ -1696,6 +1693,7 @@
 <translation id="7630202231528827509">نشانی وب ارائه‌دهنده</translation>
 <translation id="7638584964844754484">گذرعبارت نادرست است</translation>
 <translation id="764047009170754705">‏موافقت کردن با یافته‌های Chrome بسته شده است</translation>
+<translation id="7645712301713737707">چیدمان زبانه را سفارشی‌سازی کنید تا در بالا یا در کنار مرورگر نشان داده شود.</translation>
 <translation id="7646499124171960488">برای سایت‌های عمومی ناامن به شما هشدار می‌دهد</translation>
 <translation id="7655240423373329753">۷ روز گذشته</translation>
 <translation id="7656721520530864426">سایتی وجود ندارد</translation>
@@ -1866,7 +1864,7 @@
 <translation id="8265730590513812063">‏باز کردن منو Chrome</translation>
 <translation id="8266753737658117282">ادامه دادن با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8266862848225348053">مکان بارگیری</translation>
-<translation id="8271267069224406035">گزارش هرزنامه</translation>
+<translation id="8271267069224406035">گزارش کردن به‌عنوان هرزنامه</translation>
 <translation id="8277710303010772444">شروع جستجو</translation>
 <translation id="8279945625179116733">تأمین امنیت با <ph name="APP_NAME" /></translation>
 <translation id="8281886186245836920">رد شدن</translation>
@@ -1957,6 +1955,7 @@
 <translation id="860282621117673749">اعلان‌های کاهش قیمت</translation>
 <translation id="8611922158252451755">هر کسی پیوند را داشته باشد می‌تواند همه زبانه‌ها را ویرایش کند، پس بااحتیاط هم‌رسانی کنید. پیوند ظرف ۴۸ ساعت منقضی می‌شود.</translation>
 <translation id="8616006591992756292">‏ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد.</translation>
+<translation id="8622145666696249878">‏«حالت هوشواره‌ای جستجوی Google» و برنامه‌های متصل‌شده</translation>
 <translation id="8626572875733549102">ترجمه به <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">‏«منو Chrome &gt; تنظیمات» را باز کنید</translation>
 <translation id="8634050254805484913">در صفحه‌نمایش‌های باریک پنهان است</translation>
@@ -2048,7 +2047,6 @@
 <translation id="9001604755921395912">‏باز کردن در زبانه ناشناس Chrome</translation>
 <translation id="9010094279589497751">‏هر زمان که نیاز داشتید می‌توانید Gemini را به‌سرعت باز کنید</translation>
 <translation id="9012585441087414258">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. اگر صفحه‌ای کار مشکوکی انجام دهد، نشانی‌های وب و بیت‌های محتوای صفحه به «مرور ایمن Google» ارسال می‌شود.</translation>
-<translation id="9014097371980259227">برخی‌از ابزارها جابه‌جا شده‌اند تا به شما در جستجو با «حالت هوشواره‌ای» کمک کنند</translation>
 <translation id="9015111999662965458">برای اطمینان از استفاده ایمن از این دستگاه، سازمان شما ممکن است نیاز داشته باشد اطلاعاتی درباره سیستم‌عامل، مرورگر، تنظیمات، و نرم‌افزارهایی را که در دستگاه نصب شده است مشاهده کند.</translation>
 <translation id="9019199799064251516">بدون قفل نمایه خودرو ادامه می‌دهید؟</translation>
 <translation id="9022774213089566801">اغلب از آن‌ها بازدید شده است</translation>

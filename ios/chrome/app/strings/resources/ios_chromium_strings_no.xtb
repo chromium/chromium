@@ -348,7 +348,6 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8390323835464055390">Logg på med de lagrede passordene og passnøklene dine fra alle apper ved å bruke Chromium for Autoutfyll</translation>
 <translation id="8409374867500149834">Du har den sterkeste sikkerheten i Chromium mot skadelige nettsteder</translation>
 <translation id="8428449554948979733">Skjul Bruk Chromium som standard</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter. Data som ble lagret kun på denne enheten mens du var logget på, blir slettet. Dette kan omfatte logg og passord.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8602103377623855616">Chromium-side</translation>
 <translation id="865600487977764604">Holder deg trygg i Chromium og kan brukes til å øke sikkerheten din i andre Google-apper når du er pålogget.</translation>

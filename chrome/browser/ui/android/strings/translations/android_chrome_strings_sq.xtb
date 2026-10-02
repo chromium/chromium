@@ -329,7 +329,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="2327445548174191329">Nga <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Ruaje faqen si…</translation>
 <translation id="2328474416100889417">Të gjithë do të humbasin menjëherë qasjen në grupin e skedave "<ph name="GROUP_NAME" />" dhe të gjitha lidhjet e ftesave do të çaktivizohen</translation>
-<translation id="2329500425421091035">Prezantojmë "Modalitetin e IA-së" në Chrome</translation>
 <translation id="2330186936255788117">Më shumë faqeshënues</translation>
 <translation id="2330243730505117832">"Zgjidh një pajisje" është mbyllur.</translation>
 <translation id="2332515770639153015">"Shfletimi i sigurt i përmirësuar" është aktiv</translation>
@@ -602,7 +601,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3435575784518354875">Për të mbajtur qasjen te fjalëkalimet e tua, eksportoji ato tani, përditëso shërbimet e Google Play dhe më pas importoji fjalëkalimet sërish te "Menaxheri i fjalëkalimeve i Google". <ph name="BEGIN_LINK" />Shiko udhëzimet e plota<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="3435914367318771664">Shto skedën te grupi i ri</translation>
-<translation id="3436118221454753036">Pyet "Modalitetin e IA-së"</translation>
 <translation id="3439276997620616816">Këtu do të gjesh skedat e tua të fundit</translation>
 <translation id="3443221991560634068">Ringarko faqen aktuale</translation>
 <translation id="3444179773590444986">Të ndahen komentet për temën e errët për sajtet?</translation>
@@ -629,7 +627,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3524334353996115845">Lejo që <ph name="ORIGIN" /> të verifikojë që je ti</translation>
 <translation id="3527085408025491307">Dosje</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB në dispozicion</translation>
-<translation id="3547933853190131743">Kërko me "Modalitetin e IA-së"</translation>
 <translation id="3549537543136628349">Për shkak se faqet e ngarkuara paraprakisht janë të enkriptuara dhe lidhja e sajtit ose aplikacionit te faqet është një sajt ose aplikacion i Google, serverët e Google nuk marrin informacione të reja kur ngarkojnë paraprakisht këto faqe në mënyrë private.</translation>
 <translation id="3549657413697417275">Kërko në historikun tënd</translation>
 <translation id="3557336313807607643">Shto te kontaktet</translation>
@@ -983,7 +980,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4885273946141277891">Numër i pambështetur i versioneve të Chrome.</translation>
 <translation id="4890973535105146893">Nuk ka fjalëkalime të ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905823827770127520">Përfshi një lidhje për te faqja</translation>
 <translation id="4910889077668685004">Aplikacionet e pagesës</translation>
 <translation id="4911042367886397055">Mirë se u ktheve, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Ndalo rifreskimin</translation>
@@ -1214,6 +1210,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
 <translation id="5870416898561279542">Skedat dhe grupet dublikatë ose ato që nuk janë përdorur për <ph name="DAYS_INACTIVE" /> ditë zhvendosen këtu<ph name="AUTODELETE_SECTION" />. Këtë mund ta ndryshosh në çdo kohë te "<ph name="DECLUTTER_SETTINGS_TITLE" />".</translation>
 <translation id="5885378508678660271">Njoftimet <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse ky sajt është i rrezikshëm</translation>
+<translation id="5895138241574237353">Rinis</translation>
 <translation id="5896944002928653773">Fleta e poshtme e mohimit të përgjegjësisë për sinjalet e ndërmarrjes u mbyll</translation>
 <translation id="5899667542927581604">Nuk është mbyllur asnjë fletë e çelësave të kalimit</translation>
 <translation id="5907542076239273525">Faqeshënuesi u ruajt te "<ph name="FOLDER_NAME" />"</translation>
@@ -1958,6 +1955,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="860282621117673749">Alarme sinjalizuese për rënie çmimi</translation>
 <translation id="8611922158252451755">Çdo person që ka lidhjen mund të modifikojë të gjitha skedat, kështu që ndaje me kujdes. Lidhja skadon pas 48 orësh.</translation>
 <translation id="8616006591992756292">Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">"Modaliteti i IA-së" i "Kërko në Google" dhe aplikacionet e lidhura</translation>
 <translation id="8626572875733549102">Përkthe në <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Hap menynë e Chrome &gt; Cilësimet</translation>
 <translation id="8634050254805484913">Fshehur në ekranet e ngushta</translation>
@@ -2049,7 +2047,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9001604755921395912">Hape në skedë "të fshehtë" në Chrome</translation>
 <translation id="9010094279589497751">Hap me shpejtësi Gemini kur të të nevojitet</translation>
 <translation id="9012585441087414258">Të mbron kundër sajteve, shkarkimeve dhe shtesave që njihen si të rrezikshme. Nëse një faqe bën diçka të dyshimtë, URL-të dhe pjesët e përmbajtjes së faqes dërgohen te "Shfletimi i sigurt i Google".</translation>
-<translation id="9014097371980259227">Disa vegla janë zhvendosur për të të ndihmuar të kërkosh me "Modalitetin e IA-së"</translation>
 <translation id="9015111999662965458">Për t'u siguruar që kjo pajisje mund të përdoret në mënyrë të sigurt, organizata jote mund të duhet të shikojë informacione në lidhje me sistemin operativ, shfletuesin, cilësimet e saj dhe se çfarë softueri është instaluar në pajisje</translation>
 <translation id="9019199799064251516">Të vazhdohet pa një kyçje të profilit të makinës?</translation>
 <translation id="9022774213089566801">Të vizituara shpesh</translation>

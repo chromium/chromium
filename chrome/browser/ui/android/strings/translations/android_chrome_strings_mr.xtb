@@ -329,7 +329,6 @@
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> कडून</translation>
 <translation id="232757965409810352">पेज या फॉरमॅटमध्ये सेव्ह करा…</translation>
 <translation id="2328474416100889417">सर्वजण लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील आणि सर्व आमंत्रण लिंक बंद केल्या जातील</translation>
-<translation id="2329500425421091035">सादर करत आहोत Chrome मधील AI मोड</translation>
 <translation id="2330186936255788117">आणखी बुकमार्क</translation>
 <translation id="2330243730505117832">"डिव्हाइस निवडा" बंद आहे.</translation>
 <translation id="2332515770639153015">वर्धित सुरक्षित ब्राउझिंग सुरू केलेले आहे</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा, Google Play सेवा अपडेट करा आणि नंतर ते Google Password Manager मध्ये पुन्हा इंपोर्ट करा. <ph name="BEGIN_LINK" />सर्व सूचना पहा<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
 <translation id="3435914367318771664">नवीन गटामध्ये टॅब जोडा</translation>
-<translation id="3436118221454753036">AI ला विचारा मोड</translation>
 <translation id="3439276997620616816">तुमचे अलीकडील टॅब तुम्हाला येथे मिळतील</translation>
 <translation id="3443221991560634068">सध्याचे पेज रीलोड करा</translation>
 <translation id="3444179773590444986">साइटसाठीच्या गडद थीमबाबत फीडबॅक शेअर करायचा आहे का?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> ला हे तुम्हीच आहात याची पडताळणी करू द्या</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB उपलब्ध</translation>
-<translation id="3547933853190131743">AI मोड वापरून शोधा</translation>
 <translation id="3549537543136628349">प्रीलोड केलेली पेज एन्क्रिप्ट केलेली असल्यामुळे आणि पेजशी लिंक करणारी साइट किंवा अ‍ॅप Google साइट अथवा अ‍ॅप असल्यामुळे, ही पेज खाजगीरीत्या प्रीलोड करताना Google सर्व्हरना नवीन माहिती मिळत नाही.</translation>
 <translation id="3549657413697417275">तुमचा इतिहास शोधा</translation>
 <translation id="3557336313807607643">संपर्कांमध्ये जोडा</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">Chrome उदाहरणांची असमर्थित संख्या.</translation>
 <translation id="4890973535105146893">तुमच्या Google खाते मध्ये सेव्ह केलेले पासवर्ड नाहीत</translation>
 <translation id="490375751687810070">उभा</translation>
-<translation id="4905823827770127520">पेजवर लिंकचा समावेश करा</translation>
 <translation id="4910889077668685004">पेमेंट ॲप्स</translation>
 <translation id="4911042367886397055">तुमचे पुन्हा स्वागत आहे, <ph name="USER_NAME" /> !</translation>
 <translation id="4913169188695071480">रिफ्रेश करणे थांबवा</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
 <translation id="5870416898561279542">डुप्लिकेट टॅब आणि गट किंवा <ph name="DAYS_INACTIVE" /> दिवसांपासून न वापरलेले टॅब इथे हलवले जातात<ph name="AUTODELETE_SECTION" />. तुम्ही हे <ph name="DECLUTTER_SETTINGS_TITLE" /> मध्ये कधीही बदलू शकता.</translation>
 <translation id="5885378508678660271">नोटिफिकेशन <ph name="SEPARATOR" /> ही साइट धोकादायक असल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
+<translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5896944002928653773">एंटरप्राइझ सिग्नल डिस्क्लेमर तळाशी असलेली शीट बंद केली आहे</translation>
 <translation id="5899667542927581604">कोणतीही पासकी शीट बंद केली नाही</translation>
 <translation id="5907542076239273525">बुकमार्क <ph name="FOLDER_NAME" /> मध्ये सेव्ह केला आहे</translation>
@@ -1243,6 +1240,7 @@
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="604124094241169006">स्वयंचलित</translation>
+<translation id="6041959688070413372">Google Drive सारख्या शोध सेवा आणि Google Workspace अ‍ॅप्स यांमधील कनेक्शन व्यवस्थापित करा</translation>
 <translation id="6042308850641462728">अधिक</translation>
 <translation id="6047066316630165190">ग्रिड टॅब स्विचर उघडा</translation>
 <translation id="604996488070107836">अज्ञात एररमुळे <ph name="FILE_NAME" /> डाउनलोड करणे अयशस्वी झाले.</translation>
@@ -1958,6 +1956,7 @@
 <translation id="860282621117673749">किमतीमध्ये घट झाल्याच्या सूचना</translation>
 <translation id="8611922158252451755">लिंक असलेली कोणतीही व्यक्ती सर्व टॅब संपादित करू शकते, त्यामुळे विचारपूर्वक शेअर करा. लिंक ४८ तासांमध्ये एक्स्पायर होते.</translation>
 <translation id="8616006591992756292">तुमच्या Google खात्यात <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची अन्य स्वरूपे असू शकतात.</translation>
+<translation id="8622145666696249878">Google Search AI मोड आणि कनेक्ट केलेली ॲप्स</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" /> मध्ये भाषांतर करा</translation>
 <translation id="8629093325209491835">Chrome मेनू &gt; सेटिंग्ज उघडा</translation>
 <translation id="8634050254805484913">अरुंद स्क्रीनवर लपवला आहे</translation>
@@ -2049,7 +2048,6 @@
 <translation id="9001604755921395912">गुप्त मोड Chrome टॅबमध्ये उघडा</translation>
 <translation id="9010094279589497751">तुम्हाला गरज असेल तेव्हा पटकन Gemini उघडा</translation>
 <translation id="9012585441087414258">धोकादायक म्हणून ओळखल्या जाणार्‍या साइट, डाउनलोड आणि एक्स्टेंशन यापासून संरक्षण. एखाद्या पेजमध्ये काहीतरी संशयास्पद आढळल्यास, URLs आणि पेजच्या आशयाचे भाग हे Google सुरक्षित ब्राउझिंग ला पाठवले जातात.</translation>
-<translation id="9014097371980259227">तुम्हाला AI मोड वापरून शोधण्यात मदत करण्यासाठी काही टूल हलवली आहेत</translation>
 <translation id="9015111999662965458">हे डिव्हाइस सुरक्षितपणे वापरता येईल याची खात्री करण्यासाठी, तुमच्या संस्थेला ऑपरेटिंग सिस्टीम, ब्राउझर, सेटिंग्ज आणि तुमच्या डिव्हाइसवर कोणते सॉफ्टवेअर इंस्टॉल केलेले आहे यांविषयी माहिती पाहण्याची आवश्यकता असू शकते</translation>
 <translation id="9019199799064251516">कार प्रोफाइल लॉकशिवाय पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="9022774213089566801">वारंवार भेट दिलेल्या</translation>

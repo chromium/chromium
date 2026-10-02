@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opciones para guardar una tarjeta</translation>
+<translation id="138810468159004008">Permitir mientras visito el sitio</translation>
 <translation id="1396260204083880024">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre el menú de la cuenta.</translation>
 <translation id="1397144142234474689">Ocultar Historial</translation>
 <translation id="1399268420835656394">Si no eres un niño o niña, es posible que quieras verificar la edad en la cuenta de Apple de este dispositivo. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Leer lo que dicen los usuarios</translation>
 <translation id="2394659309569789395">Abrir sitio de todos modos</translation>
 <translation id="2403129868389095715">No se puede entregar el paquete</translation>
-<translation id="2408318953009664750">Permitir una vez</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="2422174748424038845">Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />", y se borrará de todos los dispositivos.</translation>
 <translation id="2424805048070062787">Retoma esta pestaña</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Descarga detenida</translation>
 <translation id="2816489851009559785">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="2818821771744632548">Saliste de tu cuenta <ph name="USER_NAME" /> como parte del restablecimiento de tu iPhone. Para volver a acceder, presiona "Continuar".</translation>
-<translation id="2819667972867209401">Si se activa, los datos se guardarán en tu Cuenta de Google. Si se desactiva, los datos se guardan solo en este dispositivo y se borran si sales de tu cuenta.</translation>
 <translation id="2827760117436553203">¿Quieres mantener los datos separados?</translation>
 <translation id="2829172210806130158">Realiza una búsqueda directa en tu pantalla</translation>
 <translation id="2831109159746537587">Encierra en un círculo o presiona la imagen para buscar</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 de octubre de 2023</translation>
 <translation id="3416904994126232207">¡Se completó la tarea para guardar una contraseña!</translation>
 <translation id="3419787211763835342">Ayuda a mejorar la función de autocompletar mejorado</translation>
+<translation id="3422958112451181446">Mantén presionado para fijar tu herramienta favorita aquí</translation>
 <translation id="3430407169377889553">Usa Gemini con cuidado y toma el control si es necesario. Eres responsable de las acciones que realice Gemini durante las tareas.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3441673211568148613">Mantén tu navegación en privado</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 forma de pago}other{# formas de pago}}</translation>
 <translation id="3831560640878483188">¿Quieres descartar la advertencia?</translation>
 <translation id="3832419617903252251">La contraseña se guardó solo en este dispositivo</translation>
-<translation id="3835016165506903031">Permitir durante la visita</translation>
 <translation id="3835964409414434850">Ir a la pestaña siguiente</translation>
 <translation id="3838691874161539578">Para protegerte mejor en línea y mejorar tu seguridad, revisa las contraseñas que guardaste.</translation>
 <translation id="3838985624086228724">Reducción de precio en el producto con seguimiento, de <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Novedades</translation>
 <translation id="4289309730265289297">Biblioteca de fotos</translation>
 <translation id="429074084062258019">{count,plural, =1{Agregar pestaña al grupo}other{Agregar pestañas al grupo}}</translation>
+<translation id="4290920330097335010">No permitir nunca</translation>
 <translation id="4294506173142861371">¿Quieres acceder como <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Administrador de contraseñas</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="446314443268698477">Compra, identifica y traduce lo que ves con tu cámara o tus fotos.</translation>
 <translation id="4469324811108161144">Las notas pueden ahorrar hasta <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
+<translation id="4470766488397113689">¿Qué quieres hacer?</translation>
 <translation id="4471472356135655769">No se pueden exportar las contraseñas</translation>
 <translation id="4472575034687746823">Comenzar</translation>
 <translation id="4473565697543262065">Se borrará la información seleccionada que se guardó en este dispositivo y en tu Cuenta de Google <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Análisis detallados de descargas sospechosas.</translation>
 <translation id="4606247758155004938">Tu organización administra el navegador.</translation>
 <translation id="4607887340472970274">Seguimiento de precios</translation>
+<translation id="4614482404958079763">Prueba un tema festivo por tiempo limitado, con ilustraciones y animaciones personalizadas</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4621768135601674446">Abrir las opciones del Modo de lectura</translation>
 <translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas existentes para usar llaves de acceso</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Accediste como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Error en la Cuenta de Google. Abre el menú de la cuenta.</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ocultar después de 1 minuto}other{Ocultar después de {count} minutos}}</translation>
+<translation id="4652266463001779298">Sin permiso</translation>
 <translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, descubre si hackearon alguna y obtén consejos para protegerte en línea. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Activar el uso compartido de pestañas</translation>
 <translation id="4658335131052370646">Guardar</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Las llaves de acceso se guardan en el Administrador de contraseñas de Google para</translation>
 <translation id="510580293474170715">No se importó nada</translation>
 <translation id="5113960131843706315">Obteniendo tu contenido…</translation>
+<translation id="5116347248003317626">No permitir que los sitios usen tu ubicación</translation>
 <translation id="5118462200606189584">Agregar cuenta…</translation>
 <translation id="5118764316110575523">No</translation>
 <translation id="5119329531859909472">Para hacer un seguimiento del producto, presiona Realizar seguimiento</translation>
@@ -1795,6 +1799,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6626281667717553020">URI de CPS</translation>
 <translation id="6627583120233659107">Editar la carpeta</translation>
 <translation id="6629759408545977279">De: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Para acceder al historial y más, accede a tu cuenta</translation>
 <translation id="6634432609054530164">Tu organización desactivó el modo Incógnito</translation>
 <translation id="6637478299472506933">Error en la descarga</translation>
 <translation id="6638511529934826365">Hacer zoom en el texto…</translation>
@@ -2008,6 +2013,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> % descargado</translation>
 <translation id="7345061034321640811">No se permite la importación</translation>
+<translation id="7346922058131593019">¿Qué quieres hacer, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importa contraseñas, historial, favoritos y mucho más</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
 <translation id="7357999308187750900">Ver todo</translation>
@@ -2064,6 +2070,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="7491131399623468277">Ir a Configuración…</translation>
 <translation id="7491161827858509164">Para ver los archivos que descargaste antes, abre <ph name="BEGIN_LINK" />Archivos<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Seguir editando</translation>
+<translation id="7498557042323380380">Establece un aspecto de temporada para la página de Nueva pestaña</translation>
 <translation id="7500244509706269886">Autocompletar formulario</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
 <translation id="7505402981231763928">Debes acceder a tu cuenta para usar Gemini</translation>
@@ -2101,6 +2108,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="760667371114328991">Desactivar las notificaciones de la Verificación de seguridad</translation>
 <translation id="7612619742409846846">Accediste a Google como</translation>
 <translation id="7612849887607288481">Abrir el menú de prototipado de IA</translation>
+<translation id="7618220760967055820">Elige qué botón mostrar en la barra de herramientas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
 <translation id="762078666799342162">Puedes ver tus descargas anteriores en <ph name="BEGIN_LINK" />Archivos<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
@@ -2310,7 +2318,6 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8233237502828137700">Cerrar banner promocional</translation>
 <translation id="823339794112333264">Activar micrófono</translation>
 <translation id="8240217649914883113">Agrega esto a mi calendario</translation>
-<translation id="824379025871762038">No permitir nunca</translation>
 <translation id="8244387390464017490">Personalizar nueva pestaña</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="8258734532103758067">Exporté mis datos</translation>
@@ -2331,6 +2338,7 @@ Puedes reiniciar en cualquier momento.</translation>
 <translation id="8282657446819506217">Abrir en el grupo de pestañas</translation>
 <translation id="828291969289324795">{count,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="8283172974887967105">Establecer…</translation>
+<translation id="8287009018010202411">Productividad</translation>
 <translation id="8289930144142009940">Se desactivaron las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="8292893224181644074">Descarga completa</translation>
 <translation id="8299417921174340354">Para usar contraseñas, primero debes establecer una en tu dispositivo.</translation>

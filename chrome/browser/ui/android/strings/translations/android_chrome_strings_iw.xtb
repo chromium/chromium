@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">שמירת הדף בשם…</translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
-<translation id="2329500425421091035">‏חדש: מצב AI ב-Chrome</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
 <translation id="2330243730505117832">הגיליון התחתון "בחירת מכשיר" נסגר.</translation>
 <translation id="2332515770639153015">הגרסה המשופרת של הגלישה הבטוחה מופעלת</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">‏כדי לשמור על הגישה לסיסמאות, צריך לייצא אותן עכשיו, לעדכן את Google Play Services ואז לייבא אותן חזרה למנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />לצפייה בהוראות המלאות<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3435914367318771664">הוספת הכרטיסייה לקבוצה חדשה</translation>
-<translation id="3436118221454753036">‏מצב AI: רוצה לשאול משהו?</translation>
 <translation id="3439276997620616816">הכרטיסיות האחרונות יופיעו כאן</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">ניתן יהיה לאמת את זהותך באמצעות <ph name="ORIGIN" /></translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3542235761944717775">‏‎<ph name="KILOBYTES" />KB זמינים</translation>
-<translation id="3547933853190131743">‏חיפוש במצב AI</translation>
 <translation id="3549537543136628349">‏הדפים שנטענים מראש מוצפנים, והאתר או האפליקציה שמקשרים לדפים האלה הם אתר או אפליקציה של Google, לכן השרתים של Google לא מקבלים מידע חדש כשמתבצעת טעינה מראש של הדפים האלה באופן פרטי.</translation>
 <translation id="3549657413697417275">חיפוש בהיסטוריה שלך</translation>
 <translation id="3557336313807607643">הוספה לאנשי הקשר</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">‏מספר בלתי נתמך של מופעי Chrome.</translation>
 <translation id="4890973535105146893">‏אין סיסמאות שמורות בחשבון שלך ב-Google</translation>
 <translation id="490375751687810070">אנכי</translation>
-<translation id="4905823827770127520">הוספת קישור לדף</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4911042367886397055">שמחים שחזרת, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">הפסקת הרענון</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5870416898561279542">כרטיסיות וקבוצות של כרטיסיות כפולות או כאלה שלא השתמשת בהן במשך <ph name="DAYS_INACTIVE" /> ימים מועברות לכאן<ph name="AUTODELETE_SECTION" />. תמיד אפשר לשנות את זה ב<ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">‏התראות <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי האתר הזה מסוכן</translation>
+<translation id="5895138241574237353">הפעלה מחדש</translation>
 <translation id="5896944002928653773">הגיליון התחתון של כתב הוויתור לגבי אותו ארגוניים נסגר</translation>
 <translation id="5899667542927581604">אין גיליון של מפתחות גישה שנסגר</translation>
 <translation id="5907542076239273525">הסימנייה נשמרה בתיקייה <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
 <translation id="764047009170754705">‏הגיליון התחתון להצטרפות לממצאי Chrome סגור</translation>
+<translation id="7645712301713737707">התאמה אישית של פריסת הכרטיסיות כך שיופיעו בחלק העליון או בצד של הדפדפן.</translation>
 <translation id="7646499124171960488">מקבלים אזהרה לגבי אתרים ציבוריים לא מאובטחים</translation>
 <translation id="7655240423373329753">7 הימים האחרונים</translation>
 <translation id="7656721520530864426">אין אתרים</translation>
@@ -1957,6 +1955,7 @@
 <translation id="860282621117673749">התראות על הנחות</translation>
 <translation id="8611922158252451755">צריך לשים לב עם מי משתפים את הכרטיסיות כי כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="8616006591992756292">‏ייתכן שלחשבון Google שלך יהיו צורות אחרות של היסטוריית גלישה בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">‏מצב AI בחיפוש Google ואפליקציות מחוברות</translation>
 <translation id="8626572875733549102">תרגום ל<ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">‏פותחים את תפריט Chrome &gt; הגדרות</translation>
 <translation id="8634050254805484913">הסרגל מוסתר במסכים צרים</translation>
@@ -2048,7 +2047,6 @@
 <translation id="9001604755921395912">‏פתיחה בכרטיסייה פרטית ב-Chrome</translation>
 <translation id="9010094279589497751">‏פתיחה מהירה של Gemini ברגע הנכון</translation>
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
-<translation id="9014097371980259227">‏כדי לעזור לך לחפש במצב AI, חלק מהכלים עברו למקום אחר</translation>
 <translation id="9015111999662965458">כדי לוודא שאפשר להשתמש במכשיר באופן בטוח, האדמין של הארגון צריך לקבל מידע על מערכת ההפעלה, הדפדפן וההגדרות של המכשיר, וגם על התוכנה שמותקנת בו.</translation>
 <translation id="9019199799064251516">להמשיך בלי נעילת פרופיל במכונית?</translation>
 <translation id="9022774213089566801">אתרים עם ביקורים תכופים</translation>

@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="138618066238211776">Շարունակել <ph name="USER_NAME" /> հաշվով</translation>
 <translation id="138692594145659985">Քարտը պահելու կարգավորումներ</translation>
+<translation id="138810468159004008">Թույլատրել կայք այցելելիս</translation>
 <translation id="1396260204083880024">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել հաշվի ընտրացանկը։</translation>
 <translation id="1397144142234474689">Թաքցնել «Պատմություն» կետը</translation>
 <translation id="1399268420835656394">Եթե դուք երեխա չեք, այս սարքում կարող եք ստուգել, թե ինչ տարիք է նշված ձեր Apple հաշվում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -303,6 +304,7 @@
 <translation id="188237709236611317">Խելացի դասավորման ընտրացանկի գոտի</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
 <translation id="1883898928879467646">Ներդիրը հեռացվեց</translation>
+<translation id="188779312703122101">Աշխատում է</translation>
 <translation id="1888854257756214946">Ընտրել գաղտնաբառ…</translation>
 <translation id="1890237935065108104">Այս կարգավորումը հասանելի չէ։</translation>
 <translation id="1894023287452300670">Հետևեք գներին այստեղ</translation>
@@ -469,7 +471,6 @@
 <translation id="2393230427496852974">Կարդալ մարդկանց կարծիքները</translation>
 <translation id="2394659309569789395">Միևնույն է բացել կայքը</translation>
 <translation id="2403129868389095715">Ձեր փաթեթը հնարավոր չէ ուղարկել</translation>
-<translation id="2408318953009664750">Թույլատրել մեկ անգամ</translation>
 <translation id="2410754283952462441">Ընտրեք հաշիվ</translation>
 <translation id="2422174748424038845">Եթե ջնջեք, բոլորին անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի բոլոր սարքերից։</translation>
 <translation id="2424805048070062787">Շարունակել այս ներդիրի դիտումը</translation>
@@ -601,7 +602,6 @@
 <translation id="2816149645002567541">Ներբեռնումը դադարեցված է</translation>
 <translation id="2816489851009559785">Ընտրացանկ → Կարգավորումներ → Կանխադրված դիտարկիչ</translation>
 <translation id="2818821771744632548">Ձեր iPhone-ը վերակայելիս դուք դուրս եք գրվել ձեր <ph name="USER_NAME" /> հաշվից։ Մուտք գործելու համար ստորև սեղմեք «Շարունակել»։</translation>
-<translation id="2819667972867209401">Երբ միացված է, տվյալները պահվում են ձեր Google հաշվում։ Հակառակ դեպքում տվյալները կպահվեն միայն այս սարքում և կջնջվեն, երբ դուրս գաք հաշվից։</translation>
 <translation id="2827760117436553203">Պահե՞լ տվյալներն առանձին</translation>
 <translation id="2829172210806130158">Որոնեք այն, ինչ էկրանին է</translation>
 <translation id="2831109159746537587">Որոնելու համար շրջագծեք նկարը կամ հպեք դրան</translation>
@@ -767,6 +767,7 @@
 <translation id="3416023309465857378">Հոկ 25, 2023</translation>
 <translation id="3416904994126232207">«Պահել գաղտնաբառ» առաջադրանքն ավարտված է։</translation>
 <translation id="3419787211763835342">Օգնեք զարգացնել բարելավված ինքնալրացումը</translation>
+<translation id="3422958112451181446">Սեղմեք և պահեք՝ ձեր սիրելի գործիքն այստեղ ամրացնելու համար</translation>
 <translation id="3430407169377889553">Զգուշությամբ օգտվեք Gemini-ից և անհրաժեշտության դեպքում վերահսկեք դրա աշխատանքը։ Դուք պատասխանատվություն եք կրում առաջադրանքների կատարման ընթացքում Gemini-ի գործողությունների համար։</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3441673211568148613">Ձեր դիտարկումը գաղտնի պահեք</translation>
@@ -884,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{վճարման 1 եղանակ}one{վճարման # եղանակ}other{վճարման # եղանակ}}</translation>
 <translation id="3831560640878483188">Փակե՞լ նախազգուշացումը</translation>
 <translation id="3832419617903252251">Գաղտնաբառը պահվեց միայն այս սարքում</translation>
-<translation id="3835016165506903031">Թույլատրել այցելելիս</translation>
 <translation id="3835964409414434850">Անցնել հաջորդ ներդիր</translation>
 <translation id="3838691874161539578">Ստուգեք պահված գաղտնաբառերը՝ համացանցում ձեր պաշտպանությունն ուժեղացնելու համար</translation>
 <translation id="3838985624086228724">Գնիջեցում ձեր հետևած ապրանքի վրա՝<ph name="PREVIOUS_PRICE" />-ից մինչև՝ <ph name="PRICE" />,<ph name="PRODUCT_NAME" /> <ph name="DOMAIN" /></translation>
@@ -1035,6 +1035,7 @@
 <translation id="428768789042547925">Ինչ նոր բան կա</translation>
 <translation id="4289309730265289297">Ֆոտոդարան</translation>
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
+<translation id="4290920330097335010">Երբեք չթույլատրել</translation>
 <translation id="4294506173142861371">Մուտք գործե՞լ որպես <ph name="FIRST_NAME" /></translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
@@ -1086,6 +1087,7 @@
 <translation id="4460014764210899310">Ապախմբավորել</translation>
 <translation id="446314443268698477">Գտեք ապրանքներ, թարգմանեք տեքստեր և ստացեք տեղեկություններ ձեզ շրջապատող օբյեկտների մասին՝ օգտագործելով տեսախցիկը կամ լուսանկարները։</translation>
 <translation id="4469324811108161144">Նշումները կարող են պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
+<translation id="4470766488397113689">Ինչի՞ վրա եք ուզում աշխատել</translation>
 <translation id="4471472356135655769">Չհաջողվեց արտահանել գաղտնաբառերը</translation>
 <translation id="4472575034687746823">Սկսել</translation>
 <translation id="4473565697543262065">Այս սարքում և ձեր Google հաշվում (<ph name="USER_EMAIL" />) պահված ընտրված տեղեկությունները կջնջվեն</translation>
@@ -1128,6 +1130,7 @@
 <translation id="4601095002996233687">Կասկածելի ներբեռնումների մանրակրկիտ սկանավորում։</translation>
 <translation id="4606247758155004938">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից։</translation>
 <translation id="4607887340472970274">Գների հետագծում</translation>
+<translation id="4614482404958079763">Փորձեք սահմանափակ ժամկետով տոնական թեման՝ հատուկ նկարազարդումներով և անիմացիաներով</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4621768135601674446">Բացել Ընթերցման ռեժիմի ընտրանքները</translation>
 <translation id="4627107755957573804">Թույլատրել կայքերին և հավելվածներին նորացնել առկա հաշիվները՝ մուտքի բանալիներ օգտագործելու համար</translation>
@@ -1143,6 +1146,7 @@
 <translation id="4647758699119474035">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Google հաշվի սխալ: Բացել հաշվի ընտրացանկը։</translation>
 <translation id="4650125387981512669">Շարունակել որպես <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Թաքցնել 1 րոպեից}one{Թաքցնել {count} րոպեից}other{Թաքցնել {count} րոպեից}}</translation>
+<translation id="4652266463001779298">Արգելված է</translation>
 <translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Միացնել ներդիրի ցուցադրումը</translation>
 <translation id="4658335131052370646">Պահել</translation>
@@ -1298,6 +1302,7 @@
 <translation id="5096619236864235">Մուտքի բանալիները պահվում են Google գաղտնաբառերի կառավարչում այս հաշվի համար՝</translation>
 <translation id="510580293474170715">Ոչինչ չի ներմուծվել</translation>
 <translation id="5113960131843706315">Տվյալները բեռնվում են…</translation>
+<translation id="5116347248003317626">Չթույլատրել կայքերին օգտագործել ձեր տեղադրության տվյալները</translation>
 <translation id="5118462200606189584">Ավելացնել հաշիվ…</translation>
 <translation id="5118764316110575523">Անջատված է</translation>
 <translation id="5119329531859909472">Ապրանքին հետևելու համար հպեք «Հետևել»</translation>
@@ -2008,6 +2013,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">Ներբեռնվել է <ph name="PERCENT" /> տոկոսը</translation>
 <translation id="7345061034321640811">Ներմուծումը թույլատրված չէ</translation>
+<translation id="7346922058131593019">Ինչի՞ վրա եք ուզում աշխատել, <ph name="USER_FIRST_NAME" /></translation>
 <translation id="7347998088283246662">Ներմուծեք գաղտնաբառեր, պատմություն, էջանիշներ և այլ տվյալներ</translation>
 <translation id="7352651011704765696">Ինչ-որ սխալ տեղի ունեցավ</translation>
 <translation id="7357999308187750900">Տեսնել բոլորը</translation>
@@ -2064,6 +2070,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="7491131399623468277">Բացել կարգավորումները…</translation>
 <translation id="7491161827858509164">Նախկինում ձեր ներբեռնած ֆայլերը տեսնելու համար բացեք <ph name="BEGIN_LINK" />Ֆայլեր<ph name="END_LINK" /> հավելվածը</translation>
 <translation id="7498234416455752244">Շարունակել աշխատանքը</translation>
+<translation id="7498557042323380380">Սահմանեք սեզոնային տեսք նոր ներդիրի էջի համար</translation>
 <translation id="7500244509706269886">Ավտոմատ լրացնել ձևը</translation>
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
 <translation id="7505402981231763928">Gemini-ից օգտվելու համար դուք պետք է մուտք գործեք հաշիվ</translation>
@@ -2101,6 +2108,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="760667371114328991">Անջատեք անվտանգության ստուգման ծանուցումները</translation>
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
 <translation id="7612849887607288481">Բացել ԱԲ-ի նախատիպի ընտրացանկը</translation>
+<translation id="7618220760967055820">Ընտրեք, թե ինչ կոճակ պետք է ցուցադրվի գործիքագոտում</translation>
 <translation id="7620522820075868385">Չեղարկել</translation>
 <translation id="762078666799342162">Նախկինում ձեր ներբեռնած ֆայլերը կարող եք դիտել <ph name="BEGIN_LINK" />Ֆայլեր<ph name="END_LINK" /> հավելվածում</translation>
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
@@ -2310,7 +2318,6 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8233237502828137700">Փակել ազդերիզի պրոմոհուշումը</translation>
 <translation id="823339794112333264">Միացնել խոսափողը</translation>
 <translation id="8240217649914883113">Ավելացրու սա իմ օրացույցում</translation>
-<translation id="824379025871762038">Երբեք չթույլատրել</translation>
 <translation id="8244387390464017490">Անհատականացրեք նոր ներդիրի էջը</translation>
 <translation id="8250920743982581267">Փաստաթղթեր</translation>
 <translation id="8258734532103758067">Ես արտահանել եմ իմ տվյալները</translation>
@@ -2331,6 +2338,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8282657446819506217">Բացել ներդիրների խմբում</translation>
 <translation id="828291969289324795">{count,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
+<translation id="8287009018010202411">Արդյունավետ աշխատանք</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />․ ծանուցումներն անջատվեցին</translation>
 <translation id="8292893224181644074">Ներբեռնումն ավարտված է</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>

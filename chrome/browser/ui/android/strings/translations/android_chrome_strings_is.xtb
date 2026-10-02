@@ -329,7 +329,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2327445548174191329">Frá <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Vista síðu sem…</translation>
 <translation id="2328474416100889417">Allir notendur munu umsvifalaust missa aðgang að flipahópnum „<ph name="GROUP_NAME" />“ og slökkt verður á öllum boðstenglum</translation>
-<translation id="2329500425421091035">Við kynnum gervigreindarstillingu í Chrome</translation>
 <translation id="2330186936255788117">Fleiri bókamerki</translation>
 <translation id="2330243730505117832">„Velja tæki“ er lokað.</translation>
 <translation id="2332515770639153015">Kveikt er á enn öruggari vefskoðun</translation>
@@ -602,7 +601,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3435575784518354875">Til að tryggja að þú hafir aðgang að aðgangsorðunum þínum skaltu flytja þau út núna, uppfæra þjónustu Google Play og flytja þau síðan aftur inn í Google-aðgangsorðastjórnun. <ph name="BEGIN_LINK" />Sjá ítarlegar leiðbeiningar<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3435914367318771664">Bæta flipa við nýjan hóp</translation>
-<translation id="3436118221454753036">Stillingin „Spyrja gervigreind“</translation>
 <translation id="3439276997620616816">Þú finnur nýlega flipa hér</translation>
 <translation id="3443221991560634068">Endurhlaða þessa síðu</translation>
 <translation id="3444179773590444986">Deila ábendingu um dökkt þema fyrir vefsvæði?</translation>
@@ -629,7 +627,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3524334353996115845">Leyfa <ph name="ORIGIN" /> að staðfesta að þetta sért þú</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tiltæk</translation>
-<translation id="3547933853190131743">Leita með gervigreindarstillingu</translation>
 <translation id="3549537543136628349">Þar sem forhlaðnar síður eru dulkóðaðar og vefsvæðið eða forritið sem er tengt við síðurnar er í eigu Google geta Google-þjónar ekki móttekið nýjar upplýsingar þegar síðunum er forhlaðið í lokaðri stillingu.</translation>
 <translation id="3549657413697417275">Leita í ferlinum</translation>
 <translation id="3557336313807607643">Bæta við tengiliði</translation>
@@ -983,7 +980,6 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="4885273946141277891">Óstuddur fjöldi Chrome tilvika.</translation>
 <translation id="4890973535105146893">Engin vistuð aðgangsorð á Google-reikningnum þínum</translation>
 <translation id="490375751687810070">Lóðrétt</translation>
-<translation id="4905823827770127520">Hafa með tengil á síðuna</translation>
 <translation id="4910889077668685004">Greiðsluforrit</translation>
 <translation id="4911042367886397055">Velkomin(n) til baka, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Hætta að endurnýja</translation>
@@ -1214,6 +1210,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
 <translation id="5870416898561279542">Tvíteknir flipar og hópar eða þeir sem hafa ekki verið notaðir í <ph name="DAYS_INACTIVE" /> daga eru færðir hingað<ph name="AUTODELETE_SECTION" />. Þú getur breytt þessu hvenær sem er í <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Tilkynningar <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því að þetta vefsvæði er hættulegt</translation>
+<translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5896944002928653773">Blaði neðst með fyrirvara um fyrirtækjamerki var lokað</translation>
 <translation id="5899667542927581604">Blaðinu „Engir aðgangslyklar“ var lokað</translation>
 <translation id="5907542076239273525">Bókamerki vistað í <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7630202231528827509">Vefslóð veitu</translation>
 <translation id="7638584964844754484">Rangt aðgangsorð</translation>
 <translation id="764047009170754705">Vali um að taka þátt í Chrome Finds lokað</translation>
+<translation id="7645712301713737707">Sérsníddu flipauppsetninguna þannig að hún birtist efst eða meðfram hlið vafrans.</translation>
 <translation id="7646499124171960488">Varar þig við óöruggum opnum vefsvæðum</translation>
 <translation id="7655240423373329753">síðastliðnum 7 dögum</translation>
 <translation id="7656721520530864426">Engin vefsvæði</translation>
@@ -1957,6 +1955,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="860282621117673749">Tilkynningar um verðlækkanir</translation>
 <translation id="8611922158252451755">Allir með tengilinn geta gert breytingar á öllum flipum og farðu því varlega í að deila. Tengillinn rennur út eftir 48 klukkustundir.</translation>
 <translation id="8616006591992756292">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Gervigreindarstilling Google-leitar og tengd forrit</translation>
 <translation id="8626572875733549102">Þýða yfir á <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Farðu í „Valmynd Chrome &gt; Stillingar“</translation>
 <translation id="8634050254805484913">Faldir eða mjóir skjáir</translation>
@@ -2048,7 +2047,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="9001604755921395912">Opna í huliðsflipa í Chrome</translation>
 <translation id="9010094279589497751">Opnaðu Gemini þegar þú þarft á því að halda</translation>
 <translation id="9012585441087414258">Vernda þig gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Ef grunsamleg virkni greinist á síðu eru vefslóðir og hlutar af innihaldi síðna sendir í örugga vefskoðun Google.</translation>
-<translation id="9014097371980259227">Sum verkfæri hafa verið færð til að auðvelda þér að leita í gervigreindarstillingu</translation>
 <translation id="9015111999662965458">Til að ganga úr skugga um að hægt sé að nota þetta tæki á öruggan hátt þarf fyrirtækið þitt hugsanlega aðgang að upplýsingum um stýrikerfi, vafra, stillingar og uppsettan hugbúnað tækisins</translation>
 <translation id="9019199799064251516">Halda áfram án þess að nota prófíllás bílsins?</translation>
 <translation id="9022774213089566801">Oft skoðað</translation>

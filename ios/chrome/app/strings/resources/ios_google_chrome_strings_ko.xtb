@@ -251,7 +251,6 @@
 <translation id="6646696210740573446">IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 Google에 보낼 수 있습니다.</translation>
 <translation id="6647304104688527905">Chrome에서 새 탭을 엽니다.</translation>
 <translation id="6684809838922667136">Chrome 개선에 참여</translation>
-<translation id="6695698548122852044">{THRESHOLD,plural, =1{이 현상은 Chrome을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}other{이 현상은 Chrome을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}}</translation>
 <translation id="6709398533399187136">정보 유출로 인해 비밀번호가 노출되었습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="6820553595690137150">결제 수단 및 주소는 암호로 암호화되지 않습니다.
 

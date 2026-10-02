@@ -958,7 +958,6 @@ Minimum eşik 1 dakikadır.
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" /> ürününün tüm IP adreslerindeki cihazlara bağlanmasına izin ver</translation>
 <translation id="1626379196197114720">Geri-ileri önbelleğin kullanılmasına izin ver</translation>
 <translation id="1628974048137236820">Yeni Sekme Sayfası kartları gösterme</translation>
-<translation id="1628984674324273832">Gemini ile Bul ve Tamamla özelliğine izin verme.</translation>
 <translation id="163200210584085447">Bu listedeki kalıplar, istek yapan URL'nin güvenlik kaynağı ile
       karşılaştırılır. Eşleşme bulunursa, SAML giriş sayfalarında video
       yakalama cihazlarına erişim izni verilir. Herhangi bir eşleşme
@@ -1735,7 +1734,6 @@ Bu politika ayarlanmazsa yalnızca kullanıcının otomatik olarak açılmasın�
 <translation id="2107601598727098402">
         Bu politika M72 sürümünde kullanımdan kaldırılmıştır. Lütfen bunun yerine CloudManagementEnrollmentToken politikasını kullanın.
         </translation>
-<translation id="2111355600078097861">Yapay zeka modellerini daha iyi hale getirmeden Gemini ile Bul ve Tamamla özelliğine izin ver.</translation>
 <translation id="2112656109118682849">Kullanıcıların, oturum açma ekranında sistem bilgilerinin gösterilmesini veya gizlenmesini seçmesine izin ver</translation>
 <translation id="2113068765175018713">Otomatik bir şekilde yeniden başlatarak cihazın açık kalma süresini sınırlandır</translation>
 <translation id="211386002920955760">Enterprise kullanıcısının Chrome'daki sekme grubu paylaşım özelliğine erişip erişemeyeceğini kontrol edin.
@@ -5629,6 +5627,11 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
 <translation id="4561940244682063697">Sitelerin kullanıcılardan ekranlarının video akışını paylaşmalarını istemesine izin verme</translation>
 <translation id="4562165737444703281">Kullanıcıların Crostini bağlantı noktası yönlendirmesini [etkinleştirmesine/yapılandırmasına] izin verir</translation>
 <translation id="456450545863578630">Kurumsal yöneticilerden gelen uzaktan destek bağlantılarında dosya aktarımını etkinleştir</translation>
+<translation id="4567614489737189156">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, kilitlenme raporları da dahil olmak üzere kullanım metriklerini ve teşhis verilerini Google'a bildirir. Politika, Devre Dışı değerine ayarlanırsa metrikler ve teşhis verisi raporlama devre dışı bırakılır.
+
+Yönetilen cihazlarda, politika ayarlanmadan bırakılırsa metrikler ve teşhis verisi raporlama varsayılan olarak etkin kalır.
+
+Bu politika, yönetilmeyen cihazlar için geçerli değildir. Kullanıcılar, cihaz kurulumu sırasında veya daha sonra ayarlar üzerinden metrik ve teşhis verileri raporlama davranışını seçebilir.</translation>
 <translation id="4570859815763368584">M68 sürümünde kullanımdan kaldırılmıştır. Bunun yerine DefaultPopupsSetting politikasını kullanın.
 
       Tam açıklama için https://www.chromestatus.com/feature/5675755719622656 adresine bakın.
@@ -6483,7 +6486,6 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
 
 Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
-<translation id="5070539335358964387">Gemini ile Bul ve Tamamla özelliğine izin verip yapay zeka modellerini daha iyi hale getir.</translation>
 <translation id="5071303485174858500">Kısıtlanmış yönetilen misafir oturumunu devre dışı bırak.</translation>
 <translation id="5073788301065423829">Bu politika, ChromeOS için "Yazmama yardım et" özelliğini etkinleştirir veya devre dışı bırakır.
 
@@ -9983,7 +9985,6 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="7136237405361383549">Alan deneme yapılandırmasına göre varsayılan oluşturucuyu kullan.</translation>
 <translation id="7138762292550697459">JavaScript setTimeout() fonksiyonunun minimum zaman aşımını kontrol et.</translation>
 <translation id="7138792262152376158">PrefixedVideoFullscreen API için düzenli desteği sonlandırma zaman çizelgelerini takip eder</translation>
-<translation id="7140755255968613921">Gemini ile Bul ve Tamamla ayarları</translation>
 <translation id="7140760943584613237">Microsoft® bulut kimlik sağlayıcısı</translation>
 <translation id="714219487865269980">Klavye odağını vurgulamayı etkinleştir</translation>
 <translation id="7144022711746703451">
@@ -10406,19 +10407,6 @@ Hassas verilerin (ör. çerezler veya giriş değerleri) gerçek değerleri TOPL
 <translation id="7402257017733669351">Tarayıcı işleminin dinamik kod oluşturmasını engelle</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> devre dışı bırakıldığında Android Yedekleme ve Geri Yükleme özelliği düzgün çalışmaz.</translation>
 <translation id="7406276857470642718">Harici IdP ile SAML kullanılarak doğrulanmış kullanıcıların ayarlarını kontrol eder</translation>
-<translation id="7407431811343706437">Kullanıcıların <ph name="PRODUCT_NAME" /> içinde "Gemini ile Bul ve Tamamla" özelliğini kullanıp kullanamayacağını kontrol eder.
-
-0 = Özelliğin kullanılmasına izin verirken Google'ın yapay zeka modellerini iyileştirmek için ilgili verileri kullanmasına izin verir. İlgili veriler arasında özelliğe bağlı olarak istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler yer alabilir. Aşağıdaki değerler belirtilmediği sürece varsayılan değer 0'dır.
-
-1 = Özelliğin kullanılmasına izin verir ancak Google'ın kullanıcıların içeriklerini (istemler, girişler, çıkışlar, kaynak materyaller ve yazılı geri bildirimler dahil) kullanarak modelleri iyileştirmesine izin vermez. <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> tarafından yönetilen kurumsal kullanıcılar ve <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> tarafından yönetilen eğitim hesapları için varsayılan değer 1'dir.
-
-2 = Özelliğe izin vermez.
-
-Gemini uygulaması devre dışı bırakıldığında bu politikanın etkisi olmaz. Örneğin, Gemini uygulaması <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından devre dışı bırakılabilir.
-
-Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> politikasına göre belirlenir.
-
-Üretken yapay zeka özelliklerinde verilerin nasıl işlendiği hakkında daha fazla bilgi için lütfen https://support.google.com/chrome/a?p=generative_ai_settings adresine göz atın.</translation>
 <translation id="7407441173422042771">Bu politika, <ph name="PRODUCT_NAME" /> içinde ağ tahminini kontrol eder. DNS'nin önceden getirilmesini, TCP ve SSL ön bağlantısını ve web sayfalarının önceden oluşturulmasını kontrol eder.
 
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Bu politika ayarlanmadan bırakılırsa ağ tahmini etkinleştirilir, ancak kullanıcı bunu değiştirebilir.</translation>
@@ -10427,11 +10415,6 @@ Politika ayarlanmadan bırakılırsa davranışı <ph name="GEN_AI_DEFAULT_SETTI
 <translation id="7410074797376205571"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> ürününün uzak bir ana makineden proxy kullanılarak gelen WebAuthn API isteklerini yürütmesine izin ver.</translation>
 <translation id="7412456346709338637">Thunderbolt/USB4 çevre birimi veri erişimini etkinleştirir</translation>
 <translation id="7414890119082492552">Tercihim yok.</translation>
-<translation id="7416222110012824615">Bu politika, XSLT özelliğinin (XSLTProcessor JavaScript API ve XSL işleme talimatı) kullanılabilirliğini kontrol eder.
-Bu politika, Etkin değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılabilir.
-Bu politika, Devre Dışı değerine ayarlanırsa özelliğin tarayıcıdaki varsayılan durumundan bağımsız olarak XSLT kullanılamaz.
-Bu politika ayarlanmadan bırakılırsa XSLT'nin kullanılabilirliği, tarayıcının varsayılan ayarlarına ve saha denemelerine göre belirlenir.
-Bu politika geçici bir çözüm olup M164 sürümünde kaldırılacaktır.</translation>
 <translation id="7417438464912687020">Bu makineye uzaktan erişim bağlantılarına izin ver</translation>
 <translation id="7417972229667085380">Sunum modundayken boşta gecikme süresini ölçekleme yüzdesi (kullanımdan kaldırıldı)</translation>
 <translation id="7421230730436851224">Sesi hiçbir zaman korumalı alana alma</translation>
@@ -10742,10 +10725,6 @@ Birleştirilmesi gereken politikaların aynı zamanda <ph name="POLICY_LIST_MULT
       Bu politikayı Yanlış değerine ayarlamak veya ayarlamadan bırakmak, raporlamayı devre dışı bırakır.
       DataLeakPreventionRulesList politikasında İZİN VER seviye kısıtlamalarıyla belirlenen kurallar, her iki durumda da etkinlikleri raporlamaz.</translation>
 <translation id="7648907905084499629">Tüm sitelerde çerezler için <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> davranışını kullan</translation>
-<translation id="7649831723389657756">Politika ayarlandığında <ph name="AUTH_SCHEMES_POLICY_NAME" /> politikasından bağımsız olarak hangi kaynaklar için <ph name="PRODUCT_NAME" /> tarafından desteklenen tüm HTTP kimlik doğrulama şemalarına izin verileceğini belirtir.
-
-      Kaynak kalıbını, <ph name="URL_SCHEME_FORMAT_LINK" /> adresine göz atarak biçimlendirin. <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> içinde en fazla 1.000 istisna tanımlanabilir.
-      Ana makine bileşeni için joker karakterlere izin verilir (ör. "*:8000", 8000 bağlantı noktasındaki tüm ana makinelerle eşleşir). Tüm şemaları veya tüm bağlantı noktalarını eşleştirmek için bileşeni tamamen çıkarın (ör. "example.com" herhangi bir şema ve herhangi bir bağlantı noktasıyla eşleşir). Ana makine adı (ör. "example.com"), alt alan adlarıyla da eşleşir. Bir ana makinenin tam olarak eşleşmesi ve alt alan adlarının hariç tutulması için başına nokta ekleyin (ör. ".example.com"). Tüm kaynakları eşleştirmek için tek bir yıldız işareti ("*") kullanın.</translation>
 <translation id="7652330587655863759">Kimlik doğrulama türü.
 
 * "none": Kimlik doğrulama yapılmaz.
@@ -11543,6 +11522,7 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="8164687848393015214">Politika Etkin değerine ayarlanırsa izleme amaçlı ağ paketleri (<ph name="HEARTBEATS_TERM" />), bağlantı durumunun izlenmesini ve cihazın çevrimdışı olup olmadığının belirlenmesini sağlamak için yönetim sunucusuna gönderilir.
 
       Politika Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa paket gönderilmez.</translation>
+<translation id="8165152191100365965">Yönetilen cihazlarda metrikleri Google'a gönder veya yönetilmeyen cihazlarda kullanıcının karar vermesine izin ver</translation>
 <translation id="8168359201203671567">Klavye arka ışığı gökkuşağı renginde</translation>
 <translation id="8169452762291746260">Cihaz sağlığını izlemeyi devre dışı bırak</translation>
 <translation id="8170359860920320269">Yetişkinlere uygun içerik barındıran siteleri filtrele</translation>
@@ -12940,6 +12920,9 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> varsayılan olar
       URI şablonu <ph name="HTTP_VARIABLE_DNS" /> değişkeni içeriyorsa çözümleyiciye gelen istekler <ph name="HTTP_METHOD_GET" /> yöntemini kullanır; aksi takdirde istekler <ph name="HTTP_METHOD_POST" /> yöntemini kullanır.
 
       Yanlış biçimlendirilmiş şablonlar yok sayılır.</translation>
+<translation id="9066972193987544412">Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar yer işaretleri ekleyebilir, kaldırabilir, değiştirebilir veya yükleyebilir.
+
+      Politika, Devre Dışı değerine ayarlanırsa kullanıcılar yer işaretleri ekleyemez, kaldıramaz, değiştiremez veya yükleyemez. Mevcut yer işaretlerini kullanmaya devam edebilirler.</translation>
 <translation id="9068629430243705879">bağlantı noktası 6566 (15.10.2021'e kadar engellemesi kaldırılabilir)</translation>
 <translation id="9069432851455606924">Coğrafi konum ayarları</translation>
 <translation id="9069503402414011061">Politikanın ayarlanması, kimlik doğrulama verisi önbellek ömrünü saat cinsinden belirtir. Önbellek, makine alanının (ilişkili alanlar) güvendiği alanlar hakkında verilere sahiptir. Bu nedenle, kimlik doğrulama verilerini önbelleğe alma, oturum açmayı hızlandırmaya yardımcı olur. Kullanıcıya özgü veriler ve ilişkili olmayan alanlara ait veriler önbelleğe alınmaz.
@@ -13013,6 +12996,21 @@ kullanılabilecek sertifikaların listesi. Sertifikalar, base64 kodlu olmalıdı
 <translation id="9122865885571719292"><ph name="PRODUCT_OS_NAME" /> ürününün giriş yapıldığında son oturumu geri yükleyip yüklemeyeceğini ve nasıl geri yükleyeceğini kontrol eder.
 Bu politika yalnızca <ph name="FULL_RESTORE_ENABLED_NAME" /> politikası doğru değerine ayarlanırsa etkili olur.</translation>
 <translation id="9123464369663964441">Kullanıcıların engellenebilir karma içeriğe izin vermek için istisnalar eklemesine izin ver</translation>
+<translation id="9123738611041078443"><ph name="PRODUCT_NAME" /> hizmetinde <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> için bağlantı ayarlarını yapılandırır.
+
+Yöneticilerin, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> hizmetini yapılandırmak için şunlardan birini sağlaması gerekir:
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> web uygulaması URL'si (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) VEYA
+* Üç eski parametrenin tümü: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> ve <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Bu üç parametrenin alt kümesi yalnızca kısmen URL olmadan belirtilirse <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> politikası yapılandırılamaz.
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi, https şemasını kullanan, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> alan adına işaret eden ve kullanıcı adı veya şifre içermeyen geçerli bir URL olmalıdır. Bu koşullar karşılanmazsa politika yoksayılır ve <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmadan bırakılır.
+
+Hem <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi hem de eski parametreler yapılandırılmışsa <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi öncelikli olur.
+
+Bu politika ayarlanırsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, yönetilen bir hesap veya yönetilen tarayıcıyla oturum açan kullanıcılar için yapılandırılır.
+
+Bu politika ayarlanmazsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmaz.
+
+Bu politikanın, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından kontrol edilebilen genel <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu kontrol etmediğini unutmayın.</translation>
 <translation id="9124770007620653639">Alan güvenilirliği verilerini hiçbir zaman Google'a gönderme</translation>
 <translation id="9126331659955304300">Yerel dosya sisteminden, kameradan ve Google profilinden kullanıcı avatarı seçimine izin ver</translation>
 <translation id="9126694586349976283">Yerleşik yapay zeka API'lerinin kullanılmasına izin ver.</translation>
@@ -13197,6 +13195,13 @@ Bir kullanıcının, cihazın ana makine adını yapılandırmasına izin verili
 Politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar, kullanıcı arayüzünde kredi kartları için otomatik doldurma önerilerini kontrol edebilirler.
 
 Politika False (Yanlış) değerine ayarlanırsa otomatik doldurma hiçbir zaman kredi kartı bilgilerini önermez ve doldurmaz, ayrıca kullanıcının web'de gezinirken gönderdiği ek kredi kartı bilgileri kaydedilmez.</translation>
+<translation id="963375545567956229">Bu politikanın desteği sonlandırıldı ve M145 sürümünden itibaren geçerli olmayacak. Güvenli Tarama Genişletilmiş Raporlama, <ph name="PRODUCT_NAME" /> sürümünden kaldırıldı. Bu nedenle, bu politikanın nasıl ayarlandığına bakılmaksızın <ph name="PRODUCT_NAME" /> artık bu raporları göndermeyecek ve ilgili ayar artık kullanıcılara gösterilmeyecek.
+
+      <ph name="PRODUCT_NAME" /> tarayıcısının, Güvenli Tarama'nın iyileştirilmesine yardımcı olacak ek bilgiler göndermesini sağlamak için <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> politikasıyla Gelişmiş Koruma'yı etkinleştirin.
+
+      M145'ten önce, politika Etkin değerine ayarlandığında <ph name="PRODUCT_NAME" /> Güvenli Tarama Genişletilmiş Raporlama özelliği etkinleştiriliyordu. Bu özellik, tehlikeli uygulamaların ve sitelerin algılanmasına yardımcı olmak için bazı sistem bilgilerini ve sayfa içeriğini Google sunucularına gönderiyordu. Politika, Devre Dışı değerine ayarlanırsa raporlar hiçbir zaman gönderilmiyordu. Politika ayarlandıysa kullanıcılar bunu değiştiremiyor, ayarlanmadıysa rapor gönderip göndermeyeceklerine karar verebiliyordu.
+
+      Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="966425658642788645">Varsayılan davranışı uygula</translation>
 <translation id="971677226939413180">Resim olarak yazdır seçeneği kullanıcı tarafından seçilemez.</translation>
 <translation id="974349541138387272">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonunu belirler</translation>

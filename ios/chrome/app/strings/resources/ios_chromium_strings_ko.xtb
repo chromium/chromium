@@ -348,7 +348,6 @@ Chromium 환경을 개선하는 데 데이터를 사용하는 설정을 더 보�
 <translation id="8390323835464055390">Chromium 자동 완성을 사용하여 저장된 비밀번호 및 패스키로 모든 앱에서 로그인하세요</translation>
 <translation id="8409374867500149834">유해한 웹사이트에 대한 Chromium의 가장 강력한 보안 기능을 갖추고 있습니다.</translation>
 <translation id="8428449554948979733">Chromium을 기본 브라우저로 사용 숨기기</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{이 현상은 Chromium을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}other{이 현상은 Chromium을 {THRESHOLD}분 동안 사용하지 않는 경우에 발생합니다. 로그인되어 있는 동안 이 기기에만 저장된 데이터는 삭제됩니다. 여기에는 방문 기록 및 비밀번호가 포함될 수 있습니다.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium 페이지</translation>
 <translation id="865600487977764604">로그인 상태일 때 Chromium에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 강화하는 데 사용될 수 있습니다.</translation>

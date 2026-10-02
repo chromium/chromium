@@ -329,7 +329,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2327445548174191329">Da <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Salva pagina come…</translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
-<translation id="2329500425421091035">Ti presentiamo AI Mode in Chrome</translation>
 <translation id="2330186936255788117">Altri preferiti</translation>
 <translation id="2330243730505117832">La sezione "Scegli un dispositivo" è chiusa.</translation>
 <translation id="2332515770639153015">Navigazione sicura avanzata attiva</translation>
@@ -602,7 +601,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3435575784518354875">Per continuare ad accedere alle tue password, esportale ora, aggiorna Google Play Services e poi importale in Gestore delle password di Google. <ph name="BEGIN_LINK" />Visualizza le istruzioni complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3435914367318771664">Agg. scheda a nuovo gruppo</translation>
-<translation id="3436118221454753036">Chiedi a AI Mode</translation>
 <translation id="3439276997620616816">Qui troverai le schede recenti</translation>
 <translation id="3443221991560634068">Ricarica la pagina corrente</translation>
 <translation id="3444179773590444986">Vuoi condividere un feedback sul tema scuro per i siti?</translation>
@@ -629,7 +627,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3524334353996115845">Consenti a <ph name="ORIGIN" /> di verificare la tua identità</translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB disponibili</translation>
-<translation id="3547933853190131743">Cerca con AI Mode</translation>
 <translation id="3549537543136628349">Poiché le pagine precaricate sono criptate e il sito o l'app che ti rimanda è un sito o app Google, i server di Google non ricevono nuove informazioni quando precaricano queste pagine privatamente.</translation>
 <translation id="3549657413697417275">Cerca nella cronologia</translation>
 <translation id="3557336313807607643">Aggiungi ai contatti</translation>
@@ -983,7 +980,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4885273946141277891">Numero di istanze di Chrome non supportato.</translation>
 <translation id="4890973535105146893">Nessuna password salvata nel tuo Account Google</translation>
 <translation id="490375751687810070">Verticale</translation>
-<translation id="4905823827770127520">Includi un link alla pagina</translation>
 <translation id="4910889077668685004">App per pagamenti</translation>
 <translation id="4911042367886397055">Siamo felici di rivederti, <ph name="USER_NAME" />.</translation>
 <translation id="4913169188695071480">Interrompi aggiornamento</translation>
@@ -1214,6 +1210,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5869522115854928033">Password salvate</translation>
 <translation id="5870416898561279542">Le schede e i gruppi duplicati o non utilizzati per <ph name="DAYS_INACTIVE" /> giorni vengono spostati qui<ph name="AUTODELETE_SECTION" />. Puoi modificare questa impostazione in qualsiasi momento in <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifiche <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni perché questo sito è pericoloso</translation>
+<translation id="5895138241574237353">Riavvia</translation>
 <translation id="5896944002928653773">Il riquadro inferiore della limitazione di responsabilità per gli indicatori di Enterprise è chiuso</translation>
 <translation id="5899667542927581604">Nessun foglio di passkey è stato chiuso</translation>
 <translation id="5907542076239273525">Preferito salvato nella cartella <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="860282621117673749">Avvisi su cali di prezzo</translation>
 <translation id="8611922158252451755">Chiunque abbia il link può modificare tutte le schede, quindi condividilo con prudenza. Il link scade tra 48 ore.</translation>
 <translation id="8616006591992756292">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI Mode della Ricerca Google e app connesse</translation>
 <translation id="8626572875733549102">Traduci in <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Apri il menu Chrome &gt; Impostazioni</translation>
 <translation id="8634050254805484913">Nascosto su schermi stretti</translation>
@@ -2049,7 +2047,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="9001604755921395912">Apri in una scheda Incognito di Chrome</translation>
 <translation id="9010094279589497751">Apri rapidamente Gemini quando ti serve</translation>
 <translation id="9012585441087414258">Protezione da siti, download ed estensioni noti per essere pericolosi. Se una pagina esegue operazioni sospette, vengono inviati URL e frammenti dei contenuti delle pagine a Google Navigazione sicura</translation>
-<translation id="9014097371980259227">Alcuni strumenti sono stati spostati per consentirti di effettuare ricerche con AI Mode</translation>
 <translation id="9015111999662965458">Per garantire che questo dispositivo possa essere usato in sicurezza, la tua organizzazione potrebbe dover accedere alle informazioni su sistema operativo, browser, impostazioni e software installato sul dispositivo.</translation>
 <translation id="9019199799064251516">Vuoi continuare senza blocco del profilo dell'auto?</translation>
 <translation id="9022774213089566801">Più visitati</translation>

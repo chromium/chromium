@@ -329,7 +329,6 @@
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> તરફથી</translation>
 <translation id="232757965409810352">પેજને આ રીતે સાચવો…</translation>
 <translation id="2328474416100889417">દરેક વ્યક્તિ તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે અને આમંત્રણની બધી લિંક બંધ થઈ જશે</translation>
-<translation id="2329500425421091035">રજૂ કરી રહ્યાં છીએ Chromeમાં AI મોડ</translation>
 <translation id="2330186936255788117">વધુ બુકમાર્ક</translation>
 <translation id="2330243730505117832">"કોઈ ડિવાઇસ પસંદ કરો" બંધ છે.</translation>
 <translation id="2332515770639153015">Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ છે</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો, Google Play સેવાઓ અપડેટ કરો અને પછી તેમને પાછા Google Password Managerમાં આયાત કરો. <ph name="BEGIN_LINK" />સંપૂર્ણ સૂચના જુઓ<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
 <translation id="3435914367318771664">નવા ગ્રૂપમાં ટૅબ ઉમેરો</translation>
-<translation id="3436118221454753036">'AIને પૂછો' મોડ</translation>
 <translation id="3439276997620616816">તમને તમારા તાજેતરના ટૅબ અહીં મળશે</translation>
 <translation id="3443221991560634068">હાલનું પેજ ફરીથી લોડ કરો</translation>
 <translation id="3444179773590444986">શું સાઇટ માટે ઘેરી થીમ પર પ્રતિસાદ શેર કરીએ?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" />ને ચકાસણી કરવા દો કે આ તમે જ છો</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ઉપલબ્ધ</translation>
-<translation id="3547933853190131743">AI મોડ વડે શોધો</translation>
 <translation id="3549537543136628349">પહેલેથી લોડ કરેલા પેજ એન્ક્રિપ્ટેડ હોવાથી અને પેજને લિંક કરતી સાઇટ કે ઍપ, Googleની સાઇટ કે ઍપ હોવાથી, આ પેજને ખાનગી રીતે પહેલેથી લોડ કરતી વખતે Googleના સર્વરને નવી માહિતી મળતી નથી.</translation>
 <translation id="3549657413697417275">તમારો ઇતિહાસ શોધો</translation>
 <translation id="3557336313807607643">સંપર્કોમાં ઉમેરો</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">અસમર્થિત સંખ્યામાં Chrome આવૃત્તિઓ.</translation>
 <translation id="4890973535105146893">તમારા Google એકાઉન્ટમાં કોઈ સાચવેલા પાસવર્ડ નથી</translation>
 <translation id="490375751687810070">વર્ટિકલ</translation>
-<translation id="4905823827770127520">આ પેજની લિંક શામેલ કરો</translation>
 <translation id="4910889077668685004">ચુકવણી ઍપ્લિકેશનો</translation>
 <translation id="4911042367886397055">આપનું ફરી સ્વાગત છે, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">તાજું કરવાનું રોકો</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5870416898561279542">ડુપ્લિકેટ ટૅબ અને ગ્રૂપ અથવા <ph name="DAYS_INACTIVE" /> દિવસથી ઉપયોગમાં ન લેવાયેલા ટૅબ અને ગ્રૂપને અહીં ખસેડવામાં આવે છે<ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" />માં તમે આને કોઈપણ સમયે બદલી શકો છો.</translation>
 <translation id="5885378508678660271">નોટિફિકેશન <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે આ સાઇટ જોખમી છે</translation>
+<translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="5896944002928653773">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ બંધ કરવામાં આવી છે</translation>
 <translation id="5899667542927581604">કોઈ પાસકી શીટ બંધ ન હતી</translation>
 <translation id="5907542076239273525"><ph name="FOLDER_NAME" />માં બુકમાર્ક સાચવવામાં આવ્યું</translation>
@@ -1243,6 +1240,7 @@
 <translation id="6039379616847168523">આગલા ટૅબ પર જાઓ</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
 <translation id="604124094241169006">સ્વચલિત</translation>
+<translation id="6041959688070413372">શોધ સેવાઓ અને Google Drive જેવી Google Workspace ઍપ વચ્ચેનું કનેક્શન મેનેજ કરો</translation>
 <translation id="6042308850641462728">વધુ</translation>
 <translation id="6047066316630165190">ગ્રિડ ટૅબ સ્વિચર ખોલો</translation>
 <translation id="604996488070107836">કોઇ અજાણી ભૂલને કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
@@ -1958,6 +1956,7 @@
 <translation id="860282621117673749">કિંમતમાં ઘટાડા વિશે અલર્ટ</translation>
 <translation id="8611922158252451755">લિંક ધરાવતી કોઈપણ વ્યક્તિ બધા ટૅબમાં ફેરફાર કરી શકે છે, તેથી સમજદારીપૂર્વક શેર કરો. લિંકની સમયસીમા 48 કલાકમાં સમાપ્ત થાય છે.</translation>
 <translation id="8616006591992756292">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
+<translation id="8622145666696249878">Google Search AI મોડ અને કનેક્ટ થયેલી ઍપ</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" />માં અનુવાદ કરો</translation>
 <translation id="8629093325209491835">Chrome મેનૂ &gt; સેટિંગ ખોલો</translation>
 <translation id="8634050254805484913">સાંકડી સ્ક્રીન પર છુપાવેલા</translation>
@@ -2049,7 +2048,6 @@
 <translation id="9001604755921395912">Chromeના છૂપા ટૅબમાં ખોલો</translation>
 <translation id="9010094279589497751">જ્યારે પણ તમને Geminiની જરૂર પડે, ત્યારે તેને ઝડપથી ખોલો</translation>
 <translation id="9012585441087414258">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે રક્ષણ આપે છે. જો કોઈ પેજ કંઈપણ શંકાસ્પદ કરે છે, તો URL અને પેજ કન્ટેન્ટના બિટ Google Safe Browsingને મોકલવામાં આવે છે.</translation>
-<translation id="9014097371980259227">AI મોડ વડે શોધવામાં તમારી મદદ કરવા માટે અમુક ટૂલ ખસેડવામાં આવ્યા છે</translation>
 <translation id="9015111999662965458">આ ડિવાઇસનો સલામત રીતે ઉપયોગ કરી શકાય તેની ખાતરી કરવા માટે, તમારી સંસ્થાને તેની ઑપરેટિંગ સિસ્ટમ, બ્રાઉઝર, સેટિંગ અને ડિવાઇસ પર કયું સૉફ્ટવેર ઇન્સ્ટૉલ કરેલું છે તે વિશેની માહિતી જોવાની કદાચ જરૂર પડી શકે છે</translation>
 <translation id="9019199799064251516">કાર પ્રોફાઇલ લૉક વિના ચાલુ રાખીએ?</translation>
 <translation id="9022774213089566801">વારંવાર મુલાકાત લેવાયેલ</translation>

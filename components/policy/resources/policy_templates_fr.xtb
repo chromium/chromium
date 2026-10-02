@@ -936,7 +936,6 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1625700732886306811">Autoriser <ph name="PRODUCT_NAME" /> à se connecter aux appareils sur toutes les adresses IP</translation>
 <translation id="1626379196197114720">Autoriser l'utilisation du cache back/forward</translation>
 <translation id="1628974048137236820">Fiches non affichées sur la page Nouvel onglet</translation>
-<translation id="1628984674324273832">Ne pas autoriser Rechercher et remplir avec Gemini.</translation>
 <translation id="163200210584085447">Les formats de cette liste seront mis en correspondance avec la source
       de sécurité de l'URL à l'origine de la demande. En cas de correspondance,
       l'accès aux appareils de capture vidéo est autorisé sur les pages de
@@ -1707,7 +1706,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="2107601598727098402">
         Cette règle a été abandonnée dans la version M72. Veuillez utiliser la règle CloudManagementEnrollmentToken à la place.
         </translation>
-<translation id="2111355600078097861">Autoriser Rechercher et remplir avec Gemini sans améliorer les modèles d'IA.</translation>
 <translation id="2112656109118682849">Autoriser les utilisateurs à activer/désactiver l'affichage des informations système sur l'écran de connexion</translation>
 <translation id="2113068765175018713">Limiter le temps de fonctionnement de l'appareil en redémarrant automatiquement</translation>
 <translation id="211386002920955760">Déterminez si un utilisateur de la version Enterprise peut accéder à la fonctionnalité de partage des groupes d'onglets dans Chrome.
@@ -5515,6 +5513,11 @@ Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://ch
 <translation id="4561940244682063697">Ne pas autoriser les sites à inviter l'utilisateur à partager un flux vidéo de son écran</translation>
 <translation id="4562165737444703281">Autoriser les utilisateurs à [activer/configurer] le transfert de port Crostini</translation>
 <translation id="456450545863578630">Activer le transfert de fichiers dans les connexions d'assistance à distance avec les administrateurs de l'entreprise</translation>
+<translation id="4567614489737189156">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les métriques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces métriques et ces données ne sont pas envoyées.
+
+Pour les appareils gérés, si cette règle n'est pas configurée, les métriques et les données de diagnostic sont envoyées par défaut.
+
+Pour les appareils non gérés, cette règle ne s'applique pas, et les utilisateurs peuvent choisir le comportement de création de rapports sur les métriques et les données de diagnostic lors de la configuration de l'appareil, ou ultérieurement dans les paramètres.</translation>
 <translation id="4570859815763368584">Règle abandonnée dans la version M68. Utilisez à la place la règle DefaultPopupsSetting.
 
       Pour obtenir une explication complète, consultez la page https://www.chromestatus.com/feature/5675755719622656.
@@ -6375,7 +6378,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">Autoriser Rechercher et remplir avec Gemini, et améliorer les modèles d'IA.</translation>
 <translation id="5071303485174858500">Désactiver la session Invité gérée restreinte.</translation>
 <translation id="5073788301065423829">Cette règle active ou désactive "Aide-moi à écrire" pour ChromeOS.
 
@@ -9812,7 +9814,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="7136237405361383549">Utilise le moteur de rendu par défaut en fonction de la configuration du test pratique.</translation>
 <translation id="7138762292550697459">Contrôle le délai d'expiration minimum de la fonction JavaScript setTimeout().</translation>
 <translation id="7138792262152376158">Suit les calendriers d'abandon standards pour l'API PrefixedVideoFullscreen</translation>
-<translation id="7140755255968613921">Paramètres de Rechercher et remplir avec Gemini</translation>
 <translation id="7140760943584613237">Fournisseur d'identité cloud Microsoft®</translation>
 <translation id="714219487865269980">Activer la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="7144022711746703451">
@@ -10223,19 +10224,6 @@ Les valeurs réelles des données sensibles (comme les cookies ou les valeurs d'
 <translation id="7402257017733669351">Empêcher le processus du navigateur de créer du code dynamique</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
 <translation id="7406276857470642718">Contrôle les paramètres des utilisateurs authentifiés via SAML avec un IdP externe</translation>
-<translation id="7407431811343706437">Détermine si les utilisateurs peuvent utiliser la fonctionnalité Rechercher et remplir avec Gemini dans <ph name="PRODUCT_NAME" />.
-
-0 = Permettre d'utiliser la fonctionnalité tout en autorisant Google à utiliser des données pertinentes pour améliorer ses modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des prompts, des entrées, des sorties, des sources et des retours écrits. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Permettre d'utiliser la fonctionnalité, mais ne pas autoriser Google à améliorer ses modèles à l'aide du contenu des utilisateurs (y compris les prompts, les entrées, les sorties, les sources et les retours écrits). 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Ne pas autoriser la fonctionnalité.
-
-Cette règle n'a aucun effet lorsque l'appli Gemini est désactivée. Par exemple, l'appli Gemini peut être désactivée par la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Si la règle n'est pas configurée, son comportement est déterminé par la règle <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA générative, veuillez consulter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
@@ -10244,11 +10232,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="7410074797376205571">Autoriser <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> à exécuter les requêtes API WebAuthn envoyées par un proxy à partir d'un hôte à distance.</translation>
 <translation id="7412456346709338637">Activer l'accès aux données des périphériques Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Aucune préférence.</translation>
-<translation id="7416222110012824615">Cette règle contrôle la disponibilité de la fonctionnalité XSLT (l'API JavaScript XSLTProcessor et l'instruction de traitement XSL).
-Si cette règle est activée, XSLT sera disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
-Si cette règle est désactivée, XSLT ne sera pas disponible, quel que soit l'état par défaut de la fonctionnalité dans le navigateur.
-Si cette règle n'est pas configurée, la disponibilité de XSLT sera déterminée par les paramètres par défaut du navigateur et les tests en conditions réelles.
-Cette règle est une solution temporaire et sera supprimée dans M164.</translation>
 <translation id="7417438464912687020">Autoriser les connexions d'accès à distance à cet ordinateur</translation>
 <translation id="7417972229667085380">Pourcentage d'adaptation du délai d'inactivité en mode Présentation (abandonné)</translation>
 <translation id="7421230730436851224">Ne jamais utiliser de bac à sable pour le processus audio</translation>
@@ -10551,10 +10534,6 @@ Les règles à fusionner doivent aussi être définies dans <ph name="POLICY_LIS
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le reporting sera désactivé.
       Les règles dont les niveaux de restriction ont été définis sur "ALLOW" dans DataLeakPreventionRulesList ne signaleront aucun événement dans les deux cas.</translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
-<translation id="7649831723389657756">Cette règle permet de spécifier les origines devant autoriser tous les schémas d'authentification HTTP pris en charge par <ph name="PRODUCT_NAME" />, indépendamment de la règle <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Indiquez l'origine en respectant le format suivant : <ph name="URL_SCHEME_FORMAT_LINK" />. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      Les caractères génériques sont autorisés pour le composant hôte (par exemple, "*:8000" correspond à tous les hôtes sur le port 8000). Pour faire correspondre tous les schémas ou tous les ports, omettez entièrement le composant (par exemple, "example.com" correspond à n'importe quel schéma et n'importe quel port). Un nom d'hôte (par exemple, "example.com") correspond également à ses sous-domaines. Pour faire correspondre un hôte exactement et exclure ses sous-domaines, ajoutez un point devant (par exemple, ".example.com"). Pour faire correspondre toutes les origines, utilisez un astérisque unique ("*").</translation>
 <translation id="7652330587655863759">Type d'authentification.
 
 * "none" : aucune authentification n'est effectuée.
@@ -11333,6 +11312,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8164687848393015214">Si cette règle est activée, les paquets de réseau de contrôle (<ph name="HEARTBEATS_TERM" />) sont transmis au serveur de gestion pour vérifier l'état de connexion et permettre au serveur de détecter si l'appareil est hors connexion.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun paquet n'est transmis.</translation>
+<translation id="8165152191100365965">Envoyer des métriques à Google (appareils gérés) ou autoriser l'utilisateur à décider (appareils non gérés)</translation>
 <translation id="8168359201203671567">Rétroéclairage du clavier arc-en-ciel</translation>
 <translation id="8169452762291746260">Désactiver le contrôle de l'état de l'appareil</translation>
 <translation id="8170359860920320269">Filtrer les sites de contenus réservés aux adultes</translation>
@@ -12701,6 +12681,9 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> peut, par déf
       Si le modèle URI contient une variable <ph name="HTTP_VARIABLE_DNS" />, les requêtes envoyées au résolveur utilisent la méthode <ph name="HTTP_METHOD_GET" />. Sinon, elles utilisent la méthode <ph name="HTTP_METHOD_POST" />.
 
       Les modèles dont le format est incorrect sont ignorés.</translation>
+<translation id="9066972193987544412">Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent ajouter, supprimer, modifier ou importer des favoris.
+
+      Si elle est désactivée, les utilisateurs ne peuvent pas ajouter, supprimer, modifier ni importer de favoris. En revanche, ils peuvent utiliser les favoris déjà disponibles.</translation>
 <translation id="9068629430243705879">port 6566 (peut être débloqué jusqu'au 15/10/2021)</translation>
 <translation id="9069432851455606924">Paramètres de géolocalisation</translation>
 <translation id="9069503402414011061">Cette règle permet de spécifier la durée de mise en cache des données d'authentification, en heures. Le cache contient des données sur les domaines approuvés par le domaine de la machine (domaines affiliés). La mise en cache des données d'authentification permet donc d'accélérer la connexion. Les données spécifiques à l'utilisateur et celles relatives à des domaines non affiliés ne sont pas mises en cache.
@@ -12773,6 +12756,21 @@ Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POL
 <translation id="9122865885571719292">Détermine si <ph name="PRODUCT_OS_NAME" /> restaure la dernière session à la connexion, et comment.
 Pour que cette règle soit effective, la règle <ph name="FULL_RESTORE_ENABLED_NAME" /> doit être définie sur "True".</translation>
 <translation id="9123464369663964441">Autoriser les utilisateurs à ajouter des exceptions afin de permettre l'affichage de contenu mixte</translation>
+<translation id="9123738611041078443">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />.
+
+Pour configurer <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, les administrateurs doivent fournir :
+* l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ; OU
+* les trois anciens paramètres ensemble : <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> et <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Si uniquement un sous-ensemble partiel de ces trois paramètres est indiqué sans URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> doit être une URL valide qui utilise le schéma https, redirige vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> et n'inclut pas de nom d'utilisateur ni de mot de passe. Si elle ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
+
+Si le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> et les anciens paramètres sont tous deux configurés, le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> prévaut.
+
+Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte géré ou un navigateur géré.
+
+Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
+
+Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Ne jamais envoyer de données sur la fiabilité du domaine à Google</translation>
 <translation id="9126331659955304300">Autoriser la sélection de l'avatar de l'utilisateur à partir du système de fichiers local, de l'appareil photo et du profil Google</translation>
 <translation id="9126694586349976283">Autoriser l'utilisation des API d'IA intégrées.</translation>
@@ -12957,6 +12955,13 @@ Pour conserver le comportement actuel de désactivation de <ph name="AUTOFILL_CR
 Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, les utilisateurs peuvent contrôler les suggestions de saisie automatique pour les cartes de crédit dans l'interface utilisateur.
 
 Si cette règle est définie sur "False", les informations de carte de crédit ne sont jamais suggérées ni saisies automatiquement. De même, les informations complémentaires de carte de crédit que l'utilisateur est susceptible de fournir sur une page Web ne sont pas enregistrées.</translation>
+<translation id="963375545567956229">Cette règle est obsolète et n'a aucun effet à partir de M145. Les rapports détaillés sur la navigation sécurisée ont été supprimés de <ph name="PRODUCT_NAME" />. <ph name="PRODUCT_NAME" /> n'envoie donc plus ces rapports, quelle que soit la configuration de cette règle, et le paramètre correspondant n'est plus présenté aux utilisateurs.
+
+      Pour que <ph name="PRODUCT_NAME" /> envoie des informations supplémentaires afin d'améliorer la navigation sécurisée, activez plutôt la protection renforcée avec la règle <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+      Avant M145, l'activation de la règle activait les rapports détaillés de la navigation sécurisée de <ph name="PRODUCT_NAME" />, qui envoyait des informations système et du contenu de page aux serveurs Google afin de faciliter la détection d'applis et de sites dangereux. Si la règle était désactivée, les rapports n'étaient jamais envoyés. Si la règle était définie, les utilisateurs ne pouvaient pas la modifier. Si elle n'était pas définie, les utilisateurs pouvaient décider d'envoyer ou non les rapports.
+
+      Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="966425658642788645">Appliquer le comportement par défaut</translation>
 <translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>

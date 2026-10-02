@@ -329,7 +329,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2327445548174191329">Từ <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Lưu trang dưới dạng…</translation>
 <translation id="2328474416100889417">Mọi người sẽ ngay lập tức mất quyền truy cập vào nhóm thẻ "<ph name="GROUP_NAME" />" và tất cả đường liên kết của lời mời sẽ đều bị vô hiệu hoá</translation>
-<translation id="2329500425421091035">Giới thiệu về Chế độ AI trong Chrome</translation>
 <translation id="2330186936255788117">Các dấu trang khác</translation>
 <translation id="2330243730505117832">Đã đóng bảng "Chọn một thiết bị".</translation>
 <translation id="2332515770639153015">Tính năng Duyệt web an toàn có tăng cường bảo vệ đang bật</translation>
@@ -602,7 +601,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3435575784518354875">Để tiếp tục sử dụng mật khẩu của bạn, hãy xuất mật khẩu ngay bây giờ, cập nhật Dịch vụ Google Play rồi nhập lại mật khẩu vào Trình quản lý mật khẩu của Google. <ph name="BEGIN_LINK" />Xem toàn bộ hướng dẫn<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
 <translation id="3435914367318771664">Thêm thẻ vào nhóm mới</translation>
-<translation id="3436118221454753036">Chế độ Hỏi AI</translation>
 <translation id="3439276997620616816">Các thẻ bạn đóng gần đây sẽ xuất hiện ở đây</translation>
 <translation id="3443221991560634068">Tải lại trang hiện tại</translation>
 <translation id="3444179773590444986">Bạn có muốn chia sẻ ý kiến phản hồi về giao diện tối cho các trang web?</translation>
@@ -629,7 +627,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3524334353996115845">Cho phép <ph name="ORIGIN" /> xác minh danh tính của bạn</translation>
 <translation id="3527085408025491307">Thư mục</translation>
 <translation id="3542235761944717775">Còn <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">Tìm kiếm bằng Chế độ AI</translation>
 <translation id="3549537543136628349">Vì các trang tải trước đã được mã hoá và ứng dụng hoặc trang web có đường liên kết đến các trang này là ứng dụng Google hoặc trang web tạo bằng Google Sites, nên các máy chủ của Google không nhận được thông tin mới khi tải trước các trang này ở chế độ riêng tư.</translation>
 <translation id="3549657413697417275">Tìm kiếm trong nhật ký duyệt web</translation>
 <translation id="3557336313807607643">Thêm vào danh bạ</translation>
@@ -983,7 +980,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4885273946141277891">Số phiên bản Chrome không được hỗ trợ.</translation>
 <translation id="4890973535105146893">Không có mật khẩu nào được lưu trong Tài khoản Google của bạn</translation>
 <translation id="490375751687810070">Dọc</translation>
-<translation id="4905823827770127520">Đưa một đường liên kết vào trang</translation>
 <translation id="4910889077668685004">Ứng dụng thanh toán</translation>
 <translation id="4911042367886397055">Chào mừng bạn quay trở lại, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Ngừng làm mới</translation>
@@ -1214,6 +1210,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="5870416898561279542">Các thẻ và nhóm thẻ trùng lặp hoặc không dùng đến trong <ph name="DAYS_INACTIVE" /> ngày sẽ được chuyển đến đây<ph name="AUTODELETE_SECTION" />. Bạn có thể thay đổi chế độ này bất cứ lúc nào trong phần <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
+<translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5896944002928653773">Bảng dưới cùng chứa tuyên bố từ chối trách nhiệm về tín hiệu doanh nghiệp đã đóng</translation>
 <translation id="5899667542927581604">Trang thông báo "Không có khoá truy cập nào" đã đóng</translation>
 <translation id="5907542076239273525">Đã lưu dấu trang vào <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="860282621117673749">Thông báo khi có mặt hàng giảm giá</translation>
 <translation id="8611922158252451755">Bất cứ ai có đường liên kết này đều có thể chỉnh sửa tất cả các thẻ. Vì vậy, hãy chia sẻ một cách sáng suốt. Đường liên kết này sẽ hết hạn sau 48 giờ nữa.</translation>
 <translation id="8616006591992756292">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Chế độ AI của Google Tìm kiếm và các ứng dụng có thể kết nối</translation>
 <translation id="8626572875733549102">Dịch sang <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Mở trình đơn Chrome &gt; Cài đặt</translation>
 <translation id="8634050254805484913">Ẩn trên màn hình hẹp</translation>
@@ -2049,7 +2047,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="9001604755921395912">Mở trong thẻ Chrome ẩn danh</translation>
 <translation id="9010094279589497751">Nhanh chóng mở Gemini khi bạn cần</translation>
 <translation id="9012585441087414258">Bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích được xác định là nguy hiểm. Nếu một trang có hoạt động đáng ngờ, thì URL và một phần nội dung của trang sẽ được gửi tới dịch vụ Duyệt web An toàn của Google.</translation>
-<translation id="9014097371980259227">Một số công cụ đã được di chuyển để giúp bạn tìm kiếm bằng Chế độ AI</translation>
 <translation id="9015111999662965458">Để đảm bảo bạn có thể dùng thiết bị này một cách an toàn, tổ chức bạn có thể cần xem thông tin về hệ điều hành, trình duyệt, chế độ cài đặt và phần mềm được cài đặt trên thiết bị</translation>
 <translation id="9019199799064251516">Tiếp tục mà không cần khoá hồ sơ ô tô?</translation>
 <translation id="9022774213089566801">Truy cập thường xuyên</translation>

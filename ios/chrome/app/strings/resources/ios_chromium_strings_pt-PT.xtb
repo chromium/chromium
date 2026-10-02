@@ -348,7 +348,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8390323835464055390">Inicie sessão com as suas palavras-passe e chaves de acesso guardadas a partir de qualquer app com o Chromium para o preenchimento automático</translation>
 <translation id="8409374867500149834">Tem a segurança mais avançada do Chromium contra Websites prejudiciais</translation>
 <translation id="8428449554948979733">Ocultar Usar o Chromium como predefinição</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minuto. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}other{Isto acontece quando o Chromium não é usado durante {THRESHOLD} minutos. Os dados guardados apenas neste dispositivo enquanto tinha sessão iniciada vão ser eliminados. Isto pode incluir o histórico e as palavras-passe.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8602103377623855616">Página do Chromium</translation>
 <translation id="865600487977764604">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>

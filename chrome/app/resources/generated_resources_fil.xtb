@@ -995,7 +995,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1755601632425835748">Laki ng text</translation>
 <translation id="1756963401828337401">Pumili ng screen na ika-capture</translation>
 <translation id="17584710573359123">Tingnan sa Chrome Web Store</translation>
-<translation id="1758845021884209593">Gamitin ang shortcut sa mga OS app</translation>
 <translation id="1761402971842586829">Na-remap ang <ph name="BUTTON_NAME" /> sa <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Mga Account ni <ph name="NAME" /></translation>
 <translation id="176272781006230109">mga suhestyon sa pamimili</translation>
@@ -1569,7 +1568,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2198625180564913276">Idinaragdag ang profile. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="2198712775285959645">I-edit</translation>
 <translation id="2199298570273670671">Nagka-error</translation>
-<translation id="220006241671843310">Piliin kung gagamit ang Chrome ng mga AI model na direktang gumagana sa iyong device</translation>
+<translation id="2199546617947317537">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="2200094388063410062">I-email</translation>
 <translation id="2200781749203116929">Mga Log ng System ng ChromeOS</translation>
 <translation id="2202391868799679245">I-on ang keyboard shortcut</translation>
@@ -2089,6 +2088,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2599048253926156421">Nakopya ang username sa clipboard</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Na-off ang 1 hindi ligtas na extension}one{Na-off ang {NUM_SITES} hindi ligtas na extension}other{Na-off ang {NUM_SITES} na hindi ligtas na extension}}</translation>
 <translation id="2603121359676416582">Para sa page na ito</translation>
+<translation id="2603656971249947488">Tab strip</translation>
 <translation id="2604129989323098489">Karaniwang nanghihingi ang mga site ng impormasyon tungkol sa iyong mga display para mahusay na makapagbukas at makapaglagay ng mga window ang mga ito, tulad ng pagpapakita ng mga dokumento o full-screen na content nang magkatabi</translation>
 <translation id="2604255671529671813">Error sa koneksyon ng network</translation>
 <translation id="2604805099836652105">Napunan ang <ph name="ADDRESS_LABEL" /> address form.</translation>
@@ -2300,6 +2300,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2743387203779672305">Kopyahin sa clipboard</translation>
 <translation id="274362947316498129">May app na sumusubok na i-access ang <ph name="DEVICE_NAME" />. I-off ang switch ng privacy ng <ph name="DEVICE_NAME" /> para payagan ang access.</translation>
 <translation id="2744221223678373668">Nakabahagi</translation>
+<translation id="2744919074068076548">Buksan ang split view</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528">Mag-sign in sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2351,6 +2352,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2777525873368474674">I-paste ang link ng larawan</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Nakakita ng 1 site na may napakaraming notification}one{Nakakita ng {NUM_SITES} site na may napakaraming notification}other{Nakakita ng {NUM_SITES} na site na may napakaraming notification}}</translation>
 <translation id="2778471504622896352">Magdagdag ng mga remote na app sa launcher ng ChromeOS</translation>
+<translation id="2781037472881921606">Para makuha ang iyong history mula sa iba mo pang device, i-sync ang history. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Gamitin ang iyong security key sa <ph name="APP_NAME" /></translation>
@@ -2413,6 +2415,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2826576843404243001">Para sa mga site na hindi sinusuportahan ang mga secure na koneksyon, mabigyan ng babala bago bisitahin ang site. Hindi mo mababago ang setting na ito dahil naka-enable sa iyo ang Advanced na Proteksyon.</translation>
 <translation id="2828375943530438449">Bumalik mula sa pag-sign in</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> ang nabakante</translation>
+<translation id="2828851448902426206">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="2833144527504272627">Mag-navigate gamit ang cursor ng text</translation>
 <translation id="2833727845850279275">Naglalaman ang file na ito ng malware o nanggaling ito sa kahina-hinalang site.</translation>
 <translation id="2835177225987815960">Mare-reset ang iyong kasalukuyang setup ng pag-scan, kasama ang anumang nakatalagang switch at kagustuhan sa bilis ng awtomatikong pag-scan.</translation>
@@ -2779,6 +2782,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3102309003841389927">Suriin ang update sa logo</translation>
 <translation id="310297983047869047">Nakaraang slide</translation>
 <translation id="3103451787721578293">Maglagay ng dahilan ng pag-upload ng data na ito:</translation>
+<translation id="3105253709809514429">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3105339775057145050">Huling Hindi Matagumpay na Update</translation>
 <translation id="3105796011181310544">Bumalik sa Google?</translation>
 <translation id="3105820656234755131">Na-update ang Password</translation>
@@ -2790,6 +2794,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3109206895301430738">Mga na-save na Mga Grupo ng Tab</translation>
 <translation id="3109724472072898302">Naka-collapse</translation>
 <translation id="3112292765614504292">Laki ng app: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong mga bookmark at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="311347022006935575">Idinagdag ang tab na ito</translation>
 <translation id="311394601889664316">Huwag payagan ang mga site na mag-edit ng mga file o folder sa iyong device</translation>
 <translation id="3113970906450647715">Na-unpin ang button</translation>
@@ -3297,6 +3302,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3498138244916757538">Nire-require sa pagbabago sa setting ng mikropono na i-shut down ang <ph name="SPECIFIC_NAME" />. I-shut down ang <ph name="SPECIFIC_NAME" /> para magpatuloy.</translation>
 <translation id="3500417806337761827">Nagka-error sa pag-mount ng pagbabahagi. Masyado nang marami ang na-mount na pagbabahagi ng SMB.</translation>
 <translation id="3500764001796099683">I-enable ang mga naka-isolate na web app</translation>
+<translation id="3501134531169168291">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3505100368357440862">Mga suhestyon sa pamimili</translation>
 <translation id="3507650052590605702">Pamahalaan ang password</translation>
 <translation id="3507888235492474624">Muling mag-scan ng mga Bluetooth device</translation>
@@ -3373,6 +3379,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3562655211539199254">Tingnan ang mga kamakailang tab ng Chrome mula sa iyong telepono</translation>
 <translation id="356268274299520831">Palitan Ito sa Site</translation>
 <translation id="3563392617245068355">Mood</translation>
+<translation id="3564327838471533677">Kamakailang isinarang split view</translation>
 <translation id="3564456410937306182">Matuto pa tungkol sa Adaptive na pag-charge.</translation>
 <translation id="3564659095423213915">Naka-save lang ang folder na ito sa device na ito. Kung ise-save mo ito sa “<ph name="ACCOUNT_FOLDER" />,” mase-save din ang folder na ito sa iyong account.</translation>
 <translation id="3564848315152754834">USB security key</translation>
@@ -3784,6 +3791,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="3838085852053358637">Hindi na-load ang extension</translation>
 <translation id="3838486795898716504">Higit pang <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Walang site na na-zoom in o na-zoom out</translation>
+<translation id="3839108710633244251">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="3839516600093027468">Palaging i-block ang <ph name="HOST" /> sa pagtingin sa clipboard</translation>
 <translation id="3840096463915153852">History ng pag-uusap</translation>
 <translation id="3841319830220785495">Default na natural na boses</translation>
@@ -4276,7 +4284,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4241140145060464825">Content ng App</translation>
 <translation id="4241224519481557898">Kategorya</translation>
 <translation id="4242245038391716252">Na-download ng extension na: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Puwede mo nang i-expand ang iyong mga tab sa pamamagitan ng pag-hover sa mga ito. Para i-on ito, mag-right click dito.</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4242825475818569385">Ang iyong <ph name="BEGIN_LINK" />browser at profile ay pinapamahalaan<ph name="END_LINK" /> ng <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Ilagay ang Passphrase</translation>
@@ -4307,6 +4314,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Panatilihin ang grupo}one{Panatilihin ang mga grupo}other{Panatilihin ang mga grupo}}</translation>
 <translation id="4261429981378979799">Mga pahintulot sa extension</translation>
 <translation id="4262004481148703251">I-dismiss ang babala</translation>
+<translation id="4262060800239714974">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4263470758446311292">Gawin ang maximum na pagtitipid sa memory. Hindi na magiging aktibo ang iyong mga tab pagkalipas ng mas maikling period.</translation>
 <translation id="4263824086525632">Aurora borealis</translation>
 <translation id="4265096510956307240">I-verify na ikaw ito</translation>
@@ -4440,7 +4448,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="4360738659108163902">I-right click ang mouse</translation>
 <translation id="4361745360460842907">Buksan bilang tab</translation>
 <translation id="4362459470237309049">Gamitin ang “.” para i-release ang button ng mouse</translation>
-<translation id="4362871358537270439">Ipakita ang mga tab mula sa iba pang device sa panel sa gilid</translation>
 <translation id="4363262124589131906">Hihinto sa awtomatikong pag-sync sa Chromebook na ito ang mga bagong file sa Aking Drive</translation>
 <translation id="4364129298304269786">Puwedeng gumamit ang mga site ng serbisyo sa pagprotekta ng content para mag-play ng content na pinoprotektahan ng copyright</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -4943,8 +4950,10 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4750185073185658673">Buksan ang iyong telepono para sumuri ng ilan pang pahintulot. Tiyaking naka-on ang Bluetooth at Wi-Fi ng iyong telepono.</translation>
 <translation id="4750394297954878236">Mga Suhestyon</translation>
 <translation id="475088594373173692">Unang user</translation>
+<translation id="4751925628341802838">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4753084533826742808">Dapat may kahit 1 character man lang</translation>
 <translation id="4754590344707355551">Pahusayin ang iyong browser gamit ang mga extension</translation>
+<translation id="4756130875344525429">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4756378406049221019">Ihinto/I-reload</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756627014339714615">I-redirect</translation>
@@ -5175,6 +5184,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4913573660390710463">Mga naka-package ng access na web application na may mga pinahusay na kakayahan. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Hindi makita ang data ng app</translation>
 <translation id="4915961947098019832">Pinapayagang magpakita ng mga larawan</translation>
+<translation id="4916140032692201190">&amp;Isalin ang pinili</translation>
 <translation id="4918021164741308375">Gusto ng <ph name="ORIGIN" /> na makipag-ugnayan sa extension na "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="4918086044614829423">Tanggapin</translation>
 <translation id="4918762404810341788">Kopyahin at buksan</translation>
@@ -5256,6 +5266,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="497403230787583386">Tapos na ang mga pagsusuri sa seguridad. Ipi-print ang iyong dokumento.</translation>
 <translation id="4974442344472293753">Resulta ng Pag-update</translation>
 <translation id="4975771730019223894">Pag-badge ng app</translation>
+<translation id="4976647810464861866">Para makuha ang iyong mga tab mula sa iba mo pang device, mag-sign in at i-sync ang history. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Kumpirmahin ang Pag-access</translation>
 <translation id="4979263087381759787">Mga Opsyon ng Developer</translation>
@@ -5428,6 +5439,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="511313294362309725">I-on ang Mabilis na Pagpares</translation>
 <translation id="5113992879909788634">Matuto pa tungkol sa awtomatikong pag-browse ng Chrome</translation>
 <translation id="51143538739122961">Ipasok ang iyong security key at pindutin ito</translation>
+<translation id="5114635223409082546">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history. Makukuha mo rin ang iyong mga bookmark at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">I-Sa&amp;ve ang Audio Bilang...</translation>
 <translation id="5117139026559873716">Idiskonekta ang iyong telepono sa <ph name="DEVICE_TYPE" /> mo. Hindi na awtomatikong makokonekta ang mga ito.</translation>
@@ -5825,6 +5837,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5436211819997237281">Kasalukuyang extension na namamahala sa iyong page ng bagong tab</translation>
 <translation id="5436492226391861498">Naghihintay para sa proxy tunnel...</translation>
 <translation id="5436510242972373446">Hanapan ang <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Para i-autofill at i-save ang iyong mga password sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="WINDOW_SIDE" /> window, at <ph name="PANE_SIZE_PERCENT" /> na ang lapad ngayon ng <ph name="PANE_SIDE" /> pane.</translation>
 <translation id="5438060324827306856">Maghanap ng Mga &amp;Extension</translation>
 <translation id="5440240650630588012">Mag-apply ng linya o window sa pagbabasa para makatulong sa pag-focus. Pindutin ang ⌥L o pumunta sa Mga Setting.</translation>
@@ -5854,6 +5867,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5457795687441958389">Manatiling Naka-sign Out</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Napakaraming beses mong inilagay ang maling PIN. Para ma-access ang iyong mga passkey at password, palitan ang iyong PIN.</translation>
+<translation id="5459251585760045919">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga extension at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5459470938885464873">Nagka-error sa pag-import ng certificate</translation>
 <translation id="5459864179070366255">Magpatuloy sa pag-install</translation>
 <translation id="5460861858595506978">Inspirasyon</translation>
@@ -6025,6 +6039,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">I-save ang username?</translation>
 <translation id="5585019845078534178">Mga Card</translation>
+<translation id="5585064628683466904">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="5585118885427931890">Hindi makalikha ng bookmark folder.</translation>
 <translation id="558563010977877295">Magbukas ng partikular na page o hanay ng mga page</translation>
 <translation id="5587592231724900065">Kinokontrol ng isang extension ang setting na ito</translation>
@@ -6236,7 +6251,6 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5776571780337000608">Magagawa mong magbukas at mag-edit ng mga sinusuportahang file mula sa iyong file browser o iba pang app gamit ang app na ito. Para kontrolin kung aling mga file ang magbubukas sa app na ito bilang default, <ph name="BEGIN_LINK" />alamin kung paano magtakda ng mga default na app sa iyong device<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Buksan ang Chrome</translation>
 <translation id="5778491106820461378">Puwede mong pamahalaan ang mga naka-sign in na Google Account mula sa <ph name="LINK_BEGIN" />Mga Setting<ph name="LINK_END" />. Posibleng malapat sa lahat ng account ang mga pahintulot na ibinigay mo sa mga website at app. Kung ayaw mong ma-access ng mga site o app ang impormasyon ng iyong account, puwede kang mag-sign in sa <ph name="DEVICE_TYPE" /> mo bilang bisita.</translation>
-<translation id="5779636902585836564">&amp;I-translate</translation>
 <translation id="5780011244986845107">Naglalaman ng mga sensitibong file ang folder na pinili mo. Sigurado ka bang gusto mong bigyan ang "<ph name="APP_NAME" />" ng permanenteng access sa pag-read sa folder na ito?</translation>
 <translation id="5780973441651030252">Priority ng proseso</translation>
 <translation id="5781120434102258025">Ilipat sa iyong personal na account ang data ng pampaaralang account mo</translation>
@@ -6763,6 +6777,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6175910054050815932">Kumuha ng link</translation>
 <translation id="6177478397823976397">Walang nakitang device. Magbukas ng artikulo sa help center sa bagong tab.</translation>
 <translation id="6177779807714496775">Buksan ang link sa kaliwang view</translation>
+<translation id="6178186430790239237">Para makuha ang iyong mga tab mula sa iba mo pang device, i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="6178664161104547336">Pumili ng certificate</translation>
 <translation id="6178682841350631965">Na-update ang iyong data sa pag-sign in</translation>
 <translation id="6179830757749383456">Pinapamahalaan ang browser ng <ph name="BROWSER_DOMAIN" />, pinapamahalaan ang profile ng <ph name="PROFILE_DOMAIN" /></translation>
@@ -6892,6 +6907,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6273677812470008672">Kalidad</translation>
 <translation id="6274089201566806618">Kumokonekta sa <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">Para mabilis na makapunta sa iyong mga paboritong site gamit ang mga bookmark mula sa lahat ng device mo, mag-sign in bilang <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">Nag-timeout ang network</translation>
 <translation id="6277518330158259200">Kumuha ng Screenshot</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7073,6 +7089,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6430202563517028640">Idagdag ang link sa listahan ng babasahin</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, single certificate</translation>
 <translation id="6431347207794742960">Ang <ph name="PRODUCT_NAME" /> ay magse-set up ng mga awtomatikong update para sa lahat ng mga user ng computer na ito.</translation>
+<translation id="6431970976661940755">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="6434104957329207050">Bilis ng pag-point scan</translation>
 <translation id="6434309073475700221">I-discard</translation>
 <translation id="6434755719322447931">Magulo</translation>
@@ -7237,6 +7254,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6556903358015358733">Tema at Wallpaper</translation>
 <translation id="6557199166823345360">Magdagdag ng higit pang detalye o magtanong tungkol sa iyong pagpipilian para pinuhin ang iyong paghahanap</translation>
 <translation id="6557290421156335491">Aking mga shortcut</translation>
+<translation id="655745275895381718">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="6558098963164662391">&amp;Alisin sa Diksyunaryo</translation>
 <translation id="6560061709899140565">Magpakita ng iba pang session ng pag-cast</translation>
 <translation id="656065428026159829">Tumingin pa</translation>
@@ -7313,6 +7331,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6607831829715835317">Higit pang mga too&amp;l</translation>
 <translation id="6608166463665411119">I-reset ang eSIM</translation>
 <translation id="660846213831377756">Mga mouse key</translation>
+<translation id="6608725880745776452">Kunin ang iyong mga password at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Iso-store ang data ng pag-sign in sa device na ito pagkatapos mong lumabas sa Incognito mode. Makakapag-sign in ka ulit sa website na ito gamit ang iyong device sa ibang pagkakataon.</translation>
 <translation id="6610002944194042868">Mga Opsyon sa Pagsasalin</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> tab</translation>
@@ -7926,6 +7945,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Na-import ang 1 password sa <ph name="BRAND" /> para sa <ph name="USER_EMAIL" />}one{Na-import ang {NUM_PASSWORDS} password sa <ph name="BRAND" /> para sa <ph name="USER_EMAIL" />}other{Na-import ang {NUM_PASSWORDS} na password sa <ph name="BRAND" /> para sa <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Tungkol sa System</translation>
 <translation id="706626672220389329">Nagka-error sa pag-mount ng share. Naka-mount na ang isinaad na share.</translation>
+<translation id="7066357648902789011">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7067396782363924830">Mga ambient na kulay</translation>
 <translation id="7067725467529581407">Huwag na itong ipakitang muli.</translation>
 <translation id="7068539819344620805">Puwede mo na ngayong bigyan ng bagong hitsura ang iyong browser anumang oras mula sa menu na I-customize ang Chrome</translation>
@@ -8075,7 +8095,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7188755083797868960">Mas mabilis na buksan ang reading mode gamit ang isang shortcut. Pindutin ang Alt + Shift + R para i-toggle ang reading mode.</translation>
 <translation id="7189234443051076392">Tiyaking may sapat na espasyo sa iyong device</translation>
-<translation id="7189558282078169397">Mga tab mula sa ibang device</translation>
 <translation id="7189965711416741966">Naidagdag ang fingerprint.</translation>
 <translation id="7190921792980745354">I-block si <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Bubukas pa rin ang ilang sinusuportahang link sa <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, at <ph name="NUMBER_OF_OTHER_APPS" /> pang app.</translation>
@@ -8111,6 +8130,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7214047272988222011">Pinapayagan – <ph name="PERMISSION_DETAILS" />. I-on ang <ph name="LINK_BEGIN" />access sa camera ng system<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Bagong Tab sa 1 Tab}one{Bagong Tab sa # Tab}other{Bagong Tab sa # na Tab}}</translation>
 <translation id="721490496276866468">Mag-import ng mga password</translation>
+<translation id="7216638029417040861">Para makuha ang iyong history mula sa iba mo pang device, mag-sign in at i-sync ang iyong history at mga tab sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga bookmark at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7217208603285112910">Hindi nakasalin sa <ph name="LANGUAGE" /> ang seleksyon</translation>
 <translation id="7217317914610152390">Magdagdag ng text, mga komento, at mga tala gamit ang bagong tool na Mga Text Annotation</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
@@ -8121,6 +8141,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7222232353993864120">Email Address</translation>
 <translation id="7222335051802562841">Tapusin ang pag-update</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong listahan ng babasahin at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7223027547122518521">Pumili ng file na mababasa ng site na ito</translation>
 <translation id="7223952304612664117">Pinapayagan nito ang mga serbisyo ng system na gamitin ang Katumpakan ng Lokasyon para matukoy ang iyong lokasyon. Gumagamit ang Katumpakan ng Lokasyon ng impormasyon tungkol sa mga wireless na signal at sensor para matantya ang lokasyon ng device.</translation>
 <translation id="7225082563376899794">Gamitin ang Windows Hello kapag pinupunan ang mga password</translation>
@@ -8491,6 +8512,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7501957181231305652">o</translation>
 <translation id="7502220299952823578">Idagdag sa listahang "palaging panatilihing aktibo ang mga site na ito"</translation>
 <translation id="7502528909759062987">I-pause ang pag-cast ng tab sa <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Bumalik sa Gemini</translation>
 <translation id="7502804472671406749">Puwedeng ma-scroll at ma-zoom ang mga naka-share na tab</translation>
 <translation id="750314150962284310">Pag-focus sa linya</translation>
 <translation id="7503191893372251637">Uri ng Netscape Certificate</translation>
@@ -8732,6 +8754,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7684718995427157417">Para gumawa at subukan ang iyong mga app, i-enable ang Android Debug Bridge (ADB). Tandaang binibigyang-daan ng pagkilos na ito ang pag-install ng mga Android app na hindi pa na-verify ng Google, at nangangailangan ito ng factory reset para ma-disable.</translation>
 <translation id="7684803937028953000">Na-block ng iyong organisasyon ang lokal na pag-download ng file na ito.</translation>
 <translation id="7684913007876670600">Para magpakita ng pinasimpleng view ng page na ito, buksan ang panel sa gilid at piliin ang Reading mode</translation>
+<translation id="7684957383619170952">Kunin ang iyong mga bookmark at higit pa mula sa <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Hindi makapag-cast</translation>
 <translation id="7685049629764448582">Memorya sa JavaScript</translation>
 <translation id="7685087414635069102">Kailangan ng PIN</translation>
@@ -9009,6 +9032,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Kanselahin ang pag-set up</translation>
 <translation id="7912974581251770345">Pagsasalin</translation>
+<translation id="7913805372428124107">Para makuha ang iyong mga tab mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history. Makukuha mo rin ang iyong mga password at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="7914399737746719723">Na-install ang app</translation>
 <translation id="7915457674565721553">Kumonekta sa internet para i-set up ang mga kontrol ng magulang</translation>
 <translation id="7916364730877325865">Hindi ka pinapayagan ng iyong organisasyon na i-on ang pag-sync sa account na ito</translation>
@@ -9257,6 +9281,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8081989000209387414">I-disable ang pag-debug ng ADB?</translation>
 <translation id="8082132721957920509">Naka-save ang Iyong Card</translation>
 <translation id="8082390128630131497">Kapag na-disable ang pag-bug ng ADB, mare-reset ang <ph name="DEVICE_TYPE" /> na ito sa mga factory setting. Mabubura ang lahat ng user account at lokal na data.</translation>
+<translation id="8082737802704584539">In-off ng iyong organisasyon ang pag-save ng history sa Google Account mo</translation>
 <translation id="8084114998886531721">Naka-save na password</translation>
 <translation id="8084417885464859041">Gamitin ang Gemini nang ligtas</translation>
 <translation id="8084429490152575036">Mga setting ng Cellular APN</translation>
@@ -9289,6 +9314,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="810362914482827094">Maghanap sa mga passkey</translation>
 <translation id="8104088837833760645">I-download ang profile ng eSIM</translation>
 <translation id="8104388155778519213">I-share kung ano ang nasa iyong screen gamit ang Google Lens</translation>
+<translation id="8104412594956510627">Para makuha ang iyong history mula sa <ph name="DEVICE" />, i-sync ang history. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="8104778744208707085">Nangangailangan ng iyong atensyon</translation>
 <translation id="8105273883928376822">Mag-sign in para magpatuloy.</translation>
 <translation id="8106114112474206597">Gamitin ang “i” para pindutin ang button ng mouse</translation>
@@ -9319,6 +9345,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8124313775439841391">Pinamamahalaang ONC</translation>
 <translation id="8125651784723647184">Pinapamahalaan ng iyong administrator ang pag-share ng password</translation>
 <translation id="8126355825906412872">Ngumiti</translation>
+<translation id="8126498026310640675">Para makuha ang iyong history mula sa <ph name="DEVICE" />, mag-sign in at mag-sync ng history at mga tab mo sa <ph name="EMAIL" />. Makukuha mo rin ang iyong mga bookmark at higit pa sa lahat ng device mo. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8133297578569873332">Katanggap-tanggap - FM</translation>
@@ -9771,6 +9798,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8477241577829954800">Humalili</translation>
 <translation id="8477384620836102176">&amp;Pangkalahatan</translation>
 <translation id="8477446666255316832">Mag-sign in nang mas mabilis sa susunod</translation>
+<translation id="8477548388161793571">&amp;Isalin ang Pinili</translation>
 <translation id="8478346767369317046">Trabaho</translation>
 <translation id="8479176401914456949">Invalid ang code. Pakisubukan ulit.</translation>
 <translation id="8480869669560681089">Hindi kilalang device mula sa <ph name="VENDOR_NAME" /></translation>

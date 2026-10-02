@@ -995,7 +995,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1755601632425835748">Textastærð</translation>
 <translation id="1756963401828337401">Veldu skjá til að taka mynd af</translation>
 <translation id="17584710573359123">Skoða í vefverslun Chrome</translation>
-<translation id="1758845021884209593">Nota flýtileið í stýrikerfisforritum</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> endurvarpað á <ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Reikningar sem <ph name="NAME" /> á</translation>
 <translation id="176272781006230109">innkaupatillögur</translation>
@@ -1569,7 +1568,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2198625180564913276">Bætir prófíl við. Þetta gæti tekið nokkrar mínútur.</translation>
 <translation id="2198712775285959645">Breyta</translation>
 <translation id="2199298570273670671">Villa</translation>
-<translation id="220006241671843310">Veldu hvort Chrome noti gervigreindarlíkön sem keyrð eru í tækinu þínu</translation>
+<translation id="2199546617947317537">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="2200094388063410062">Tölvupóstur</translation>
 <translation id="2200781749203116929">ChromeOS-kerfisannálar</translation>
 <translation id="2202391868799679245">Kveikja á flýtilykli</translation>
@@ -2089,6 +2088,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2599048253926156421">Notandanafn afritað á klippiborð</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Slökkt var á einni ótraustri viðbót}one{Slökkt var á {NUM_SITES} ótraustri viðbót}other{Slökkt var á {NUM_SITES} ótraustum viðbótum}}</translation>
 <translation id="2603121359676416582">Fyrir þessa síðu</translation>
+<translation id="2603656971249947488">Fliparæma</translation>
 <translation id="2604129989323098489">Vefsvæði biðja venjulega um upplýsingar um skjáina þína svo þau geti opnað og staðsett glugga á snjallan hátt, t.d. sýnt skjöl eða efni á öllum skjánum hlið við hlið.</translation>
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2604805099836652105">Eyðublað fyllt út fyrir heimilisfang „<ph name="ADDRESS_LABEL" />“.</translation>
@@ -2300,6 +2300,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2743387203779672305">Afrita á klippiborð</translation>
 <translation id="274362947316498129">Forrit er að reyna að opna <ph name="DEVICE_NAME" />. Slökktu á persónuverndarrofa fyrir <ph name="DEVICE_NAME" /> til að veita aðgang.</translation>
 <translation id="2744221223678373668">Deilt</translation>
+<translation id="2744919074068076548">Opna tvískiptan skjá</translation>
 <translation id="2745080116229976798">Microsoft-vottuð skipan</translation>
 <translation id="2749756011735116528">Skráðu þig inn á <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2351,6 +2352,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2777525873368474674">Líma myndatengil</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 vefsvæði með mörgum tilkynningum fannst}one{{NUM_SITES} vefsvæði með mörgum tilkynningum fannst}other{{NUM_SITES} vefsvæði með mörgum tilkynningum fundust}}</translation>
 <translation id="2778471504622896352">Bættu fjartengdum forritum við ChromeOS ræsiforritið</translation>
+<translation id="2781037472881921606">Samstilltu feril til að sækja ferilinn þinn úr hinum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Notaðu öryggislykilinn þinn með <ph name="APP_NAME" /></translation>
@@ -2413,6 +2415,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2826576843404243001">Fáðu viðvörun áður en þú opnar síðu sem styður ekki örugga tengingu. Þú getur ekki breytt þessari stillingu vegna þess að þú ert með kveikt á ítarlegri vernd.</translation>
 <translation id="2828375943530438449">Aftur úr innskráningu</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> losað/losuð</translation>
+<translation id="2828851448902426206">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="2833144527504272627">Fletta með textabendli</translation>
 <translation id="2833727845850279275">Þessi skrá inniheldur spilliforrit eða kemur frá ótraustu vefsvæði.</translation>
 <translation id="2835177225987815960">Núverandi uppsetning skönnunar verður endurstillt, þ.m.t. úthlutaðir rofar og hraðastillingar sjálfvirkrar skönnunar.</translation>
@@ -2779,6 +2782,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3102309003841389927">Fara yfir uppfærslu lógós</translation>
 <translation id="310297983047869047">Fyrri skyggna</translation>
 <translation id="3103451787721578293">Færðu inn ástæðu þess að hlaða upp þessum gögnum:</translation>
+<translation id="3105253709809514429">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="3105339775057145050">Síðasta uppfærsla sem mistókst</translation>
 <translation id="3105796011181310544">Skipta aftur yfir í Google?</translation>
 <translation id="3105820656234755131">Aðgangsorð uppfært</translation>
@@ -2790,6 +2794,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3109206895301430738">Vistaðir flipahópar</translation>
 <translation id="3109724472072898302">Minnkað</translation>
 <translation id="3112292765614504292">Stærð forrits <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig bókamerkin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="311347022006935575">Bætti þessum flipa við</translation>
 <translation id="311394601889664316">Ekki leyfa vefsvæðum að breyta skrám eða möppum í tækinu</translation>
 <translation id="3113970906450647715">Hnappur losaður</translation>
@@ -3297,6 +3302,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3498138244916757538">Breyting á stillingu hljóðnemans krefst þess að slökkt sé á <ph name="SPECIFIC_NAME" />. Slökktu á <ph name="SPECIFIC_NAME" /> til að halda áfram.</translation>
 <translation id="3500417806337761827">Villa við tengingu skráageymslu. Of margar SMB-geymslur eru þegar tengdar.</translation>
 <translation id="3500764001796099683">Kveikja á einangruðum vefforritum</translation>
+<translation id="3501134531169168291">Til að sækja flipana þína úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla feril. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="3505100368357440862">Innkaupatillögur</translation>
 <translation id="3507650052590605702">Stjórna aðgangsorði</translation>
 <translation id="3507888235492474624">Leita aftur að Bluetooth-tækjum</translation>
@@ -3373,6 +3379,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3562655211539199254">Skoðaðu nýlega Chrome flipa úr símanum</translation>
 <translation id="356268274299520831">Breyta því á vefsvæðinu</translation>
 <translation id="3563392617245068355">Stemning</translation>
+<translation id="3564327838471533677">Nýlega lokaður tvískiptur skjár</translation>
 <translation id="3564456410937306182">Nánar um aðlagaða hleðslu.</translation>
 <translation id="3564659095423213915">Þessi mappa er eingöngu vistuð í þessu tæki. Ef þú vistar hana í „<ph name="ACCOUNT_FOLDER" />“ verður hún einnig vistuð á reikningnum þínum.</translation>
 <translation id="3564848315152754834">USB-öryggislykill</translation>
@@ -3784,6 +3791,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3838085852053358637">Ekki tókst að hlaða viðbót</translation>
 <translation id="3838486795898716504">Fleiri <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Aðdráttur hefur ekki verið aukinn eða minnkaður á neinum vefsvæðum</translation>
+<translation id="3839108710633244251">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="3839516600093027468">Koma alltaf í veg fyrir að <ph name="HOST" /> sjái klippiborðið</translation>
 <translation id="3840096463915153852">Samtalsferill</translation>
 <translation id="3841319830220785495">Sjálfgefin venjuleg rödd</translation>
@@ -4276,7 +4284,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4241140145060464825">Forritsefni</translation>
 <translation id="4241224519481557898">Flokkur</translation>
 <translation id="4242245038391716252">Sótt af viðbót: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Nú geturðu stækkað flipana þína með því að halda bendlinum yfir þeim. Hægrismelltu hér til að kveikja á þessu.</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Vafranum þínum og prófílnum er stjórnað<ph name="END_LINK" /> af <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Sláðu inn aðgangsorð</translation>
@@ -4307,6 +4314,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Halda hópi}one{Halda hópum}other{Halda hópum}}</translation>
 <translation id="4261429981378979799">Heimildir viðbóta</translation>
 <translation id="4262004481148703251">Hunsa viðvörun</translation>
+<translation id="4262060800239714974">Samstilltu ferilinn þinn og flipa við <ph name="EMAIL" /> til að hafa aðgang að flipum úr <ph name="DEVICE" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4263470758446311292">Fáðu hámarksminnissparnað. Fliparnir þínir verða óvirkir eftir styttri tíma.</translation>
 <translation id="4263824086525632">Norðurljós</translation>
 <translation id="4265096510956307240">Staðfestu hver þú ert</translation>
@@ -4440,7 +4448,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4360738659108163902">Hægrismellur á mús</translation>
 <translation id="4361745360460842907">Opna sem flipa</translation>
 <translation id="4362459470237309049">Notaðu „.“ til að sleppa músarhnappi</translation>
-<translation id="4362871358537270439">Sýna flipa úr öðrum tækjum í hliðarglugga</translation>
 <translation id="4363262124589131906">Nýjar skrár á drifinu þínu hætta sjálfvirkri samstillingu við þessa Chromebook-tölvu</translation>
 <translation id="4364129298304269786">Vefsvæði kunna að nota efnisverndarþjónustu til að spila höfundarréttarvarið efni</translation>
 <translation id="4364327530094270451">Melóna</translation>
@@ -4943,8 +4950,10 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4750185073185658673">Farðu í símann til að fara yfir nokkrar heimildir í viðbót. Gættu þess að kveikt sé á Bluetooth og Wi-Fi í símanum.</translation>
 <translation id="4750394297954878236">Tillögur</translation>
 <translation id="475088594373173692">Fyrsti notandi</translation>
+<translation id="4751925628341802838">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4753084533826742808">Verður að vera minnst einn stafur</translation>
 <translation id="4754590344707355551">Gerðu vafrann þinn enn betri með viðbótum</translation>
+<translation id="4756130875344525429">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4756378406049221019">Stöðva/endurhlaða</translation>
 <translation id="4756388243121344051">Ferill</translation>
 <translation id="4756627014339714615">Framsending</translation>
@@ -5175,6 +5184,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4913573660390710463">Aðgangur að pökkuðum vefforritum með ítareiginleikum. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Ekki tókst að finna forritsgögn</translation>
 <translation id="4915961947098019832">Mega birta myndir</translation>
+<translation id="4916140032692201190">&amp;Þýða val</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> vill eiga samskipti við viðbótina „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="4918086044614829423">Samþykkja</translation>
 <translation id="4918762404810341788">Afrita og opna</translation>
@@ -5256,6 +5266,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="497403230787583386">Öryggisathugunum er lokið. Skjalið verður prentað.</translation>
 <translation id="4974442344472293753">Niðurstaða uppfærslu</translation>
 <translation id="4975771730019223894">Merking forrita</translation>
+<translation id="4976647810464861866">Til að sækja flipana þína úr öðrum tækjum skaltu skrá þig inn og samstilla feril. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Staðfesta aðgang</translation>
 <translation id="4979263087381759787">Forritunarkostir</translation>
@@ -5428,6 +5439,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="511313294362309725">Kveikja á hraðpörun</translation>
 <translation id="5113992879909788634">Nánar um sjálfvirka vöfrun í Chrome</translation>
 <translation id="51143538739122961">Stingdu öryggislykli í samband og snertu hann</translation>
+<translation id="5114635223409082546">Til að sækja flipana þína úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla feril. Þú færð einnig bókamerkin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">&amp;Vista hljóð sem...</translation>
 <translation id="5117139026559873716">Aftengdu símann frá <ph name="DEVICE_TYPE" />. Tækin munu ekki lengur tengjast sjálfkrafa.</translation>
@@ -5825,6 +5837,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5436211819997237281">Núverandi viðbót stýrir síðu nýrra flipa</translation>
 <translation id="5436492226391861498">Bíður eftir proxy-gögnum...</translation>
 <translation id="5436510242972373446">Leita á <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Skráðu þig inn sem <ph name="EMAIL" /> til að fylla aðgangsorðin þín út sjálfkrafa og vista þau í öllum tækjunum þínum</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> gluggi er núna <ph name="WINDOW_SIZE_PERCENT" /> á breidd, <ph name="PANE_SIDE" /> svæði er núna <ph name="PANE_SIZE_PERCENT" /> á breidd.</translation>
 <translation id="5438060324827306856">Finna &amp;Viðbætur</translation>
 <translation id="5440240650630588012">Notaðu lestrarlínu eða -glugga til að eiga auðveldara með að einbeita þér. Ýttu á ⌥L eða opnaðu stillingar.</translation>
@@ -5854,6 +5867,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5457795687441958389">Ekki skrá mig inn</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Þú hefur slegið inn rangt PIN-númer of oft. Til að fá aðgang að aðgangslyklunum og aðgangsorðunum þínum skaltu breyta PIN-númerinu þínu.</translation>
+<translation id="5459251585760045919">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig viðbæturnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="5459470938885464873">Villa kom upp við að flytja inn vottorð</translation>
 <translation id="5459864179070366255">Halda uppsetningu áfram</translation>
 <translation id="5460861858595506978">Innblástur</translation>
@@ -6025,6 +6039,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5584088138253955452">Vista notandanafn?</translation>
 <translation id="5585019845078534178">Kort</translation>
+<translation id="5585064628683466904">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="5585118885427931890">Ekki tókst að búa til bókamerkjamöppu.</translation>
 <translation id="558563010977877295">Opna tiltekna síðu eða safn síðna</translation>
 <translation id="5587592231724900065">Viðbót stjórnar þessari stillingu</translation>
@@ -6236,7 +6251,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5776571780337000608">Þú getur opnað og breytt studdum skrám með þessu forriti úr skráavafranum eða öðrum forritum. Til að stýra því hvaða skrár opna þetta forrit sjálfkrafa skaltu <ph name="BEGIN_LINK" />kynna þér hvernig sjálfgefin forrit eru sett upp í tækinu þínu<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Opna Chrome</translation>
 <translation id="5778491106820461378">Hægt er að hafa umsjón með innskráðum Google reikningum í <ph name="LINK_BEGIN" />stillingunum<ph name="LINK_END" />. Heimildir sem þú hefur veitt vefsvæðum og forritum gætu átt við alla reikningana. Ef þú vilt ekki að vefsvæði eða forrit fái aðgang að reikningsupplýsingunum þínum geturðu skráð þig inn í <ph name="DEVICE_TYPE" /> sem gestur.</translation>
-<translation id="5779636902585836564">&amp;Þýða</translation>
 <translation id="5780011244986845107">Mappan sem þú valdir inniheldur viðkvæmar skrár. Ertu viss um að þú viljir veita „<ph name="APP_NAME" />“ varanlegan lesaðgang að þessari möppu?</translation>
 <translation id="5780973441651030252">Forgangur ferla</translation>
 <translation id="5781120434102258025">Flyttu gögn skólareikningsins þíns yfir á einkareikninginn þinn</translation>
@@ -6763,6 +6777,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6175910054050815932">Fá tengil</translation>
 <translation id="6177478397823976397">Engin tæki fundust. Opnaðu grein í hjálparmiðstöð í nýjum flipa fyrir nánari upplýsingar.</translation>
 <translation id="6177779807714496775">Opna tengil í vinstri glugga</translation>
+<translation id="6178186430790239237">Samstilltu ferilinn þinn og flipa við <ph name="EMAIL" /> til að hafa aðgang að flipum úr hinum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="6178664161104547336">Veldu vottorð</translation>
 <translation id="6178682841350631965">Innskráningargögnin þín voru uppfærð</translation>
 <translation id="6179830757749383456">Vafra er stjórnað af <ph name="BROWSER_DOMAIN" />, prófíl er stjórnað af <ph name="PROFILE_DOMAIN" /></translation>
@@ -6892,6 +6907,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6273677812470008672">Gæði</translation>
 <translation id="6274089201566806618">Tengist <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Skjáupptaka</translation>
+<translation id="6276246115230302286">Skráðu þig inn með <ph name="EMAIL" /> til að komast fljótt á uppáhaldsvefsvæðin þín með því að nota bókamerki í öllum tækjunum þínum</translation>
 <translation id="6277105963844135994">Tímamörk nets útrunnin</translation>
 <translation id="6277518330158259200">T&amp;aka skjámynd</translation>
 <translation id="6278428485366576908">Þema</translation>
@@ -7073,6 +7089,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6430202563517028640">Bæta tengli við leslista</translation>
 <translation id="6430814529589430811">Base64-kóðað ASCII, stakt vottorð</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> mun setja upp sjálfvirkar uppfærslur fyrir alla notendur tölvunnar.</translation>
+<translation id="6431970976661940755">Til að sækja flipana þína úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla feril. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="6434104957329207050">Punktaskönnunarhraði</translation>
 <translation id="6434309073475700221">Fleygja</translation>
 <translation id="6434755719322447931">Óreiðukennt</translation>
@@ -7237,6 +7254,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6556903358015358733">Þema og veggfóður</translation>
 <translation id="6557199166823345360">Bættu við meiri upplýsingum eða spyrðu spurningar um úrval þitt til að fínstilla leitina</translation>
 <translation id="6557290421156335491">Flýtileiðirnar mínar</translation>
+<translation id="655745275895381718">Til að sækja flipana þína úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla feril. Þú færð einnig vistuðu upplýsingarnar þínar og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="6558098963164662391">&amp;Fjarlægja úr orðabók</translation>
 <translation id="6560061709899140565">Sýna aðrar vörpunarlotur</translation>
 <translation id="656065428026159829">Sjá meira</translation>
@@ -7313,6 +7331,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="6607831829715835317">F&amp;leiri verkfæri</translation>
 <translation id="6608166463665411119">Endurstilla eSIM</translation>
 <translation id="660846213831377756">Músarhnappar</translation>
+<translation id="6608725880745776452">Sæktu aðgangsorðin þín og fleira úr <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Innskráningargögn verða geymd í þessu tæki eftir að þú lokar huliðsstillingu. Þú getur skráð þig aftur inn á þetta vefsvæði með tækinu þínu síðar.</translation>
 <translation id="6610002944194042868">Valkostir þýðinga</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> flipi</translation>
@@ -7925,6 +7944,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 aðgangsorð var flutt inn í <ph name="BRAND" /> fyrir <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} aðgangsorð var flutt inn í <ph name="BRAND" /> fyrir <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} aðgangsorð voru flutt inn í <ph name="BRAND" /> fyrir <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Um kerfið</translation>
 <translation id="706626672220389329">Villa við að tengja deilt efni. Tilgreint deilt efni er þegar tengt.</translation>
+<translation id="7066357648902789011">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7067396782363924830">Umhverfislitir</translation>
 <translation id="7067725467529581407">Aldrei sýna þetta aftur.</translation>
 <translation id="7068539819344620805">Nú geturðu skipt um útlit á vafranum hvenær sem er í valmyndinni „Sérsníða Chrome“</translation>
@@ -8074,7 +8094,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7188755083797868960">Opnaðu lesstillingu hraðar með flýtileið. Ýttu á Alt + Shift + R til að kveikja eða slökkva á lesstillingu.</translation>
 <translation id="7189234443051076392">Gakktu úr skugga um að það sé nóg pláss á tækinu</translation>
-<translation id="7189558282078169397">Flipar frá öðrum tækjum</translation>
 <translation id="7189965711416741966">Fingrafari bætt við.</translation>
 <translation id="7190921792980745354">Setja <ph name="MEMBER_FULL_NAME" /> á bannlista?</translation>
 <translation id="7191063546666816478">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> og <ph name="NUMBER_OF_OTHER_APPS" /> forritum í viðbót.</translation>
@@ -8110,6 +8129,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7214047272988222011">Leyft – <ph name="PERMISSION_DETAILS" />. Kveiktu á <ph name="LINK_BEGIN" />aðgangi kerfisins að myndavélinni<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nýr flipi á 1 flipa}one{Nýr flipi á # flipa}other{Nýr flipi á # flipum}}</translation>
 <translation id="721490496276866468">Flytja inn aðgangsorð</translation>
+<translation id="7216638029417040861">Til að sækja ferilinn þinn úr öðrum tækjum skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig bókamerkin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7217208603285112910">Ekki þýða val á <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Bættu texta, ummælum og glósum við með nýja textaskýringarverkfærinu</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
@@ -8120,6 +8140,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7222232353993864120">Netfang</translation>
 <translation id="7222335051802562841">Ljúka uppfærslu</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig leslistann þinn og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7223027547122518521">Veldu skrá sem vefsvæðið getur lesið</translation>
 <translation id="7223952304612664117">Þetta gerir kerfisþjónustunni kleift að nota staðsetningarnákvæmni til að finna staðsetninguna þína. Staðsetningarnákvæmni notar upplýsingar um þráðlaus merki og skynjara til að meta staðsetningu tækisins.</translation>
 <translation id="7225082563376899794">Nota Windows Hello við útfyllingu aðgangsorða</translation>
@@ -8490,6 +8511,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7501957181231305652">eða</translation>
 <translation id="7502220299952823578">Bæta við listann „halda þessum vefsvæðum ávallt virkum“</translation>
 <translation id="7502528909759062987">Gera hlé á vörpun flipa yfir í <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Fara aftur í Gemini</translation>
 <translation id="7502804472671406749">Hægt er að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="750314150962284310">Línufókus</translation>
 <translation id="7503191893372251637">Tegund Netscape-vottorðs</translation>
@@ -8731,6 +8753,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7684718995427157417">Kveiktu á villuleitarbrú Android (ADB) til að búa til og prófa forritin þín. Hafðu í huga að þessi aðgerð gerir þér kleift að setja upp Android forrit sem eru ekki staðfest af Google. Núllstilla þarf tækið til að slökkva á þessu.</translation>
 <translation id="7684803937028953000">Fyrirtækið þitt/stofnunin þín lokaði fyrir staðbundið niðurhal á þessari skrá.</translation>
 <translation id="7684913007876670600">Til að birta einfaldað yfirlit þessarar síðu skaltu opna hliðargluggann og velja lesstillingu</translation>
+<translation id="7684957383619170952">Sæktu bókamerkin þín og fleira í <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Ekki hægt að varpa</translation>
 <translation id="7685049629764448582">JavaScript-minni</translation>
 <translation id="7685087414635069102">PIN-númers krafist</translation>
@@ -9008,6 +9031,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Hætta við uppsetningu</translation>
 <translation id="7912974581251770345">Þýðing</translation>
+<translation id="7913805372428124107">Til að sækja flipana þína úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla feril. Þú færð einnig aðgangsorðin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7914399737746719723">Forrit uppsett</translation>
 <translation id="7915457674565721553">Tengstu við internetið til að setja upp barnalæsingu</translation>
 <translation id="7916364730877325865">Fyrirtækið leyfir þér ekki kveikja á samstillingu við þennan reikning</translation>
@@ -9256,6 +9280,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8081989000209387414">Slökkva á ADB-villuleit?</translation>
 <translation id="8082132721957920509">Kortið var vistað</translation>
 <translation id="8082390128630131497">Ef slökkt er á ADB-villuleit verður þetta <ph name="DEVICE_TYPE" /> tæki núllstillt. Öllum notendareikningum og staðbundnum gögnum verður eytt.</translation>
+<translation id="8082737802704584539">Fyrirtækið þitt slökkti á vistun ferils á Google-reikningnum þínum</translation>
 <translation id="8084114998886531721">Vistað aðgangsorð</translation>
 <translation id="8084417885464859041">Notaðu Gemini á öruggan hátt</translation>
 <translation id="8084429490152575036">Stillingar farsímaaðgangsstaðar</translation>
@@ -9288,6 +9313,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="810362914482827094">Leita að aðgangslyklum</translation>
 <translation id="8104088837833760645">Sækja eSIM-prófíl</translation>
 <translation id="8104388155778519213">Deildu því sem er á skjánum með Google-linsu</translation>
+<translation id="8104412594956510627">Samstilltu feril til að sækja ferilinn þinn úr <ph name="DEVICE" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="8104778744208707085">Þarfnast skoðunar frá þér</translation>
 <translation id="8105273883928376822">Skráðu þig inn til að halda áfram.</translation>
 <translation id="8106114112474206597">Notaðu „i“ til að ýta á músarhnapp</translation>
@@ -9318,6 +9344,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8124313775439841391">Stýrt ONC</translation>
 <translation id="8125651784723647184">Stjórnandinn hefur umsjón með aðgangsorðadeilingu</translation>
 <translation id="8126355825906412872">Brostu</translation>
+<translation id="8126498026310640675">Til að sækja ferilinn þinn úr <ph name="DEVICE" /> skaltu skrá þig inn og samstilla ferilinn þinn og flipa við <ph name="EMAIL" />. Þú færð einnig bókamerkin þín og fleira í öllum tækjunum þínum. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8133297578569873332">Ásættanleg – FM</translation>
@@ -9769,6 +9796,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8477241577829954800">Leyst af hólmi</translation>
 <translation id="8477384620836102176">Almennt</translation>
 <translation id="8477446666255316832">Vertu enn fljótari að skrá þig inn næst</translation>
+<translation id="8477548388161793571">&amp;Þýða val</translation>
 <translation id="8478346767369317046">Vinna</translation>
 <translation id="8479176401914456949">Ógildur kóði. Reyndu aftur.</translation>
 <translation id="8480869669560681089">Óþekkt tæki frá <ph name="VENDOR_NAME" /></translation>

@@ -935,7 +935,6 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1625700732886306811"><ph name="PRODUCT_NAME" /> toestaan verbinding te maken met Cast-apparaten op alle IP-adressen.</translation>
 <translation id="1626379196197114720">Toestaan dat de Back-Forward Cache wordt gebruikt</translation>
 <translation id="1628974048137236820">Geen kaarten te zien op de pagina Nieuw tabblad</translation>
-<translation id="1628984674324273832">'Zoeken en invullen met Gemini' niet toestaan.</translation>
 <translation id="163200210584085447">Patronen in deze lijst worden vergeleken met de
       beveiligingsoorsprong van de aanvragende URL. Als een overeenkomst
       wordt gevonden, wordt toegang tot apparaten voor het vastleggen van
@@ -1707,7 +1706,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="2107601598727098402">
         Dit beleid is beëindigd in M72. Gebruik in plaats daarvan CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">'Zoeken en invullen met Gemini' toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="2112656109118682849">Gebruikers toestaan de weergave van systeemgegevens aan/uit te zetten op het inlogscherm</translation>
 <translation id="2113068765175018713">Uptime van apparaat beperken door automatisch opnieuw op te starten</translation>
 <translation id="211386002920955760">Bepaal of een zakelijke gebruiker toegang heeft tot de functie voor het delen van tabbladgroepen in Chrome.
@@ -5509,6 +5507,11 @@ Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerd
 <translation id="4561940244682063697">Niet toestaan dat sites gebruikers vragen om een videostream van hun scherm te delen</translation>
 <translation id="4562165737444703281">Toestaan dat gebruikers Crostini-poortdoorschakeling [aanzetten/configureren]</translation>
 <translation id="456450545863578630">Bestandsoverdracht in verbindingen voor externe support van bedrijfsbeheerders aanzetten</translation>
+<translation id="4567614489737189156">Als je het beleid inschakelt, rapporteert <ph name="PRODUCT_OS_NAME" /> gebruiksstatistieken en diagnostische gegevens, waaronder crashrapporten, aan Google. Als je het beleid uitschakelt, worden er geen statistieken en diagnostische gegevens gerapporteerd.
+
+Als je het beleid niet instelt voor beheerde apparaten, blijft de rapportage van statistieken en diagnostische gegevens standaard aanstaan.
+
+Voor onbeheerde apparaten is dit beleid niet van toepassing en kunnen gebruikers het gedrag voor rapportage van statistieken en diagnostische gegevens kiezen tijdens de apparaatinstallatie of later via de instellingen.</translation>
 <translation id="4570859815763368584">Beëindigd in M68. Gebruik in plaats hiervan DefaultPopupsSetting.
 
 Ga naar https://www.chromestatus.com/feature/5675755719622656 voor een volledige uitleg.
@@ -6345,7 +6348,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
-<translation id="5070539335358964387">'Zoeken en invullen met Gemini' toestaan en AI-modellen verbeteren.</translation>
 <translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
 <translation id="5073788301065423829">Met dit beleid kun je Help me met schrijven aan- of uitzetten voor ChromeOS.
 
@@ -9766,7 +9768,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="7136237405361383549">Gebruik het standaard weergaveprogramma op basis van de configuratie voor praktijktests.</translation>
 <translation id="7138762292550697459">Minimale time-out van de JavaScript-functie setTimeout() beheren.</translation>
 <translation id="7138792262152376158">Volgt de reguliere beëindigingstijdlijnen voor de PrefixedVideoFullscreen API</translation>
-<translation id="7140755255968613921">Instellingen voor 'Zoeken en invullen met Gemini'</translation>
 <translation id="7140760943584613237">Microsoft®-cloudidentiteitsprovider</translation>
 <translation id="714219487865269980">Markering toetsenbordfocus aanzetten</translation>
 <translation id="7144022711746703451">
@@ -10178,19 +10179,6 @@ De werkelijke waarden van gevoelige gegevens (zoals cookies of invoerwaarden) wo
 <translation id="7402257017733669351">Voorkomen dat het browserproces dynamische code maakt</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
 <translation id="7406276857470642718">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
-<translation id="7407431811343706437">Bepaalt of gebruikers de functie 'Zoeken en invullen met Gemini' kunnen gebruiken in <ph name="PRODUCT_NAME" />.
-
-0 = Hiermee wordt toegestaan dat de functie wordt gebruikt en dat Google relevante gegevens gebruikt om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = Hiermee wordt toegestaan dat de functie wordt gebruikt, maar wordt niet toegestaan dat Google modellen verbetert met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Hiermee wordt de functie niet toegestaan.
-
-Dit beleid heeft geen effect als de Gemini-app is uitgezet. De Gemini-app kan bijvoorbeeld worden uitgezet met het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, wordt netwerkvoorspelling aangezet, maar kan de gebruiker dit wijzigen.</translation>
@@ -10199,11 +10187,6 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="7410074797376205571">Toestaan dat <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> WebAuthn API-verzoeken uitvoert die afkomstig zijn van een externe host.</translation>
 <translation id="7412456346709338637">Gegevenstoegang voor Thunderbolt/USB4-randapparaten aanzetten</translation>
 <translation id="7414890119082492552">Geen voorkeur.</translation>
-<translation id="7416222110012824615">Dit beleid bepaalt de beschikbaarheid van de XSLT-functie (de XSLTProcessor Javascript API en de XSL-verwerkingsinstructie).
-Als je dit beleid toepast, is XSLT beschikbaar, ongeacht de standaardstatus van de functie in de browser.
-Als je dit beleid niet toepast, is XSLT niet beschikbaar, ongeacht de standaardstatus van de functie in de browser.
-Als je dit beleid niet instelt, wordt de beschikbaarheid van XSLT bepaald door de standaardinstellingen van de browser en praktijktests.
-Dit beleid is een tijdelijke maatregel en wordt verwijderd in M164.</translation>
 <translation id="7417438464912687020">Verbindingen voor externe toegang tot deze machine toestaan</translation>
 <translation id="7417972229667085380">Het percentage waarmee je de inactieve vertraging in presentatiemodus kunt schalen (verouderd)</translation>
 <translation id="7421230730436851224">Het audioproces nooit in een sandbox plaatsen</translation>
@@ -10506,10 +10489,6 @@ Beleidsregels die moeten worden samengevoegd, moeten ook worden ingesteld in <ph
       Als je dit beleid instelt op False of niet instelt, wordt de rapportage uitgezet.
       Regels die zijn gedefinieerd met beperkingen op ALLOW-niveau in DataLeakPreventionRulesList, rapporteren in beide gevallen geen gebeurtenissen.</translation>
 <translation id="7648907905084499629">Gedrag van <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> voor cookies op alle sites gebruiken</translation>
-<translation id="7649831723389657756">Als je het beleid instelt, wordt gespecificeerd voor welke herkomsten alle HTTP-verificatieschema's worden toegestaan die <ph name="PRODUCT_NAME" /> ondersteunt, ongeacht het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Maak het herkomstpatroon op volgens deze indeling (<ph name="URL_SCHEME_FORMAT_LINK" />). Je kunt maximaal 1000 uitzonderingen definiëren in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      Jokertekens zijn toegestaan voor de hostcomponent (bijvoorbeeld *:8000 komt overeen met alle hosts op poort 8000). Als je alle schema's of alle poorten wilt matchen, laat je de component helemaal weg (bijvoorbeeld example.com komt overeen met elk schema en elke poort). Een hostnaam (bijvoorbeeld example.com) komt ook overeen met de subdomeinen. Als je een host exact wilt matchen en de subdomeinen wilt uitsluiten, voeg je een punt toe (bijvoorbeeld .example.com). Als je alle herkomsten wilt matchen, gebruik je één asterisk (*).</translation>
 <translation id="7652330587655863759">Het type verificatie.
 
 * none: er wordt geen verificatie uitgevoerd.
@@ -11286,6 +11265,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8164687848393015214">Als je het beleid toepast, worden controlenetwerkpakketten (<ph name="HEARTBEATS_TERM" />) naar de beheerserver gestuurd, zodat de server kan waarnemen of het apparaat offline is.
 
       Als je het beleid niet toepast of niet instelt, worden er geen pakketten gestuurd.</translation>
+<translation id="8165152191100365965">Statistieken naar Google sturen op beheerde apparaten of de gebruiker laten beslissen op onbeheerde apparaten</translation>
 <translation id="8168359201203671567">Regenboogachtergrondverlichting van toetsenbord</translation>
 <translation id="8169452762291746260">Controle van apparaatstatus uitzetten</translation>
 <translation id="8170359860920320269">Sites filteren op content voor volwassenen</translation>
@@ -12653,6 +12633,9 @@ Als je het beleid niet instelt, kan <ph name="PRODUCT_NAME" /> deze logboeken st
       Als de URI-template een variabele <ph name="HTTP_VARIABLE_DNS" /> bevat, wordt voor verzoeken aan de resolver <ph name="HTTP_METHOD_GET" /> gebruikt; anders wordt voor verzoeken <ph name="HTTP_METHOD_POST" /> gebruikt.
 
       Onjuist opgemaakte templates worden genegeerd.</translation>
+<translation id="9066972193987544412">Als je het beleid aanzet of niet instelt, kunnen gebruikers bookmarks toevoegen, verwijderen, wijzigen of uploaden.
+
+      Als je het beleid uitzet, kunnen gebruikers geen bookmarks toevoegen, verwijderen, wijzigen of uploaden. Ze kunnen nog wel bestaande bookmarks gebruiken.</translation>
 <translation id="9068629430243705879">poort 6566 (blokkering kan worden opgeheven tot 15-10-2021)</translation>
 <translation id="9069432851455606924">Instellingen voor geolocatie</translation>
 <translation id="9069503402414011061">Als je het beleid instelt, geef je aan hoeveel uur verificatiegegevens in het cachegeheugen worden bewaard. Het cachegeheugen bevat gegevens over realms die door de machine realm worden vertrouwd (aangesloten realms). Verificatiegegevens worden opgeslagen in het cachegeheugen zodat je sneller kunt inloggen. Er worden geen gebruikersspecifieke gegevens en geen gegevens voor niet-aangesloten realms in het cachegeheugen opgeslagen.
@@ -12725,6 +12708,21 @@ Als je het beleid niet instelt, is <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> v
 <translation id="9122865885571719292">Bepaalt of en hoe <ph name="PRODUCT_OS_NAME" /> de laatste sessie herstelt bij het inloggen.
 Dit beleid heeft alleen effect als het beleid <ph name="FULL_RESTORE_ENABLED_NAME" /> is ingesteld op True.</translation>
 <translation id="9123464369663964441">Gebruikers toestaan uitzonderingen toe te voegen om gemengde content toe te staan</translation>
+<translation id="9123738611041078443">Hiermee worden de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> geconfigureerd.
+
+Als beheerders <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> willen instellen, moeten ze een van de volgende opties invoeren:
+* De URL van de web-app van <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), OF
+* Alle 3 de verouderde parameters samen: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> en <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Als je maar een gedeeltelijke subset van deze 3 parameters verstrekt zonder URL, blijft <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet-geconfigureerd.
+
+De parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> moet een geldige URL zijn die het https-schema gebruikt, naar een <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-domein verwijst en geen gebruikersnaam of wachtwoord bevat. Als het niet aan deze vereisten voldoet, wordt het beleid genegeerd en wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet ingesteld.
+
+Als zowel de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> als de oude parameters zijn ingesteld, heeft de parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> voorrang.
+
+Als je dit beleid instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ingesteld voor gebruikers die zijn ingelogd met een beheerd account of een beheerde browser.
+
+Als je dit beleid niet instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet geconfigureerd.
+
+Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Die kan worden beheerd door het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Nooit gegevens over domeinbetrouwbaarheid naar Google sturen</translation>
 <translation id="9126331659955304300">Selecteren van gebruikersavatars toestaan via het lokale bestandssysteem, de camera en het Google-profiel</translation>
 <translation id="9126694586349976283">Het gebruik van de ingebouwde AI-API's toestaan</translation>
@@ -12909,6 +12907,13 @@ Als je het huidige gedrag van <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME
 Als je het beleid instelt op True of niet instelt, krijgen gebruikers de controle over 'Automatisch aanvullen' voor creditcards in de UI.
 
 Als je het beleid instelt op False, worden er nooit creditcardgegevens voorgesteld of ingevuld door 'Automatisch aanvullen'. Ook worden er geen aanvullende creditcardgegevens opgeslagen die gebruikers opgeven als ze internetten.</translation>
+<translation id="963375545567956229">Dit beleid is beëindigd en heeft geen effect meer vanaf M145. Uitgebreide rapportage van Safe Browsing is verwijderd uit <ph name="PRODUCT_NAME" />, dus <ph name="PRODUCT_NAME" /> stuurt deze rapporten niet meer, ongeacht hoe dit beleid is ingesteld. De bijbehorende instelling wordt niet meer aan gebruikers getoond.
+
+      Als je wilt dat <ph name="PRODUCT_NAME" /> aanvullende informatie stuurt om Safe Browsing te verbeteren, zet je in plaats daarvan Geoptimaliseerde beveiliging aan met het beleid <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+      Vóór M145 werd met de instelling Aan de uitgebreide rapporten van Safe Browsing van <ph name="PRODUCT_NAME" /> aangezet. Hiermee werden bepaalde systeeminformatie en paginacontent naar Google-servers gestuurd om te helpen bij de detectie van gevaarlijke apps en sites. Als je het beleid niet toepaste, werden er nooit rapporten gestuurd. Als het beleid was ingesteld, konden gebruikers het niet wijzigen. Als het niet was ingesteld, konden gebruikers beslissen of ze rapporten wilden sturen.
+
+      Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="966425658642788645">Standaardgedrag toepassen</translation>
 <translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>

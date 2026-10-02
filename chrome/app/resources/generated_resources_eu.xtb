@@ -623,7 +623,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1472675084647422956">Erakutsi gehiago</translation>
 <translation id="1473223074251193484">Ezarri konexioa partekatzeko aukeraren konfigurazioa</translation>
 <translation id="1473616112002966036">&amp;Bideo-fotograma</translation>
-<translation id="1475224725276659152">Irakurketa-zerrenda eta gehiago gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="1475224725276659152">Irakurketa-zerrenda eta bestelako datuak gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="1476607407192946488">&amp;Hizkuntza-ezarpenak</translation>
 <translation id="1477654881618305065">Erakundeak ez dizu eman baimenik eduki hau partekatzeko. Laguntza behar baduzu, jarri administratzailearekin harremanetan.</translation>
 <translation id="1478340334823509079">Xehetasunak: <ph name="FILE_NAME" /></translation>
@@ -986,7 +986,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1755601632425835748">Testuaren tamaina</translation>
 <translation id="1756963401828337401">Aukeratu pantaila bat haren argazki bat ateratzeko</translation>
 <translation id="17584710573359123">Ikusi Chrome Web Store-n</translation>
-<translation id="1758845021884209593">Erabili lasterbidea sistema eragilearen aplikazioetan</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> botoiari <ph name="REMAPPING_OPTION" /> ekintza esleitu zaio.</translation>
 <translation id="1761845175367251960"><ph name="NAME" /> erabiltzailearen kontuak</translation>
 <translation id="176272781006230109">erosketei buruzko iradokizunak</translation>
@@ -1558,7 +1557,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2198625180564913276">Profila gehitzen. Agian minutu batzuk beharko dira.</translation>
 <translation id="2198712775285959645">Editatu</translation>
 <translation id="2199298570273670671">Errorea</translation>
-<translation id="220006241671843310">Aukeratu Chrome-k gailuan zuzenean exekutatzen diren AAko ereduak erabil ditzakeen ala ez</translation>
+<translation id="2199546617947317537">Beste gailuetako historia lortzeko, hasi saioa eta sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Gainera, pasahitzak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="2200094388063410062">Posta elektronikoa</translation>
 <translation id="2200781749203116929">ChromeOS-en sistemaren erregistroak</translation>
 <translation id="2202391868799679245">Aktibatu lasterbidea</translation>
@@ -2075,6 +2074,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2599048253926156421">Kopiatu da erabiltzaile-izena arbelean</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Segurua ez den luzapen bat desaktibatu da}other{Seguruak ez diren {NUM_SITES} luzapen desaktibatu dira}}</translation>
 <translation id="2603121359676416582">Orri honetarako</translation>
+<translation id="2603656971249947488">Fitxen zinta</translation>
 <translation id="2604129989323098489">Webguneek pantailei buruzko informazioa eskatu ohi dute leihoak modu adimentsuan ireki eta kokatu ahal izateko (adibidez, dokumentuak edo pantaila osoko edukia alboz albo erakusteko)</translation>
 <translation id="2604255671529671813">Sareko konexioaren errorea</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" /> helbidearen inprimakia bete da.</translation>
@@ -2286,6 +2286,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2743387203779672305">Kopiatu arbelean</translation>
 <translation id="274362947316498129">Aplikazio bat <ph name="DEVICE_NAME" /> atzitu nahian dabil. Sarbidea emateko, desaktibatu <ph name="DEVICE_NAME" />ren pribatutasun-etengailua.</translation>
 <translation id="2744221223678373668">Partekatutakoak</translation>
+<translation id="2744919074068076548">Ireki ikuspegi zatitua</translation>
 <translation id="2745080116229976798">Microsoft menderakuntza mugatua</translation>
 <translation id="2749756011735116528">Hasi saioa <ph name="PRODUCT_NAME" />-n</translation>
 <translation id="2749836841884031656">SIMa</translation>
@@ -2337,6 +2338,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2777525873368474674">Itsatsi irudirako esteka</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 webgune aurkitu da jakinarazpen ugarirekin}other{{NUM_SITES} webgune aurkitu dira jakinarazpen ugarirekin}}</translation>
 <translation id="2778471504622896352">Urruneko aplikazioak Chrome OS-ren abiarazlean gehitu.</translation>
+<translation id="2781037472881921606">Beste gailuetako historia lortzeko, sinkronizatu historia. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Erabili segurtasun-giltza <ph name="APP_NAME" /> aplikazioarekin</translation>
@@ -2399,6 +2401,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2826576843404243001">Konexio seguruak onartzen ez dituzten webguneetan, abisu bat ikusiko duzu webgunea bisitatu aurretik. Ezin duzu aldatu ezarpena, Babes aurreratua gaituta daukazulako.</translation>
 <translation id="2828375943530438449">Egin saioa hasteko orritik atzera</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> libre utzi dira</translation>
+<translation id="2828851448902426206">Beste gailuetako fitxak lortzeko, hasi saioa eta sinkronizatu historia. Gainera, gordetako informazioa eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="2833144527504272627">Nabigatu testu-kurtsorearekin</translation>
 <translation id="2833727845850279275">Fitxategi honek malwarea dauka, edo webgune susmagarri batekoa da.</translation>
 <translation id="2835177225987815960">Oraingo mugitze-konfigurazioa berrezarri egingo da, esleitutako etengailuak eta pantailan automatikoki mugitzeko abiadura-hobespenak barne.</translation>
@@ -2765,6 +2768,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3102309003841389927">Berrikusi eguneratutako logotipoa</translation>
 <translation id="310297983047869047">Aurreko diapositiba</translation>
 <translation id="3103451787721578293">Idatzi datu hauek kargatzeko arrazoi bat:</translation>
+<translation id="3105253709809514429">Beste gailuetako fitxak lortzeko, hasi saioa eta sinkronizatu historia. Luzapenak eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3105339775057145050">Ezin izan da instalatu azken eguneratzea</translation>
 <translation id="3105796011181310544">Google-ra itzuli nahi duzu?</translation>
 <translation id="3105820656234755131">Eguneratu da pasahitza</translation>
@@ -2776,6 +2780,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3109206895301430738">Gordetako fitxa taldeak</translation>
 <translation id="3109724472072898302">Tolestuta</translation>
 <translation id="3112292765614504292">Aplikazioaren tamaina: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Beste gailuetako fitxak lortzeko, hasi saioa eta sinkronizatu historia. Gainera, laster-markak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="311347022006935575">Fitxa hau gehitu du</translation>
 <translation id="311394601889664316">Ez eman gailuko fitxategiak edo karpetak editatzeko baimena webguneei</translation>
 <translation id="3113970906450647715">Aingura kendu zaio botoiari</translation>
@@ -3281,6 +3286,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3498138244916757538">Mikrofonoaren ezarpenean egindako aldaketa aplikatzeko, itzali egin behar da <ph name="SPECIFIC_NAME" />. Aurrera egiteko, itzali <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3500417806337761827">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. SMBko fitxategiak partekatzeko biltegi gehiegi daude jada muntatuta.</translation>
 <translation id="3500764001796099683">Gaitu sareko aplikazio isolatuak</translation>
+<translation id="3501134531169168291"><ph name="DEVICE" /> gailuko fitxak lortzeko, hasi saioa eta sinkronizatu historia. Luzapenak eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3505100368357440862">erosketei buruzko iradokizunak</translation>
 <translation id="3507650052590605702">Kudeatu pasahitza</translation>
 <translation id="3507888235492474624">Bilatu berriro Bluetooth bidezko gailuak</translation>
@@ -3357,6 +3363,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3562655211539199254">Ikusi telefonoan azkenaldian erabilitako Chrome-ko fitxak</translation>
 <translation id="356268274299520831">Aldatu webgunean</translation>
 <translation id="3563392617245068355">Aldarteak</translation>
+<translation id="3564327838471533677">Duela gutxi itxitako ikuspegi zatitua</translation>
 <translation id="3564456410937306182">Lortu karga egokituari buruzko informazio gehiago.</translation>
 <translation id="3564659095423213915">Karpeta hau gailu honetan soilik dago gordeta. "<ph name="ACCOUNT_FOLDER" />" karpetan gordetzen baduzu, kontuan ere gordeko da karpeta.</translation>
 <translation id="3564848315152754834">USB bidezko segurtasun-giltza</translation>
@@ -3768,6 +3775,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3838085852053358637">Ezin izan da kargatu luzapena</translation>
 <translation id="3838486795898716504"><ph name="PAGE_TITLE" /> orriaren jarraipena</translation>
 <translation id="383891835335927981">Ez da aplikatu zoomik inongo webgunetan</translation>
+<translation id="3839108710633244251">Beste gailuetako historia lortzeko, hasi saioa eta sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Gainera, gordetako informazioa eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="3839516600093027468">Blokeatu beti <ph name="HOST" /> webguneari arbela ikusteko aukera</translation>
 <translation id="3840096463915153852">Elkarrizketaren historia</translation>
 <translation id="3841319830220785495">Ahots natural lehenetsia</translation>
@@ -4140,7 +4148,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4131283654370308898">Eman fitxa honetan <ph name="EXTENSION_NAME" /> erabiltzeko baimena</translation>
 <translation id="4131410914670010031">Zuri-beltzez</translation>
 <translation id="413193092008917129">Sarearen diagnostiko-errutinak</translation>
-<translation id="4132108564882155194"><ph name="DEVICE" /> gailuko irakurketa-zerrenda eta gehiago lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="4132108564882155194"><ph name="DEVICE" /> gailuko irakurketa-zerrenda eta bestelako datuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="4132137475637520539">Utzi sartzen esteka duten guztiei</translation>
 <translation id="4132364317545104286">Aldatu izena eSIMaren profilari</translation>
 <translation id="4132969033912447558">Berrekin honi: <ph name="FILE_NAME" /></translation>
@@ -4260,7 +4268,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4241140145060464825">Aplikazioko edukia</translation>
 <translation id="4241224519481557898">Kategoria</translation>
 <translation id="4242245038391716252">Luzapenak deskargatu du: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Orain, fitxak zabaltzeko, pasatu kurtsorea haien gainetik. Aktibatzeko, egin klik eskuineko botoiarekin hemen.</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> domeinuak <ph name="BEGIN_LINK" />kudeatzen ditu zure arakatzailea eta profila<ph name="END_LINK" /></translation>
 <translation id="424315890655130736">Idatzi pasaesaldia</translation>
@@ -4291,6 +4298,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Mantendu taldea}other{Mantendu taldeak}}</translation>
 <translation id="4261429981378979799">Luzapenen baimenak</translation>
 <translation id="4262004481148703251">Baztertu abisua</translation>
+<translation id="4262060800239714974"><ph name="DEVICE" /> gailuko fitxak lortzeko, sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4263470758446311292">Lortu memoria-aurrezte ahalik eta handiena. Tarte laburrago baten ondoren ezartzen dira inaktibo fitxak.</translation>
 <translation id="4263824086525632">Aurora boreala</translation>
 <translation id="4265096510956307240">Egiaztatu zeu zarela</translation>
@@ -4424,7 +4432,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4360738659108163902">Saguaren eskuineko botoiarekin klik egitea</translation>
 <translation id="4361745360460842907">Ireki fitxa gisa</translation>
 <translation id="4362459470237309049">Erabili "." saguaren botoi bat askatzeko</translation>
-<translation id="4362871358537270439">Erakutsi beste gailu batzuetako fitxak alboko panelean</translation>
 <translation id="4363262124589131906">Nire unitatea karpetako fitxategi berriak Chromebook honekin automatikoki sinkronizatzeari utziko zaio</translation>
 <translation id="4364129298304269786">Litekeena da webguneek edukia babesteko zerbitzu bat erabiltzea copyrightaren bidez babestutako edukia erreproduzitzeko</translation>
 <translation id="4364327530094270451">Meloia</translation>
@@ -4927,8 +4934,10 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4750185073185658673">Hartu telefonoa eta berrikusi beste baimen batzuk. Ziurtatu telefonoak Bluetootha eta wifia aktibatuta dauzkala.</translation>
 <translation id="4750394297954878236">Iradokizunak</translation>
 <translation id="475088594373173692">Lehen erabiltzailea</translation>
+<translation id="4751925628341802838">Beste gailuetako historia lortzeko, hasi saioa eta sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Luzapenak eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4753084533826742808">Gutxienez karaktere bat eduki behar du</translation>
 <translation id="4754590344707355551">Hobetu arakatzailea luzapenak erabilita</translation>
+<translation id="4756130875344525429"><ph name="DEVICE" /> gailuko historia lortzeko, hasi saioa eta sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Gainera, gordetako informazioa eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4756378406049221019">Gelditu / Kargatu berriro</translation>
 <translation id="4756388243121344051">&amp;Historia</translation>
 <translation id="4756627014339714615">Birbideratu</translation>
@@ -5158,6 +5167,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4913573660390710463">Paketatutako sarbidea duten sareko aplikazioak, gaitasun hobetuekin. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Ezin dira aurkitu aplikazioko datuak</translation>
 <translation id="4915961947098019832">Irudiak erakuts ditzakete</translation>
+<translation id="4916140032692201190">&amp;Itzuli hautatutakoa</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> webguneak "<ph name="EXTENSION_NAME" />" luzapenarekin komunikatu nahi du</translation>
 <translation id="4918086044614829423">Onartu</translation>
 <translation id="4918762404810341788">Kopiatu eta ireki</translation>
@@ -5239,6 +5249,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="497403230787583386">Amaitu dira segurtasun-egiaztapenak. Dokumentua inprimatu egingo da.</translation>
 <translation id="4974442344472293753">Eguneratzearen emaitza</translation>
 <translation id="4975771730019223894">Aplikazio-multzokatzea</translation>
+<translation id="4976647810464861866">Beste gailuetako fitxak lortzeko, hasi saioa eta sinkronizatu historia. Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Berretsi sarbidea</translation>
 <translation id="4979263087381759787">Garatzaileentzako aukerak</translation>
@@ -5411,6 +5422,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="511313294362309725">Aktibatu Parekatze bizkorra</translation>
 <translation id="5113992879909788634">Lortu Chrome-ren arakatze automatikoari buruzko informazio gehiago</translation>
 <translation id="51143538739122961">Sartu segurtasun-giltza eta saka ezazu</translation>
+<translation id="5114635223409082546"><ph name="DEVICE" /> gailuko fitxak lortzeko, hasi saioa eta sinkronizatu historia. Gainera, laster-markak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="5115338116365931134">Saio-hasiera bakarra</translation>
 <translation id="5116628073786783676">Go&amp;rde audioa honela…</translation>
 <translation id="5117139026559873716">Deskonektatu telefonoa <ph name="DEVICE_TYPE" /> gailutik. Automatikoki konektatzeari utziko diote.</translation>
@@ -5807,6 +5819,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5436211819997237281">Fitxa berriaren orria une honetan kudeatzen duen luzapena</translation>
 <translation id="5436492226391861498">Proxy-tunelaren zain…</translation>
 <translation id="5436510242972373446">Bilatu <ph name="SITE_NAME" /> bidez:</translation>
+<translation id="5437406591808823366">Pasahitzak gailu guztietan automatikoki bete eta gordetzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> leihoaren zabalera <ph name="WINDOW_SIZE_PERCENT" /> da orain, <ph name="PANE_SIDE" /> panelaren zabalera <ph name="PANE_SIZE_PERCENT" /> da orain.</translation>
 <translation id="5438060324827306856">Bilatu luzapenak</translation>
 <translation id="5440240650630588012">Aplikatu irakurketa-lerro edo -leiho bat arreta mantentzen laguntzeko. Sakatu ⌥L edo joan Ezarpenak atalera.</translation>
@@ -5836,6 +5849,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5457795687441958389">Ez hasi saioa</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Gehiegitan idatzi duzu oker PINa. Sarbide-gakoak eta pasahitzak erabiltzeko, aldatu PINa.</translation>
+<translation id="5459251585760045919"><ph name="DEVICE" /> gailuko historia lortzeko, hasi saioa eta sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Luzapenak eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="5459470938885464873">Errore bat gertatu da ziurtagiria inportatzean</translation>
 <translation id="5459864179070366255">Instalatzeko, egin aurrera</translation>
 <translation id="5460861858595506978">Inspirazioa</translation>
@@ -6007,6 +6021,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5584088138253955452">Erabiltzaile-izena gorde nahi duzu?</translation>
 <translation id="5585019845078534178">Txartelak</translation>
+<translation id="5585064628683466904">Beste gailuetako historia lortzeko, hasi saioa eta sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="5585118885427931890">Ezin izan da sortu laster-marken karpeta.</translation>
 <translation id="558563010977877295">Ireki orri edo orri multzo zehatz bat</translation>
 <translation id="5587592231724900065">Luzapen batek kontrolatzen du ezarpena</translation>
@@ -6216,7 +6231,6 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5776571780337000608">Onartzen diren fitxategiak aplikazio honekin ireki ditzakezu fitxategi-arakatzailetik edo beste aplikazio batzuetatik. Aplikazio hau modu lehenetsian zein fitxategik irekitzen duten kontrolatzeko, <ph name="BEGIN_LINK" />lortu gailuaren aplikazio lehenetsiak ezartzeko argibideak<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Ireki Chrome</translation>
 <translation id="5778491106820461378"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan.</translation>
-<translation id="5779636902585836564">&amp;Itzuli</translation>
 <translation id="5780011244986845107">Kontuzko fitxategiak ditu hautatu duzun karpetak. Ziur "<ph name="APP_NAME" />" aplikazioari karpeta hori irakurtzeko behin betiko sarbidea eman nahi diozula?</translation>
 <translation id="5780973441651030252">Prozesuaren lehentasuna</translation>
 <translation id="5781120434102258025">Eraman ikastetxeko kontuko datuak zure kontu pertsonalera</translation>
@@ -6742,6 +6756,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6175910054050815932">Lortu esteka bat</translation>
 <translation id="6177478397823976397">Ez da aurkitu gailurik. Ireki laguntza-zentroko artikulu bat beste fitxa batean</translation>
 <translation id="6177779807714496775">Ireki esteka ezkerreko ikuspegian</translation>
+<translation id="6178186430790239237">Beste gailuetako fitxak lortzeko, sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="6178664161104547336">Hautatu ziurtagiri bat</translation>
 <translation id="6178682841350631965">Eguneratu dira saioa hasteko datuak</translation>
 <translation id="6179830757749383456">Arakatzailea <ph name="BROWSER_DOMAIN" /> domeinuak kudeatzen du; profila, berriz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
@@ -6871,6 +6886,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6273677812470008672">Kalitatea</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> gailura konektatzen</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">Zure gailu guztietako laster-markak erabilita gogoko webguneetara bizkor joateko, hasi saioa <ph name="EMAIL" /> gisa.</translation>
 <translation id="6277105963844135994">Sarera konektatzeko denbora-muga gainditu da</translation>
 <translation id="6277518330158259200">&amp;Atera pantaila-argazkia</translation>
 <translation id="6278428485366576908">Gaia</translation>
@@ -7052,6 +7068,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6430202563517028640">Gehitu esteka irakurketa-zerrendan</translation>
 <translation id="6430814529589430811">Base64 bidez kodetutako ASCII, ziurtagiri bakarra</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> programak eguneratze automatikoak ezarriko ditu ordenagailuaren erabiltzaile guztientzat.</translation>
+<translation id="6431970976661940755"><ph name="DEVICE" /> gailuko fitxak lortzeko, hasi saioa eta sinkronizatu historia. Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="6434104957329207050">Puntukako mugimenduaren abiadura</translation>
 <translation id="6434309073475700221">Baztertu</translation>
 <translation id="6434755719322447931">Kaotikoa</translation>
@@ -7216,6 +7233,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="6556903358015358733">Gaia eta horma-papera</translation>
 <translation id="6557199166823345360">Gehitu xehetasun gehiago edo egin zure hautapenari buruzko galdera bat, bilaketa mugatzeko</translation>
 <translation id="6557290421156335491">Nire lasterbideak</translation>
+<translation id="655745275895381718"><ph name="DEVICE" /> gailuko fitxak lortzeko, hasi saioa eta sinkronizatu historia. Gainera, gordetako informazioa eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="6558098963164662391">&amp;Kendu hiztegitik</translation>
 <translation id="6560061709899140565">Erakutsi beste igorpen-saio batzuk</translation>
 <translation id="656065428026159829">Ikusi gehiago</translation>
@@ -7290,6 +7308,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6607831829715835317">&amp;Tresna gehiago</translation>
 <translation id="6608166463665411119">Berrezarri eSIMa</translation>
 <translation id="660846213831377756">Saguaren teklak</translation>
+<translation id="6608725880745776452">Atzitu pasahitzak eta bestelako datuak <ph name="DEVICE" /> gailutik</translation>
 <translation id="6609478180749378879">Ezkutuko modutik irteten zarenean, saioa hasteko datuak gailu honetan gordeko dira. Horrela, gailu honekin webgune honetan saioa hasi ahalko duzu berriro.</translation>
 <translation id="6610002944194042868">Itzultzeko aukerak</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> fitxa</translation>
@@ -7902,6 +7921,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 pasahitz inportatu da <ph name="BRAND" /> zerbitzura (<ph name="USER_EMAIL" />)}other{{NUM_PASSWORDS} pasahitz inportatu dira <ph name="BRAND" /> zerbitzura (<ph name="USER_EMAIL" />)}}</translation>
 <translation id="7065534935986314333">Sistemari buruz</translation>
 <translation id="706626672220389329">Errore bat gertatu da fitxategiak partekatzeko biltegia muntatzean. Zehaztutako fitxategiak partekatzeko biltegia muntatuta dago jada.</translation>
+<translation id="7066357648902789011"><ph name="DEVICE" /> gailuko historia lortzeko, hasi saioa eta sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Gainera, pasahitzak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7067396782363924830">Inguruko koloreak</translation>
 <translation id="7067725467529581407">Ez erakutsi berriro.</translation>
 <translation id="7068539819344620805">Orain, nahi duzunean eman diezaiokezu itxura berria arakatzaileari, Chrome pertsonalizatzeko menutik</translation>
@@ -8051,7 +8071,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
 <translation id="7188755083797868960">Ireki irakurtzeko modua bizkorrago lasterbide batekin. Irakurtzeko modua aktibatzeko/desaktibatzeko, sakatu Alt + Maius + R.</translation>
 <translation id="7189234443051076392">Ziurtatu gailuan behar adina toki duzula</translation>
-<translation id="7189558282078169397">Beste gailu batzuetako fitxak</translation>
 <translation id="7189965711416741966">Gehitu da hatz-marka.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" /> blokeatu nahi duzu?</translation>
 <translation id="7191063546666816478">Laguntza emateko esteka batzuek <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> eta beste <ph name="NUMBER_OF_OTHER_APPS" /> aplikaziotan irekitzen jarraituko dute.</translation>
@@ -8087,6 +8106,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7214047272988222011">Baimena dauka (<ph name="PERMISSION_DETAILS" />). Aktibatu <ph name="LINK_BEGIN" />sistemaren kamera erabiltzeko baimena<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Fitxa berria fitxa batean}other{Fitxa berria # fitxatan}}</translation>
 <translation id="721490496276866468">Inportatu pasahitzak</translation>
+<translation id="7216638029417040861">Beste gailuetako historia lortzeko, hasi saioa eta sinkronizatu fitxak eta historia <ph name="EMAIL" /> kontuan. Gainera, laster-markak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7217208603285112910">Hautatutakoaren hizkuntza ez da <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Gehitu testua, iruzkinak eta oharrak testuzko oharpenen tresna berriarekin</translation>
 <translation id="7219254577985949841">Webguneko datuak ezabatu nahi dituzu?</translation>
@@ -8097,6 +8117,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7222232353993864120">Helbide elektronikoa</translation>
 <translation id="7222335051802562841">Amaitu eguneratzen</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522"><ph name="DEVICE" /> gailuko historia lortzeko, hasi saioa eta sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Irakurketa-zerrenda eta bestelako datuak ere eskuratuko dituzu gailu guztietan. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7223027547122518521">Hautatu webgune honek irakur dezakeen fitxategi bat</translation>
 <translation id="7223952304612664117">Zure kokapena zehazteko Kokapen-zehaztasuna erabiltzeko baimena ematen die sistemaren zerbitzuei. Kokapen-zehaztasuna ezarpenak hari gabeko seinaleen eta sentsoreen datuak erabiltzen ditu gailuaren kokapena estimatzeko.</translation>
 <translation id="7225082563376899794">Pasahitzak betetzean, erabili Windows Hello</translation>
@@ -8466,6 +8487,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7501957181231305652">edo</translation>
 <translation id="7502220299952823578">Gehitu mantendu beti webgune hauek aktibo zerrendan</translation>
 <translation id="7502528909759062987">Pausatu fitxa <ph name="DEVICE_NAME" /> gailura igortzeko prozesua</translation>
+<translation id="750275011730776314">Itzuli Gemini-ra</translation>
 <translation id="7502804472671406749">Fitxa partekatuetan gora/behera egin, eta zooma erabil daiteke</translation>
 <translation id="750314150962284310">Lerro-fokua</translation>
 <translation id="7503191893372251637">Netscape ziurtagiri mota</translation>
@@ -8494,7 +8516,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="7517959947270534934">Familiako kideak ezin du jaso pasahitzik une honetan. Eska iezaiozu Chrome eguneratzeko eta pasahitzak sinkronizatzeko.</translation>
 <translation id="7518079994230200553">Aukera hau ez dago erabilgarri une honetan.</translation>
 <translation id="7519506357537394422"><ph name="DOMAIN" /> aplikazioan zure izenean saioa hasteko baimena eman nahi diozu Gemini-ri?</translation>
-<translation id="752021853309481824">Gordetako informazioa eta bestelako datuak gailu guztietan lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="752021853309481824">Gordetako informazioa eta bestelako datuak gailu guztietan gordeta edukitzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="7520766081042531487">Ezkutuko moduaren ataria: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="752098910262610337">Erakutsi lasterbideak</translation>
 <translation id="7521430434164837205">Microsoft 365-eko fitxategiak</translation>
@@ -8707,6 +8729,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7684718995427157417">Zeure aplikazioak sortu eta probatzeko, gaitu Android Debug Bridge (ADB). Kontuan izan ekintza honekin baimendu egiten dela Google-k egiaztatu ez dituen Android-erako aplikazioak instalatzeko aukera eta, inoiz tresna hori desgaitu nahi izanez gero, jatorrizko datuak berrezarri beharko direla.</translation>
 <translation id="7684803937028953000">Zure erakundeak fitxategiaren deskarga lokala blokeatu du.</translation>
 <translation id="7684913007876670600">Orri honen ikuspegi sinplifikatu bat erakusteko, ireki alboko panela eta hautatu Irakurtzeko modua</translation>
+<translation id="7684957383619170952">Atzitu <ph name="DEVICE" /> gailuko laster-markak eta bestelako edukiak</translation>
 <translation id="7685038817958445325">Ezin da igorri edukia</translation>
 <translation id="7685049629764448582">JavaScript memoria</translation>
 <translation id="7685087414635069102">PINa behar da</translation>
@@ -8984,6 +9007,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Utzi konfiguratzeari</translation>
 <translation id="7912974581251770345">Itzulpena</translation>
+<translation id="7913805372428124107"><ph name="DEVICE" /> gailuko fitxak lortzeko, hasi saioa eta sinkronizatu historia. Gainera, pasahitzak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7914399737746719723">Instalatu da aplikazioa</translation>
 <translation id="7915457674565721553">Konektatu Internetera guraso-murriztapenak konfiguratzeko</translation>
 <translation id="7916364730877325865">Erakundeak ez dizu eman baimenik kontu honekin sinkronizazioa aktibatzeko</translation>
@@ -9232,6 +9256,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8081989000209387414">ADB arazketa desgaitu nahi duzu?</translation>
 <translation id="8082132721957920509">Txartela gordeta dago</translation>
 <translation id="8082390128630131497">ADB arazketa desgaitzen baduzu, <ph name="DEVICE_TYPE" /> gailuaren jatorrizko ezarpenak berrezarriko dira. Erabiltzaile-kontu guztiak eta gailuko datuak ezabatu egingo dira.</translation>
+<translation id="8082737802704584539">Erakundeak historia gordetzeko aukera desaktibatu du Google-ko kontuan</translation>
 <translation id="8084114998886531721">Gordetako pasahitza</translation>
 <translation id="8084417885464859041">Erabili Gemini segurtasunez</translation>
 <translation id="8084429490152575036">APN mugikorraren ezarpenak</translation>
@@ -9264,6 +9289,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="810362914482827094">Bilatu sarbide-gakoak</translation>
 <translation id="8104088837833760645">Deskargatu eSIMaren profila</translation>
 <translation id="8104388155778519213">Partekatu pantailan duzuna Google Lens-ekin</translation>
+<translation id="8104412594956510627"><ph name="DEVICE" /> gailuko historia lortzeko, sinkronizatu historia. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="8104778744208707085">Zerbait egin behar duzu</translation>
 <translation id="8105273883928376822">Hasi saioa aurrera egin ahal izateko.</translation>
 <translation id="8106114112474206597">Erabili "i" saguaren botoi bat sakatzeko</translation>
@@ -9294,6 +9320,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8124313775439841391">Kudeatutako ONC propietateak</translation>
 <translation id="8125651784723647184">Pasahitzen partekatzea zure administratzaileak kudeatzen du</translation>
 <translation id="8126355825906412872">Irribarre egitea</translation>
+<translation id="8126498026310640675"><ph name="DEVICE" /> gailuko historia lortzeko, hasi saioa eta sinkronizatu historia eta fitxak <ph name="EMAIL" /> kontuan. Gainera, laster-markak eta bestelako datuak gailu guztietan izango dituzu. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="813082847718468539">Ikusi webgunearen informazioa</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8133297578569873332">Onargarria: FM</translation>
@@ -9745,6 +9772,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8477241577829954800">Ordeztua</translation>
 <translation id="8477384620836102176">&amp;Orokorra</translation>
 <translation id="8477446666255316832">Hasi saioa bizkorrago hurrengoan</translation>
+<translation id="8477548388161793571">&amp;Itzuli hautatutakoa</translation>
 <translation id="8478346767369317046">Lana</translation>
 <translation id="8479176401914456949">Kodeak ez du balio. Saiatu berriro.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> saltzailearen identifikatu ezin den gailua</translation>
@@ -10213,7 +10241,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="8841843049738266382">Onartutakoen zerrendako erabiltzaileak ikusi eta aldatu.</translation>
 <translation id="8841884135319684422">Amaitu zeregina</translation>
 <translation id="8842594465773264717">Ezabatu hatz-marka</translation>
-<translation id="8843160937959801189"><ph name="DEVICE" /> gailuko laster-markak eta bestelako elementuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
+<translation id="8843160937959801189"><ph name="DEVICE" /> gailuko laster-markak eta bestelako datuak lortzeko, hasi saioa <ph name="EMAIL" /> gisa</translation>
 <translation id="8844476858332168421">Kudeatu trebetasunak</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
 <translation id="8846132060409673887">Ordenagailuaren fabrikatzaileari eta modeloari buruzko informazioa irakurri.</translation>

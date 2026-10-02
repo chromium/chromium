@@ -934,7 +934,6 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 <translation id="1625700732886306811">允许 <ph name="PRODUCT_NAME" /> 连接到位于任何 IP 地址的设备</translation>
 <translation id="1626379196197114720">允许使用往返缓存</translation>
 <translation id="1628974048137236820">“新标签页”页面不会显示卡片</translation>
-<translation id="1628984674324273832">不允许使用 Gemini 智能查找和填充。</translation>
 <translation id="163200210584085447">系统会将此列表中的网址格式与请求网址的安全来源进行比对。如果找到了匹配项，系统将允许相应网址通过 SAML 登录页面访问视频捕获设备。如果未找到匹配项，系统将自动拒绝授予访问权限。不允许使用通配符模式。</translation>
 <translation id="1634770710106162474">如果此政策已启用，当 <ph name="PRODUCT_NAME" /> 在不受支持的计算机或操作系统中运行时，系统将不会显示警告。
 
@@ -1694,7 +1693,6 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
 <translation id="2107601598727098402">
         此政策在 M72 中已弃用。请改用 CloudManagementEnrollmentToken。
         </translation>
-<translation id="2111355600078097861">允许使用 Gemini 智能查找和填充功能，但不改进 AI 模型。</translation>
 <translation id="2112656109118682849">允许用户在登录屏幕上显示/隐藏系统信息</translation>
 <translation id="2113068765175018713">通过自动重启限制设备的正常运行时间</translation>
 <translation id="211386002920955760">控制企业用户是否可以使用 Chrome 中的标签页分组共享功能。
@@ -5483,6 +5481,11 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="4561940244682063697">不允许网站提示用户分享录屏</translation>
 <translation id="4562165737444703281">允许用户 [启用/配置] Crostini 端口转发</translation>
 <translation id="456450545863578630">允许在由企业管理员建立的远程支持连接中传输文件</translation>
+<translation id="4567614489737189156">如果启用此政策，<ph name="PRODUCT_OS_NAME" /> 会将使用情况指标和诊断数据（包括崩溃报告）反馈给 Google。如果停用此政策，系统会关闭指标和诊断数据报告功能。
+
+对于受管设备，如果此政策未设置，系统会默认启用指标和诊断数据报告功能。
+
+对于非受管设备，此政策不适用，用户可以在设备设置期间或日后通过设置选择指标和诊断数据报告行为。</translation>
 <translation id="4570859815763368584">已在 M68 中弃用。请改用 DefaultPopupsSetting。
 
       如需查看完整说明，请访问 https://www.chromestatus.com/feature/5675755719622656。
@@ -6321,7 +6324,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 如果此政策未设置，其行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
 
 如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
-<translation id="5070539335358964387">允许使用 Gemini 智能查找和填充功能并改进 AI 模型。</translation>
 <translation id="5071303485174858500">停用受限受管理访客会话。</translation>
 <translation id="5073788301065423829">此政策用于启用或停用 ChromeOS 的“帮我写”功能。
 
@@ -9731,7 +9733,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="7136237405361383549">使用现场试验配置中的默认渲染程序。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函数的最短超时时间。</translation>
 <translation id="7138792262152376158">遵循 PrefixedVideoFullscreen API 的常规弃用时间表</translation>
-<translation id="7140755255968613921">Gemini 智能查找和填充功能的设置</translation>
 <translation id="7140760943584613237">Microsoft® Cloud Identity 提供方</translation>
 <translation id="714219487865269980">允许使用键盘焦点突出显示</translation>
 <translation id="7144022711746703451">
@@ -10135,19 +10136,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="7402257017733669351">阻止浏览器进程创建动态代码</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7406276857470642718">此政策旨在控制通过 SAML 向外部 IdP 验证身份的用户的设置</translation>
-<translation id="7407431811343706437">控制用户是否可以在 <ph name="PRODUCT_NAME" /> 中使用 Gemini 智能查找和填充功能。
-
-0 表示允许使用此功能，同时允许 Google 使用相关数据改进其 AI 模型。相关数据可能包括提示、输入、输出、素材和书面反馈，具体取决于相应功能。除非下文另有说明，否则默认值是 0。
-
-1 表示允许使用此功能，但不允许 Google 使用用户内容（包括提示、输入、输出、素材和书面反馈）改进模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示不允许使用此功能。
-
-如果 Gemini 应用已停用，此政策将不会产生任何影响。例如，可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策停用 Gemini 应用。
-
-如果未设置此政策，该工具的行为将由 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策决定。
-
-如需详细了解生成式 AI 功能的数据处理机制，请访问 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
 
       如果您设置了此政策，用户便无法更改相关设置。如果您未设置此政策，系统会开启网络预测功能，但用户可以更改设置。</translation>
@@ -10156,11 +10144,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="7410074797376205571">允许 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 执行远程主机通过代理发送的 WebAuthn API 请求。</translation>
 <translation id="7412456346709338637">启用 Thunderbolt/USB4 外围设备数据访问</translation>
 <translation id="7414890119082492552">无偏好设置。</translation>
-<translation id="7416222110012824615">此政策用于控制 XSLT 功能（XSLTProcessor JavaScript API 和 XSL 处理指令）的可用性。
-如果此政策已启用，无论浏览器中此功能的默认状态如何，XSLT 都将可用。
-如果此政策已停用，无论浏览器中此功能的默认状态如何，XSLT 都将不可用。
-如果此政策未设置，XSLT 的可用性将由浏览器的默认设置和现场试验决定。
-此政策是一项暂时性措施，将在 M164 中移除。</translation>
 <translation id="7417438464912687020">允许与这台计算机建立远程访问连接</translation>
 <translation id="7417972229667085380">演示模式下待机延迟时间的调整幅度（百分比）（已弃用）</translation>
 <translation id="7421230730436851224">一律不在沙盒中处理音频</translation>
@@ -10461,10 +10444,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       如果此政策设为 False 或未设置，系统将会关闭这种报告。
       在这两种情况下，使用 DataLeakPreventionRulesList 中的 ALLOW 级限制定义的规则将不会报告事件。</translation>
 <translation id="7648907905084499629">让所有网站上的 Cookie 都采用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行为</translation>
-<translation id="7649831723389657756">此政策允许您指定哪些来源可以使用 <ph name="PRODUCT_NAME" /> 支持的所有 HTTP 身份验证方案，而无需考虑 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策。
-
-      请按 <ph name="URL_SCHEME_FORMAT_LINK" /> 中的说明处理来源的格式。最多可在 <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中定义 1,000 个例外情况。
-      主机组件可以使用通配符（例如，“*:8000”匹配端口 8000 上的所有主机）。如需匹配所有方案或所有端口，请完全忽略相应组件（例如，“example.com”匹配任何方案和任何端口）。主机名（例如“example.com”）也与其子网域匹配。如需完全匹配某个主机并排除其子网域，请在其前面加上一个点（例如“.example.com”）。如需匹配所有来源，请使用单个星号 ('*')。</translation>
 <translation id="7652330587655863759">身份验证的类型。
 
 *“none”：不执行身份验证。
@@ -11236,6 +11215,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="8164687848393015214">如果此政策已启用，系统会将监控网络数据包（“<ph name="HEARTBEATS_TERM" />”）发送到管理服务器以监控设备在线状态，使服务器能够判断设备是否已离线。
 
       如果此政策已停用或未设置，系统将不会发送任何数据包。</translation>
+<translation id="8165152191100365965">在受管设备上向 Google 发送指标，或允许用户在非受管设备上自行决定</translation>
 <translation id="8168359201203671567">键盘背光颜色：彩虹色</translation>
 <translation id="8169452762291746260">停用设备运行状况监测</translation>
 <translation id="8170359860920320269">滤除提供成人内容的网站</translation>
@@ -12593,6 +12573,9 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       如果 URI 模板包含 <ph name="HTTP_VARIABLE_DNS" /> 变量，向解析器发出的请求将会使用 <ph name="HTTP_METHOD_GET" />；否则，这些请求便会使用 <ph name="HTTP_METHOD_POST" />。
 
       格式有误的模板将被忽略。</translation>
+<translation id="9066972193987544412">如果此政策已启用或未设置，用户可以添加、移除、修改或上传书签。
+
+      如果此政策已停用，用户将无法添加、移除、修改或上传书签，但仍能使用现有书签。</translation>
 <translation id="9068629430243705879">端口 6566（可在 2021 年 10 月 15 日之前解禁）</translation>
 <translation id="9069432851455606924">地理定位设置</translation>
 <translation id="9069503402414011061">通过设置此政策，您可以指定身份验证数据缓存期限（以小时为单位）。此缓存包含与机器领域所信任的领域（关联领域）相关的数据。因此，身份验证数据缓存有助于加快登录速度。系统不会缓存用户专属数据以及非关联领域的数据。
@@ -12665,6 +12648,21 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="9122865885571719292">控制 <ph name="PRODUCT_OS_NAME" /> 是否在登录时恢复上次会话以及如何恢复。
 此政策生效的前提是 <ph name="FULL_RESTORE_ENABLED_NAME" /> 政策设为 true。</translation>
 <translation id="9123464369663964441">让用户能够添加例外情况以允许显示混合内容</translation>
+<translation id="9123738611041078443">在 <ph name="PRODUCT_NAME" /> 中配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 的连接设置。
+
+如需配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />，管理员必须提供以下任一项：
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> Web 应用网址 (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />)，或
+* 所有三个旧版参数：<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> 和 <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />。如果仅指定这三个参数的部分子集，而不指定网址，则 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 将保持未配置状态。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数必须是使用 https 协议、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 域名且不包含用户名或密码的有效网址。如果未满足这些要求，系统会忽略此政策，并且 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 将保持未配置状态。
+
+如果同时配置了 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数和旧版参数，则以 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 参数为准。
+
+如果设置了此政策，系统会为使用受管理账号或受管理浏览器登录的用户配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果未设置此政策，系统将不会配置 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+请注意，此政策不会控制常规的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 集成，该集成可通过 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策控制。</translation>
 <translation id="9124770007620653639">一律不将网域可靠性数据发送给 Google</translation>
 <translation id="9126331659955304300">允许从本地文件系统、相机和 Google 个人资料中选择用户头像</translation>
 <translation id="9126694586349976283">允许使用内置 AI API。</translation>
@@ -12841,6 +12839,13 @@ HTTPS-Only 模式最初会设置为“严格”或“平衡”，但用户可以
 如果此政策设为 True 或未设置，用户可以控制界面中的信用卡信息自动填充建议。
 
 如果此政策设为 False，则“自动填充”功能一律不会建议或填充信用卡信息，也不会保存用户在浏览网页时提交的其他信用卡信息。</translation>
+<translation id="963375545567956229">此政策已弃用，从 M145 开始不再有效。安全浏览扩展报告功能已从 <ph name="PRODUCT_NAME" /> 中移除，因此无论此政策如何设置，<ph name="PRODUCT_NAME" /> 都不会再发送这些报告，并且相应的设置也不会再向用户显示。
+
+      如需让 <ph name="PRODUCT_NAME" /> 发送更多信息来帮助改进安全浏览功能，请改为使用 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 政策开启增强型保护。
+
+      在 M145 之前，如果此政策已启用，系统会开启 <ph name="PRODUCT_NAME" /> 的安全浏览扩展报告功能，该功能会将某些系统信息和网页内容发送到 Google 服务器，以帮助检测危险应用和网站。如果此政策已停用，系统一律不会发送报告。如果设置了此政策，用户将无法更改它；如果未设置此政策，用户可以决定是否发送报告。
+
+      详细了解“安全浏览”功能 (https://developers.google.com/safe-browsing)。</translation>
 <translation id="966425658642788645">应用默认行为</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>

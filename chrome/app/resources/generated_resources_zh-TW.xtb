@@ -986,7 +986,6 @@
 <translation id="1755601632425835748">文字大小</translation>
 <translation id="1756963401828337401">選擇要擷取的畫面</translation>
 <translation id="17584710573359123">前往 Chrome 線上應用程式商店查看</translation>
-<translation id="1758845021884209593">在 OS 應用程式中使用快速鍵</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />已重新對應到「<ph name="REMAPPING_OPTION" />」。</translation>
 <translation id="1761845175367251960"><ph name="NAME" />的帳戶</translation>
 <translation id="176272781006230109">購物建議</translation>
@@ -1560,7 +1559,6 @@
 <translation id="2198712775285959645">編輯</translation>
 <translation id="2199298570273670671">錯誤</translation>
 <translation id="2199546617947317537">如要存取其他裝置的歷史記錄，請登入帳戶，並將歷史記錄和分頁同步到 <ph name="EMAIL" />。這樣一來，密碼和其他資料也能同步到所有裝置。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務提供個人化體驗。</translation>
-<translation id="220006241671843310">選擇是否讓 Chrome 使用直接在裝置上執行的 AI 模型</translation>
 <translation id="2200094388063410062">電子郵件</translation>
 <translation id="2200781749203116929">ChromeOS 系統記錄</translation>
 <translation id="2202391868799679245">開啟鍵盤快速鍵</translation>
@@ -2077,6 +2075,7 @@
 <translation id="2599048253926156421">使用者名稱已複製到剪貼簿</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{已關閉 1 個不安全的擴充功能}other{已關閉 {NUM_SITES} 個不安全的擴充功能}}</translation>
 <translation id="2603121359676416582">針對這個頁面</translation>
+<translation id="2603656971249947488">分頁列</translation>
 <translation id="2604129989323098489">網站通常會要求你提供螢幕的相關資訊，以便視情況開啟視窗並調整視窗位置，例如並排顯示文件或全螢幕內容</translation>
 <translation id="2604255671529671813">網路連線錯誤</translation>
 <translation id="2604805099836652105">已填寫<ph name="ADDRESS_LABEL" />地址表單。</translation>
@@ -2288,6 +2287,7 @@
 <translation id="2743387203779672305">複製到剪貼簿</translation>
 <translation id="274362947316498129">一個應用程式正在嘗試存取<ph name="DEVICE_NAME" />。如要允許存取，請關閉<ph name="DEVICE_NAME" />隱私權切換鈕。</translation>
 <translation id="2744221223678373668">共用</translation>
+<translation id="2744919074068076548">開啟分割畫面</translation>
 <translation id="2745080116229976798">Microsoft 合格分類</translation>
 <translation id="2749756011735116528">登入 <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
@@ -3363,6 +3363,7 @@
 <translation id="3562655211539199254">查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="356268274299520831">前往該網站變更</translation>
 <translation id="3563392617245068355">情境</translation>
+<translation id="3564327838471533677">最近關閉的分割畫面</translation>
 <translation id="3564456410937306182">進一步瞭解自動調節充電功能。</translation>
 <translation id="3564659095423213915">這個資料夾只會儲存到這部裝置。如果儲存到「<ph name="ACCOUNT_FOLDER" />」，這個資料夾也會儲存到你的帳戶。</translation>
 <translation id="3564848315152754834">USB 安全金鑰</translation>
@@ -4266,7 +4267,6 @@
 <translation id="4241140145060464825">應用程式內容</translation>
 <translation id="4241224519481557898">類別</translation>
 <translation id="4242245038391716252">由擴充功能 (&lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;) 下載</translation>
-<translation id="4242344119782070019">現在只要將游標懸停在分頁上，就能展開分頁。如要開啟這項功能，請在這裡按一下滑鼠右鍵。</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4242825475818569385">你的<ph name="BEGIN_LINK" />瀏覽器和設定檔<ph name="END_LINK" />是由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="424315890655130736">輸入通關密語</translation>
@@ -4431,7 +4431,6 @@
 <translation id="4360738659108163902">按一下滑鼠右鍵</translation>
 <translation id="4361745360460842907">在分頁中開啟</translation>
 <translation id="4362459470237309049">按下「.」表示放開滑鼠按鍵</translation>
-<translation id="4362871358537270439">在側邊面板顯示其他裝置的分頁</translation>
 <translation id="4363262124589131906">「我的雲端硬碟」中的新檔案會自動停止同步至這部 Chromebook</translation>
 <translation id="4364129298304269786">網站可能會透過內容保護服務，播放受著作權保護的內容</translation>
 <translation id="4364327530094270451">瓜</translation>
@@ -5164,6 +5163,7 @@
 <translation id="4913573660390710463">存取具備進階功能的封裝網頁應用程式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">找不到應用程式資料</translation>
 <translation id="4915961947098019832">可以顯示圖片</translation>
+<translation id="4916140032692201190">翻譯所選內容(&amp;T)</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> 要求與「<ph name="EXTENSION_NAME" />」擴充功能通訊</translation>
 <translation id="4918086044614829423">接受</translation>
 <translation id="4918762404810341788">複製並開啟</translation>
@@ -5815,6 +5815,7 @@
 <translation id="5436211819997237281">現在是由這個擴充功能管理新分頁</translation>
 <translation id="5436492226391861498">正在等待 Proxy 通道...</translation>
 <translation id="5436510242972373446">搜尋 <ph name="SITE_NAME" />：</translation>
+<translation id="5437406591808823366">如要在所有裝置上自動填入及儲存密碼，請以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />視窗現在的寬度為 <ph name="WINDOW_SIZE_PERCENT" />，<ph name="PANE_SIDE" />窗格現在的寬度為 <ph name="PANE_SIZE_PERCENT" />。</translation>
 <translation id="5438060324827306856">尋找擴充功能(&amp;E)</translation>
 <translation id="5440240650630588012">套用閱讀線或視窗，協助你專注閱讀。按下 ⌥L 鍵或前往「設定」。</translation>
@@ -6226,7 +6227,6 @@
 <translation id="5776571780337000608">你可以在檔案瀏覽器或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
 <translation id="5777468213129569553">開啟 Chrome</translation>
 <translation id="5778491106820461378">你可以透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。你授予網站和應用程式的權限可能適用於所有帳戶。如果不想讓網站和應用程式存取你的帳戶資訊，請以訪客身分登入 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="5779636902585836564">翻譯(&amp;T)</translation>
 <translation id="5780011244986845107">你選取的資料夾包含敏感檔案。你確定要將這個資料夾的讀取權限永久授予「<ph name="APP_NAME" />」嗎？</translation>
 <translation id="5780973441651030252">處理優先順序</translation>
 <translation id="5781120434102258025">將學校帳戶資料移到個人帳戶</translation>
@@ -6882,6 +6882,7 @@
 <translation id="6273677812470008672">品質</translation>
 <translation id="6274089201566806618">正在連線至「<ph name="HOST_DEVICE_NAME" />」</translation>
 <translation id="6274202259872570803">螢幕側錄</translation>
+<translation id="6276246115230302286">如要使用各裝置上的書籤快速前往常用網站，請以「<ph name="EMAIL" />」身分登入</translation>
 <translation id="6277105963844135994">網路逾時</translation>
 <translation id="6277518330158259200">擷取螢幕畫面(&amp;A)</translation>
 <translation id="6278428485366576908">主題</translation>
@@ -7303,6 +7304,7 @@
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6608166463665411119">重設 eSIM</translation>
 <translation id="660846213831377756">滑鼠按鍵</translation>
+<translation id="6608725880745776452">存取<ph name="DEVICE" />中的密碼和其他資料</translation>
 <translation id="6609478180749378879">系統會在無痕模式結束後將登入資料儲存在這部裝置上。你可以再次透過這部裝置登入這個網站。</translation>
 <translation id="6610002944194042868">翻譯選項</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> 個分頁</translation>
@@ -8065,7 +8067,6 @@
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7188755083797868960">使用快速鍵，更快開啟閱讀模式。按下 Alt + Shift + R 鍵即可切換閱讀模式。</translation>
 <translation id="7189234443051076392">確認你的裝置上有足夠空間</translation>
-<translation id="7189558282078169397">在其他裝置上的分頁</translation>
 <translation id="7189965711416741966">指紋新增成功。</translation>
 <translation id="7190921792980745354">要封鎖<ph name="MEMBER_FULL_NAME" />嗎？</translation>
 <translation id="7191063546666816478">某些支援連結仍會在「<ph name="APP_NAME" />」、「<ph name="APP_NAME_2" />」、「<ph name="APP_NAME_3" />」、「<ph name="NUMBER_OF_OTHER_APPS" />」和其他應用程式中開啟。</translation>
@@ -8483,6 +8484,7 @@
 <translation id="7501957181231305652">或</translation>
 <translation id="7502220299952823578">新增至「一律啟用這些網站」清單</translation>
 <translation id="7502528909759062987">暫停將分頁投放到「<ph name="DEVICE_NAME" />」</translation>
+<translation id="750275011730776314">返回 Gemini</translation>
 <translation id="7502804472671406749">可捲動及縮放已分享的分頁</translation>
 <translation id="750314150962284310">行焦點</translation>
 <translation id="7503191893372251637">Netscape 憑證類型</translation>
@@ -8724,6 +8726,7 @@
 <translation id="7684718995427157417">如要建立並測試你的應用程式，請啟用 Android Debug Bridge (ADB)。請注意，這項操作會允許你安裝未經 Google 驗證的 Android 應用程式，而且需要將裝置恢復原廠設定才能停用。</translation>
 <translation id="7684803937028953000">貴機構禁止在本機下載這個檔案。</translation>
 <translation id="7684913007876670600">如要顯示這個頁面的簡易檢視畫面，請開啟側邊面板並選取「閱讀模式」</translation>
+<translation id="7684957383619170952">取得<ph name="DEVICE" />中的書籤和其他資料</translation>
 <translation id="7685038817958445325">無法投放</translation>
 <translation id="7685049629764448582">JavaScript 記憶體使用量</translation>
 <translation id="7685087414635069102">請輸入 PIN 碼</translation>
@@ -9766,6 +9769,7 @@
 <translation id="8477241577829954800">已取代</translation>
 <translation id="8477384620836102176">一般(&amp;G)</translation>
 <translation id="8477446666255316832">加快登入速度</translation>
+<translation id="8477548388161793571">翻譯所選內容(&amp;T)</translation>
 <translation id="8478346767369317046">工作</translation>
 <translation id="8479176401914456949">代碼無效。請再試一次。</translation>
 <translation id="8480869669560681089">不明的 <ph name="VENDOR_NAME" /> 裝置</translation>

@@ -962,7 +962,6 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1625700732886306811">Izinkan <ph name="PRODUCT_NAME" /> terhubung ke perangkat di semua alamat IP</translation>
 <translation id="1626379196197114720">Izinkan penggunaan back-forward cache</translation>
 <translation id="1628974048137236820">Halaman Tab Baru tidak akan menampilkan kartu</translation>
-<translation id="1628984674324273832">Jangan izinkan fitur Temukan dan Isi dengan Gemini.</translation>
 <translation id="163200210584085447">Pola dalam daftar ini akan dicocokkan dengan
       asal keamanan URL yang meminta.  Jika ditemukan kecocokan, akses ke perangkat
       perekam video akan diberikan di halaman masuk SAML.  Jika tidak ditemukan
@@ -1756,7 +1755,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia di instance yang dike
 <translation id="2107601598727098402">
         Kebijakan ini tidak digunakan lagi di M72. Gunakan CloudManagementEnrollmentToken sebagai gantinya.
         </translation>
-<translation id="2111355600078097861">Izinkan fitur Temukan dan Isi dengan Gemini tanpa meningkatkan kualitas model AI.</translation>
 <translation id="2112656109118682849">Izinkan pengguna mengubah tampilan informasi sistem di layar login</translation>
 <translation id="2113068765175018713">Membatasi waktu operasi perangkat dengan melakukan booting ulang secara otomatis</translation>
 <translation id="211386002920955760">Mengontrol apakah pengguna perusahaan dapat mengakses fitur berbagi grup tab di Chrome.
@@ -5704,6 +5702,11 @@ Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https
 <translation id="4561940244682063697">Jangan izinkan situs meminta pengguna untuk membagikan streaming video dari layar mereka</translation>
 <translation id="4562165737444703281">Mengizinkan pengguna untuk [mengaktifkan/mengonfigurasi] penerusan port Crostini</translation>
 <translation id="456450545863578630">Aktifkan transfer file di koneksi dukungan jarak jauh dari admin perusahaan</translation>
+<translation id="4567614489737189156">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan melaporkan kembali metrik penggunaan dan data diagnostik, termasuk laporan error, ke Google. Jika kebijakan disetel ke Nonaktif, pelaporan metrik dan data diagnostik akan dinonaktifkan.
+
+Untuk perangkat terkelola, jika kebijakan ini tidak disetel, pelaporan metrik dan data diagnostik akan tetap diaktifkan secara default.
+
+Untuk perangkat yang tidak dikelola, kebijakan ini tidak berlaku, dan pengguna dapat memilih perilaku pelaporan metrik serta data diagnostik selama penyiapan perangkat atau nanti melalui setelan.</translation>
 <translation id="4570859815763368584">Tidak digunakan lagi di M68. Sebagai gantinya, gunakan DefaultPopupsSetting.
 
       Untuk penjelasan selengkapnya, lihat https://www.chromestatus.com/feature/5675755719622656.
@@ -6601,7 +6604,6 @@ Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
 Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">Izinkan fitur Temukan dan Isi dengan Gemini serta tingkatkan kualitas model AI.</translation>
 <translation id="5071303485174858500">Nonaktifkan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="5073788301065423829">Kebijakan ini mengaktifkan atau menonaktifkan fitur "Bantu tulis" untuk ChromeOS.
 
@@ -10198,7 +10200,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="7136237405361383549">Gunakan perender default berdasarkan konfigurasi uji coba lapangan.</translation>
 <translation id="7138762292550697459">Mengontrol waktu tunggu minimum fungsi setTimeout() JavaScript.</translation>
 <translation id="7138792262152376158">Mengikuti linimasa penghentian reguler untuk PrefixedVideoFullscreen API</translation>
-<translation id="7140755255968613921">Setelan untuk fitur Temukan dan Isi dengan Gemini</translation>
 <translation id="7140760943584613237">Penyedia identitas cloud Microsoft®</translation>
 <translation id="714219487865269980">Aktifkan penyorotan fokus keyboard</translation>
 <translation id="7144022711746703451">
@@ -10641,19 +10642,6 @@ Nilai sebenarnya dari data sensitif (seperti cookie atau nilai input) TIDAK diku
 <translation id="7402257017733669351">Mencegah proses browser membuat kode dinamis</translation>
 <translation id="7406039009275722824">Menonaktifkan <ph name="CHROME_SYNC_NAME" /> akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
 <translation id="7406276857470642718">Mengontrol setelan untuk pengguna yang diautentikasi melalui SAML dengan IdP eksternal</translation>
-<translation id="7407431811343706437">Mengontrol apakah pengguna dapat menggunakan fitur "Temukan dan Isi dengan Gemini" di <ph name="PRODUCT_NAME" />.
-
-Nilai 0 = Mengizinkan penggunaan fitur ini, sekaligus mengizinkan Google menggunakan data yang relevan untuk meningkatkan kualitas model AI-nya. Data yang relevan mungkin mencakup perintah, input, output, materi referensi, dan masukan tertulis, bergantung pada fiturnya. Nilai 0 adalah nilai default, kecuali jika dinyatakan lain di bawah.
-
-Nilai 1 = Mengizinkan penggunaan fitur ini, tetapi tidak mengizinkan Google meningkatkan kualitas model menggunakan konten pengguna (termasuk perintah, input, output, materi referensi, dan masukan tertulis). Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> serta bagi akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Nilai 2 = Tidak mengizinkan penggunaan fitur ini.
-
-Kebijakan ini tidak akan berlaku jika aplikasi Gemini dinonaktifkan. Misalnya, aplikasi Gemini dapat dinonaktifkan oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, perilakunya akan ditentukan oleh kebijakan <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI generatif, lihat https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Kebijakan ini mengontrol prediksi jaringan di <ph name="PRODUCT_NAME" />. Kebijakan ini mengontrol pengambilan data DNS, prakoneksi TCP dan SSL, serta pra-rendering halaman.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, prediksi jaringan akan diaktifkan, tetapi pengguna dapat mengubahnya.</translation>
@@ -10662,11 +10650,6 @@ Untuk mengetahui informasi selengkapnya tentang penanganan data untuk fitur AI g
 <translation id="7410074797376205571">Izinkan <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> mengeksekusi permintaan WebAuthn API yang di-proxy dari host jarak jauh.</translation>
 <translation id="7412456346709338637">Mengaktifkan akses data periferal Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Tidak ada preferensi.</translation>
-<translation id="7416222110012824615">Kebijakan ini mengontrol ketersediaan fitur XSLT (XSLTProcessor JavaScript API dan petunjuk pemrosesan XSL).
-Jika kebijakan ini disetel ke Aktif, XSLT akan tersedia terlepas dari status default fitur tersebut di browser.
-Jika kebijakan ini disetel ke Nonaktif, XSLT tidak akan tersedia terlepas dari status default fitur tersebut di browser.
-Jika kebijakan ini tidak disetel, ketersediaan XSLT akan ditentukan oleh setelan default browser dan uji coba di lingkungan sebenarnya.
-Kebijakan ini bersifat sementara, dan akan dihapus di M164.</translation>
 <translation id="7417438464912687020">Izinkan koneksi akses jarak jauh ke perangkat ini</translation>
 <translation id="7417972229667085380">Persentase yang digunakan untuk menskalakan penundaan status menganggur dalam mode presentasi (tidak digunakan lagi)</translation>
 <translation id="7421230730436851224">Jangan pernah melakukan sandbox proses audio</translation>
@@ -10976,10 +10959,6 @@ Kebijakan yang perlu digabungkan juga harus disetel di <ph name="POLICY_LIST_MUL
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pelaporan akan dinonaktifkan.
       Baik disetel maupun tidak disetel, aturan yang ditentukan dengan batasan tingkat ALLOW di DataLeakPreventionRulesList tidak akan melaporkan peristiwa.</translation>
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
-<translation id="7649831723389657756">Jika kebijakan ini disetel, hal ini akan menentukan origin mana yang akan mengizinkan semua skema autentikasi HTTP yang didukung <ph name="PRODUCT_NAME" />, terlepas dari nilai kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Format pola origin sesuai dengan format ini (<ph name="URL_SCHEME_FORMAT_LINK" />). Hingga 1.000 pengecualian dapat ditentukan di <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      Karakter pengganti diizinkan untuk komponen host (misalnya, '*:8000' cocok dengan semua host di port 8000). Untuk mencocokkan semua skema atau semua port, hapus komponen sepenuhnya (misalnya, 'example.com' cocok dengan skema dan port apa pun). Nama host (misalnya, 'example.com') juga cocok dengan subdomainnya. Untuk mencocokkan host secara persis dan mengecualikan subdomainnya, tambahkan titik di depannya (misalnya, '.example.com'). Untuk mencocokkan semua origin, gunakan satu tanda bintang ('*').</translation>
 <translation id="7652330587655863759">Jenis autentikasi.
 
 * 'none': Tidak ada autentikasi yang dilakukan.
@@ -11782,6 +11761,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8164687848393015214">Jika kebijakan disetel ke Aktif, paket jaringan pemantauan (<ph name="HEARTBEATS_TERM" />) akan dikirim ke server pengelolaan untuk memantau status online, guna memungkinkan server mendeteksi apakah perangkat sedang offline.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, paket tidak akan dikirim.</translation>
+<translation id="8165152191100365965">Kirim metrik ke Google di perangkat terkelola, atau izinkan pengguna menentukan pilihan di perangkat yang tidak dikelola</translation>
 <translation id="8168359201203671567">Warna lampu latar keyboard pelangi</translation>
 <translation id="8169452762291746260">Nonaktifkan pemantauan kondisi perangkat</translation>
 <translation id="8170359860920320269">Filter konten khusus dewasa dari situs</translation>
@@ -13213,6 +13193,9 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_NAME" /> akan mengumpulkan dan m
       Jika template URI berisi variabel <ph name="HTTP_VARIABLE_DNS" />, permintaan untuk resolver akan menggunakan <ph name="HTTP_METHOD_GET" />. Jika tidak, permintaan akan menggunakan <ph name="HTTP_METHOD_POST" />.
 
       Template dengan format yang salah akan diabaikan.</translation>
+<translation id="9066972193987544412">Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna akan dapat menambahkan, menghapus, mengubah, atau mengupload bookmark.
+
+      Jika kebijakan ini disetel ke Nonaktif, pengguna tidak akan dapat menambahkan, menghapus, mengubah, atau mengupload bookmark. Pengguna tetap dapat menggunakan bookmark yang ada.</translation>
 <translation id="9068629430243705879">port 6566 (blokir dapat dibatalkan hingga 15/10/2021)</translation>
 <translation id="9069432851455606924">Setelan geolokasi</translation>
 <translation id="9069503402414011061">Jika kebijakan disetel, durasi cache data autentikasi akan ditentukan dalam hitungan jam. Cache memiliki data tentang realm yang dipercaya oleh realm perangkat (realm terafiliasi). Oleh karena itu, penyimpanan data autentikasi ke cache akan membantu mempercepat login. Data khusus pengguna dan data untuk realm yang tidak terafiliasi tidak akan di-cache.
@@ -13286,6 +13269,21 @@ tetapi dapat digunakan sebagai petunjuk untuk membuat jalur. Sertifikat harus di
 <translation id="9122865885571719292">Mengontrol apakah dan bagaimana <ph name="PRODUCT_OS_NAME" /> akan memulihkan sesi terakhir saat login.
 Kebijakan ini hanya berlaku jika kebijakan <ph name="FULL_RESTORE_ENABLED_NAME" /> disetel ke benar (true).</translation>
 <translation id="9123464369663964441">Izinkan pengguna menambahkan pengecualian untuk mengizinkan konten campuran</translation>
+<translation id="9123738611041078443">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
+
+Untuk mengonfigurasi <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, administrator harus memberikan:
+* URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />), ATAU
+* Ketiga parameter lama secara bersamaan: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />, dan <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Jika hanya menentukan sebagian dari ketiga parameter ini tanpa URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> harus berupa URL valid yang menggunakan skema https, mengarah ke domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, dan tidak menyertakan nama pengguna atau sandi. Jika tidak memenuhi persyaratan ini, kebijakan akan diabaikan dan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Jika parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> dan parameter lama dikonfigurasi, parameter <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> akan diprioritaskan.
+
+Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
+
+Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
+
+Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Jangan pernah mengirimkan data keandalan domain ke Google</translation>
 <translation id="9126331659955304300">Izinkan pemilihan avatar pengguna dari sistem file lokal, kamera, dan profil Google</translation>
 <translation id="9126694586349976283">Izinkan penggunaan API AI bawaan.</translation>
@@ -13466,6 +13464,13 @@ Untuk mempertahankan perilaku penonaktifan <ph name="AUTOFILL_CREDIT_CARD_ENABLE
 Jika kebijakan disetel ke Benar (True) atau tidak disetel, pengguna akan dapat mengontrol saran isi otomatis untuk kartu kredit di UI.
 
 Jika kebijakan disetel ke Salah (False), isi otomatis tidak akan menyarankan atau mengisi informasi kartu kredit, juga tidak menyimpan informasi kartu kredit tambahan yang mungkin dikirimkan pengguna saat menjelajahi web.</translation>
+<translation id="963375545567956229">Kebijakan ini tidak digunakan lagi dan tidak akan berpengaruh mulai M145. Pelaporan Lengkap Safe Browsing telah dihapus dari <ph name="PRODUCT_NAME" />, sehingga <ph name="PRODUCT_NAME" /> tidak lagi mengirim laporan ini, terlepas dari cara kebijakan ini disetel, dan setelan terkait tidak lagi ditampilkan kepada pengguna.
+
+      Agar <ph name="PRODUCT_NAME" /> mengirimkan informasi tambahan untuk membantu meningkatkan kualitas Safe Browsing, aktifkan Perlindungan yang Ditingkatkan dengan kebijakan <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+      Sebelum M145, menyetel kebijakan ke Aktif akan mengaktifkan Pelaporan Lengkap Safe Browsing di <ph name="PRODUCT_NAME" />, yang mengirimkan beberapa informasi sistem dan konten halaman ke server Google untuk membantu mendeteksi aplikasi dan situs berbahaya. Jika kebijakan disetel ke Nonaktif, laporan tidak akan pernah dikirim. Jika kebijakan disetel, pengguna tidak akan dapat mengubahnya; jika kebijakan tidak disetel, pengguna dapat menentukan apakah akan mengirim laporan atau tidak.
+
+      Baca selengkapnya tentang Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
 <translation id="966425658642788645">Terapkan perilaku default</translation>
 <translation id="971677226939413180">Opsi Cetak sebagai gambar tidak tersedia bagi pilihan pengguna.</translation>
 <translation id="974349541138387272">Menentukan template URI pada resolver DNS-over-HTTPS yang diinginkan</translation>

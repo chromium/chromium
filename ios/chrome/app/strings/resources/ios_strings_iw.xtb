@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="138618066238211776">המשך בתור <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">אפשרויות לשמירת כרטיס</translation>
+<translation id="138810468159004008">רק בזמן הביקור באתר</translation>
 <translation id="1396260204083880024">נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. לפתיחת תפריט החשבון.</translation>
 <translation id="1397144142234474689">הסתרת ההיסטוריה</translation>
 <translation id="1399268420835656394">אם אינך ילד/ה, כדאי לבדוק את הגיל שמוגדר בחשבון אפל במכשיר הזה. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">מה אנשים אומרים</translation>
 <translation id="2394659309569789395">אני רוצה לפתוח את האתר בכל זאת</translation>
 <translation id="2403129868389095715">אי אפשר למסור את החבילה</translation>
-<translation id="2408318953009664750">רק הפעם</translation>
 <translation id="2410754283952462441">בחירת חשבון</translation>
 <translation id="2422174748424038845">אם הקבוצה תימחק, כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות "<ph name="GROUP_NAME" />", והיא תימחק מכל המכשירים.</translation>
 <translation id="2424805048070062787">המשך הגלישה בכרטיסייה הזו</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">ההורדה הושהתה</translation>
 <translation id="2816489851009559785">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="2818821771744632548">‏המערכת הוציאה אותך מהחשבון, <ph name="USER_NAME" />, במסגרת האיפוס של iPhone. כדי להיכנס שוב לחשבון צריך ללחוץ על 'המשך' למטה.</translation>
-<translation id="2819667972867209401">‏כשההגדרה מופעלת, הנתונים נשמרים בחשבון שלך ב-Google. כשההגדרה מושבתת, הנתונים נשמרים רק במכשיר הזה ונמחקים כשיוצאים מהחשבון.</translation>
 <translation id="2827760117436553203">לשמור את הנתונים בנפרד?</translation>
 <translation id="2829172210806130158">חיפוש במסך</translation>
 <translation id="2831109159746537587">כדי לחפש, מקיפים את התמונה עם האצבע או לוחצים עליה</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 באוקטובר 2023</translation>
 <translation id="3416904994126232207">המשימה "שמירת סיסמה" הושלמה!</translation>
 <translation id="3419787211763835342">אפשר להפוך את המילוי האוטומטי המשופר לטוב יותר</translation>
+<translation id="3422958112451181446">כדי להצמיד לכאן את הכלי הרצוי, צריך ללחוץ לחיצה ארוכה</translation>
 <translation id="3430407169377889553">‏צריך להשתמש ב-Gemini בזהירות ולהתערב אם צריך. הפעולות ש-Gemini עושה במסגרת המשימות הן באחריותך.</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3441673211568148613">שמירה על פרטיות הגלישה</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{אמצעי תשלום אחד}one{‫# אמצעי תשלום}two{‫# אמצעי תשלום}other{‫# אמצעי תשלום}}</translation>
 <translation id="3831560640878483188">לסגור את האזהרה?</translation>
 <translation id="3832419617903252251">הסיסמה נשמרה רק במכשיר הזה</translation>
-<translation id="3835016165506903031">רק בזמן הביקור</translation>
 <translation id="3835964409414434850">מעבר לכרטיסייה הבאה</translation>
 <translation id="3838691874161539578">כדאי לבדוק את הסיסמאות השמורות כדי להגביר את האבטחה ולשמור על הבטיחות באינטרנט</translation>
 <translation id="3838985624086228724">זוהתה ירידה במחיר במוצר שנמצא במעקב שלך, מ-<ph name="PREVIOUS_PRICE" /> ל-<ph name="PRICE" />, ‏<ph name="PRODUCT_NAME" />, ‏<ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">מה חדש</translation>
 <translation id="4289309730265289297">ספריית התמונות</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
+<translation id="4290920330097335010">אף פעם לא לאפשר</translation>
 <translation id="4294506173142861371">להיכנס לחשבון בתור <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="446314443268698477">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה או התמונות.</translation>
 <translation id="4469324811108161144">אפשר לשמור בהערות עד <ph name="CHARACTER_LIMIT" /> תווים.</translation>
+<translation id="4470766488397113689">על מה נעבוד עכשיו?</translation>
 <translation id="4471472356135655769">אי אפשר לייצא סיסמאות</translation>
 <translation id="4472575034687746823">תחילת העבודה</translation>
 <translation id="4473565697543262065">‏הפעולה הזו תמחק את המידע הנבחר ששמור במכשיר הזה ובחשבון שלך ב-Google: <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">סריקות מעמיקות לאיתור הורדות חשודות.</translation>
 <translation id="4606247758155004938">הדפדפן מנוהל על ידי הארגון שלך.</translation>
 <translation id="4607887340472970274">מעקב מחירים</translation>
+<translation id="4614482404958079763">רוצה לנסות עיצוב חגיגי לזמן מוגבל, עם אנימציות ואיורים בהתאמה אישית?</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4621768135601674446">פתיחת האפשרויות של "מצב קריאה"</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. שגיאה בחשבון Google. לפתיחת תפריט החשבון.</translation>
 <translation id="4650125387981512669">המשך בשם <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{הסתרה לאחר דקה אחת}one{הסתרה לאחר {count} דקות}two{הסתרה לאחר {count} דקות}other{הסתרה לאחר {count} דקות}}</translation>
+<translation id="4652266463001779298">אין הרשאה</translation>
 <translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">הפעלת שיתוף הכרטיסיות</translation>
 <translation id="4658335131052370646">שמירה</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">‏מפתחות הגישה נשמרים במנהל הסיסמאות של Google בחשבון</translation>
 <translation id="510580293474170715">לא יובא אף פריט</translation>
 <translation id="5113960131843706315">הדברים שלך בדרך…</translation>
+<translation id="5116347248003317626">לא לאפשר לאתרים להשתמש במיקום שלך</translation>
 <translation id="5118462200606189584">הוספת חשבון…</translation>
 <translation id="5118764316110575523">כבויה</translation>
 <translation id="5119329531859909472">כדי לעקוב אחרי המוצר, לוחצים על "מעקב"</translation>
@@ -2008,6 +2012,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241">הושלמה הורדה של <ph name="PERCENT" /> אחוז</translation>
 <translation id="7345061034321640811">הייבוא אסור</translation>
+<translation id="7346922058131593019">על מה נעבוד עכשיו, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">אפשר לייבא סיסמאות, היסטוריה, סימניות ועוד</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
 <translation id="7357999308187750900">הצגת כל הפריטים</translation>
@@ -2064,6 +2069,7 @@
 <translation id="7491131399623468277">להגדרות…</translation>
 <translation id="7491161827858509164">כדי לראות קבצים שהורדו בעבר, פותחים את <ph name="BEGIN_LINK" />קבצים<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">המשך העריכה</translation>
+<translation id="7498557042323380380">הגדרת עיצוב עונתי לדף "כרטיסייה חדשה"</translation>
 <translation id="7500244509706269886">מילוי אוטומטי של טופס</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
 <translation id="7505402981231763928">‏כדי להשתמש ב-Gemini, צריך להיכנס לחשבון</translation>
@@ -2101,6 +2107,7 @@
 <translation id="760667371114328991">השבתת ההתראות של הטיימר לדיווח על מצב מסוכן</translation>
 <translation id="7612619742409846846">‏התחברת ל-Google בשם</translation>
 <translation id="7612849887607288481">‏פתיחת תפריט אב הטיפוס של ה-AI</translation>
+<translation id="7618220760967055820">בחירת הכפתור שיופיע בסרגל הכלים</translation>
 <translation id="7620522820075868385">ביטול</translation>
 <translation id="762078666799342162">אפשר לראות את ההורדות הקודמות בתיקיית <ph name="BEGIN_LINK" />הקבצים<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
@@ -2310,7 +2317,6 @@
 <translation id="8233237502828137700">סגירת הבאנר של המבצע</translation>
 <translation id="823339794112333264">הפעלה של המיקרופון</translation>
 <translation id="8240217649914883113">תוסיף את זה ליומן שלי</translation>
-<translation id="824379025871762038">אף פעם לא לאפשר</translation>
 <translation id="8244387390464017490">התאמה אישית של דף הכרטיסייה החדשה</translation>
 <translation id="8250920743982581267">מסמכים</translation>
 <translation id="8258734532103758067">ייצאתי את הנתונים שלי</translation>
@@ -2331,6 +2337,7 @@
 <translation id="8282657446819506217">פתיחה בקבוצת כרטיסיות</translation>
 <translation id="828291969289324795">{count,plural, =1{הוספת הכרטיסייה לקבוצה חדשה}one{הוספת הכרטיסיות לקבוצה חדשה}two{הוספת הכרטיסיות לקבוצה חדשה}other{הוספת הכרטיסיות לקבוצה חדשה}}</translation>
 <translation id="8283172974887967105">להגדרה…</translation>
+<translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="8289930144142009940">ההתראות של <ph name="FEATURE_NAME" /> מושבתות</translation>
 <translation id="8292893224181644074">ההורדה הסתיימה</translation>
 <translation id="8299417921174340354">כדי שניתן יהיה להשתמש בסיסמאות, יש להגדיר תחילה קוד גישה במכשיר.</translation>

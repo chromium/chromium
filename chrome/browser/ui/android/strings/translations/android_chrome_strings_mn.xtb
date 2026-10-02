@@ -329,7 +329,6 @@
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" />-с</translation>
 <translation id="232757965409810352">Хуудсыг дараахаар хадгалах…</translation>
 <translation id="2328474416100889417">Хүн бүр “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах бөгөөд урилгын бүх холбоосыг унтраана</translation>
-<translation id="2329500425421091035">Chrome-н ХОУ-ы горимыг танилцуулж байна</translation>
 <translation id="2330186936255788117">Бусад хавчуурга</translation>
 <translation id="2330243730505117832">"Төхөөрөмж сонгох" цонхыг хаалаа.</translation>
 <translation id="2332515770639153015">Сайжруулсан аюулгүй хөтөч асаалттай байна</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, Google Play үйлчилгээг шинэчилж, дараа нь буцааж Google Нууц үгний менежер лүү импортолно уу. <ph name="BEGIN_LINK" />Бүтэн зааварчилгааг харна уу<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3435914367318771664">Табыг шинэ бүлэгт нэмэх</translation>
-<translation id="3436118221454753036">ХОУ-аас асуух горим</translation>
 <translation id="3439276997620616816">Та саяхны табуудаа эндээс олно</translation>
 <translation id="3443221991560634068">Одоогийн хуудсыг дахин ачаалах</translation>
 <translation id="3444179773590444986">Сайтуудад зориулсан бараан загварын талаар cанал хүсэлт хуваалцах уу?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">Өөрийгөө мөн болохыг <ph name="ORIGIN" />-р баталгаажуулна уу</translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> килобайт боломжтой</translation>
-<translation id="3547933853190131743">ХОУ-ы горимоор хайх</translation>
 <translation id="3549537543136628349">Урьдчилан ачаалсан хуудаснууд нь шифрлэгдсэн ба тухайн хуудаснуудтай холбож буй сайт, апп нь Google-н сайт, апп тул тэдгээр хуудсыг нууцлалтайгаар урьдчилан ачаалахад Google-н сервер шинэ мэдээлэл хүлээн авахгүй.</translation>
 <translation id="3549657413697417275">Түүхээ хайх</translation>
 <translation id="3557336313807607643">Харилцагчид нэмэх</translation>
@@ -983,7 +980,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="4885273946141277891">Chrome-ийн хэд хэдэн дэмжигдээгүй тохиолдол</translation>
 <translation id="4890973535105146893">Таны Google Бүртгэлд хадгалсан ямар ч нууц үг байхгүй</translation>
 <translation id="490375751687810070">Босоо</translation>
-<translation id="4905823827770127520">Холбоосыг хуудсанд багтаана уу</translation>
 <translation id="4910889077668685004">Төлбөрийн апп</translation>
 <translation id="4911042367886397055">Эргээд тавтай морилно уу <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Дахин боловсруулахыг зогсоох</translation>
@@ -1214,6 +1210,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
 <translation id="5870416898561279542">Хуулбар таб, бүлэг эсвэл <ph name="DAYS_INACTIVE" /> хоногийн турш ашиглаагүй табуудыг ийш зөөж, <ph name="AUTODELETE_SECTION" />. Та үүнийг хүссэн үедээ <ph name="DECLUTTER_SETTINGS_TITLE" />-д өөрчлөх боломжтой.</translation>
 <translation id="5885378508678660271">Мэдэгдэл <ph name="SEPARATOR" /> Энэ сайт аюултай тул Chrome эдгээр зөвшөөрлийг хассан</translation>
+<translation id="5895138241574237353">Дахин асаах</translation>
 <translation id="5896944002928653773">Байгууллагын дохионы татгалзлын доод хүснэгтийг хаасан</translation>
 <translation id="5899667542927581604">Нэвтрэх түлхүүрийн ямар ч хүснэгт хаагаагүй</translation>
 <translation id="5907542076239273525">Хавчуургыг <ph name="FOLDER_NAME" />-д хадгалсан</translation>
@@ -1958,6 +1955,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="860282621117673749">Үнэ бууралтын сэрэмжлүүлэг</translation>
 <translation id="8611922158252451755">Холбоостой дурын хүн бүх табыг засах боломжтой тул сайтар бодолцож хуваалцаарай. Холбоосны хугацаа 48 цагийн дараа дуусна.</translation>
 <translation id="8616006591992756292">Таны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байж болзошгүй.</translation>
+<translation id="8622145666696249878">Google Хайлтын ХОУ-ы горим болон холбоотой аппууд</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" /> руу орчуулах</translation>
 <translation id="8629093325209491835">Chrome-н цэс &gt; Тохиргоог нээнэ үү</translation>
 <translation id="8634050254805484913">Нарийн дэлгэц дээр нуусан</translation>
@@ -2049,7 +2047,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9001604755921395912">Chrome-н нууцлалтай табд нээх</translation>
 <translation id="9010094279589497751">Gemini-г хэрэгтэй үедээ шуурхай нээгээрэй</translation>
 <translation id="9012585441087414258">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Хэрэв хуудас ямар нэг сэжигтэй зүйл хийвэл URL болон хуудасны контентын багахан хэсгийг Google-н аюулгүй хөтчид илгээдэг.</translation>
-<translation id="9014097371980259227">ХОУ-ы горимоор хайхад тань туслахын тулд зарим хэрэгслийг зөөсөн</translation>
 <translation id="9015111999662965458">Энэ төхөөрөмжийг аюулгүй ашиглах боломжтой эсэхийг нягтлахын тулд танай байгууллага төхөөрөмжийн үйлдлийн систем, хөтөч, тохиргоо болон суулгасан программ хангамжийн талаарх мэдээллийг харах шаардлагатай байж магадгүй</translation>
 <translation id="9019199799064251516">Автомашины профайлын түгжээгүйгээр үргэлжлүүлэх үү?</translation>
 <translation id="9022774213089566801">Байнга зочилдог</translation>

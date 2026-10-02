@@ -329,7 +329,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="2327445548174191329">Seadmest <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Salvesta leht nimega…</translation>
 <translation id="2328474416100889417">Kõik kasutajad kaotavad vahelehegrupile „<ph name="GROUP_NAME" />“ kohe juurdepääsu ja kõik kutselingid lülitatakse välja</translation>
-<translation id="2329500425421091035">Tutvustame Chrome'is AI-režiimi</translation>
 <translation id="2330186936255788117">Rohkem järjehoidjaid</translation>
 <translation id="2330243730505117832">„Valige seade” on suletud.</translation>
 <translation id="2332515770639153015">Täiustatud ohutu sirvimine on sisse lülitatud</translation>
@@ -602,7 +601,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3435575784518354875">Paroolide kasutamise jätkamiseks eksportige need, värskendage Google Play teenused ja importige need uuesti Google'i paroolihaldurisse. <ph name="BEGIN_LINK" />Lugege juhiseid<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Turvalisus</translation>
 <translation id="3435914367318771664">Vahelehe lisamine uude gruppi</translation>
-<translation id="3436118221454753036">AI-le küsimuse esitamise režiim</translation>
 <translation id="3439276997620616816">Oma hiljutised vahelehed leiate siit</translation>
 <translation id="3443221991560634068">Praeguse lehe uuesti laadimine</translation>
 <translation id="3444179773590444986">Kas soovite saitide tumeda teema kohta tagasisidet jagada?</translation>
@@ -629,7 +627,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3524334353996115845">Lubage teenusel <ph name="ORIGIN" /> teie isik kinnitada</translation>
 <translation id="3527085408025491307">Kaust</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> kB on saadaval</translation>
-<translation id="3547933853190131743">Otsing AI-režiimis</translation>
 <translation id="3549537543136628349">Kuna eellaaditud saidid on krüpteeritud ja lehtedele linkiv sait või rakendus on Google'i sait või rakendus, ei võta Google'i serverid nende lehtede privaatsel eellaadimisel vastu uut teavet.</translation>
 <translation id="3549657413697417275">Otsige oma ajaloost</translation>
 <translation id="3557336313807607643">Lisa kontaktidesse</translation>
@@ -983,7 +980,6 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4885273946141277891">Toetamata arv Chrome'i eksemplare.</translation>
 <translation id="4890973535105146893">Teie Google'i kontole ei ole paroole salvestatud</translation>
 <translation id="490375751687810070">Vertikaalne</translation>
-<translation id="4905823827770127520">Kaasake lehe link</translation>
 <translation id="4910889077668685004">Makserakendused</translation>
 <translation id="4911042367886397055">Tere tulemast tagasi, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Peata värskendamine</translation>
@@ -1214,6 +1210,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
 <translation id="5870416898561279542">Duplikaatvahelehed ja -rühmad, mida pole <ph name="DAYS_INACTIVE" /> päeva kasutatud, teisaldatakse siia<ph name="AUTODELETE_SECTION" />. Seda saab alati muuta jaotises <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Märguanded <ph name="SEPARATOR" /> Chrome eemaldas need load, kuna see sait on ohtlik</translation>
+<translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5896944002928653773">Ettevõttesignaalide välistuse alumine leht on suletud.</translation>
 <translation id="5899667542927581604">Pääsuvõtmete puudumise leht suleti</translation>
 <translation id="5907542076239273525">Järjehoidja on salvestatud kausta <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="860282621117673749">Hinnalanguse märguanded</translation>
 <translation id="8611922158252451755">Valige hoolega, kellega linke jagate, sest kõiki vahelehti saab muuta igaüks, kellel on link. Link aegub 48 tunni pärast.</translation>
 <translation id="8616006591992756292">Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
+<translation id="8622145666696249878">Google'i otsingu AI-režiim ja ühendatud rakendused</translation>
 <translation id="8626572875733549102">Tõlgi <ph name="LANGUAGE" /> keelde</translation>
 <translation id="8629093325209491835">Avage Chrome'i menüü &gt; Seaded.</translation>
 <translation id="8634050254805484913">Kitsastel ekraanidel peidetud</translation>
@@ -2049,7 +2047,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="9001604755921395912">Ava Chrome'i inkognito vahelehel</translation>
 <translation id="9010094279589497751">Avage Gemini kiiresti just siis, kui seda vajate.</translation>
 <translation id="9012585441087414258">Kaitseb teadaolevalt ohtlike veebisaitide, allalaadimiste ja laienduste vastu. Kui leht teeb midagi kahtlast, saadetakse URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
-<translation id="9014097371980259227">Mõned tööriistad on teisaldatud, et saaksite AI-režiimis otsida.</translation>
 <translation id="9015111999662965458">Seadme ohutu kasutamise tagamiseks võib teie organisatsioonil olla vaja näha teavet seadme operatsioonisüsteemi, brauseri, seadete ning seadmesse installitud tarkvara kohta.</translation>
 <translation id="9019199799064251516">Kas jätkata ilma auto profiililukuta?</translation>
 <translation id="9022774213089566801">Sageli külastatud</translation>

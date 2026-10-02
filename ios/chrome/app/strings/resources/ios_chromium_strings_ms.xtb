@@ -348,7 +348,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="8390323835464055390">Log masuk dengan kata laluan &amp; kunci laluan anda yang disimpan daripada mana-mana apl menggunakan Chromium untuk Autolengkap</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="8428449554948979733">Sembunyikan Gunakan Chromium sebagai Lalai</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Data yang disimpan hanya pada peranti ini semasa anda log masuk akan dipadamkan. Data ini boleh termasuk sejarah dan kata laluan.}}</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
 <translation id="8602103377623855616">Halaman Chromium</translation>
 <translation id="865600487977764604">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>

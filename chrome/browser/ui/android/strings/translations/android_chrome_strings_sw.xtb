@@ -329,7 +329,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2327445548174191329">Kutoka <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Hifadhi ukurasa kama…</translation>
 <translation id="2328474416100889417">Kila mtu atapoteza uwezo wa kufikia kikundi cha vichupo cha “<ph name="GROUP_NAME" />” papo hapo na viungo vyote vya mwaliko vitazimwa</translation>
-<translation id="2329500425421091035">Tunakuletea Modi ya AI kwenye Chrome</translation>
 <translation id="2330186936255788117">Alamisho zaidi</translation>
 <translation id="2330243730505117832">Sehemu ya "Chagua kifaa" imefungwa.</translation>
 <translation id="2332515770639153015">Kipengele cha Kuvinjari Salama Kilichoboreshwa kimewashwa</translation>
@@ -602,7 +601,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3435575784518354875">Ili uendelee kufikia manenosiri yako, yahamishe sasa, sasisha Huduma za Google Play kisha uyapakie tena kwenye kidhibiti cha manenosiri unachopendelea. <ph name="BEGIN_LINK" />Angalia maagizo kamili<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Usalama</translation>
 <translation id="3435914367318771664">Weka kichupo kwenye kikundi kipya</translation>
-<translation id="3436118221454753036">Uliza Modi ya AI</translation>
 <translation id="3439276997620616816">Utaona vichupo vyako vya hivi karibuni hapa</translation>
 <translation id="3443221991560634068">Pakia upya ukurasa wa sasa</translation>
 <translation id="3444179773590444986">Ungependa kushiriki maoni kuhusu mandhari meusi ya tovuti?</translation>
@@ -629,7 +627,6 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3524334353996115845">Ruhusu <ph name="ORIGIN" /> ithibitishe kwamba ni wewe</translation>
 <translation id="3527085408025491307">Folda</translation>
 <translation id="3542235761944717775">KB <ph name="KILOBYTES" /> zinapatikana</translation>
-<translation id="3547933853190131743">Tafuta ukitumia Modi ya AI</translation>
 <translation id="3549537543136628349">Kwa sababu kurasa zilizopakiwa mapema zimesimbwa kwa njia fiche na tovuti au programu yenye viungo vya kurasa hizo ni programu au tovuti ya Google, seva za Google hazitapokea maelezo mapya wakati wa kupakia mapema kurasa hizi kwa njia ya faragha.</translation>
 <translation id="3549657413697417275">Tafuta katika historia yako</translation>
 <translation id="3557336313807607643">Ongeza kwenye anwani</translation>
@@ -983,7 +980,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4885273946141277891">Idadi ya matukio ya Chrome isiyoweza kutumika.</translation>
 <translation id="4890973535105146893">Hujahifadhi manenosiri katika Akaunti yako ya Google</translation>
 <translation id="490375751687810070">Wima</translation>
-<translation id="4905823827770127520">Jumuisha kiungo cha ukurasa huu</translation>
 <translation id="4910889077668685004">Programu za malipo</translation>
 <translation id="4911042367886397055">Karibu tena, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Acha kuonyesha upya</translation>
@@ -1214,6 +1210,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5869522115854928033">Manenosiri yaliyohifadhiwa</translation>
 <translation id="5870416898561279542">Vichupo na vikundi vya vichupo vilivyojirudia au ambavyo havijatumika kwa siku <ph name="DAYS_INACTIVE" /> huhamishiwa hapa<ph name="AUTODELETE_SECTION" />. Unaweza kubadilisha mipangilio hii wakati wowote katika <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Arifa <ph name="SEPARATOR" /> Chrome imeondoa ruhusa hizi kwa sababu tovuti hii ni hatari</translation>
+<translation id="5895138241574237353">Zima na uwashe</translation>
 <translation id="5896944002928653773">Safu ya chini ya kanusho la viashiria vya biashara imefungwa</translation>
 <translation id="5899667542927581604">Hakuna laha ya funguo za siri iliyofungwa</translation>
 <translation id="5907542076239273525">Alamisho imehifadhiwa kwenye <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="860282621117673749">Arifa kuhusu punguzo la bei</translation>
 <translation id="8611922158252451755">Yeyote aliye na kiungo anaweza kubadilisha vichupo vyote, kwa hivyo ruhusu ufikiaji kwa busara. Muda wa kutumia kiungo huisha baada ya saa 48.</translation>
 <translation id="8616006591992756292">Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Modi ya AI katika huduma ya Tafuta na Google na programu zilizounganishwa</translation>
 <translation id="8626572875733549102">Tafsiri kwenda <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Fungua menyu ya Chrome &gt; Mipangilio</translation>
 <translation id="8634050254805484913">Imefichwa kwenye skrini ndogo</translation>
@@ -2049,7 +2047,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="9001604755921395912">Fungua katika kichupo cha Faraghani cha Chrome</translation>
 <translation id="9010094279589497751">Fungua Gemini kwa haraka wakati unaihitaji</translation>
 <translation id="9012585441087414258">Hukulinda dhidi ya tovuti, vipakuliwa na viendelezi vinavyojulikana kuwa hatari Iwapo ukurasa utafanya kitu chenye kutia mashaka, URL na sehemu za maudhui hutumwa kwenye kipengele cha Kuvinjari Salama na Google.</translation>
-<translation id="9014097371980259227">Baadhi ya zana zimehamishwa ili uweze kutafuta ukitumia Modi ya AI</translation>
 <translation id="9015111999662965458">Ili kuhakikisha kuwa kifaa hiki kinaweza kutumiwa kwa usalama, huenda shirika lako likahitaji kuona maelezo kuhusu mfumo wa uendeshaji, kivinjari, mipangilio na programu zilizowekwa kwenye kifaa.</translation>
 <translation id="9019199799064251516">Endelea bila kufuli la wasifu kwenye gari?</translation>
 <translation id="9022774213089566801">Unazotembelea mara kwa mara</translation>

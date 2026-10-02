@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Zoeken</translation>
 <translation id="138618066238211776">Doorgaan als <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opties om een kaart op te slaan</translation>
+<translation id="138810468159004008">Toestaan tijdens websitebezoek</translation>
 <translation id="1396260204083880024">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Accountmenu openen.</translation>
 <translation id="1397144142234474689">Geschiedenis verbergen</translation>
 <translation id="1399268420835656394">Als je geen kind bent, kun je de leeftijd in het Apple-account op dit apparaat checken. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Lees wat mensen zeggen</translation>
 <translation id="2394659309569789395">Site toch openen</translation>
 <translation id="2403129868389095715">Je pakket kan niet worden bezorgd</translation>
-<translation id="2408318953009664750">Eenmalig toestaan</translation>
 <translation id="2410754283952462441">Een account selecteren</translation>
 <translation id="2422174748424038845">Als je de groep verwijdert, raakt iedereen meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en wordt deze verwijderd van alle apparaten.</translation>
 <translation id="2424805048070062787">Doorgaan met dit tabblad</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Download onderbroken</translation>
 <translation id="2816489851009559785">Menu → Instellingen → Standaardbrowser</translation>
 <translation id="2818821771744632548">Je bent uitgelogd van je account <ph name="USER_NAME" /> omdat je iPhone wordt gereset. Tik hieronder op Doorgaan om weer in te loggen.</translation>
-<translation id="2819667972867209401">Als dit aanstaat, worden gegevens opgeslagen in je Google-account. Staat dit uit? Dan worden gegevens alleen opgeslagen op dit apparaat en worden ze verwijderd als je uitlogt.</translation>
 <translation id="2827760117436553203">Gegevens gescheiden houden?</translation>
 <translation id="2829172210806130158">Zoeken op je scherm</translation>
 <translation id="2831109159746537587">Omcirkel of tik op de afbeelding om te zoeken</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 okt 2023</translation>
 <translation id="3416904994126232207">'Een wachtwoord opslaan' is afgerond.</translation>
 <translation id="3419787211763835342">Help ons verbeterd automatisch invullen te verbeteren</translation>
+<translation id="3422958112451181446">Houd je vinger hierop om je favoriete tool hier vast te zetten</translation>
 <translation id="3430407169377889553">Gebruik Gemini zorgvuldig en neem waar nodig de controle over. Jij bent verantwoordelijk voor de acties van Gemini tijdens taken.</translation>
 <translation id="3435738964857648380">Beveiliging</translation>
 <translation id="3441673211568148613">Houd je browsen privé</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 betaalmethode}other{# betaalmethoden}}</translation>
 <translation id="3831560640878483188">Waarschuwing sluiten?</translation>
 <translation id="3832419617903252251">Wachtwoord alleen opgeslagen op dit apparaat</translation>
-<translation id="3835016165506903031">Toestaan tijdens bezoek</translation>
 <translation id="3835964409414434850">Naar het volgende tabblad gaan</translation>
 <translation id="3838691874161539578">Check je opgeslagen wachtwoorden om je beveiliging te verbeteren en veiliger te internetten</translation>
 <translation id="3838985624086228724">Prijsdaling voor je gevolgde product, van <ph name="PREVIOUS_PRICE" /> naar <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Nieuws</translation>
 <translation id="4289309730265289297">Fotobibliotheek</translation>
 <translation id="429074084062258019">{count,plural, =1{Tabblad toevoegen aan groep}other{Tabbladen toevoegen aan groep}}</translation>
+<translation id="4290920330097335010">Nooit toestaan</translation>
 <translation id="4294506173142861371">Inloggen als <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Positie instellen</translation>
 <translation id="4304713468139749426">Wachtwoordmanager</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>
 <translation id="446314443268698477">Winkel, vertaal en identificeer wat je ziet met je camera of foto's.</translation>
 <translation id="4469324811108161144">Notities mogen maximaal <ph name="CHARACTER_LIMIT" /> tekens bevatten.</translation>
+<translation id="4470766488397113689">Waar wil je aan werken?</translation>
 <translation id="4471472356135655769">Kan wachtwoorden niet exporteren</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4473565697543262065">Hiermee verwijder je geselecteerde informatie die is opgeslagen op dit apparaat en in je Google-account <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Uitgebreide scans voor verdachte downloads.</translation>
 <translation id="4606247758155004938">Je browser wordt beheerd door je organisatie.</translation>
 <translation id="4607887340472970274">Prijzen volgen</translation>
+<translation id="4614482404958079763">Probeer een tijdelijk feestelijk thema, compleet met aangepaste illustraties en animaties</translation>
 <translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4621768135601674446">Opties voor de leesmodus openen</translation>
 <translation id="4627107755957573804">Sta toe dat sites en apps bestaande accounts upgraden om toegangssleutels te gebruiken</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fout in Google-account. Accountmenu openen.</translation>
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Verbergen na 1 minuut}other{Verbergen na {count} minuten}}</translation>
+<translation id="4652266463001779298">Niet toegestaan</translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Tabblad delen aanzetten</translation>
 <translation id="4658335131052370646">Opslaan</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Toegangssleutels worden opgeslagen in Google Wachtwoordmanager voor</translation>
 <translation id="510580293474170715">Niets geïmporteerd</translation>
 <translation id="5113960131843706315">Je items ophalen…</translation>
+<translation id="5116347248003317626">Niet toestaan dat sites je locatie gebruiken</translation>
 <translation id="5118462200606189584">Account toevoegen…</translation>
 <translation id="5118764316110575523">Uit</translation>
 <translation id="5119329531859909472">Tik op Volgen om het product te volgen</translation>
@@ -1795,6 +1799,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Map bewerken</translation>
 <translation id="6629759408545977279">Van: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Log in op je account voor toegang tot onder andere je geschiedenis</translation>
 <translation id="6634432609054530164">Je organisatie heeft de incognitomodus uitgezet</translation>
 <translation id="6637478299472506933">Download is mislukt</translation>
 <translation id="6638511529934826365">Tekst zoomen…</translation>
@@ -2008,6 +2013,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> procent gedownload</translation>
 <translation id="7345061034321640811">Importeren niet toegestaan</translation>
+<translation id="7346922058131593019">Waar wil je aan werken, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importeer onder andere wachtwoorden, geschiedenis en bookmarks</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
 <translation id="7357999308187750900">Alles weergeven</translation>
@@ -2064,6 +2070,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="7491131399623468277">Naar instellingen…</translation>
 <translation id="7491161827858509164">Als je bestanden wilt bekijken die je eerder hebt gedownload, open je <ph name="BEGIN_LINK" />Bestanden<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Doorgaan met bewerken</translation>
+<translation id="7498557042323380380">Stel een seizoensgebonden look in voor je pagina Nieuw tabblad</translation>
 <translation id="7500244509706269886">Formulier automatisch invullen</translation>
 <translation id="750493650310597496">0 geselecteerd</translation>
 <translation id="7505402981231763928">Je moet inloggen om Gemini te gebruiken</translation>
@@ -2101,6 +2108,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="760667371114328991">Meldingen van Veiligheidscheck uitzetten</translation>
 <translation id="7612619742409846846">Ingelogd bij Google als</translation>
 <translation id="7612849887607288481">Menu voor AI-prototypering openen</translation>
+<translation id="7618220760967055820">Kies welke knop wordt getoond op de werkbalk</translation>
 <translation id="7620522820075868385">Annuleren</translation>
 <translation id="762078666799342162">Je kunt je eerdere downloads bekijken in <ph name="BEGIN_LINK" />Bestanden<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
@@ -2310,7 +2318,6 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8233237502828137700">Bannerpromotie sluiten</translation>
 <translation id="823339794112333264">Microfoon aanzetten</translation>
 <translation id="8240217649914883113">Dit toevoegen aan mijn agenda</translation>
-<translation id="824379025871762038">Nooit toestaan</translation>
 <translation id="8244387390464017490">Pagina Nieuw tabblad aanpassen</translation>
 <translation id="8250920743982581267">Documenten</translation>
 <translation id="8258734532103758067">Ik heb mijn gegevens geëxporteerd</translation>
@@ -2331,6 +2338,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8282657446819506217">Openen in tabbladgroep</translation>
 <translation id="828291969289324795">{count,plural, =1{Tabblad toevoegen aan nieuwe groep}other{Tabbladen toevoegen aan nieuwe groep}}</translation>
 <translation id="8283172974887967105">Instellen…</translation>
+<translation id="8287009018010202411">Productiviteit</translation>
 <translation id="8289930144142009940">Meldingen voor <ph name="FEATURE_NAME" /> staan uit</translation>
 <translation id="8292893224181644074">Download afgerond</translation>
 <translation id="8299417921174340354">Als je wachtwoorden wilt gebruiken, moet je eerst een toegangscode instellen op je apparaat.</translation>

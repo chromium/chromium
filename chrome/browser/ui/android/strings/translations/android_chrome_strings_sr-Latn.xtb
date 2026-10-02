@@ -329,7 +329,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="2327445548174191329">Izvor: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Sačuvaj stranicu kao…</translation>
 <translation id="2328474416100889417">Svi će odmah izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i svi linkovi pozivnice će biti isključeni</translation>
-<translation id="2329500425421091035">Predstavljamo AI režim u Chrome-u</translation>
 <translation id="2330186936255788117">Još obeleživača</translation>
 <translation id="2330243730505117832">Opcija Izaberite uređaj je zatvorena.</translation>
 <translation id="2332515770639153015">Poboljšano bezbedno pregledanje je uključeno</translation>
@@ -602,7 +601,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3435575784518354875">Da biste zadržali pristup lozinkama, izvezite ih odmah, ažurirajte Google Play usluge, pa ih ponovo uvezite u Google menadžer lozinki. <ph name="BEGIN_LINK" />Pogledajte kompletna uputstva<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Bezbednost</translation>
 <translation id="3435914367318771664">Dodaj karticu u novu grupu</translation>
-<translation id="3436118221454753036">Upitajte AI režim</translation>
 <translation id="3439276997620616816">Ovde ćete pronaći nedavne kartice</translation>
 <translation id="3443221991560634068">Ponovno učitavanje aktuelne stranice</translation>
 <translation id="3444179773590444986">Želite da delite povratne informacije o tamnoj temi za sajtove?</translation>
@@ -629,7 +627,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3524334353996115845">Omogućite da <ph name="ORIGIN" /> potvrdi da ste to vi</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775">Dostupno je <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">Pretražujte pomoću AI režima</translation>
 <translation id="3549537543136628349">Pošto su predučitane stranice šifrovane, a sajt ili aplikacija koji vodi do stranica je Google sajt ili aplikacija, Google serveri ne dobijaju nove informacije kada privatno predučitavaju te stranice.</translation>
 <translation id="3549657413697417275">Pretražite svoju istoriju</translation>
 <translation id="3557336313807607643">Dodaj u kontakte</translation>
@@ -983,7 +980,6 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4885273946141277891">Nepodržan broj Chrome instanci.</translation>
 <translation id="4890973535105146893">Nema sačuvanih lozinki na Google nalogu</translation>
 <translation id="490375751687810070">Vertikalno</translation>
-<translation id="4905823827770127520">Uvrstite link do stranice</translation>
 <translation id="4910889077668685004">Aplikacije za plaćanje</translation>
 <translation id="4911042367886397055">Dobro nam došli ponovo, <ph name="USER_NAME" />.</translation>
 <translation id="4913169188695071480">Zaustavi osvežavanje</translation>
@@ -1214,6 +1210,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="5870416898561279542">Duple kartice i grupe ili one koje se ne koriste <ph name="DAYS_INACTIVE" /> dana premeštaju se ovde<ph name="AUTODELETE_SECTION" />. To možete da promenite u bilo kom trenutku u odeljku <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Obaveštenja <ph name="SEPARATOR" /> Chrome je uklonio ove dozvole jer je ovaj sajt opasan</translation>
+<translation id="5895138241574237353">Pokreni ponovo</translation>
 <translation id="5896944002928653773">Zatvorena je donja tabela sa odricanjem odgovornosti za signale preduzeća</translation>
 <translation id="5899667542927581604">Nijedna tabela sa pristupnim ključevima nije zatvorena</translation>
 <translation id="5907542076239273525">Obeleživač je sačuvan u folderu <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7630202231528827509">URL dobavljača</translation>
 <translation id="7638584964844754484">Neispravna pristupna fraza</translation>
 <translation id="764047009170754705">Omogućavanje Chrome pronalazaka je zatvoreno</translation>
+<translation id="7645712301713737707">Prilagodite raspored kartica tako da se prikazuju u vrhu ili sa strane pregledača.</translation>
 <translation id="7646499124171960488">Upozorava vas na nebezbedne javne sajtove</translation>
 <translation id="7655240423373329753">poslednjih 7 dana</translation>
 <translation id="7656721520530864426">Nema sajtova</translation>
@@ -1957,6 +1955,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="860282621117673749">Obaveštenja o sniženjima</translation>
 <translation id="8611922158252451755">Svako sa linkom može da menja sve kartice, pa pazite šta delite. Link ističe za 48 sati.</translation>
 <translation id="8616006591992756292">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI režim Google pretrage i povezane aplikacije</translation>
 <translation id="8626572875733549102">Prevedi na: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Otvorite Chrome meni &gt; Podešavanja</translation>
 <translation id="8634050254805484913">Skrivena na uskim ekranima</translation>
@@ -2048,7 +2047,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="9001604755921395912">Chrome kartica bez arhiviranja</translation>
 <translation id="9010094279589497751">Brzo otvorite Gemini kada vam zatreba</translation>
 <translation id="9012585441087414258">Štiti vas od sajtova, preuzimanja i dodataka za koje se zna da su štetni. Ako stranica uradi nešto sumnjivo, URL-ovi i delovi sadržaja stranice se šalju u Google bezbedno pregledanje.</translation>
-<translation id="9014097371980259227">Neke alatke smo premestili da biste lakše pretraživali pomoću AI režima</translation>
 <translation id="9015111999662965458">Da bi se uverila da ovaj uređaj može bezbedno da se koristi, organizacija će možda morati da vidi informacije o operativnom sistemu, pregledaču i podešavanjima, kao i o softveru koji je instaliran na uređaju</translation>
 <translation id="9019199799064251516">Želite da nastavite bez zaključavanja profila za automobil?</translation>
 <translation id="9022774213089566801">Često posećivano</translation>

@@ -329,7 +329,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> ile başlayan fiyatlarla</translation>
 <translation id="232757965409810352">Sayfayı farklı kaydet…</translation>
 <translation id="2328474416100889417">Herkes "<ph name="GROUP_NAME" />" sekme grubuna erişimini anında kaybeder ve tüm davet bağlantıları devre dışı bırakılır</translation>
-<translation id="2329500425421091035">Chrome'da AI Modu ile Tanışın</translation>
 <translation id="2330186936255788117">Daha fazla yer işareti</translation>
 <translation id="2330243730505117832">"Cihaz seçin" kapatıldı.</translation>
 <translation id="2332515770639153015">Gelişmiş Güvenli Tarama açık</translation>
@@ -602,7 +601,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3435575784518354875">Şifrelerinize erişmeye devam etmek için hemen dışa aktarın, Google Play Hizmetleri'ni güncelleyin ve ardından Google Şifre Yöneticisi'ne geri aktarın. <ph name="BEGIN_LINK" />Talimatların tamamına göz atın<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
 <translation id="3435914367318771664">Sekmeyi yeni gruba ekle</translation>
-<translation id="3436118221454753036">AI Modu'na sorun</translation>
 <translation id="3439276997620616816">Son sekmeleriniz burada gösterilir</translation>
 <translation id="3443221991560634068">Geçerli sayfayı yeniden yükler</translation>
 <translation id="3444179773590444986">Sitelerdeki koyu temayla ilgili geri bildirim paylaşmak ister misiniz?</translation>
@@ -629,7 +627,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3524334353996115845"><ph name="ORIGIN" /> kaynağının sizi doğrulamasına izin verin</translation>
 <translation id="3527085408025491307">Klasör</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB kullanılabilir</translation>
-<translation id="3547933853190131743">AI Modu ile arama yap</translation>
 <translation id="3549537543136628349">Önceden yüklenmiş sayfalar şifrelenmiş ve sayfalara bağlantı veren site ya da uygulama bir Google sitesi veya uygulaması olduğundan Google sunucuları bu sayfaları gizli olarak önceden yüklerken yeni bilgi almaz.</translation>
 <translation id="3549657413697417275">Geçmişinizde arayın</translation>
 <translation id="3557336313807607643">Kişilere ekle</translation>
@@ -983,7 +980,6 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4885273946141277891">Desteklenmeyen sayıda Chrome örneği var.</translation>
 <translation id="4890973535105146893">Google Hesabınızda kayıtlı şifre yok</translation>
 <translation id="490375751687810070">Dikey</translation>
-<translation id="4905823827770127520">Sayfaya bağlantı ver</translation>
 <translation id="4910889077668685004">Ödeme uygulamaları</translation>
 <translation id="4911042367886397055">Tekrar hoş geldiniz <ph name="USER_NAME" />,</translation>
 <translation id="4913169188695071480">Yenilemeyi durdur</translation>
@@ -1214,6 +1210,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5869522115854928033">Kayıtlı şifreler</translation>
 <translation id="5870416898561279542">Kopya veya <ph name="DAYS_INACTIVE" /> gündür kullanılmayan sekmeler ve gruplar buraya taşınır<ph name="AUTODELETE_SECTION" />. Bunu istediğiniz zaman <ph name="DECLUTTER_SETTINGS_TITLE" /> bölümünde değiştirebilirsiniz.</translation>
 <translation id="5885378508678660271">Bildirimler <ph name="SEPARATOR" /> Bu site tehlikeli olduğu için Chrome bu izinleri kaldırdı</translation>
+<translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5896944002928653773">Kurumsal sinyaller sorumluluk reddi beyanı alt sayfası kapatıldı</translation>
 <translation id="5899667542927581604">Geçiş anahtarı yok sayfası kapatıldı</translation>
 <translation id="5907542076239273525">Yer işareti <ph name="FOLDER_NAME" /> klasörüne kaydedildi</translation>
@@ -1696,6 +1693,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7630202231528827509">Sağlayıcı URL'si</translation>
 <translation id="7638584964844754484">Yanlış parola</translation>
 <translation id="764047009170754705">Chrome Finds etkinleştirme sayfası kapatıldı</translation>
+<translation id="7645712301713737707">Sekme düzeninizi, tarayıcınızın üst kısmında veya yan tarafında görünecek şekilde özelleştirin.</translation>
 <translation id="7646499124171960488">Sizi herkese açık güvensiz sitelerle ilgili uyarır</translation>
 <translation id="7655240423373329753">Son 7 gün</translation>
 <translation id="7656721520530864426">Site yok</translation>
@@ -1957,6 +1955,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="860282621117673749">Fiyat düşüşü uyarıları</translation>
 <translation id="8611922158252451755">Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir. Bu nedenle paylaşım yaparken dikkatli olun. Bağlantı 48 saat süreyle geçerlidir.</translation>
 <translation id="8616006591992756292">Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
+<translation id="8622145666696249878">Google Arama AI Modu ve bağlı uygulamalar</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" /> diline çevir</translation>
 <translation id="8629093325209491835">Chrome menüsü &gt; Ayarlar'ı açın.</translation>
 <translation id="8634050254805484913">Dar ekranlarda gizlenir</translation>
@@ -2048,7 +2047,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="9001604755921395912">Gizli Chrome sekmesinde aç</translation>
 <translation id="9010094279589497751">İhtiyacınız olduğunda Gemini'ı hızlıca açın</translation>
 <translation id="9012585441087414258">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir sayfa şüpheli işlem gerçekleştirirse URL'ler ve sayfa içeriğinin bir kısmı Google Güvenli Tarama'ya gönderilir.</translation>
-<translation id="9014097371980259227">Bazı araçlar, AI Modu ile arama yapmanıza yardımcı olmak için taşındı</translation>
 <translation id="9015111999662965458">Kuruluşunuzun, bu cihazın güvenli bir şekilde kullanıldığından emin olmak için işletim sistemi, tarayıcısı, ayarları ve cihazda hangi yazılımların yüklü olduğu ile ilgili bilgileri görmesi gerekebilir</translation>
 <translation id="9019199799064251516">Arabada profil kilidi olmadan devam edilsin mi?</translation>
 <translation id="9022774213089566801">Sık ziyaret edilenler</translation>

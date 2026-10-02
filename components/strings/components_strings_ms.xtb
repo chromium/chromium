@@ -80,7 +80,6 @@
 <translation id="112840717907525620">Cache dasar OK</translation>
 <translation id="1131264053432022307">Imej yang Anda Salin</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – Untuk keluar daripada skrin penuh, seret dari bahagian atas dan sentuh butang kembali</translation>
-<translation id="1133418583142946603">Tambah tab semasa</translation>
 <translation id="1138458427267715730">Terima makluman jika harga produk tersebut turun pada mana-mana laman merentas web</translation>
 <translation id="1142713751288681188">Jenis kertas</translation>
 <translation id="1142965388643537393">Maklumat perjalanan</translation>
@@ -536,6 +535,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1890171020361705182">Permainan Dino. Dinosaur berpiksel mengelak daripada terlanggar kaktus dan pterodaktil ketika berlari merentas daratan yang tandus. Apabila anda mendengar kiu audio, ketik untuk melompat melepasi halangan.</translation>
 <translation id="1898423065542865115">Penapisan</translation>
 <translation id="1898678876221454577">Log masuk untuk menyimpan imbasan anda</translation>
+<translation id="1898804291554630487">Tanya tentang halaman ini</translation>
 <translation id="1901443836186977402">{1,plural, =1{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh sehari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda ditetapkan kepada <ph name="CURRENT_DATE" /> pada masa ini. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}other{Pelayan ini tidak dapat membuktikan bahawa itu ialah <ph name="DOMAIN" />; sijil keselamatan domain itu tamat tempoh # hari yang lalu. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang memintas sambungan anda. Jam komputer anda buat masa ini ditetapkan kepada <ph name="CURRENT_DATE" />. Adakah itu betul? Jika tidak, anda perlu membetulkan jam sistem anda dan kemudian memuatkan semula halaman ini.}}</translation>
 <translation id="190166348986967700">Pentadbir anda akan mula memuat naik fail anda kepada <ph name="CLOUD_PROVIDER" /> pada <ph name="DATE_TIME" />. Pastikan peranti anda disambungkan sehingga fail anda selesai dimuat naik. Semasa proses muat naik, anda akan dapat membaca fail setempat sahaja.</translation>
 <translation id="1902576642799138955">Tempoh Masa Sah</translation>
@@ -1100,7 +1100,6 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859383374160668142">Anda boleh melihat penurunan harga untuk produk yang anda jejaki pada bila-bila masa.</translation>
 <translation id="2859806420264540918">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan.</translation>
-<translation id="2864493683872263351">Buat pengekodan, tulis atau buat slaid</translation>
 <translation id="2873317327342476681">Permainan Dino, ketik dinosaur atau tekan kekunci ruang untuk bermain</translation>
 <translation id="287387905105155974">Gelembung bantuan</translation>
 <translation id="2875109558992200904">Apabila peristiwa keselamatan dibenderakan oleh Chrome, data yang berkaitan tentang peristiwa tersebut akan dihantar kepada pentadbir anda. Data ini boleh termasuk URL dan tajuk halaman yang anda lawati dalam Chrome, URL halaman yang anda menyalin data, nama fail atau metadata, alamat IP, penyemak imbas atau tab ranap dan nama pengguna yang digunakan untuk log masuk ke aplikasi berasaskan web, peranti dan Chrome anda.</translation>
@@ -2163,6 +2162,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4610279718074907952">Laman ini berada dalam kumpulan, ditakrifkan oleh <ph name="SET_OWNER" />, yang boleh melihat aktiviti anda</translation>
 <translation id="4612631413844865947">Terdapat ralat semasa memproses pesanan anda pada <ph name="MERCHANT_ORIGIN" /> melalui <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Laman ini mungkin mengandungi kandungan matang. Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh melawati laman web ini.</translation>
+<translation id="4613873770449493819">URL mestilah menghala kepada domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4619669610757527494">Simpan lesen memandu dalam Google Wallet</translation>
 <translation id="4622292761762557753">Pindahkan juga</translation>
@@ -2373,6 +2373,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4943620199112228840">Gunakan mikrofon anda</translation>
 <translation id="4943872375798546930">Tiada hasil carian</translation>
 <translation id="494701040141924538">OK, tutup notis</translation>
+<translation id="4951038790614970523">Teks yang anda potong atau salin kepada papan keratan dihantar kepada Google Cloud atau pihak ketiga untuk dianalisis. Contohnya, kandungan tersebut mungkin diimbas untuk mencari data sensitif dan mungkin disimpan berdasarkan dasar syarikat dan dapat dilihat oleh pentadbir anda.</translation>
 <translation id="495170559598752135">Tindakan</translation>
 <translation id="4953689047182316270">Jawab Acara Kebolehaksesan</translation>
 <translation id="4954505713046251871">Untuk menawarkan cadangan dan meningkatkan ciri ini, URL dan kandungan halaman dikongsi dengan Google</translation>
@@ -2607,6 +2608,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="533323551986281710">Helaian bawah Commerce dibuka pada ketinggian penuh</translation>
 <translation id="5334013548165032829">Log sistem terperinci</translation>
 <translation id="5340250774223869109">Aplikasi disekat</translation>
+<translation id="5342666539242413840">Teks disalin kepada papan keratan</translation>
 <translation id="5342693890921195472">minit yang lalu</translation>
 <translation id="534295439873310000">Peranti NFC</translation>
 <translation id="5344579389779391559">Halaman ini mungkin cuba mengenakan bayaran kepada anda</translation>
@@ -3427,7 +3429,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada sesuatu yang tidak kena dengan pelayan proksi atau alamat tidak betul.</translation>
 <translation id="6711700233707023861">Rentetan variasi disalin kepada papan keratan</translation>
-<translation id="6712003214447962889">Jawapan yang lebih pintar dan lebih pantas</translation>
 <translation id="6712343563085762261">Dialihkan ke atas</translation>
 <translation id="6716039223770814796">Bandingkan <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> item</translation>
 <translation id="6716672519412350405"><ph name="URL" /> mahu membuat peta 3D bagi persekitaran anda dan menjejaki kedudukan kamera</translation>
@@ -3872,7 +3873,6 @@ Butiran tambahan:
 <translation id="7470854469646445678">Berikan sebab untuk menyalin fail (diperlukan)</translation>
 <translation id="7471007961486718967">Berikan sebab untuk memindahkan fail (diperlukan)</translation>
 <translation id="7473033553872550521">Anda juga boleh menghubungi pemilik laman tersebut dan mencadangkan agar mereka meningkatkan protokol komunikasi kepada HTTPS. <ph name="LEARN_MORE" /></translation>
-<translation id="7473555040328423550">Tambahkan tab</translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
 <translation id="7475618719385705713">Halaman ini disekat</translation>
 <translation id="7481312909269577407">Majukan</translation>

@@ -348,7 +348,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8390323835464055390">Log ind med dine gemte adgangskoder og adgangsnøgler fra en hvilken som helst app ved hjælp af Autofyld i Chromium</translation>
 <translation id="8409374867500149834">Du har Chromiums stærkeste beskyttelse mod skadelige websites</translation>
 <translation id="8428449554948979733">Skjul Brug Chromium som standard</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}one{Dette sker, når Chromium ikke bruges i {THRESHOLD} minut. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}other{Dette sker, når Chromium ikke bruges i {THRESHOLD} minutter. Data, som kun er gemt på denne enhed, mens du var logget ind, slettes. Dette kan omfatte historik og adgangskoder.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8602103377623855616">Chromium-side</translation>
 <translation id="865600487977764604">Beskytter dig i Chromium og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>

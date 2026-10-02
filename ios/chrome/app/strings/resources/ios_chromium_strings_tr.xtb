@@ -348,7 +348,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8390323835464055390">Otomatik doldurma için Chromium'u kullanarak kayıtlı şifreleriniz ve geçiş anahtarlarınızla tüm uygulamalardan oturum açın</translation>
 <translation id="8409374867500149834">Zararlı web sitelerine karşı Chromium'un en güçlü güvenlik avantajına sahipsiniz</translation>
 <translation id="8428449554948979733">Chromium'u Varsayılan Olarak Kullan seçeneğini gizle</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Yalnızca oturumunuz açıkken bu cihaza kaydedilen veriler silinir. Geçmiş ve şifreler bu kapsamda yer alabilir.}other{Bu işlem, Chromium {THRESHOLD} dakika boyunca kullanılmadığında gerçekleşir. Yalnızca oturumunuz açıkken bu cihaza kaydedilen veriler silinir. Geçmiş ve şifreler bu kapsamda yer alabilir.}}</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8602103377623855616">Chromium sayfası</translation>
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>

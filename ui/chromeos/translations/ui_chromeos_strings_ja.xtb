@@ -522,7 +522,6 @@
 <translation id="5081517858322016911"><ph name="TOTAL_FILE_SIZE" /> 分のファイルが削除されます</translation>
 <translation id="508423945471810158"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムを <ph name="FOLDER_NAME" /> に移動しています</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>
-<translation id="5102922915594634436">同期したフォルダを管理</translation>
 <translation id="5109254780565519649">エラーが発生しました。一部のアイテムは復元されていない可能性があります。</translation>
 <translation id="5110329002213341433">英語（カナダ）</translation>
 <translation id="5119780910075847424">同期が一時停止されています</translation>

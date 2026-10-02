@@ -329,7 +329,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="2327445548174191329">Iš <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Išsaugoti puslapį kaip…</translation>
 <translation id="2328474416100889417">Visi iškart neteks prieigos prie skirtukų grupės „<ph name="GROUP_NAME" />“, o visos kvietimų nuorodos bus išjungtos</translation>
-<translation id="2329500425421091035">Pristatome DI režimą naršyklėje „Chrome“</translation>
 <translation id="2330186936255788117">Daugiau žymių</translation>
 <translation id="2330243730505117832">Lapas „Įrenginio pasirinkimas“ uždarytas.</translation>
 <translation id="2332515770639153015">Sustiprintas saugus naršymas įjungtas</translation>
@@ -602,7 +601,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3435575784518354875">Jei norite išsaugoti prieigą prie slaptažodžių, juos eksportuokite dabar, atnaujinkite „Google Play“ paslaugas ir tada importuokite juos atgal į „Google“ slaptažodžių tvarkyklę. <ph name="BEGIN_LINK" />Žr. išsamias instrukcijas<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sauga</translation>
 <translation id="3435914367318771664">Pridėti skirtuką prie naujos grupės</translation>
-<translation id="3436118221454753036">„Klausti DI“ režimas</translation>
 <translation id="3439276997620616816">Čia rasite naujausius skirtukus</translation>
 <translation id="3443221991560634068">Iš naujo įkelti dabartinį puslapį</translation>
 <translation id="3444179773590444986">Bendrinti atsiliepimą apie tamsiąją temą, skirtą svetainėms?</translation>
@@ -629,7 +627,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3524334353996115845">Leiskite <ph name="ORIGIN" /> patvirtinti jūsų tapatybę</translation>
 <translation id="3527085408025491307">Aplankas</translation>
 <translation id="3542235761944717775">Pasiekiama <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">Ieškokite naudodami DI režimą</translation>
 <translation id="3549537543136628349">Kadangi iš anksto įkelti puslapiai yra šifruoti ir su puslapiais susieta „Google“ svetainė ar programa, „Google“ serveriai negauna naujos informacijos privačiai iš naujo įkeliant šiuos puslapius.</translation>
 <translation id="3549657413697417275">Ieškokite savo istorijoje</translation>
 <translation id="3557336313807607643">Pridėti prie kontaktų</translation>
@@ -778,6 +775,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4136632885151622181">„<ph name="TAB_TITLE" />“, kelis kartus pasirinktas prisegtas įrašantis skirtukas</translation>
 <translation id="4137746084635924146">Dabartinės įrenginio kalba</translation>
 <translation id="414128724510021958">Svetainės kompiuteriams, kurių užklausos pateikiamos pagal numatytuosius nustatymus</translation>
+<translation id="4150837143272125910">Naujinys atsisiųstas</translation>
 <translation id="4162867837470729563">Bendrinimo parinkčių sąrašas per visą ekrano aukštį.</translation>
 <translation id="4164642020717536140">Naršykite žiniatinklį sparčiai ir saugiai</translation>
 <translation id="4165077084524712774">Daugiau įrankių</translation>
@@ -983,7 +981,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4885273946141277891">Nepalaikomas „Chrome“ atvejų skaičius.</translation>
 <translation id="4890973535105146893">„Google“ paskyroje nėra išsaugotų slaptažodžių</translation>
 <translation id="490375751687810070">Vertikaliai</translation>
-<translation id="4905823827770127520">Įtraukti nuorodą į puslapį</translation>
 <translation id="4910889077668685004">Mokėjimo programos</translation>
 <translation id="4911042367886397055">Sveiki sugrįžę, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Sustabdyti atnaujinimą</translation>
@@ -1214,6 +1211,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5869522115854928033">Išsaugoti slaptažodžiai</translation>
 <translation id="5870416898561279542">Čia perkeliamos tikslios skirtukų ir grupių kopijos arba skirtukai ir grupės, kurie nebuvo naudojami <ph name="DAYS_INACTIVE" /> d.<ph name="AUTODELETE_SECTION" /> Galite bet kada tai pakeisti skiltyje „<ph name="DECLUTTER_SETTINGS_TITLE" />“.</translation>
 <translation id="5885378508678660271">Pranešimai <ph name="SEPARATOR" /> „Chrome“ pašalino šiuos leidimus, nes ši svetainė pavojinga</translation>
+<translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5896944002928653773">Įmonės signalų atsisakymo apatinis lapas uždarytas</translation>
 <translation id="5899667542927581604">Lapas, informuojantis, kad nėra prieigos raktų, uždarytas</translation>
 <translation id="5907542076239273525">Žymė išsaugota aplanke „<ph name="FOLDER_NAME" />“</translation>
@@ -1403,6 +1401,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6565959834589222080">„Wi-Fi“ naudojama, kai pasiekiama</translation>
 <translation id="657177046675873214">Jei norite pasiekti žymes visuose įrenginiuose, nustatymuose įjunkite nustatymą „Žymės“</translation>
 <translation id="6573096386450695060">Visada leisti</translation>
+<translation id="657480975869429144">Yra nauja „Chrome“ versija</translation>
 <translation id="658099107946526506">Apsaugokite privatų naršymą naudodami PIN kodą, kad išvengtumėte nepageidaujamos prieigos</translation>
 <translation id="6583199322650523874">Pažymėti dabartinį puslapį</translation>
 <translation id="6588043302623806746">Naudoti saugią DNS</translation>
@@ -1958,6 +1957,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="860282621117673749">Įspėjimai apie sumažintas kainas</translation>
 <translation id="8611922158252451755">Visi nuorodą turintys žmonės gali redaguoti visus skirtukus, todėl bendrinkite atsakingai. Nuoroda baigia galioti po 48 val.</translation>
 <translation id="8616006591992756292">„Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">„Google“ paieškos DI režimas ir susijusios programos</translation>
 <translation id="8626572875733549102">Versti į: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Atidarykite „Chrome“ meniu &gt; „Nustatymai“</translation>
 <translation id="8634050254805484913">Paslėpta siauruose ekranuose</translation>
@@ -2049,7 +2049,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="9001604755921395912">Atidaryti „Chrome“ inkognito skirtuką</translation>
 <translation id="9010094279589497751">Greitai atidarykite „Gemini“, kai tik jo prireikia</translation>
 <translation id="9012585441087414258">Apsaugo nuo svetainių, atsisiuntimų ir plėtinių, kurie yra žinomi kaip pavojingi. Jei puslapyje atliekami įtartini veiksmai, URL ir puslapio turinio dalys siunčiami „Google“ saugaus naršymo paslaugai.</translation>
-<translation id="9014097371980259227">Kai kurie įrankiai perkelti, kad galėtumėte ieškoti naudodami DI režimą</translation>
 <translation id="9015111999662965458">Siekiant įsitikinti, kad šį įrenginį galima naudoti saugiai, jūsų organizacijai gali reikėti peržiūrėti informaciją apie jo operacinę sistemą, naršyklę, nustatymus ir įrenginyje įdiegtą programinę įrangą</translation>
 <translation id="9019199799064251516">Tęsti be automobilio profilio užrakto?</translation>
 <translation id="9022774213089566801">Dažnai lankytasi</translation>

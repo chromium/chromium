@@ -329,7 +329,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> से मिला</translation>
 <translation id="232757965409810352">पेज को इस रूप में सेव करें…</translation>
 <translation id="2328474416100889417">सभी लोगों के लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, न्योते के सभी लिंक काम करना बंद कर देंगे</translation>
-<translation id="2329500425421091035">पेश है Chrome में एआई मोड</translation>
 <translation id="2330186936255788117">ज़्यादा बुकमार्क</translation>
 <translation id="2330243730505117832">"कोई डिवाइस चुनें" पैनल बंद है.</translation>
 <translation id="2332515770639153015">बेहतर सुरक्षित ब्राउज़िंग की सुविधा चालू है</translation>
@@ -602,7 +601,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3435575784518354875">अपने पासवर्ड का ऐक्सेस बनाए रखने के लिए, उन्हें अभी एक्सपोर्ट करें. इसके बाद, Google Play Services को अपडेट करें और फिर उन्हें Google Password Manager पर इंपोर्ट करें. <ph name="BEGIN_LINK" />पूरे निर्देश देखें<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3435914367318771664">नए ग्रुप में टैब जोड़ें</translation>
-<translation id="3436118221454753036">एआई मोड में पूछें</translation>
 <translation id="3439276997620616816">आपको हाल ही में खोले गए टैब, यहां दिखेंगे</translation>
 <translation id="3443221991560634068">वर्तमान पेज फिर से लोड करें</translation>
 <translation id="3444179773590444986">क्या आप साइटों के लिए गहरे रंग वाली थीम से जुड़े सुझाव, शिकायत या राय शेयर करना चाहते हैं?</translation>
@@ -629,7 +627,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3524334353996115845"><ph name="ORIGIN" /> को आपकी पहचान की पुष्टि करने दें</translation>
 <translation id="3527085408025491307">फ़ोल्डर</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> केबी उपलब्ध</translation>
-<translation id="3547933853190131743">एआई मोड की मदद से खोजें</translation>
 <translation id="3549537543136628349">अगर पहले से लोड किए गए पेजों को एन्क्रिप्ट यानी सुरक्षित किया गया है और इन्हें लिंक करने वाली साइट या ऐप्लिकेशन एक Google साइट या ऐप्लिकेशन है, तो निजी तौर पर पहले से लोड करते समय, Google के सर्वर को इनसे जुड़ी कोई नई जानकारी नहीं मिलती.</translation>
 <translation id="3549657413697417275">अपने इतिहास में खोजें</translation>
 <translation id="3557336313807607643">संपर्कों में जोड़ें</translation>
@@ -983,7 +980,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="4885273946141277891">Chrome इंस्टेंस की असमर्थित संख्या.</translation>
 <translation id="4890973535105146893">आपके Google खाते में कोई भी पासवर्ड सेव नहीं है</translation>
 <translation id="490375751687810070">वर्टिकल व्यू</translation>
-<translation id="4905823827770127520">पेज का लिंक जोड़ें</translation>
 <translation id="4910889077668685004">पेमेंट ऐप्लिकेशन</translation>
 <translation id="4911042367886397055">आपका फिर से स्वागत है, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">रीफ्रेश करना बंद करें</translation>
@@ -1214,6 +1210,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5869522115854928033">सेव किए गए पासवर्ड</translation>
 <translation id="5870416898561279542">डुप्लीकेट या <ph name="DAYS_INACTIVE" /> दिनों से इस्तेमाल नहीं किए गए टैब या ग्रुप को यहां मूव कर दिया जाता है <ph name="AUTODELETE_SECTION" />. <ph name="DECLUTTER_SETTINGS_TITLE" /> में जाकर, इसे किसी भी समय बदला जा सकता है.</translation>
 <translation id="5885378508678660271">सूचनाएं <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए यह अनुमति हटा दी है, क्योंकि यह सुरक्षित नहीं है</translation>
+<translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
 <translation id="5896944002928653773">एंटरप्राइज़ सिग्नल के डिसक्लेमर वाली बॉटम शीट बंद की गई</translation>
 <translation id="5899667542927581604">कोई पासकी शीट बंद नहीं की गई</translation>
 <translation id="5907542076239273525">बुकमार्क को <ph name="FOLDER_NAME" /> में सेव किया गया</translation>
@@ -1696,6 +1693,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7630202231528827509">सेवा देने वाली कंपनी का यूआरएल</translation>
 <translation id="7638584964844754484">गलत 'पासफ़्रेज़'</translation>
 <translation id="764047009170754705">Chrome Finds को चालू करने की सुविधा बंद है</translation>
+<translation id="7645712301713737707">टैब के लेआउट को पसंद के मुताबिक बनाएं, ताकि वह आपके ब्राउज़र में सबसे ऊपर या साइड में दिखे.</translation>
 <translation id="7646499124171960488">इससे आपको असुरक्षित सार्वजनिक साइटों के बारे में चेतावनी मिलती है</translation>
 <translation id="7655240423373329753">पिछले सात दिन का</translation>
 <translation id="7656721520530864426">कोई साइटें नहीं</translation>
@@ -1957,6 +1955,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="860282621117673749">कीमत में कमी की सूचनाएं</translation>
 <translation id="8611922158252451755">जिन लोगों के पास यह लिंक है वे हर टैब में बदलाव कर सकते हैं. इसलिए, सोच-समझकर ही लोगों को ग्रुप में शामिल होने का न्योता भेजें. लिंक 48 घंटों के बाद काम नहीं करते हैं.</translation>
 <translation id="8616006591992756292">आपके Google खाते में <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> पर अन्य तरह के ब्राउज़िंग इतिहास हो सकतेे हैं.</translation>
+<translation id="8622145666696249878">Google Search का एआई मोड और कनेक्ट किए गए ऐप्लिकेशन</translation>
 <translation id="8626572875733549102"><ph name="LANGUAGE" /> में अनुवाद करें</translation>
 <translation id="8629093325209491835">Chrome मेन्यू &gt; सेटिंग खोलें</translation>
 <translation id="8634050254805484913">छोटी स्क्रीन पर छिपा हुआ होता है</translation>
@@ -2048,7 +2047,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="9001604755921395912">Chrome के गुप्त टैब में खोलें</translation>
 <translation id="9010094279589497751">ज़रूरत पड़ने पर Gemini को तुरंत खोलें</translation>
 <translation id="9012585441087414258">ऐसे डाउनलोड, साइटों, और एक्सटेंशन से सुरक्षा करता है जो नुकसान पहुंचा सकते हैं. अगर किसी पेज में कुछ संदिग्ध मिलता है, तो उसके यूआरएल और पेज कॉन्टेंट के बिट, 'Google सुरक्षित ब्राउज़िंग' की सुविधा को भेजे जाते हैं.</translation>
-<translation id="9014097371980259227">एआई मोड के ज़रिए खोज करने में आपकी मदद के लिए, कुछ टूल की जगह बदली गई है</translation>
 <translation id="9015111999662965458">इस डिवाइस का सुरक्षित तरीके से इस्तेमाल किया जा सके, यह पक्का करने के लिए आपके संगठन को इसके ऑपरेटिंग सिस्टम, ब्राउज़र, और सेटिंग की जानकारी देखने की ज़रूरत पड़ सकती है. उसे यह भी देखना पड़ सकता है कि डिवाइस पर कौनसा सॉफ़्टवेयर इंस्टॉल है</translation>
 <translation id="9019199799064251516">क्या आपको कार के प्रोफ़ाइल लॉक के बिना आगे बढ़ना है?</translation>
 <translation id="9022774213089566801">अक्सर देखी जाने वाली वेबसाइटें</translation>

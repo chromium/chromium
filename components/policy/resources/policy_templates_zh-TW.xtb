@@ -922,7 +922,6 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="1625700732886306811">允許 <ph name="PRODUCT_NAME" /> 透過所有 IP 位址連線到裝置</translation>
 <translation id="1626379196197114720">允許使用往返快取</translation>
 <translation id="1628974048137236820">新分頁不會顯示卡片</translation>
-<translation id="1628984674324273832">不允許使用「透過 Gemini 尋找並填入資訊」功能。</translation>
 <translation id="163200210584085447">系統會比對這份清單中的模式與要求網址的
       安全性來源。如果找到相符的結果，系統就會
       在 SAML 登入網頁授權存取錄影裝置。如果找不到
@@ -1657,7 +1656,6 @@ ChromeOS M184 將是最後一個支援 Chrome 應用程式的 ChromeOS 版本。
 <translation id="2107601598727098402">
         這項政策已於 M72 淘汰。請改用 CloudManagementEnrollmentToken。
         </translation>
-<translation id="2111355600078097861">允許使用「透過 Gemini 尋找並填入資訊」功能，但不協助改良 AI 模型。</translation>
 <translation id="2112656109118682849">允許使用者選擇是否讓登入畫面顯示系統資訊</translation>
 <translation id="2113068765175018713">透過自動重新啟動的方式限制裝置的正常運作時間</translation>
 <translation id="211386002920955760">控管企業版使用者能否使用 Chrome 的分頁群組共用功能。
@@ -5394,6 +5392,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 <translation id="4561940244682063697">不允許網站提示使用者分享螢幕畫面的影片串流</translation>
 <translation id="4562165737444703281">允許使用者啟用/設定 Crostini 連接埠轉送</translation>
 <translation id="456450545863578630">允許企業管理員在遠端支援連線時傳輸檔案</translation>
+<translation id="4567614489737189156">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" /> 會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果設為停用，系統會關閉指標和診斷資料的報告功能。
+
+受管理的裝置如果未設定這項政策，系統預設會啟用指標和診斷資料的回報功能。
+
+非受管裝置則不適用這項政策，使用者可以在設定裝置時或日後透過設定，選擇指標和診斷資料的回報行為。</translation>
 <translation id="4570859815763368584">自 M68 起已淘汰，請改用 DefaultPopupsSetting。
 
       如需完整說明，請前往 https://www.chromestatus.com/feature/5675755719622656。
@@ -6228,7 +6231,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 如果不設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
 
 如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
-<translation id="5070539335358964387">允許使用「透過 Gemini 尋找並填入資訊」功能，並協助改良 AI 模型。</translation>
 <translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073788301065423829">這項政策會啟用或停用 ChromeOS 的「幫我寫」功能。
 
@@ -9576,7 +9578,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7136237405361383549">依據實際測試設定使用預設轉譯器。</translation>
 <translation id="7138762292550697459">控制 JavaScript setTimeout() 函式的最低逾時時間。</translation>
 <translation id="7138792262152376158">依循 PrefixedVideoFullscreen API 的定期淘汰時間表</translation>
-<translation id="7140755255968613921">「透過 Gemini 尋找並填入資訊」設定</translation>
 <translation id="7140760943584613237">Microsoft® 雲端識別資訊提供者</translation>
 <translation id="714219487865269980">啟用鍵盤焦點醒目顯示功能</translation>
 <translation id="7144022711746703451">
@@ -9970,19 +9971,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7402257017733669351">防止瀏覽器程序建立動態程式碼</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
 <translation id="7406276857470642718">控制透過外部 IdP (使用 SAML) 進行驗證的使用者設定</translation>
-<translation id="7407431811343706437">控管使用者是否能在 <ph name="PRODUCT_NAME" /> 中使用「透過 Gemini 尋找並填入資訊」功能。
-
-0 = 允許使用這項功能，並允許 Google 運用相關資料改善 AI 模型。相關資料可能包括提示、輸入內容、輸出內容、來源資料和文字意見回饋 (視功能而定)。預設值為 0，但以下註明的情形除外。
-
-1 = 允許使用這項功能，但不允許 Google 運用使用者的內容 (包括提示、輸入內容、輸出內容、來源資料和文字意見回饋) 改良模型。如果是 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企業版使用者，以及 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版帳戶，預設值為 1。
-
-2 = 不允許使用這項功能。
-
-如果停用 Gemini 應用程式，這項政策就沒有任何作用。例如，<ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策可能會停用 Gemini 應用程式。
-
-如果未設定這項政策，系統會根據 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定其行為。
-
-如要進一步瞭解生成式 AI 功能的資料處理方式，請前往 https://support.google.com/chrome/a?p=generative_ai_settings。</translation>
 <translation id="7407441173422042771">這項政策可控管 <ph name="PRODUCT_NAME" /> 中的網路預測功能。這項設定會控管 DNS 預先擷取功能、TCP、SSL 預先連線和網頁預先轉譯機制。
 
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，系統會關閉網路預測功能，但使用者可以變更這項設定。</translation>
@@ -9991,7 +9979,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7410074797376205571">允許 <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />執行遠端主機透過 Proxy 傳送的 WebAuthn API 要求。</translation>
 <translation id="7412456346709338637">啟用 Thunderbolt/USB4 周邊裝置資料存取權</translation>
 <translation id="7414890119082492552">無偏好。</translation>
-<translation id="7416222110012824615">這項政策會控管 XSLT 功能 (XSLTProcessor Javascript API 和 XSL 處理指令) 是否開放使用。如果將這項政策設為啟用，無論瀏覽器中的預設狀態為何，系統都會提供 XSLT。如果將這項政策設為停用，無論瀏覽器中的預設狀態為何，XSLT 都無法使用。如果不設定這項政策，XSLT 是否可用會取決於瀏覽器的預設設定和實測。這項政策只是暫時性措施，將在 M164 中移除。</translation>
 <translation id="7417438464912687020">允許與這部裝置建立遠端存取連線</translation>
 <translation id="7417972229667085380">簡報模式中的閒置延遲時間延長百分比 (已不適用)</translation>
 <translation id="7421230730436851224">一律不在沙箱中處理音訊</translation>
@@ -10285,10 +10272,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
       如果將這項政策設為 False 或不設定，系統則會關閉回報功能，
       且在這兩種情況下，DataLeakPreventionRulesList 中以「ALLOW」層級限制定義的規則都不會回報事件。</translation>
 <translation id="7648907905084499629">對所有網站上的 Cookie 使用 <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> 行為</translation>
-<translation id="7649831723389657756">你可以透過這項政策，指定哪些來源允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證機制 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。
-
-      依據 <ph name="URL_SCHEME_FORMAT_LINK" /> 的說明，為來源模式套用適當的格式。<ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> 中最多可定義 1000 個例外網址。
-      主機元件名稱可以使用萬用字元 (例如「*:8000」可比對通訊埠 8000 上的所有主機)。如果完全省略某個元件，就能比對所有配置或所有通訊埠 (例如「example.com」可比對所有配置和通訊埠)。主機名稱 (例如「example.com」) 也會比對其子網域。如要確切比對主機並排除其子網域，請在主機名稱前面加上半形句號 (例如「.example.com」)。如要比對所有來源，請使用單一星號「*」。</translation>
 <translation id="7652330587655863759">驗證類型。
 
 * 'none'：不執行驗證。
@@ -11046,6 +11029,7 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8164687848393015214">如果將這項政策設為啟用，系統會將監控網路封包 (<ph name="HEARTBEATS_TERM" />) 傳送到可監控上線狀態的管理伺服器，讓伺服器偵測裝置是否處於離線狀態。
 
       如果將這項政策設為停用或不設定，系統不會傳送任何封包。</translation>
+<translation id="8165152191100365965">在受管理裝置上將指標傳送給 Google，或允許使用者在非受管裝置上決定是否傳送</translation>
 <translation id="8168359201203671567">彩虹鍵盤背光顏色</translation>
 <translation id="8169452762291746260">停用裝置健康狀態監控功能</translation>
 <translation id="8170359860920320269">篩選成人內容網站</translation>
@@ -12398,6 +12382,9 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
       如果 URI 範本包含 <ph name="HTTP_VARIABLE_DNS" /> 變數，系統會使用 <ph name="HTTP_METHOD_GET" /> 對解析器發出要求。如果不包含這項變數，則會使用 <ph name="HTTP_METHOD_POST" />。
 
       系統會忽略格式不正確的範本。</translation>
+<translation id="9066972193987544412">如果將這項政策設為啟用或不設定，使用者就能新增、移除、修改或上傳書籤。
+
+      如果將這項政策設為停用，使用者將無法新增、移除、修改或上傳書籤，但仍可以使用現有書籤。</translation>
 <translation id="9068629430243705879">通訊埠 6566 (2021 年 10 月 15 日前可解除封鎖)</translation>
 <translation id="9069432851455606924">地理位置設定</translation>
 <translation id="9069503402414011061">你可以透過這項政策，指定驗證資料快取的效期 (以小時為單位)。這類快取包含本機運作範圍 (關聯運作範圍) 信任的運作範圍相關資料。因此，驗證資料快取有助於加快登入作業。系統不會快取使用者專屬資料和非關聯運作範圍的資料。
@@ -12468,6 +12455,21 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="91206085111961438">控制資訊清單 v2 擴充功能的可用性</translation>
 <translation id="9122865885571719292">控管 <ph name="PRODUCT_OS_NAME" /> 是否要在使用者登入後還原上一個工作階段及其還原方式。只有在 <ph name="FULL_RESTORE_ENABLED_NAME" /> 政策設為 True 時，這項政策才會生效。</translation>
 <translation id="9123464369663964441">允許使用者新增可載入複合型內容的例外網站</translation>
+<translation id="9123738611041078443">設定 <ph name="PRODUCT_NAME" /> 的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 連線設定。
+
+如要設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />，管理員必須提供下列其中一項：
+* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址 (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />)
+* 以下三個舊版參數：<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> 和 <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />。如果未完整指定這三個參數，且未提供網址，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數必須是有效的網址，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+如果同時設定 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數和舊版參數，系統會優先採用 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數。
+
+如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
+
+如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
+
+請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="9124770007620653639">一律不將網域可靠性資料傳送給 Google</translation>
 <translation id="9126331659955304300">允許從本機檔案系統、相機圖庫和 Google 個人資料選取使用者顯示圖片</translation>
 <translation id="9126694586349976283">允許使用內建的 AI API。</translation>
@@ -12644,6 +12646,13 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 如果將這項政策設為 True 或未設定，使用者就能在 UI 中開啟或關閉信用卡自動填入功能。
 
 如果設為 False，系統就完全不會提供信用卡資訊建議或自動填入這類內容，也不會儲存使用者在網頁上輸入的新信用卡資訊。</translation>
+<translation id="963375545567956229">這項政策已淘汰，從 M145 起不再有效。安全瀏覽延伸回報功能已從 <ph name="PRODUCT_NAME" /> 中移除，因此無論這項政策如何設定，<ph name="PRODUCT_NAME" /> 都不會再傳送這些報告，使用者也不會再看到對應的設定。
+
+      如要讓 <ph name="PRODUCT_NAME" /> 傳送額外資訊，協助改善安全瀏覽功能，請改用 <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" /> 政策啟用強化防護功能。
+
+      在 M145 之前，將這項政策設為啟用，會開啟 <ph name="PRODUCT_NAME" /> 的安全瀏覽延伸回報功能，將部分系統資訊和網頁內容傳送給 Google 伺服器，協助偵測危險的應用程式和網站。如果將這項政策設為停用，系統一律不會傳送報告。如果設定了這項政策，使用者就無法變更；如果未設定，使用者可以決定是否要傳送報告。
+
+      如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="966425658642788645">套用預設行為</translation>
 <translation id="971677226939413180">使用者無法選擇「以圖片形式列印」選項。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>

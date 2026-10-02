@@ -329,7 +329,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="2327445548174191329">No ierīces <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Saglabāt lapu kā…</translation>
 <translation id="2328474416100889417">Visi uzreiz zaudēs piekļuvi ciļņu grupai “<ph name="GROUP_NAME" />”, un visas uzaicinājuma saites tiks izslēgtas.</translation>
-<translation id="2329500425421091035">Iepazīstinām ar MI režīmu pārlūkā Chrome</translation>
 <translation id="2330186936255788117">Vairāk grāmatzīmju</translation>
 <translation id="2330243730505117832">Ekrāna apakšdaļas lapa “Ierīces izvēle” ir aizvērta.</translation>
 <translation id="2332515770639153015">Droša pārlūkošana ar papildu aizsardzību ir ieslēgta</translation>
@@ -602,7 +601,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3435575784518354875">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt, atjauniniet Google Play pakalpojumus un pēc tam atkal importējiet paroles Google paroļu pārvaldniekā. <ph name="BEGIN_LINK" />Skatiet visus norādījumus<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Drošība</translation>
 <translation id="3435914367318771664">Pievienot cilni jaunai grupai</translation>
-<translation id="3436118221454753036">Jautāt MI režīmam</translation>
 <translation id="3439276997620616816">Šeit varēsiet skatīt savas nesen atvērtās cilnes</translation>
 <translation id="3443221991560634068">Atkārtoti ielādēt pašreizējo lapu</translation>
 <translation id="3444179773590444986">Vai kopīgot atsauksmi par tumšā motīva lietošanu vietnēs?</translation>
@@ -629,7 +627,6 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3524334353996115845">Ļaujiet <ph name="ORIGIN" /> apstiprināt jūsu identitāti.</translation>
 <translation id="3527085408025491307">Mape</translation>
 <translation id="3542235761944717775">Pieejami <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">Meklēt, izmantojot MI režīmu</translation>
 <translation id="3549537543136628349">Tā kā iepriekš ielādētās lapas ir šifrētas un vietne vai lietotne, kas novirza uz lapām, ir Google vietne vai lietotne, Google serveri nesaņem jaunu informāciju, ja šīs lapas tiek iepriekš ielādētas privāti.</translation>
 <translation id="3549657413697417275">Meklēt savā vēsturē</translation>
 <translation id="3557336313807607643">Pievienot kontaktpersonām</translation>
@@ -983,7 +980,6 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4885273946141277891">Neatbalstīts Chrome instanču skaits</translation>
 <translation id="4890973535105146893">Jūsu Google kontā nav saglabātu paroļu</translation>
 <translation id="490375751687810070">Vertikāli</translation>
-<translation id="4905823827770127520">Iekļaut saiti uz lapu</translation>
 <translation id="4910889077668685004">Maksājumu lietotnes</translation>
 <translation id="4911042367886397055">Laipni lūdzam atpakaļ, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Pārtraukt atsvaidzināšanu</translation>
@@ -1214,6 +1210,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5869522115854928033">Saglabātās paroles</translation>
 <translation id="5870416898561279542">Šeit tiek pārvietotas dublētās cilnes un grupas vai cilnes un grupas, kas nav izmantotas <ph name="DAYS_INACTIVE" /> dienas, <ph name="AUTODELETE_SECTION" />. Jebkurā brīdī varat to mainīt sadaļā <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Paziņojumi <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo šī vietne ir bīstama</translation>
+<translation id="5895138241574237353">Restartēt</translation>
 <translation id="5896944002928653773">Ekrāna apakšdaļas lapa “Uzņēmuma signālu atruna” ir aizvērta</translation>
 <translation id="5899667542927581604">Lapa “Nav piekļuves atslēgu” tika aizvērta</translation>
 <translation id="5907542076239273525">Grāmatzīme tika saglabāta mapē <ph name="FOLDER_NAME" />.</translation>
@@ -1696,6 +1693,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7630202231528827509">Piegādātāja URL</translation>
 <translation id="7638584964844754484">Nepareiza ieejas frāze</translation>
 <translation id="764047009170754705">Chrome ieteikumu izvēles ekrāna apakšdaļas lapa ir aizvērta</translation>
+<translation id="7645712301713737707">Pielāgojiet ciļņu izkārtojumu, lai tās tiktu rādītas pārlūka augšdaļā vai sānos.</translation>
 <translation id="7646499124171960488">Tiek rādīti brīdinājumi par nedrošām publiskām vietnēm</translation>
 <translation id="7655240423373329753">pēdējās 7 dienas</translation>
 <translation id="7656721520530864426">Nav vietņu</translation>
@@ -1957,6 +1955,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="860282621117673749">Brīdinājumi par cenu kritumu</translation>
 <translation id="8611922158252451755">Ikviens, kam ir saite, var rediģēt visas cilnes, tāpēc kopīgojot ievērojiet piesardzību. Saite ir derīga 48 stundas.</translation>
 <translation id="8616006591992756292">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Google meklēšanas MI režīms un piesaistītās lietotnes</translation>
 <translation id="8626572875733549102">Tulkot šādā valodā: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Atveriet Chrome izvēlni &gt; Iestatījumi.</translation>
 <translation id="8634050254805484913">Paslēpta šauros ekrānos</translation>
@@ -2048,7 +2047,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="9001604755921395912">Atvērt Chrome inkognito cilnē</translation>
 <translation id="9010094279589497751">Ātri atveriet Gemini, kad tas ir nepieciešams.</translation>
 <translation id="9012585441087414258">Tiek nodrošināta aizsardzība pret zināmām bīstamām vietnēm, lejupielādēm un paplašinājumiem. Ja lapas darbība ir aizdomīga, funkcijai “Google droša pārlūkošana” tiek nosūtīti vietrāži URL un lapas satura fragmenti.</translation>
-<translation id="9014097371980259227">Daži rīki ir pārvietoti, lai palīdzētu jums meklēt, izmantojot MI režīmu.</translation>
 <translation id="9015111999662965458">Lai varētu droši izmantot šo ierīci, jūsu organizācijai, iespējams, būs jāredz informācija par tās operētājsistēmu, pārlūku un iestatījumiem, kā arī to, kāda programmatūra ir instalēta ierīcē.</translation>
 <translation id="9019199799064251516">Vai turpināt, neizmantojot automašīnas profila bloķēšanu?</translation>
 <translation id="9022774213089566801">Bieži apmeklētas vietnes</translation>

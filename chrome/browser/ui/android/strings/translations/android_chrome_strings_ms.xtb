@@ -329,7 +329,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="2327445548174191329">Daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Simpan halaman sebagai…</translation>
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
-<translation id="2329500425421091035">Memperkenalkan AI Mode dalam Chrome</translation>
 <translation id="2330186936255788117">Lebih banyak penanda halaman</translation>
 <translation id="2330243730505117832">"Pilih peranti" ditutup.</translation>
 <translation id="2332515770639153015">Penyemakan Imbas Selamat Dipertingkat dihidupkan</translation>
@@ -602,7 +601,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3435575784518354875">Untuk mengekalkan akses kepada kata laluan anda, eksport kata laluan tersebut sekarang, kemas kinikan Perkhidmatan Google Play, kemudian import semula kata laluan tersebut pada Google Password Manager. <ph name="BEGIN_LINK" />Lihat arahan penuh<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Keselamatan</translation>
 <translation id="3435914367318771664">Tambahkan tab pada kumpulan baharu</translation>
-<translation id="3436118221454753036">Tanya Mod AI</translation>
 <translation id="3439276997620616816">Anda boleh menemukan tab terbaharu anda di sini</translation>
 <translation id="3443221991560634068">Muat semula halaman semasa</translation>
 <translation id="3444179773590444986">Kongsikan maklum balas tentang tema gelap untuk laman?</translation>
@@ -629,7 +627,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3524334353996115845">Benarkan <ph name="ORIGIN" /> mengesahkan itu anda</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB tersedia</translation>
-<translation id="3547933853190131743">Cari dengan AI Mode</translation>
 <translation id="3549537543136628349">Oleh sebab halaman pramuat disulitkan dan pemautan laman atau apl kepada halaman tersebut ialah laman atau apl Google, pelayan Google tidak menerima maklumat baharu apabila mempramuatkan halaman ini secara peribadi.</translation>
 <translation id="3549657413697417275">Cari sejarah anda</translation>
 <translation id="3557336313807607643">Tambahkan pada kenalan</translation>
@@ -983,7 +980,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="4885273946141277891">Bilangan kejadian Chrome tidak disokong.</translation>
 <translation id="4890973535105146893">Tiada kata laluan yang disimpan dalam Google Account anda</translation>
 <translation id="490375751687810070">Menegak</translation>
-<translation id="4905823827770127520">Sertakan pautan kepada halaman</translation>
 <translation id="4910889077668685004">Apl pembayaran</translation>
 <translation id="4911042367886397055">Selamat kembali, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Berhenti memuat semula</translation>
@@ -1214,6 +1210,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5869522115854928033">Kata laluan disimpan</translation>
 <translation id="5870416898561279542">Tab dan kumpulan pendua atau tab dan kumpulan yang tidak digunakan selama <ph name="DAYS_INACTIVE" /> hari dialihkan ke sini<ph name="AUTODELETE_SECTION" />. Anda boleh menukar pilihan ini pada bila-bila masa dalam <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Pemberitahuan <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana laman ini berbahaya</translation>
+<translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5896944002928653773">Helaian bawah penafian isyarat perusahaan ditutup</translation>
 <translation id="5899667542927581604">Tiada helaian kunci laluan yang ditutup</translation>
 <translation id="5907542076239273525">Penanda halaman disimpan pada <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="860282621117673749">Makluman penurunan harga</translation>
 <translation id="8611922158252451755">Sesiapa sahaja yang mempunyai pautan boleh mengedit semua tab, maka berkongsilah dengan bijak. Pautan akan tamat tempoh selepas 48 jam.</translation>
 <translation id="8616006591992756292">Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI Mode Google Search dan apl yang disambungkan</translation>
 <translation id="8626572875733549102">Terjemah kepada <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Buka menu Chrome &gt; Tetapan</translation>
 <translation id="8634050254805484913">Tersembunyi pada skrin sempit</translation>
@@ -2049,7 +2047,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="9001604755921395912">Buka dalam tab Chrome Inkognito</translation>
 <translation id="9010094279589497751">Buka Gemini dengan pantas apabila anda memerlukan Gemini</translation>
 <translation id="9012585441087414258">Melindungi daripada laman, muat turun dan sambungan yang diketahui berbahaya. Jika terdapat tindakan halaman yang mencurigakan, URL dan bit kandungan halaman tersebut akan dihantar kepada Penyemakan Imbas Selamat Google.</translation>
-<translation id="9014097371980259227">Beberapa alatan telah dialihkan untuk membantu anda membuat carian dengan AI Mode</translation>
 <translation id="9015111999662965458">Untuk memastikan peranti ini boleh digunakan dengan selamat, organisasi anda mungkin perlu meneliti maklumat tentang sistem pengendalian, penyemak imbas, tetapan dan perisian yang dipasang pada peranti tersebut</translation>
 <translation id="9019199799064251516">Teruskan tanpa kunci profil kereta?</translation>
 <translation id="9022774213089566801">Kerap dilawat</translation>

@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="138618066238211776">Continua come <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opzioni per salvare la carta</translation>
+<translation id="138810468159004008">Consenti durante la visita al sito</translation>
 <translation id="1396260204083880024">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Apri il menu dell'account.</translation>
 <translation id="1397144142234474689">Nascondi Cronologia</translation>
 <translation id="1399268420835656394">Se non sei un bambino, ti consigliamo di controllare l'età nell'Apple Account su questo dispositivo. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Leggi cosa dicono le persone</translation>
 <translation id="2394659309569789395">Apri comunque il sito</translation>
 <translation id="2403129868389095715">Il pacco non può essere consegnato</translation>
-<translation id="2408318953009664750">Solo una volta</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
 <translation id="2422174748424038845">Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi.</translation>
 <translation id="2424805048070062787">Continua con questa scheda</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Download in pausa</translation>
 <translation id="2816489851009559785">Menu → Impostazioni → Browser predefinito</translation>
 <translation id="2818821771744632548">Il tuo account <ph name="USER_NAME" /> è stato disconnesso durante il ripristino dell'iPhone. Per accedere di nuovo, tocca "Continua" di seguito.</translation>
-<translation id="2819667972867209401">In caso di attivazione, i dati vengono salvati nel tuo Account Google. In caso di disattivazione, i dati vengono salvati solo su questo dispositivo e vengono eliminati se ti disconnetti.</translation>
 <translation id="2827760117436553203">Mantenere i dati separati?</translation>
 <translation id="2829172210806130158">Cerca sullo schermo</translation>
 <translation id="2831109159746537587">Prova a cerchiare o a toccare l'immagine per cercarla</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 ott 2023</translation>
 <translation id="3416904994126232207">Azione completata: "Salva una password".</translation>
 <translation id="3419787211763835342">Contribuisci a migliorare la compilazione automatica avanzata</translation>
+<translation id="3422958112451181446">Tieni premuto per fissare qui il tuo strumento preferito</translation>
 <translation id="3430407169377889553">Usa Gemini con prudenza e intervieni se necessario. Sei responsabile delle azioni di Gemini durante le attività.</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3441673211568148613">Mantieni privata la navigazione</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 metodo di pagamento}other{# metodi di pagamento}}</translation>
 <translation id="3831560640878483188">Ignorare l'avviso?</translation>
 <translation id="3832419617903252251">Password salvata solo su questo dispositivo</translation>
-<translation id="3835016165506903031">Consenti durante la visita</translation>
 <translation id="3835964409414434850">Passa alla scheda successiva</translation>
 <translation id="3838691874161539578">Controlla le password salvate per aumentare la tua sicurezza e proteggerti meglio online</translation>
 <translation id="3838985624086228724">Calo di prezzo nel prodotto monitorato, da <ph name="PREVIOUS_PRICE" /> a <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">Novità</translation>
 <translation id="4289309730265289297">Raccolta fotografica</translation>
 <translation id="429074084062258019">{count,plural, =1{Aggiungi scheda a gruppo}other{Aggiungi schede a gruppo}}</translation>
+<translation id="4290920330097335010">Non consentire mai</translation>
 <translation id="4294506173142861371">Accedere come <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Imposta posizione</translation>
 <translation id="4304713468139749426">Gestore delle password</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Separa</translation>
 <translation id="446314443268698477">Acquista, traduci e identifica ciò che vedi con la fotocamera o tramite le foto.</translation>
 <translation id="4469324811108161144">Le note possono contenere massimo <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
+<translation id="4470766488397113689">Su cosa vuoi lavorare?</translation>
 <translation id="4471472356135655769">Impossibile esportare le password</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
 <translation id="4473565697543262065">In questo modo le informazioni selezionate salvate su questo dispositivo e nel tuo Account Google <ph name="USER_EMAIL" /> verranno eliminate</translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">Scansioni approfondite per rilevare i download sospetti.</translation>
 <translation id="4606247758155004938">Il tuo browser è gestito dalla tua organizzazione.</translation>
 <translation id="4607887340472970274">Monitoraggio del prezzo</translation>
+<translation id="4614482404958079763">Prova un tema festivo temporaneo, completo di illustrazioni e animazioni personalizzate</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4621768135601674446">Apri le opzioni della modalità Lettura</translation>
 <translation id="4627107755957573804">Consenti a siti e app di fare l'upgrade degli account esistenti per utilizzare le passkey</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Accesso eseguito come <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Errore dell'Account Google. Apri il menu dell'account.</translation>
 <translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Nascondi dopo 1 minuto}other{Nascondi dopo {count} minuti}}</translation>
+<translation id="4652266463001779298">Autorizzazione non concessa</translation>
 <translation id="4652817563047461855">Assicurati che le tue password siano al sicuro, scopri se sono state compromesse e ricevi consigli per proteggerti online. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Attiva la condivisione della scheda</translation>
 <translation id="4658335131052370646">Salva</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Le passkey vengono salvate in Gestore delle password di Google per</translation>
 <translation id="510580293474170715">Nessun elemento importato</translation>
 <translation id="5113960131843706315">Recupero dei tuoi dati in corso…</translation>
+<translation id="5116347248003317626">Non consentire ai siti di usare la tua posizione</translation>
 <translation id="5118462200606189584">Aggiungi account…</translation>
 <translation id="5118764316110575523">Non attiva</translation>
 <translation id="5119329531859909472">Per monitorare il prodotto, tocca Monitora</translation>
@@ -1795,6 +1799,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Modifica cartella</translation>
 <translation id="6629759408545977279">Da: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Per accedere alla cronologia e altro ancora, accedi al tuo account</translation>
 <translation id="6634432609054530164">La tua organizzazione ha disattivato la modalità Incognito</translation>
 <translation id="6637478299472506933">Download non riuscito</translation>
 <translation id="6638511529934826365">Zoom del testo…</translation>
@@ -2008,6 +2013,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" />% scaricato</translation>
 <translation id="7345061034321640811">Importazione non consentita</translation>
+<translation id="7346922058131593019">Su cosa vuoi lavorare, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Importa password, cronologia, preferiti e altro</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
 <translation id="7357999308187750900">Mostra tutto</translation>
@@ -2064,6 +2070,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7491131399623468277">Vai alle Impostazioni…</translation>
 <translation id="7491161827858509164">Per visualizzare i file scaricati in precedenza, apri <ph name="BEGIN_LINK" />File<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Continua modifica</translation>
+<translation id="7498557042323380380">Imposta un aspetto stagionale per la pagina Nuova scheda</translation>
 <translation id="7500244509706269886">Compila automaticamente il modulo</translation>
 <translation id="750493650310597496">0 selezionati</translation>
 <translation id="7505402981231763928">Devi accedere per usare Gemini</translation>
@@ -2101,6 +2108,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="760667371114328991">Disattiva le notifiche del controllo di sicurezza</translation>
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612849887607288481">Apri il menu di prototipazione AI</translation>
+<translation id="7618220760967055820">Scegli il pulsante da mostrare nella barra degli strumenti</translation>
 <translation id="7620522820075868385">Annulla</translation>
 <translation id="762078666799342162">Puoi visualizzare i download precedenti in <ph name="BEGIN_LINK" />File<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
@@ -2310,7 +2318,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8233237502828137700">Chiudi banner promozionale</translation>
 <translation id="823339794112333264">Attiva microfono</translation>
 <translation id="8240217649914883113">Aggiungi al mio calendario</translation>
-<translation id="824379025871762038">Non consentire mai</translation>
 <translation id="8244387390464017490">Personalizza Nuova scheda</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8258734532103758067">Ho esportato i miei dati</translation>
@@ -2331,6 +2338,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8282657446819506217">Apri in gruppo di schede</translation>
 <translation id="828291969289324795">{count,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="8283172974887967105">Imposta…</translation>
+<translation id="8287009018010202411">Produttività</translation>
 <translation id="8289930144142009940">Notifiche di <ph name="FEATURE_NAME" /> disattivate</translation>
 <translation id="8292893224181644074">Download completato</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>

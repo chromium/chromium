@@ -80,7 +80,6 @@
 <translation id="112840717907525620">Policy cache OK</translation>
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – to exit full screen, drag from the top and touch the back button</translation>
-<translation id="1133418583142946603">Add current tab</translation>
 <translation id="1138458427267715730">Get alerts when the price drops on any site across the web</translation>
 <translation id="1142713751288681188">Paper type</translation>
 <translation id="1142965388643537393">Travel info</translation>
@@ -282,6 +281,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1448166547804028941">Keys '<ph name="DATA_CONTROLS_FIRST_KEY_SET" />' cannot be set in the same dictionary as the '<ph name="DATA_CONTROLS_SECOND_KEY_SET" />' keys</translation>
 <translation id="1449251255954293933">Save redress number in Google Wallet</translation>
 <translation id="1455413310270022028">Eraser</translation>
+<translation id="1456749217800922313">Verification code</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{View 0 reviews}=1{View 1 review}other{View all # reviews}}</translation>
 <translation id="1460317464907341501">Verify this email automatically?</translation>
 <translation id="1461041542809785877">Performance</translation>
@@ -518,6 +518,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1849438148665368129">Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">Virtual card enrollment closed</translation>
 <translation id="1854180393107901205">Stop casting</translation>
+<translation id="1860986945084448084">Open certificate details</translation>
 <translation id="1863257867908022953">Tray 12</translation>
 <translation id="1863374797460198869">Chat hidden</translation>
 <translation id="1871208020102129563">Proxy is set to use fixed proxy servers, not a .pac script URL.</translation>
@@ -534,6 +535,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1890171020361705182">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, tap to jump over obstacles.</translation>
 <translation id="1898423065542865115">Filtering</translation>
 <translation id="1898678876221454577">Sign in to save your scan</translation>
+<translation id="1898804291554630487">Ask about this page</translation>
 <translation id="1901443836186977402">{1,plural, =1{This server could not prove that it is <ph name="DOMAIN" />; its security certificate expired in the last day. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE" />. Does that look right? If not, you should correct your system's clock and then refresh this page.}other{This server could not prove that it is <ph name="DOMAIN" />; its security certificate expired # days ago. This may be caused by a misconfiguration or an attacker intercepting your connection. Your computer's clock is currently set to <ph name="CURRENT_DATE" />. Does that look right? If not, you should correct your system's clock and then refresh this page.}}</translation>
 <translation id="190166348986967700">Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER" /> on <ph name="DATE_TIME" />. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.</translation>
 <translation id="1902576642799138955">Validity Period</translation>
@@ -645,6 +647,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2096183846792489672">The content and URLs of the pages that you visit can be processed in a private space in the cloud</translation>
 <translation id="209961642949927292">Check out faster next time?</translation>
 <translation id="2099652385553570808">Triple staple left</translation>
+<translation id="210056520177407132">EU trust mark</translation>
 <translation id="2101225219012730419">Version:</translation>
 <translation id="2102134110707549001">Suggest strong password…</translation>
 <translation id="2102495993840063010">Android apps</translation>
@@ -1097,7 +1100,6 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
 <translation id="2859383374160668142">You can view price drops for products you track at any time.</translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
-<translation id="2864493683872263351">Code, write or make slides</translation>
 <translation id="2873317327342476681">Dino game, tap the dino or press space to play</translation>
 <translation id="287387905105155974">Help bubble</translation>
 <translation id="2875109558992200904">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs and titles of pages that you visit in Chrome, URLs of pages that you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web-based applications, your device and Chrome.</translation>
@@ -1628,6 +1630,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3727850735097852673">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="3728173127485570463">Chrome browser will no longer require your fingerprint to autofill passwords</translation>
 <translation id="3729811201279509483">Manually add tabs</translation>
+<translation id="3732370487905329239">Estimated delivery date</translation>
 <translation id="3736564442532774454">Chrome browser is trying to fill your sensitive info on <ph name="APP_NAME" />.</translation>
 <translation id="3738166223076830879">Your browser is managed by your administrator.</translation>
 <translation id="3739842843727261045">Thumbs up submits feedback that you like these results</translation>
@@ -1915,6 +1918,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4209092469652827314">Large</translation>
 <translation id="4210602799576081649">Verification code expired. Request a new code</translation>
 <translation id="421066178035138955">Use virtual reality devices and data</translation>
+<translation id="4211023027325848327">Open EU Qualified Certificate (QWAC)</translation>
 <translation id="4214357935346142455">sign-in screen profile</translation>
 <translation id="4218327733815631046">Keep approximate location</translation>
 <translation id="4219596572397833317">See price history and more to help you shop smarter.</translation>
@@ -2157,6 +2161,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4610279718074907952">This site is in a group, defined by <ph name="SET_OWNER" />, that can see your activity</translation>
 <translation id="4612631413844865947">There was an error processing your order on <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">This site may have mature content. A parent or guardian has to say that it's OK for you to visit this website.</translation>
+<translation id="4613873770449493819">URL must point to a <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> domain.</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4619669610757527494">Save driving licence in Google Wallet</translation>
 <translation id="4622292761762557753">Transfer anyway</translation>
@@ -2328,6 +2333,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4885256590493466218">Pay with <ph name="CARD_DETAIL" /> at checkout</translation>
 <translation id="4886565443854420066">Chrome browser wants to verify that it's you before you change settings</translation>
 <translation id="4887406273302438710">Protect passwords with Windows Hello</translation>
+<translation id="4887435305021446590">Open Gmail</translation>
 <translation id="4887785555357166111">Save video frame</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter to delete your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="4892391379033030113">Open Isolated Window button, activate to open a new Isolated Window to browse privately</translation>
@@ -2366,6 +2372,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4943620199112228840">Use your microphones</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="494701040141924538">Got it, close notice</translation>
+<translation id="4951038790614970523">Text that you cut or copy to the clipboard is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data and might be stored based on company policies and visible to your administrator.</translation>
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
 <translation id="4954505713046251871">To offer suggestions and improve this feature, the page's URL and content are shared with Google</translation>
@@ -2508,6 +2515,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5177076414499237632">Learn about this page's source and topic</translation>
 <translation id="5179490652562926740">Payment verification settings saved</translation>
 <translation id="5180662470511508940">Keyboard lock not allowed</translation>
+<translation id="5180732217498483224">Open <ph name="APP_NAME" /> source: <ph name="TITLE" /></translation>
 <translation id="5190072300954988691">Camera and microphone not allowed</translation>
 <translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
@@ -2599,6 +2607,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="533323551986281710">Commerce bottom sheet opened at full height</translation>
 <translation id="5334013548165032829">Detailed system logs</translation>
 <translation id="5340250774223869109">Application is blocked</translation>
+<translation id="5342666539242413840">Text is copied to clipboard</translation>
 <translation id="5342693890921195472">min ago</translation>
 <translation id="534295439873310000">NFC devices</translation>
 <translation id="5344579389779391559">This page may try to charge you money</translation>
@@ -3180,6 +3189,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6311410654831092784">Card stock</translation>
 <translation id="6311642842034740437">Named location</translation>
 <translation id="6312113039770857350">Web page not available</translation>
+<translation id="6313189007657889655">Order ID</translation>
 <translation id="6316110367871394043">File upload to <ph name="CLOUD_PROVIDER" /> has been paused</translation>
 <translation id="63172326633386613">Manage accessibility settings</translation>
 <translation id="6319672966240656136">This site will remain blocked because you are under Google's Advanced Protection Programme. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3418,7 +3428,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="671076103358959139">Enrolment Token:</translation>
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
 <translation id="6711700233707023861">Copied variations string to clipboard</translation>
-<translation id="6712003214447962889">Smarter, faster answers</translation>
 <translation id="6712343563085762261">Moved up</translation>
 <translation id="6716039223770814796">Compare <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
@@ -3863,7 +3872,6 @@ Additional details:
 <translation id="7470854469646445678">Provide reason for copying (required)</translation>
 <translation id="7471007961486718967">Provide reason for transferring (required)</translation>
 <translation id="7473033553872550521">You might also contact the site owner and suggest that they upgrade to HTTPS. <ph name="LEARN_MORE" /></translation>
-<translation id="7473555040328423550">Add tab</translation>
 <translation id="7473891865547856676">No, thanks</translation>
 <translation id="7475618719385705713">This page is blocked</translation>
 <translation id="7481312909269577407">Forward</translation>
@@ -3881,6 +3889,7 @@ Additional details:
 <translation id="7500917112031739411">Show by group</translation>
 <translation id="7501663406926337752">The site ahead is flagged by your organisation</translation>
 <translation id="7502044688973049724">manage your info</translation>
+<translation id="7506748477220312995">Sources for suggestion</translation>
 <translation id="7507075214339298899">Envelope no.9</translation>
 <translation id="7508255263130623398">Returned policy device ID is empty or doesn't match current device ID</translation>
 <translation id="7511707705708508147">Currency not supported</translation>
@@ -4242,6 +4251,7 @@ Additional details:
 <translation id="8099473231501330216">ask to have deleted</translation>
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8103643211515685474">Print anyway</translation>
+<translation id="8104153649317588511">Sources sheet closed</translation>
 <translation id="8105368624971345109">Turn off</translation>
 <translation id="810875025413331850">No nearby devices found.</translation>
 <translation id="8116925261070264013">Muted</translation>
@@ -4730,6 +4740,7 @@ Additional details:
 <translation id="8997023839087525404">The server presented a certificate that was not publicly disclosed using the Certificate Transparency policy. This is a requirement for some certificates, to ensure that they are trustworthy and protect against attackers.</translation>
 <translation id="9001074447101275817">The proxy <ph name="DOMAIN" /> requires a username and password.</translation>
 <translation id="9001963517402879850">Jump!</translation>
+<translation id="9002677862950442746">Verification code: <ph name="OTP" /></translation>
 <translation id="9003263770394939629">Suggested by Gemini. Manage enhanced autofill in settings.</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">VR session in progress</translation>
@@ -4919,6 +4930,7 @@ Additional details:
 <translation id="98237783946365638">Save identity card securely in Google Wallet</translation>
 <translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> button, press Enter to ask <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">Payment methods</translation>
+<translation id="984950103108016064">From <ph name="EMAIL" /></translation>
 <translation id="985199708454569384">&lt;p&gt;You'll see this error if your computer or mobile device's date and time are inaccurate.&lt;/p&gt;
     &lt;p&gt;To fix the error, open your device's clock. Make sure that the time and date are correct.&lt;/p&gt;</translation>
 <translation id="987264212798334818">General</translation>

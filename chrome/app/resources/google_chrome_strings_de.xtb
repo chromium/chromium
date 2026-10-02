@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome hat diesen Download blockiert, weil der Dateityp normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="1197860368385086056">Wenn du Chrome das nächste Mal auf deinem Gerät (<ph name="DEVICE_TYPE" />) öffnest, wirst du daran erinnert, Benachrichtigungen zum Preis-Tracking zu aktivieren.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="1226003169284463347">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1289911795790071537">Suche mit Chrome öffnen</translation>
 <translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">Du hast diese Website in letzter Zeit nicht besucht. Chrome hat „<ph name="PERMISSION" />“ entfernt.</translation>
 <translation id="2106831557840787829">Chrome OS Flex und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="2108778574543343055">Chrome-Ausführung im Hintergrund für Apps deaktivieren</translation>
+<translation id="2111985952714409792">Wenn du auf allen deinen Geräten auf deine Erweiterungen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="2120620239521071941">Dadurch werden <ph name="ITEMS_COUNT" /> Elemente von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
 <translation id="2121284319307530122">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />Aktuelle Einstellungen<ph name="END_LINK" /> übermitteln und so helfen, Chrome zu verbessern</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Im Dock behalten</translation>
 <translation id="2309047409763057870">Dies ist eine Zweitinstallation, daher kann Google Chrome nicht als Standardbrowser festgelegt werden.</translation>
 <translation id="2345992953227471816">Chrome hat festgestellt, dass diese Erweiterungen Malware enthalten:</translation>
+<translation id="2358140144860869442">Wenn du auf allen deinen Geräten auf deine Leseliste und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2403703063067034158">Fehler beim Starten: Derzeit wird eine andere Einrichtung ausgeführt. Bitte versuche es später noch einmal.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Auf 1 HID-Gerät wurde von mindestens einer Chrome-Erweiterung zugegriffen}=1{Auf 1 HID-Gerät wird von mindestens einer Chrome-Erweiterung zugegriffen}other{Auf # HID-Geräte wird von mindestens einer Chrome-Erweiterung zugegriffen}}</translation>
@@ -172,6 +175,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome prüft regelmäßig, ob dein Browser die sichersten Einstellungen hat. Solltest du etwas überprüfen müssen, informieren wir dich.</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
+<translation id="2661616016316841783">Wenn du auf deine Erweiterungen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="2665296953892887393">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Google Chrome an Google senden</translation>
 <translation id="2668094785979141847">Klicke, um Google Lens zu beenden</translation>
 <translation id="2674238339205910678">ChromeOS Flex konnte die Chrome-Daten nicht in deinem Google-Konto speichern, da deine Anmeldedaten für das Konto nicht mehr aktuell sind</translation>
@@ -194,6 +198,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="2857540653560290388">Chrome wird gestartet…</translation>
 <translation id="286025080868315611">Warum blockiert Chrome einige Downloads?</translation>
 <translation id="2861074815332034794">Chrome wird aktualisiert (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="2869959624320573933">In Chrome anmelden</translation>
 <translation id="2875053229394024379">Wenn du dich mit deinem Google-Konto in Chrome anmeldest, kannst du dein Chrome-Profil mit Gemini verwenden. <ph name="BEGIN_LINK" />Informationen zur Anmeldung in Chrome<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Weitere Informationen zum Datenschutz bei Chrome<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">Task-Manager</translation>
@@ -243,6 +248,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3242486428260808857">Mit der Chrome App auf deinem <ph name="DEVICE_TYPE" /> noch besser online einkaufen</translation>
 <translation id="3245429137663807393">Wenn du Chrome-Nutzungsberichte teilst, enthalten diese Berichte die von dir aufgerufenen URLs</translation>
 <translation id="3249558306861350254">Klicke in den Windows-Einstellungen auf <ph name="BEGIN_BOLD" />Als Standard festlegen<ph name="END_BOLD" />.</translation>
+<translation id="3258706751219502154">Wenn du auf deine Lesezeichen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="3259748324892322072">Chrome App herunterladen</translation>
 <translation id="3282568296779691940">In Chrome anmelden</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>
@@ -341,6 +347,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4280647692742956593">Lade Chrome auf dein Smartphone herunter, um Tabgruppen unterwegs zu öffnen oder zu erstellen.</translation>
 <translation id="4281844954008187215">Nutzungsbedingungen</translation>
 <translation id="430327780270213103">Zulassen, dass die Erweiterung Zugriffsanfragen in der Chrome-Symbolleiste anzeigt</translation>
+<translation id="4312908933392839680">Wenn du auf allen deinen Geräten auf deine gespeicherten Informationen und andere Daten zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome empfiehlt, den Tab zu pausieren, der deinen Browser verlangsamt}other{Chrome empfiehlt, die Tabs zu pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Zur Personalisierung und für andere Funktionen musst du Chrome in die Web- &amp; App-Aktivitäten und in die verknüpften Google-Dienste aufnehmen</translation>
@@ -506,7 +513,9 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="6046028983725193307">Wenn du Systemaudio teilen möchtest, öffne die Systemeinstellungen und aktiviere die Option „Nur Systemaudio aufzeichnen“ für Chrome. Du musst Chrome dann neu starten.</translation>
 <translation id="6069027071882229820">Als Bild kopieren</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>
+<translation id="6071642418303142778">Wenn du auf deine Passwörter und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
+<translation id="6077365059401096066">Wenn du auf deine Leseliste und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
 <translation id="6116004140911290070">Skills in Chrome aktivieren</translation>
 <translation id="6116252277240876590">In dieser Sprache werden Menüs, Einstellungen, Benachrichtigungen und andere Texte in Chrome angezeigt</translation>
@@ -704,6 +713,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="7804947029129221742">Deine Suchmaschine wurde außerhalb von Chrome geändert. Zu deinem Schutz hat Chrome die ursprüngliche Standardsuchmaschine wiederhergestellt. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
 <translation id="7827099906024714326">Chrome muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten gelöscht.</translation>
+<translation id="7829850924999627855">Wenn du auf deine gespeicherten Informationen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chrome an</translation>
 <translation id="7832314606810669113">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chrome an. Dieses Lesezeichen wird in deinem Google-Konto gespeichert, nachdem du dich angemeldet hast.</translation>
 <translation id="7845233973568007926">Vielen Dank für die Installation. Du musst deinen Computer neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="7847170235260850604">Chrome beim Starten von Windows öffnen</translation>

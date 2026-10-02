@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="138618066238211776">Continue as <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Options to save card</translation>
+<translation id="138810468159004008">Allow while visiting the site</translation>
 <translation id="1396260204083880024">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Open account menu.</translation>
 <translation id="1397144142234474689">Hide history</translation>
 <translation id="1399268420835656394">If you're not a child, you may want to check the age in the Apple Account on this device. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -470,7 +471,6 @@
 <translation id="2393230427496852974">Read what people are saying</translation>
 <translation id="2394659309569789395">Open site anyway</translation>
 <translation id="2403129868389095715">Your package can't be delivered</translation>
-<translation id="2408318953009664750">Allow once</translation>
 <translation id="2410754283952462441">Choose an account</translation>
 <translation id="2422174748424038845">If you delete it, everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all devices.</translation>
 <translation id="2424805048070062787">Continue with this tab</translation>
@@ -602,7 +602,6 @@
 <translation id="2816149645002567541">Download paused</translation>
 <translation id="2816489851009559785">Menu → Settings → Default browser</translation>
 <translation id="2818821771744632548">You were signed out of your account, <ph name="USER_NAME" />, as part of your iPhone reset. To sign back in, tap 'Continue' below.</translation>
-<translation id="2819667972867209401">When on, data is saved in your Google Account. When off, data is saved only to this device and is deleted if you sign out.</translation>
 <translation id="2827760117436553203">Keep data separate?</translation>
 <translation id="2829172210806130158">Search your screen</translation>
 <translation id="2831109159746537587">Try circling or tapping the picture to search</translation>
@@ -768,6 +767,7 @@
 <translation id="3416023309465857378">25 Oct 2023</translation>
 <translation id="3416904994126232207">'Save a password' completed!</translation>
 <translation id="3419787211763835342">Help improve enhanced autofill</translation>
+<translation id="3422958112451181446">Press and hold to pin your favourite tool here</translation>
 <translation id="3430407169377889553">Use Gemini carefully and take control if needed. You are responsible for Gemini's actions during tasks.</translation>
 <translation id="3435738964857648380">Security</translation>
 <translation id="3441673211568148613">Keep your browsing private</translation>
@@ -885,7 +885,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 payment method}other{# payment methods}}</translation>
 <translation id="3831560640878483188">Dismiss warning?</translation>
 <translation id="3832419617903252251">Password saved only on this device</translation>
-<translation id="3835016165506903031">Allow while visiting</translation>
 <translation id="3835964409414434850">Go to next tab</translation>
 <translation id="3838691874161539578">Check your saved passwords to strengthen your security and stay safer online</translation>
 <translation id="3838985624086228724">Price drop on your tracked product, from <ph name="PREVIOUS_PRICE" /> to <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1035,7 @@
 <translation id="428768789042547925">What's new</translation>
 <translation id="4289309730265289297">Photo Library</translation>
 <translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
+<translation id="4290920330097335010">Never allow</translation>
 <translation id="4294506173142861371">Sign in as <ph name="FIRST_NAME" />?</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
@@ -1087,6 +1087,7 @@
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="446314443268698477">Shop, translate and identify what you see with your camera or photos.</translation>
 <translation id="4469324811108161144">Notes can save up to <ph name="CHARACTER_LIMIT" /> characters.</translation>
+<translation id="4470766488397113689">What do you want to work on?</translation>
 <translation id="4471472356135655769">Can't export passwords</translation>
 <translation id="4472575034687746823">Get started</translation>
 <translation id="4473565697543262065">This deletes selected info saved on this device and in your Google Account <ph name="USER_EMAIL" /></translation>
@@ -1129,6 +1130,7 @@
 <translation id="4601095002996233687">In-depth scans for suspicious downloads.</translation>
 <translation id="4606247758155004938">Your browser is managed by your organisation.</translation>
 <translation id="4607887340472970274">Price tracking</translation>
+<translation id="4614482404958079763">Try a limited-time festive theme, complete with custom illustrations and animations</translation>
 <translation id="4619564267100705184">Verify that it's you</translation>
 <translation id="4621768135601674446">Open reading mode options</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
@@ -1144,6 +1146,7 @@
 <translation id="4647758699119474035">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google Account error. Open account menu.</translation>
 <translation id="4650125387981512669">Continue as <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Hide after 1 minute}other{Hide after {count} minutes}}</translation>
+<translation id="4652266463001779298">Not allowed</translation>
 <translation id="4652817563047461855">Make sure that your passwords are safe, find out if they've been compromised and get advice to help protect yourself online. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">Turn on tab sharing</translation>
 <translation id="4658335131052370646">Save</translation>
@@ -1299,6 +1302,7 @@
 <translation id="5096619236864235">Passkeys are saved in Google Password Manager for</translation>
 <translation id="510580293474170715">Nothing imported</translation>
 <translation id="5113960131843706315">Getting your stuff…</translation>
+<translation id="5116347248003317626">Don't allow sites to use your location</translation>
 <translation id="5118462200606189584">Add account…</translation>
 <translation id="5118764316110575523">Off</translation>
 <translation id="5119329531859909472">To track the product, tap Track</translation>
@@ -2009,6 +2013,7 @@ You can restart at any time.</translation>
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> percent downloaded</translation>
 <translation id="7345061034321640811">Import not allowed</translation>
+<translation id="7346922058131593019">What do you want to work on, <ph name="USER_FIRST_NAME" />?</translation>
 <translation id="7347998088283246662">Import passwords, history, bookmarks and more</translation>
 <translation id="7352651011704765696">Something went wrong</translation>
 <translation id="7357999308187750900">See all</translation>
@@ -2065,6 +2070,7 @@ You can restart at any time.</translation>
 <translation id="7491131399623468277">Go to Settings…</translation>
 <translation id="7491161827858509164">To see files that you've downloaded before, open <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Keep editing</translation>
+<translation id="7498557042323380380">Set a seasonal look for your New Tab page</translation>
 <translation id="7500244509706269886">Autofill form</translation>
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7505402981231763928">You need to sign in to use Gemini</translation>
@@ -2102,6 +2108,7 @@ You can restart at any time.</translation>
 <translation id="760667371114328991">Turn off notifications for Safety Check</translation>
 <translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612849887607288481">Open AI prototyping menu</translation>
+<translation id="7618220760967055820">Choose what button to show in the toolbar</translation>
 <translation id="7620522820075868385">Cancel</translation>
 <translation id="762078666799342162">You can view your earlier downloads in <ph name="BEGIN_LINK" />Files<ph name="END_LINK" /></translation>
 <translation id="7638584964844754484">Incorrect passphrase</translation>
@@ -2311,7 +2318,6 @@ You can restart at any time.</translation>
 <translation id="8233237502828137700">Close banner promo</translation>
 <translation id="823339794112333264">Turn on microphone</translation>
 <translation id="8240217649914883113">Add this to my calendar</translation>
-<translation id="824379025871762038">Never allow</translation>
 <translation id="8244387390464017490">Customise new tab page</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
@@ -2332,6 +2338,7 @@ You can restart at any time.</translation>
 <translation id="8282657446819506217">Open in tab group</translation>
 <translation id="828291969289324795">{count,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="8283172974887967105">Set…</translation>
+<translation id="8287009018010202411">Productivity</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> notifications turned off</translation>
 <translation id="8292893224181644074">Download completed</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>

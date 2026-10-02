@@ -986,7 +986,6 @@
 <translation id="1755601632425835748">ટેક્સ્ટનું કદ</translation>
 <translation id="1756963401828337401">કૅપ્ચર કરવા માટે સ્ક્રીન પસંદ કરો</translation>
 <translation id="17584710573359123">Chrome વેબ સ્ટોરમાં જુઓ</translation>
-<translation id="1758845021884209593">OS ઍપ પર શૉર્ટકટનો ઉપયોગ કરો</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" />નું <ph name="REMAPPING_OPTION" /> પર ફરીથી મૅપિંગ કરવામાં આવ્યું.</translation>
 <translation id="1761845175367251960"><ph name="NAME" />ના એકાઉન્ટ</translation>
 <translation id="176272781006230109">શૉપિંગ માટેના સૂચનો</translation>
@@ -1560,7 +1559,6 @@
 <translation id="2198712775285959645">ફેરફાર કરો</translation>
 <translation id="2199298570273670671">ભૂલ</translation>
 <translation id="2199546617947317537">તમારા અન્ય ડિવાઇસમાંથી તમારો ઇતિહાસ મેળવવા માટે, સાઇન ઇન કરો અને તમારા ઇતિહાસ તથા ટૅબને <ph name="EMAIL" /> સાથે સિંક કરો. તમને તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ તેમજ બીજું ઘણું મળશે. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
-<translation id="220006241671843310">Chrome સીધા તમારા ડિવાઇસ પર ચાલતા AI મૉડલનો ઉપયોગ કરે કે નહીં તે પસંદ કરો</translation>
 <translation id="2200094388063410062">ઇ-મેઇલ</translation>
 <translation id="2200781749203116929">ChromeOS સિસ્ટમના લૉગ</translation>
 <translation id="2202391868799679245">કીબોર્ડ શૉર્ટકટ ચાલુ કરો</translation>
@@ -2078,6 +2076,7 @@
 <translation id="2599048253926156421">વપરાશકર્તાનું નામ ક્લિપબોર્ડ પર કૉપિ કર્યું</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{1 અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યું}one{{NUM_SITES} અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યું}other{{NUM_SITES} અસુરક્ષિત એક્સ્ટેન્શન બંધ કર્યા}}</translation>
 <translation id="2603121359676416582">આ પેજ માટે</translation>
+<translation id="2603656971249947488">ટૅબ સ્ટ્રિપ</translation>
 <translation id="2604129989323098489">સાઇટ સામાન્ય રીતે તમારા ડિસ્પ્લે વિશેની માહિતી માગે છે, જેથી તેઓ ઇન્ટેલિજન્ટ રીતે વિન્ડો ખોલી શકે અને તેને મૂકી શકે, જેમ કે દસ્તાવેજો અથવા પૂર્ણ-સ્ક્રીન કન્ટેન્ટને એકબીજાની આજુબાજુમાં બતાવવા</translation>
 <translation id="2604255671529671813">નેટવર્ક કનેક્શનમાં ભૂલ</translation>
 <translation id="2604805099836652105"><ph name="ADDRESS_LABEL" />ના સરનામાનું ફોર્મ ભર્યું.</translation>
@@ -2289,6 +2288,7 @@
 <translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="274362947316498129">કોઈ ઍપ <ph name="DEVICE_NAME" /> ઍક્સેસ કરવાનો પ્રયાસ કરી રહી છે. ઍક્સેસની મંજૂરી આપવા માટે, <ph name="DEVICE_NAME" />ની પ્રાઇવસીનું સ્વિચ બંધ કરો.</translation>
 <translation id="2744221223678373668">શેર કરેલી</translation>
+<translation id="2744919074068076548">વિભાજિત વ્યૂ ખોલો</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
@@ -3367,6 +3367,7 @@
 <translation id="3562655211539199254">તમારા ફોનમાંની તાજેતરની Chrome ટૅબ જુઓ</translation>
 <translation id="356268274299520831">સાઇટ પર જઈને તેને બદલો</translation>
 <translation id="3563392617245068355">મૂડ</translation>
+<translation id="3564327838471533677">તાજેતરમાં બંધ કરેલો વિભાજિત વ્યૂ</translation>
 <translation id="3564456410937306182">અડૅપ્ટિવ ચાર્જિંગ વિશે વધુ જાણો.</translation>
 <translation id="3564659095423213915">આ ફોલ્ડર માત્ર આ ડિવાઇસ પર સાચવવામાં આવ્યું છે. જો તમે તેને "<ph name="ACCOUNT_FOLDER" />"માં સાચવશો, તો આ ફોલ્ડરને તમારા એકાઉન્ટમાં પણ સાચવવામાં આવશે.</translation>
 <translation id="3564848315152754834">USB સુરક્ષા કોડ</translation>
@@ -4271,7 +4272,6 @@
 <translation id="4241140145060464825">ઍપનું કન્ટેન્ટ</translation>
 <translation id="4241224519481557898">કૅટેગરી</translation>
 <translation id="4242245038391716252">એક્સ્ટેન્શન દ્વારા ડાઉનલોડ કરવામાં આવ્યું: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">હવે તમે તમારા ટૅબ પર માઉસ લઈ જઈને તેને મોટા કરી શકો છો. આને ચાલુ કરવા માટે, અહીં રાઇટ ક્લિક કરો.</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="4242825475818569385"><ph name="DOMAIN" /> દ્વારા તમારા <ph name="BEGIN_LINK" />બ્રાઉઝર તેમજ પ્રોફાઇલ મેનેજ<ph name="END_LINK" /> કરવામાં આવે છે</translation>
 <translation id="424315890655130736">પાસફ્રેઝ દાખલ કરો</translation>
@@ -4436,7 +4436,6 @@
 <translation id="4360738659108163902">માઉસ પર રાઇટ ક્લિક કરો</translation>
 <translation id="4361745360460842907">ટેબ તરીકે ખોલો</translation>
 <translation id="4362459470237309049">માઉસનું બટન રિલીઝ કરવા માટે “.”નો ઉપયોગ કરો</translation>
-<translation id="4362871358537270439">બાજુની પૅનલમાં અન્ય ડિવાઇસમાંથી ટૅબ બતાવો</translation>
 <translation id="4363262124589131906">My Driveમાં રહેલી નવી ફાઇલોનું આ Chromebook સાથે સિંક થવાનું ઑટોમૅટિક રીતે બંધ થશે</translation>
 <translation id="4364129298304269786">કૉપિરાઇટ દ્વારા સંરક્ષિત કન્ટેન્ટ ચલાવવા માટે, સાઇટ કન્ટેન્ટ સુરક્ષા સેવાનો ઉપયોગ કરી શકે છે</translation>
 <translation id="4364327530094270451">ટેટી</translation>
@@ -5173,6 +5172,7 @@
 <translation id="4913573660390710463">બહેતર બનાવેલી ક્ષમતાઓ સાથેની વેબ ઍપ્લિકેશનનું પૅકેજ ઍક્સેસ કરો. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ઍપનો ડેટા શોધી શકતા નથી</translation>
 <translation id="4915961947098019832">છબીઓ બતાવવાની મંજૂરી છે</translation>
+<translation id="4916140032692201190">&amp;પસંદગીનો અનુવાદ કરો</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> એ એક્સ્ટેન્શન "<ph name="EXTENSION_NAME" />" સાથે વાર્તાલાપ કરવા માંગે છે</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
 <translation id="4918762404810341788">કૉપિ કરો અને પેસ્ટ કરો</translation>
@@ -5825,6 +5825,7 @@
 <translation id="5436211819997237281">તમારા નવા ટૅબના પેજને મેનેજ કરતું વર્તમાન એક્સ્ટેન્શન</translation>
 <translation id="5436492226391861498">પ્રૉક્સી ટનલની પ્રતીક્ષા કરી રહ્યાં છે...</translation>
 <translation id="5436510242972373446"><ph name="SITE_NAME" /> શોધો:</translation>
+<translation id="5437406591808823366">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ ઑટોમૅટિક રીતે ભરવા અને સાચવવા માટે, <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> વિન્ડો હવે <ph name="WINDOW_SIZE_PERCENT" /> પહોળી છે, <ph name="PANE_SIDE" /> વિભાગ હવે <ph name="PANE_SIZE_PERCENT" /> પહોળો છે.</translation>
 <translation id="5438060324827306856">&amp;એક્સ્ટેન્શન શોધો</translation>
 <translation id="5440240650630588012">ફોકસ કરવામાં મદદ માટે વાંચન લાઇન અથવા વિન્ડો લાગુ કરો. ⌥L દબાવો અથવા સેટિંગ પર જાઓ.</translation>
@@ -6239,7 +6240,6 @@
 <translation id="5776571780337000608">તમે તમારી ફાઇલના બ્રાઉઝર અથવા અન્ય ઍપમાં, આ ઍપ વડે સપોર્ટેડ ફાઇલો ખોલી શકો છો અને તેમાં ફેરફાર કરી શકો છો. આ ઍપમાં ડિફૉલ્ટ તરીકે ખોલવામાં આવે તેવી ફાઇલોને નિયંત્રિત કરવા માટે, <ph name="BEGIN_LINK" />તમારા ડિવાઇસ પર ડિફૉલ્ટ ઍપને સેટ કરવાની રીત વિશે જાણો<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Chrome ખોલો</translation>
 <translation id="5778491106820461378">તમે <ph name="LINK_BEGIN" />સેટિંગ<ph name="LINK_END" />માં જઈને સાઇન ઇન કરેલા હોય એવા Google એકાઉન્ટ મેનેજ કરી શકો છો. તમે વેબસાઇટ અને ઍપને આપેલી પરવાનગીઓ બધા એકાઉન્ટ પર લાગુ થઈ શકે છે. જો તમે ઇચ્છતા ન હો કે સાઇટ અથવા ઍપ તમારા એકાઉન્ટની માહિતી ઍક્સેસ કરે, તો તમારા <ph name="DEVICE_TYPE" />માં તમે અતિથિ તરીકે સાઇન ઇન કરી શકો છો.</translation>
-<translation id="5779636902585836564">&amp;અનુવાદ કરો</translation>
 <translation id="5780011244986845107">તમે પસંદ કરેલું ફોલ્ડર સંવેદનશીલ ફાઇલો ધરાવે છે. શું તમે ખરેખર "<ph name="APP_NAME" />"ને આ ફોલ્ડરને કાયમી વાંચવાનો ઍક્સેસ આપવા માંગો છો?</translation>
 <translation id="5780973441651030252">પ્રાધાન્યતા પર પ્રક્રિયા કરો</translation>
 <translation id="5781120434102258025">તમારા સ્કૂલ એકાઉન્ટના ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડો</translation>
@@ -6897,6 +6897,7 @@ USB ડિવાઇસ</translation>
 <translation id="6273677812470008672">ગુણવત્તા</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">તમારા બધા ડિવાઇસ પરથી બુકમાર્કનો ઉપયોગ કરીને તમારી મનપસંદ સાઇટ પર ઝડપથી જવા માટે, <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="6277105963844135994">નેટવર્ક ટાઇમઆઉટ</translation>
 <translation id="6277518330158259200">સ્ક્રીનશોટ &amp;લો</translation>
 <translation id="6278428485366576908">થીમ</translation>
@@ -7320,6 +7321,7 @@ USB ડિવાઇસ</translation>
 <translation id="6607831829715835317">વધુ સા&amp;ધનો</translation>
 <translation id="6608166463665411119">ઇ-સિમને રીસેટ કરો</translation>
 <translation id="660846213831377756">માઉસ કી</translation>
+<translation id="6608725880745776452"><ph name="DEVICE" />માંથી તમારા પાસવર્ડ અને બીજું ઘણું મેળવો</translation>
 <translation id="6609478180749378879">તમે 'છૂપા મોડ'થી બહાર નીકળો, તે પછી સાઇન-ઇન ડેટા આ ડિવાઇસ પર સ્ટોર કરવામાં આવશે. તમે તમારા ડિવાઇસ વડે આ વેબસાઇટમાં થોડા સમય પછી સાઇન ઇન કરી શકશો.</translation>
 <translation id="6610002944194042868">અનુવાદ માટેના વિકલ્પો</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> ટૅબ</translation>
@@ -8083,7 +8085,6 @@ USB ડિવાઇસ</translation>
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7188755083797868960">શૉર્ટકટ વડે વાંચન મોડ વધુ ઝડપથી ખોલો. વાંચન મોડ ટૉગલ કરવા માટે Alt + Shift + R દબાવો.</translation>
 <translation id="7189234443051076392">ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે</translation>
-<translation id="7189558282078169397">અન્ય ડિવાઇસમાંથી ટૅબ</translation>
 <translation id="7189965711416741966">ફિંગરપ્રિન્ટ ઉમેરી.</translation>
 <translation id="7190921792980745354"><ph name="MEMBER_FULL_NAME" />ને બ્લૉક કરીએ?</translation>
 <translation id="7191063546666816478">અમુક સપોર્ટેડ લિંક હજી પણ <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> અને અન્ય <ph name="NUMBER_OF_OTHER_APPS" /> ઍપમાં ખૂલશે.</translation>
@@ -8501,6 +8502,7 @@ USB ડિવાઇસ</translation>
 <translation id="7501957181231305652">અથવા</translation>
 <translation id="7502220299952823578">"આ સાઇટને હંમેશાં સક્રિય રાખો" સૂચિમાં ઉમેરો</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> પર ટૅબ કાસ્ટ કરવાનું થોભાવો</translation>
+<translation id="750275011730776314">Gemini પર પાછા જાઓ</translation>
 <translation id="7502804472671406749">શેર કરેલા ટૅબને સ્ક્રોલ અને નાના-મોટા કરી શકાય છે</translation>
 <translation id="750314150962284310">લાઇન ફોકસ</translation>
 <translation id="7503191893372251637">નેટસ્કેપ પ્રમાણપત્રનો પ્રકાર</translation>
@@ -8742,6 +8744,7 @@ USB ડિવાઇસ</translation>
 <translation id="7684718995427157417">ઍપ બનાવવા અને તેનું પરીક્ષણ કરવા માટે, Android ડીબગ બ્રિજ (ADB) ચાલુ કરો. ધ્યાનમાં રાખો કે આ ક્રિયા દ્વારા ચકાસણી થઈ ન હોય એવી Android ઍપના ઇન્સ્ટૉલેશનની મંજૂરી આપે છે અને ફેક્ટરી રીસેટ બંધ કરવું જરૂરી છે.</translation>
 <translation id="7684803937028953000">તમારી સંસ્થા દ્વારા આ ફાઇલનું સ્થાનિક ડાઉનલોડ બ્લૉક કરવામાં આવ્યું છે.</translation>
 <translation id="7684913007876670600">આ પેજનું સરળીકૃત વ્યૂ બતાવવા માટે, બાજુની પૅનલ ખોલો અને વાંચન મોડ પસંદ કરો</translation>
+<translation id="7684957383619170952"><ph name="DEVICE" />માંથી તમારા બુકમાર્ક અને બીજું ઘણું મેળવો</translation>
 <translation id="7685038817958445325">કાસ્ટ કરી શકતા નથી</translation>
 <translation id="7685049629764448582">JavaScript મેમરી</translation>
 <translation id="7685087414635069102">પિન જરૂરી છે</translation>
@@ -9779,6 +9782,7 @@ USB ડિવાઇસ</translation>
 <translation id="8477241577829954800">જૂનું થયેલું</translation>
 <translation id="8477384620836102176">&amp;સામાન્ય</translation>
 <translation id="8477446666255316832">આગલી વખતે વધુ ઝડપથી સાઇન ઇન કરો</translation>
+<translation id="8477548388161793571">&amp;પસંદગીનો અનુવાદ કરો</translation>
 <translation id="8478346767369317046">ઑફિસ</translation>
 <translation id="8479176401914456949">અમાન્ય કોડ. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> તરફથી અજાણ્યું ઉપકરણ</translation>

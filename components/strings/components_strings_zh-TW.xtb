@@ -80,7 +80,6 @@
 <translation id="112840717907525620">政策快取正確</translation>
 <translation id="1131264053432022307">你複製的圖片</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> - 如要退出全螢幕模式，請從頂端向下拖曳，然後輕觸返回按鈕</translation>
-<translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1138458427267715730">如果產品在任何網站上降價，透過快訊取得通知</translation>
 <translation id="1142713751288681188">紙張類型</translation>
 <translation id="1142965388643537393">旅遊資訊</translation>
@@ -282,6 +281,7 @@
 <translation id="1448166547804028941">「<ph name="DATA_CONTROLS_SECOND_KEY_SET" />」鍵無法在相同的字典中設為「<ph name="DATA_CONTROLS_FIRST_KEY_SET" />」鍵</translation>
 <translation id="1449251255954293933">將檢核號碼 (redress number) 儲存到 Google 錢包</translation>
 <translation id="1455413310270022028">橡皮擦</translation>
+<translation id="1456749217800922313">驗證碼</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{查看 0 則評論}=1{查看 1 則評論}other{查看全部 # 則評論}}</translation>
 <translation id="1460317464907341501">要自動驗證這個電子郵件地址嗎？</translation>
 <translation id="1461041542809785877">效能</translation>
@@ -517,6 +517,7 @@
 <translation id="1849438148665368129">購買金額必須低於 <ph name="CHECKOUT_AMOUNT_MAXIMUM" /></translation>
 <translation id="1853392626017747777">虛擬卡片註冊對話方塊已關閉</translation>
 <translation id="1854180393107901205">停止投放</translation>
+<translation id="1860986945084448084">開啟憑證詳細資料</translation>
 <translation id="1863257867908022953">紙匣 12</translation>
 <translation id="1863374797460198869">已隱藏對話</translation>
 <translation id="1871208020102129563">Proxy 設定為使用固定的 Proxy 伺服器，而非 .pac 指令碼網址。</translation>
@@ -533,6 +534,7 @@
 <translation id="1890171020361705182">在這款恐龍遊戲中，你要協助在荒野中奔馳的像素風恐龍閃避仙人掌和翼手龍。聽見提示音效時，輕觸一下即可躍過障礙物。</translation>
 <translation id="1898423065542865115">篩選</translation>
 <translation id="1898678876221454577">登入即可儲存掃描結果</translation>
+<translation id="1898804291554630487">詢問這個網頁的內容</translation>
 <translation id="1901443836186977402">{1,plural, =1{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證已在昨天到期。這可能是因為設定錯誤，或是有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}other{伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證已在 # 天前到期。這可能是因為設定錯誤，或有攻擊者攔截你的連線。這台電腦的時鐘目前設為 <ph name="CURRENT_DATE" />，這是正確的時間嗎？如果不是的話，請更新系統時鐘，然後重新整理這個網頁。}}</translation>
 <translation id="190166348986967700">系統管理員會在 <ph name="DATE_TIME" /> 開始將你的檔案上傳到 <ph name="CLOUD_PROVIDER" />。完成之前，請勿中斷裝置連線。上傳期間，你只能讀取本機檔案。</translation>
 <translation id="1902576642799138955">有效期間</translation>
@@ -644,6 +646,7 @@
 <translation id="2096183846792489672">系統可能會在雲端私人空間處理你造訪的網頁內容和網址</translation>
 <translation id="209961642949927292">想加快之後的結帳速度嗎？</translation>
 <translation id="2099652385553570808">三釘 (左側)</translation>
+<translation id="210056520177407132">歐盟信任標章</translation>
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102134110707549001">建議高強度密碼…</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
@@ -1096,7 +1099,6 @@
 <translation id="2858134430383535011">200 x 300 公釐</translation>
 <translation id="2859383374160668142">你隨時可以查看追蹤產品的降價資訊。</translation>
 <translation id="2859806420264540918">這個網站會顯示干擾性或誤導性的廣告。</translation>
-<translation id="2864493683872263351">編寫程式碼、撰寫內容或製作簡報</translation>
 <translation id="2873317327342476681">恐龍遊戲，輕觸恐龍或按下空格鍵即可開始</translation>
 <translation id="287387905105155974">說明泡泡</translation>
 <translation id="2875109558992200904">Chrome 在標記安全性事件時，會將事件相關資料傳送給系統管理員，內容可能包括你在 Chrome 中造訪的網頁網址和標題、複製資料的來源網頁網址、檔案名稱或中繼資料、IP 位址、瀏覽器或分頁當機相關資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
@@ -1626,6 +1628,7 @@
 <translation id="3727850735097852673">如要搭配 macOS 鑰匙圈使用 Google 密碼管理工具，請重新啟動 Chrome 並允許存取鑰匙圈。重新啟動之後，會重新開啟所有分頁。</translation>
 <translation id="3728173127485570463">Chrome 瀏覽器不再需要指紋才能自動填入密碼</translation>
 <translation id="3729811201279509483">手動新增分頁</translation>
+<translation id="3732370487905329239">預計送達日期</translation>
 <translation id="3736564442532774454">Chrome 瀏覽器正在「<ph name="APP_NAME" />」中填入敏感資訊。</translation>
 <translation id="3738166223076830879">你的瀏覽器是由系統管理員管理。</translation>
 <translation id="3739842843727261045">按讚可對這些結果給予正面評價</translation>
@@ -1913,6 +1916,7 @@
 <translation id="4209092469652827314">大</translation>
 <translation id="4210602799576081649">驗證碼已過期，請申請新的驗證碼</translation>
 <translation id="421066178035138955">使用虛擬實境裝置和資料</translation>
+<translation id="4211023027325848327">開啟歐盟合格憑證 (QWAC)</translation>
 <translation id="4214357935346142455">登入畫面設定檔</translation>
 <translation id="4218327733815631046">維持大概位置</translation>
 <translation id="4219596572397833317">提供價格記錄等資訊，協助你做出更聰明的購物決策。</translation>
@@ -2155,6 +2159,7 @@
 <translation id="4610279718074907952">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，群組擁有者可以查看你的活動</translation>
 <translation id="4612631413844865947">透過 <ph name="PAYMENT_APP_ORIGIN" /> 處理 <ph name="MERCHANT_ORIGIN" /> 的訂單時發生錯誤。</translation>
 <translation id="4612904677925722054">這個網站可能含有兒童不宜的內容。你必須獲得家長或監護人許可，才能造訪這個網站。</translation>
+<translation id="4613873770449493819">網址必須指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域。</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619669610757527494">將駕照儲存到 Google 錢包</translation>
 <translation id="4622292761762557753">仍要轉移</translation>
@@ -2326,6 +2331,7 @@
 <translation id="4885256590493466218">使用 <ph name="CARD_DETAIL" /> 結帳付款</translation>
 <translation id="4886565443854420066">Chrome 瀏覽器需要先驗證你的身分，才能變更設定</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保護密碼</translation>
+<translation id="4887435305021446590">開啟 Gmail</translation>
 <translation id="4887785555357166111">儲存影片影格</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />，按下 Tab 鍵再按下 Enter 鍵即可在 Chrome 設定中刪除你的瀏覽記錄、Cookie、快取和其他資料</translation>
 <translation id="4892391379033030113">「開啟隔離視窗」按鈕，啟動後即可開啟新隔離視窗進行私密瀏覽</translation>
@@ -2364,6 +2370,7 @@
 <translation id="4943620199112228840">使用麥克風</translation>
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="494701040141924538">我知道了，關閉通知</translation>
+<translation id="4951038790614970523">你剪下或複製到剪貼簿的文字會傳送到 Google Cloud 或第三方進行分析。舉例來說，Google Cloud 或第三方可能會掃描內容，檢查是否含有機密資料，也可能會依據公司政策儲存這些資料，並通知系統管理員查看。</translation>
 <translation id="495170559598752135">動作</translation>
 <translation id="4953689047182316270">回應無障礙活動</translation>
 <translation id="4954505713046251871">為提供建議及改良這項功能，網頁網址和內容會分享給 Google</translation>
@@ -2506,6 +2513,7 @@
 <translation id="5177076414499237632">進一步瞭解這個頁面的來源和主題</translation>
 <translation id="5179490652562926740">已儲存付款驗證設定</translation>
 <translation id="5180662470511508940">不允許鎖定鍵盤</translation>
+<translation id="5180732217498483224">開啟 <ph name="APP_NAME" /> 來源：<ph name="TITLE" /></translation>
 <translation id="5190072300954988691">不允許使用相機和麥克風</translation>
 <translation id="5190835502935405962">書籤列</translation>
 <translation id="5191315092027169558">你的設定檔是由 <ph name="DOMAIN" /> 管理</translation>
@@ -2597,6 +2605,7 @@
 <translation id="533323551986281710">商務底部功能表已完整開啟</translation>
 <translation id="5334013548165032829">詳細系統記錄</translation>
 <translation id="5340250774223869109">應用程式已遭封鎖</translation>
+<translation id="5342666539242413840">文字已複製到剪貼簿</translation>
 <translation id="5342693890921195472">分鐘前</translation>
 <translation id="534295439873310000">NFC 裝置</translation>
 <translation id="5344579389779391559">進入接下來的頁面後，系統可能會向您收費</translation>
@@ -3178,6 +3187,7 @@
 <translation id="6311410654831092784">卡片紙</translation>
 <translation id="6311642842034740437">已命名的位置</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
+<translation id="6313189007657889655">訂單 ID</translation>
 <translation id="6316110367871394043">已暫停「<ph name="CLOUD_PROVIDER" />」檔案上傳作業</translation>
 <translation id="63172326633386613">管理無障礙設定</translation>
 <translation id="6319672966240656136">你已加入 Google 進階保護計畫，因此這個網站將維持封鎖狀態。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3416,7 +3426,6 @@
 <translation id="671076103358959139">註冊憑證：</translation>
 <translation id="6711464428925977395">Proxy 伺服器發生錯誤，或是位址不正確。</translation>
 <translation id="6711700233707023861">變化版本字串已複製到剪貼簿</translation>
-<translation id="6712003214447962889">更聰明、更快速的解答</translation>
 <translation id="6712343563085762261">已上移</translation>
 <translation id="6716039223770814796">比較「<ph name="COMPARE_SET_NAME" />」· <ph name="ITEMS" /> 個項目</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 要求根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
@@ -3861,7 +3870,6 @@
 <translation id="7470854469646445678">請提供要複製的原因 (必填)</translation>
 <translation id="7471007961486718967">請提供要傳輸的原因 (必填)</translation>
 <translation id="7473033553872550521">你也可以與網站擁有者聯絡，建議對方升級為 HTTPS。<ph name="LEARN_MORE" /></translation>
-<translation id="7473555040328423550">新增分頁</translation>
 <translation id="7473891865547856676">不用了，謝謝</translation>
 <translation id="7475618719385705713">這個頁面遭到封鎖</translation>
 <translation id="7481312909269577407">往前</translation>
@@ -3879,6 +3887,7 @@
 <translation id="7500917112031739411">依群組顯示</translation>
 <translation id="7501663406926337752">貴機構標記了你要瀏覽的網站</translation>
 <translation id="7502044688973049724">管理你的資訊</translation>
+<translation id="7506748477220312995">建議來源</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">傳回的政策裝置 ID 沒有任何內容，或是與目前的裝置 ID 不符</translation>
 <translation id="7511707705708508147">不支援這個幣別</translation>
@@ -4240,6 +4249,7 @@
 <translation id="8099473231501330216">要求刪除</translation>
 <translation id="8103161714697287722">付款方式</translation>
 <translation id="8103643211515685474">一律列印</translation>
+<translation id="8104153649317588511">已關閉來源工作表</translation>
 <translation id="8105368624971345109">關閉</translation>
 <translation id="810875025413331850">找不到附近的裝置。</translation>
 <translation id="8116925261070264013">已設為靜音</translation>
@@ -4728,6 +4738,7 @@
 <translation id="8997023839087525404">該伺服器的憑證並未根據憑證透明化政策對外公開。部分憑證必須符合這項規定，以確保憑證值得信任，不會讓使用者遭到攻擊。</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
 <translation id="9001963517402879850">跳起來！</translation>
+<translation id="9002677862950442746">驗證碼：<ph name="OTP" /></translation>
 <translation id="9003263770394939629">Gemini 提供的建議。請前往「設定」管理強化版自動填入功能。</translation>
 <translation id="9003639428623471314">Envelope Kahu</translation>
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
@@ -4916,6 +4927,7 @@
 <translation id="98237783946365638">將身分證安全地儲存到 Google 錢包</translation>
 <translation id="983587187183716432">「<ph name="AI_ENGINE_NAME" />」按鈕，按下 Enter 鍵即可詢問 <ph name="AI_ENGINE_NAME" /></translation>
 <translation id="984275831282074731">付款方式</translation>
+<translation id="984950103108016064">來自 <ph name="EMAIL" /></translation>
 <translation id="985199708454569384">&lt;p&gt;如果畫面顯示這則錯誤訊息，表示您電腦或行動裝置的日期或時間不正確。&lt;/p&gt;
     &lt;p&gt;如要修正這項錯誤，請開啟裝置的時鐘，確認時間和日期是否正確無誤。&lt;/p&gt;</translation>
 <translation id="987264212798334818">一般</translation>

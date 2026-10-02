@@ -329,7 +329,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2327445548174191329">Source : <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Enregistrer la page sous…</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
-<translation id="2329500425421091035">Découvrez le Mode IA dans Chrome</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
 <translation id="2330243730505117832">La fenêtre qui permet de choisir un appareil est fermée.</translation>
 <translation id="2332515770639153015">Navigation sécurisée avec protection renforcée activée</translation>
@@ -602,7 +601,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis importez les mots de passe à nouveau dans le Gestionnaire de mots de passe de Google. <ph name="BEGIN_LINK" />Voir les instructions détaillées<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3435914367318771664">Ajout onglet à nouv. groupe</translation>
-<translation id="3436118221454753036">Demander au Mode IA</translation>
 <translation id="3439276997620616816">Vos onglets récents s'afficheront ici</translation>
 <translation id="3443221991560634068">Actualiser la page active</translation>
 <translation id="3444179773590444986">Envoyer des commentaires sur le thème sombre pour les sites ?</translation>
@@ -629,7 +627,6 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3524334353996115845">Autorisez <ph name="ORIGIN" /> à vérifier qu'il s'agit bien de vous</translation>
 <translation id="3527085408025491307">Dossier</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> Ko disponibles</translation>
-<translation id="3547933853190131743">Rechercher avec le Mode IA</translation>
 <translation id="3549537543136628349">Étant donné que les pages préchargées sont chiffrées et que le site ou l'appli liés aux pages sont un site ou une appli Google, les serveurs de Google ne reçoivent pas de nouvelles informations lors du préchargement de ces pages en mode privé.</translation>
 <translation id="3549657413697417275">Recherchez dans l'historique</translation>
 <translation id="3557336313807607643">Ajouter aux contacts</translation>
@@ -983,7 +980,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4885273946141277891">Le nombre d'instances de Chrome n'est pas compatible.</translation>
 <translation id="4890973535105146893">Aucun mot de passe enregistré dans votre compte Google</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Inclure un lien à la page</translation>
 <translation id="4910889077668685004">Applications de paiement</translation>
 <translation id="4911042367886397055">Bon retour parmi nous, <ph name="USER_NAME" /> !</translation>
 <translation id="4913169188695071480">Ne plus actualiser</translation>
@@ -1214,6 +1210,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5870416898561279542">Les onglets et groupes en double ou inutilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cela à tout moment dans les <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car ce site est dangereux</translation>
+<translation id="5895138241574237353">Redémarrer</translation>
 <translation id="5896944002928653773">La bottom sheet de l'avis de non-responsabilité concernant les signaux Enterprise est fermée</translation>
 <translation id="5899667542927581604">Aucune feuille de clés d'accès n'a été fermée</translation>
 <translation id="5907542076239273525">Favori enregistré dans <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
 <translation id="764047009170754705">Activation de Chrome Finds fermée</translation>
+<translation id="7645712301713737707">Personnaliser la disposition de vos onglets pour qu'ils s'affichent en haut ou sur le côté de votre navigateur.</translation>
 <translation id="7646499124171960488">Vous avertit pour les sites publics non sécurisés</translation>
 <translation id="7655240423373329753">sept derniers jours</translation>
 <translation id="7656721520530864426">Aucun site</translation>
@@ -1957,6 +1955,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="860282621117673749">Alertes de prix en baisse</translation>
 <translation id="8611922158252451755">Toute personne disposant du lien peut modifier tous les onglets. Faites donc preuve de prudence lorsque vous le partagez. Le lien expire dans 48 heures.</translation>
 <translation id="8616006591992756292">Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Mode IA de la recherche Google et applis connectées</translation>
 <translation id="8626572875733549102">Traduire en <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Ouvrez le menu Chrome &gt; Paramètres</translation>
 <translation id="8634050254805484913">Masquée sur les écrans étroits</translation>
@@ -2048,7 +2047,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="9001604755921395912">Ouvrir en onglet Chrome privé</translation>
 <translation id="9010094279589497751">Ouvrez rapidement Gemini quand vous en avez besoin</translation>
 <translation id="9012585441087414258">Protège contre les sites, les téléchargements et les extensions connus pour être dangereux. En cas d'activité suspecte sur une page, des URL et des extraits de son contenu sont envoyés à la navigation sécurisée Google.</translation>
-<translation id="9014097371980259227">Certains outils ont été déplacés pour vous aider à effectuer des recherches avec le Mode IA</translation>
 <translation id="9015111999662965458">Pour une utilisation sécurisée de cet appareil, votre organisation peut avoir besoin d'informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
 <translation id="9019199799064251516">Continuer sans verrouillage du profil pour la voiture ?</translation>
 <translation id="9022774213089566801">Consultés régulièrement</translation>

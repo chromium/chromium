@@ -329,7 +329,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="2327445548174191329">Fra <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Gem side som…</translation>
 <translation id="2328474416100889417">Alle mister øjeblikkeligt adgang til fanegruppen "<ph name="GROUP_NAME" />", og alle invitationslinks deaktiveres</translation>
-<translation id="2329500425421091035">Vi præsenterer AI-tilstand i Chrome</translation>
 <translation id="2330186936255788117">Flere bogmærker</translation>
 <translation id="2330243730505117832">"Vælg en enhed" er lukket.</translation>
 <translation id="2332515770639153015">Udvidet beskyttet browsing er aktiveret</translation>
@@ -602,7 +601,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3435575784518354875">Hvis du fortsat vil have adgang til dine adgangskoder, skal du eksportere dem nu, opdatere Google Play-tjenester og derefter importere dem til Google Adgangskodeadministrator igen. <ph name="BEGIN_LINK" />Se hele vejledningen<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3435914367318771664">Føj fane til ny gruppe</translation>
-<translation id="3436118221454753036">Spørg AI-tilstand</translation>
 <translation id="3439276997620616816">Her finder du dine seneste faner</translation>
 <translation id="3443221991560634068">Genindlæs den aktuelle side</translation>
 <translation id="3444179773590444986">Vil du dele feedback om Mørkt tema på websites?</translation>
@@ -629,7 +627,6 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3524334353996115845">Tillad, at <ph name="ORIGIN" /> verificerer din identitet</translation>
 <translation id="3527085408025491307">Mappe</translation>
 <translation id="3542235761944717775">Der er <ph name="KILOBYTES" /> kB til rådighed</translation>
-<translation id="3547933853190131743">Søg med AI-tilstand</translation>
 <translation id="3549537543136628349">Fordi de forudindlæste sider er krypterede, og det website eller den app, der linker til siderne, er et Google-website eller en Google-app, modtager Googles servere ikke nye oplysninger, når disse sider forudindlæses privat.</translation>
 <translation id="3549657413697417275">Søg i din historik</translation>
 <translation id="3557336313807607643">Føj til kontakter</translation>
@@ -983,7 +980,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4885273946141277891">Der er flere forekomster af Chrome, end der understøttes.</translation>
 <translation id="4890973535105146893">Ingen gemte adgangskoder på din Google-konto</translation>
 <translation id="490375751687810070">Lodret</translation>
-<translation id="4905823827770127520">Medtag et link til siden</translation>
 <translation id="4910889077668685004">Betalingsapps</translation>
 <translation id="4911042367886397055">Velkommen tilbage, <ph name="USER_NAME" />.</translation>
 <translation id="4913169188695071480">Stop med at opdatere</translation>
@@ -1214,6 +1210,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="5870416898561279542">Dubletter af faner og grupper eller faner og grupper, der ikke er blevet brugt i <ph name="DAYS_INACTIVE" /> dage, flyttes hertil<ph name="AUTODELETE_SECTION" />. Du kan til enhver tid ændre dette i <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notifikationer <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi dette website er farligt</translation>
+<translation id="5895138241574237353">Genstart</translation>
 <translation id="5896944002928653773">Feltet i bunden med ansvarsfraskrivelse for virksomhedssignaler er lukket</translation>
 <translation id="5899667542927581604">Feltet "Ingen tilgængelige adgangsnøgler" blev lukket</translation>
 <translation id="5907542076239273525">Bogmærket er gemt i <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="860282621117673749">Underretninger om prisfald</translation>
 <translation id="8611922158252451755">Alle med linket kan redigere alle faner, så del med omtanke. Linket udløber om 48 timer.</translation>
 <translation id="8616006591992756292">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI-tilstand i Google Søgning og tilknyttede apps</translation>
 <translation id="8626572875733549102">Oversæt til <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Åbn Chrome-menuen &gt; Indstillinger</translation>
 <translation id="8634050254805484913">Skjult på smalle skærme</translation>
@@ -2049,7 +2047,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9001604755921395912">Åbn i inkognito i Chrome</translation>
 <translation id="9010094279589497751">Åbn hurtigt Gemini, når du har brug for det</translation>
 <translation id="9012585441087414258">Beskytter mod websites, downloads og udvidelser, der er registreret som skadelige. Hvis en side udviser mistænkelig adfærd, sendes webadresser og uddrag af sideindhold til Google Beskyttet browsing.</translation>
-<translation id="9014097371980259227">Nogle værktøjer er blevet flyttet for at hjælpe dig med at søge med AI-tilstand</translation>
 <translation id="9015111999662965458">Da din organisation skal sikre, at denne enhed kan bruges sikkert, skal organisationen muligvis se oplysninger om dens operativsystem, browser og indstillinger, og hvilken software der er installeret på enheden</translation>
 <translation id="9019199799064251516">Vil du fortsætte uden en profillås i bilen?</translation>
 <translation id="9022774213089566801">Ofte besøgte</translation>

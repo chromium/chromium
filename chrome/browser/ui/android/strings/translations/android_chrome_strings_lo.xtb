@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">ຈາກ <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">ບັນທຶກໜ້າເປັນ…</translation>
 <translation id="2328474416100889417">ທຸກຄົນຈະສູນເສຍສິດເຂົ້າເຖິງກຸ່ມແຖບ “<ph name="GROUP_NAME" />” ທັນທີ ແລະ ລະບົບຈະປິດລິ້ງຄຳເຊີນທັງໝົດ</translation>
-<translation id="2329500425421091035">ຂໍແນະນຳໂໝດ AI ໃນ Chrome</translation>
 <translation id="2330186936255788117">ບຸກມາກເພີ່ມເຕີມ</translation>
 <translation id="2330243730505117832">"ເລືອກອຸປະກອນ" ປິດຢູ່.</translation>
 <translation id="2332515770639153015">ເປີດໃຊ້ Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນແລ້ວ</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">ເພື່ອຮັກສາສິດເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ສົ່ງພວກມັນອອກຕອນນີ້, ອັບເດດການບໍລິການ Google Play ແລ້ວຈາກນັ້ນໃຫ້ນໍາພວກມັນເຂົ້າໄປຫາ ຕົວຈັດການລະຫັດຜ່ານ Google. <ph name="BEGIN_LINK" />ເບິ່ງຄຳແນະນຳໂດຍລະອຽດ<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">ຄວາມ​ປອດ​ໄພ</translation>
 <translation id="3435914367318771664">ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່</translation>
-<translation id="3436118221454753036">ໂໝດຖາມ AI</translation>
 <translation id="3439276997620616816">ທ່ານຈະເຫັນແຖບຫຼ້າສຸດຂອງທ່ານຢູ່ບ່ອນນີ້</translation>
 <translation id="3443221991560634068">ໂຫຼດໜ້າປັດຈຸບັນຄືນໃໝ່</translation>
 <translation id="3444179773590444986">ແບ່ງປັນຄຳຕິຊົມກ່ຽວກັບຮູບແບບສີສັນມືດສຳລັບເວັບໄຊບໍ?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">ໃຫ້ <ph name="ORIGIN" /> ຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="3527085408025491307">ໂຟລເດີ</translation>
 <translation id="3542235761944717775">ຍັງເຫຼືອ <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">ຊອກຫາດ້ວຍໂໝດ AI</translation>
 <translation id="3549537543136628349">ເນື່ອງຈາກໜ້າເວັບທີ່ໂຫຼດກ່ອນລ່ວງໜ້າໄດ້ຖືກເຂົ້າລະຫັດໄວ້ ແລະ ເວັບໄຊ ຫຼື ແອັບທີ່ລິ້ງໄປຫາໜ້າດັ່ງກ່າວເປັນເວັບໄຊ ຫຼື ແອັບຂອງ Google, ເຊີບເວີຂອງ Google ຈຶ່ງບໍ່ໄດ້ຮັບຂໍ້ມູນໃໝ່ເມື່ອໂຫຼດໜ້າເວັບເຫຼົ່ານີ້ກ່ອນລ່ວງໜ້າແບບສ່ວນຕົວ.</translation>
 <translation id="3549657413697417275">ຊອກຫາປະຫວັດຂອງທ່ານ</translation>
 <translation id="3557336313807607643">ເພີ່ມໃສ່ລາຍຊື່ຜູ້ຕິດຕໍ່</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">ຈໍາ​ນວນຂອງຕົວຢ່າງ Chrome ທີ່ບໍ່ຮອງຮັບ​.</translation>
 <translation id="4890973535105146893">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="490375751687810070">ລວງຕັ້ງ</translation>
-<translation id="4905823827770127520">ຮວມລິ້ງໄປຫາໜ້າ</translation>
 <translation id="4910889077668685004">ແອັບຈ່າຍເງິນ</translation>
 <translation id="4911042367886397055">ຍິນດີຕ້ອນຮັບກັບມາ, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">ຢຸດການໂຫຼດຄືນໃໝ່</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">ລະ​ຫັດ​ຜ່ານ​ທີ່ບັນທຶກໄວ້</translation>
 <translation id="5870416898561279542">ແຖບ ແລະ ກຸ່ມທີ່ຊ້ຳກັນ ຫຼື ບໍ່ໄດ້ໃຊ້ເປັນເວລາ <ph name="DAYS_INACTIVE" /> ມື້ຈະຍ້າຍມາບ່ອນນີ້<ph name="AUTODELETE_SECTION" />. ທ່ານສາມາດປ່ຽນຕົວເລືອກນີ້ໄດ້ທຸກເວລາໃນ <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">ການແຈ້ງເຕືອນ <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກເວັບໄຊນີ້ເປັນອັນຕະລາຍ</translation>
+<translation id="5895138241574237353">ເລີ່ມຕົ້ນໃໝ່</translation>
 <translation id="5896944002928653773">ຊີດລຸ່ມສຸດຂອງຂໍ້ຈຳກັດຄວາມຮັບຜິດຊອບກ່ຽວກັບສັນຍານ Enterprise ປິດຢູ່</translation>
 <translation id="5899667542927581604">ບໍ່ໄດ້ປິດຊີດກະແຈຜ່ານໃດໆ</translation>
 <translation id="5907542076239273525">ບັນທຶກບຸກມາກໄວ້ໃນ <ph name="FOLDER_NAME" /> ແລ້ວ</translation>
@@ -1696,6 +1693,7 @@
 <translation id="7630202231528827509">URL ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7638584964844754484">ລະຫັດຜ່ານບໍ່ຖືກຕ້ອງ</translation>
 <translation id="764047009170754705">ການເປີດໃຊ້ Chrome Finds ປິດຢູ່</translation>
+<translation id="7645712301713737707">ປັບແຕ່ງໂຄງຮ່າງແຖບຂອງທ່ານໃຫ້ປາກົດຢູ່ເທິງສຸດ ຫຼື ຢູ່ທາງຂ້າງຂອງໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ.</translation>
 <translation id="7646499124171960488">ເຕືອນທ່ານຫາກພົບເວັບໄຊສາທາລະນະທີ່ບໍ່ປອດໄພ</translation>
 <translation id="7655240423373329753">7 ມື້ຫຼ້າສຸດ</translation>
 <translation id="7656721520530864426">ບໍ່ມີເວັບໄຊ</translation>
@@ -1957,6 +1955,7 @@
 <translation id="860282621117673749">ແຈ້ງເຕືອນຫຼຸດລາຄາ</translation>
 <translation id="8611922158252451755">ທຸກຄົນທີ່ມີລິ້ງສາມາດແກ້ໄຂແຖບທັງໝົດໄດ້, ດັ່ງນັ້ນກະລຸນາແບ່ງປັນຢ່າງລະມັດລະວັງ. ລິ້ງຈະໝົດອາຍຸໃນ 48 ຊົ່ວໂມງ.</translation>
 <translation id="8616006591992756292">ບັນຊີ Google ຂອງທ່ານອາດຈະມີຮູບແບບອື່ນຂອງປະຫວັດການທ່ອງເວັບຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">ໂໝດ AI ຂອງ Google ຊອກຫາ ແລະ ແອັບທີ່ເຊື່ອມຕໍ່</translation>
 <translation id="8626572875733549102">ແປເປັນພາສາ <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">ເປີດເມນູ Chrome &gt; ການຕັ້ງຄ່າ</translation>
 <translation id="8634050254805484913">ເຊື່ອງໄວ້ຢູ່ໃນໜ້າຈໍແຄບ</translation>
@@ -2048,7 +2047,6 @@
 <translation id="9001604755921395912">ເປີດໃນແຖບທີ່ບໍ່ເປີດເຜີຍຕົວຕົນຂອງ Chrome</translation>
 <translation id="9010094279589497751">ເປີດ Gemini ໄດ້ຢ່າງວ່ອງໄວເມື່ອທ່ານຕ້ອງການ</translation>
 <translation id="9012585441087414258">ປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ຮູ້ແລ້ວວ່າເປັນອັນຕະລາຍ. ຫາກໜ້າເວັບເຮັດສິ່ງທີ່ໜ້າສົງໄສ, URL ແລະ ເນື້ອຫາຂອງໜ້າເວັບບາງສ່ວນຈະຖືກສົ່ງໄປຫາ Google Safe Browsing.</translation>
-<translation id="9014097371980259227">ເຄື່ອງມືບາງຢ່າງໄດ້ຍ້າຍໄປເພື່ອຊ່ວຍໃຫ້ທ່ານຊອກຫາດ້ວຍໂໝດ AI</translation>
 <translation id="9015111999662965458">ເພື່ອໃຫ້ໃຊ້ອຸປະກອນນີ້ໄດ້ຢ່າງປອດໄພ, ອົງກອນຂອງທ່ານອາດຕ້ອງເບິ່ງຂໍ້ມູນກ່ຽວກັບລະບົບປະຕິບັດການ, ໂປຣແກຣມທ່ອງເວັບ, ການຕັ້ງຄ່າ, ຮວມທັງຊອບແວທີ່ຕິດຕັ້ງຢູ່ອຸປະກອນ</translation>
 <translation id="9019199799064251516">ສືບຕໍ່ໂດຍບໍ່ໃຊ້ການລັອກໂປຣໄຟລ໌ລົດບໍ?</translation>
 <translation id="9022774213089566801">ເຂົ້າເບິ່ງເລື້ອຍໆ</translation>

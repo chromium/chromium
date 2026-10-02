@@ -348,7 +348,6 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="8390323835464055390">Chromium の自動入力を使用して、保存したパスワードとパスキーですべてのアプリからログイン</translation>
 <translation id="8409374867500149834">Chromium の最高強度のセキュリティで有害なウェブサイトから保護します</translation>
 <translation id="8428449554948979733">[Chromium を既定に設定する] を非表示</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}other{Chromium を {THRESHOLD} 分間使用しなかった場合に行われます。ログイン中にこのデバイスにのみ保存されたデータは削除されます。これには履歴やパスワードが含まれる場合があります。}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8602103377623855616">Chromium ページ</translation>
 <translation id="865600487977764604">ログイン時に、Chromium を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>

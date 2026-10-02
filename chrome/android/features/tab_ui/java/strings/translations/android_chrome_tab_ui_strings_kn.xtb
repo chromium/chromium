@@ -114,6 +114,7 @@
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> ದಿನದ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}one{<ph name="NUM_DAYS_MANY" /> ದಿನಗಳ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}other{<ph name="NUM_DAYS_MANY" /> ದಿನಗಳ ಹಿಂದೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="4496868141611329150">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="4653140634010630594">{TAB_COUNT,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
+<translation id="4657810666108475055">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="4686942373615810936">ಇದೀಗ ತಾನೇ ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="4783638485675352219">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಮ್ ಮೂಲಕ ಈ ಸಾಧನದಿಂದ ಶೀರ್ಷಿಕೆಗಳು ಮತ್ತು ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳ URL ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}other{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}}</translation>

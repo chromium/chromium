@@ -348,7 +348,6 @@
 <translation id="8390323835464055390">透過 Chromium 的自動填入功能，使用任何應用程式已儲存的密碼和密鑰登入</translation>
 <translation id="8409374867500149834">Chromium 最強大的安全功能可協助防範有害網站</translation>
 <translation id="8428449554948979733">隱藏「將 Chromium 用作預設瀏覽器」</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}other{當 Chromium 閒置 {THRESHOLD} 分鐘後，系統就會執行此操作。系統將刪除你登入時只儲存至此裝置的資料，其中可能包括記錄和密碼。}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8602103377623855616">Chromium 頁面</translation>
 <translation id="865600487977764604">確保您登入使用 Chromium 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>

@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">来自<ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">将页面另存为…</translation>
 <translation id="2328474416100889417">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且所有邀请链接都将失效</translation>
-<translation id="2329500425421091035">Chrome 迎来 AI 模式</translation>
 <translation id="2330186936255788117">更多书签</translation>
 <translation id="2330243730505117832">“选择设备”对话框已关闭。</translation>
 <translation id="2332515770639153015">“增强型安全浏览”已开启</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
 <translation id="3435738964857648380">安全</translation>
 <translation id="3435914367318771664">将标签页添加到新分组</translation>
-<translation id="3436118221454753036">问问 AI 模式</translation>
 <translation id="3439276997620616816">此处会显示您近期关闭的标签页</translation>
 <translation id="3443221991560634068">重新加载当前网页</translation>
 <translation id="3444179773590444986">针对为网站开启深色主题分享反馈？</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">让 <ph name="ORIGIN" /> 验证您的身份</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3542235761944717775">可用空间：<ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">使用 AI 模式搜索</translation>
 <translation id="3549537543136628349">由于预加载的网页均已加密，并且链接到这些网页的网站或应用是一个 Google 网站或应用，因此当以私密方式预加载这些网页时，Google 服务器不会收到新信息。</translation>
 <translation id="3549657413697417275">搜索您的历史记录</translation>
 <translation id="3557336313807607643">添加到通讯录</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">Chrome 实例数量已超出上限。</translation>
 <translation id="4890973535105146893">您的 Google 账号中没有保存任何密码</translation>
 <translation id="490375751687810070">纵向</translation>
-<translation id="4905823827770127520">包含页面链接</translation>
 <translation id="4910889077668685004">付款应用</translation>
 <translation id="4911042367886397055"><ph name="USER_NAME" />，欢迎回来！</translation>
 <translation id="4913169188695071480">停止刷新</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5870416898561279542">重复的标签页和分组或已闲置 <ph name="DAYS_INACTIVE" /> 天的标签页和分组会移至此处，<ph name="AUTODELETE_SECTION" />。您随时可在<ph name="DECLUTTER_SETTINGS_TITLE" />中更改此设置。</translation>
 <translation id="5885378508678660271">通知 <ph name="SEPARATOR" /> Chrome 撤消了这些权限，因为此网站具有危险性</translation>
+<translation id="5895138241574237353">重新启动</translation>
 <translation id="5896944002928653773">企业信号免责声明底部动作条已关闭</translation>
 <translation id="5899667542927581604">未关闭任何通行密钥表格</translation>
 <translation id="5907542076239273525">书签已保存到“<ph name="FOLDER_NAME" />”中。</translation>
@@ -1956,6 +1953,7 @@
 <translation id="860282621117673749">降价提醒</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
 <translation id="8616006591992756292">您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
+<translation id="8622145666696249878">Google 搜索 AI 模式和关联的应用</translation>
 <translation id="8626572875733549102">翻译成<ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">依次打开 Chrome 菜单 &gt;“设置”</translation>
 <translation id="8634050254805484913">在窄屏设备上隐藏</translation>
@@ -2047,7 +2045,6 @@
 <translation id="9001604755921395912">在 Chrome 无痕式标签页中打开</translation>
 <translation id="9010094279589497751">随时随需快速打开 Gemini</translation>
 <translation id="9012585441087414258">防范已知危险的网站、下载内容和扩展程序。如果发现某个网页有可疑之处，系统会将相应网址连同少量网页内容发送到“Google 安全浏览”功能进行检查。</translation>
-<translation id="9014097371980259227">部分工具的位置有所调整，助您利用 AI 模式开启搜索新体验</translation>
 <translation id="9015111999662965458">为确保您可以安全地使用此设备，您的组织可能需要查看与设备操作系统、浏览器、设置以及设备上安装的软件相关的信息</translation>
 <translation id="9019199799064251516">不设置车载设备个人资料锁定就继续吗？</translation>
 <translation id="9022774213089566801">经常访问</translation>

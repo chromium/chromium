@@ -136,6 +136,7 @@
 <translation id="1383876407941801731">ស្វែងរក</translation>
 <translation id="138618066238211776">បន្តជា <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">ជម្រើស​សម្រាប់រក្សា​ទុកកាត</translation>
+<translation id="138810468159004008">អនុញ្ញាតពេលចូលមើលគេហទំព័រ</translation>
 <translation id="1396260204083880024">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="1397144142234474689">លាក់​ប្រវត្តិ</translation>
 <translation id="1399268420835656394">ប្រសិនបើ​អ្នក​មិនមែនជា​កុមារទេ អ្នក​ប្រហែលជា​ចង់ពិនិត្យមើល​អាយុ​នៅក្នុង​គណនី Apple នៅលើ​ឧបករណ៍នេះ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -160,6 +161,7 @@
 <translation id="1466035273550360103">គ្មានផ្ទាំងដែលបើកទេ</translation>
 <translation id="1469381646033328562">គណនី​របស់អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់មាតាបិតា​អ្នក។
 <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">ចាប់តាំងពីបញ្ចប់ "បង្កើតក្រុមផ្ទាំង"</translation>
 <translation id="147982357559798527">បានប្ដូរ</translation>
 <translation id="1481450969185702334">ស្វែងរក និងបំពេញ</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
@@ -303,6 +305,7 @@
 <translation id="188237709236611317">របារម៉ឺនុយ​តម្រៀប​ឆ្លាតវៃ</translation>
 <translation id="1883255238294161206">បង្រួមបញ្ជីចូល</translation>
 <translation id="1883898928879467646">បានដកផ្ទាំងចេញ</translation>
+<translation id="188779312703122101">កំពុងធ្វើការ</translation>
 <translation id="1888854257756214946">ជ្រើសរើស​ពាក្យសម្ងាត់…</translation>
 <translation id="1890237935065108104">មិនអាចប្រើ​ការកំណត់​នេះបានទេ។</translation>
 <translation id="1894023287452300670">តាម​ដាន​តម្លៃ​នៅទីនេះ</translation>
@@ -407,6 +410,7 @@
 <translation id="2220529011494928058">រាយការណ៍ពីបញ្ហា</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ត្រូវបាន​ទប់ស្កាត់​មិនឱ្យ​ចូលប្រើ​កាមេរ៉ា​របស់អ្នក</translation>
 <translation id="2223461067862937305">បង្កើតកូដ QR</translation>
+<translation id="222798989929574238">អ្នកបានប្រើរូបថត 20 សន្លឹកឡើងទៅ ដើម្បីស្វែងរក</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>
 <translation id="2236949375853147973">សកម្មភាព​របស់ខ្ញុំ</translation>
 <translation id="2237869114829007407">ទទួលបានទិដ្ឋភាពរួម និងព័ត៌មានស៊ីជម្រៅសំខាន់ៗសម្រាប់ទំព័រ ឬប្រធានបទណាមួយ</translation>
@@ -469,7 +473,6 @@
 <translation id="2393230427496852974">អានអ្វី​ដែលគេ​កំពុងនិយាយ</translation>
 <translation id="2394659309569789395">មិនអីទេ បើក​គេហទំព័រចុះ</translation>
 <translation id="2403129868389095715">មិនអាច​ដឹកជញ្ជូន​កញ្ចប់របស់អ្នក​បានទេ</translation>
-<translation id="2408318953009664750">អនុញ្ញាត​តែម្ដង</translation>
 <translation id="2410754283952462441">ជ្រើសរើស​គណនី</translation>
 <translation id="2422174748424038845">ប្រសិនបើ​អ្នកលុបវា អ្នកគ្រប់គ្នា​នឹង​បាត់បង់​សិទ្ធិចូលប្រើ​ក្រុមផ្ទាំង "<ph name="GROUP_NAME" />" ភ្លាមៗ ហើយ​វានឹង​ត្រូវបានលុប​ចេញពី​ឧបករណ៍​ទាំងអស់។</translation>
 <translation id="2424805048070062787">បន្ត​ជាមួយ​ផ្ទាំងនេះ</translation>
@@ -601,7 +604,6 @@
 <translation id="2816149645002567541">បាន​ផ្អាក​ការ​ទាញយក</translation>
 <translation id="2816489851009559785">ម៉ឺនុយ → ការ​កំណត់ → កម្មវិធីរុករកតាមអ៊ីនធឺណិតលំនាំដើម</translation>
 <translation id="2818821771744632548">អ្នកបានចេញ​ពីគណនី​របស់អ្នក <ph name="USER_NAME" /> ដែលជាផ្នែកមួយ​នៃការកំណត់ iPhone របស់អ្នកឡើងវិញ។ ដើម្បី​ចូលគណនីវិញ សូមចុច "បន្ត" ខាងក្រោម។</translation>
-<translation id="2819667972867209401">នៅពេល​បើក ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​នៅក្នុង​គណនី Google របស់អ្នក។ នៅពេលបិទ ទិន្នន័យ​ត្រូវបាន​រក្សាទុក​តែនៅលើ​ឧបករណ៍នេះ​ប៉ុណ្ណោះ និង​ត្រូវបានលុប ប្រសិនបើ​អ្នកចេញពី​គណនី។</translation>
 <translation id="2827760117436553203">រក្សា​ទិន្នន័យ​ដាច់ដោយឡែក​ឬ?</translation>
 <translation id="2829172210806130158">ស្វែងរកនៅលើអេក្រង់របស់អ្នក</translation>
 <translation id="2831109159746537587">សាកល្បង​គូររង្វង់ ឬ​ចុចលើ​រូបភាព​ដើម្បី​ស្វែងរក</translation>
@@ -885,7 +887,6 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{វិធីបង់ប្រាក់ 1}other{វិធី​បង់ប្រាក់ #}}</translation>
 <translation id="3831560640878483188">ច្រានចោល​សារប្រុងប្រយ័ត្នឬ?</translation>
 <translation id="3832419617903252251">បានរក្សាទុកពាក្យសម្ងាត់តែនៅលើឧបករណ៍នេះប៉ុណ្ណោះ</translation>
-<translation id="3835016165506903031">អនុញ្ញាត​ពេល​កំពុងចូលមើល</translation>
 <translation id="3835964409414434850">ទៅកាន់​ផ្ទាំង​បន្ទាប់</translation>
 <translation id="3838691874161539578">ពិនិត្យមើល​ពាក្យសម្ងាត់​ដែល​អ្នក​បាន​រក្សាទុក ដើម្បី​ពង្រឹង​សុវត្ថិភាព​របស់​អ្នក និង​ធ្វើឱ្យកាន់តែមាន​សុវត្ថិភាពនៅ​លើអ៊ីនធឺណិត</translation>
 <translation id="3838985624086228724">ការធ្លាក់ថ្លៃ​ផលិតផលដែល​អ្នកបាន​តាមដាន​ពី <ph name="PREVIOUS_PRICE" /> មក <ph name="PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN" /></translation>
@@ -1036,6 +1037,7 @@
 <translation id="428768789042547925">អ្វីដែលថ្មី</translation>
 <translation id="4289309730265289297">បណ្ណាល័យរូបថត</translation>
 <translation id="429074084062258019">{count,plural, =1{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}other{បញ្ចូល​ផ្ទាំង​ទៅក្រុម}}</translation>
+<translation id="4290920330097335010">កុំ​អនុញ្ញាត</translation>
 <translation id="4294506173142861371">ចូលគណនី​ជា <ph name="FIRST_NAME" /> ឬ?</translation>
 <translation id="4302061870579014542">កំណត់ទីតាំង</translation>
 <translation id="4304713468139749426">កម្មវិធី​គ្រប់គ្រង​ពាក្យសម្ងាត់</translation>
@@ -1146,6 +1148,7 @@
 <translation id="4647758699119474035">បានចូលគណនី​ជា <ph name="USER_NAME" />។ <ph name="USER_EMAIL" />។ បញ្ហាគណនី Google។ បើកម៉ឺនុយគណនី។</translation>
 <translation id="4650125387981512669">បន្តជា <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{លាក់​ក្រោយ​រយៈពេល 1 នាទី}other{លាក់​ក្រោយ​រយៈពេល {count} នាទី}}</translation>
+<translation id="4652266463001779298">មិន​អនុញ្ញាត</translation>
 <translation id="4652817563047461855">ត្រូវប្រាកដថាពាក្យសម្ងាត់​របស់អ្នក​មានសុវត្ថិភាព ពិនិត្យមើល​ថាតើពាក្យ​សម្ងាត់​ទាំងនោះ​រងការលុកលុយ​ឬអត់ និង​ទទួល​ការណែនាំ​ក្នុងការ​ជួយការពារខ្លួនអ្នក​លើអ៊ីនធឺណិត។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="4653053602672040238">បើកការចែករំលែកផ្ទាំង</translation>
 <translation id="4658335131052370646">រក្សាទុក</translation>
@@ -1762,6 +1765,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6525550806864373485">កែម៉ឺនុយ</translation>
 <translation id="6527208859483186860">ផ្ទៃខាងក្រោយ​ទី {position} នៃ {total}</translation>
 <translation id="6527303717912515753">ចែករំលែក</translation>
+<translation id="6529706885792457023">អ្នកបាន​រៀបចំ 15 ផ្ទាំងឡើងទៅ</translation>
 <translation id="6532106788206463496">រក្សាទុក​ការ​ផ្លាស់ប្ដូរ</translation>
 <translation id="6536759809440150308">បើក <ph name="GROUP_TITLE" />, ក្រុមដែលមាន <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1807,6 +1811,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6642362222295953972">ប្ដូរទៅផ្ទាំង​ដែលមានស្រាប់</translation>
 <translation id="6643016212128521049">ជម្រះ</translation>
 <translation id="6645899968535965230">កូដ QR៖ <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">អ្នកបាន​ពិនិត្យ​ពាក្យ​សម្ងាត់ 25 ឡើងទៅ</translation>
 <translation id="6657585470893396449">ពាក្យសម្ងាត់</translation>
 <translation id="6659660757330712663">អ្នកអាច​អូស​របារឧបករណ៍ ដើម្បី​ប្ដូររវាង​ផ្ទាំង។</translation>
 <translation id="6663529247339810546">មិនអាចរក្សាទុករូបភាពបានទេ</translation>
@@ -1965,6 +1970,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7145337554745942724">ធ្វើបច្ចុប្បន្នភាព​បណ្ណ​បើកបរ</translation>
 <translation id="7146301801400584641">មានឯកសារ​ប្រតិទិន</translation>
 <translation id="7149893636342594995">24 ម៉ោងមុន</translation>
+<translation id="7151361008641622036">{count,plural, =1{អ្នកបាន​រៀបចំ 1 ផ្ទាំង}other{អ្នកបាន​រៀបចំ # ផ្ទាំង}}</translation>
 <translation id="7154417656353909837">ដក​អាសយដ្ឋាន​ចេញ</translation>
 <translation id="7161230316646448869">ធ្វើសម​កាល​កម្មចំណាំ ប្រវត្តិរបស់អ្នក និងអ្វីៗ​ជាច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2317,7 +2323,6 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8233237502828137700">បិទ​ការផ្សព្វផ្សាយ​លើ​ផ្ទាំងបដា</translation>
 <translation id="823339794112333264">បើកមីក្រូហ្វូន</translation>
 <translation id="8240217649914883113">បញ្ចូលវាទៅក្នុងប្រតិទិនរបស់ខ្ញុំ</translation>
-<translation id="824379025871762038">កុំ​អនុញ្ញាត</translation>
 <translation id="8244387390464017490">ប្ដូរទំព័រផ្ទាំងថ្មីតាមបំណង</translation>
 <translation id="8250920743982581267">ឯកសារ</translation>
 <translation id="8258734532103758067">I've exported my data</translation>
@@ -2338,6 +2343,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8282657446819506217">បើក​នៅក្នុង​ក្រុមផ្ទាំង</translation>
 <translation id="828291969289324795">{count,plural, =1{បញ្ចូលផ្ទាំង​ទៅក្រុមថ្មី}other{បញ្ចូលផ្ទាំង​ទៅក្រុមថ្មី}}</translation>
 <translation id="8283172974887967105">កំណត់…</translation>
+<translation id="8287009018010202411">ផលិតភាព</translation>
 <translation id="8289930144142009940">បានបិទ​ការជូនដំណឹង​អំពី <ph name="FEATURE_NAME" /></translation>
 <translation id="8292893224181644074">បាន​បញ្ចប់​ការទាញយក</translation>
 <translation id="8299417921174340354">ដើម្បី​ប្រើ​ពាក្យសម្ងាត់ អ្នកត្រូវតែ​កំណត់​លេខ​កូដ​សម្ងាត់​នៅលើ​ឧបករណ៍​របស់អ្នក​ជាមុន​សិន។</translation>
@@ -2395,6 +2401,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8481184073299279701">ចុចប៊ូតុង "ចាប់ផ្ដើម​ធ្វើកំណត់ហេតុ" ដើម្បីប្រមូលបញ្ហា និងកំណត់​ហេតុកុងសូល JavaScript នាពេលអនាគតពីផ្ទាំងទាំងអស់។ កំណត់​ហេតុនឹងត្រូវបានប្រមូល (និងរក្សាទុកនៅក្នុងអង្គចងចាំតែប៉ុណ្ណោះ) រហូតទាល់តែទំព័រនេះត្រូវបានបិទ ឬ "បញ្ឈប់​ការធ្វើកំណត់​ហេតុ" ត្រូវបានចុច។</translation>
 <translation id="8487667956631253959">បើក</translation>
 <translation id="8487700953926739672">មាននៅក្រៅបណ្តាញ</translation>
+<translation id="8488065047914929586">ចាប់តាំងពីបញ្ចប់ "រក្សាទុក​ពាក្យសម្ងាត់"</translation>
 <translation id="8488923644885757471">វិនដូ​ថ្មី</translation>
 <translation id="8490629238792920282">មិនអាចបង្កើត​តំណបានទេ</translation>
 <translation id="8501469528283376592">លុបឯកសារ​ដែលបាន​ទាញយក​ដោយ​ស្វ័យប្រវត្តិ</translation>
@@ -2542,6 +2549,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8890516388109605451">ប្រភព</translation>
 <translation id="8893208530912252670">វីដេអូ</translation>
 <translation id="8898822736010347272">បញ្ជូន URL នៃ​គេហទំព័រ​មួយចំនួន​ដែលអ្នក​ចូលមើល ព័ត៌មាន​ប្រព័ន្ធ​មួយចំនួន និង​ខ្លឹមសារ​ទំព័រ​មួយចំនួន​ទៅ Google ដើម្បីជួយ​ស្វែងរក​ការគំរាមកំហែង​ថ្មី និង​ការពារ​អ្នកគ្រប់គ្នា​នៅលើ​អ៊ីនធឺណិត​។</translation>
+<translation id="890009681345348416">បានបំពេញ​ពាក្យសម្ងាត់ 40 ឡើងទៅដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="8900845556227858314">កម្មវិធីរុករក​តាម​អ៊ីនធឺណិត</translation>
 <translation id="890565330728586731">ថយក្រោយ</translation>
 <translation id="8907722425137681851">ស្វែងរកក្នុងទំព័រ…</translation>

@@ -348,7 +348,6 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="8390323835464055390">Inicia sesión con tus contraseñas y llaves de acceso guardadas desde cualquier aplicación con Autocompletar en Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más potente de Chromium frente a sitios web dañinos</translation>
 <translation id="8428449554948979733">Ocultar Usar Chromium como predeterminado</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Ocurre cuando Chromium lleva {THRESHOLD} minuto sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}other{Ocurre cuando Chromium lleva {THRESHOLD} minutos sin usarse. Se eliminarán los datos guardados solo en este dispositivo mientras tenías la sesión iniciada. Esto podría incluir el historial y las contraseñas.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8602103377623855616">Página de Chromium</translation>
 <translation id="865600487977764604">Te protege en Chromium y se puede usar para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>

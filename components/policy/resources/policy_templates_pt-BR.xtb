@@ -959,7 +959,6 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1625700732886306811">Permitir que o <ph name="PRODUCT_NAME" /> se conecte- a dispositivos em todos os endereços IP</translation>
 <translation id="1626379196197114720">Permitir o uso do cache de avanço e retorno</translation>
 <translation id="1628974048137236820">A página Nova guia não exibirá cards</translation>
-<translation id="1628984674324273832">Não permitir o recurso Encontrar e Preencher com o Gemini.</translation>
 <translation id="163200210584085447">Os padrões nesta lista serão comparados com a origem
       de segurança do URL solicitante. Se for encontrada uma correspondência, o acesso a dispositivos de captura
       de vídeo será concedido em páginas de login SAML. Se nenhuma correspondência for
@@ -1755,7 +1754,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="2107601598727098402">
         O uso desta política foi suspenso no M72. Use CloudManagementEnrollmentToken.
         </translation>
-<translation id="2111355600078097861">Permitir o recurso Encontrar e Preencher com o Gemini sem melhorar os modelos de IA.</translation>
 <translation id="2112656109118682849">Permitir que os usuários escolham se as informações do sistema vão ser mostradas na tela de login ou não</translation>
 <translation id="2113068765175018713">Limitar tempo de execução do dispositivo reiniciando automaticamente</translation>
 <translation id="211386002920955760">Controle se um usuário empresarial pode acessar o recurso de compartilhamento de grupos de guias no Chrome.
@@ -5693,6 +5691,11 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
 <translation id="4561940244682063697">Não permitir que os sites peçam para o usuário compartilhar um stream de vídeo da tela</translation>
 <translation id="4562165737444703281">Permitir que os usuários [ativem/configurem] o encaminhamento de portas do Crostini</translation>
 <translation id="456450545863578630">Ativar a transferência de arquivos em conexões de suporte remoto de administradores corporativos</translation>
+<translation id="4567614489737189156">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> informará métricas de uso e dados de diagnóstico, incluindo relatórios de erros, para o Google. Se a política for definida como "Desativada", as informações de métrica e dados de diagnóstico serão desativados.
+
+Em dispositivos gerenciados, se a política for deixada sem definição, os relatórios de métricas e dados de diagnóstico vão continuar ativados por padrão.
+
+Para dispositivos não gerenciados, esta política não se aplica, e os usuários podem escolher o comportamento dos relatórios de métricas e dados de diagnóstico durante a configuração do dispositivo ou mais tarde nas configurações.</translation>
 <translation id="4570859815763368584">Uso descontinuado na versão M68. Use a política DefaultPopupsSetting.
 
       Para acessar a explicação detalhada, acesse https://www.chromestatus.com/feature/5675755719622656.
@@ -6588,7 +6591,6 @@ Se ela for definida como 2, o recurso não será habilitado.
 Se for deixada sem definição, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
 
 Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
-<translation id="5070539335358964387">Permitir o recurso Encontrar e Preencher com o Gemini e melhorar os modelos de IA.</translation>
 <translation id="5071303485174858500">Desativar sessão de visitante gerenciada restrita.</translation>
 <translation id="5073788301065423829">Esta política ativa ou desativa o recurso "Me ajude a escrever" no ChromeOS.
 
@@ -10170,7 +10172,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="7136237405361383549">Usar o renderizador padrão com base na configuração do teste de campo.</translation>
 <translation id="7138762292550697459">Controle o tempo limite mínimo da função setTimeout() do JavaScript.</translation>
 <translation id="7138792262152376158">Segue cronogramas regulares de descontinuação para a API PrefixedVideoFullscreen</translation>
-<translation id="7140755255968613921">Configurações do recurso Encontrar e Preencher com o Gemini</translation>
 <translation id="7140760943584613237">Provedor de identidade na nuvem da Microsoft®</translation>
 <translation id="714219487865269980">Ativar destaque de foco do teclado</translation>
 <translation id="7144022711746703451">
@@ -10610,19 +10611,6 @@ Os valores reais dos dados sensíveis (como cookies ou valores de entrada) NÃO 
 <translation id="7402257017733669351">Impedir que o processo do navegador crie código dinâmico</translation>
 <translation id="7406039009275722824">Desativar a <ph name="CHROME_SYNC_NAME" /> fará com que o recurso de backup e restauração do Android não funcione corretamente.</translation>
 <translation id="7406276857470642718">Controla as configurações para usuários autenticados por SAML com um IdP externo</translation>
-<translation id="7407431811343706437">Controla se os usuários podem usar o recurso "Encontrar e Preencher com o Gemini" no <ph name="PRODUCT_NAME" />.
-
-Se ela for definida como 0, o recurso será habilitado e os dados relevantes poderão ser usados pelo Google para melhorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-Se a política for definida como 1, o recurso será habilitado, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de fonte e feedback por escrito) para melhorar os modelos. O valor 1 é o padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Se ela for definida como 2, o recurso não será habilitado.
-
-Esta política não tem efeito quando o app do Gemini está desativado. Por exemplo, ele pode ser desativado pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
-
-Se ela não for definida, o comportamento será determinado pela política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
-
-Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="7407441173422042771">Esta política controla a previsão de rede no <ph name="PRODUCT_NAME" />. Ela controla a pré-busca de DNS, a pré-conexão SSL e TCP e a pré-renderização das páginas da Web.
 
       Se você definir a política, os usuários não poderão mudá-la. Se ela não for definida, a previsão de rede será ativada, mas os usuários poderão mudar a configuração.</translation>
@@ -10631,11 +10619,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="7410074797376205571">Permitir que a <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> execute solicitações de API do WebAuthn transmitidas por proxy de um host remoto.</translation>
 <translation id="7412456346709338637">Ativar acesso a dados de periféricos Thunderbolt/USB4</translation>
 <translation id="7414890119082492552">Não tenho preferência.</translation>
-<translation id="7416222110012824615">Política que controla a disponibilidade do recurso XSLT (a API JavaScript XSLTProcessor e a instrução de processamento XSL).
-Quando ela é ativada, o XSLT fica disponível, mesmo que esteja desativado por padrão no navegador.
-Quando ela é desativada, o XSLT fica indisponível, mesmo que esteja ativado por padrão no navegador.
-Se a política não for configurada, a disponibilidade do XSLT será definida pelas configurações padrão do navegador e pelos testes de campo.
-Esta política é uma medida temporária e será removida na versão M164.</translation>
 <translation id="7417438464912687020">Permitir conexões de acesso remoto a esta máquina</translation>
 <translation id="7417972229667085380">Percentual pelo qual calcular o intervalo de inatividade no modo de apresentação (uso suspenso)</translation>
 <translation id="7421230730436851224">Nunca colocar o processo de áudio no sandbox</translation>
@@ -10945,10 +10928,6 @@ As políticas que precisam ser mescladas também precisam ser definidas na <ph n
       Se ela for definida como falsa ou for deixada sem definição, os relatórios serão desativados.
       Em ambos os casos, as regras definidas com o nível de restrições ALLOW na DataLeakPreventionRulesList não criarão relatórios de eventos.</translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
-<translation id="7649831723389657756">A definição desta política especifica quais origens têm permissão para todos os esquemas de autenticação HTTP compatíveis com <ph name="PRODUCT_NAME" />, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.
-
-      Formate o padrão da origem de acordo com o formato apresentado em <ph name="URL_SCHEME_FORMAT_LINK" />. Até 1.000 exceções podem ser definidas na política <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.
-      É possível usar caracteres curingas para o componente de host (por exemplo, "*:8000" corresponde a todos os hosts na porta 8000). Para corresponder a todos os esquemas ou todas as portas, omita o componente por completo (ou seja, "exemplo.com" corresponde a qualquer esquema e qualquer porta). Um nome do host (no caso, "exemplo.com") também corresponde aos subdomínios dele. Para corresponder exatamente a um host e excluir os subdomínios dele, adicione um ponto antes (ou seja, ".exemplo.com"). Para corresponder a todas as origens, use um único asterisco ("*").</translation>
 <translation id="7652330587655863759">O tipo de autenticação.
 
 * 'none': nenhuma autenticação é realizada.
@@ -11755,6 +11734,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8164687848393015214">Se a política estiver definida como "Ativada", ela enviará pacotes de monitoramento de rede (<ph name="HEARTBEATS_TERM" />) para o servidor de gerenciamento. Com isso, o status de conexão é monitorado e o servidor consegue detectar se o dispositivo está off-line.
 
       Se a política for definida como "Desativada" ou não for definida, nenhum pacote será enviado.</translation>
+<translation id="8165152191100365965">Enviar métricas ao Google em dispositivos gerenciados ou permitir que o usuário decida em dispositivos não gerenciados</translation>
 <translation id="8168359201203671567">Luz de fundo em arco-íris do teclado</translation>
 <translation id="8169452762291746260">Desativar o monitoramento de integridade do dispositivo</translation>
 <translation id="8170359860920320269">Filtrar sites com conteúdo adulto</translation>
@@ -13177,6 +13157,9 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
       Se o modelo de URI tiver uma variável <ph name="HTTP_VARIABLE_DNS" />, as solicitações para o resolvedor vão usar <ph name="HTTP_METHOD_GET" />. Caso contrário, as solicitações usarão <ph name="HTTP_METHOD_POST" />.
 
       Modelos formatados incorretamente vão ser ignorados.</translation>
+<translation id="9066972193987544412">Se a política for ativada ou deixada sem definição, os usuários poderão adicionar, remover, mudar ou fazer upload de favoritos.
+
+      Se ela for desativada, os usuários não poderão adicionar, remover, mudar ou fazer upload de favoritos. Eles ainda poderão usar os favoritos já existentes.</translation>
 <translation id="9068629430243705879">porta 6566 (pode ser desbloqueada até 15/10/2021)</translation>
 <translation id="9069432851455606924">Configurações de geolocalização</translation>
 <translation id="9069503402414011061">A definição da política especifica, em horas, o ciclo de vida do armazenamento em cache dos dados de autenticação. O cache contém dados sobre realms confiáveis pelo realm da máquina (realms afiliados). Portanto, o armazenamento em cache dos dados de autenticação acelera o login. Dados específicos do usuário e dados de realms não afiliados não são armazenados em cache.
@@ -13250,6 +13233,21 @@ mas que podem ser usados como dicas para criar caminhos. Os certificados precisa
 <translation id="9122865885571719292">Controla se e como o <ph name="PRODUCT_OS_NAME" /> restaura a última sessão no login.
 Esta política só tem efeito quando a <ph name="FULL_RESTORE_ENABLED_NAME" /> está definida como verdadeira.</translation>
 <translation id="9123464369663964441">Permitir que os usuários adicionem exceções para liberar conteúdo misto</translation>
+<translation id="9123738611041078443">Define as configurações de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no <ph name="PRODUCT_NAME" />.
+
+Para configurar o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, os admins precisam fornecer:
+* O URL do aplicativo da web do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) OU
+* Os três parâmetros legados juntos: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> e <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Especificar apenas um subconjunto parcial desses três parâmetros sem um URL deixa o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sem configuração.
+
+O parâmetro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> precisa ser um URL válido que use o esquema https, aponte para um domínio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e não inclua um nome de usuário ou senha. Se não atender a esses requisitos, a política será ignorada e o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ficará sem configuração.
+
+Se o parâmetro <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> e os parâmetros legados estiverem configurados, o <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> terá precedência.
+
+Se esta política for definida, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> será configurado para os usuários que fizerem login com uma conta ou um navegador gerenciados.
+
+Se esta política for deixada sem definição, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será configurado.
+
+Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="9124770007620653639">Nunca enviar dados de confiabilidade do domínio para o Google</translation>
 <translation id="9126331659955304300">Permitir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="9126694586349976283">Permita o uso de APIs de IA integradas.</translation>
@@ -13430,6 +13428,13 @@ Para manter o comportamento atual de desativar o <ph name="AUTOFILL_CREDIT_CARD_
 Se a política for definida como verdadeira ou não for definida, os usuários poderão controlar as sugestões de preenchimento automático para cartões de crédito na IU.
 
 Se a política for definida como falsa, o preenchimento automático nunca fará sugestões ou preencherá informações de cartão de crédito nem salvará outros dados desse tipo que os usuários enviarem ao navegar na web.</translation>
+<translation id="963375545567956229">Esta política foi descontinuada e não tem efeito a partir da versão M145. Os relatórios estendidos da Navegação segura foram removidos do <ph name="PRODUCT_NAME" />. Por isso, o <ph name="PRODUCT_NAME" /> não envia mais esses relatórios, seja qual for a definição dessa política, e a configuração correspondente não é mais mostrada aos usuários.
+
+      Para que o <ph name="PRODUCT_NAME" /> envie mais informações para ajudar a melhorar a Navegação segura, ative a Proteção reforçada com a política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME" />.
+
+      Antes do M145, ativar a política habilitava os relatórios estendidos da Navegação segura do <ph name="PRODUCT_NAME" />, que enviavam algumas informações do sistema e o conteúdo da página aos servidores do Google para detectar apps e sites perigosos. Se a política fosse desativada, os relatórios nunca seriam enviados. Se a política fosse definida, os usuários não poderiam mudá-la. Se não fosse definida, os usuários poderiam decidir se enviariam relatórios ou não.
+
+      Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>

@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">ከ<ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">ገጽን አስቀምጥ እንደ…</translation>
 <translation id="2328474416100889417">ሁሉም ሰው ወዲያውኑ የ«<ph name="GROUP_NAME" />» የትር ቡድን መዳረሻን ያጣል እና ሁሉም የግብዣ አገናኞች ይጠፋሉ</translation>
-<translation id="2329500425421091035">የሰው ሠራሽ አስተውሎት ሁነታን በChrome ውስጥ በማስተዋወቅ ላይ</translation>
 <translation id="2330186936255788117">ተጨማሪ እልባቶች</translation>
 <translation id="2330243730505117832">«መሣሪያ ይምረጡ» ተዘግቷል።</translation>
 <translation id="2332515770639153015">የተሻሻለ የደህንነት አሰሳ በርቷል</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">የይለፍ ቃላትዎን መዳረሻ ለማቆየት አሁን ወደ ውጪ ይላኳቸው፣Google  Play አገልግሎቶችን ያዘምኑ ከዚያም ወደ Google የይለፍ ቃል አስተዳዳሪ ያስመጧቸው። <ph name="BEGIN_LINK" />ሙሉ መመሪያዎችን አሳይ<ph name="END_LINK" />።</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
 <translation id="3435914367318771664">ትር ወደ አዲስ ቡድን ያክሉ</translation>
-<translation id="3436118221454753036">የሰው ሠራሽ አስተውሎት ሁነታን ይጠይቁ</translation>
 <translation id="3439276997620616816">የእርስዎን የቅርብ ጊዜ ትሮች እዚህ ያገኛሉ</translation>
 <translation id="3443221991560634068">የአሁኑን ገፅ ዳግም ጫን</translation>
 <translation id="3444179773590444986">ለጣቢያዎች ጠቆር ያለ ገጽታ ላይ ግብረመልስ ይጋራ?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845"><ph name="ORIGIN" /> እርስዎ መሆንዎን እንዲያረጋግጥ ይፍቀዱ</translation>
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> ኪባ ይገኛል</translation>
-<translation id="3547933853190131743">በሰው ሠራሽ አስተውሎት ሁነታ ይፈልጉ</translation>
 <translation id="3549537543136628349">ቅድሚያ የተጫኑ ገፆች የተመሠጠሩ ስለሆኑ እና ከገፆቹ ጋር የሚያገናኘው ጣቢያ ወይም መተግበሪያ የGoogle ጣቢያ ወይም መተግበሪያ ስለሆነ እነዚህ ገፆች በግል ቅድሚያ ሲጫኑ የGoogle አገልጋዮች አዲስ መረጃ አይደርሳቸውም።</translation>
 <translation id="3549657413697417275">የራስዎን ታሪክ ይፈልጉ</translation>
 <translation id="3557336313807607643">ወደ እውቂያዎች አክል</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">የማይደገፍ የChrome አብነቶች ብዛት።</translation>
 <translation id="4890973535105146893">Google መለያዎ ውስጥ ምንም የተቀመጡ የይለፍ ቃላት የሉም</translation>
 <translation id="490375751687810070">አቀባዊ</translation>
-<translation id="4905823827770127520">ገጹ ውስጥ አገናኝ ያካትቱ</translation>
 <translation id="4910889077668685004">የክፍያ መተግበሪያዎች</translation>
 <translation id="4911042367886397055">እንኳን በደህና ተመልሰው መጡ፣ <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">ማደስ አቁም</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
 <translation id="5870416898561279542">የተባዙ ትሮች እና ቡድኖች ወይም ለ<ph name="DAYS_INACTIVE" /> ቀናት ጥቅም ላይ ያልዋሉ ወደዚህ <ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="DECLUTTER_SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
 <translation id="5885378508678660271">ማሳወቂያዎች <ph name="SEPARATOR" /> ይህ ጣቢያ አደገኛ ስለሆነ Chrome እነዚህን ፈቃዶች አስወግዷል</translation>
+<translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5896944002928653773">የድርጅት ምልክቶች የክህደት ቃል የግርጌ ሉህ ተዘግቷል</translation>
 <translation id="5899667542927581604">ምንም የይለፍ ቁልፎች ሉህ አልተዘጋም</translation>
 <translation id="5907542076239273525">ዕልባት ወደ <ph name="FOLDER_NAME" /> ተቀምጧል</translation>
@@ -1958,6 +1955,7 @@
 <translation id="860282621117673749">የዋጋ ቅነሳ ማንቂያዎች</translation>
 <translation id="8611922158252451755">አገናኙ ያለው ማንኛውም ሰው ሁሉንም ትሮች ማርትዕ ይችላሉ፣ ስለዚህ በብልሃት ያጋሩ። አገናኙ በ48 ሰዓታት ውስጥ ጊዜው ያበቃል።</translation>
 <translation id="8616006591992756292">የእርስዎ Google መለያ <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
+<translation id="8622145666696249878">የGoogle ፍለጋ ሰው ሠራሽ አስተውሎት ሁነታ እና የተገናኙ መተግበሪያዎች</translation>
 <translation id="8626572875733549102">ወደ <ph name="LANGUAGE" /> ተርጉም</translation>
 <translation id="8629093325209491835">የChrome ምናሌ &gt; ቅንብሮች ይክፈቱ</translation>
 <translation id="8634050254805484913">ጠባብ ማያ ገጾች ላይ የተደበቀ ነው</translation>
@@ -2049,7 +2047,6 @@
 <translation id="9001604755921395912">ማንነት በማያሳውቅ የChrome ትር ክፈት</translation>
 <translation id="9010094279589497751">Geminiን በሚፈልጉት ጊዜ በፍጥነት ይክፈቱት</translation>
 <translation id="9012585441087414258">አደገኛ እንደሆኑ ከሚታወቁ ጣቢያዎች፣ ውርዶች እና ቅጥያዎች ጥበቃ ያደርጋል። አንድ ገጽ አጠራጣሪ የሆነ ነገር ካደረገ የገፁ ይዘት ዩአርኤሎች እና ቢቶች ወደ የGoogle ጥንቃቄ አሰሳ ይላካሉ።</translation>
-<translation id="9014097371980259227">በሰው ሠራሽ አስተውሎት ሁነታ እንዲፈልጉ ለማገዝ አንዳንድ መሣሪያዎች ተንቀሳቅሰዋል</translation>
 <translation id="9015111999662965458">ይህ መሣሪያ ደኅንነቱ በተጠበቀ ሁኔታ ጥቅም ላይ መዋል መቻሉን ለማረጋገጥ ድርጅትዎ ስለ ሥርዓተ ክወናው፣ አሳሹ እና ቅንብሮቹ እና በመሣሪያው ላይ ምን ዓይነት ሶፍትዌር እንደተጫነ መረጃ ማየት ሊኖርበት ይችላል።</translation>
 <translation id="9019199799064251516">ያለ መኪና የመገለጫ መቆለፊያ ይቀጥላሉ?</translation>
 <translation id="9022774213089566801">በተደጋጋሚነት የተጎበኙ</translation>

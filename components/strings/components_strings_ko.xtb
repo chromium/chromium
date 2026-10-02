@@ -80,7 +80,6 @@
 <translation id="112840717907525620">정책 캐시 확인</translation>
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: 전체 화면을 종료하려면 상단에서 드래그한 후 뒤로 버튼을 터치하세요.</translation>
-<translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1138458427267715730">웹에 가격이 인하된 사이트가 있으면 알림이 전송됩니다.</translation>
 <translation id="1142713751288681188">용지 종류</translation>
 <translation id="1142965388643537393">여행 정보</translation>
@@ -282,6 +281,7 @@
 <translation id="1448166547804028941">"<ph name="DATA_CONTROLS_FIRST_KEY_SET" />" 키는 "<ph name="DATA_CONTROLS_SECOND_KEY_SET" />" 키와 같은 사전에서 설정할 수 없습니다.</translation>
 <translation id="1449251255954293933">Google 월렛에 리드레스 넘버 저장</translation>
 <translation id="1455413310270022028">지우개</translation>
+<translation id="1456749217800922313">인증 코드</translation>
 <translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{리뷰 0개 보기}=1{리뷰 1개 보기}other{리뷰 #개 보기}}</translation>
 <translation id="1460317464907341501">이 이메일을 자동으로 인증하시겠습니까?</translation>
 <translation id="1461041542809785877">성능</translation>
@@ -518,6 +518,7 @@
 <translation id="1849438148665368129">구매 금액이 <ph name="CHECKOUT_AMOUNT_MAXIMUM" /> 미만이어야 함</translation>
 <translation id="1853392626017747777">가상 카드 등록 종료됨</translation>
 <translation id="1854180393107901205">전송 중지</translation>
+<translation id="1860986945084448084">인증서 세부정보 열기</translation>
 <translation id="1863257867908022953">트레이 12</translation>
 <translation id="1863374797460198869">채팅 숨김</translation>
 <translation id="1871208020102129563">프록시가 .pac 스크립트 URL이 아닌 고정 프록시 서버를 사용하도록 설정됩니다.</translation>
@@ -534,6 +535,7 @@
 <translation id="1890171020361705182">공룡 게임입니다. 픽셀 스타일의 공룡이 선인장과 프테로사우루스를 피하며 황무지를 달려갑니다. 오디오 신호음이 들리면 탭하여 장애물을 뛰어넘으세요.</translation>
 <translation id="1898423065542865115">필터링</translation>
 <translation id="1898678876221454577">스캔한 항목을 저장하려면 로그인하세요</translation>
+<translation id="1898804291554630487">이 페이지에 대해 질문하기</translation>
 <translation id="1901443836186977402">{1,plural, =1{서버의 보안 인증서가 마지막 날 만료되어 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. 현재 컴퓨터의 시간이 <ph name="CURRENT_DATE" />로 설정되어 있습니다. 시간이 정확하지 않으면 시스템 시간을 수정하고 이 페이지를 새로고침하세요.}other{서버의 보안 인증서가 #일 전에 만료되어 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 설정이 잘못되었거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다. 현재 컴퓨터의 시간이 <ph name="CURRENT_DATE" />로 설정되어 있습니다. 시간이 정확하지 않으면 시스템 시간을 수정하고 이 페이지를 새로고침하세요.}}</translation>
 <translation id="190166348986967700"><ph name="DATE_TIME" />에 관리자가 파일을 <ph name="CLOUD_PROVIDER" />에 업로드하기 시작합니다. 파일 업로드가 완료될 때까지 기기를 연결된 상태로 유지하세요. 업로드하는 동안에는 로컬 파일을 읽는 것만 가능합니다.</translation>
 <translation id="1902576642799138955">유효성 기간</translation>
@@ -645,6 +647,7 @@
 <translation id="2096183846792489672">방문하는 페이지의 콘텐츠와 URL이 클라우드의 비공개 스페이스에서 처리될 수 있습니다.</translation>
 <translation id="209961642949927292">다음번에는 더 빠르게 결제하고 싶으신가요?</translation>
 <translation id="2099652385553570808">왼쪽 트리플 스테이플</translation>
+<translation id="210056520177407132">EU 신뢰 마크</translation>
 <translation id="2101225219012730419">버전:</translation>
 <translation id="2102134110707549001">강력한 비밀번호 추천...</translation>
 <translation id="2102495993840063010">Android 앱</translation>
@@ -1097,7 +1100,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="2858134430383535011">200x300mm</translation>
 <translation id="2859383374160668142">언제든지 추적하는 제품의 가격 인하를 확인할 수 있습니다</translation>
 <translation id="2859806420264540918">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
-<translation id="2864493683872263351">코딩, 글쓰기 또는 슬라이드 만들기</translation>
 <translation id="2873317327342476681">공룡 게임입니다. 플레이하려면 공룡을 탭하거나 스페이스바를 누르세요</translation>
 <translation id="287387905105155974">도움말 풍선</translation>
 <translation id="2875109558992200904">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지의 URL 및 제목, 데이터를 복사한 페이지의 URL, 파일 이름 또는 메타데이터, IP 주소, 브라우저 또는 탭 비정상 종료, 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
@@ -1628,6 +1630,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="3727850735097852673">Google 비밀번호 관리자를 MacOS 키체인과 함께 사용하려면 Chrome을 다시 실행한 다음 키체인 액세스를 허용하세요. 탭을 다시 실행하면 탭이 다시 열립니다.</translation>
 <translation id="3728173127485570463">Chrome 브라우저에서 비밀번호를 자동 완성하기 위해 더 이상 지문이 필요하지 않습니다.</translation>
 <translation id="3729811201279509483">수동으로 탭 추가</translation>
+<translation id="3732370487905329239">배송 예정일</translation>
 <translation id="3736564442532774454">Chrome 브라우저가 <ph name="APP_NAME" />에서 민감한 정보를 입력하려고 합니다.</translation>
 <translation id="3738166223076830879">관리자가 관리하는 브라우저입니다.</translation>
 <translation id="3739842843727261045">좋아요를 누르면 이러한 결과가 마음에 든다는 의견이 제출됩니다</translation>
@@ -1915,6 +1918,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4209092469652827314">크게</translation>
 <translation id="4210602799576081649">인증 코드가 만료되었습니다. 새 코드를 요청하세요.</translation>
 <translation id="421066178035138955">가상 현실 기기 및 데이터 사용</translation>
+<translation id="4211023027325848327">EU 적격 인증서(QWAC) 열기</translation>
 <translation id="4214357935346142455">로그인 화면 프로필</translation>
 <translation id="4218327733815631046">대략적인 위치 계속 사용</translation>
 <translation id="4219596572397833317">가격 변동 내역 등을 확인하여 더 현명하게 쇼핑하세요.</translation>
@@ -2157,6 +2161,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4610279718074907952"><ph name="SET_OWNER" />에서 정의한 그룹(내 활동을 볼 수 있음)에 속하는 사이트입니다.</translation>
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> 앱으로 <ph name="MERCHANT_ORIGIN" /> 주문을 처리하는 중에 오류가 발생했습니다.</translation>
 <translation id="4612904677925722054">이 사이트에는 미성년자 부적합 콘텐츠가 포함되어 있을 수 있습니다. 부모님 또는 보호자가 이 웹사이트 방문을 허용해야 합니다.</translation>
+<translation id="4613873770449493819">URL은 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리켜야 합니다.</translation>
 <translation id="4619564267100705184">본인 인증</translation>
 <translation id="4619669610757527494">Google 월렛에 운전면허증 저장</translation>
 <translation id="4622292761762557753">무시하고 전송</translation>
@@ -2328,6 +2333,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4886565443854420066">Chrome 브라우저에서 설정을 변경하기 전에 본인 확인을 요청합니다.</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
+<translation id="4887435305021446590">Gmail 열기</translation>
 <translation id="4887785555357166111">동영상 프레임 저장</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
 <translation id="4892391379033030113">보안 시크릿 창 열기 버튼, 새 보안 시크릿 창을 열어 비공개로 탐색하려면 활성화하세요</translation>
@@ -2366,6 +2372,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="4943620199112228840">마이크 사용</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
 <translation id="494701040141924538">확인, 알림 닫기</translation>
+<translation id="4951038790614970523">잘라내거나 클립보드에 복사한 텍스트는 분석을 위해 Google Cloud 또는 서드 파티로 전송됩니다. 예를 들어 민감한 정보를 찾기 위해 텍스트를 검사할 수 있으며, 회사 정책에 따라 보관되어 관리자가 볼 수도 있습니다.</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953689047182316270">접근성 이벤트에 응답</translation>
 <translation id="4954505713046251871">추천을 제공하고 이 기능을 개선하기 위해 페이지의 URL 및 콘텐츠가 Google과 공유됩니다</translation>
@@ -2508,6 +2515,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="5177076414499237632">이 페이지의 출처 및 주제에 대해 알아보기</translation>
 <translation id="5179490652562926740">결제 확인 설정 저장됨</translation>
 <translation id="5180662470511508940">키보드 잠금이 허용되지 않음</translation>
+<translation id="5180732217498483224"><ph name="APP_NAME" /> 소스 열기: <ph name="TITLE" /></translation>
 <translation id="5190072300954988691">카메라 및 마이크가 허용되지 않음</translation>
 <translation id="5190835502935405962">북마크바</translation>
 <translation id="5191315092027169558">내 프로필은 <ph name="DOMAIN" />에서 관리합니다</translation>
@@ -2599,6 +2607,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="533323551986281710">상거래 하단 시트가 전체 높이로 열림</translation>
 <translation id="5334013548165032829">세부 시스템 로그</translation>
 <translation id="5340250774223869109">애플리케이션이 차단됨</translation>
+<translation id="5342666539242413840">텍스트가 클립보드에 복사됨</translation>
 <translation id="5342693890921195472">분 전</translation>
 <translation id="534295439873310000">NFC 기기</translation>
 <translation id="5344579389779391559">이 페이지에서 금액을 청구할 수 있습니다.</translation>
@@ -3180,6 +3189,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="6311410654831092784">카드 용지</translation>
 <translation id="6311642842034740437">이름이 지정된 위치</translation>
 <translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
+<translation id="6313189007657889655">주문 ID</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />에 대한 파일 업로드가 일시중지되었습니다</translation>
 <translation id="63172326633386613">접근성 설정 관리</translation>
 <translation id="6319672966240656136">Google의 고급 보호 프로그램에 가입되어 있으므로 이 사이트는 차단된 상태로 유지됩니다. <ph name="BEGIN_LEARN_MORE_LINK" />이 경고에 대해 자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3418,7 +3428,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="671076103358959139">등록 토큰:</translation>
 <translation id="6711464428925977395">프록시 서버에 문제가 발생했거나 주소가 잘못되었습니다.</translation>
 <translation id="6711700233707023861">변형 문자열이 클립보드에 복사되었습니다.</translation>
-<translation id="6712003214447962889">더 스마트하고 빠른 대답</translation>
 <translation id="6712343563085762261">위로 이동했습니다</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> 비교 · 항목 <ph name="ITEMS" />개</translation>
 <translation id="6716672519412350405"><ph name="URL" />에서 주변 환경의 3D 지도를 생성하고 카메라 위치를 추적하려고 합니다.</translation>
@@ -3862,7 +3871,6 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7470854469646445678">복사 사유 입력(필수)</translation>
 <translation id="7471007961486718967">이전 사유 입력(필수)</translation>
 <translation id="7473033553872550521">사이트 소유자에게 연락하여 HTTPS로 업그레이드할 것을 제안할 수도 있습니다. <ph name="LEARN_MORE" /></translation>
-<translation id="7473555040328423550">탭 추가</translation>
 <translation id="7473891865547856676">나중에</translation>
 <translation id="7475618719385705713">페이지가 차단됨</translation>
 <translation id="7481312909269577407">앞으로</translation>
@@ -3880,6 +3888,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="7500917112031739411">그룹별로 표시</translation>
 <translation id="7501663406926337752">조직에서 신고한 사이트입니다</translation>
 <translation id="7502044688973049724">내 정보를 관리</translation>
+<translation id="7506748477220312995">추천 항목의 출처</translation>
 <translation id="7507075214339298899">봉투 #9</translation>
 <translation id="7508255263130623398">반환된 정책 기기 ID가 비었거나 현재 기기 ID와 일치하지 않음</translation>
 <translation id="7511707705708508147">지원되지 않는 통화</translation>
@@ -4241,6 +4250,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8099473231501330216">삭제를 요청</translation>
 <translation id="8103161714697287722">결제 수단</translation>
 <translation id="8103643211515685474">무시하고 인쇄</translation>
+<translation id="8104153649317588511">출처 시트 닫힘</translation>
 <translation id="8105368624971345109">사용 중지</translation>
 <translation id="810875025413331850">주변 기기를 찾을 수 없습니다.</translation>
 <translation id="8116925261070264013">음소거됨</translation>
@@ -4729,6 +4739,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>
 <translation id="9001963517402879850">점프하세요</translation>
+<translation id="9002677862950442746">인증 코드: <ph name="OTP" /></translation>
 <translation id="9003263770394939629">Gemini가 추천합니다. 설정에서 향상된 자동 완성 기능을 관리해 보세요.</translation>
 <translation id="9003639428623471314">봉투 Kahu</translation>
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
@@ -4917,6 +4928,7 @@ Chrome에서 이 추천을 삭제할 수 있습니다. 원본 소스는 삭제�
 <translation id="98237783946365638">Google 월렛에 안전하게 신분증 저장하기</translation>
 <translation id="983587187183716432"><ph name="AI_ENGINE_NAME" /> 버튼을 누른 후 Enter 키를 눌러 <ph name="AI_ENGINE_NAME" />에 질문하세요</translation>
 <translation id="984275831282074731">결제 수단</translation>
+<translation id="984950103108016064"><ph name="EMAIL" /> 제공</translation>
 <translation id="985199708454569384">&lt;p&gt;컴퓨터나 휴대기기의 날짜 및 시간이 잘못 설정되어 있는 경우 이 오류가 표시됩니다.&lt;/p&gt;
     &lt;p&gt;오류를 수정하려면 기기의 시계를 열고 날짜 및 시간이 올바른지 확인하세요.&lt;/p&gt;</translation>
 <translation id="987264212798334818">일반</translation>

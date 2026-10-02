@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">Извор: <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Сачувај страницу као…</translation>
 <translation id="2328474416100889417">Сви ће одмах изгубити приступ групи картица <ph name="GROUP_NAME" /> и сви линкови позивнице ће бити искључени</translation>
-<translation id="2329500425421091035">Представљамо AI режим у Chrome-у</translation>
 <translation id="2330186936255788117">Још обележивача</translation>
 <translation id="2330243730505117832">Опција Изаберите уређај је затворена.</translation>
 <translation id="2332515770639153015">Побољшано безбедно прегледање је укључено</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">Да бисте задржали приступ лозинкама, извезите их одмах, ажурирајте Google Play услуге, па их поново увезите у Google менаџер лозинки. <ph name="BEGIN_LINK" />Погледајте комплетна упутства<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Безбедност</translation>
 <translation id="3435914367318771664">Додај картицу у нову групу</translation>
-<translation id="3436118221454753036">Упитајте AI режим</translation>
 <translation id="3439276997620616816">Овде ћете пронаћи недавне картице</translation>
 <translation id="3443221991560634068">Поновно учитавање актуелне странице</translation>
 <translation id="3444179773590444986">Желите да делите повратне информације о тамној теми за сајтове?</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">Омогућите да <ph name="ORIGIN" /> потврди да сте то ви</translation>
 <translation id="3527085408025491307">Фолдер</translation>
 <translation id="3542235761944717775">Доступно је <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">Претражујте помоћу AI режима</translation>
 <translation id="3549537543136628349">Пошто су предучитане странице шифроване, а сајт или апликација који води до страница је Google сајт или апликација, Google сервери не добијају нове информације када приватно предучитавају те странице.</translation>
 <translation id="3549657413697417275">Претражите своју историју</translation>
 <translation id="3557336313807607643">Додај у контакте</translation>
@@ -983,7 +980,6 @@ Google налог можда има друге облике историје п�
 <translation id="4885273946141277891">Неподржан број Chrome инстанци.</translation>
 <translation id="4890973535105146893">Нема сачуваних лозинки на Google налогу</translation>
 <translation id="490375751687810070">Вертикално</translation>
-<translation id="4905823827770127520">Уврстите линк до странице</translation>
 <translation id="4910889077668685004">Апликације за плаћање</translation>
 <translation id="4911042367886397055">Добро нам дошли поново, <ph name="USER_NAME" />.</translation>
 <translation id="4913169188695071480">Заустави освежавање</translation>
@@ -1214,6 +1210,7 @@ Google налог можда има друге облике историје п�
 <translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5870416898561279542">Дуплe картицe и групe или оне које се не користе <ph name="DAYS_INACTIVE" /> дана премештају се овде<ph name="AUTODELETE_SECTION" />. То можете да промените у било ком тренутку у одељку <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Обавештења <ph name="SEPARATOR" /> Chrome је уклонио ове дозволе јер је овај сајт опасан</translation>
+<translation id="5895138241574237353">Покрени поново</translation>
 <translation id="5896944002928653773">Затворена је доња табела са одрицањем одговорности за сигнале предузећа</translation>
 <translation id="5899667542927581604">Ниједна табела са приступним кључевима није затворена</translation>
 <translation id="5907542076239273525">Обележивач је сачуван у фолдеру <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Google налог можда има друге облике историје п�
 <translation id="7630202231528827509">URL добављача</translation>
 <translation id="7638584964844754484">Неисправна приступна фраза</translation>
 <translation id="764047009170754705">Омогућавање Chrome проналазака је затворено</translation>
+<translation id="7645712301713737707">Прилагодите распоред картица тако да се приказују у врху или са стране прегледача.</translation>
 <translation id="7646499124171960488">Упозорава вас на небезбедне јавне сајтове</translation>
 <translation id="7655240423373329753">последњих 7 дана</translation>
 <translation id="7656721520530864426">Нема сајтова</translation>
@@ -1957,6 +1955,7 @@ Google налог можда има друге облике историје п�
 <translation id="860282621117673749">Обавештења о снижењима</translation>
 <translation id="8611922158252451755">Свако са линком може да мења све картице, па пазите шта делите. Линк истиче за 48 сати.</translation>
 <translation id="8616006591992756292">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">AI режим Google претраге и повезане апликације</translation>
 <translation id="8626572875733549102">Преведи на: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Отворите Chrome мени &gt; Подешавања</translation>
 <translation id="8634050254805484913">Скривена на уским екранима</translation>
@@ -2048,7 +2047,6 @@ Google налог можда има друге облике историје п�
 <translation id="9001604755921395912">Chrome картица без архивирања</translation>
 <translation id="9010094279589497751">Брзо отворите Gemini када вам затреба</translation>
 <translation id="9012585441087414258">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Ако страница уради нешто сумњиво, URL-ови и делови садржаја странице се шаљу у Google безбедно прегледање.</translation>
-<translation id="9014097371980259227">Неке алатке смо преместили да бисте лакше претраживали помоћу AI режима</translation>
 <translation id="9015111999662965458">Да би се уверила да овај уређај може безбедно да се користи, организација ће можда морати да види информације о оперативном систему, прегледачу и подешавањима, као и о софтверу који је инсталиран на уређају</translation>
 <translation id="9019199799064251516">Желите да наставите без закључавања профила за аутомобил?</translation>
 <translation id="9022774213089566801">Често посећивано</translation>

@@ -42,6 +42,7 @@
 <translation id="141901961143729572">Lass uns wissen, was du denkst</translation>
 <translation id="1465192221147974788">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1478370723027452770">Hilfe zu Chrome for Testing</translation>
+<translation id="147870194906295621">Wenn du auf deine gespeicherten Informationen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="1497802159252041924">Installationsfehler: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Diese Seite ist geschützt</translation>
 <translation id="1524282610922162960">Chromium-Tab freigeben</translation>
@@ -189,6 +190,7 @@
 <translation id="3012615494352020668">{count,plural, =1{Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten (1 Element) gelöscht.}other{Chromium muss deine Identität bestätigen, damit einige Daten in deinem Google-Konto gespeichert und auf allen deinen Geräten verwendet werden können. Wenn du dich jetzt abmeldest, werden diese Daten ({count} Elemente) gelöscht.}}</translation>
 <translation id="3013473503895162900"><ph name="URL" /> in einem neuen Tab in Chromium öffnen.</translation>
 <translation id="302551344979399011">KI-Innovationen wie Skills werden in deinem Google-Konto gespeichert und getrennt von der Chromium-Synchronisierung verwaltet</translation>
+<translation id="3032219013429286568">Wenn du auf allen deinen Geräten auf deine Erweiterungen und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3032787606318309379">Wird zu Chromium hinzugefügt...</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
 <translation id="3045032126857188731">Übersetzte Sprache: <ph name="LANGUAGE" /></translation>
@@ -199,6 +201,7 @@
 <translation id="3068515742935458733">Absturzberichte und <ph name="UMA_LINK" /> zur Verbesserung von Chromium an Google senden</translation>
 <translation id="3071024987058544609">Mit der Chromium App wirst du unterwegs bestmöglich von Google geschützt</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Auf 1 USB-Gerät wurde von mindestens einer Chromium-Erweiterung zugegriffen}=1{Auf 1 USB-Gerät wird von mindestens einer Chromium-Erweiterung zugegriffen}other{Auf # USB-Geräte wird von mindestens einer Chromium-Erweiterung zugegriffen}}</translation>
+<translation id="3090734884397229414">Wenn du auf deine Leseliste und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3095811995836568724">Chromium-Verlauf</translation>
 <translation id="3103660991484857065">Das Installationsprogramm konnte das Archiv nicht dekomprimieren. Bitte lade Chromium erneut herunter.</translation>
 <translation id="310459126943037700">Die Aufgabe(n) konnte(n) nicht beendet werden.</translation>
@@ -220,6 +223,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Mit Chromium für iOS kannst du deine bevorzugten KI-Tools von Google überall nutzen.</translation>
+<translation id="3264761466044851269">Wenn du auf deine Erweiterungen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3286538390144397061">Jetzt neu starten</translation>
 <translation id="328888136576916638">Google API-Schlüssel fehlen. Einige Funktionen von Chromium sind deaktiviert.</translation>
 <translation id="3296368748942286671">Apps weiter im Hintergrund ausführen, wenn Chromium geschlossen wird</translation>
@@ -231,6 +235,7 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Zu bestehendem Chromium-Profil wechseln?</translation>
 <translation id="3412460710772753638">Im Passwortmanager auf diesem Gerät</translation>
+<translation id="3427159664004296878">Wenn du auf deine Lesezeichen und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3438772217992559640">Diesen Tab mit der Bildersuche durchsuchen</translation>
 <translation id="3455907671758333080">Erweitertes Safe Browsing mit Chromium auf deinem Smartphone nutzen</translation>
 <translation id="3461644266919055473">Chromium personalisieren…</translation>
@@ -263,6 +268,7 @@
 
           **Fragen vorschlagen:** Erstelle eine Aufzählungsliste mit 3–5 Fragen, die ein Nutzer stellen könnte, um den Screenshot besser zu verstehen. Mindestens eine der Fragen sollte sich konkret auf ein visuelles Objekt, sein Design oder seine Platzierung beziehen.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">Wenn du auf allen deinen Geräten auf deine Lesezeichen und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3885770153807205175">Sprachauswahl</translation>
 <translation id="388648406173476553">Du kannst Chromium anpassen und Einstellungen festlegen. Etwas erfordert deine Aufmerksamkeit – klicke hier, um mehr zu erfahren.</translation>
 <translation id="3889543394854987837">Klicke auf deinen Namen, um Chromium zu öffnen und im Web zu surfen.</translation>
@@ -271,6 +277,7 @@
 <translation id="3909353120217047026">Diese Erweiterung verstößt gegen die Chrome Web Store-Richtlinien und ist möglicherweise nicht sicher. Entferne sie aus Chromium, damit sie deine Daten auf von dir besuchten Websites nicht mehr abrufen oder ändern kann, auch nicht deine personenbezogenen Daten.</translation>
 <translation id="3941890832296813527">Installationsfehler: Der Dateiname des Installationsprogramms ist ungültig oder wird nicht unterstützt.</translation>
 <translation id="3945058413678539331">Chromium versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
+<translation id="3950481960271781644">Wenn du auf allen deinen Geräten auf deine gespeicherten Informationen und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="3954172517175569325">Deine Passwörter, Zahlungsmethoden und Adressen, die du in deinem Google-Konto gespeichert hast, werden von diesem Gerät entfernt. Wenn du sie in Zukunft in Chromium verwenden möchtest, melde dich einfach wieder an.</translation>
 <translation id="395904275706073188">Geschützte Seiten können nicht gelesen werden. Versuche es mit einer anderen Seite.</translation>
 <translation id="3962647064319009959">So trägt Chromium zu deinem Schutz bei</translation>
@@ -359,6 +366,7 @@
 <translation id="4893347770495441059">Neu starten, um &amp;Chromium zu aktualisieren</translation>
 <translation id="4918086044614829423">Annehmen</translation>
 <translation id="4918844574251943176">Bild kopiert</translation>
+<translation id="4919431996536326528">Wenn du auf allen deinen Geräten auf deine Leseliste und andere Daten zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="4943838377383847465">Chromium wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="494490797786467921">Klicken, um Dialogfeld zur Anmeldung in Chromium zu schließen</translation>
 <translation id="4950660488495335294">Mit Chromium-Profilen kannst du Chromium-Inhalte voneinander trennen. Du kannst Profile für Freunde und Familie erstellen oder Inhalte in Arbeit und Freizeit einteilen.</translation>
@@ -369,6 +377,7 @@
 <translation id="5074496654342756568">Mit Chromium auf deinem <ph name="DEVICE_TYPE" /> kannst du auf alle deine Google-Favoriten zugreifen</translation>
 <translation id="5123973130450702873">Chromium benötigt eine Berechtigung für das Handtracking</translation>
 <translation id="5141988424377517949">Du hast diese Website in letzter Zeit nicht besucht. Chromium hat „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ und „<ph name="PERMISSION_3" />“ entfernt.</translation>
+<translation id="5171868502429358653">In Chromium anmelden</translation>
 <translation id="5174969993834422967">Normalerweise blockierst du Benachrichtigungen. Wenn du von dieser Website Benachrichtigungen erhalten möchtest, klicke auf das Benachrichtigungssymbol in der rechten Ecke der Adressleiste.</translation>
 <translation id="5174983315706567306">Nicht genügend Speicherplatz.</translation>
 <translation id="5187123684706427865">Chromium-Konto muss noch einmal authentifiziert werden</translation>
@@ -789,6 +798,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="904366664621834601">Chromium hat diesen Download blockiert, weil die Archivdatei weitere Dateien enthält, die möglicherweise Malware verbergen</translation>
 <translation id="9053882453960391422">Passwörter, Lesezeichen und Verlauf werden auf allen Geräten synchronisiert. Wenn du deinen Standardbrowser auf Chromium aktualisierst, kannst du ganz einfach auf die vertrauten Funktionen zugreifen. Chromium wird für den Schnellzugriff an die Taskleiste angepinnt.</translation>
 <translation id="9056398481763999048">Mit der Chromium App auf deinem Smartphone die besten KI-Tools von Google nutzen</translation>
+<translation id="9057625473949801035">Wenn du auf deine Passwörter und andere Daten von <ph name="DEVICE" /> zugreifen möchtest, melde dich in Chromium an</translation>
 <translation id="9062666675513499497">In Chromium anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="9078733879136747090">Chromium wurde automatisch geschlossen</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>

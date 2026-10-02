@@ -329,7 +329,6 @@
 <translation id="2327445548174191329">จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">บันทึกหน้าเป็น…</translation>
 <translation id="2328474416100889417">ทุกคนจะเสียสิทธิ์เข้าถึงกลุ่มแท็บ "<ph name="GROUP_NAME" />" ทันที และระบบจะปิดลิงก์คำเชิญทั้งหมด</translation>
-<translation id="2329500425421091035">ขอแนะนำโหมด AI ใน Chrome</translation>
 <translation id="2330186936255788117">บุ๊กมาร์กเพิ่มเติม</translation>
 <translation id="2330243730505117832">"เลือกอุปกรณ์" ปิดอยู่</translation>
 <translation id="2332515770639153015">Google Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นเปิดอยู่</translation>
@@ -602,7 +601,6 @@
 <translation id="3435575784518354875">หากต้องการเข้าถึงรหัสผ่านต่อไป ให้ส่งออกรหัสผ่านตอนนี้ อัปเดตบริการ Google Play แล้วนำเข้ากลับไปยังเครื่องมือจัดการรหัสผ่านบน Google <ph name="BEGIN_LINK" />ดูวิธีการโดยละเอียด<ph name="END_LINK" /></translation>
 <translation id="3435738964857648380">ความปลอดภัย</translation>
 <translation id="3435914367318771664">เพิ่มแท็บไปยังกลุ่มใหม่</translation>
-<translation id="3436118221454753036">ถามโหมด AI</translation>
 <translation id="3439276997620616816">คุณจะเห็นแท็บล่าสุดที่นี่</translation>
 <translation id="3443221991560634068">โหลดหน้าปัจจุบันอีกครั้ง</translation>
 <translation id="3444179773590444986">ต้องการแชร์ความคิดเห็นเกี่ยวกับธีมมืดสำหรับเว็บไซต์ไหม</translation>
@@ -629,7 +627,6 @@
 <translation id="3524334353996115845">ให้ <ph name="ORIGIN" /> ยืนยันตัวตนของคุณ</translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3542235761944717775">ใช้ได้ <ph name="KILOBYTES" /> KB</translation>
-<translation id="3547933853190131743">ค้นหาด้วยโหมด AI</translation>
 <translation id="3549537543136628349">เซิร์ฟเวอร์ของ Google จะไม่ได้รับข้อมูลใหม่เมื่อโหลดหน้าเว็บล่วงหน้าแบบส่วนตัว เนื่องจากหน้าเว็บที่โหลดล่วงหน้าจะได้รับการเข้ารหัส และเว็บไซต์หรือแอปที่ลิงก์ไปยังหน้าดังกล่าวเป็นเว็บไซต์หรือแอป Google</translation>
 <translation id="3549657413697417275">ค้นหาประวัติการเข้าชม</translation>
 <translation id="3557336313807607643">เพิ่มในรายชื่อติดต่อ</translation>
@@ -983,7 +980,6 @@
 <translation id="4885273946141277891">อินสแตนซ์ของ Chrome เกินจำนวนที่สนับสนุน</translation>
 <translation id="4890973535105146893">ไม่มีรหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="490375751687810070">แนวตั้ง</translation>
-<translation id="4905823827770127520">ใส่ลิงก์ลงในหน้า</translation>
 <translation id="4910889077668685004">แอปชำระเงิน</translation>
 <translation id="4911042367886397055">ยินดีต้อนรับกลับมา คุณ <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">หยุดรีเฟรช</translation>
@@ -1214,6 +1210,7 @@
 <translation id="5869522115854928033">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="5870416898561279542">แท็บและกลุ่มที่ซ้ำกันหรือไม่ได้ใช้งานเป็นเวลา <ph name="DAYS_INACTIVE" /> วันจะย้ายมาที่นี่<ph name="AUTODELETE_SECTION" /> คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อใน<ph name="DECLUTTER_SETTINGS_TITLE" /></translation>
 <translation id="5885378508678660271">การแจ้งเตือน <ph name="SEPARATOR" /> Chrome นำสิทธิ์เหล่านี้ออกเนื่องจากเว็บไซต์นี้อันตราย</translation>
+<translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="5896944002928653773">Bottom Sheet ข้อจำกัดความรับผิดเกี่ยวกับสัญญาณ Enterprise ปิดอยู่</translation>
 <translation id="5899667542927581604">ไม่ได้ปิดชีตพาสคีย์ใดๆ</translation>
 <translation id="5907542076239273525">บันทึกบุ๊กมาร์กไปยัง <ph name="FOLDER_NAME" /> แล้ว</translation>
@@ -1958,6 +1955,7 @@
 <translation id="860282621117673749">การแจ้งเตือนการลดราคา</translation>
 <translation id="8611922158252451755">ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดแชร์อย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชั่วโมง</translation>
 <translation id="8616006591992756292">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="8622145666696249878">โหมด AI ของ Google Search และแอปที่เชื่อมต่อ</translation>
 <translation id="8626572875733549102">แปลเป็นภาษา<ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">เปิดเมนู Chrome &gt; การตั้งค่า</translation>
 <translation id="8634050254805484913">ซ่อนในหน้าจอแคบ</translation>
@@ -2049,7 +2047,6 @@
 <translation id="9001604755921395912">เปิดในแท็บที่ไม่ระบุตัวตนของ Chrome</translation>
 <translation id="9010094279589497751">เปิด Gemini ได้อย่างรวดเร็วเมื่อต้องการ</translation>
 <translation id="9012585441087414258">ปกป้องจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่ทราบแล้วว่าเป็นอันตราย หากหน้าเว็บทำสิ่งที่น่าสงสัย ระบบจะส่ง URL และเนื้อหาของหน้าเว็บบางส่วนไปยัง Google Safe Browsing</translation>
-<translation id="9014097371980259227">เครื่องมือบางอย่างย้ายไปเพื่อช่วยให้คุณค้นหาด้วยโหมด AI ได้</translation>
 <translation id="9015111999662965458">องค์กรของคุณอาจต้องดูข้อมูลเกี่ยวกับระบบปฏิบัติการ เบราว์เซอร์ การตั้งค่า รวมทั้งซอฟต์แวร์ที่ติดตั้งในอุปกรณ์เพื่อให้ใช้อุปกรณ์นี้ได้อย่างปลอดภัย</translation>
 <translation id="9019199799064251516">ดำเนินการต่อโดยไม่ล็อกโปรไฟล์รถยนต์ใช่ไหม</translation>
 <translation id="9022774213089566801">เข้าชมบ่อย</translation>

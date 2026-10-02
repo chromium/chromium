@@ -348,7 +348,6 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="8390323835464055390">Usa Chromium para autocompletar os contrasinais e as claves de acceso gardadas e iniciar sesión en calquera aplicación</translation>
 <translation id="8409374867500149834">Contas coa máxima seguranza de Chromium contra sitios web daniños</translation>
 <translation id="8428449554948979733">Ocultar Usar Chromium como navegador predeterminado</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minuto. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}other{Isto ocorre cando Chromium non se utiliza durante {THRESHOLD} minutos. Eliminaranse os datos que se garden só neste dispositivo mentres teñas a sesión inciada. Esta información pode incluír contrasinais e datos do historial.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8602103377623855616">Páxina de Chromium</translation>
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>

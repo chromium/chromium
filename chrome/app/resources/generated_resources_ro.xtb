@@ -986,7 +986,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1755601632425835748">Dimensiunea textului</translation>
 <translation id="1756963401828337401">Alege un ecran de capturat</translation>
 <translation id="17584710573359123">Vezi în Magazinul web Chrome</translation>
-<translation id="1758845021884209593">Folosește comanda rapidă în aplicațiile sistemului de operare</translation>
 <translation id="1761402971842586829"><ph name="BUTTON_NAME" /> a fost remapat la<ph name="REMAPPING_OPTION" />.</translation>
 <translation id="1761845175367251960">Conturile utilizatorului <ph name="NAME" /></translation>
 <translation id="176272781006230109">sugestii pentru cumpărături</translation>
@@ -1559,7 +1558,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2198625180564913276">Se adaugă profilul. Poate dura câteva minute.</translation>
 <translation id="2198712775285959645">Editează</translation>
 <translation id="2199298570273670671">Eroare</translation>
-<translation id="220006241671843310">Alege dacă dorești ca browserul Chrome să folosească modele AI care rulează direct pe dispozitivul tău</translation>
+<translation id="2199546617947317537">Pentru a accesa istoricul de pe celelalte dispozitive, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2200094388063410062">E-mail</translation>
 <translation id="2200781749203116929">Jurnale de sistem ChromeOS</translation>
 <translation id="2202391868799679245">Activează comanda rapidă de la tastatură</translation>
@@ -2076,6 +2075,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2599048253926156421">Numele de utilizator a fost copiat în clipboard</translation>
 <translation id="2600631204638174747">{NUM_SITES,plural, =1{Ai dezactivat o extensie nesigură}few{Ai dezactivat {NUM_SITES} extensii nesigure}other{Ai dezactivat {NUM_SITES} de extensii nesigure}}</translation>
 <translation id="2603121359676416582">Pentru această pagină</translation>
+<translation id="2603656971249947488">Bară de file</translation>
 <translation id="2604129989323098489">Site-urile solicită de obicei informații despre ecranele tale, astfel încât să poată deschide și plasa ferestre în mod inteligent, cum ar fi afișând alăturat documente sau conținut pe ecran complet</translation>
 <translation id="2604255671529671813">Eroare de conectare la rețea</translation>
 <translation id="2604805099836652105">Formularul pentru adresa <ph name="ADDRESS_LABEL" /> a fost completat.</translation>
@@ -2287,6 +2287,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="274362947316498129">O aplicație încearcă să acceseze <ph name="DEVICE_NAME" />. Dezactivează comutatorul de confidențialitate <ph name="DEVICE_NAME" /> pentru a permite accesul.</translation>
 <translation id="2744221223678373668">Comune</translation>
+<translation id="2744919074068076548">Deschide afișarea împărțită</translation>
 <translation id="2745080116229976798">Subordonare calificată Microsoft</translation>
 <translation id="2749756011735116528">Conectează-te la <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
@@ -2338,6 +2339,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2777525873368474674">Inserează linkul imagine</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Am găsit un site cu multe notificări}few{Am găsit {NUM_SITES} site-uri cu multe notificări}other{Am găsit {NUM_SITES} de site-uri cu multe notificări}}</translation>
 <translation id="2778471504622896352">Adaugă aplicații la distanță în lansatorul sistemului de operare Chrome</translation>
+<translation id="2781037472881921606">Pentru a accesa istoricul de pe alte dispozitive, sincronizează istoricul. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Folosește cheia de securitate cu <ph name="APP_NAME" /></translation>
@@ -2400,6 +2402,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2826576843404243001">Pentru site-urile care nu acceptă conexiuni securizate, primești un avertisment înainte să le accesezi. Nu poți schimba această setare deoarece ai activată Protecția avansată.</translation>
 <translation id="2828375943530438449">Înapoi de la Conectează-te</translation>
 <translation id="2828833307884755422">Memorie eliberată: <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2833144527504272627">Navighează folosind cursorul pentru text</translation>
 <translation id="2833727845850279275">Acest fișier conține programe malware sau provine de pe un site suspect.</translation>
 <translation id="2835177225987815960">Configurația actuală de scanare va fi resetată, inclusiv comutatoarele atribuite și setările pentru viteza de scanare automată.</translation>
@@ -2766,6 +2769,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3102309003841389927">Examinează actualizarea siglei</translation>
 <translation id="310297983047869047">Slide-ul anterior</translation>
 <translation id="3103451787721578293">Introdu un motiv pentru încărcarea acestor date:</translation>
+<translation id="3105253709809514429">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3105339775057145050">Ultima actualizare nereușită</translation>
 <translation id="3105796011181310544">Revii la Google?</translation>
 <translation id="3105820656234755131">Parola s-a actualizat</translation>
@@ -2777,6 +2781,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3109206895301430738">Grupuri de file salvate</translation>
 <translation id="3109724472072898302">Restrâns</translation>
 <translation id="3112292765614504292">Dimensiunea aplicației: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="311347022006935575">A adăugat această filă</translation>
 <translation id="311394601889664316">Nu permite site-urilor să modifice fișierele sau dosarele de pe dispozitiv</translation>
 <translation id="3113970906450647715">S-a anulat fixarea butonului</translation>
@@ -3283,6 +3288,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3498138244916757538">Modificarea setării pentru microfon necesită închiderea <ph name="SPECIFIC_NAME" />. Închide <ph name="SPECIFIC_NAME" /> pentru a continua.</translation>
 <translation id="3500417806337761827">Eroare la montarea dispozitivului de stocare în rețea. Au fost conectate deja prea multe dispozitive de stocare în rețea SMB.</translation>
 <translation id="3500764001796099683">Activează aplicațiile web izolate</translation>
+<translation id="3501134531169168291">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3505100368357440862">Sugestii pentru cumpărături</translation>
 <translation id="3507650052590605702">Gestionează parola</translation>
 <translation id="3507888235492474624">Caută din nou dispozitive Bluetooth</translation>
@@ -3359,6 +3365,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3562655211539199254">Vezi filele Chrome recente de pe telefon</translation>
 <translation id="356268274299520831">Modific-o pe site</translation>
 <translation id="3563392617245068355">Stare de spirit</translation>
+<translation id="3564327838471533677">Afișare împărțită închisă recent</translation>
 <translation id="3564456410937306182">Află mai multe despre Încărcarea adaptativă.</translation>
 <translation id="3564659095423213915">Dosarul se salvează numai pe acest dispozitiv. Dacă îl salvezi în <ph name="ACCOUNT_FOLDER" />, dosarul se va salva și în contul tău.</translation>
 <translation id="3564848315152754834">Cheie de securitate USB</translation>
@@ -3770,6 +3777,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3838085852053358637">Extensia nu s-a încărcat</translation>
 <translation id="3838486795898716504">Mai multe <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Nu s-a mărit sau micșorat niciun site</translation>
+<translation id="3839108710633244251">Pentru a accesa istoricul de pe celelalte dispozitive, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3839516600093027468">Blochează întotdeauna accesul <ph name="HOST" /> la clipboard</translation>
 <translation id="3840096463915153852">Istoricul conversației</translation>
 <translation id="3841319830220785495">Voce naturală prestabilită</translation>
@@ -4262,7 +4270,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4241140145060464825">Conținutul aplicațiilor</translation>
 <translation id="4241224519481557898">Categorie</translation>
 <translation id="4242245038391716252">Descărcat de extensia: &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
-<translation id="4242344119782070019">Acum poți extinde filele dacă plasezi cursorul peste ele. Pentru a activa opțiunea, dă clic dreapta aici.</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="4242825475818569385"><ph name="BEGIN_LINK" />Browserul și profilul tău sunt gestionate<ph name="END_LINK" /> de <ph name="DOMAIN" /></translation>
 <translation id="424315890655130736">Introdu expresia de acces</translation>
@@ -4293,6 +4300,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Păstrează grupul}few{Păstrează grupurile}other{Păstrează grupurile}}</translation>
 <translation id="4261429981378979799">Permisiuni pentru extensii</translation>
 <translation id="4262004481148703251">Respinge avertismentul</translation>
+<translation id="4262060800239714974">Pentru a accesa filele de pe <ph name="DEVICE" />, sincronizează istoricul și filele cu <ph name="EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4263470758446311292">Fă economii maxime de memorie. Filele devin inactive după o perioadă mai scurtă.</translation>
 <translation id="4263824086525632">Aurora boreală</translation>
 <translation id="4265096510956307240">Confirmă-ți identitatea</translation>
@@ -4426,7 +4434,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4360738659108163902">Dă clic dreapta pe mouse</translation>
 <translation id="4361745360460842907">Deschideți ca filă</translation>
 <translation id="4362459470237309049">Folosește „.” pentru a elibera un buton al mouse-ului</translation>
-<translation id="4362871358537270439">Afișează filele de pe alte dispozitive în panoul lateral</translation>
 <translation id="4363262124589131906">Fișierele noi din Contul meu Drive nu se vor mai sincroniza automat cu acest Chromebook</translation>
 <translation id="4364129298304269786">Site-urile pot folosi un serviciu pentru protejarea conținutului pentru a reda conținut protejat prin drepturi de autor</translation>
 <translation id="4364327530094270451">Pepene galben</translation>
@@ -4929,8 +4936,10 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4750185073185658673">Examinează alte câteva permisiuni pe telefon. Asigură-te că funcțiile Bluetooth și Wi-Fi ale telefonului sunt activate.</translation>
 <translation id="4750394297954878236">Sugestii</translation>
 <translation id="475088594373173692">Primul utilizator</translation>
+<translation id="4751925628341802838">Pentru a accesa istoricul de pe celelalte dispozitive, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4753084533826742808">Trebuie să aibă cel puțin un caracter</translation>
 <translation id="4754590344707355551">Îmbunătățește-ți browserul cu extensii</translation>
+<translation id="4756130875344525429">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4756378406049221019">Oprește/Reîncarcă</translation>
 <translation id="4756388243121344051">&amp;Istoric</translation>
 <translation id="4756627014339714615">Redirecționează</translation>
@@ -5160,6 +5169,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4913573660390710463">Accesează aplicații web în pachet cu funcții îmbunătățite. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Datele aplicației nu au fost găsite</translation>
 <translation id="4915961947098019832">Au permisiunea de a afișa imagini</translation>
+<translation id="4916140032692201190">&amp;Tradu textul selectat</translation>
 <translation id="4918021164741308375"><ph name="ORIGIN" /> dorește să comunice cu extensia „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="4918086044614829423">Acceptă</translation>
 <translation id="4918762404810341788">Copiază și deschide</translation>
@@ -5241,6 +5251,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="497403230787583386">S-au finalizat verificările de securitate. Documentul va fi printat.</translation>
 <translation id="4974442344472293753">Actualizează rezultatul</translation>
 <translation id="4975771730019223894">Marcarea cu insignă a aplicațiilor</translation>
+<translation id="4976647810464861866">Pentru a accesa filele de pe alte dispozitive, conectează-te și sincronizează istoricul. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmați accesul</translation>
 <translation id="4979263087381759787">Opțiuni pentru dezvoltatori</translation>
@@ -5413,6 +5424,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="511313294362309725">Activează Fast Pair</translation>
 <translation id="5113992879909788634">Află mai multe despre navigarea automată în Chrome</translation>
 <translation id="51143538739122961">Introdu cheia de securitate și atinge-o</translation>
+<translation id="5114635223409082546">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Sal&amp;vează conținutul audio ca...</translation>
 <translation id="5117139026559873716">Deconectează telefonul de la <ph name="DEVICE_TYPE" />. Nu se va mai conecta automat.</translation>
@@ -5809,6 +5821,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5436211819997237281">Extensia actuală care gestionează pagina Filă nouă</translation>
 <translation id="5436492226391861498">Se așteaptă tunelul proxy...</translation>
 <translation id="5436510242972373446">Caută <ph name="SITE_NAME" />:</translation>
+<translation id="5437406591808823366">Pentru a completa automat și a salva parolele pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="5438014818441491616">Fereastra <ph name="WINDOW_SIDE" /> are acum o lățime de <ph name="WINDOW_SIZE_PERCENT" />; panoul <ph name="PANE_SIDE" /> acum are o lățime de <ph name="PANE_SIZE_PERCENT" />.</translation>
 <translation id="5438060324827306856">Găsește &amp;extensii</translation>
 <translation id="5440240650630588012">Aplică o linie sau o fereastră de citire pentru a te ajuta să te concentrezi. Apasă pe ⌥L sau accesează Setările.</translation>
@@ -5838,6 +5851,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5457795687441958389">Nu doresc să mă conectez</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Ai introdus un cod PIN greșit de prea multe ori. Pentru a accesa cheile de acces și parolele, schimbă codul PIN.</translation>
+<translation id="5459251585760045919">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa extensiile și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5459470938885464873">Eroare la importarea certificatului</translation>
 <translation id="5459864179070366255">Continuă instalarea</translation>
 <translation id="5460861858595506978">Inspirație</translation>
@@ -6009,6 +6023,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Salvezi numele de utilizator?</translation>
 <translation id="5585019845078534178">Carduri</translation>
+<translation id="5585064628683466904">Pentru a accesa istoricul de pe celelalte dispozitive, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="5585118885427931890">Nu se poate crea un dosar pentru marcaje.</translation>
 <translation id="558563010977877295">Deschide o anumită pagină sau un set de pagini</translation>
 <translation id="5587592231724900065">O extensie controlează această setare</translation>
@@ -6220,7 +6235,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5776571780337000608">Poți să deschizi și să editezi fișierele acceptate în această aplicație din browserul de fișiere sau din alte aplicații. Pentru a alege fișierele care deschid aplicația în mod prestabilit, <ph name="BEGIN_LINK" />află cum să setezi aplicații prestabilite pe dispozitiv<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Deschide Chrome</translation>
 <translation id="5778491106820461378">Poți să gestionezi Conturile Google conectate din <ph name="LINK_BEGIN" />Setări<ph name="LINK_END" />. Permisiunile pe care le-ai acordat site-urilor și aplicațiilor se pot aplica tuturor conturilor. Dacă nu vrei ca site-urile sau aplicațiile să îți acceseze informațiile contului, poți să te conectezi pe <ph name="DEVICE_TYPE" /> ca invitat.</translation>
-<translation id="5779636902585836564">&amp;Tradu</translation>
 <translation id="5780011244986845107">Dosarul pe care l-ai selectat conține fișiere cu informații sensibile. Sigur dorești să permiți accesul de scriere permanent pentru „<ph name="APP_NAME" />” la acest dosar?</translation>
 <translation id="5780973441651030252">Prioritatea procesului</translation>
 <translation id="5781120434102258025">Mută datele din contul școlar în contul personal</translation>
@@ -6747,6 +6761,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6175910054050815932">Obține linkul</translation>
 <translation id="6177478397823976397">Nu s-au găsit dispozitive. Deschide un articol din centrul de ajutor într-o filă nouă.</translation>
 <translation id="6177779807714496775">Deschide linkul în afișarea din stânga</translation>
+<translation id="6178186430790239237">Pentru a accesa filele de pe celelalte dispozitive, sincronizează istoricul și filele cu <ph name="EMAIL" />. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="6178664161104547336">Selectează un certificat</translation>
 <translation id="6178682841350631965">Datele de conectare au fost actualizate</translation>
 <translation id="6179830757749383456">Browser gestionat de <ph name="BROWSER_DOMAIN" />, profil gestionat de <ph name="PROFILE_DOMAIN" /></translation>
@@ -6876,6 +6891,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6273677812470008672">Calitate</translation>
 <translation id="6274089201566806618">Se conectează la <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">Înregistrare de pe ecran</translation>
+<translation id="6276246115230302286">Pentru a accesa rapid site-urile preferate folosind marcajele de pe toate dispozitivele, conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">Conectarea la rețea a expirat</translation>
 <translation id="6277518330158259200">F&amp;aceți o captură de ecran</translation>
 <translation id="6278428485366576908">Temă</translation>
@@ -7057,6 +7073,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6430202563517028640">Adaugă linkul în Lista de lecturi</translation>
 <translation id="6430814529589430811">ASCII codificat Base64, certificat unic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configura actualizările automate pentru toți utilizatorii acestui computer.</translation>
+<translation id="6431970976661940755">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="6434104957329207050">Viteza de scanare punctuală</translation>
 <translation id="6434309073475700221">Renunță</translation>
 <translation id="6434755719322447931">Haotic</translation>
@@ -7221,6 +7238,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6556903358015358733">Temă și imagine de fundal</translation>
 <translation id="6557199166823345360">Adaugă mai multe detalii sau pune o întrebare despre selecție pentru a rafina căutarea</translation>
 <translation id="6557290421156335491">Comenzile mele rapide</translation>
+<translation id="655745275895381718">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa informațiile salvate și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="6558098963164662391">&amp;Elimină din dicționar</translation>
 <translation id="6560061709899140565">Afișează alte sesiuni de proiectare</translation>
 <translation id="656065428026159829">Vezi mai multe</translation>
@@ -7297,6 +7315,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6607831829715835317">Mai multe instru&amp;mente</translation>
 <translation id="6608166463665411119">Resetează eSIM-ul</translation>
 <translation id="660846213831377756">Tastele mouse-ului</translation>
+<translation id="6608725880745776452">Accesează-ți parolele și alte date de pe <ph name="DEVICE" /></translation>
 <translation id="6609478180749378879">Datele de conectare vor fi stocate pe acest dispozitiv după ce ieși din modul incognito. Vei putea să te reconectezi la site folosind dispozitivul.</translation>
 <translation id="6610002944194042868">Opțiuni de traducere</translation>
 <translation id="6611432349566876829"><ph name="NUM" /> filă</translation>
@@ -7910,6 +7929,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{O parolă importată în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}few{{NUM_PASSWORDS} parole importate în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} de parole importate în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Despre sistem</translation>
 <translation id="706626672220389329">Eroare la montarea dispozitivului de stocare în rețea. Dispozitivul indicat este deja montat.</translation>
+<translation id="7066357648902789011">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7067396782363924830">Culori ambientale</translation>
 <translation id="7067725467529581407">Nu mai afișa niciodată acest mesaj.</translation>
 <translation id="7068539819344620805">Acum îi poți oferi browserului un nou aspect oricând din meniul Personalizează Chrome</translation>
@@ -8059,7 +8079,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7188508872042490670">Date privind site-urile pe dispozitiv</translation>
 <translation id="7188755083797868960">Deschide mai rapid modul de lectură cu o comandă rapidă. Apasă pe Alt + Shift + R pentru a comuta modul de lectură.</translation>
 <translation id="7189234443051076392">Asigură-te că există spațiu suficient pe dispozitiv</translation>
-<translation id="7189558282078169397">File de pe alte dispozitive</translation>
 <translation id="7189965711416741966">Amprentă adăugată.</translation>
 <translation id="7190921792980745354">Blochezi pe <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="7191063546666816478">Unele linkuri acceptate se vor deschide în continuare în <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" /> și alte <ph name="NUMBER_OF_OTHER_APPS" /> aplicații.</translation>
@@ -8095,6 +8114,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7214047272988222011">Se permite – <ph name="PERMISSION_DETAILS" />. Activează <ph name="LINK_BEGIN" />accesul la camera foto a sistemului<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Filă nouă într-o filă}few{Filă nouă în # file}other{Filă nouă în # de file}}</translation>
 <translation id="721490496276866468">Importă parole</translation>
+<translation id="7216638029417040861">Pentru a accesa istoricul de pe celelalte dispozitive, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7217208603285112910">Selecția nu este în <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Adaugă text, comentarii și note cu noul instrument Adnotări pentru text</translation>
 <translation id="7219254577985949841">Ștergi datele privind site-ul?</translation>
@@ -8105,6 +8125,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7222232353993864120">Adresa de e-mail</translation>
 <translation id="7222335051802562841">Finalizează actualizarea</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa lista de lecturi și alte date de pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7223027547122518521">Selectează un fișier pe care îl poate citi acest site</translation>
 <translation id="7223952304612664117">Astfel, serviciile de sistem pot să folosească Precizia locației pentru a-ți determina locația. Precizia locației folosește informații despre semnalele și senzorii wireless pentru a estima locația dispozitivului.</translation>
 <translation id="7225082563376899794">Folosește Windows Hello la completarea parolelor</translation>
@@ -8475,6 +8496,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7501957181231305652">sau</translation>
 <translation id="7502220299952823578">Adaugă în lista Menține întotdeauna active aceste site-uri</translation>
 <translation id="7502528909759062987">Întrerupe proiectarea filei pe <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">Revino la Gemini</translation>
 <translation id="7502804472671406749">Se poate derula și face zoom în filele la care s-a permis accesul</translation>
 <translation id="750314150962284310">Focalizare pe rând</translation>
 <translation id="7503191893372251637">Tip de certificat Netscape</translation>
@@ -8716,6 +8738,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7684718995427157417">Pentru a crea și testa aplicații, activează Android Debug Bridge (ADB). Reține că această acțiune permite instalarea aplicațiilor Android care nu au fost verificate de Google și pentru dezactivarea instrumentului este necesară revenirea la setările din fabrică.</translation>
 <translation id="7684803937028953000">Organizația ta a blocat descărcarea locală a acestui fișier.</translation>
 <translation id="7684913007876670600">Pentru a vedea o afișare simplificată a acestei pagini, deschide panoul lateral și selectează modul de lectură</translation>
+<translation id="7684957383619170952">Accesează marcajele și alte date de pe <ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">Nu se poate proiecta</translation>
 <translation id="7685049629764448582">Memorie JavaScript</translation>
 <translation id="7685087414635069102">PIN necesar</translation>
@@ -8993,6 +9016,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Anulează configurarea</translation>
 <translation id="7912974581251770345">Traducere</translation>
+<translation id="7913805372428124107">Pentru a accesa filele de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul. În plus, vei putea accesa parolele și multe altele pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7914399737746719723">Aplicație instalată</translation>
 <translation id="7915457674565721553">Conectează-te la internet pentru a configura controlul parental</translation>
 <translation id="7916364730877325865">Organizația nu îți permite să activezi sincronizarea cu acest cont</translation>
@@ -9274,6 +9298,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="810362914482827094">Caută chei de acces</translation>
 <translation id="8104088837833760645">Descarcă profilul eSIM</translation>
 <translation id="8104388155778519213">Permite accesul la conținutul de pe ecran cu Google Lens</translation>
+<translation id="8104412594956510627">Pentru a accesa istoricul de pe <ph name="DEVICE" />, sincronizează istoricul. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="8104778744208707085">Ia măsuri!</translation>
 <translation id="8105273883928376822">Conectează-te pentru a continua.</translation>
 <translation id="8106114112474206597">Folosește tasta „i” pentru a apăsa un buton al mouse-ului</translation>
@@ -9304,6 +9329,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8124313775439841391">Proprietăți ONC gestionate</translation>
 <translation id="8125651784723647184">Permiterea accesului la parolă este gestionată de administrator</translation>
 <translation id="8126355825906412872">Zâmbește</translation>
+<translation id="8126498026310640675">Pentru a accesa istoricul de pe <ph name="DEVICE" />, conectează-te și sincronizează istoricul și filele cu <ph name="EMAIL" />. În plus, vei putea accesa marcajele și alte date pe toate dispozitivele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8133297578569873332">Acceptabilă – FM</translation>
@@ -9755,6 +9781,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8477241577829954800">Depășit</translation>
 <translation id="8477384620836102176">&amp;General</translation>
 <translation id="8477446666255316832">Conectează-te mai rapid data viitoare</translation>
+<translation id="8477548388161793571">&amp;Tradu textul selectat</translation>
 <translation id="8478346767369317046">Serviciu</translation>
 <translation id="8479176401914456949">Cod nevalid. Încearcă din nou.</translation>
 <translation id="8480869669560681089">Dispozitiv necunoscut de la <ph name="VENDOR_NAME" /></translation>

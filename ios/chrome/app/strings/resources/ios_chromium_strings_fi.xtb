@@ -348,7 +348,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8390323835464055390">Kirjaudu sisään minka tahansa sovelluksen tallennetuilla salasanoilla ja avainkoodeilla käyttämällä Chromiumia automaattiseen täyttöön</translation>
 <translation id="8409374867500149834">Käytössäsi on Chromiumin vahvin suojaus haitallisia verkkosivustoja vastaan</translation>
 <translation id="8428449554948979733">Piilota "Käytä Chromiumia oletuksena"</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}other{Näin käy, kun Chromiumia ei ole käytetty {THRESHOLD} minuuttiin. Data, joka on tallennettu vain tälle laitteelle ollessasi kirjautuneena sisään, poistetaan. Tämä koskee esimerkiksi historiaa ja salasanoja.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8602103377623855616">Chromium-sivu</translation>
 <translation id="865600487977764604">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>

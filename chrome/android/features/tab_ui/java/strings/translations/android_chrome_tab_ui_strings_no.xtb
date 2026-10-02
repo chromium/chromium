@@ -114,6 +114,7 @@
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{Oppdatert for <ph name="NUM_DAYS_ONE" /> dag siden}other{Oppdatert for <ph name="NUM_DAYS_MANY" /> dager siden}}</translation>
 <translation id="4496868141611329150">Flytt fanegruppen til venstre</translation>
 <translation id="4653140634010630594">{TAB_COUNT,plural, =1{Kutt lyden for nettstedet}other{Kutt lyden for nettstedene}}</translation>
+<translation id="4657810666108475055">Fanesøk</translation>
 <translation id="4686942373615810936">Opprettet nå nettopp</translation>
 <translation id="4783638485675352219">Del titlene og nettadressene til åpne faner på denne enheten med operativsystemet</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> anmeldelse)}other{(<ph name="REVIEWS_COUNT_MANY" /> anmeldelser)}}</translation>

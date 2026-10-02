@@ -348,7 +348,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8390323835464055390">Accede con tus contraseñas y llaves de acceso guardadas desde cualquier app con Autocompletar en Chromium</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="8428449554948979733">Ocultar Usar Chromium como navegador predeterminado</translation>
-<translation id="8543509361021925846">{THRESHOLD,plural, =1{Esto sucede cuando no usas Chromium durante {THRESHOLD} minuto. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}other{Esto sucede cuando no usas Chromium durante {THRESHOLD} minutos. Se borrarán los datos que se guardaron solo en este dispositivo mientras tenías acceso. Esto puede incluir el historial y las contraseñas.}}</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8602103377623855616">Página de Chromium</translation>
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>

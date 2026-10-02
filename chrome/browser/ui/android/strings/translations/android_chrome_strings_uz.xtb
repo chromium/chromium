@@ -329,7 +329,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="2327445548174191329"><ph name="DEVICE_NAME" /> orqali</translation>
 <translation id="232757965409810352">Sahifani saqlash…</translation>
 <translation id="2328474416100889417">“<ph name="GROUP_NAME" />” varaqlar guruhi hammada ishlamay qoladi va barcha taklif havolalar oʻchiriladi</translation>
-<translation id="2329500425421091035">Chromeda AI rejimi bilan tanishing</translation>
 <translation id="2330186936255788117">Yana bukmarklar</translation>
 <translation id="2330243730505117832">“Qurilma tanlash” paneli yopildi.</translation>
 <translation id="2332515770639153015">Saytlarni kuchaytirilgan rejimda xavfsiz kezish rejimi yoniq</translation>
@@ -602,7 +601,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3435575784518354875">Parollardan foydalanishda davom etish uchun ularni hoziroq eksport qilib, Googel Play xizmatlarini yangilang va Google Parollar meneriga qayta import qiling. <ph name="BEGIN_LINK" />Toʻliq koʻrsatmalar<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Xavfsizlik</translation>
 <translation id="3435914367318771664">Varaqni yangi guruhga kiritish</translation>
-<translation id="3436118221454753036">AI rejimida soʻrash</translation>
 <translation id="3439276997620616816">Oxirgi ochilgan varaqlar shu yerda chiqadi</translation>
 <translation id="3443221991560634068">Joriy sahifani qayta yuklash</translation>
 <translation id="3444179773590444986">Saytlar uchun tungi mavzuda oid fikr-mulohaza yuborilsinmi?</translation>
@@ -629,7 +627,6 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3524334353996115845"><ph name="ORIGIN" /> shaxsingizni tasdiqlasin</translation>
 <translation id="3527085408025491307">Jild</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB bo‘sh</translation>
-<translation id="3547933853190131743">AI rejimida qidirish</translation>
 <translation id="3549537543136628349">Oldindan yuklanadigan sahifalar shifrlangani va sahifalarga ulovchi sayt yoki ilova Google sayti yoki ilovasi boʻlgani bois, bunday sahifalar maxfiy tarzda oldindan yuklansa, Google serverlari yangi maʼlumotlarni qabul qila olmaydi.</translation>
 <translation id="3549657413697417275">Tarix ichidan qidirish</translation>
 <translation id="3557336313807607643">Kontaktlarga saqlash</translation>
@@ -983,7 +980,6 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4885273946141277891">Bir nechta Chrome versiyalari birdaniga ishlamaydi.</translation>
 <translation id="4890973535105146893">Google hisobida parollar saqlanmagan</translation>
 <translation id="490375751687810070">Vertikal</translation>
-<translation id="4905823827770127520">Sahifaga havolani kiriting</translation>
 <translation id="4910889077668685004">To‘lov ilovalari</translation>
 <translation id="4911042367886397055">Qaytganingizdan mamnunmiz, <ph name="USER_NAME" /></translation>
 <translation id="4913169188695071480">Yangilanishni to‘xtatish</translation>
@@ -1214,6 +1210,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
 <translation id="5870416898561279542">Takroriy varaqlar va guruhlar yoki <ph name="DAYS_INACTIVE" /> kun ishlatilmagan varaqlar shu yerga olinadi<ph name="AUTODELETE_SECTION" />. Buni istalgan vaqtda <ph name="DECLUTTER_SETTINGS_TITLE" /> orqali oʻzgartirish mumkin.</translation>
 <translation id="5885378508678660271">Bildirishnomalar <ph name="SEPARATOR" /> Chrome bu saytni xavfli deb hisoblab, mazkur ruxsatlarni olib tashladi</translation>
+<translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5896944002928653773">Korporativ signallar boʻyicha ogohlantirish quyi ekrani yopildi</translation>
 <translation id="5899667542927581604">Hech qanday kirish kaliti jadvali yopilmadi</translation>
 <translation id="5907542076239273525">Bukmark “<ph name="FOLDER_NAME" />” jildiga saqlandi</translation>
@@ -1958,6 +1955,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="860282621117673749">Narx tushishi signallari</translation>
 <translation id="8611922158252451755">Havolaga ega har kim barcha varaqlarni tahrirlashi mumkin, diqqat bilan ulashing. Havola muddati: 48 soat.</translation>
 <translation id="8616006591992756292">Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali ko‘rishingiz mumkin.</translation>
+<translation id="8622145666696249878">Google Qidiruv AI rejimi va ulanadigan ilovalar</translation>
 <translation id="8626572875733549102">Bu tilga tarjima qilish: <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Chrome menyusi &gt; Sozlamalar ruknini oching</translation>
 <translation id="8634050254805484913">Tor ekranlarda chiqmaydi</translation>
@@ -2049,7 +2047,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="9001604755921395912">Chrome Inkognito varaqda ochish</translation>
 <translation id="9010094279589497751">Kerak boʻlganda Geminini tezda oching</translation>
 <translation id="9012585441087414258">Xavfli ekanligi maʼlum boʻlgan saytlar, yuklanmalar va kengaytmalardan himoya qiladi. Agar sahifa shubhali biror ish qilsa, URL manzillari va sahifa kontentining bitlari Google Saytlarni xavfsiz kezish xizmatiga yuboriladi.</translation>
-<translation id="9014097371980259227">AI rejimida qidirishga yordam berish uchun ayrim vositalar koʻchirildi</translation>
 <translation id="9015111999662965458">Qurilmadan foydalanish xavfsizligini taʼminlash muhim. Buning uchun tashkilotingiz operatsion tizim, brauzer, sozlamalar va bu qurilmada oʻrnatilgan dasturiy taʼminot haqidagi axborotga kirishni talab qilishi mumkin.</translation>
 <translation id="9019199799064251516">Avtomobil profil qulfisiz davom etasizmi?</translation>
 <translation id="9022774213089566801">Eng koʻp ochilgan</translation>

@@ -329,7 +329,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="2327445548174191329">Vanaf <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Stoor bladsy as …</translation>
 <translation id="2328474416100889417">Almal sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en alle uitnodigingskakels sal afgeskakel word</translation>
-<translation id="2329500425421091035">Bekendstelling van KI-modus in Chrome</translation>
 <translation id="2330186936255788117">Meer boekmerke</translation>
 <translation id="2330243730505117832">“Kies ’n toestel” is toegemaak.</translation>
 <translation id="2332515770639153015">Verbeterde Veiligblaai is aan</translation>
@@ -602,7 +601,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3435575784518354875">Om toegang tot jou wagwoorde te behou, moet jy hulle nou uitvoer, Google Play Dienste opdateer, en hulle dan weer na Google Wagwoordbestuurder invoer. <ph name="BEGIN_LINK" />Sien volledige instruksies<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
 <translation id="3435914367318771664">Voeg oortjie by nuwe groep</translation>
-<translation id="3436118221454753036">Vra KI-modus</translation>
 <translation id="3439276997620616816">Jy sal jou onlangse oortjies hier kry</translation>
 <translation id="3443221991560634068">Herlaai die huidige bladsy</translation>
 <translation id="3444179773590444986">Deel terugvoer oor donkertema vir werwe?</translation>
@@ -629,7 +627,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3524334353996115845">Laat <ph name="ORIGIN" /> verifieer dat dit jy is</translation>
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB beskikbaar</translation>
-<translation id="3547933853190131743">Soek met KI-modus</translation>
 <translation id="3549537543136628349">Google-bedieners ontvang nie nuwe inligting wanneer hierdie bladsye privaat vooraf gelaai word nie omdat die voorafgelaaide bladsye geënkripteer is en die werf of app wat na die bladsye skakel 'n Google-werf of -app is.</translation>
 <translation id="3549657413697417275">Deursoek jou geskiedenis</translation>
 <translation id="3557336313807607643">Voeg by kontakte</translation>
@@ -983,7 +980,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4885273946141277891">Ongesteunde aantal Chrome-gevalle.</translation>
 <translation id="4890973535105146893">Geen gestoorde wagwoorde in jou Google-rekening nie</translation>
 <translation id="490375751687810070">Vertikaal</translation>
-<translation id="4905823827770127520">Sluit 'n skakel na die bladsy toe in</translation>
 <translation id="4910889077668685004">Betalingprogramme</translation>
 <translation id="4911042367886397055">Welkom terug, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Hou op herlaai</translation>
@@ -1214,6 +1210,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
 <translation id="5870416898561279542">Duplikaatoortjies en -groepe of dié wat vir <ph name="DAYS_INACTIVE" /> dae nie gebruik is nie, word hierheen geskuif<ph name="AUTODELETE_SECTION" />. Jy kan dit enige tyd in <ph name="DECLUTTER_SETTINGS_TITLE" /> verander.</translation>
 <translation id="5885378508678660271">Kennisgewings <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder want die werf is gevaarlik</translation>
+<translation id="5895138241574237353">Herbegin</translation>
 <translation id="5896944002928653773">Enterprise-seinevrywaring se onderste blad is toegemaak</translation>
 <translation id="5899667542927581604">Geen toegangsleutelblad is toegemaak nie</translation>
 <translation id="5907542076239273525">Boekmerk gestoor in <ph name="FOLDER_NAME" /></translation>
@@ -1958,6 +1955,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="860282621117673749">Opletberigte oor prysverlagings</translation>
 <translation id="8611922158252451755">Enigiemand met die skakel kan alle oortjies wysig, so deel verstandig. Skakel verval oor 48 uur.</translation>
 <translation id="8616006591992756292">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
+<translation id="8622145666696249878">Google Search KI-modus en gekoppelde apps</translation>
 <translation id="8626572875733549102">Vertaal in <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Maak Chrome-kieslys &gt; Instellings oop</translation>
 <translation id="8634050254805484913">Word versteek op klein skerms</translation>
@@ -2049,7 +2047,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="9001604755921395912">Maak in Incognito Chrome-oortjie oop</translation>
 <translation id="9010094279589497751">Maak Gemini vinnig oop wanneer jy dit nodig het</translation>
 <translation id="9012585441087414258">Beskerm teen webwerwe, aflaaie en uitbreidings wat bekend is daarvoor dat hulle gevaarlik is. As ’n bladsy iets verdag doen, word URL’e en stukkies van die bladsyinhoud na Google Veiligblaai toe gestuur.</translation>
-<translation id="9014097371980259227">Sommige nutsgoed het geskuif om jou te help om met KI-modus te soek</translation>
 <translation id="9015111999662965458">Om te verseker dat hierdie toestel veilig gebruik kan word, kan dit nodig wees dat jou organisasie inligting moet sien oor sy bedryfstelsel, blaaier en instellings, en watter sagteware op die toestel geïnstalleer is</translation>
 <translation id="9019199799064251516">Gaan voort sonder ’n motorprofielsluitt?</translation>
 <translation id="9022774213089566801">Gereeld besoek</translation>

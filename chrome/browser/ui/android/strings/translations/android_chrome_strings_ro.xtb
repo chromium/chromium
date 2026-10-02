@@ -329,7 +329,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2327445548174191329">Din <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">Salvează pagina ca…</translation>
 <translation id="2328474416100889417">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și toate linkurile de invitație vor fi dezactivate</translation>
-<translation id="2329500425421091035">Îți prezentăm Modul AI în Chrome</translation>
 <translation id="2330186936255788117">Mai multe marcaje</translation>
 <translation id="2330243730505117832">Opțiunea Alege un dispozitiv este închisă.</translation>
 <translation id="2332515770639153015">Navigarea sigură îmbunătățită este activată</translation>
@@ -602,7 +601,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Securitate</translation>
 <translation id="3435914367318771664">Adaugă fila într-un grup nou</translation>
-<translation id="3436118221454753036">Întreabă Modul AI</translation>
 <translation id="3439276997620616816">Aici vei vedea filele recente</translation>
 <translation id="3443221991560634068">Reîncarcă pagina curentă</translation>
 <translation id="3444179773590444986">Trimiți feedback despre tema întunecată pentru site-uri?</translation>
@@ -629,7 +627,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3524334353996115845">Permite ca <ph name="ORIGIN" /> să-ți verifice identitatea</translation>
 <translation id="3527085408025491307">Dosar</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB disponibili</translation>
-<translation id="3547933853190131743">Caută cu Modul AI</translation>
 <translation id="3549537543136628349">Întrucât paginile preîncărcate sunt criptate, iar site-ul sau aplicația conectată la pagini este un site sau o aplicație Google, serverele Google nu primesc informații noi la preîncărcarea în mod privat a acestor pagini.</translation>
 <translation id="3549657413697417275">Caută în istoricul tău</translation>
 <translation id="3557336313807607643">Adaugă în Agendă</translation>
@@ -983,7 +980,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4885273946141277891">Număr de instanțe Chrome neacceptat.</translation>
 <translation id="4890973535105146893">Nu există parole salvate în Contul Google</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Include un link către pagină</translation>
 <translation id="4910889077668685004">Aplicații pentru plăți</translation>
 <translation id="4911042367886397055">Bine ai revenit, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Oprește actualizarea</translation>
@@ -1214,6 +1210,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5869522115854928033">Parole salvate</translation>
 <translation id="5870416898561279542">Filele și grupurile dublură sau cele nefolosite timp de <ph name="DAYS_INACTIVE" /> zile sunt mutate aici<ph name="AUTODELETE_SECTION" />. Poți modifica oricând opțiunea din <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Notificări <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece site-ul este periculos</translation>
+<translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5896944002928653773">Foaia din partea de jos cu clauza de declinare a responsabilității privind semnalele de companie este închisă</translation>
 <translation id="5899667542927581604">Nu s-a închis nicio foaie cu chei de acces</translation>
 <translation id="5907542076239273525">Marcajul s-a salvat în <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7630202231528827509">Adresa URL a furnizorului</translation>
 <translation id="7638584964844754484">Expresie de acces incorectă</translation>
 <translation id="764047009170754705">Opțiunea de activare pentru Chrome Finds este închisă</translation>
+<translation id="7645712301713737707">Personalizează aspectul filelor, astfel încât să apară în partea de sus sau în partea laterală a browserului.</translation>
 <translation id="7646499124171960488">Te avertizează cu privire la site-urile publice nesigure</translation>
 <translation id="7655240423373329753">ultimele 7 zile</translation>
 <translation id="7656721520530864426">Niciun site</translation>
@@ -1957,6 +1955,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="860282621117673749">Alerte privind scăderile de preț</translation>
 <translation id="8611922158252451755">Oricine are linkul poate edita toate filele, prin urmare trimite-l cu atenție. Linkul expiră în 48 de ore.</translation>
 <translation id="8616006591992756292">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Modul AI din Căutarea Google și aplicațiile conectate</translation>
 <translation id="8626572875733549102">Tradu în <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Deschide Meniul Chrome &gt; Setări</translation>
 <translation id="8634050254805484913">Ascuns pe ecrane înguste</translation>
@@ -2048,7 +2047,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="9001604755921395912">Deschide într-o filă Chrome incognito</translation>
 <translation id="9010094279589497751">Deschide rapid Gemini când ai nevoie</translation>
 <translation id="9012585441087414258">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Dacă o pagină face ceva suspect, adresele URL și fragmente din conținutul paginii sunt trimise la Navigarea sigură Google.</translation>
-<translation id="9014097371980259227">Unele instrumente s-au mutat pentru a te ajuta să cauți cu Modul AI</translation>
 <translation id="9015111999662965458">Pentru a se asigura că dispozitivul poate fi folosit în siguranță, organizația ta poate avea nevoie de informații despre sistemul de operare, browser, setări, precum și despre software-ul instalat pe dispozitiv</translation>
 <translation id="9019199799064251516">Continui fără o blocare a profilului pentru mașină?</translation>
 <translation id="9022774213089566801">Accesate frecvent</translation>

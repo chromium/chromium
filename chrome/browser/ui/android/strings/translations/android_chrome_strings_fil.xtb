@@ -329,7 +329,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2327445548174191329">Mula sa <ph name="DEVICE_NAME" /></translation>
 <translation id="232757965409810352">I-save ang page bilang…</translation>
 <translation id="2328474416100889417">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />,” at mao-off ang lahat ng link ng imbitasyon</translation>
-<translation id="2329500425421091035">Ipinapakilala ang AI Mode sa Chrome</translation>
 <translation id="2330186936255788117">Higit pang bookmark</translation>
 <translation id="2330243730505117832">Isinara ang "Pumili ng device."</translation>
 <translation id="2332515770639153015">Naka-on ang Pinahusay na Ligtas na Pag-browse</translation>
@@ -602,7 +601,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3435575784518354875">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito, i-update ang Mga Serbisyo ng Google Play, at pagkatapos ay i-import ulit ang mga ito sa Google Password Manager. <ph name="BEGIN_LINK" />Tingnan ang mga kumpletong tagubilin<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3435914367318771664">Magdagdag ng tab sa bagong grupo</translation>
-<translation id="3436118221454753036">Ask AI Mode</translation>
 <translation id="3439276997620616816">Makikita mo rito ang iyong mga kamakailang tab</translation>
 <translation id="3443221991560634068">I-reload ang kasalukuyang page</translation>
 <translation id="3444179773590444986">Magbahagi ng feedback sa madilim na tema para sa mga site?</translation>
@@ -629,7 +627,6 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3524334353996115845">Hayaan ang <ph name="ORIGIN" /> na patunayang ikaw ito</translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3542235761944717775"><ph name="KILOBYTES" /> KB ang available</translation>
-<translation id="3547933853190131743">Maghanap gamit ang AI Mode</translation>
 <translation id="3549537543136628349">Dahil naka-encrypt ang mga na-preload na page, at ang site o app na nagli-link sa mga page ay site o app ng Google, hindi nakakatanggap ng bagong impormasyon ang mga server ng Google kapag pribadong pini-preload ang mga page na ito.</translation>
 <translation id="3549657413697417275">Hanapin sa iyong history</translation>
 <translation id="3557336313807607643">Idagdag sa mga contact</translation>
@@ -983,7 +980,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4885273946141277891">Hindi sinusuportahang bilang ng mga instance ng Chrome.</translation>
 <translation id="4890973535105146893">Walang naka-save na password sa iyong Google Account</translation>
 <translation id="490375751687810070">Vertical</translation>
-<translation id="4905823827770127520">Magsama ng link sa page</translation>
 <translation id="4910889077668685004">Mga app sa pagbabayad</translation>
 <translation id="4911042367886397055">Maligayang pagbabalik, <ph name="USER_NAME" />!</translation>
 <translation id="4913169188695071480">Ihinto ang pag-refresh</translation>
@@ -1214,6 +1210,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5870416898561279542">Ililipat dito ang mga duplicate na tab at grupo o ang mga hindi ginamit sa loob ng <ph name="DAYS_INACTIVE" /> (na) araw<ph name="AUTODELETE_SECTION" />. Puwede mo itong baguhin anumang oras sa <ph name="DECLUTTER_SETTINGS_TITLE" />.</translation>
 <translation id="5885378508678660271">Mga Notification <ph name="SEPARATOR" /> Inalis ng Chrome ang mga pahintulot na ito dahil mapanganib ang site na ito</translation>
+<translation id="5895138241574237353">I-restart</translation>
 <translation id="5896944002928653773">Isinara ang bottom sheet ng disclaimer ng mga signal ng enterprise</translation>
 <translation id="5899667542927581604">Isinara ang sheet na walang passkey</translation>
 <translation id="5907542076239273525">Na-save ang bookmark sa <ph name="FOLDER_NAME" /></translation>
@@ -1696,6 +1693,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
 <translation id="764047009170754705">Nakasara ang pag-opt in sa mga nahanap ng Chrome</translation>
+<translation id="7645712301713737707">I-customize ang layout ng iyong tab para lumabas sa itaas o sa gilid ng browser mo.</translation>
 <translation id="7646499124171960488">Binabalaan ka para sa mga hindi secure na pampublikong site</translation>
 <translation id="7655240423373329753">nakaraang 7 araw</translation>
 <translation id="7656721520530864426">Walang site</translation>
@@ -1957,6 +1955,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="860282621117673749">Mga alerto sa pagbaba ng presyo</translation>
 <translation id="8611922158252451755">Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pag-share. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="8616006591992756292">Maaaring may iba pang anyo ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="8622145666696249878">Google Search AI Mode at mga nakakonektang app</translation>
 <translation id="8626572875733549102">Isalin sa <ph name="LANGUAGE" /></translation>
 <translation id="8629093325209491835">Buksan ang menu ng Chrome &gt; Mga Setting</translation>
 <translation id="8634050254805484913">Naka-hide sa maliliit na screen</translation>
@@ -2048,7 +2047,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9001604755921395912">Buksan sa Incognito Chrome tab</translation>
 <translation id="9010094279589497751">Mabilis na buksan ang Gemini kapag kailangan mo ito</translation>
 <translation id="9012585441087414258">Nagpoprotekta laban sa mga site, download, at extension na kilalang mapanganib. Kung may kahina-hinalang ginagawa ang isang page, ipinapadala sa Ligtas na Pag-browse sa Google ang mga URL at bit ng content ng page.</translation>
-<translation id="9014097371980259227">Inilipat ang ilang tool para tulungan kang maghanap gamit ang AI Mode</translation>
 <translation id="9015111999662965458">Para matiyak na magagamit nang ligtas ang device na ito, posibleng kailanganing tingnan ng iyong organisasyon ang impormasyon tungkol sa operating system, browser, mga setting nito, at kung anong software ang naka-install sa device</translation>
 <translation id="9019199799064251516">Magpatuloy nang walang lock ng profile ng kotse?</translation>
 <translation id="9022774213089566801">Madalas na binibisita</translation>
