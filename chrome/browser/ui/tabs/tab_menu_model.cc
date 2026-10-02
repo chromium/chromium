@@ -552,10 +552,8 @@ void TabMenuModel::Build(int index) {
   }
 
   const bool display_read_later = tab_strip_->delegate()->SupportsReadLater();
-  const std::optional<send_tab_to_self::EntryPointDisplayReason>
-      send_tab_to_self_reason = send_tab_to_self::GetEntryPointDisplayReason(
-          tab_strip_->GetWebContentsAt(index));
-  const bool display_send_to_self = send_tab_to_self_reason.has_value();
+  const bool display_send_to_self = send_tab_to_self::ShouldDisplayEntryPoint(
+      tab_strip_->GetWebContentsAt(index));
 
   if ((display_read_later || display_send_to_self) && !glic_displayed) {
     AddSeparator(ui::NORMAL_SEPARATOR);

@@ -4729,13 +4729,11 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
                               ? params_.link_url
                               : embedder_web_contents_->GetLastCommittedURL();
 
-  // Only returns nullopt when unshareable (e.g., incognito, invalid scheme,
-  // policy disabled). Signed-out or zero-device states still return a valid
-  // display reason (`kOfferSignIn` or `kInformNoTargetDevice`) to show promos.
-  std::optional<send_tab_to_self::EntryPointDisplayReason> display_reason =
-      send_tab_to_self::GetEntryPointDisplayReason(embedder_web_contents_,
-                                                   target_url);
-  if (!display_reason.has_value()) {
+  // Only returns false when unshareable (e.g., incognito, invalid scheme,
+  // policy disabled). Signed-out or zero-device states still return true
+  // (`kOfferSignIn` or `kInformNoTargetDevice`) to show promos.
+  if (!send_tab_to_self::ShouldDisplayEntryPoint(embedder_web_contents_,
+                                                 target_url)) {
     return;
   }
 
