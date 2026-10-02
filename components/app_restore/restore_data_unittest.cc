@@ -71,10 +71,6 @@ constexpr int32_t kDeskId2 = 2;
 constexpr int32_t kDeskId3 =
     aura::client::kWindowWorkspaceVisibleOnAllWorkspaces;
 
-const base::Uuid kDeskGuid1 = base::Uuid::GenerateRandomV4();
-const base::Uuid kDeskGuid2 = base::Uuid::GenerateRandomV4();
-const base::Uuid kDeskGuid3 = base::Uuid();
-
 constexpr gfx::Rect kCurrentBounds1(11, 21, 111, 121);
 constexpr gfx::Rect kCurrentBounds2(31, 41, 131, 141);
 constexpr gfx::Rect kCurrentBounds3(51, 61, 151, 161);
@@ -190,7 +186,7 @@ class RestoreDataTest : public testing::Test {
     WindowInfo window_info1;
     window_info1.activation_index = kActivationIndex1;
     window_info1.desk_id = kDeskId1;
-    window_info1.desk_guid = kDeskGuid1;
+    window_info1.desk_guid = desk_guid1_;
     window_info1.current_bounds = kCurrentBounds1;
     window_info1.window_state_type = kWindowStateType1;
     window_info1.display_id = kDisplayId2;
@@ -202,7 +198,7 @@ class RestoreDataTest : public testing::Test {
     WindowInfo window_info2;
     window_info2.activation_index = kActivationIndex2;
     window_info2.desk_id = kDeskId2;
-    window_info2.desk_guid = kDeskGuid2;
+    window_info2.desk_guid = desk_guid2_;
     window_info2.current_bounds = kCurrentBounds2;
     window_info2.window_state_type = kWindowStateType2;
     window_info2.pre_minimized_show_state_type = kPreMinimizedWindowStateType2;
@@ -214,7 +210,7 @@ class RestoreDataTest : public testing::Test {
     WindowInfo window_info3;
     window_info3.activation_index = kActivationIndex3;
     window_info3.desk_id = kDeskId3;
-    window_info3.desk_guid = kDeskGuid3;
+    window_info3.desk_guid = desk_guid3_;
     window_info3.current_bounds = kCurrentBounds3;
     window_info3.window_state_type = kWindowStateType3;
     window_info3.snap_percentage = kSnapPercentage;
@@ -358,7 +354,7 @@ class RestoreDataTest : public testing::Test {
         std::vector<base::FilePath>{base::FilePath(kFilePath1),
                                     base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionSend, kMimeType, kShareText1), kAppTypeBrower1,
-        kActivationIndex1, kFirstNonPinnedTabIndex, kDeskId1, kDeskGuid1,
+        kActivationIndex1, kFirstNonPinnedTabIndex, kDeskId1, desk_guid1_,
         kCurrentBounds1, kWindowStateType1, kPreMinimizedWindowStateType1,
         /*snap_percentage=*/0, kMaxSize1, kMinSize1, std::u16string(kTitle1),
         kBoundsInRoot1, kPrimaryColor1, kStatusBarColor1,
@@ -374,7 +370,7 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath2)},
         MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
-        kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kDeskGuid2,
+        kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, desk_guid2_,
         kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
         /*snap_percentage=*/0, std::nullopt, kMinSize2, std::u16string(kTitle2),
         kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2,
@@ -393,7 +389,7 @@ class RestoreDataTest : public testing::Test {
         WindowOpenDisposition::NEW_POPUP, kDisplayId1,
         std::vector<base::FilePath>{base::FilePath(kFilePath1)},
         MakeIntent(kIntentActionView, kMimeType, kShareText1), kAppTypeBrower3,
-        kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3, kDeskGuid3,
+        kActivationIndex3, kFirstNonPinnedTabIndex, kDeskId3, desk_guid3_,
         kCurrentBounds3, kWindowStateType3, kPreMinimizedWindowStateType3,
         kSnapPercentage, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
         0, 0,
@@ -410,6 +406,11 @@ class RestoreDataTest : public testing::Test {
       const RestoreData& restore_data) const {
     return restore_data.app_id_to_launch_list();
   }
+
+ protected:
+  const base::Uuid desk_guid1_ = base::Uuid::GenerateRandomV4();
+  const base::Uuid desk_guid2_ = base::Uuid::GenerateRandomV4();
+  const base::Uuid desk_guid3_;
 
  private:
   RestoreData restore_data_;
@@ -457,7 +458,7 @@ TEST_F(RestoreDataTest, ModifyWindowId) {
       WindowOpenDisposition::NEW_FOREGROUND_TAB, kDisplayId1,
       std::vector<base::FilePath>{base::FilePath(kFilePath2)},
       MakeIntent(kIntentActionView, kMimeType, kShareText2), kAppTypeBrower2,
-      kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, kDeskGuid2,
+      kActivationIndex2, kFirstNonPinnedTabIndex, kDeskId2, desk_guid2_,
       kCurrentBounds2, kWindowStateType2, kPreMinimizedWindowStateType2,
       /*snap_percentage=*/0, std::nullopt, kMinSize2, std::u16string(kTitle2),
       kBoundsInRoot2, kPrimaryColor2, kStatusBarColor2,
@@ -648,7 +649,7 @@ TEST_F(RestoreDataTest, GetWindowInfo) {
   EXPECT_THAT(window_info->desk_id, testing::Optional(kDeskId1));
 
   EXPECT_TRUE(window_info->desk_guid.is_valid());
-  EXPECT_EQ(kDeskGuid1, window_info->desk_guid);
+  EXPECT_EQ(desk_guid1_, window_info->desk_guid);
 
   EXPECT_THAT(window_info->current_bounds, testing::Optional(kCurrentBounds1));
   EXPECT_THAT(window_info->window_state_type,

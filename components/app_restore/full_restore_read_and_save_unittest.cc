@@ -69,10 +69,6 @@ constexpr char kHandlerId[] = "audio";
 constexpr char kExampleUrl1[] = "https://www.example1.com";
 constexpr char kExampleUrl2[] = "https://www.example2.com";
 
-// Randomly generated desk GUID to test saving removing desk GUID.
-const base::Uuid kRemovingDeskGuid = base::Uuid::GenerateRandomV4();
-const base::Uuid kNonRemovingDeskGuid = base::Uuid::GenerateRandomV4();
-
 }  // namespace
 
 class FullRestoreReadHandlerTestApi {
@@ -867,17 +863,21 @@ TEST_F(FullRestoreReadAndSaveTest, PreventWindowsOnRemovingDeskFromRestoring) {
   AddAppLaunchInfo(GetPath(), kId2);
   ASSERT_TRUE(timer->IsRunning());
 
+  // Randomly generated desk GUIDs to test saving the removing desk GUID.
+  const base::Uuid removing_desk_guid = base::Uuid::GenerateRandomV4();
+  const base::Uuid non_removing_desk_guid = base::Uuid::GenerateRandomV4();
+
   // Create two windows. Establish that `window1` will be on the removing desk
   // and `window2` will be on the non-removing desk.
   std::unique_ptr<aura::Window> window1 = CreateWindowInfo(
-      kId1, kActivationIndex1, chromeos::AppType::BROWSER, kRemovingDeskGuid);
+      kId1, kActivationIndex1, chromeos::AppType::BROWSER, removing_desk_guid);
   std::unique_ptr<aura::Window> window2 =
       CreateWindowInfo(kId2, kActivationIndex2, chromeos::AppType::BROWSER,
-                       kNonRemovingDeskGuid);
+                       non_removing_desk_guid);
 
-  // Establish that the desk with `kRemovingDeskGuid` as its GUID is being
+  // Establish that the desk with `removing_desk_guid` as its GUID is being
   // removed.
-  save_handler->SaveRemovingDeskGuid(kRemovingDeskGuid);
+  save_handler->SaveRemovingDeskGuid(removing_desk_guid);
 
   // Simulate timeout, which should trigger a save, and verify the timer stops.
   timer->FireNow();

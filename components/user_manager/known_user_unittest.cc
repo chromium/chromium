@@ -574,9 +574,19 @@ class KnownUserWithPrefTypeTest : public KnownUserTest {
   ~KnownUserWithPrefTypeTest() = default;
 };
 
-TYPED_TEST_SUITE_P(KnownUserWithPrefTypeTest);
+// This must be an alias because the preprocessor does not understand <> so if
+// it was directly embedded in the TYPED_TEST_SUITE macro the preprocessor
+// would be confused on the comma.
+using AllTypeInfos = testing::Types<PrefTypeInfoString,
+                                    PrefTypeInfoInteger,
+                                    PrefTypeInfoDouble,
+                                    PrefTypeInfoBoolean,
+                                    PrefTypeInfoValue>;
 
-TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadOnNonExistingUser) {
+// TYPED_TEST_SUITE_P would declare a global with an exit-time destructor.
+TYPED_TEST_SUITE(KnownUserWithPrefTypeTest, AllTypeInfos);
+
+TYPED_TEST(KnownUserWithPrefTypeTest, ReadOnNonExistingUser) {
   KnownUser known_user(KnownUserTest::local_state());
 
   constexpr char kPrefName[] = "some_pref";
@@ -589,7 +599,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadOnNonExistingUser) {
   EXPECT_FALSE(read_success);
 }
 
-TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadMissingPrefOnExistingUser) {
+TYPED_TEST(KnownUserWithPrefTypeTest, ReadMissingPrefOnExistingUser) {
   KnownUser known_user(KnownUserTest::local_state());
 
   constexpr char kPrefName[] = "some_pref";
@@ -602,7 +612,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadMissingPrefOnExistingUser) {
   EXPECT_FALSE(read_success);
 }
 
-TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPref) {
+TYPED_TEST(KnownUserWithPrefTypeTest, ReadExistingPref) {
   KnownUser known_user(KnownUserTest::local_state());
 
   constexpr char kPrefName[] = "some_pref";
@@ -619,7 +629,7 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPref) {
   EXPECT_TRUE(TypeParam::CheckPrefValue(read_result));
 }
 
-TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
+TYPED_TEST(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
   KnownUser known_user(KnownUserTest::local_state());
 
   constexpr char kPrefName[] = "some_pref";
@@ -635,25 +645,5 @@ TYPED_TEST_P(KnownUserWithPrefTypeTest, ReadExistingPrefAsValue) {
   ASSERT_TRUE(read_result);
   EXPECT_TRUE(TypeParam::CheckPrefValueAsBaseValue(*read_result));
 }
-
-REGISTER_TYPED_TEST_SUITE_P(KnownUserWithPrefTypeTest,
-                            // All test functions must be listed:
-                            ReadOnNonExistingUser,
-                            ReadMissingPrefOnExistingUser,
-                            ReadExistingPref,
-                            ReadExistingPrefAsValue);
-
-// This must be an alias because the preprocessor does not understand <> so if
-// it was directly embedded in the INSTANTIATE_TYPED_TEST_SUITE_P macro the
-// prepocessor would be confused on the comma.
-using AllTypeInfos = testing::Types<PrefTypeInfoString,
-                                    PrefTypeInfoInteger,
-                                    PrefTypeInfoDouble,
-                                    PrefTypeInfoBoolean,
-                                    PrefTypeInfoValue>;
-
-INSTANTIATE_TYPED_TEST_SUITE_P(AllTypes,
-                               KnownUserWithPrefTypeTest,
-                               AllTypeInfos);
 
 }  // namespace user_manager
