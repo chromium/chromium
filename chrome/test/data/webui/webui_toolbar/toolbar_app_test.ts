@@ -175,11 +175,17 @@ suite('ToolbarAppTest', () => {
 
   let startTrackingCalls: Array<[HTMLElement, string]> = [];
   let stopTrackingCalls: HTMLElement[] = [];
+  let highlightCallbacks = new Map<string, (highlighted: boolean) => void>();
 
   const mockManager = {
-    startTracking: (element: HTMLElement, nativeId: string) => {
-      startTrackingCalls.push([element, nativeId]);
-    },
+    startTracking:
+        (element: HTMLElement, nativeId: string,
+         options?: {onHighlightChanged?: (highlighted: boolean) => void}) => {
+          startTrackingCalls.push([element, nativeId]);
+          if (options?.onHighlightChanged) {
+            highlightCallbacks.set(nativeId, options.onHighlightChanged);
+          }
+        },
     stopTracking: (element: HTMLElement) => {
       stopTrackingCalls.push(element);
     },
@@ -190,6 +196,7 @@ suite('ToolbarAppTest', () => {
 
     startTrackingCalls = [];
     stopTrackingCalls = [];
+    highlightCallbacks = new Map();
     TrackedElementManager.setInstance(mockManager as any);
 
     const handler = new TestHelpBubbleHandler();
@@ -770,6 +777,53 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     assertFalse(innerChip.classList.contains('help-anchor-highlight'));
+  });
+
+  test('AvatarButtonClickSuppression', async () => {
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
+    const innerChip = avatarButton.shadowRoot.querySelector('#button')!;
+    const setHighlighted =
+        highlightCallbacks.get('kToolbarAvatarButtonElementId')!;
+    assertTrue(!!setHighlighted);
+    const handler = browserProxy.toolbarUIHandler;
+
+    const dispatchMouseClick = () => {
+      innerChip.dispatchEvent(new PointerEvent(
+          'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+      innerChip.dispatchEvent(new PointerEvent(
+          'click', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    };
+
+    // 1. Normal click when not highlighted opens the menu.
+    dispatchMouseClick();
+    assertEquals(1, handler.getCallCount('showAvatarMenu'));
+
+    // 2. Click while highlighted (profile menu open) is suppressed.
+    setHighlighted(true);
+    dispatchMouseClick();
+    assertEquals(1, handler.getCallCount('showAvatarMenu'));
+
+    // 3. Click right after unhighlighting (< 100ms) is suppressed.
+    setHighlighted(false);
+    dispatchMouseClick();
+    assertEquals(1, handler.getCallCount('showAvatarMenu'));
+
+    // 4. Keyboard activation (empty pointerType) is not suppressed even after
+    // a pointerdown that armed click skipping.
+    innerChip.dispatchEvent(new PointerEvent(
+        'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    innerChip.dispatchEvent(
+        new PointerEvent('click', {bubbles: true, button: 0, pointerType: ''}));
+    assertEquals(2, handler.getCallCount('showAvatarMenu'));
+
+    // 5. Click >= 100ms after unhighlighting opens the menu.
+    await new Promise(resolve => setTimeout(resolve, 150));
+    dispatchMouseClick();
+    assertEquals(3, handler.getCallCount('showAvatarMenu'));
   });
 
   test('AvatarButtonDoesNotAnimateOnNewWindow', async () => {

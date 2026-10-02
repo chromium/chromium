@@ -22,7 +22,7 @@ export function getHtml(this: AvatarButtonElement) {
     .ariaHasPopup="menu"
     .ariaDescription="${this.state.accessibilityDescription || ''}"
     @click="${this.onClick_}"
-    @pointerdown="${this.onPointerdown_}"
+    @pointerdown="${this.highlightTracker.onPointerdown}"
     @mouseenter="${this.onMouseenter_}"
     @mouseleave="${this.onMouseleave_}"
     @focusin="${this.onFocusin_}"

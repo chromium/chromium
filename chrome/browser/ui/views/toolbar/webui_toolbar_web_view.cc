@@ -849,12 +849,8 @@ WebUIToolbarWebView::OnOmniboxAction(
   }
 }
 
-void WebUIToolbarWebView::ShowAvatarMenu(bool is_pointer_interaction) {
-  avatar_control_.OnClicked(is_pointer_interaction);
-}
-
-void WebUIToolbarWebView::OnAvatarButtonMousePressed() {
-  avatar_control_.OnMousePressed();
+void WebUIToolbarWebView::ShowAvatarMenu() {
+  avatar_control_.ButtonPressed(/*is_source_accelerator=*/false);
 }
 
 void WebUIToolbarWebView::SetAvatarButtonHovered(bool hovered) {

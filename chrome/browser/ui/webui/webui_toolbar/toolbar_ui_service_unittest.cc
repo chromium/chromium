@@ -401,16 +401,9 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect2) {
 
 // Tests that calling ShowAvatarMenu() calls the delegate.
 TEST_F(ToolbarUIServiceTest, TestShowAvatarMenu) {
-  EXPECT_CALL(delegate(), ShowAvatarMenu(true));
+  EXPECT_CALL(delegate(), ShowAvatarMenu());
 
-  service().ShowAvatarMenu(/*is_pointer_interaction=*/true, base::DoNothing());
-}
-
-// Tests that calling OnAvatarButtonMousePressed() calls the delegate.
-TEST_F(ToolbarUIServiceTest, TestOnAvatarButtonMousePressed) {
-  EXPECT_CALL(delegate(), OnAvatarButtonMousePressed());
-
-  service().OnAvatarButtonMousePressed();
+  service().ShowAvatarMenu(base::DoNothing());
 }
 
 // Tests that calling OnGlicButtonClicked() calls the delegate.

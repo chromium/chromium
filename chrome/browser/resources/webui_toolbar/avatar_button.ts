@@ -9,7 +9,7 @@ import '/shared/icon_from_table.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {BUTTON_LEFT, HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
+import {HelpBubbleAnchorMixin, HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {AvatarControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {AvatarToolbarButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -54,6 +54,7 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     this.registerHelpBubble('kToolbarAvatarButtonElementId', this.$.button, {
       onHighlightChanged: (highlighted: boolean) => {
         this.classList.toggle('anchor-highlight', highlighted);
+        this.highlightTracker.onHighlightChanged(highlighted);
       },
       onHelpBubbleShown: () => setHasHelpBubble(this, true),
       onHelpBubbleHidden: () => setHasHelpBubble(this, false),
@@ -86,6 +87,8 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
     enabled: true,
     hasLinearGradientRing: false,
   };
+
+  protected highlightTracker: HighlightTracker = new HighlightTracker();
 
   protected getTooltip_(): string {
     return this.adjustTooltipForHelpBubble(this.state?.tooltip || '');
@@ -121,15 +124,9 @@ export class AvatarButtonElement extends AvatarButtonElementBase {
   }
 
   protected onClick_(e: PointerEvent) {
-    // TODO(behamilton): Log an error if this fails.
-    BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu(
-        e.pointerType !== '');
-  }
-
-  protected onPointerdown_(e: PointerEvent) {
-    if (e.button === BUTTON_LEFT) {
-      BrowserProxyImpl.getInstance()
-          .toolbarUIHandler.onAvatarButtonMousePressed();
+    if (!this.highlightTracker.shouldSkipClick(e)) {
+      // TODO(behamilton): Log an error if this fails.
+      BrowserProxyImpl.getInstance().toolbarUIHandler.showAvatarMenu();
     }
   }
 

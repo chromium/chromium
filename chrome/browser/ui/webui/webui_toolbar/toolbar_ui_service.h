@@ -97,8 +97,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
     virtual void OnToolbarDropFile(const gfx::PointF& drop_position) = 0;
     virtual base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
     OnOmniboxAction(toolbar_ui_api::mojom::OmniboxActionPtr action) = 0;
-    virtual void ShowAvatarMenu(bool is_pointer_interaction) = 0;
-    virtual void OnAvatarButtonMousePressed() = 0;
+    virtual void ShowAvatarMenu() = 0;
     virtual void SetAvatarButtonHovered(bool hovered) = 0;
     virtual void SetAvatarButtonFocused(bool focused) = 0;
     virtual void SetAvatarButtonIPHPromoShowing(bool showing) = 0;
@@ -199,9 +198,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnHomeButtonDropFile(const gfx::PointF& drop_position) override;
   void OnHomeButtonDropText(const std::string& text) override;
   void OnToolbarDropFile(const gfx::PointF& drop_position) override;
-  void ShowAvatarMenu(bool is_pointer_interaction,
-                      ShowAvatarMenuCallback callback) override;
-  void OnAvatarButtonMousePressed() override;
+  void ShowAvatarMenu(ShowAvatarMenuCallback callback) override;
   void SetAvatarButtonHovered(bool hovered,
                               SetAvatarButtonHoveredCallback callback) override;
   void SetAvatarButtonFocused(bool focused,
