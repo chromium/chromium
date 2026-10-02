@@ -949,13 +949,6 @@ bool IsFullscreenRefactoringEnabled() {
          base::FeatureList::IsEnabled(kFullscreenRefactoring);
 }
 
-BASE_FEATURE(kFullscreenEasedTransitions, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsFullscreenEasedTransitionsEnabled() {
-  return IsFullscreenRefactoringEnabled() &&
-         base::FeatureList::IsEnabled(kFullscreenEasedTransitions);
-}
-
 BASE_FEATURE(kPageToolsFeatureUnavailability, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsPageToolsFeatureUnavailabilityEnabled() {

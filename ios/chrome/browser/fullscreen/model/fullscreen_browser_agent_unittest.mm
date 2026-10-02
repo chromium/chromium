@@ -454,8 +454,7 @@ TEST_F(FullscreenBrowserAgentTest, SettledStateCommittedWhenAnimationStarts) {
 // already running.
 TEST_F(FullscreenBrowserAgentTest, NonAnimatedTransitionInterruptsAnimation) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
+  feature_list.InitWithFeatures({kFullscreenRefactoring, kGlassToolbar}, {});
 
   FullscreenBrowserAgent::CreateForBrowser(browser_.get());
   FullscreenBrowserAgent* agent =
