@@ -57,6 +57,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -136,8 +138,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -258,9 +258,6 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK);
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
   // Check if the browser is still alive, as it might have been closed in the
@@ -270,16 +267,15 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
   if (browser) {
     browser->OpenURL(params, /*navigation_handle_callback=*/{});
   }
-#endif
 }
 
 void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
     const std::string& query) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#else
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents_);
+  if (!browser) {
+    return;
+  }
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser->GetProfile());
   DCHECK(url_service);
@@ -290,7 +286,6 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
           GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
           ui::PAGE_TRANSITION_LINK);
   browser->OpenURL(params, /*navigation_handle_callback=*/{});
-#endif
 }
 
 void DefaultBindingsDelegate::InspectedContentsClosing() {
