@@ -1798,20 +1798,23 @@ void PDFiumPage::PopulateTextRunTypeAndImageAltTextForStructElement(
 }
 
 void PDFiumPage::PopulateAnnotations() {
-  if (calculated_annotations_)
+  if (calculated_annotations_) {
     return;
+  }
 
   FPDF_PAGE page = GetPage();
-  if (!page)
+  if (!page) {
     return;
+  }
 
   int annotation_count = FPDFPage_GetAnnotCount(page);
   for (int i = 0; i < annotation_count; ++i) {
     ScopedFPDFAnnotation annot(FPDFPage_GetAnnot(page, i));
-    DCHECK(annot);
-    FPDF_ANNOTATION_SUBTYPE subtype = FPDFAnnot_GetSubtype(annot.get());
+    if (!annot) {
+      continue;
+    }
 
-    switch (subtype) {
+    switch (FPDFAnnot_GetSubtype(annot.get())) {
       case FPDF_ANNOT_HIGHLIGHT: {
         PopulateHighlight(annot.get());
         break;
