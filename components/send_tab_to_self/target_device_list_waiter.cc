@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync/service/sync_service.h"
 
@@ -27,12 +28,17 @@ TargetDeviceListWaiter::TargetDeviceListWaiter(
   CHECK(send_tab_to_self_service_);
   CHECK(on_list_known_callback_);
   sync_observation_.Observe(sync_service);
+  SendTabToSelfModel* model =
+      send_tab_to_self_service_->GetSendTabToSelfModel();
+  CHECK(model);
+  model_observation_.Observe(model);
   OnStateChanged(nullptr);
 }
 
 TargetDeviceListWaiter::~TargetDeviceListWaiter() = default;
 
-void TargetDeviceListWaiter::OnStateChanged(syncer::SyncService* /*sync_service*/) {
+void TargetDeviceListWaiter::OnStateChanged(
+    syncer::SyncService* /*sync_service*/) {
   if (!on_list_known_callback_ || !send_tab_to_self_service_) {
     return;
   }
@@ -48,11 +54,16 @@ void TargetDeviceListWaiter::OnStateChanged(syncer::SyncService* /*sync_service*
     case EntryPointDisplayReason::kOfferFeature:
     case EntryPointDisplayReason::kInformNoTargetDevice:
       sync_observation_.Reset();
+      model_observation_.Reset();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&TargetDeviceListWaiter::RunCallback,
                                     weak_ptr_factory_.GetWeakPtr()));
       break;
   }
+}
+
+void TargetDeviceListWaiter::OnModelReady() {
+  OnStateChanged(nullptr);
 }
 
 void TargetDeviceListWaiter::RunCallback() {
@@ -67,6 +78,7 @@ void TargetDeviceListWaiter::OnSyncShutdown(
   // shutdown because SyncServiceFactory depends on
   // SendTabToSelfSyncServiceFactory.
   sync_observation_.Reset();
+  model_observation_.Reset();
   on_list_known_callback_.Reset();
   send_tab_to_self_service_ = nullptr;
 }

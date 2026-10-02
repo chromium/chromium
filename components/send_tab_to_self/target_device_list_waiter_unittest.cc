@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -41,8 +42,13 @@ class TargetDeviceListWaiterTest : public Test {
     return &send_tab_to_self_service_;
   }
 
-  void SetDisplayReason(std::optional<EntryPointDisplayReason> reason) {
-    send_tab_to_self_service_.SetEntryPointDisplayReason(reason);
+  // Posts a sentinel task and waits for it, ensuring all previously posted
+  // tasks have run.
+  void FlushPostedTasks() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
  private:
@@ -56,7 +62,8 @@ class TargetDeviceListWaiterTest : public Test {
 TEST_F(TargetDeviceListWaiterTest,
        TriggersCallbackWhenDisplayReasonIsOfferFeature) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
@@ -64,7 +71,8 @@ TEST_F(TargetDeviceListWaiterTest,
   EXPECT_FALSE(future.IsReady());
 
   // Transition display reason to kOfferFeature and notify sync state change.
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
@@ -75,7 +83,8 @@ TEST_F(TargetDeviceListWaiterTest,
 TEST_F(TargetDeviceListWaiterTest,
        TriggersCallbackWhenDisplayReasonIsInformNoTargetDevice) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
@@ -84,7 +93,8 @@ TEST_F(TargetDeviceListWaiterTest,
 
   // Transition display reason to kInformNoTargetDevice and notify sync state
   // change.
-  SetDisplayReason(EntryPointDisplayReason::kInformNoTargetDevice);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kInformNoTargetDevice);
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
@@ -95,7 +105,7 @@ TEST_F(TargetDeviceListWaiterTest,
 TEST_F(TargetDeviceListWaiterTest,
        DoesNotTriggerCallbackWhileDisplayReasonIsPending) {
   TestFuture<void> future;
-  SetDisplayReason(std::nullopt);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(std::nullopt);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
@@ -103,13 +113,15 @@ TEST_F(TargetDeviceListWaiterTest,
   EXPECT_FALSE(future.IsReady());
 
   // Set to kOfferSignIn - still waiting.
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
   sync_service()->FireStateChanged();
 
   EXPECT_FALSE(future.IsReady());
 
   // Transition to kOfferFeature - completes successfully.
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
@@ -120,7 +132,8 @@ TEST_F(TargetDeviceListWaiterTest,
 TEST_F(TargetDeviceListWaiterTest,
        DoesNotTriggerCallbackWhileDisplayReasonIsOfferReauth) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
@@ -128,13 +141,15 @@ TEST_F(TargetDeviceListWaiterTest,
   EXPECT_FALSE(future.IsReady());
 
   // Set to kOfferReauth - still waiting.
-  SetDisplayReason(EntryPointDisplayReason::kOfferReauth);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferReauth);
   sync_service()->FireStateChanged();
 
   EXPECT_FALSE(future.IsReady());
 
   // Transition to kInformNoTargetDevice - completes successfully.
-  SetDisplayReason(EntryPointDisplayReason::kInformNoTargetDevice);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kInformNoTargetDevice);
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
@@ -146,7 +161,8 @@ TEST_F(TargetDeviceListWaiterTest,
 TEST_F(TargetDeviceListWaiterTest,
        TriggersCallbackAsynchronouslyIfAlreadyResolvedAtConstruction) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
@@ -159,7 +175,8 @@ TEST_F(TargetDeviceListWaiterTest,
 // cancels the callback execution.
 TEST_F(TargetDeviceListWaiterTest, DestroyingWaiterCancelsCallback) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
 
   {
     TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
@@ -168,11 +185,7 @@ TEST_F(TargetDeviceListWaiterTest, DestroyingWaiterCancelsCallback) {
     // `waiter` is destroyed at the end of this scope.
   }
 
-  // Post a sentinel task to ensure all prior tasks in the queue have run.
-  TestFuture<void> sentinel_future;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, sentinel_future.GetCallback());
-  EXPECT_TRUE(sentinel_future.Wait());
+  FlushPostedTasks();
   EXPECT_FALSE(future.IsReady());
 }
 
@@ -180,7 +193,8 @@ TEST_F(TargetDeviceListWaiterTest, DestroyingWaiterCancelsCallback) {
 // and does not cause a crash or use-after-free.
 TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   std::unique_ptr<TargetDeviceListWaiter> waiter;
   waiter = std::make_unique<TargetDeviceListWaiter>(
@@ -191,7 +205,8 @@ TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {
             std::move(callback).Run();
           }));
 
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
@@ -202,27 +217,33 @@ TEST_F(TargetDeviceListWaiterTest, HandlesSelfDestructionInCompletionCallback) {
 // callback prematurely.
 TEST_F(TargetDeviceListWaiterTest, HandlesSyncShutdownWithoutCrashing) {
   TestFuture<void> future;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl), future.GetCallback());
 
   waiter.OnSyncShutdown(sync_service());
 
-  // State changes after shutdown should be ignored.
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  // State changes and model notifications after shutdown should not crash or
+  // run the callback.
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
   sync_service()->FireStateChanged();
+  send_tab_to_self_service()->GetFakeSendTabToSelfModel()->SetIsReady(true);
 
+  FlushPostedTasks();
   EXPECT_FALSE(future.IsReady());
 }
 
-// Verifies that subsequent sync state change notifications after resolution
-// do not crash or re-trigger completion.
+// Verifies that subsequent SyncService state changes and model ready
+// notifications after resolution do not crash or re-trigger completion.
 TEST_F(TargetDeviceListWaiterTest,
-       MultipleStateChangesDoNotCrashOrReTriggerCallback) {
+       MultipleNotificationsDoNotCrashOrReTriggerCallback) {
   TestFuture<void> future;
   int callback_count = 0;
-  SetDisplayReason(EntryPointDisplayReason::kOfferSignIn);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
 
   TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
                                 GURL(kTestUrl),
@@ -231,12 +252,112 @@ TEST_F(TargetDeviceListWaiterTest,
                                   future.SetValue();
                                 }));
 
-  SetDisplayReason(EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
   // Trigger state change twice in succession.
   sync_service()->FireStateChanged();
   sync_service()->FireStateChanged();
 
   EXPECT_TRUE(future.Wait());
+
+  // Model notifications after resolution should not crash or re-run the
+  // callback.
+  send_tab_to_self_service()->GetFakeSendTabToSelfModel()->SetIsReady(true);
+
+  FlushPostedTasks();
+  EXPECT_THAT(callback_count, Eq(1));
+}
+
+// Verifies that the waiter triggers its completion callback when the model
+// notifies OnModelReady() (e.g. after DeviceInfo finishes loading from disk)
+// even without a separate SyncService state change.
+TEST_F(TargetDeviceListWaiterTest, TriggersCallbackWhenModelReadyFires) {
+  TestFuture<void> future;
+  send_tab_to_self_service()->GetFakeSendTabToSelfModel()->SetIsReady(false);
+  // The stub service returns this display reason regardless of whether the
+  // fake model is ready, so this only verifies that OnModelReady() makes the
+  // waiter re-check it.
+  send_tab_to_self_service()->SetEntryPointDisplayReason(std::nullopt);
+
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
+
+  EXPECT_FALSE(future.IsReady());
+
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
+  send_tab_to_self_service()->GetFakeSendTabToSelfModel()->SetIsReady(true);
+
+  EXPECT_TRUE(future.Wait());
+}
+
+// Verifies that a SyncService state change that arrives while the model is
+// still loading from disk does not resolve the waiter, and that the waiter
+// resolves once the model later notifies OnModelReady(). Unlike
+// TriggersCallbackWhenModelReadyFires, this covers a Sync state change that
+// happens before the model is ready.
+TEST_F(TargetDeviceListWaiterTest,
+       SyncStateChangeWhileModelLoadingDoesNotResolve) {
+  TestFuture<void> future;
+  FakeSendTabToSelfModel* model =
+      send_tab_to_self_service()->GetFakeSendTabToSelfModel();
+  model->SetIsReady(false);
+  // The stub service returns this display reason regardless of whether the
+  // fake model is ready, so std::nullopt simulates the model still loading.
+  send_tab_to_self_service()->SetEntryPointDisplayReason(std::nullopt);
+
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl), future.GetCallback());
+
+  // A Sync state change while the model is still loading must not resolve
+  // the waiter.
+  sync_service()->FireStateChanged();
+  FlushPostedTasks();
+  EXPECT_FALSE(future.IsReady());
+
+  // The model finishes loading and the device list is now known.
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferFeature);
+  model->SetIsReady(true);
+
+  EXPECT_TRUE(future.Wait());
+}
+
+// Verifies that OnModelReady() does not resolve the waiter while the display
+// reason is still pending (std::nullopt or kOfferSignIn).
+TEST_F(TargetDeviceListWaiterTest, ModelReadyKeepsWaitingWhileReasonPending) {
+  TestFuture<void> future;
+  int callback_count = 0;
+  FakeSendTabToSelfModel* model =
+      send_tab_to_self_service()->GetFakeSendTabToSelfModel();
+  model->SetIsReady(false);
+  send_tab_to_self_service()->SetEntryPointDisplayReason(std::nullopt);
+
+  TargetDeviceListWaiter waiter(sync_service(), send_tab_to_self_service(),
+                                GURL(kTestUrl),
+                                base::BindLambdaForTesting([&]() {
+                                  callback_count++;
+                                  future.SetValue();
+                                }));
+
+  model->SetIsReady(true);
+  FlushPostedTasks();
+  EXPECT_FALSE(future.IsReady());
+
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
+  model->SetIsReady(true);
+  FlushPostedTasks();
+  EXPECT_FALSE(future.IsReady());
+
+  send_tab_to_self_service()->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kInformNoTargetDevice);
+  model->SetIsReady(true);
+  EXPECT_TRUE(future.Wait());
+
+  // A later model ready notification must not run the callback again.
+  model->SetIsReady(true);
+  FlushPostedTasks();
   EXPECT_THAT(callback_count, Eq(1));
 }
 
