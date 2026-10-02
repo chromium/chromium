@@ -76,9 +76,11 @@
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #else
 #include "chrome/browser/download/download_browsertest_utils.h"
@@ -106,14 +108,31 @@ namespace {
 class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
  public:
 #if BUILDFLAG(IS_ANDROID)
-  // Notifies DelayLoadStartAndExecuteJavascript when a tab is added.
-  class TabHelper : public TabModelObserver {
+  // Notifies DelayLoadStartAndExecuteJavascript when a tab is added. Observes
+  // every TabModel, including ones registered after construction, because
+  // additional models (e.g. headless models for other persisted windows) can be
+  // registered asynchronously during startup on desktop Android.
+  class TabHelper : public TabModelListObserver, public TabModelObserver {
    public:
     explicit TabHelper(DelayLoadStartAndExecuteJavascript* owner)
         : owner_(owner) {
-      // Assumes only one window open, which is fine for these tests.
-      CHECK_EQ(1u, TabModelList::models().size());
-      TabModelList::models().front()->AddObserver(this);
+      TabModelList::AddObserver(this);
+      for (TabModel* model : TabModelList::models()) {
+        OnTabModelAdded(model);
+      }
+    }
+
+    ~TabHelper() override { StopObserving(); }
+
+    // TabModelListObserver:
+    void OnTabModelAdded(TabModel* tab_model) override {
+      tab_model_observations_.AddObservation(tab_model);
+    }
+
+    void OnTabModelRemoved(TabModel* tab_model) override {
+      if (tab_model_observations_.IsObservingSource(tab_model)) {
+        tab_model_observations_.RemoveObservation(tab_model);
+      }
     }
 
     // TabModelObserver:
@@ -122,13 +141,19 @@ class DelayLoadStartAndExecuteJavascript : public content::WebContentsObserver {
         return;
       }
 
-      CHECK_EQ(1u, TabModelList::models().size());
-      TabModelList::models().front()->RemoveObserver(this);
-
+      StopObserving();
       owner_->OnTabAdded(tab->GetContents());
     }
 
+   private:
+    void StopObserving() {
+      tab_model_observations_.RemoveAllObservations();
+      TabModelList::RemoveObserver(this);
+    }
+
     raw_ptr<DelayLoadStartAndExecuteJavascript> owner_;
+    base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
+        tab_model_observations_{this};
   };
 #else
   // Notifies DelayLoadStartAndExecuteJavascript when a tab is added.
