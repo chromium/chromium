@@ -59,33 +59,49 @@ template("generate_localizable_strings") {
     }
   }
 
-  compiled_action("${_target_name}_generate") {
-    forward_variables_from(invoker, [ "testonly" ])
+  _generate_inputs = [ invoker.config_file ]
+  _generate_outputs = []
 
-    visibility = _bundle_targets
-    deps = invoker.deps
-    tool = "//ios/chrome/tools/strings:generate_localizable_strings"
-
-    outputs = []
-    inputs = [ invoker.config_file ]
-
-    foreach(locale, invoker.packed_locales) {
-      inputs += [ "${invoker.datapack_dir}/${locale}.lproj/locale.pak" ]
-      foreach(filename, invoker.output_filenames) {
-        outputs += [ "${target_gen_dir}/${locale}.lproj/$filename" ]
-      }
+  foreach(locale, invoker.packed_locales) {
+    _generate_inputs += [ "${invoker.datapack_dir}/${locale}.lproj/locale.pak" ]
+    foreach(filename, invoker.output_filenames) {
+      _generate_outputs += [ "${target_gen_dir}/${locale}.lproj/$filename" ]
     }
+  }
 
-    args = [
-             "-c",
-             rebase_path(invoker.config_file, root_build_dir),
-             "-I",
-             rebase_path(root_gen_dir, root_build_dir),
-             "-p",
-             rebase_path(invoker.datapack_dir, root_build_dir),
-             "-o",
-             rebase_path(target_gen_dir, root_build_dir),
-           ] + invoker.packed_locales
+  _generate_args = [
+                     "-c",
+                     rebase_path(invoker.config_file, root_build_dir),
+                     "-I",
+                     rebase_path(root_gen_dir, root_build_dir),
+                     "-p",
+                     rebase_path(invoker.datapack_dir, root_build_dir),
+                     "-o",
+                     rebase_path(target_gen_dir, root_build_dir),
+                   ] + invoker.packed_locales
+
+  if (host_os == "mac") {
+    compiled_action("${_target_name}_generate") {
+      forward_variables_from(invoker, [ "testonly" ])
+
+      visibility = _bundle_targets
+      deps = invoker.deps
+      tool = "//ios/chrome/tools/strings:generate_localizable_strings"
+      inputs = _generate_inputs
+      outputs = _generate_outputs
+      args = _generate_args
+    }
+  } else {
+    action("${_target_name}_generate") {
+      forward_variables_from(invoker, [ "testonly" ])
+
+      visibility = _bundle_targets
+      deps = invoker.deps
+      script = "//ios/chrome/tools/strings/ios_strings_tool.py"
+      inputs = _generate_inputs + [ "//tools/grit/grit/format/data_pack.py" ]
+      outputs = _generate_outputs
+      args = [ "generate_localizable_strings" ] + _generate_args
+    }
   }
 
   group(_target_name) {

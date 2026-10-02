@@ -30,31 +30,51 @@ template("substitute_strings_identifier") {
   assert(defined(invoker.headers),
          "headers needs to be defined for ${target_name}")
 
-  compiled_action(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "deps",
-                             "public_deps",
-                             "visibility",
-                           ])
+  _substitute_inputs = [ invoker.source ] + invoker.headers
+  _substitute_outputs = [ invoker.output ]
+  _substitute_args = [
+    "-i",
+    rebase_path(invoker.source, root_build_dir),
+    "-o",
+    rebase_path(invoker.output, root_build_dir),
+  ]
 
-    tool = "//ios/chrome/tools/strings:substitute_strings_identifier"
-    inputs = [ invoker.source ] + invoker.headers
-    outputs = [ invoker.output ]
-
-    args = [
-      "-i",
-      rebase_path(invoker.source, root_build_dir),
-      "-o",
-      rebase_path(invoker.output, root_build_dir),
+  foreach(_header, invoker.headers) {
+    _substitute_args += [
+      "-I",
+      rebase_path(_header, root_build_dir),
     ]
+  }
 
-    foreach(_header, invoker.headers) {
-      args += [
-        "-I",
-        rebase_path(_header, root_build_dir),
-      ]
+  if (host_os == "mac") {
+    compiled_action(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "testonly",
+                               "deps",
+                               "public_deps",
+                               "visibility",
+                             ])
+
+      tool = "//ios/chrome/tools/strings:substitute_strings_identifier"
+      inputs = _substitute_inputs
+      outputs = _substitute_outputs
+      args = _substitute_args
+    }
+  } else {
+    action(target_name) {
+      forward_variables_from(invoker,
+                             [
+                               "testonly",
+                               "deps",
+                               "public_deps",
+                               "visibility",
+                             ])
+
+      script = "//ios/chrome/tools/strings/ios_strings_tool.py"
+      inputs = _substitute_inputs
+      outputs = _substitute_outputs
+      args = [ "substitute_strings_identifier" ] + _substitute_args
     }
   }
 }
