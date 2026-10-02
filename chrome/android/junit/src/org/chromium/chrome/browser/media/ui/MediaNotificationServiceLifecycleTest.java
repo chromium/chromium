@@ -37,8 +37,10 @@ import org.mockito.InOrder;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotificationManager;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,6 +50,7 @@ import org.chromium.components.browser_ui.media.MediaNotificationInfo;
 import org.chromium.components.browser_ui.media.MediaNotificationManager;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
+import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.services.media_session.MediaMetadata;
 
 import java.util.concurrent.TimeUnit;
@@ -522,6 +525,52 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
                         eq(getNotificationId()),
                         any(Notification.class),
                         eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+    }
+
+    @Test
+    public void promoteDoesNotRepostNotificationAfterStopListenerService() {
+        BrowserUiUtilsCachedFlags.getInstance().setAsyncNotificationManagerFlag(true);
+        ResettersForTesting.register(
+                () ->
+                        BrowserUiUtilsCachedFlags.getInstance()
+                                .setAsyncNotificationManagerFlag(false));
+        mMediaNotificationInfoBuilder.setPaused(false);
+        setUpService();
+        getController().mService = mService;
+        getController().mMediaNotificationInfo = mMediaNotificationInfoBuilder.build();
+
+        getController().promote();
+        getController().stopListenerService();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(0, getShadowNotificationManager().getAllNotifications().size());
+    }
+
+    @Test
+    public void promoteWhileDemoteNotifyPendingOverwritesDemotedNotification() {
+        BrowserUiUtilsCachedFlags.getInstance().setAsyncNotificationManagerFlag(true);
+        ResettersForTesting.register(
+                () ->
+                        BrowserUiUtilsCachedFlags.getInstance()
+                                .setAsyncNotificationManagerFlag(false));
+        setUpService();
+        getController().mService = mService;
+        getController().setIsForegroundForTesting(true);
+
+        getController().mMediaNotificationInfo =
+                mMediaNotificationInfoBuilder.setPaused(true).build();
+        getController().demote();
+
+        getController().mMediaNotificationInfo =
+                mMediaNotificationInfoBuilder.setPaused(false).build();
+        getController().promote();
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(1, getShadowNotificationManager().getAllNotifications().size());
+        Notification finalNotification =
+                getShadowNotificationManager().getAllNotifications().get(0);
+        assertTrue(shadowOf(finalNotification).isOngoing());
     }
 
     private ShadowNotificationManager getShadowNotificationManager() {

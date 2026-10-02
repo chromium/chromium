@@ -30,6 +30,7 @@ import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -128,6 +129,9 @@ public class MediaNotificationController {
     @VisibleForTesting public long mTimeOfLastPauseMs = -1;
 
     private boolean mIsForeground;
+
+    // Number of in-flight BaseNotificationManagerProxy#notify() calls for this controller.
+    private int mPendingNotifyCount;
 
     @VisibleForTesting public @Nullable MediaSessionCompat mMediaSession;
 
@@ -997,14 +1001,16 @@ public class MediaNotificationController {
 
         boolean success = false;
         if (mIsForeground && useForegroundService) {
+            // promoteInternal() calls startForeground() synchronously. Only enqueue an async
+            // notify() if a prior notify() (e.g. from demote()) is still in flight, so the
+            // promoted notification runs last and wins once the async queue drains.
+            boolean hasPendingNotify = mPendingNotifyCount > 0;
             success = promoteInternal(notification);
-            if (success) {
-                BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
-                manager.notify(notification);
+            if (success && hasPendingNotify) {
+                notifyNotificationManager(notification);
             }
         } else {
-            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
-            manager.notify(notification);
+            notifyNotificationManager(notification);
             success = true;
         }
         if (!useForegroundService) mServicelessNotificationShown = true;
@@ -1381,10 +1387,21 @@ public class MediaNotificationController {
             // exception if trying to start a foreground service from the background. Fall back to
             // showing a normal background notification so media controls remain visible.
             mIsForeground = false;
-            BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
-            manager.notify(notification);
+            notifyNotificationManager(notification);
             return false;
         }
+    }
+
+    /**
+     * Posts the notification via {@link BaseNotificationManagerProxy} and tracks in-flight calls.
+     * This should be the only way {@code notify()} is called in this class to avoid a stale {@link
+     * #mPendingNotifyCount}.
+     */
+    private void notifyNotificationManager(NotificationWrapper notification) {
+        ThreadUtils.assertOnUiThread();
+        mPendingNotifyCount++;
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
+        manager.notify(notification, () -> mPendingNotifyCount--);
     }
 
     /**

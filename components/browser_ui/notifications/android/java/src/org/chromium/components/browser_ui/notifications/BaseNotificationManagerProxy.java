@@ -81,6 +81,18 @@ public interface BaseNotificationManagerProxy {
     void notify(NotificationWrapper notification);
 
     /**
+     * Post an Android notification to the notification bar and run {@code callback} on completion.
+     *
+     * @param notification A NotificationWrapper object containing all the information about the
+     *     notification.
+     * @param callback Optional runnable invoked once the notification call finishes.
+     */
+    default void notify(NotificationWrapper notification, @Nullable Runnable callback) {
+        notify(notification);
+        if (callback != null) callback.run();
+    }
+
+    /**
      * @see <a
      *     href=https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannelGroup(java.lang.String)">
      *     https://developer.android.com/reference/android/app/NotificationManager#deleteNotificationChannelGroup(java.lang.String)</a>
