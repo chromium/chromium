@@ -2093,10 +2093,6 @@ android_library("chrome_unit_test_java_org.chromium.chrome.browser.download") {
   resources_package = "org.chromium.chrome"
 
   sources = [
-    "src/org/chromium/chrome/browser/download/DownloadForegroundServiceManagerTest.java",
-    "src/org/chromium/chrome/browser/download/DownloadForegroundServiceTest.java",
-    "src/org/chromium/chrome/browser/download/DownloadNotificationServiceTest.java",
-    "src/org/chromium/chrome/browser/download/DownloadUserInitiatedTaskManagerTest.java",
     "src/org/chromium/chrome/browser/download/SystemDownloadNotifierTest.java",
     "src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogTest.java",
   ]

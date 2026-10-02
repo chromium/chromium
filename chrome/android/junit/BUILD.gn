@@ -289,6 +289,7 @@ if (is_android) {
       "//components/device_reauth:device_reauth_java_enums",
       "//components/digital_goods/mojom:mojom_java",
       "//components/dom_distiller/core/android:dom_distiller_core_java",
+      "//components/download/public/common:public_java",
       "//components/download/public/task:public_java",
       "//components/embedder_support/android:content_view_java",
       "//components/embedder_support/android:context_menu_java",
@@ -840,8 +841,12 @@ if (is_android) {
       "chrome_junit_tests_org.chromium.chrome.browser.download") {
     sources = [
       "src/org/chromium/chrome/browser/download/DownloadControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/download/DownloadForegroundServiceManagerTest.java",
+      "src/org/chromium/chrome/browser/download/DownloadForegroundServiceTest.java",
+      "src/org/chromium/chrome/browser/download/DownloadNotificationServiceTest.java",
       "src/org/chromium/chrome/browser/download/DownloadOpenRequestTest.java",
       "src/org/chromium/chrome/browser/download/DownloadSharedPreferenceEntryTest.java",
+      "src/org/chromium/chrome/browser/download/DownloadUserInitiatedTaskManagerTest.java",
       "src/org/chromium/chrome/browser/download/DownloadUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/download/OfflineContentAvailabilityStatusProviderTest.java",
       "src/org/chromium/chrome/browser/download/items/OfflineContentAggregatorNotificationBridgeUiTest.java",

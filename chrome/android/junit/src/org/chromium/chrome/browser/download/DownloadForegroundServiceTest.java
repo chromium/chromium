@@ -14,18 +14,16 @@ import static org.chromium.chrome.browser.download.DownloadSnackbarController.IN
 import android.app.Notification;
 
 import androidx.annotation.IntDef;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,8 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Test for DownloadForegroundService. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class DownloadForegroundServiceTest {
     private static final int FAKE_DOWNLOAD_ID1 = 1;
     private static final int FAKE_DOWNLOAD_ID2 = 2;
@@ -113,7 +110,6 @@ public class DownloadForegroundServiceTest {
      * correcting the notification.
      */
     @Test
-    @SmallTest
     @Feature({"Download"})
     public void testStartForeground_sdkAtLeast24() {
         mForegroundService.mTargetSdk = 24;
@@ -155,7 +151,6 @@ public class DownloadForegroundServiceTest {
      * stop foreground with the correct flag and no notification adjustment is required.
      */
     @Test
-    @SmallTest
     @Feature({"Download"})
     public void testStopForeground_sdkAtLeast24() {
         mForegroundService.mTargetSdk = 24;

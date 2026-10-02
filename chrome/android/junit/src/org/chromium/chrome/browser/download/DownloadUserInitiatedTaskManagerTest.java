@@ -4,31 +4,26 @@
 
 package org.chromium.chrome.browser.download;
 
+import static org.junit.Assert.assertEquals;
+
 import android.app.Notification;
 import android.content.Context;
 
-import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.AdvancedMockContext;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
 /** Test for {@link DownloadUserInitiatedTaskManager}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public final class DownloadUserInitiatedTaskManagerTest {
     private static final int FAKE_DOWNLOAD_1 = 111;
     private static final int FAKE_DOWNLOAD_2 = 222;
@@ -77,7 +72,7 @@ public final class DownloadUserInitiatedTaskManagerTest {
         }
 
         public void assertPinnedNotificationId(int notificationId) {
-            Assert.assertEquals(notificationId, mPinnedNotificationId);
+            assertEquals(notificationId, mPinnedNotificationId);
         }
     }
 
@@ -85,23 +80,19 @@ public final class DownloadUserInitiatedTaskManagerTest {
     public void setUp() {
         mCallback1.reset();
         mCallback2.reset();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mContext = new AdvancedMockContext(ApplicationProvider.getApplicationContext());
-                    mDownloadUiTaskManager = new MockDownloadUserInitiatedTaskManager();
+        mContext = ApplicationProvider.getApplicationContext();
+        mDownloadUiTaskManager = new MockDownloadUserInitiatedTaskManager();
 
-                    mNotification =
-                            NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                                            ChromeChannelDefinitions.ChannelId.DOWNLOADS)
-                                    .setSmallIcon(R.drawable.ic_file_download_white_24dp)
-                                    .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
-                                    .setContentText(FAKE_NOTIFICATION_CHANNEL)
-                                    .build();
-                });
+        mNotification =
+                NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS)
+                        .setSmallIcon(R.drawable.ic_file_download_white_24dp)
+                        .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
+                        .setContentText(FAKE_NOTIFICATION_CHANNEL)
+                        .build();
     }
 
     @Test
-    @SmallTest
     @Feature({"Download"})
     public void testCallbackNotInvokedForNonInProgressStates() {
         // Set task callbacks.
@@ -113,12 +104,11 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 DownloadNotificationService.DownloadStatus.FAILED,
                 FAKE_DOWNLOAD_1,
                 mNotification);
-        Assert.assertEquals(0, mCallback1.mCallCount);
+        assertEquals(0, mCallback1.mCallCount);
         mDownloadUiTaskManager.assertPinnedNotificationId(-1);
     }
 
     @Test
-    @SmallTest
     @Feature({"Download"})
     public void testAddMultipleCallbacks() {
         // Set task callbacks.
@@ -132,16 +122,15 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(1, mCallback1.mCallCount);
-        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
-        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
-        Assert.assertEquals(1, mCallback2.mCallCount);
-        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
-        Assert.assertEquals(mNotification, mCallback2.mLastNotification);
+        assertEquals(1, mCallback1.mCallCount);
+        assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        assertEquals(mNotification, mCallback1.mLastNotification);
+        assertEquals(1, mCallback2.mCallCount);
+        assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
+        assertEquals(mNotification, mCallback2.mLastNotification);
     }
 
     @Test
-    @SmallTest
     @Feature({"Download"})
     public void testSetNotificationAfterFinishTask() {
         // Set task callbacks.
@@ -156,13 +145,11 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 DownloadNotificationService.DownloadStatus.IN_PROGRESS,
                 FAKE_DOWNLOAD_1,
                 mNotification);
-        Assert.assertEquals(0, mCallback1.mCallCount);
+        assertEquals(0, mCallback1.mCallCount);
         mDownloadUiTaskManager.assertPinnedNotificationId(-1);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testStartDownloadAndCompleteAlongWithInactiveOtherDownloads() {
         mDownloadUiTaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback1);
@@ -173,9 +160,9 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(1, mCallback1.mCallCount);
-        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
-        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
+        assertEquals(1, mCallback1.mCallCount);
+        assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        assertEquals(mNotification, mCallback1.mLastNotification);
 
         mCallback1.reset();
         mDownloadUiTaskManager.updateDownloadStatus(
@@ -184,7 +171,7 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(0, mCallback1.mCallCount);
+        assertEquals(0, mCallback1.mCallCount);
 
         // Service does not get affected by addition of inactive download.
         mCallback1.reset();
@@ -194,12 +181,10 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_2,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(0, mCallback1.mCallCount);
+        assertEquals(0, mCallback1.mCallCount);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testDownloadResumeAfterNetworkInterruption() {
         mDownloadUiTaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback1);
@@ -210,9 +195,9 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(1, mCallback1.mCallCount);
-        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
-        Assert.assertEquals(mNotification, mCallback1.mLastNotification);
+        assertEquals(1, mCallback1.mCallCount);
+        assertEquals(FAKE_DOWNLOAD_1, mCallback1.mLastNotificationId);
+        assertEquals(mNotification, mCallback1.mLastNotification);
 
         // Start another job (due to network interruption).
         mDownloadUiTaskManager.setTaskNotificationCallback(TASK_ID_1, mCallback2);
@@ -222,8 +207,8 @@ public final class DownloadUserInitiatedTaskManagerTest {
                 FAKE_DOWNLOAD_1,
                 mNotification);
         mDownloadUiTaskManager.assertPinnedNotificationId(FAKE_DOWNLOAD_1);
-        Assert.assertEquals(1, mCallback2.mCallCount);
-        Assert.assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
-        Assert.assertEquals(mNotification, mCallback2.mLastNotification);
+        assertEquals(1, mCallback2.mCallCount);
+        assertEquals(FAKE_DOWNLOAD_1, mCallback2.mLastNotificationId);
+        assertEquals(mNotification, mCallback2.mLastNotification);
     }
 }

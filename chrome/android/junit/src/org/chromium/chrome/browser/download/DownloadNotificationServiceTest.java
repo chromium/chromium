@@ -8,21 +8,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -35,8 +30,7 @@ import org.chromium.url.GURL;
 import java.util.UUID;
 
 /** Tests of {@link DownloadNotificationService}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class DownloadNotificationServiceTest {
     private static final ContentId ID1 =
             LegacyHelpers.buildLegacyContentId(false, UUID.randomUUID().toString());
@@ -48,15 +42,11 @@ public class DownloadNotificationServiceTest {
 
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mDownloadNotificationService = new MockDownloadNotificationService();
-                    mDownloadForegroundServiceManager =
-                            new DownloadForegroundServiceManagerTest
-                                    .MockDownloadForegroundServiceManager();
-                    mDownloadNotificationService.setDownloadForegroundServiceManager(
-                            mDownloadForegroundServiceManager);
-                });
+        mDownloadNotificationService = new MockDownloadNotificationService();
+        mDownloadForegroundServiceManager =
+                new DownloadForegroundServiceManagerTest.MockDownloadForegroundServiceManager();
+        mDownloadNotificationService.setDownloadForegroundServiceManager(
+                mDownloadForegroundServiceManager);
         NotificationProxyUtils.setNotificationEnabledForTest(true);
     }
 
@@ -68,8 +58,6 @@ public class DownloadNotificationServiceTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testBasicDownloadFlow() {
         // Download is in-progress.
@@ -156,8 +144,6 @@ public class DownloadNotificationServiceTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testDownloadPendingAndCancelled() {
         // Download is in-progress.
@@ -211,8 +197,6 @@ public class DownloadNotificationServiceTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testDownloadInterruptedAndFailed() {
         // Download is in-progress.
@@ -258,8 +242,6 @@ public class DownloadNotificationServiceTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testDownloadDangerousAndValidated() {
         // Download is in-progress.
@@ -322,8 +304,6 @@ public class DownloadNotificationServiceTest {
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     @Feature({"Download"})
     public void testDownloadDangerousAndRemoved() {
         // Download is in-progress.
