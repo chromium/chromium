@@ -6,7 +6,6 @@
 
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/command_updater.h"
@@ -23,8 +22,14 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace browser_controls_api {
 
@@ -81,38 +86,34 @@ void BrowserControlsAdapterImpl::NavigateHome(
 }
 
 void BrowserControlsAdapterImpl::Navigate(const GURL& url) {
-  bool drag_originated_from_renderer = GetDragOriginatedFromRendererAndReset();
+  const bool drag_has_javascript_url = GetDragHasJavaScriptUrlAndReset();
+  const bool drag_originated_from_renderer =
+      GetDragOriginatedFromRendererAndReset();
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, drag origin provenance cannot be reliably distinguished
-  // between OS-local and renderer sources. To ensure security by default, all
-  // drags are conservatively treated as renderer-originated. This enforces
-  // strict scheme checks below, redirecting non-HTTP/HTTPS and non-file URLs
-  // (such as privileged chrome:// schemes) to about:blank#blocked.
-  drag_originated_from_renderer = true;
-#endif
-
-  // If the drag originated from a renderer (web page), only allow safe schemes
-  // (HTTP, HTTPS, file). Block and redirect other schemes (e.g., chrome://) to
-  // about:blank#blocked to match native UI drag-and-drop navigation security.
-  if (drag_originated_from_renderer) {
-    if (!url.SchemeIsHTTPOrHTTPS() && !url.SchemeIs(url::kFileScheme)) {
-      browser_.get().OpenGURL(GURL("about:blank#blocked"),
-                              WindowOpenDisposition::CURRENT_TAB);
-      return;
-    }
-  } else {
-    // If initiated locally (e.g., OS file manager drop), allow most schemes
-    // but block javascript: URLs to prevent self-XSS.
-    if (url.SchemeIs(url::kJavaScriptScheme)) {
-      return;
-    }
+  // Disallow javascript: URLs to prevent self-XSS. The unfiltered drag data is
+  // also consulted, since `FilterDropData` may have rewritten the URL.
+  if (url.SchemeIs(url::kJavaScriptScheme) || drag_has_javascript_url) {
+    return;
   }
 
-  browser_.get().OpenGURL(url, WindowOpenDisposition::CURRENT_TAB);
+  // If the drag originated from a renderer (web page), only allow safe schemes
+  // (HTTP, HTTPS, file) to match native UI drag-and-drop navigation security.
+  if (drag_originated_from_renderer && !url.SchemeIsHTTPOrHTTPS() &&
+      !url.SchemeIs(url::kFileScheme)) {
+    return;
+  }
+
+  OpenDroppedUrl(url, drag_originated_from_renderer);
 }
 
 void BrowserControlsAdapterImpl::NavigateText(const std::string& text) {
+  // Text drops are checked by the scheme of the classified URL below, so the
+  // unfiltered drag URL state is only cleared here so that it does not leak
+  // into a later call.
+  GetDragHasJavaScriptUrlAndReset();
+  const bool drag_originated_from_renderer =
+      GetDragOriginatedFromRendererAndReset();
+
   std::u16string text_u16 = base::UTF8ToUTF16(text);
   std::u16string sanitized_text = AutocompleteInput::SanitizeString(text_u16);
 
@@ -125,35 +126,21 @@ void BrowserControlsAdapterImpl::NavigateText(const std::string& text) {
     return;
   }
 
-  bool drag_originated_from_renderer = GetDragOriginatedFromRendererAndReset();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, drag origin provenance cannot be reliably distinguished
-  // between OS-local and renderer sources. To ensure security by default, all
-  // drags are conservatively treated as renderer-originated. This restricts
-  // plain-text drops strictly to HTTP/HTTPS destinations, preventing untrusted
-  // drag actions from navigating to privileged or local URL schemes.
-  drag_originated_from_renderer = true;
-#endif
+  // Disallow javascript: URLs to prevent self-XSS.
+  if (match.destination_url.SchemeIs(url::kJavaScriptScheme)) {
+    return;
+  }
 
   // For text drops, enforce stricter filtering for renderer-originated drags.
   // Only allow HTTP/HTTPS to prevent web pages from forcing navigation to local
   // system files (file://) or other unsafe URLs by tricking the user into
   // dragging plain text.
-  if (drag_originated_from_renderer) {
-    if (!match.destination_url.SchemeIsHTTPOrHTTPS()) {
-      return;
-    }
-  } else {
-    // For local text drops (e.g., notepad), allow all URL schemes except
-    // javascript.
-    if (match.destination_url.SchemeIs(url::kJavaScriptScheme)) {
-      return;
-    }
+  if (drag_originated_from_renderer &&
+      !match.destination_url.SchemeIsHTTPOrHTTPS()) {
+    return;
   }
 
-  browser_.get().OpenGURL(match.destination_url,
-                          WindowOpenDisposition::CURRENT_TAB);
+  OpenDroppedUrl(match.destination_url, drag_originated_from_renderer);
 }
 
 webui_toolbar::TabSplitStatus
@@ -164,6 +151,29 @@ BrowserControlsAdapterImpl::ComputeSplitTabStatus() {
 bool BrowserControlsAdapterImpl::GetDragOriginatedFromRendererAndReset() {
   return webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
       web_contents());
+}
+
+bool BrowserControlsAdapterImpl::GetDragHasJavaScriptUrlAndReset() {
+  return webui_toolbar::WebUIToolbarDragState::TakeDragHasJavaScriptUrl(
+      web_contents());
+}
+
+void BrowserControlsAdapterImpl::OpenDroppedUrl(
+    const GURL& url,
+    bool drag_originated_from_renderer) {
+  content::OpenURLParams params(url, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/false);
+  // A drag that started in a web page carries data controlled by that page, so
+  // the navigation must not be treated as browser-initiated. Otherwise it
+  // would be sent with `Sec-Fetch-Site: none` and SameSite=Strict cookies.
+  // `content::DropData` does not carry the page origin, so an opaque origin is
+  // used instead.
+  if (drag_originated_from_renderer) {
+    params.initiator_origin = url::Origin();
+  }
+  browser_.get().OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 }  // namespace browser_controls_api

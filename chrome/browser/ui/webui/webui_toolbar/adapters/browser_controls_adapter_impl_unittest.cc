@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "build/build_config.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -58,10 +57,30 @@ class BrowserControlsAdapterImplTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<BrowserControlsAdapterImpl> adapter_;
 };
 
+// Matches `content::OpenURLParams` that open `url` in the active tab, which is
+// how the adapter handles every drop on the toolbar.
+MATCHER_P(OpensInCurrentTab, url, "") {
+  return arg.url == url &&
+         arg.disposition == WindowOpenDisposition::CURRENT_TAB;
+}
+
+// Matches `content::OpenURLParams` whose initiator is an opaque origin, as set
+// for drags that started in a web page so the navigation is not treated as
+// browser-initiated (b/563340726).
+MATCHER(HasOpaqueInitiator, "") {
+  return arg.initiator_origin.has_value() && arg.initiator_origin->opaque();
+}
+
+// Matches `content::OpenURLParams` without an initiator, as expected for drags
+// that started outside the browser.
+MATCHER(HasNoInitiator, "") {
+  return !arg.initiator_origin.has_value();
+}
+
 TEST_F(BrowserControlsAdapterImplTest, NavigateText_HTTPAllowed) {
   GURL expected_url("https://www.example.com/");
   EXPECT_CALL(browser_window_interface_,
-              OpenGURL(expected_url, WindowOpenDisposition::CURRENT_TAB));
+              OpenURL(OpensInCurrentTab(expected_url), _));
   adapter_->NavigateText("https://www.example.com/");
 }
 
@@ -70,26 +89,20 @@ TEST_F(BrowserControlsAdapterImplTest,
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(true);
-  EXPECT_CALL(browser_window_interface_, OpenGURL(_, _)).Times(0);
+  EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
   adapter_->NavigateText("chrome://settings");
 }
 
+// The adapter trusts the drag state as recorded. ChromeOS treating every drag
+// as renderer-originated (b/256022714) happens earlier, in
+// `PreHandleDragUpdate`, which these tests bypass.
 TEST_F(BrowserControlsAdapterImplTest,
        NavigateText_PrivilegedSchemeWhenDragNotRendererTainted) {
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(false);
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, all drags are conservatively treated as renderer-originated to
-  // enforce strict scheme validation, ensuring privileged schemes like
-  // chrome:// are blocked even if the drag state is not flagged as
-  // renderer-tainted.
-  EXPECT_CALL(browser_window_interface_, OpenGURL(_, _)).Times(0);
-#else
-  EXPECT_CALL(
-      browser_window_interface_,
-      OpenGURL(GURL("chrome://settings"), WindowOpenDisposition::CURRENT_TAB));
-#endif
+  EXPECT_CALL(browser_window_interface_,
+              OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
   adapter_->NavigateText("chrome://settings");
 }
 
@@ -98,16 +111,64 @@ TEST_F(BrowserControlsAdapterImplTest,
   webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
       web_contents())
       ->set_drag_originated_from_renderer(false);
-#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_CALL(browser_window_interface_,
-              OpenGURL(GURL("about:blank#blocked"),
-                       WindowOpenDisposition::CURRENT_TAB));
-#else
+              OpenURL(OpensInCurrentTab(GURL("chrome://settings")), _));
+  adapter_->Navigate(GURL("chrome://settings"));
+}
+
+TEST_F(BrowserControlsAdapterImplTest,
+       Navigate_PrivilegedSchemeIgnoredOnRendererDrag) {
+  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+      web_contents())
+      ->set_drag_originated_from_renderer(true);
+  EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
+  adapter_->Navigate(GURL("chrome://settings"));
+}
+
+TEST_F(BrowserControlsAdapterImplTest,
+       Navigate_IgnoredWhenUnfilteredDragUrlIsJavaScript) {
+  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+      web_contents())
+      ->set_drag_has_javascript_url(true);
+  EXPECT_CALL(browser_window_interface_, OpenURL(_, _)).Times(0);
+  adapter_->Navigate(GURL("about:blank#blocked"));
+}
+
+TEST_F(BrowserControlsAdapterImplTest,
+       Navigate_RendererDragHasOpaqueInitiator) {
+  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+      web_contents())
+      ->set_drag_originated_from_renderer(true);
+  const GURL url("https://www.example.com/");
   EXPECT_CALL(
       browser_window_interface_,
-      OpenGURL(GURL("chrome://settings"), WindowOpenDisposition::CURRENT_TAB));
-#endif
-  adapter_->Navigate(GURL("chrome://settings"));
+      OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
+              _));
+  adapter_->Navigate(url);
+}
+
+TEST_F(BrowserControlsAdapterImplTest,
+       NavigateText_RendererDragHasOpaqueInitiator) {
+  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+      web_contents())
+      ->set_drag_originated_from_renderer(true);
+  const GURL url("https://www.example.com/");
+  EXPECT_CALL(
+      browser_window_interface_,
+      OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasOpaqueInitiator()),
+              _));
+  adapter_->NavigateText(url.spec());
+}
+
+TEST_F(BrowserControlsAdapterImplTest, Navigate_OsDragHasNoInitiator) {
+  webui_toolbar::WebUIToolbarDragState::GetOrCreateForWebContents(
+      web_contents())
+      ->set_drag_originated_from_renderer(false);
+  const GURL url("https://www.example.com/");
+  EXPECT_CALL(
+      browser_window_interface_,
+      OpenURL(::testing::AllOf(OpensInCurrentTab(url), HasNoInitiator()), _));
+  adapter_->Navigate(url);
 }
 
 }  // namespace

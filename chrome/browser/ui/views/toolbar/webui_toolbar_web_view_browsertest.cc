@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -24,12 +25,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
@@ -67,6 +70,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -135,16 +139,19 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller_factory.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -157,6 +164,7 @@
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -164,6 +172,8 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/actions/actions.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -173,6 +183,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -199,6 +210,8 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -3738,396 +3751,539 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewTouchBrowserTest, VerifyLayout) {
       content::EvalJs(web_contents, get_indicator_bottom_js).ExtractString());
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+// Drops data on an empty area of the WebUI toolbar through the same sequence of
+// calls that `WebContentsViewAura` makes for a real drag, so that both the drag
+// provenance tracked by `PreHandleDragUpdate` and the data the WebUI receives
+// match production.
+class WebUIToolbarDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
+ public:
+  WebUIToolbarDropBrowserTest()
+      : WebUIToolbarWebViewBrowserTest(
+            {features::kInitialWebUI, features::kWebUIBackForwardButton,
+             features::kWebUIReloadButton},
+            {}) {}
 
-  GURL new_url("https://www.example.test/");
-  content::TestNavigationObserver navigation_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
+  enum class DragOrigin {
+    // Dragged out of a web page rendered by a renderer process.
+    kWebPage,
+    // Dragged in from outside the browser (a text editor, a file manager...).
+    kOs,
+  };
 
-  SimulateUriListDropOnToolbar(web_contents, new_url.spec());
+  void TearDownOnMainThread() override {
+    navigation_counter_.reset();
+    navigation_observer_.reset();
+    toolbar_web_contents_ = nullptr;
+    WebUIToolbarWebViewBrowserTest::TearDownOnMainThread();
+  }
 
-  navigation_observer.Wait();
-  EXPECT_EQ(new_url, browser()
-                         ->GetTabStripModel()
-                         ->GetActiveWebContents()
-                         ->GetLastCommittedURL());
-}
+ protected:
+  content::WebContents* active_web_contents() {
+    return browser()->GetTabStripModel()->GetActiveWebContents();
+  }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropJavaScriptUrlOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+  // Loads a page that never navigates on its own, and finds a point on the
+  // toolbar that is not covered by any control. Must be called before any
+  // Simulate*Drop()/Expect*() call.
+  void SetUpToolbarDropTest() {
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Load about:blank.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    ui::TrackedElement* element = nullptr;
+    WebUIToolbarWebView* webui_toolbar_view = nullptr;
+    views::WebView* web_view = nullptr;
+    ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                       &webui_toolbar_view, &web_view,
+                                       browser()));
+    toolbar_web_contents_ = web_view->GetWebContents();
+    content::WaitForCopyableViewInWebContents(toolbar_web_contents_);
 
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  NavigationCounter counter(active_contents);
+    // Hit-test the toolbar for a point that resolves to the toolbar-app itself,
+    // i.e. the empty space between controls. Drops there are handled by the
+    // toolbar-app rather than by a specific control.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      const std::string probe = content::EvalJs(toolbar_web_contents_, R"(
+        (() => {
+          const app = document.querySelector('toolbar-app');
+          if (!app) {
+            return '';
+          }
+          const rect = app.getBoundingClientRect();
+          const y = Math.floor(rect.top + rect.height / 2);
+          let start = -1;
+          for (let x = Math.ceil(rect.left); x < rect.right; ++x) {
+            const hit = document.elementFromPoint(x, y) === app &&
+                app.shadowRoot.elementFromPoint(x, y) === app;
+            if (hit && start < 0) {
+              start = x;
+            } else if (!hit && start >= 0) {
+              return `${Math.floor((start + x - 1) / 2)},${y}`;
+            }
+          }
+          return '';
+        })();)")
+                                    .ExtractString();
+      std::vector<std::string> coords = base::SplitString(
+          probe, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      int x = 0;
+      int y = 0;
+      if (coords.size() != 2 || !base::StringToInt(coords[0], &x) ||
+          !base::StringToInt(coords[1], &y)) {
+        return false;
+      }
+      drop_point_ = gfx::PointF(x, y);
+      return true;
+    }));
 
-  // Verify initial title is empty.
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
+    initial_tab_url_ = active_web_contents()->GetLastCommittedURL();
+    navigation_counter_ =
+        std::make_unique<NavigationCounter>(active_web_contents());
+    navigation_observer_ = std::make_unique<content::TestNavigationObserver>(
+        active_web_contents());
+  }
 
-  // Simulate dropping a javascript URL as text/uri-list.
-  SimulateUriListDropOnToolbar(web_contents,
-                               "javascript:void(document.title='PWNED')");
+  // Returns whether the toolbar accepted the drag. A refused drag receives no
+  // drop, as the platform does not deliver one after the target rejects every
+  // drag operation.
+  //
+  // When `drag_exited_before_drop` is true, the toolbar is told that the drag
+  // left it after the last drag update, as happens when the drag leaves the
+  // toolbar area before the drop lands.
+  bool PerformDropOnToolbar(content::DropData drop_data,
+                            bool drag_exited_before_drop = false) {
+    views::View* toolbar_view = GetWebUIToolbar();
+    const gfx::PointF screen_pt(
+        drop_point_ + toolbar_view->GetBoundsInScreen().OffsetFromOrigin());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, unsafe schemes dropped on toolbar are redirected to
+    content::RenderWidgetHost* rwh =
+        toolbar_web_contents_->GetPrimaryMainFrame()->GetRenderWidgetHost();
+    EXPECT_TRUE(rwh);
+    if (!rwh) {
+      return false;
+    }
+
+    // Filter the drop data via `RenderWidgetHost::FilterDropData` before
+    // sending `DragTargetDragEnter`, matching
+    // `WebContentsViewAura::DragEnteredCallback`.
+    content::DropData filtered_drop_data = drop_data;
+    rwh->FilterDropData(&filtered_drop_data);
+    rwh->DragTargetDragEnter(filtered_drop_data, drop_point_, screen_pt,
+                             blink::kDragOperationEvery, /*key_modifiers=*/0,
+                             base::DoNothing());
+
+    // Pass the unfiltered drop data to `PreHandleDragUpdate` before sending
+    // `DragTargetDragOver`, matching
+    // `WebContentsViewAura::DragUpdatedCallback`.
+    toolbar_web_contents_->GetDelegate()->PreHandleDragUpdate(drop_data,
+                                                              drop_point_);
+    base::test::TestFuture<ui::mojom::DragOperation, bool> drag_over_future;
+    rwh->DragTargetDragOver(drop_point_, screen_pt, blink::kDragOperationEvery,
+                            /*key_modifiers=*/0,
+                            drag_over_future.GetCallback());
+    const bool drag_over_replied = drag_over_future.Wait();
+    EXPECT_TRUE(drag_over_replied);
+    if (!drag_over_replied) {
+      return false;
+    }
+    if (drag_over_future.Get<0>() == ui::mojom::DragOperation::kNone) {
+      rwh->DragTargetDragLeave(drop_point_, screen_pt);
+      toolbar_web_contents_->GetDelegate()->PreHandleDragExit();
+      return false;
+    }
+    EXPECT_TRUE(drag_over_future.Get<1>());
+
+    if (drag_exited_before_drop) {
+      toolbar_web_contents_->GetDelegate()->PreHandleDragExit();
+    }
+
+    // Pass the filtered drop data through `HandleOnPerformingDrop` before
+    // sending `DragTargetDrop`, matching
+    // `WebContentsViewAura::PerformDropCallback`.
+    filtered_drop_data.document_is_handling_drag = drag_over_future.Get<1>();
+    base::test::TestFuture<std::optional<content::DropData>>
+        performing_drop_future;
+    HandleOnPerformingDrop(toolbar_web_contents_, std::move(filtered_drop_data),
+                           performing_drop_future.GetCallback());
+    std::optional<content::DropData> final_drop_data =
+        performing_drop_future.Take();
+    EXPECT_TRUE(final_drop_data.has_value());
+    if (!final_drop_data.has_value()) {
+      return true;
+    }
+
+    base::test::TestFuture<void> drop_future;
+    rwh->DragTargetDrop(*final_drop_data, drop_point_, screen_pt,
+                        /*key_modifiers=*/0, drop_future.GetCallback());
+    EXPECT_TRUE(drop_future.Wait());
+    return true;
+  }
+
+  // Drop of a link, i.e. `text/uri-list` only.
+  void SimulateLinkDrop(const std::string& url, DragOrigin origin) {
+    content::DropData drop_data;
+    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
+    drop_data.url_infos.emplace_back(GURL(url), std::u16string());
+    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
+  }
+
+  // Drop of selected text, i.e. `text/plain`. The drop data is built through
+  // `ui::OSExchangeData`, matching `WebContentsViewAura::PrepareDropData`, so
+  // platforms that synthesize a URL from URL-like plain text (Windows,
+  // ChromeOS, Wayland) also add `text/uri-list`, while X11 does not. Returns
+  // whether a URL was synthesized.
+  bool SimulateTextDrop(const std::string& text, DragOrigin origin) {
+    ui::OSExchangeData data;
+    if (origin == DragOrigin::kWebPage) {
+      data.MarkRendererTaintedFromOrigin(url::Origin());
+    }
+    data.SetString(base::UTF8ToUTF16(text));
+
+    content::DropData drop_data;
+    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
+    drop_data.text = data.GetString();
+    drop_data.url_infos =
+        data.GetURLs(ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES);
+    const bool has_synthesized_url = !drop_data.url_infos.empty();
+    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
+    return has_synthesized_url;
+  }
+
+  // Drop carrying `url` in both `text/uri-list` and `text/plain`.
+  void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin) {
+    content::DropData drop_data;
+    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
+    drop_data.url_infos.emplace_back(GURL(url), std::u16string());
+    drop_data.text = base::UTF8ToUTF16(url);
+    EXPECT_TRUE(PerformDropOnToolbar(drop_data));
+  }
+
+  // Drop of an OS file, i.e. `Files` plus `DropData::filenames`. Returns
+  // whether the toolbar accepted the drag.
+  bool SimulateFileDrop(const base::FilePath& path,
+                        DragOrigin origin,
+                        bool drag_exited_before_drop = false) {
+    content::DropData drop_data;
+    drop_data.did_originate_from_renderer = origin == DragOrigin::kWebPage;
+    drop_data.filenames.emplace_back(path, path.BaseName());
+    return PerformDropOnToolbar(drop_data, drag_exited_before_drop);
+  }
+
+  // The active tab navigated to `expected`.
+  void ExpectNavigatedTo(const GURL& expected) {
+    content::WebContents* active_contents = active_web_contents();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return active_contents->GetLastCommittedURL() == expected; }));
+  }
+
+  // The active tab navigated to the default search engine's results page for
+  // `query`.
+  void ExpectSearchedFor(const std::string& query) {
+    content::WebContents* active_contents = active_web_contents();
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      const GURL& url = active_contents->GetLastCommittedURL();
+      return url.SchemeIs(url::kHttpsScheme) &&
+             url.host() == "www.google.com" && url.path() == "/search";
+    }));
+
+    // Search terms are substituted into the query component, where
+    // TemplateURLRef encodes spaces as '+'.
+    std::string expected_query;
+    base::ReplaceChars(query, " ", "+", &expected_query);
+    EXPECT_NE(std::string_view::npos,
+              active_contents->GetLastCommittedURL().query().find(
+                  "q=" + expected_query));
+  }
+
+  // Nothing happened at all: no navigation, including no redirect to
   // about:blank#blocked.
-  content::TestNavigationObserver navigation_observer(active_contents);
-  navigation_observer.Wait();
-  EXPECT_EQ(active_contents->GetLastCommittedURL(),
-            GURL("about:blank#blocked"));
-#else
-  // Wait to see if any navigation starts (it should not).
-  counter.WaitForNoNavigations();
-#endif
+  void ExpectDropIgnored() {
+    navigation_counter_->WaitForNoNavigations();
+    EXPECT_EQ(initial_tab_url_, active_web_contents()->GetLastCommittedURL());
+  }
 
-  // Verify that the title remained empty (javascript was not executed).
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
+  // Waits for the navigation triggered by the drop and returns its initiator.
+  std::optional<url::Origin> WaitForDropNavigationInitiator() {
+    navigation_observer_->Wait();
+    return navigation_observer_->last_initiator_origin();
+  }
+
+ private:
+  raw_ptr<content::WebContents> toolbar_web_contents_ = nullptr;
+  gfx::PointF drop_point_;
+  GURL initial_tab_url_;
+  std::unique_ptr<NavigationCounter> navigation_counter_;
+  std::unique_ptr<content::TestNavigationObserver> navigation_observer_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropPlainText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kWebPage);
+
+  ExpectSearchedFor("hello world");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropNestedJavaScriptUrlOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropPlainText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kOs);
 
-  // Load about:blank.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  NavigationCounter counter(active_contents);
-
-  // Verify initial title is empty.
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
-
-  // Simulate dropping a nested javascript URL as text/uri-list.
-  SimulateUriListDropOnToolbar(
-      web_contents, "javascript:javascript:void(document.title='PWNED')");
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, unsafe schemes dropped on toolbar are redirected to
-  // about:blank#blocked.
-  content::TestNavigationObserver navigation_observer(active_contents);
-  navigation_observer.Wait();
-  EXPECT_EQ(active_contents->GetLastCommittedURL(),
-            GURL("about:blank#blocked"));
-#else
-  // Wait to see if any navigation starts (it should not).
-  counter.WaitForNoNavigations();
-#endif
-
-  // Verify that the title remained empty (javascript was not executed).
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
+  ExpectSearchedFor("hello world");
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropJavaScriptTextOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateTextDrop(url.spec(), DragOrigin::kWebPage);
 
-  // Load about:blank.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  NavigationCounter counter(active_contents);
-
-  // Verify initial title is empty.
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
-
-  // Simulate dropping a javascript URL that attempts to modify the title.
-  SimulateDropOnToolbar(web_contents,
-                        "javascript:void(document.title='PWNED')");
-
-  // Wait to see if any navigation starts (it should not).
-  counter.WaitForNoNavigations();
-
-  // Verify that the title remained empty (javascript was not executed).
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
+  ExpectNavigatedTo(url);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropNestedJavaScriptTextOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
 
-  // Load about:blank.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
-
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  NavigationCounter counter(active_contents);
-
-  // Verify initial title is empty.
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
-
-  // Simulate dropping a nested javascript URL.
-  SimulateDropOnToolbar(web_contents,
-                        "javascript:javascript:void(document.title='PWNED')");
-
-  // Wait to see if any navigation starts (it should not).
-  counter.WaitForNoNavigations();
-
-  // Verify that the title remained empty (javascript was not executed).
-  EXPECT_EQ("",
-            content::EvalJs(active_contents, "document.title").ExtractString());
+  ExpectNavigatedTo(url);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, DropUrlTextOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+// Dragging a real link produces both `text/uri-list` and `text/plain` holding
+// the same URL. The link must win, so it is navigated to rather than searched
+// for.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropUrlLinkWithTextFallback_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL link("https://www.example.test/");
+  SimulateLinkWithTextDrop(link.spec(), DragOrigin::kWebPage);
 
-  GURL test_url("https://www.example.test/");
-
-  content::TestNavigationObserver navigation_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
-
-  SimulateDropOnToolbar(web_contents, test_url.spec());
-
-  // Wait for the navigation to finish and assert.
-  navigation_observer.Wait();
-  EXPECT_EQ(test_url, browser()
-                          ->GetTabStripModel()
-                          ->GetActiveWebContents()
-                          ->GetLastCommittedURL());
+  ExpectNavigatedTo(link);
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropSearchTextOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
 
-  std::string search_term = "hello world";
-  content::TestNavigationObserver navigation_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
-
-  SimulateDropOnToolbar(web_contents, search_term);
-
-  // Wait for the navigation (it might load an error page, but the URL commits).
-  navigation_observer.Wait();
-
-  GURL committed_url = browser()
-                           ->GetTabStripModel()
-                           ->GetActiveWebContents()
-                           ->GetLastCommittedURL();
-
-  EXPECT_TRUE(committed_url.SchemeIs(url::kHttpsScheme));
-  EXPECT_EQ("www.google.com", committed_url.host());
-  EXPECT_EQ("/search", committed_url.path());
-  // The query should contain "q=hello+world" (spaces are URL-encoded as + or
-  // %20).
-  EXPECT_TRUE(
-      committed_url.query().find("q=hello+world") != std::string::npos ||
-      committed_url.query().find("q=hello%20world") != std::string::npos);
+  ExpectNavigatedTo(url);
 }
 
-// On ChromeOS, drag origin provenance cannot be distinguished between OS-local
-// and renderer sources (b/256022714), so all drags are conservatively treated
-// as renderer-originated and local file navigation via drag is blocked.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DropFileOnToolbar DISABLED_DropFileOnToolbar
-#else
-#define MAYBE_DropFileOnToolbar DropFileOnToolbar
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       MAYBE_DropFileOnToolbar) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-  content::WebContents* web_contents = web_view->GetWebContents();
-
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropFile_FromOs) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
-  base::WriteFile(file_path, "<html><body>test</body></html>");
-  GURL file_url = net::FilePathToFileURL(file_path);
-
-  gfx::Point click_point(10, 10);  // Somewhere on the toolbar
-
-  content::DropData drop_data;
-  drop_data.filenames.emplace_back(file_path, base::FilePath());
-
-  web_view->GetWebContents()->GetDelegate()->PreHandleDragUpdate(
-      drop_data, gfx::PointF(click_point));
-
-  content::TestNavigationObserver navigation_observer(
-      browser()->GetTabStripModel()->GetActiveWebContents());
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents, base::StringPrintf(R"(
-    const toolbarApp = document.querySelector('toolbar-app');
-    const dataTransfer = new DataTransfer();
-    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
-    const dropEvent = new DragEvent('drop', {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: dataTransfer,
-      clientX: %d,
-      clientY: %d
-    });
-    toolbarApp.dispatchEvent(dropEvent);
-  )",
-                                       click_point.x(), click_point.y())));
-
-  navigation_observer.Wait();
-  EXPECT_EQ(file_url, browser()
-                          ->GetTabStripModel()
-                          ->GetActiveWebContents()
-                          ->GetLastCommittedURL());
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropFileOnToolbar_BlockedRendererOriginated) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("secret.html");
-  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>secret</body></html>"));
-
-  gfx::Point click_point(10, 10);
-
-  content::DropData drop_data;
-  drop_data.did_originate_from_renderer = true;
-  drop_data.filenames.emplace_back(file_path, base::FilePath());
-
-  web_view->GetWebContents()->GetDelegate()->PreHandleDragUpdate(
-      drop_data, gfx::PointF(click_point));
-
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  GURL initial_url = active_contents->GetLastCommittedURL();
-  NavigationCounter counter(active_contents);
-
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      base::StringPrintf(R"(
-    const toolbarApp = document.querySelector('toolbar-app');
-    const dataTransfer = new DataTransfer();
-    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
-    const dropEvent = new DragEvent('drop', {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: dataTransfer,
-      clientX: %d,
-      clientY: %d
-    });
-    toolbarApp.dispatchEvent(dropEvent);
-  )",
-                                         click_point.x(), click_point.y())));
-
-  counter.WaitForNoNavigations();
-  EXPECT_EQ(initial_url, active_contents->GetLastCommittedURL());
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
-                       DropFileOnToolbar_BlockedAfterDragExit) {
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* webui_toolbar_view = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &webui_toolbar_view, &web_view,
-                                     browser()));
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
   ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateFileDrop(file_path, DragOrigin::kOs);
 
-  gfx::Point click_point(10, 10);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714). The dragged file path is
+  // then never cached, leaving the drop with nothing to act on.
+  ExpectDropIgnored();
+#else
+  ExpectNavigatedTo(net::FilePathToFileURL(file_path));
+#endif
+}
 
-  content::DropData drop_data;
-  drop_data.did_originate_from_renderer = false;
-  drop_data.filenames.emplace_back(file_path, base::FilePath());
+// A web page must not be able to open a local file by dragging it onto the
+// toolbar. The renderer never sees files from a web page drag, so the toolbar
+// refuses the drag outright.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropFile_FromWebPage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("secret.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>secret</body></html>"));
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  EXPECT_FALSE(SimulateFileDrop(file_path, DragOrigin::kWebPage));
 
-  auto* delegate = web_view->GetWebContents()->GetDelegate();
-  delegate->PreHandleDragUpdate(drop_data, gfx::PointF(click_point));
+  ExpectDropIgnored();
+}
 
-  // Drag exits the toolbar area before dropping.
-  delegate->PreHandleDragExit();
+// Leaving the toolbar clears the dragged file cached by the drag update, so a
+// drop that lands afterwards has nothing to open.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropFile_FromOs_IgnoredAfterDragExit) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_TRUE(SimulateFileDrop(file_path, DragOrigin::kOs,
+                               /*drag_exited_before_drop=*/true));
 
-  content::WebContents* active_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  GURL initial_url = active_contents->GetLastCommittedURL();
-  NavigationCounter counter(active_contents);
+  ExpectDropIgnored();
+}
 
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      base::StringPrintf(R"(
-    const toolbarApp = document.querySelector('toolbar-app');
-    const dataTransfer = new DataTransfer();
-    Object.defineProperty(dataTransfer, 'types', {value: ['Files']});
-    const dropEvent = new DragEvent('drop', {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: dataTransfer,
-      clientX: %d,
-      clientY: %d
-    });
-    toolbarApp.dispatchEvent(dropEvent);
-  )",
-                                         click_point.x(), click_point.y())));
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropFilePath_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateTextDrop("file:///tmp/secret.html", DragOrigin::kWebPage);
 
-  counter.WaitForNoNavigations();
-  EXPECT_EQ(initial_url, active_contents->GetLastCommittedURL());
+  ExpectDropIgnored();
+}
+
+// A web page cannot point the browser at a local file through `text/plain`
+// (see DropFilePath_FromWebPage), but it can through a link. This asymmetry
+// replicates the native Views behavior and is deliberate.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropFileLink_FromWebPage) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  const GURL file_url = net::FilePathToFileURL(file_path);
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateLinkDrop(file_url.spec(), DragOrigin::kWebPage);
+
+  ExpectNavigatedTo(file_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropFilePath_FromOs) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
+  ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
+  const GURL file_url = net::FilePathToFileURL(file_path);
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+
+  // ChromeOS synthesizes the `file:` URL, and `file:` is allowed even though
+  // every ChromeOS drag is treated as renderer-originated (b/256022714).
+  SimulateTextDrop(file_url.spec(), DragOrigin::kOs);
+
+  ExpectNavigatedTo(file_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropJavaScriptText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+// A nested pseudo-scheme must not survive a second round of unwrapping.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropNestedJavaScriptText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropJavaScriptLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateLinkDrop("javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropNestedJavaScriptLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateLinkDrop("javascript:javascript:void(document.title='PWNED')",
+                   DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest, DropJavaScriptText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  ASSERT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+  SimulateTextDrop("javascript:void(document.title='PWNED')", DragOrigin::kOs);
+
+  ExpectDropIgnored();
+  EXPECT_EQ("", content::EvalJs(active_web_contents(), "document.title"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropPrivilegedUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateTextDrop("chrome://version/", DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropPrivilegedUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateLinkDrop("chrome://version/", DragOrigin::kWebPage);
+
+  ExpectDropIgnored();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropPrivilegedUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("chrome://version/");
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS cannot tell an OS-local drag from a renderer drag, so it treats
+  // every drag as renderer-originated (b/256022714), which rejects privileged
+  // schemes whether or not a URL was synthesized.
+  ExpectDropIgnored();
+#else
+  ExpectNavigatedTo(url);
+#endif
+}
+
+// A link dropped from a web page must keep the page as the navigation
+// initiator, as native Views does, so the navigation is not treated as
+// user-typed (b/563340726).
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropUrlLink_FromWebPage_HasOpaqueInitiator) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateLinkDrop(url.spec(), DragOrigin::kWebPage);
+
+  const std::optional<url::Origin> initiator = WaitForDropNavigationInitiator();
+  EXPECT_EQ(url, active_web_contents()->GetLastCommittedURL());
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_TRUE(initiator->opaque());
+}
+
+// Same as DropUrlLink_FromWebPage_HasOpaqueInitiator, for text that is resolved
+// into a search (b/563340726).
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropPlainText_FromWebPage_HasOpaqueInitiator) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  SimulateTextDrop("hello world", DragOrigin::kWebPage);
+
+  const std::optional<url::Origin> initiator = WaitForDropNavigationInitiator();
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_TRUE(initiator->opaque());
+}
+
+// A drop from outside the browser is a user action, so it has no initiator.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarDropBrowserTest,
+                       DropUrlText_FromOs_HasNoInitiator) {
+  ASSERT_NO_FATAL_FAILURE(SetUpToolbarDropTest());
+  const GURL url("https://www.example.test/");
+  SimulateTextDrop(url.spec(), DragOrigin::kOs);
+
+  const std::optional<url::Origin> initiator = WaitForDropNavigationInitiator();
+  EXPECT_EQ(url, active_web_contents()->GetLastCommittedURL());
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS treats every drag as renderer-originated (b/256022714).
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_TRUE(initiator->opaque());
+#else
+  EXPECT_FALSE(initiator.has_value());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, LoadExtension) {

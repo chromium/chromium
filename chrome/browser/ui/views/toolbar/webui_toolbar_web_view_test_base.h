@@ -140,12 +140,6 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
       const std::vector<base::test::FeatureRef>& enabled,
       const std::vector<base::test::FeatureRef>& disabled);
 
-  void SimulateDropOnToolbar(content::WebContents* web_contents,
-                             const std::string& text);
-
-  void SimulateUriListDropOnToolbar(content::WebContents* web_contents,
-                                    const std::string& url);
-
   scoped_refptr<const extensions::Extension> LoadAndPinExtension(
       WebUIToolbarWebView* webui_toolbar_view,
       base::ScopedTempDir& temp_dir,

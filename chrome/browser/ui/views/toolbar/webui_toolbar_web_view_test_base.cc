@@ -259,40 +259,6 @@ WebUIToolbarWebViewTestBase::WebUIToolbarWebViewTestBase(
   feature_list_.InitWithFeatures(enabled, disabled);
 }
 
-void WebUIToolbarWebViewTestBase::SimulateDropOnToolbar(
-    content::WebContents* web_contents,
-    const std::string& text) {
-  EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
-    const toolbarApp = document.querySelector('toolbar-app');
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData('text/plain', "%s");
-    const dropEvent = new DragEvent('drop', {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: dataTransfer
-    });
-    toolbarApp.dispatchEvent(dropEvent);
-  )",
-                                                               text.c_str())));
-}
-
-void WebUIToolbarWebViewTestBase::SimulateUriListDropOnToolbar(
-    content::WebContents* web_contents,
-    const std::string& url) {
-  EXPECT_TRUE(content::ExecJs(web_contents, base::StringPrintf(R"(
-    const toolbarApp = document.querySelector('toolbar-app');
-    const dataTransfer = new DataTransfer();
-    dataTransfer.setData('text/uri-list', "%s");
-    const dropEvent = new DragEvent('drop', {
-      bubbles: true,
-      cancelable: true,
-      dataTransfer: dataTransfer
-    });
-    toolbarApp.dispatchEvent(dropEvent);
-  )",
-                                                               url.c_str())));
-}
-
 scoped_refptr<const extensions::Extension>
 WebUIToolbarWebViewTestBase::LoadAndPinExtension(
     WebUIToolbarWebView* webui_toolbar_view,
