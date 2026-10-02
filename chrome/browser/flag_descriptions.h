@@ -6877,20 +6877,6 @@ inline constexpr char kEnableShouldShowPromotionName[] =
 inline constexpr char kEnableShouldShowPromotionDescription[] =
     "Enables showing the promotion banner on chromewebstore page.";
 
-inline constexpr char kInfiniteTabsFreezingName[] = "Infinite Tabs Freezing";
-inline constexpr char kInfiniteTabsFreezingDescription[] =
-    "Freezes eligible tabs which are not in the 5 most recently used ones, to "
-    "preserve Chrome speed as new tabs are created. Tabs providing background "
-    "functionality (e.g. playing audio, handling a video call) are not "
-    "eligible for freezing.";
-
-inline constexpr char kMemoryPurgeOnFreezeLimitName[] =
-    "Memory Purge on Freeze Limit";
-inline constexpr char kMemoryPurgeOnFreezeLimitDescription[] =
-    "Do not purge memory in renderers with frozen pages more than once per "
-    "backgrounded interval, to minimize overhead when pages are periodically "
-    "unfrozen. To be enabled with memory-purge-on-freeze-limit.";
-
 inline constexpr char kReadAnythingOmniboxChipName[] =
     "Reading Mode Omnibox Chip";
 inline constexpr char kReadAnythingOmniboxChipDescription[] =

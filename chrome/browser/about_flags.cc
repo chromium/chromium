@@ -10636,17 +10636,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(visited_url_ranking::features::
                             kVisitedURLRankingHistoryVisibilityScoreFilter)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"infinite-tabs-freezing", flag_descriptions::kInfiniteTabsFreezingName,
-     flag_descriptions::kInfiniteTabsFreezingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(performance_manager::features::kInfiniteTabsFreezing)},
-
-    {"memory-purge-on-freeze-limit",
-     flag_descriptions::kMemoryPurgeOnFreezeLimitName,
-     flag_descriptions::kMemoryPurgeOnFreezeLimitDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(blink::features::kMemoryPurgeOnFreezeLimit)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_WIN)
     {"hid-get-feature-report-fix",
      flag_descriptions::kHidGetFeatureReportFixName,

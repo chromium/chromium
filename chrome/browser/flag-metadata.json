@@ -6340,11 +6340,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "infinite-tabs-freezing",
-    "owners": [ "fdoray@chromium.org", "catan-team@chromium.org" ],
-    "expiry_milestone": 142
-  },
-  {
     "name": "infobar-banner-revamp",
     "owners": [ "kanouche@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 172
@@ -7013,11 +7008,6 @@
     // aren't easily understood. It is primarily used by support to help
     // individual users get cast working.
     "expiry_milestone": -1
-  },
-  {
-    "name": "memory-purge-on-freeze-limit",
-    "owners": [ "fdoray@chromium.org", "catan-team@chromium.org" ],
-    "expiry_milestone": 142
   },
   {
     "name": "menu-simplification",
