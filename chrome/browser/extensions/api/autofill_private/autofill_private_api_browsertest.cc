@@ -947,6 +947,8 @@ IN_PROC_BROWSER_TEST_F(
     GetDetailsForUpsertPass_ReturnsNoArgumentsWhenContextTokenEmpty) {
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
   response.context_token = "";
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kEligible;
 
   EXPECT_CALL(wallet_manager(),
               GetDetailsForUpsertPass(
@@ -962,6 +964,34 @@ IN_PROC_BROWSER_TEST_F(
       extensions::api_test_utils::RunFunction(function.get(), "[]", profile()));
   ASSERT_TRUE(function->GetResultListForTest());
   EXPECT_TRUE(function->GetResultListForTest()->empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AutofillPrivateApiPublicPassTest,
+    GetDetailsForUpsertPass_ReturnsDetailsWhenIneligibleUserWithoutToken) {
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.legal_message_lines = {};
+  response.context_token = "";
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kIneligible;
+
+  EXPECT_CALL(wallet_manager(),
+              GetDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
+                  testing::_))
+      .WillOnce(RunOnceCallback<1>(std::move(response)));
+
+  auto function = base::MakeRefCounted<
+      extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), "[]", profile());
+  EXPECT_THAT(result, Optional(AllOf(
+                          DictionaryHasValue("contextToken", base::Value("")),
+                          DictionaryHasValue("legalMessageLines",
+                                             base::test::ParseJson("[]")))));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,

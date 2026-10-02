@@ -1430,7 +1430,15 @@ void AutofillPrivateGetDetailsForUpsertPassFunction::
         base::expected<
             autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse,
             wallet::WalletHttpClient::WalletRequestError> response) {
-  if (!response.has_value() || response->context_token.empty()) {
+  const bool should_see_legal_message_notice =
+      response.has_value() &&
+      response->user_eligibility ==
+          autofill::WalletPassAccessManager::UserEligibility::kEligible;
+  const bool fallback_to_local =
+      !response.has_value() || (should_see_legal_message_notice &&
+                                (response->legal_message_lines.empty() ||
+                                 response->context_token.empty()));
+  if (fallback_to_local) {
     Respond(NoArguments());
     return;
   }
