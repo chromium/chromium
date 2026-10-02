@@ -638,20 +638,89 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, UrgentFastShutdownWithUnloadHandler) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Disable the protection of recent tabs.
   OpenTwoTabs(embedded_test_server()->GetURL("a.com", "/title1.html"),
-              embedded_test_server()->GetURL("/unload.html"));
+              embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  // The Tab Manager will not be able to safely fast-kill either of the tabs as
-  // one of them is current, and the other has an unload handler. An unsafe
-  // attempt will be made on some platforms.
+  content::WebContents* second_tab = tsm()->GetWebContentsAt(1);
+  ASSERT_TRUE(content::ExecJs(
+      second_tab, "window.addEventListener('pagehide', () => {});"));
+
+  base::HistogramTester histogram_tester;
+  std::optional<WindowedRenderProcessHostExitObserver> observer;
 #if BUILDFLAG(IS_CHROMEOS)
-  // The unsafe attempt for ChromeOS should succeed as ChromeOS ignores unload
-  // handlers when in critical condition.
-  WindowedRenderProcessHostExitObserver observer;
+  observer.emplace();
+#else
+  if (IsRetainedWebContents()) {
+    observer.emplace();
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(UrgentDiscardTabImmediately());
-#if BUILDFLAG(IS_CHROMEOS)
-  observer.Wait();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  if (observer.has_value()) {
+    observer->Wait();
+    histogram_tester.ExpectUniqueSample(
+        "Discarding.AttemptFastKillForDiscardResult",
+        AttemptFastKillForDiscardResult::kKilledWithoutUnloadHandlers, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(TabManagerTest, ProactiveFastShutdownWithUnloadHandler) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTwoTabs(embedded_test_server()->GetURL("a.com", "/title1.html"),
+              embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  content::WebContents* second_tab = tsm()->GetWebContentsAt(1);
+  ASSERT_TRUE(content::ExecJs(
+      second_tab, "window.addEventListener('pagehide', () => {});"));
+  content::RenderProcessHost* process =
+      second_tab->GetPrimaryMainFrame()->GetProcess();
+
+  base::HistogramTester histogram_tester;
+  content::RenderProcessHostWatcher exit_observer(
+      process, content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  EXPECT_TRUE(
+      GetLifecycleUnitAt(1)->Discard(LifecycleUnitDiscardReason::PROACTIVE));
+
+  // For non-urgent discards with an unload/pagehide handler,
+  // AttemptFastKillForDiscard must skip up-front fast shutdown so handlers can
+  // execute.
+  histogram_tester.ExpectUniqueSample(
+      "Discarding.AttemptFastKillForDiscardResult",
+      AttemptFastKillForDiscardResult::kSkipped, 1);
+
+  if (IsRetainedWebContents()) {
+    // Once the renderer finishes running unload/pagehide handlers and
+    // committing the empty document, the dedicated renderer process should be
+    // terminated.
+    exit_observer.Wait();
+    EXPECT_FALSE(process->IsInitializedAndNotDead());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(TabManagerTest, UrgentFastShutdownWithOOPIF) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  OpenTwoTabs(embedded_test_server()->GetURL("a.com", "/title1.html"),
+              embedded_test_server()->GetURL("b.com", "/iframe.html"));
+
+  content::WebContents* second_tab = tsm()->GetWebContentsAt(1);
+  GURL oopif_url = embedded_test_server()->GetURL("c.com", "/title1.html");
+  EXPECT_TRUE(content::NavigateIframeToURL(second_tab, "test", oopif_url));
+
+  content::RenderFrameHost* main_frame = second_tab->GetPrimaryMainFrame();
+  content::RenderFrameHost* oopif_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(oopif_frame);
+  content::RenderProcessHost* oopif_process = oopif_frame->GetProcess();
+  EXPECT_NE(main_frame->GetProcess(), oopif_process);
+
+  if (IsRetainedWebContents()) {
+    content::RenderProcessHostWatcher exit_observer(
+        oopif_process,
+        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    EXPECT_TRUE(UrgentDiscardTabImmediately());
+    exit_observer.Wait();
+    EXPECT_FALSE(oopif_process->IsInitializedAndNotDead());
+  } else {
+    EXPECT_TRUE(UrgentDiscardTabImmediately());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(TabManagerTest,
