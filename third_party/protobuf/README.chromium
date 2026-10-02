@@ -23,12 +23,17 @@ Steps used to create the current version (or roll a newer one):
 2. Add back chromium's on-upstream files (from this directory):
 
    $ git checkout origin/main -- BUILD.gn DEPS DIR_METADATA OWNERS \
-     README.chromium gen_extra_chromium_files.py proto_library.gni \
-     proto_sources.gni proto_wkt.gni patches/
+     PRESUBMIT.py PRESUBMIT_test.py README.chromium \
+     gen_extra_chromium_files.py proto_library.gni proto_sources.gni \
+     proto_wkt.gni ':(glob)patches/*'
 
    Note: The `patches/` directory is already a part of the protobuf repository,
-   but it uses subdirectories for its content, while in Chromium we store our
-   patches directly in the `patches/` directory.
+   but it uses subdirectories (`patches/protobuf_vNN/`) for its content, while
+   in Chromium we store our patches directly in `patches/`. Use a single
+   `':(glob)patches/*'` pathspec so `*` stops at `/` instead of matching
+   upstream's subdirectories (plain `'patches/*.patch'` still matches across
+   `/`), and avoid separate `.patch` and `.md` globs (`git checkout` exits 1
+   and restores nothing if any single pathspec matches no files).
 
    Note: Ideally we wouldn't do this but instead have a
    `third_party/protobuf/src/` subdirectory where upstream code goes directly
