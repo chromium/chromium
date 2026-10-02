@@ -8,6 +8,11 @@
 #include <variant>
 
 #include "base/types/expected.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace ttc {
@@ -32,6 +37,26 @@ AiOverlayToolsAndroid::AiOverlayToolsAndroid(
 AiOverlayToolsAndroid::~AiOverlayToolsAndroid() = default;
 
 content::WebContents* AiOverlayToolsAndroid::GetActiveWebContents() const {
+  if (!browser()) {
+    return nullptr;
+  }
+
+  if (TabModel* model = TabModelList::FindTabModelWithWindowSessionId(
+          browser()->GetSessionID())) {
+    if (content::WebContents* web_contents = model->GetActiveWebContents()) {
+      return web_contents;
+    }
+  }
+
+  Profile* profile = browser()->GetProfile();
+  for (TabModel* model : TabModelList::models()) {
+    if (model->GetProfile() == profile && model->IsActiveModel()) {
+      if (content::WebContents* web_contents = model->GetActiveWebContents()) {
+        return web_contents;
+      }
+    }
+  }
+
   return nullptr;
 }
 

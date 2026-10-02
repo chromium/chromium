@@ -111,6 +111,7 @@ source_set("impl") {
       "tools/tools_android.cc",
       "tools/tools_android.h",
     ]
+    deps += [ "//chrome/browser/ui/android/tab_model" ]
   }
   if (is_desktop_android) {
     deps += [
