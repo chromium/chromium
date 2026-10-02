@@ -1371,7 +1371,7 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, ImmediatelyAfterPopupExit) {
   }
 #endif
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
-  if (GetParam() && ui::OzonePlatform::RunningOnWaylandForTest()) {
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
     // TODO(crbug.com/568756577): Flaky on Linux Wayland.
     GTEST_SKIP() << "Flaky. See https://crbug.com/568756577";
   }
