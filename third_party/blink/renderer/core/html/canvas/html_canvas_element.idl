@@ -37,8 +37,6 @@
     [RaisesException=Setter, CEReactions] attribute unsigned long height;
 
     [RuntimeEnabled=CanvasDrawElement, CEReactions, Reflect, ReflectOnly=("fallback", "drawable"), ReflectMissing="fallback", ReflectInvalid="fallback"] attribute DOMString content;
-    // TODO(crbug.com/561849343): Remove support for layoutsubtree.
-    [RuntimeEnabled=CanvasDrawElement] attribute boolean layoutSubtree;
     [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onpaint;
     [RuntimeEnabled=CanvasDrawElement] attribute EventHandler onelementgeometryupdate;
     [RuntimeEnabled=CanvasDrawElement] void requestPaint();

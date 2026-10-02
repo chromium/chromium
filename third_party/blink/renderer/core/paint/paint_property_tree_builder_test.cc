@@ -8363,7 +8363,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
 TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasClipPropertyTree) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
-    <canvas layoutsubtree id="canvas">
+    <canvas content=drawable id="canvas">
       <div id="target" drawable style="translate: 10px 20px"></div>
     </canvas>
   )HTML");

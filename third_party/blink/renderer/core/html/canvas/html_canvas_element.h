@@ -123,10 +123,6 @@ class CORE_EXPORT HTMLCanvasElement final
   void setHeight(unsigned, ExceptionState&);
 
   bool IsContentDrawable() const { return is_content_drawable_; }
-  // TODO(crbug.com/561849343): Remove support for layoutsubtree.
-  void setLayoutSubtree(bool);
-  // TODO(crbug.com/561849343): Remove support for layoutsubtree.
-  bool layoutSubtree() const;
   DEFINE_ATTRIBUTE_EVENT_LISTENER(paint, kPaint)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(elementgeometryupdate, kElementgeometryupdate)
   void requestPaint();

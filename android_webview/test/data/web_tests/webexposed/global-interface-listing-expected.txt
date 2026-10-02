@@ -3766,7 +3766,6 @@ interface HTMLCanvasElement : HTMLElement
     attribute @@toStringTag
     getter content
     getter height
-    getter layoutSubtree
     getter onelementgeometryupdate
     getter onpaint
     getter width
@@ -3784,7 +3783,6 @@ interface HTMLCanvasElement : HTMLElement
     method updateElementGeometry
     setter content
     setter height
-    setter layoutSubtree
     setter onelementgeometryupdate
     setter onpaint
     setter width

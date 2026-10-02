@@ -374,28 +374,21 @@ void HTMLCanvasElement::AttributeChanged(
     }
   }
 
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
-    if (params.name == html_names::kContentAttr ||
-        params.name == html_names::kLayoutsubtreeAttr) {
-      const AtomicString& content_attr =
-          FastGetAttribute(html_names::kContentAttr);
-      bool has_content_drawable =
-          !content_attr.IsNull()
-              ? EqualIgnoringAsciiCase(content_attr, keywords::kDrawable)
-              // TODO(crbug.com/561849343): Remove support for layoutsubtree.
-              : FastHasAttribute(html_names::kLayoutsubtreeAttr);
-      if (is_content_drawable_ != has_content_drawable) {
-        is_content_drawable_ = has_content_drawable;
-        SetNeedsStyleRecalc(kSubtreeStyleChange,
-                            StyleChangeReasonForTracing::Create(
-                                style_change_reason::kAttribute));
-        SetForceReattachLayoutTree();
-        if (auto* object = GetLayoutObject()) {
-          object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
-        }
-        if (accessibility_manager_) {
-          accessibility_manager_->SetHasContentDrawable(has_content_drawable);
-        }
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext()) &&
+      params.name == html_names::kContentAttr) {
+    bool has_content_drawable =
+        EqualIgnoringAsciiCase(params.new_value, keywords::kDrawable);
+    if (is_content_drawable_ != has_content_drawable) {
+      is_content_drawable_ = has_content_drawable;
+      SetNeedsStyleRecalc(
+          kSubtreeStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
+      SetForceReattachLayoutTree();
+      if (auto* object = GetLayoutObject()) {
+        object->SetNeedsLayout(layout_invalidation_reason::kAttributeChanged);
+      }
+      if (accessibility_manager_) {
+        accessibility_manager_->SetHasContentDrawable(has_content_drawable);
       }
     }
   }
@@ -444,16 +437,6 @@ void HTMLCanvasElement::setWidth(unsigned value,
     SetUnsignedIntegralAttribute(html_names::kWidthAttr, value,
                                  kDefaultCanvasWidth);
   }
-}
-
-// TODO(crbug.com/561849343): Remove support for layoutsubtree.
-void HTMLCanvasElement::setLayoutSubtree(bool value) {
-  SetBooleanAttribute(html_names::kLayoutsubtreeAttr, value);
-}
-
-// TODO(crbug.com/561849343): Remove support for layoutsubtree.
-bool HTMLCanvasElement::layoutSubtree() const {
-  return IsContentDrawable();
 }
 
 void HTMLCanvasElement::requestPaint() {
