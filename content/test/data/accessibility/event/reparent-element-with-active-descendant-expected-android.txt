@@ -1,7 +1,16 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.MenuItem on [New] class_name=android.view.MenuItem
 TYPE_VIEW_FOCUSED class_name=android.view.MenuItem on [New] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [New] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.MenuItem on [Open...] class_name=android.view.MenuItem
 TYPE_VIEW_FOCUSED class_name=android.view.MenuItem on [Open...] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [Open...] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.MenuItem on [Quit] class_name=android.view.MenuItem
 TYPE_VIEW_FOCUSED class_name=android.view.MenuItem on [Quit] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [Quit] class_name=android.view.MenuItem
