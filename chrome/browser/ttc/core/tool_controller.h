@@ -19,6 +19,7 @@
 #include "chrome/browser/ttc/app/public/tool_types.h"
 #include "components/tabs/public/tab_interface.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace actor {
@@ -74,6 +75,12 @@ class ToolController {
                        ToolResponseCallback callback);
   void TranslatePage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
+  void SetFullscreen(const base::DictValue& arguments,
+                     ToolResponseCallback callback);
+
+  // Returns the browser window the session is acting on, or null if there
+  // isn't one.
+  BrowserWindowInterface* GetActiveBrowser();
 
   // Runs the tool request returned by `create_action` against the session's
   // active tab, replying to `callback` with the result. Replies with an error
@@ -84,8 +91,18 @@ class ToolController {
           create_action,
       ToolResponseCallback callback);
 
+  // Like PerformActionOnActiveTab(), but for tool requests that target the
+  // session's active browser window rather than a tab.
+  void PerformActionOnActiveWindow(
+      base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
+          BrowserWindowInterface&)> create_action,
+      ToolResponseCallback callback);
+
+  // Runs `action` in the actor task, creating the task if needed, and replies
+  // to `callback` with the result.
   void PerformAction(std::unique_ptr<actor::ToolRequest> action,
                      ToolResponseCallback callback);
+
   void OnActionsFinished(
       ToolResponseCallback callback,
       std::vector<actor::ActionResultWithLatencyInfo> results,

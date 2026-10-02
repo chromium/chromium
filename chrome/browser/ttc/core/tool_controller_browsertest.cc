@@ -60,6 +60,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -768,6 +769,53 @@ IN_PROC_BROWSER_TEST_F(ToolControllerTranslateBrowserTest,
       response, actor::mojom::ActionResultCode::kTranslateUnsupportedLanguage);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SetFullscreen) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+  ASSERT_FALSE(browser()->GetWindow()->IsFullscreen());
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "set_fullscreen";
+    tool_request.arguments.Set("fullscreen", true);
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_TRUE(browser()->GetWindow()->IsFullscreen());
+  }
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "set_fullscreen";
+    tool_request.arguments.Set("fullscreen", false);
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       SetFullscreenMissingFullscreen) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "set_fullscreen";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_FALSE(browser()->GetWindow()->IsFullscreen());
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -793,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 13u);
+  ASSERT_EQ(tools.size(), 14u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -1008,6 +1056,30 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       translate_schema.FindList("required");
   ASSERT_TRUE(translate_required);
   EXPECT_EQ(*translate_required, base::ListValue().Append("target_language"));
+
+  const ToolDefinition& set_fullscreen = tools[13];
+  EXPECT_EQ(set_fullscreen.name, "set_fullscreen");
+  EXPECT_FALSE(set_fullscreen.description.empty());
+  EXPECT_EQ(set_fullscreen.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(set_fullscreen.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& fullscreen_schema =
+      set_fullscreen.parameters_json_schema;
+  const std::string* fullscreen_schema_type =
+      fullscreen_schema.FindString("type");
+  ASSERT_TRUE(fullscreen_schema_type);
+  EXPECT_EQ(*fullscreen_schema_type, "object");
+
+  const std::string* fullscreen_type =
+      fullscreen_schema.FindStringByDottedPath("properties.fullscreen.type");
+  ASSERT_TRUE(fullscreen_type);
+  EXPECT_EQ(*fullscreen_type, "boolean");
+
+  const base::ListValue* fullscreen_required =
+      fullscreen_schema.FindList("required");
+  ASSERT_TRUE(fullscreen_required);
+  EXPECT_EQ(*fullscreen_required, base::ListValue().Append("fullscreen"));
 }
 
 // The session's actor task is started with the session and stopped when it

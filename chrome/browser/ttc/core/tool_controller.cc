@@ -38,9 +38,11 @@
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/sessions/core/session_id.h"
 #include "url/gurl.h"
 #endif
 
@@ -171,6 +173,11 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
 
   if (tool_request.name == "translate_page") {
     TranslatePage(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "set_fullscreen") {
+    SetFullscreen(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -381,6 +388,26 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   translate_page.behavior = ToolDefinition::Behavior::kBlocking;
   translate_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(translate_page));
+
+  ToolDefinition set_fullscreen;
+  set_fullscreen.name = "set_fullscreen";
+  set_fullscreen.description =
+      "Set or exit full screen mode for the active browser window.";
+  set_fullscreen.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "fullscreen",
+                   base::DictValue()
+                       .Set("type", "boolean")
+                       .Set("description",
+                            "Set to true to enter full screen, false to exit "
+                            "full screen.")))
+          .Set("required", base::ListValue().Append("fullscreen"));
+  set_fullscreen.behavior = ToolDefinition::Behavior::kBlocking;
+  set_fullscreen.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(set_fullscreen));
 #endif
 
   return tools;
@@ -627,17 +654,40 @@ void ToolController::TranslatePage(const base::DictValue& arguments,
       std::move(callback));
 }
 
+void ToolController::SetFullscreen(const base::DictValue& arguments,
+                                   ToolResponseCallback callback) {
+  std::optional<bool> fullscreen = arguments.FindBool("fullscreen");
+  if (!fullscreen) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing fullscreen argument"));
+    return;
+  }
+
+  PerformActionOnActiveWindow(
+      [&fullscreen](BrowserWindowInterface& browser)
+          -> std::unique_ptr<actor::ToolRequest> {
+        const int32_t window_id = browser.GetSessionID().id();
+        if (*fullscreen) {
+          return std::make_unique<actor::EnterFullscreenToolRequest>(window_id);
+        }
+        return std::make_unique<actor::ExitFullscreenToolRequest>(window_id);
+      },
+      std::move(callback));
+}
+
+BrowserWindowInterface* ToolController::GetActiveBrowser() {
+  // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
+  // (or a class that manages the active window for the session).
+  auto* collection = ProfileBrowserCollection::GetForProfile(GetProfile());
+  return collection ? collection->GetLastActiveBrowser() : nullptr;
+}
+
 void ToolController::PerformActionOnActiveTab(
     base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
         create_action,
     ToolResponseCallback callback) {
-  // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
-  // (or a class that manages the active window for the session).
-  BrowserWindowInterface* browser = nullptr;
-  if (auto* collection =
-          ProfileBrowserCollection::GetForProfile(GetProfile())) {
-    browser = collection->GetLastActiveBrowser();
-  }
+  BrowserWindowInterface* browser = GetActiveBrowser();
   if (!browser) {
     std::move(callback).Run(
         ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
@@ -653,6 +703,21 @@ void ToolController::PerformActionOnActiveTab(
   }
 
   PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
+}
+
+void ToolController::PerformActionOnActiveWindow(
+    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
+        BrowserWindowInterface&)> create_action,
+    ToolResponseCallback callback) {
+  BrowserWindowInterface* browser = GetActiveBrowser();
+  if (!browser) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
+                            "No active browser window"));
+    return;
+  }
+
+  PerformAction(create_action(*browser), std::move(callback));
 }
 
 void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,
