@@ -207,8 +207,7 @@ FlatlandSurfaceFactory::CreateVulkanImplementation(
 bool FlatlandSurfaceFactory::IsFormatSupportedForTexturing(
     viz::SharedImageFormat format) const {
   auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
-      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+      {viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
        viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
        viz::MultiPlaneFormat::kNV12});
   return kSupportedFormats.contains(format);

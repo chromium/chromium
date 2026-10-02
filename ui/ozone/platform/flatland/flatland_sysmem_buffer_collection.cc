@@ -32,10 +32,6 @@ VkFormat ToTextureVkFormat(viz::SharedImageFormat format) {
     return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
   } else if (format == viz::MultiPlaneFormat::kNV12) {
     return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kR_8) {
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRG_88) {
-    return VK_FORMAT_R8G8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
              format == viz::SinglePlaneFormat::kBGRX_8888) {
     return VK_FORMAT_B8G8R8A8_UNORM;
@@ -264,8 +260,7 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
   auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
-      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+      {viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
        viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
        viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
@@ -290,8 +285,7 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     NativePixmapUsageSet usage) {
   auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
-      {viz::SinglePlaneFormat::kR_8, viz::SinglePlaneFormat::kRG_88,
-       viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
+      {viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
        viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
        viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
