@@ -22,9 +22,11 @@
 // The delegate that hendles the edit menu.
 @property(nonatomic, weak) id<BrowserContentViewControllerDelegate> delegate;
 
-// Adds the given `contentView` as a subview and removes the previously added
-// `contentView` or `contentViewController`, if any. If `contentView` is nil
-// then only old content view or view controller is removed.
+// Adds the given `contentView` as a subview (constrained to match this view
+// controller's view when fullscreen refactoring is enabled) and removes the
+// previously added `contentView` or `contentViewController`, if any. If
+// `contentView` is nil then only old content view or view controller is
+// removed.
 - (void)setContentView:(UIView*)contentView;
 
 // Adds the given `contentViewController` as a child view controller and removes

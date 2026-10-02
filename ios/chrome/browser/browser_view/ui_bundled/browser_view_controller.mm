@@ -284,6 +284,9 @@ bool IsFullscreenNextIAEnabled() {
   NSArray<NSLayoutConstraint*>* _NTPConstraints;
   // The last recorded view size to avoid redundant updates on layout.
   CGSize _lastViewSize;
+  // The last recorded top inset with corner adaptation to avoid redundant
+  // toolbar state updates on every layout pass.
+  CGFloat _lastTopInsetWithCornerAdaptation;
 }
 
 // Activates/deactivates the object. This will enable/disable the ability for
@@ -501,18 +504,18 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)setBroadcasting:(BOOL)broadcasting {
+  if (_broadcasting == broadcasting) {
+    return;
+  }
+  _broadcasting = broadcasting;
+
   if (IsFullscreenRefactoringEnabled()) {
-    if (broadcasting && _fullscreenBrowserAgent) {
+    if (_broadcasting && _fullscreenBrowserAgent) {
       _fullscreenBrowserAgent->InvalidateInsetRange();
     }
     // Broadcasting is not needed for FullscreenRefactoring.
     return;
   }
-
-  if (_broadcasting == broadcasting) {
-    return;
-  }
-  _broadcasting = broadcasting;
 
   ChromeBroadcaster* broadcaster = self.fullscreenController->broadcaster();
   if (_broadcasting) {
@@ -1046,11 +1049,19 @@ bool IsFullscreenNextIAEnabled() {
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
 
-  if ([self topInsetWithCornerAdaptation] - self.rootSafeAreaInsets.top > 0) {
-    // On iOS 26, the safe area layout guide doesn't automatically adjust
-    // for the control setting island's dimensions.
-    // Update the collapsedTopToolbarHeight when the dynamic island has moved.
-    [self updateToolbarState];
+  const CGFloat topInsetWithCornerAdaptation =
+      [self topInsetWithCornerAdaptation];
+  if (topInsetWithCornerAdaptation != _lastTopInsetWithCornerAdaptation) {
+    const BOOL hadCornerAdaptation =
+        _lastTopInsetWithCornerAdaptation > self.rootSafeAreaInsets.top;
+    _lastTopInsetWithCornerAdaptation = topInsetWithCornerAdaptation;
+    if (hadCornerAdaptation ||
+        topInsetWithCornerAdaptation > self.rootSafeAreaInsets.top) {
+      // On iOS 26, the safe area layout guide doesn't automatically adjust
+      // for the control setting island's dimensions.
+      // Update the collapsedTopToolbarHeight when the dynamic island has moved.
+      [self updateToolbarState];
+    }
   }
 
   [self updateNTPSafeAreaInsets];
@@ -1628,10 +1639,6 @@ bool IsFullscreenNextIAEnabled() {
       }
     } else {
       self.browserContentViewController.contentView = view;
-      if (IsFullscreenRefactoringEnabled()) {
-        view.translatesAutoresizingMaskIntoConstraints = NO;
-        AddSameConstraints(self.browserContentViewController.view, view);
-      }
       [self invalidateFullscreenInsets];
     }
     // Resize horizontal viewport if Smooth Scrolling is on.
