@@ -1749,6 +1749,206 @@ suite('OmniboxPopupSearchboxTest', function() {
        handler.getArgs('logEscapeAction')[0]);
  });
 
+ test('EscapeStagedUnwinding_KeywordMode', async () => {
+   // Scenario: User is in keyword mode with a typed query on a webpage.
+   // 1st ESC closes dropdown; keyword mode remains active.
+   // 2nd ESC clears user input, exits keyword mode, and restores permanent URL.
+   // 3rd ESC blurs and closes omnibox.
+   const permanentDisplayText = 'example.com';
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 10,
+     text: 'search query',
+     selection: {start: 12, end: 12},
+     userInputInProgress: true,
+     fullUrl: 'https://example.com/',
+     isFocused: true,
+     permanentDisplayText: permanentDisplayText,
+     keywordModel: {
+       type: KeywordType.kInKeyword,
+       keyword: 'youtube.com',
+       displayText: 'Search YouTube',
+       iconPath: '',
+       placeholder: '',
+     },
+   }));
+   await microtasksFinished();
+
+   searchbox.activeQueryId = 0;
+   searchbox.lastQueriedInput = 'search query';
+   searchbox.getInputElement().inputElement.value = 'search query';
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: 'search query',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'search query',
+         keywordModel: createMatchKeywordModelForTesting({
+           type: KeywordType.kInKeyword,
+           keyword: 'youtube.com',
+         }),
+       }),
+     ],
+   }));
+   await microtasksFinished();
+
+   assertTrue(searchbox.dropdownIsVisible);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
+
+   // 1st Escape (Stage 2: kClosePopup)
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // 2nd Escape (Stage 3: kClearUserInput) - exits keyword mode & restores URL.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals(null, searchbox.inputKeywordModel);
+   assertEquals(
+       permanentDisplayText, searchbox.getInputElement().inputElement.value);
+   assertEquals(0, searchbox.getInputElement().inputElement.selectionStart);
+   assertEquals(
+       permanentDisplayText.length,
+       searchbox.getInputElement().inputElement.selectionEnd);
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(10, handler.getArgs('revert')[0]);
+   assertEquals(0, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClearUserInput,
+       handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // 3rd Escape (Stage 4: kBlur) - closes UI.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(1, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
+ });
+
+ test('EscapeStagedUnwinding_KeywordMode_EmptyPermanentUrl', async () => {
+   // Scenario: User enters keyword mode on NTP (permanentDisplayText is empty)
+   // with no query typed, and keyword suggestions dropdown is open.
+   // 1st ESC closes dropdown; keyword mode remains active.
+   // 2nd ESC clears keyword mode and keeps focus in Omnibox.
+   // 3rd ESC blurs and closes omnibox.
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     sequenceNumber: 11,
+     text: '',
+     userInputInProgress: true,
+     isFocused: true,
+     permanentDisplayText: '',
+     keywordModel: {
+       type: KeywordType.kInKeyword,
+       keyword: 'youtube.com',
+       displayText: 'Search YouTube',
+       iconPath: '',
+       placeholder: '',
+     },
+   }));
+   await microtasksFinished();
+
+   searchbox.activeQueryId = 0;
+   searchbox.lastQueriedInput = '';
+   searchbox.getInputElement().inputElement.value = '';
+   searchbox.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+     queryId: 0,
+     input: '',
+     matches: [
+       createSearchMatchForTesting({
+         allowedToBeDefaultMatch: true,
+         fillIntoEdit: 'youtube.com',
+         keywordModel: createMatchKeywordModelForTesting({
+           type: KeywordType.kInKeyword,
+           keyword: 'youtube.com',
+         }),
+       }),
+     ],
+   }));
+   await microtasksFinished();
+
+   assertTrue(searchbox.dropdownIsVisible);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
+
+   // 1st Escape (Stage 2: kClosePopup) - closes dropdown, preserves keyword
+   // mode.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.dropdownIsVisible);
+   assertTrue(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals('youtube.com', searchbox.inputKeywordModel?.keyword);
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClosePopup, handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // 2nd Escape (Stage 3: kClearUserInput) - exits keyword mode, stays open.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertFalse(searchbox.keywordModeManager.isInKeywordMode);
+   assertEquals(null, searchbox.inputKeywordModel);
+   assertEquals('', searchbox.getInputElement().inputElement.value);
+   assertEquals(1, handler.getCallCount('revert'));
+   assertEquals(11, handler.getArgs('revert')[0]);
+   assertEquals(0, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kClearUserInput,
+       handler.getArgs('logEscapeAction')[0]);
+
+   handler.reset();
+   testProxy.handler.reset();
+
+   // 3rd Escape (Stage 4: kBlur) - closes UI.
+   await searchbox.handleKeyNavigation(new KeyboardEvent('keydown', {
+     key: 'Escape',
+     cancelable: true,
+   }));
+   await microtasksFinished();
+
+   assertEquals(1, handler.getCallCount('closeUI'));
+   assertEquals(1, handler.getCallCount('logEscapeAction'));
+   assertEquals(
+       OmniboxEscapeAction.kBlur, handler.getArgs('logEscapeAction')[0]);
+ });
+
  test('EscapeIgnoredDuringIMEComposition', async () => {
    searchbox.lastQueriedInput = 'a';
    searchbox.activeQueryId = 0;

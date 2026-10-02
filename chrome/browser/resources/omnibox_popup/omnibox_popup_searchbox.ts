@@ -1740,11 +1740,14 @@ export class OmniboxPopupSearchboxElement extends
     // selects all text (or closes UI if already empty on NTP). Focus stays in
     // Omnibox.
     const isInputDirty = this.userInputInProgress_ ||
+        this.keywordModeManager.isInKeywordMode ||
         inputEl.inputElement.value !== this.permanentDisplayText_;
     if (isInputDirty) {
-      const wasAlreadyEmpty = inputEl.inputElement.value.length === 0;
+      const wasAlreadyEmpty = inputEl.inputElement.value.length === 0 &&
+          !this.keywordModeManager.isInKeywordMode;
       const restoredText = this.permanentDisplayText_;
       this.fullUrlShown_ = false;
+      this.keywordModeManager.exit();
       inputEl.setInput({
         text: restoredText,
         inline: '',
