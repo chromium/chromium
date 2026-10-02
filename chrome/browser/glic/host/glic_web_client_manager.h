@@ -80,6 +80,9 @@ class GlicWebClientManager : public content::WebContentsObserver {
   content::WebContents* web_client_contents() const;
 
   GlicWebClientAccess* web_client_access() const { return web_client_; }
+  bool has_pending_web_client_receiver_for_testing() const {
+    return pending_web_client_receiver_.is_valid();
+  }
 
   void SetPendingWebClientReceiver(
       mojo::PendingReceiver<glic::mojom::WebClientHandler> web_client_receiver);

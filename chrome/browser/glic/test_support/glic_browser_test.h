@@ -1075,6 +1075,42 @@ class GlicBrowserTestMixin : public T {
     return WaitForDisplayState(
         GlicNoWebviewContentsManager::DisplayState::kShowingGuest, instance);
   }
+
+  [[nodiscard]] TestResult<> WaitForGuestState(
+      GlicNoWebviewContentsManager::GuestState guest_state,
+      GlicInstance* instance = nullptr) {
+    if (!features::IsGlicNoWebviewEnabled()) {
+      return base::unexpected(
+          "WaitForGuestState only works with GlicNoWebview");
+    }
+    auto to_string =
+        [](GlicNoWebviewContentsManager::GuestState state) -> std::string {
+      switch (state) {
+        case GlicNoWebviewContentsManager::GuestState::kLoading:
+          return "kLoading";
+        case GlicNoWebviewContentsManager::GuestState::kReady:
+          return "kReady";
+        case GlicNoWebviewContentsManager::GuestState::kLogin:
+          return "kLogin";
+        case GlicNoWebviewContentsManager::GuestState::kGuestError:
+          return "kGuestError";
+      }
+    };
+    return RunUntilEqual(
+        [&, instance, to_string]() -> std::string {
+          GlicInstanceImpl* target = GetInstanceImpl(instance);
+          if (!target) {
+            return "no instance";
+          }
+          auto* manager = static_cast<GlicNoWebviewContentsManager*>(
+              target->host().contents_manager());
+          if (!manager) {
+            return "no contents manager";
+          }
+          return to_string(manager->guest_state().get());
+        },
+        to_string(guest_state), "Timeout waiting for guest state");
+  }
   GlicKeyedService* service() {
     GlicKeyedService* service = GlicKeyedService::Get(weak_profile_.get());
     CHECK(service);
