@@ -8840,60 +8840,20 @@ if (!is_android) {
   }
 
   test("sync_performance_tests") {
-    sources = [
-      "../browser/sync/test/integration/performance/autofill_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/bookmarks_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/dictionary_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/extensions_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/passwords_sync_perf_test.cc",
-      "../browser/sync/test/integration/performance/sessions_sync_perf_test.cc",
-      "base/browser_perf_tests_main.cc",
-    ]
+    sources = [ "base/browser_perf_tests_main.cc" ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
-      ":test_support",
-      ":test_support_ui",
-      "//chrome/app:chrome_dll_resources",
-      "//chrome/app:command_ids",
-      "//chrome/browser/sync/test/integration:sync_integration_test_support",
-      "//chrome/browser/ui",
-      "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/select_file_policy",
+      "//chrome/browser/sync/test/integration:sync_performance_tests_impl",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_suite",
-      "//components/bookmarks/browser",
-      "//components/password_manager/core/browser",
-      "//components/spellcheck/common",
-      "//components/sync",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//testing/perf",
     ]
 
-    data_deps = [ "//chrome:packed_resources" ]
-
     if (is_mac) {
-      # Dictionary sync is disabled on Mac.
-      sources -= [ "../browser/sync/test/integration/performance/dictionary_sync_perf_test.cc" ]
-
       # The sync_performance_tests do not run on mac without this flag.
       # Search for comments about "xcode_settings" elsewhere in this file.
       ldflags = [ "-Wl,-ObjC" ]
-    }
-    if (is_win) {
-      deps += [
-        "//chrome:other_version",
-        "//chrome/installer/util:strings",
-        "//third_party/wtl",
-        "//ui/resources",
-      ]
-    }
-
-    if (toolkit_views) {
-      deps += [ "//ui/views" ]
     }
 
     # This target should not require the Chrome executable to run.

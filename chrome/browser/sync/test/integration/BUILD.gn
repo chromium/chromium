@@ -648,3 +648,58 @@ source_set("sync_integration_test_support") {
     deps += [ "//chrome/browser/ui:browser_window_header" ]
   }
 }
+
+if (!is_android) {
+  source_set("sync_performance_tests_impl") {
+    visibility = [ "//chrome/test:sync_performance_tests" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "performance/autofill_sync_perf_test.cc",
+      "performance/bookmarks_sync_perf_test.cc",
+      "performance/extensions_sync_perf_test.cc",
+      "performance/passwords_sync_perf_test.cc",
+      "performance/sessions_sync_perf_test.cc",
+    ]
+
+    if (!is_mac) {
+      # Dictionary sync is disabled on Mac.
+      sources += [ "performance/dictionary_sync_perf_test.cc" ]
+    }
+
+    deps = [
+      ":sync_integration_test_support",
+      "//chrome/app:chrome_dll_resources",
+      "//chrome/app:command_ids",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/select_file_policy",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/bookmarks/browser",
+      "//components/password_manager/core/browser",
+      "//components/spellcheck/common",
+      "//components/sync",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//testing/perf",
+    ]
+
+    data_deps = [ "//chrome:packed_resources" ]
+
+    if (is_win) {
+      deps += [
+        "//chrome:other_version",
+        "//chrome/installer/util:strings",
+        "//third_party/wtl",
+        "//ui/resources",
+      ]
+    }
+
+    if (toolkit_views) {
+      deps += [ "//ui/views" ]
+    }
+  }
+}
