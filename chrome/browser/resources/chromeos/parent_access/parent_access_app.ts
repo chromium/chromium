@@ -15,6 +15,7 @@ import './parent_access_ui.js';
 import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 
+import {assert} from 'chrome://resources/ash/common/assert.js';
 import type {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
@@ -31,6 +32,7 @@ export interface ParentAccessApp {
 }
 
 export enum Screens {
+  UNSET = 'unset',
   AUTHENTICATION_FLOW = 'parent-access-ui',
   BEFORE_FLOW = 'parent-access-before',
   AFTER_FLOW = 'parent-access-after',
@@ -66,7 +68,7 @@ export class ParentAccessApp extends PolymerElement {
     return getTemplate();
   }
 
-  private currentScreen: Screens;
+  private currentScreen_: Screens = Screens.UNSET;
 
   override ready() {
     super.ready();
@@ -91,7 +93,8 @@ export class ParentAccessApp extends PolymerElement {
   }
 
   getCurrentScreenForTest(): Screens {
-    return this.currentScreen;
+    assert(this.currentScreen_ !== Screens.UNSET);
+    return this.currentScreen_;
   }
 
   private addEventListeners() {
@@ -144,16 +147,16 @@ export class ParentAccessApp extends PolymerElement {
     if (this.isAppInTerminalState()) {
       return;
     }
-    this.currentScreen = screen;
-    this.$.viewManager.switchView(this.currentScreen);
+    this.currentScreen_ = screen;
+    this.$.viewManager.switchView(this.currentScreen_);
     this.shadowRoot!.querySelector(screen)!.dispatchEvent(
         new CustomEvent(ParentAccessEvent.ON_SCREEN_SWITCHED));
   }
 
   /** Returns if the app can navigate away from the current screen. */
   private isAppInTerminalState(): boolean {
-    return this.currentScreen === Screens.ERROR ||
-        this.currentScreen === Screens.DISABLED;
+    return this.currentScreen_ === Screens.ERROR ||
+        this.currentScreen_ === Screens.DISABLED;
   }
 }
 customElements.define(ParentAccessApp.is, ParentAccessApp);

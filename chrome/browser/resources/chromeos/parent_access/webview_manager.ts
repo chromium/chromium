@@ -6,6 +6,8 @@ type ShouldSendTokenToUrlFunction = (token: string) => boolean;
 type AllowedRequestFunction = (request: string) => boolean;
 type OnBeforeSendHeadersListener = (obj: any) =>
     chrome.webRequest.BlockingResponse|null;
+type OnBeforeRequestListener = (obj: any) =>
+    chrome.webRequest.BlockingResponse|null;
 
 /**
  * Class that handles managing and configuring a <webview> for use
@@ -21,12 +23,13 @@ export class WebviewManager {
    * Tracks the current listener used to filter destinations
    * to which we send access tokens.
    */
-  private shouldSendTokenToUrlListener_: OnBeforeSendHeadersListener|null;
+  private shouldSendTokenToUrlListener_: OnBeforeSendHeadersListener|null =
+      null;
   /**
    * Tracks the current listener used to filter destinations
    * to which we send allow requests.
    */
-  private allowedRequestListener_: OnBeforeSendHeadersListener|null;
+  private allowedRequestListener_: OnBeforeRequestListener|null = null;
 
   constructor(webview: chrome.webviewTag.WebView) {
     this.webview_ = webview;
@@ -71,7 +74,7 @@ export class WebviewManager {
    */
   setAllowRequestFn(allowedRequestFn: AllowedRequestFunction) {
     if (this.allowedRequestListener_) {
-      this.webview_.request.onBeforeSendHeaders.removeListener(
+      this.webview_.request.onBeforeRequest.removeListener(
           this.allowedRequestListener_);
       this.allowedRequestListener_ = null;
     }

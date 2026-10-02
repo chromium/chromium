@@ -54,15 +54,13 @@ export class ParentAccessUi extends PolymerElement {
     };
   }
 
-  declare webviewLoading: boolean;
-  private webviewManager: WebviewManager;
-  private server: ParentAccessController;
-  private parentAccessUiHandler: ParentAccessUiHandlerInterface;
-  private webviewUrl: string;
+  declare protected webviewLoading: boolean;
+  private parentAccessUiHandler_: ParentAccessUiHandlerInterface;
+  private webviewUrl_: string = '';
 
   constructor() {
     super();
-    this.parentAccessUiHandler = getParentAccessUiHandler();
+    this.parentAccessUiHandler_ = getParentAccessUiHandler();
   }
 
   override ready() {
@@ -109,7 +107,7 @@ export class ParentAccessUi extends PolymerElement {
 
   shouldReceiveAuthHeader(url: string): boolean {
     const requestUrl = new URL(url);
-    const webviewUrl = new URL(this.webviewUrl);
+    const webviewUrl = new URL(this.webviewUrl_);
 
     // Only the webviewUrl URL should receive the auth header, because for
     // security reasons, we shouldn't distribute the OAuth token any more
@@ -119,16 +117,18 @@ export class ParentAccessUi extends PolymerElement {
   }
 
   async configureUi() {
-    this.webviewUrl =
-        (await this.parentAccessUiHandler.getParentAccessUrl()).url;
+    this.webviewUrl_ =
+        (await this.parentAccessUiHandler_.getParentAccessUrl()).url;
 
+    let server: ParentAccessController;
     try {
-      const parsedWebviewUrl = new URL(this.webviewUrl);
+      const parsedWebviewUrl = new URL(this.webviewUrl_);
       // Set the filter to accept postMessages from the webviewURL's origin
       // only.
       const eventOriginFilter = parsedWebviewUrl.origin;
 
-      const oauthFetchResult = await this.parentAccessUiHandler.getOauthToken();
+      const oauthFetchResult =
+          await this.parentAccessUiHandler_.getOauthToken();
       if (oauthFetchResult.status !== GetOauthTokenStatus.kSuccess) {
         throw new Error('OAuth token was not successfully fetched.');
       }
@@ -138,16 +138,16 @@ export class ParentAccessUi extends PolymerElement {
 
       // Set up the WebviewManager to handle the configuration and
       // access control for the webview.
-      this.webviewManager = new WebviewManager(webview);
-      this.webviewManager.setAccessToken(accessToken, (url: string) => {
+      const webviewManager = new WebviewManager(webview);
+      webviewManager.setAccessToken(accessToken, (url: string) => {
         return this.shouldReceiveAuthHeader(url);
       });
-      this.webviewManager.setAllowRequestFn((url: string) => {
+      webviewManager.setAllowRequestFn((url: string) => {
         return this.isAllowedRequest(url);
       });
 
       // Setting the src of the webview triggers the loading process.
-      const url = new URL(this.webviewUrl);
+      const url = new URL(this.webviewUrl_);
       webview.src = url.toString();
 
       webview.addEventListener('loadabort', () => {
@@ -157,7 +157,7 @@ export class ParentAccessUi extends PolymerElement {
 
       // Set up the controller. It will automatically start the initialization
       // handshake with the hosted content.
-      this.server = new ParentAccessController(
+      server = new ParentAccessController(
           webview, url.toString(), eventOriginFilter);
     } catch (e) {
       this.showErrorPage();
@@ -173,14 +173,14 @@ export class ParentAccessUi extends PolymerElement {
 
     while (lastServerMessageType === ParentAccessServerMessageType.kIgnore) {
       const parentAccessCallback = await Promise.race([
-        this.server.whenParentAccessCallbackReceived(),
-        this.server.whenInitializationError(),
+        server.whenParentAccessCallbackReceived(),
+        server.whenInitializationError(),
       ]);
 
       // Notify ParentAccessUiHandler that we received a ParentAccessCallback.
       // The handler will attempt to parse the callback and return the status.
       const parentAccessServerMessage =
-          await this.parentAccessUiHandler.onParentAccessCallbackReceived(
+          await this.parentAccessUiHandler_.onParentAccessCallbackReceived(
               parentAccessCallback);
 
       // If the parentAccessCallback couldn't be parsed, then an initialization

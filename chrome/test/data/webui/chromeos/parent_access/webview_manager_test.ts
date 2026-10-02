@@ -94,4 +94,23 @@ suite('ParentAccessWebviewManagerTest', function() {
 
     webview.src = TARGET_URL;
   });
+
+  test('ResetAllowRequestFnTest', function(done) {
+    // First, set a blocking filter.
+    manager.setAllowRequestFn(() => {
+      return false;
+    });
+
+    // Then, replace it with an allowing filter, which should remove the old
+    // listener from onBeforeRequest.
+    manager.setAllowRequestFn(() => {
+      return true;
+    });
+
+    webview.request.onSendHeaders.addListener(() => {
+      done();
+    }, {urls: ['<all_urls>']}, ['requestHeaders']);
+
+    webview.src = TARGET_URL;
+  });
 });
