@@ -80,7 +80,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
           context_provider_wrapper,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation,
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>
           animated_image_frame_index_map = nullptr);
 

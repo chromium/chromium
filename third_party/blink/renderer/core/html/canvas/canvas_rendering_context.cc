@@ -271,7 +271,6 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage, draw_to_canvas,
-          ImageOrientation(),
           child_paint_record->paint_state.animated_image_frame_index_map);
     }
   }

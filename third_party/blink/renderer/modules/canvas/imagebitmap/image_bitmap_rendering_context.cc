@@ -84,8 +84,7 @@ scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
         paint.setBlendMode(SkBlendMode::kSrc);
         canvas.drawImage(source->PaintImageForCurrentFrame(), 0, 0,
                          SkSamplingOptions(), &paint);
-      },
-      ImageOrientationEnum::kDefault);
+      });
 }
 
 ImageBitmapRenderingContext::ImageBitmapRenderingContext(
