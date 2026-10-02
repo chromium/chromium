@@ -4,6 +4,7 @@
 
 #include "services/audio/input_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -15,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "input_controller.h"
@@ -30,7 +32,6 @@
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #endif
@@ -42,14 +43,11 @@
 #include "services/audio/reference_signal_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "media/webrtc/ml_model_handle.h"  // nogncheck
-#include "media/webrtc/voice_isolation/voice_isolation.h"
-#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"  // nogncheck
 #include "services/audio/ml_model_manager.h"
+#include "services/audio/test/fake_ml_model_handles.h"
 #endif
 
 using ::testing::_;
@@ -93,20 +91,6 @@ std::unique_ptr<LoopbackMixin> DoNotCreateLoopbackMixin(
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
-class FakeMlModelHandle : public media::MlModelHandle {
- public:
-  FakeMlModelHandle() : model_(media::LoadVoiceIsolationTestModel()) {
-    CHECK(model_);
-  }
-
-  const tflite::FlatBufferModel& Get() override { return *model_; }
-
- private:
-  ~FakeMlModelHandle() override = default;
-  std::vector<uint8_t> buffer_;
-  std::unique_ptr<tflite::FlatBufferModel> model_;
-};
-
 class FakeMlModelManager : public MlModelManager {
  public:
   FakeMlModelManager() = default;
@@ -116,15 +100,20 @@ class FakeMlModelManager : public MlModelManager {
       mojom::MlModelType model_type) override {
     if (model_type == mojom::MlModelType::kVoiceIsolationDenoiser &&
         !return_null_model_) {
-      return base::MakeRefCounted<FakeMlModelHandle>();
+      return model_to_return_ ? model_to_return_
+                              : base::MakeRefCounted<FakeMlModelHandle>();
     }
     return nullptr;
   }
 
   void set_return_null_model(bool val) { return_null_model_ = val; }
+  void set_model_to_return(scoped_refptr<media::MlModelHandle> model) {
+    model_to_return_ = std::move(model);
+  }
 
  private:
   bool return_null_model_ = false;
+  scoped_refptr<media::MlModelHandle> model_to_return_;
 };
 
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -1225,6 +1214,71 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   CreateAudioController();
   EXPECT_TRUE(controller_);
   controller_->Close();
+}
+
+// Verifies that when an audio stream is created with voice isolation enabled
+// but component initialization fails asynchronously on the background
+// ThreadPool, InputController dispatches STREAM_ERROR to EventHandler::OnError
+// to terminate the stream.
+TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
+       VoiceIsolationAsyncStartupFailure_ReportsStreamError) {
+  // Configure audio processing with voice isolation enabled.
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
+
+  // Configure manager to return a handle whose component creation will fail.
+  scoped_refptr<media::MlModelHandle> failing_model =
+      base::MakeRefCounted<FakeInvalidMlModelHandle>();
+  ml_model_manager_.set_model_to_return(failing_model);
+
+  EXPECT_CALL(event_handler_, OnCreated(_));
+
+  // Expect STREAM_ERROR dispatched to EventHandler when ThreadPool creation
+  // fails.
+  base::RunLoop loop;
+  EXPECT_CALL(event_handler_, OnError(InputController::STREAM_ERROR))
+      .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+
+  // Initialize controller; pipeline starts in pass-through warmup.
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+  EXPECT_TRUE(helper_->HasVoiceIsolation());
+
+  // Wait for background creation failure to post back and trigger OnError.
+  loop.Run();
+
+  controller_->Close();
+}
+
+// Verifies that if an audio input stream is closed via Close() before
+// asynchronous voice isolation initialization finishes on the ThreadPool,
+// the subsequent creation failure is safely dropped and does not dispatch
+// OnError to the EventHandler.
+TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
+       VoiceIsolationStartupFailureAfterClose_DoesNotDeliverError) {
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  processing_config_->settings.voice_isolation = true;
+
+  scoped_refptr<media::MlModelHandle> failing_model =
+      base::MakeRefCounted<FakeInvalidMlModelHandle>();
+  ml_model_manager_.set_model_to_return(failing_model);
+
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  EXPECT_CALL(event_handler_, OnError(_)).Times(0);
+
+  CreateAudioController();
+  ASSERT_TRUE(controller_.get());
+
+  // Close stream immediately before background task replies.
+  controller_->Close();
+
+  // Wait for background creation failure to be handled and logged.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return std::ranges::any_of(
+        event_handler_.log_messages(), [](const auto& m) {
+          return m.find("OnComponentCreated") != std::string::npos;
+        });
+  }));
 }
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 

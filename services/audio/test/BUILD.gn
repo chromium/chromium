@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 source_set("test_support") {
   testonly = true
 
@@ -34,4 +36,16 @@ source_set("test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (chrome_wide_echo_cancellation_supported) {
+    sources += [
+      "fake_ml_model_handles.cc",
+      "fake_ml_model_handles.h",
+    ]
+    public_deps = [
+      "//media/webrtc",
+      "//media/webrtc/voice_isolation:test_support",
+      "//third_party/tflite",
+    ]
+  }
 }

@@ -469,9 +469,15 @@ InputController::MaybeCreateVoiceIsolationHandler(
     return nullptr;
   }
 
+  // If asynchronous component initialization fails on the background thread,
+  // terminate the stream with STREAM_ERROR rather than delivering unisolated
+  // audio.
+  auto error_cb =
+      base::BindOnce(&InputController::DoReportError, weak_this_, STREAM_ERROR);
+
   return VoiceIsolationHandler::MaybeCreate(
       *ml_model_manager, processing_output_params,
-      std::move(deliver_processed_audio_callback),
+      std::move(deliver_processed_audio_callback), std::move(error_cb),
       base::BindRepeating(&EventHandler::OnLog,
                           base::Unretained(event_handler_)),
       debug_recording_manager);

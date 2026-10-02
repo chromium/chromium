@@ -15,11 +15,13 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "media/audio/audio_debug_recording_helper.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/base/audio_bus.h"
@@ -47,14 +49,32 @@ enum class StartupResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VoiceIsolationStartupResult)
 
-std::unique_ptr<media::VoiceIsolationComponent> CreateVoiceIsolationComponent(
+base::expected<std::unique_ptr<media::VoiceIsolationComponent>,
+               media::VoiceIsolationCreationResult>
+CreateVoiceIsolationComponent(
     scoped_refptr<media::MlModelHandle> model_handle) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::CreateVoiceIsolationComponent");
-  if (!model_handle) {
-    return nullptr;
+  CHECK(model_handle);
+  return media::VoiceIsolation::CreateComponent(&model_handle->Get());
+}
+
+const char* VoiceIsolationCreationResultToString(
+    media::VoiceIsolationCreationResult result) {
+  switch (result) {
+    case media::VoiceIsolationCreationResult::kSuccess:
+      return "kSuccess";
+    case media::VoiceIsolationCreationResult::kInterpreterCreationFailed:
+      return "kInterpreterCreationFailed";
+    case media::VoiceIsolationCreationResult::kDelegateCreationFailed:
+      return "kDelegateCreationFailed";
+    case media::VoiceIsolationCreationResult::kTensorAllocationFailed:
+      return "kTensorAllocationFailed";
+    case media::VoiceIsolationCreationResult::kIncompatibleModel:
+      return "kIncompatibleModel";
+    case media::VoiceIsolationCreationResult::kWarmupFailed:
+      return "kWarmupFailed";
   }
-  return media::VoiceIsolation::CreateComponent(&model_handle->Get())
-      .value_or(nullptr);
+  NOTREACHED();
 }
 
 }  // namespace
@@ -105,11 +125,13 @@ VoiceIsolationHandler::VoiceIsolationHandler(
     std::unique_ptr<media::AudioDebugRecorder> debug_recorder,
     const media::AudioParameters& output_params,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    ErrorCallback error_callback,
     LogCallback log_callback)
     : model_handle_(std::move(model_handle)),
       output_params_(output_params),
       deliver_processed_audio_callback_(
           std::move(deliver_processed_audio_callback)),
+      error_callback_(std::move(error_callback)),
       log_callback_(std::move(log_callback)),
       output_bus_(media::AudioBus::Create(output_params)),
       transition_crossfader_(output_params.frames_per_buffer()),
@@ -117,6 +139,7 @@ VoiceIsolationHandler::VoiceIsolationHandler(
       bypass_voice_isolation_(true),
       startup_metrics_logger_(std::make_unique<StartupMetricsLogger>(this)) {
   CHECK(!deliver_processed_audio_callback_.is_null());
+  CHECK(!error_callback_.is_null());
   CHECK(!log_callback_.is_null());
   CHECK(output_bus_);
   CHECK(model_handle_);
@@ -192,23 +215,37 @@ VoiceIsolationHandler::~VoiceIsolationHandler() {
 }
 
 void VoiceIsolationHandler::OnComponentCreated(
-    std::unique_ptr<media::VoiceIsolationComponent> component) {
+    base::expected<std::unique_ptr<media::VoiceIsolationComponent>,
+                   media::VoiceIsolationCreationResult> component_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT("audio", "VoiceIsolationHandler::OnComponentCreated");
-  SendLogMessage(base::StringPrintf("%s({success=%s})", __func__,
-                                    base::ToString(component != nullptr)));
-
   CHECK(startup_metrics_logger_);
-  startup_metrics_logger_->SetResult(component ? StartupResult::kSuccess
-                                               : StartupResult::kFailed);
+
+  const bool success = component_or_error.has_value();
+  startup_metrics_logger_->SetResult(success ? StartupResult::kSuccess
+                                             : StartupResult::kFailed);
   startup_metrics_logger_.reset();
 
-  if (!component) {
-    LOG(ERROR) << "Failed to create VoiceIsolationComponent.";
+  if (!success) {
+    const auto error = component_or_error.error();
+    const char* error_name = VoiceIsolationCreationResultToString(error);
+    SendLogMessage(base::StringPrintf("%s({success=false, error=%s})", __func__,
+                                      error_name));
+    LOG(ERROR) << "Failed to create VoiceIsolationComponent, error="
+               << error_name;
+
+    // Voice isolation was requested when this stream was created. Even if voice
+    // isolation is currently disabled/bypassed, a subsequent
+    // SetVoiceIsolation(true) call during the stream's lifetime could not be
+    // honored. Therefore, report a fatal error regardless of the current toggle
+    // state.
+    std::move(error_callback_).Run();
     return;
   }
-  voice_isolation_ =
-      media::VoiceIsolation::Create(std::move(component), output_params_);
+
+  SendLogMessage(base::StringPrintf("%s({success=true})", __func__));
+  voice_isolation_ = media::VoiceIsolation::Create(
+      std::move(*component_or_error), output_params_);
   if (voice_isolation_enabled_) {
     bypass_voice_isolation_.store(false, std::memory_order_release);
   }
@@ -350,6 +387,7 @@ std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
     MlModelManager& ml_model_manager,
     const media::AudioParameters& output_params,
     DeliverProcessedAudioCallback deliver_processed_audio_callback,
+    ErrorCallback error_callback,
     LogCallback log_callback,
     media::AudioDebugRecordingManager* debug_recording_manager) {
   TRACE_EVENT("audio", "VoiceIsolationHandler::MaybeCreate");
@@ -369,7 +407,8 @@ std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::MaybeCreate(
 
   return base::WrapUnique(new VoiceIsolationHandler(
       std::move(model_handle), std::move(debug_recorder), output_params,
-      std::move(deliver_processed_audio_callback), std::move(log_callback)));
+      std::move(deliver_processed_audio_callback), std::move(error_callback),
+      std::move(log_callback)));
 }
 
 std::unique_ptr<VoiceIsolationHandler> VoiceIsolationHandler::CreateForTesting(

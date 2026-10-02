@@ -32,16 +32,14 @@
 #include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/mock_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
-#include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/audio/ml_model_manager.h"
+#include "services/audio/test/fake_ml_model_handles.h"
 #include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 using ::testing::_;
 using ::testing::Eq;
@@ -153,29 +151,6 @@ enum class VoiceIsolationStartupResult {
   kSuccess = 0,
   kFailed = 1,
   kAborted = 2,
-};
-
-class FakeMlModelHandle : public media::MlModelHandle {
- public:
-  explicit FakeMlModelHandle(
-      base::OnceClosure on_destroy = base::NullCallback())
-      : on_destroy_(std::move(on_destroy)),
-        reply_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
-        model_(media::LoadVoiceIsolationTestModel()) {}
-
-  const tflite::FlatBufferModel& Get() override { return *model_; }
-
- private:
-  ~FakeMlModelHandle() override {
-    if (on_destroy_) {
-      reply_runner_->PostTask(FROM_HERE, std::move(on_destroy_));
-    }
-  }
-
-  base::OnceClosure on_destroy_;
-  scoped_refptr<base::SequencedTaskRunner> reply_runner_;
-  std::vector<uint8_t> buffer_;
-  std::unique_ptr<tflite::FlatBufferModel> model_;
 };
 
 class MockMlModelManager : public MlModelManager {
@@ -665,7 +640,8 @@ TEST_F(AudioProcessorHandlerTest,
 
   auto handler = VoiceIsolationHandler::MaybeCreate(
       model_manager, output_params_, deliver_callback_.Get(),
-      /*log_callback=*/base::DoNothing(), &mock_debug_recording_manager);
+      /*error_callback=*/base::DoNothing(), /*log_callback=*/base::DoNothing(),
+      &mock_debug_recording_manager);
   ASSERT_TRUE(handler);
   EXPECT_TRUE(handler->HasDebugRecorderForTesting());
 }
@@ -713,7 +689,8 @@ TEST_F(AudioProcessorHandlerTest,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([]() { return nullptr; });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   EXPECT_FALSE(handler);
 }
 // TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
@@ -731,7 +708,8 @@ TEST_F(AudioProcessorHandlerTest,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
 
@@ -755,7 +733,8 @@ TEST_F(AudioProcessorHandlerTest,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
 
@@ -794,7 +773,8 @@ TEST_F(AudioProcessorHandlerTest,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
 
@@ -830,7 +810,8 @@ TEST_F(AudioProcessorHandlerTest,
         return base::MakeRefCounted<FakeMlModelHandle>(run_loop.QuitClosure());
       });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
 
   handler.reset();
@@ -852,8 +833,11 @@ TEST_F(AudioProcessorHandlerTest,
   EXPECT_CALL(model_manager,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
+  base::MockCallback<base::OnceClosure> error_cb;
+  EXPECT_CALL(error_cb, Run()).Times(0);
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(), error_cb.Get(),
+      log_callback_.Get());
   ASSERT_TRUE(handler);
   EXPECT_FALSE(handler->IsInitializedForTesting());
 
@@ -890,7 +874,8 @@ TEST_F(AudioProcessorHandlerTest,
         return base::MakeRefCounted<FakeMlModelHandle>(run_loop.QuitClosure());
       });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
   EXPECT_FALSE(handler->IsInitializedForTesting());
 
@@ -904,6 +889,99 @@ TEST_F(AudioProcessorHandlerTest,
       "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success", 0);
   histogram_tester.ExpectTotalCount(
       "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure", 0);
+}
+
+// Verifies that when asynchronous voice isolation component creation fails on
+// the background ThreadPool (simulated with FakeInvalidMlModelHandle):
+// 1. The registered ErrorCallback is invoked exactly once on the owning
+// sequence.
+// 2. A diagnostic log message containing the failure error code is emitted.
+// 3. The handler remains in an uninitialized state.
+// 4. UMA histograms record a failed startup and failure duration without
+// success.
+TEST_F(AudioProcessorHandlerTest,
+       VoiceIsolationAsyncStartupFailureReportsErrorAndLogsMetrics) {
+  base::HistogramTester histogram_tester;
+  MockMlModelManager model_manager;
+  // Serve an invalid model handle that will fail interpreter creation on
+  // ThreadPool.
+  scoped_refptr<media::MlModelHandle> failing_handle =
+      base::MakeRefCounted<FakeInvalidMlModelHandle>();
+
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() { return failing_handle; });
+
+  // ErrorCallback should be invoked on the owning sequence when startup fails.
+  base::RunLoop run_loop;
+  base::MockCallback<base::OnceClosure> error_cb;
+  EXPECT_CALL(error_cb, Run()).Times(1).WillOnce([&]() {
+    EXPECT_TRUE(task_environment_.GetMainThreadTaskRunner()
+                    ->RunsTasksInCurrentSequence());
+    run_loop.Quit();
+  });
+
+  EXPECT_CALL(log_callback_, Run(_)).Times(testing::AnyNumber());
+  // Expect structured diagnostic log containing the exact failure enum code.
+  EXPECT_CALL(log_callback_,
+              Run(testing::HasSubstr("OnComponentCreated({success=false, "
+                                     "error=kInterpreterCreationFailed})")))
+      .Times(1);
+
+  // Instantiating handler starts capture in pass-through warmup and posts
+  // component creation to ThreadPool.
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get(), error_cb.Get(),
+      log_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Wait for the ThreadPool creation task to complete and reply to owning
+  // sequence.
+  run_loop.Run();
+
+  // Verify failure contract: error callback ran and handler remains
+  // uninitialized.
+  EXPECT_FALSE(handler->IsInitializedForTesting());
+
+  // Verify UMA startup result and failure duration metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Capture.VoiceIsolation.StartupResult",
+      VoiceIsolationStartupResult::kFailed, 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Failure", 1);
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success", 0);
+}
+
+// Verifies that if VoiceIsolationHandler is destroyed while asynchronous
+// component initialization is pending on the ThreadPool, the error callback is
+// safely dropped and not run.
+TEST_F(
+    AudioProcessorHandlerTest,
+    VoiceIsolationHandlerDestroyedBeforeStartupReplyDoesNotRunErrorCallback) {
+  base::RunLoop run_loop;
+  MockMlModelManager model_manager;
+  EXPECT_CALL(model_manager,
+              GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+      .WillOnce([&]() {
+        return base::MakeRefCounted<FakeInvalidMlModelHandle>(
+            run_loop.QuitClosure());
+      });
+
+  base::MockCallback<base::OnceClosure> error_cb;
+  EXPECT_CALL(error_cb, Run()).Times(0);
+
+  auto handler = VoiceIsolationHandler::MaybeCreate(
+      model_manager, output_params_, deliver_callback_.Get(), error_cb.Get(),
+      log_callback_.Get());
+  ASSERT_TRUE(handler);
+
+  // Destroy handler immediately while background initialization is in flight.
+  handler.reset();
+
+  // Wait for background ThreadPool task and reply to finish.
+  run_loop.Run();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(AudioProcessorHandlerTest, NoDedicatedFifoByDefault) {
@@ -1231,7 +1309,8 @@ TEST_F(AudioProcessorHandlerTest,
               GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillOnce([&]() { return base::MakeRefCounted<FakeMlModelHandle>(); });
   auto handler = VoiceIsolationHandler::MaybeCreate(
-      model_manager, output_params_, deliver_callback_.Get());
+      model_manager, output_params_, deliver_callback_.Get(),
+      /*error_callback=*/base::DoNothing());
   ASSERT_TRUE(handler);
   EXPECT_TRUE(handler->HasProcessingThread());
   EXPECT_TRUE(handler->IsVoiceIsolationBypassedForTesting());
