@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -369,8 +370,11 @@ class CapturedSitesAutomatedPasswordChangeBrowserTest
     auto* password_change_service =
         PasswordChangeServiceFactory::GetForProfile(browser()->GetProfile());
     password_change_service->OfferPasswordChangeUi(
-        CreatePasswordForm(WebContents()->GetLastCommittedURL(), u"test",
-                           u"pa$$word"),
+        password_manager::LeakedPasswordDetails(
+            password_manager::CredentialLeakFlags::kHasChangePasswordUrl,
+            CreatePasswordForm(WebContents()->GetLastCommittedURL(), u"test",
+                               u"pa$$word"),
+            /*in_account_store=*/false),
         WebContents());
     PasswordChangeDelegate* delegate =
         password_change_service->GetPasswordChangeDelegate(WebContents());

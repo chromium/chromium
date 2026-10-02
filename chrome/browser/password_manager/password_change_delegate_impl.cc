@@ -392,10 +392,16 @@ void PasswordChangeDelegateImpl::OnLoginStateCheckedWithPIResult(
       }
       // Reached max attempt, treat as an error.
       [[fallthrough]];
-    case LoginCheckResult::Status::kError:
+    case LoginCheckResult::Status::kError: {
+      if (result.error == LoginCheckResult::LoginCheckError::kServerError) {
+        observers_.Notify(&PasswordChangeDelegate::Observer::
+                              OnLoginCheckFailedWithServerError,
+                          this);
+      }
       Stop();
       ResetInternalState();
       return;
+    }
   }
 }
 

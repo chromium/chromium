@@ -108,6 +108,10 @@ class MockPasswordChangeDelegateObserver
               OnPasswordChangeStopped,
               (PasswordChangeDelegate*),
               (override));
+  MOCK_METHOD(void,
+              OnLoginCheckFailedWithServerError,
+              (PasswordChangeDelegate*),
+              (override));
 };
 
 class MockPasswordChangeActuator : public PasswordChangeActuator {
@@ -731,10 +735,62 @@ TEST_F(PasswordChangeDelegateImplTest, PrivateInferenceLoginCheck_Failure) {
   MockPasswordChangeDelegateObserver observer;
   delegate()->AddObserver(&observer);
 
+  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError(delegate())).Times(0);
   EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
   delegate()->login_checker()->RespondWithLoginStatus(
-      LoginCheckResult::Status::kError);
+      LoginCheckResult::Status::kError, /*logging_data=*/nullptr,
+      LoginCheckResult::LoginCheckError::kTimeout);
   EXPECT_FALSE(delegate()->logs_uploader());
+
+  delegate()->RemoveObserver(&observer);
+}
+
+TEST_F(PasswordChangeDelegateImplTest,
+       PrivateInferenceLoginCheck_ServerError_NotifiesObserver) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+
+  CreateDelegate();
+  EXPECT_EQ(delegate()->GetCurrentState(),
+            PasswordChangeDelegate::State::kNoState);
+  ASSERT_TRUE(delegate()->login_checker());
+
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError(delegate()));
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  delegate()->login_checker()->RespondWithLoginStatus(
+      LoginCheckResult::Status::kError, /*logging_data=*/nullptr,
+      LoginCheckResult::LoginCheckError::kServerError);
+  EXPECT_FALSE(delegate()->logs_uploader());
+
+  delegate()->RemoveObserver(&observer);
+}
+
+// Verifies there is no crash and no observer notification (and hence no
+// credential leak dialog) if the originator tab is closed while the login
+// check is still in flight.
+TEST_F(PasswordChangeDelegateImplTest,
+       PrivateInferenceLoginCheck_OriginatorDestroyed_NoNotification) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_change::features::kPasswordChangeWithPrivateInferenceLoginCheck);
+
+  CreateDelegate();
+  ASSERT_TRUE(delegate()->login_checker());
+
+  MockPasswordChangeDelegateObserver observer;
+  delegate()->AddObserver(&observer);
+
+  // Closing the tab stops the flow and destroys the login checker, so a late
+  // server error can no longer reach the delegate.
+  EXPECT_CALL(observer, OnLoginCheckFailedWithServerError).Times(0);
+  EXPECT_CALL(observer, OnPasswordChangeStopped(delegate()));
+  SimulateTabWillDetach(tabs::TabInterface::DetachReason::kDelete);
+
+  EXPECT_FALSE(delegate()->login_checker());
 
   delegate()->RemoveObserver(&observer);
 }
