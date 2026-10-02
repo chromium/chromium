@@ -26,6 +26,8 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -447,6 +449,48 @@ TEST_F(GlicViewNoWebviewTest, DraggableRegionsChanged_ForwardsFromPwc) {
 
   EXPECT_TRUE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 10)));
   EXPECT_FALSE(glic_view()->IsPointWithinDraggableRegion(gfx::Point(10, 100)));
+}
+
+class TestGlicViewForWindowCreation : public GlicView {
+ public:
+  using GlicView::GlicView;
+
+  bool HandleWindowCreation(
+      content::RenderFrameHost* opener,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& features) override {
+    last_opener_ = opener;
+    last_url_ = target_url;
+    last_disposition_ = disposition;
+    window_creation_called_ = true;
+    return true;
+  }
+
+  raw_ptr<content::RenderFrameHost> last_opener_ = nullptr;
+  GURL last_url_;
+  WindowOpenDisposition last_disposition_ = WindowOpenDisposition::UNKNOWN;
+  bool window_creation_called_ = false;
+};
+
+TEST_F(GlicViewNoWebviewTest, HandleWindowCreation_ForwardsFromPwc) {
+  auto test_view = std::make_unique<TestGlicViewForWindowCreation>(
+      profile(), gfx::Size(800, 600), nullptr);
+
+  test_view->SetWebContents(pwc()->web_contents());
+  ASSERT_EQ(pwc()->embedder_delegate(), test_view.get());
+
+  content::RenderFrameHost* rfh = pwc()->web_contents()->GetPrimaryMainFrame();
+  GURL target_url("https://example.com");
+  blink::mojom::WindowFeatures features;
+
+  EXPECT_TRUE(pwc()->HandleWindowCreation(
+      rfh, target_url, WindowOpenDisposition::NEW_FOREGROUND_TAB, features));
+  EXPECT_TRUE(test_view->window_creation_called_);
+  EXPECT_EQ(test_view->last_opener_, rfh);
+  EXPECT_EQ(test_view->last_url_, target_url);
+  EXPECT_EQ(test_view->last_disposition_,
+            WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
 TEST_F(GlicViewNoWebviewTest, SetWebContents_InformsSize) {

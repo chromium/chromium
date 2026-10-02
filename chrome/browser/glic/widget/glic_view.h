@@ -69,6 +69,11 @@ class GlicView : public views::WebView,
   void DraggableRegionsChanged(
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
+  bool HandleWindowCreation(
+      content::RenderFrameHost* opener,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& features) override;
 
   // views::WebView:
   void SetWebContents(content::WebContents* web_contents) override;

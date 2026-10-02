@@ -10,7 +10,9 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -85,6 +87,15 @@ bool IsGlicWebUI(const content::WebContents* web_contents);
 
 // Returns true if `web_contents` is the Glic guest WebContents.
 bool IsGlicGuest(const content::WebContents* web_contents);
+
+// Handles off-PWC window creation requested by a Glic guest (e.g. from
+// window.open or target=_blank links). Opens the URL in a new tab or popup.
+// Returns true if handled.
+bool MaybeHandleGlicWindowCreation(
+    content::RenderFrameHost* opener,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& window_features);
 
 // Returns true if `web_contents` contains the Glic overlay WebUI.
 bool IsGlicOverlay(const content::WebContents* web_contents);

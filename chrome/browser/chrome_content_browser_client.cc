@@ -4481,6 +4481,11 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   // outright, so window.open() returns null and target=_blank openers get
   // nothing. Any legitimate off-PWC navigation is the feature's own concern.
   if (web_contents->IsPrivileged()) {
+    if (auto* privileged =
+            pwc::PrivilegedWebContents::FromWebContents(web_contents)) {
+      privileged->HandleWindowCreation(opener, target_url, disposition,
+                                       features);
+    }
     return false;
   }
 

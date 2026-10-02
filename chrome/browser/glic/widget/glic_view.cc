@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -168,6 +169,15 @@ void GlicView::DraggableRegionsChanged(
   // glic web app,
   const bool is_webview_contents = web_contents() != contents;
   SetDraggableRegion(sk_region, /*for_webview=*/is_webview_contents);
+}
+
+bool GlicView::HandleWindowCreation(
+    content::RenderFrameHost* opener,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& features) {
+  return MaybeHandleGlicWindowCreation(opener, target_url, disposition,
+                                       features);
 }
 
 bool GlicView::IsPointWithinDraggableRegion(const gfx::Point& point) {

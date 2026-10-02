@@ -1241,6 +1241,27 @@ class ApiTests extends ApiTestFixtureBase {
     link.click();
   }
 
+  async testWindowOpenOpensTab() {
+    const button = document.createElement('button');
+    button.addEventListener('click', () => {
+      window.open('https://www.chromium.org', '_blank');
+    });
+    document.body.appendChild(button);
+    button.click();
+  }
+
+  async testCtrlClickLinkOpensTab() {
+    const link = document.createElement('a');
+    link.setAttribute('href', 'https://www.chromium.org');
+    document.body.appendChild(link);
+    link.dispatchEvent(new MouseEvent('click', {
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true,
+      view: window,
+    }));
+  }
+
   async testOpenGlicSettingsPage() {
     assertDefined(this.host.openGlicSettingsPage);
     this.host.openGlicSettingsPage();

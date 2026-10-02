@@ -3872,14 +3872,35 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
-  if (GetParam().no_webview) {
-    GTEST_SKIP() << "Test doesn't yet work in kGlicNoWebview";
-  }
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetPopupCount(), 0);
   ExecuteJsTest();
   ASSERT_OK(RunUntilEqual([&]() { return GetPopupCount(); }, 1));
 }
+
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testWindowOpenOpensTab) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetTabListInterface()->GetTabCount() == 2; }));
+  EXPECT_EQ(
+      GetTabListInterface()->GetActiveTab()->GetContents()->GetVisibleURL(),
+      GURL("https://www.chromium.org"));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testCtrlClickLinkOpensTab) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
+  ExecuteJsTest();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return GetTabListInterface()->GetTabCount() == 2; }));
+  EXPECT_EQ(
+      GetTabListInterface()->GetActiveTab()->GetContents()->GetVisibleURL(),
+      GURL("https://www.chromium.org"));
+}
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testOpenGlicSettingsPage) {

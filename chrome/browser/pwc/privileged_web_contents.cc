@@ -20,6 +20,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -28,7 +29,9 @@
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace pwc {
@@ -256,6 +259,14 @@ void PrivilegedWebContents::EmbedderDelegate::DraggableRegionsChanged(
     const std::vector<blink::mojom::DraggableRegionPtr>& regions,
     content::WebContents* contents) {}
 
+bool PrivilegedWebContents::EmbedderDelegate::HandleWindowCreation(
+    content::RenderFrameHost* opener,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& features) {
+  return false;
+}
+
 content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
     content::WebContents& web_contents,
     content::PreloadingTriggerType trigger_type) {
@@ -263,6 +274,24 @@ content::PreloadingEligibility PrivilegedWebContents::IsPrerender2Supported(
   // Note this also matches the WebContentsDelegate default, but is stated
   // explicitly so the security property does not depend on the default.
   return content::PreloadingEligibility::kPreloadingUnsupportedByWebContents;
+}
+
+content::WebContents* PrivilegedWebContents::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  if (source != web_contents_.get()) {
+    return nullptr;
+  }
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      params.source_render_process_id, params.source_render_frame_id);
+  if (!rfh) {
+    rfh = web_contents_->GetPrimaryMainFrame();
+  }
+  blink::mojom::WindowFeatures features;
+  HandleWindowCreation(rfh, params.url, params.disposition, features);
+  return nullptr;
 }
 
 content::WebContents* PrivilegedWebContents::AddNewContents(
@@ -398,6 +427,18 @@ void PrivilegedWebContents::DraggableRegionsChanged(
   if (embedder_delegate_) {
     embedder_delegate_->DraggableRegionsChanged(regions, contents);
   }
+}
+
+bool PrivilegedWebContents::HandleWindowCreation(
+    content::RenderFrameHost* opener,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const blink::mojom::WindowFeatures& features) {
+  if (embedder_delegate_) {
+    return embedder_delegate_->HandleWindowCreation(opener, target_url,
+                                                    disposition, features);
+  }
+  return false;
 }
 
 bool PrivilegedWebContents::IsPrimaryMainFrame(
