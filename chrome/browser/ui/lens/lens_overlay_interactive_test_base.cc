@@ -34,9 +34,39 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "media/base/media_switches.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+
+namespace {
+
+// Simulates a left-button drag from `from` to `to` in `web_contents`, with
+// both points in the coordinates of its view. The events are queued to the
+// renderer in order; callers should wait for the drag's effect.
+void SimulateLeftClickDrag(content::WebContents* web_contents,
+                           const gfx::Point& from,
+                           const gfx::Point& to) {
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseDown,
+                              blink::WebMouseEvent::Button::kLeft, from);
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseMove,
+                              blink::WebMouseEvent::Button::kLeft, to);
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseUp,
+                              blink::WebMouseEvent::Button::kLeft, to);
+}
+
+}  // namespace
 
 TestingAimEligibilityService::TestingAimEligibilityService(
     bool is_aim_eligible,
@@ -322,12 +352,13 @@ LensOverlayInteractiveTestBase::SelectRegionInLensOverlay(
                                   LensOverlayController::kOverlayId),
           WaitForWebContentsReady(
               overlay_id, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
-      InSameContext(WaitForShow(LensOverlayController::kOverlayId),
-                    // Disable animations in the WebUI to prevent flakiness on
-                    // bots. The duration is set to 0s instead of 'none' to
-                    // ensure that animationend/transitionend events still fire,
-                    // as the WebUI logic relies on them to transition states.
-                    ExecuteJsAt(overlay_id, {}, R"(
+      InSameContext(
+          WaitForShow(LensOverlayController::kOverlayId),
+          // Disable animations in the WebUI to prevent flakiness on
+          // bots. The duration is set to 0s instead of 'none' to
+          // ensure that animationend/transitionend events still fire,
+          // as the WebUI logic relies on them to transition states.
+          ExecuteJsAt(overlay_id, {}, R"(
                       () => {
                         const style = document.createElement('style');
                         style.textContent = `
@@ -339,9 +370,26 @@ LensOverlayInteractiveTestBase::SelectRegionInLensOverlay(
                         document.head.appendChild(style);
                       }
                     )"),
-                    WaitForScreenshotRendered(overlay_id),
-                    EnsurePresent(overlay_id, kPathToRegionSelection),
-                    MoveMouseTo(LensOverlayController::kOverlayId),
-                    DragMouseTo(std::move(target_point)),
-                    FinishScreenshotUpload(tab_id_int)));
+          WaitForScreenshotRendered(overlay_id),
+          EnsurePresent(overlay_id, kPathToRegionSelection),
+          // Send the drag straight to the overlay renderer instead
+          // of using OS-level input. On Windows, ui_controls waits
+          // with no timeout for each mouse button message to reach
+          // the UI thread, so one lost message hangs the step until
+          // the whole sequence times out.
+          WithElement(LensOverlayController::kOverlayId,
+                      base::BindOnce(
+                          [](base::OnceCallback<gfx::Point()> target_point,
+                             ui::TrackedElement* el) {
+                            auto* const web_view = AsView<views::WebView>(el);
+                            const gfx::Rect bounds =
+                                web_view->GetBoundsInScreen();
+                            SimulateLeftClickDrag(
+                                web_view->GetWebContents(),
+                                gfx::Rect(bounds.size()).CenterPoint(),
+                                std::move(target_point).Run() -
+                                    bounds.OffsetFromOrigin());
+                          },
+                          std::move(target_point))),
+          FinishScreenshotUpload(tab_id_int)));
 }
