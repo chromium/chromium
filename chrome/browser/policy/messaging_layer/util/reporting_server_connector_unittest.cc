@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -229,7 +230,14 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
   EXPECT_TRUE(enqueued_result.has_value());
   EXPECT_THAT(enqueued_result.value(), ContainerEq(expected_cached_seq_ids));
 
-  task_environment_.RunUntilIdle();
+  // Wait for the upload request. `EncryptedReportingClient` keeps at most one
+  // upload request in flight at any given time (per priority and generation),
+  // and that request stays pending until a response is simulated below. So
+  // once the first request appears, no other request can be sent before the
+  // checks below.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return !test_env_->url_loader_factory()->pending_requests()->empty();
+  }));
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
 
   // Verify request header DOES NOT contain a dm token
