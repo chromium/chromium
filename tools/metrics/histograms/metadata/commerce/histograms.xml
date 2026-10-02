@@ -978,7 +978,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.MessageImpact.NavigationCount"
-    units="navigations" expires_after="2026-04-25">
+    units="navigations" expires_after="2027-10-02">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -989,12 +989,15 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
     Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
     be missing.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-10-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="MerchantTrust.MessageImpact.NavigationCount.Rating{MessageStarRating}"
-    units="navigations" expires_after="2026-04-25">
+    units="navigations" expires_after="2027-10-02">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -1005,6 +1008,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Android.
 
     Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-10-02; data may
     be missing.
   </summary>
   <token key="MessageStarRating" variants="MerchantTrustMessageStarRating"/>
