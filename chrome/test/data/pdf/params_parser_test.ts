@@ -105,22 +105,22 @@ chrome.test.runTests([
 
     // Checking #nameddest.
     let params = await paramsParser.getViewportFromUrlParams(`${URL}#RU`);
-    chrome.test.assertEq(26, params.page);
+    chrome.test.assertEq(26, params.pageIndex);
 
     // Checking #nameddest=name.
     params = await paramsParser.getViewportFromUrlParams(`${URL}#nameddest=US`);
-    chrome.test.assertEq(0, params.page);
+    chrome.test.assertEq(0, params.pageIndex);
 
     // Checking #page=pagenum without setting the page count should not have a
     // page value.
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
-    chrome.test.assertEq(null, params.page);
+    chrome.test.assertEq(null, params.pageIndex);
 
     // Checking #page=pagenum nameddest. The document first page has a pagenum
     // value of 1.
     paramsParser.setPageCount(100);
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
-    chrome.test.assertEq(5, params.page);
+    chrome.test.assertEq(5, params.pageIndex);
 
     // Checking #zoom=scale.
     params = await paramsParser.getViewportFromUrlParams(`${URL}#zoom=200`);
@@ -136,19 +136,19 @@ chrome.test.runTests([
     // Checking #nameddest=name and zoom=scale.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=UY&zoom=150`);
-    chrome.test.assertEq(22, params.page);
+    chrome.test.assertEq(22, params.pageIndex);
     chrome.test.assertEq(1.5, params.zoom);
 
     // Checking #page=pagenum and zoom=scale.
     params =
         await paramsParser.getViewportFromUrlParams(`${URL}#page=2&zoom=250`);
-    chrome.test.assertEq(1, params.page);
+    chrome.test.assertEq(1, params.pageIndex);
     chrome.test.assertEq(2.5, params.zoom);
 
     // Checking #nameddest=name and zoom=scale,left,top.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=UY&zoom=150,100,200`);
-    chrome.test.assertEq(22, params.page);
+    chrome.test.assertEq(22, params.pageIndex);
     chrome.test.assertEq(1.5, params.zoom);
     chrome.test.assertEq(100, params.position!.x);
     chrome.test.assertEq(200, params.position!.y);
@@ -156,7 +156,7 @@ chrome.test.runTests([
     // Checking #page=pagenum and zoom=scale,left,top.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#page=2&zoom=250,100,200`);
-    chrome.test.assertEq(1, params.page);
+    chrome.test.assertEq(1, params.pageIndex);
     chrome.test.assertEq(2.5, params.zoom);
     chrome.test.assertEq(100, params.position!.x);
     chrome.test.assertEq(200, params.position!.y);
@@ -165,18 +165,18 @@ chrome.test.runTests([
     // the upper bound.
     paramsParser.setPageCount(5);
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=6`);
-    chrome.test.assertEq(4, params.page);
+    chrome.test.assertEq(4, params.pageIndex);
 
     // Checking #page=pagenum with value out of lower bounds sets the value to
     // the lower bound.
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=0`);
-    chrome.test.assertEq(0, params.page);
+    chrome.test.assertEq(0, params.pageIndex);
 
     // Checking #page=pagenum with a page count set to 0 should not have a page
     // value.
     paramsParser.setPageCount(0);
     params = await paramsParser.getViewportFromUrlParams(`${URL}#page=1`);
-    chrome.test.assertEq(null, params.page);
+    chrome.test.assertEq(null, params.pageIndex);
 
     chrome.test.succeed();
   },
@@ -190,7 +190,7 @@ chrome.test.runTests([
     // type is "XYZ" with multiple valid parameters.
     let params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZ`);
-    chrome.test.assertEq(10, params.page);
+    chrome.test.assertEq(10, params.pageIndex);
     chrome.test.assertEq(1.7, params.zoom);
     chrome.test.assertEq(111, params.position!.x);
     chrome.test.assertEq(222, params.position!.y);
@@ -200,7 +200,7 @@ chrome.test.runTests([
     // type is "XYZ" with a zoom parameter of null.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZAtZoomNull`);
-    chrome.test.assertEq(10, params.page);
+    chrome.test.assertEq(10, params.pageIndex);
     chrome.test.assertEq(undefined, params.zoom);
     chrome.test.assertEq(111, params.position!.x);
     chrome.test.assertEq(222, params.position!.y);
@@ -210,7 +210,7 @@ chrome.test.runTests([
     // type is "XYZ" and its X parameter is 0.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZWithX0`);
-    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(11, params.pageIndex);
     chrome.test.assertEq(1.7, params.zoom);
     chrome.test.assertEq(0, params.position!.x);
     chrome.test.assertEq(200, params.position!.y);
@@ -220,7 +220,7 @@ chrome.test.runTests([
     // type is "XYZ" and its X parameter is null.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZWithXNull`);
-    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(11, params.pageIndex);
     chrome.test.assertEq(1.7, params.zoom);
     chrome.test.assertTrue(Number.isNaN(params.position!.x));
     chrome.test.assertEq(200, params.position!.y);
@@ -230,7 +230,7 @@ chrome.test.runTests([
     // type is "XYZ" and its Y parameter is 0.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZWithY0`);
-    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(11, params.pageIndex);
     chrome.test.assertEq(1.7, params.zoom);
     chrome.test.assertEq(100, params.position!.x);
     chrome.test.assertEq(0, params.position!.y);
@@ -240,7 +240,7 @@ chrome.test.runTests([
     // type is "XYZ" and its Y parameter is null.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithXYZWithYNull`);
-    chrome.test.assertEq(11, params.page);
+    chrome.test.assertEq(11, params.pageIndex);
     chrome.test.assertEq(1.7, params.zoom);
     chrome.test.assertEq(100, params.position!.x);
     chrome.test.assertTrue(Number.isNaN(params.position!.y));
@@ -250,7 +250,7 @@ chrome.test.runTests([
     // type is "FitR" with multiple valid parameters.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithFitR`);
-    chrome.test.assertEq(0, params.page);
+    chrome.test.assertEq(0, params.pageIndex);
     chrome.test.assertEq(2.5, params.zoom);
     chrome.test.assertEq(20, params.position!.x);
     chrome.test.assertEq(100, params.position!.y);
@@ -260,7 +260,7 @@ chrome.test.runTests([
     // type is "FitR" with multiple valid parameters.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithFitRReversedCoordinates`);
-    chrome.test.assertEq(0, params.page);
+    chrome.test.assertEq(0, params.pageIndex);
     chrome.test.assertEq(2.5, params.zoom);
     chrome.test.assertEq(20, params.position!.x);
     chrome.test.assertEq(100, params.position!.y);
@@ -270,7 +270,7 @@ chrome.test.runTests([
     // type is "FitR" with one NULL parameters.
     params = await paramsParser.getViewportFromUrlParams(
         `${URL}#nameddest=DestWithFitRWithNull`);
-    chrome.test.assertEq(0, params.page);
+    chrome.test.assertEq(0, params.pageIndex);
     chrome.test.assertEq(undefined, params.zoom);
     chrome.test.assertEq(undefined, params.position);
     chrome.test.assertEq(undefined, params.viewPosition);

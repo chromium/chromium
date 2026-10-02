@@ -196,11 +196,11 @@ export class PdfNavigatorImpl implements PdfNavigator {
     } catch (err) {
     }
 
-    const pageNumber = viewportPosition.page;
-    if (pageNumber !== undefined && this.originalUrl_ && newUrl &&
+    const pageIndex = viewportPosition.pageIndex;
+    if (pageIndex !== undefined && this.originalUrl_ && newUrl &&
         this.originalUrl_.origin === newUrl.origin &&
         this.originalUrl_.pathname === newUrl.pathname) {
-      this.viewport_.goToPage(pageNumber);
+      this.viewport_.goToPage(pageIndex);
     } else {
       this.navigatorDelegate_.navigateInCurrentTab(viewportPosition.url!);
     }

@@ -10,7 +10,7 @@ import type {Size} from './viewport.js';
 
 export interface OpenPdfParams {
   boundingBox?: Rect;
-  page?: number;
+  pageIndex?: number;
   position?: Point;
   url?: string;
   view?: FittingType;
@@ -374,7 +374,7 @@ export class OpenPdfParamsParser {
           pageNumber = this.pageCount_;
         }
         // goToPage() takes a zero-based page index.
-        params['page'] = pageNumber - 1;
+        params['pageIndex'] = pageNumber - 1;
       }
     }
 
@@ -388,12 +388,12 @@ export class OpenPdfParamsParser {
       Object.assign(params, this.parseZoomParam_(urlParams.get('zoom')!));
     }
 
-    if (params.page === undefined && urlParams.has('nameddest')) {
+    if (params.pageIndex === undefined && urlParams.has('nameddest')) {
       const data =
           await this.getNamedDestinationCallback_(urlParams.get('nameddest')!);
 
       if (data.pageIndex !== -1) {
-        params.page = data.pageIndex;
+        params.pageIndex = data.pageIndex;
         pageNumber = data.pageIndex;
       }
 

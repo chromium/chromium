@@ -481,23 +481,23 @@ export abstract class PdfViewerBaseElement extends HelpBubbleCrLitElementBase {
 
     if (params.position) {
       this.viewport_.goToPageAndXy(
-          params.page || 0, params.position.x, params.position.y);
+          params.pageIndex || 0, params.position.x, params.position.y);
     }
 
     if (params.view) {
       this.isUserInitiatedEvent = false;
       const fittingTypeParams = {
         boundingBox: params.boundingBox,
-        page: params.page || 0,
+        page: params.pageIndex || 0,
         viewPosition: params.viewPosition,
         fitToWidth: params.view === FittingType.FIT_TO_BOUNDING_BOX_WIDTH,
       };
       this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);
       this.isUserInitiatedEvent = true;
-    } else if (!params.position && params.page !== undefined) {
+    } else if (!params.position && params.pageIndex !== undefined) {
       // No fitting type provided, so just go to page.
-      this.viewport_.goToPage(params.page);
+      this.viewport_.goToPage(params.pageIndex);
     }
   }
 
