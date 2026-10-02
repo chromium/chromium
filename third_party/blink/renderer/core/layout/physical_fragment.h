@@ -450,10 +450,11 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return layout_object_->CanTraversePhysicalFragments();
   }
 
-  // This fragment is hidden for paint purpose, but exists for querying layout
-  // information. Used for `text-overflow: ellipsis`.
-  bool IsHiddenForPaint() const {
-    return is_hidden_for_paint_ || layout_object_->IsTruncated();
+  // This fragment won't be painted (due to reasons involving layout, rather
+  // than style), but still exists for querying layout information. Used for
+  // `text-overflow: ellipsis` and `line-clamp`.
+  bool IsHiddenDueToLayout() const {
+    return is_hidden_due_to_layout_ || layout_object_->IsTruncated();
   }
 
   // This fragment is opaque for layout and paint, as if it does not exist and
@@ -786,7 +787,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   const uint8_t type_ : 1;           // FragmentType
   const uint8_t sub_type_ : 4;       // BoxType, TextItemType, or LineBoxType
   const uint8_t style_variant_ : 2;  // StyleVariant
-  const uint8_t is_hidden_for_paint_ : 1;
+  const uint8_t is_hidden_due_to_layout_ : 1;
   uint8_t : 0;  // Zero-length bitfield used to allow the compiler to split
                 // memory locations. If the above bitfields are part of the
                 // same memory location as the bitfields below, they will all

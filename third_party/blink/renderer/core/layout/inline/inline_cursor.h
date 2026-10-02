@@ -108,9 +108,9 @@ class CORE_EXPORT InlineCursorPosition {
   // True if the current position is a box for "float"
   bool IsFloating() const { return item_->IsFloating(); }
 
-  // True if the current position is hidden for paint. It is error to call at
-  // end.
-  bool IsHiddenForPaint() const { return item_->IsHiddenForPaint(); }
+  // True if the current position won't be painted due to layout reasons. It is
+  // an error to call at the end.
+  bool IsHiddenDueToLayout() const { return item_->IsHiddenDueToLayout(); }
 
   // |ComputedStyle| and related functions.
   StyleVariant GetStyleVariant() const { return item_->GetStyleVariant(); }

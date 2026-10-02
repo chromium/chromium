@@ -75,7 +75,7 @@ ConstraintSpace CreateConstraintSpaceForFloat(
   builder.SetIsPaintedAtomically(true);
 
   if (unpositioned_float.line_clamp_state == LineClampFloatState::kHide) {
-    builder.SetIsHiddenForPaint(true);
+    builder.SetIsHiddenDueToLayout(true);
   } else if (unpositioned_float.line_clamp_state ==
              LineClampFloatState::kClip) {
     builder.SetIsLineClampClippedFloat();

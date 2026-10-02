@@ -353,16 +353,16 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
 
   Vector<TextBoxInfo> results;
   if (const OffsetMapping* mapping = GetOffsetMapping()) {
-    bool in_hidden_for_paint = false;
+    bool is_hidden_due_to_layout = false;
     InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       // TODO(yosin): We should introduce |FragmentItem::IsTruncated()| to
-      // skip them instead of using |IsHiddenForPaint()| with ordering of
+      // skip them instead of using |IsHiddenDueToLayout()| with ordering of
       // fragments.
-      if (cursor.Current().IsHiddenForPaint()) {
-        in_hidden_for_paint = true;
-      } else if (in_hidden_for_paint) {
+      if (cursor.Current().IsHiddenDueToLayout()) {
+        is_hidden_due_to_layout = true;
+      } else if (is_hidden_due_to_layout) {
         // Because of we finished original fragments (not painted), we should
         // ignore truncated fragments (actually painted).
         break;
@@ -489,8 +489,9 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (option != ClippingOption::kNoClipping) [[unlikely]] {
         DCHECK_EQ(option, ClippingOption::kClipToEllipsis);
-        if (cursor.Current().IsHiddenForPaint())
+        if (cursor.Current().IsHiddenDueToLayout()) {
           continue;
+        }
       }
       yield(cursor.Current().RectInContainerFragment());
     }
@@ -1131,8 +1132,9 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     PhysicalRect rect;
     InlineCursor cursor(*FragmentItemsContainer());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      if (cursor.Current().IsHiddenForPaint())
+      if (cursor.Current().IsHiddenDueToLayout()) {
         continue;
+      }
       const LayoutSelectionStatus status =
           frame_selection.ComputeLayoutSelectionStatus(cursor);
       if (status.start == status.end)

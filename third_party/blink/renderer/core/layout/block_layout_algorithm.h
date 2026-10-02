@@ -81,7 +81,7 @@ struct BlockLineClampData {
 
   bool IsPastClampPoint() const { return data.IsPastClampPoint(); }
 
-  bool ShouldHideForPaint() const { return data.ShouldHideForPaint(); }
+  bool IsHidden() const { return data.IsHidden(); }
 
   bool ShouldRelayoutWithNoForcedTruncate() const {
     if (!previous_inflow_position_when_clamped.has_value()) {

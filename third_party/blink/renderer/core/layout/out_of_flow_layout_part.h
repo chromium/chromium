@@ -157,8 +157,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
                                               TextDirection::kLtr};
     // If the container is scrollable.
     bool is_scroll_container;
-    // If the container is hidden for paint, which is also true for the OOFs.
-    bool is_hidden_for_paint;
+    // If the container is hidden due to layout, which is also true for the
+    // OOFs.
+    bool is_hidden_due_to_layout;
     // Size and offset of the container.
     LogicalRect rect;
     // https://drafts.csswg.org/css-position-4/#scrollable-containing-block

@@ -803,8 +803,8 @@ const LayoutResult* ComputeOofBlockDimensions(
     builder.SetAvailableSize({dimensions->size.inline_size, imcb.BlockSize()});
     builder.SetIsFixedInlineSize(true);
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
-    if (space.IsHiddenForPaint()) {
-      builder.SetIsHiddenForPaint(true);
+    if (space.IsHiddenDueToLayout()) {
+      builder.SetIsHiddenDueToLayout(true);
     }
     builder.SetBlockAutoBehavior(block_auto_size_behavior);
 

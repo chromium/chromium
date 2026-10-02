@@ -138,7 +138,7 @@ void ScrollableOverflowCalculator::AddItemsInternal(
   }
 
   for (const auto& item : items) {
-    if (item->IsHiddenForPaint()) {
+    if (item->IsHiddenDueToLayout()) {
       continue;
     }
 
@@ -241,7 +241,8 @@ PhysicalRect ScrollableOverflowCalculator::AdjustOverflowForScrollOrigin(
 PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     const PhysicalBoxFragment& child_fragment) {
   // Don't propagate any overflow if:
-  //  - We are hidden for painting purposes (empty-cells within a table).
+  //  - We are hidden for painting purposes due to layout rather than CSS
+  //    (empty-cells within a table).
   //  - We are a ::view-transition pseudo. They are positioned as a child of
   //    its owning element, but not subject to that elements overflow clip or
   //    scroll translation. See:
@@ -249,7 +250,7 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
   //    Note that both the scope and its container will ignore overflow from
   //    this pseudo; this should be correct as a consequence of the fact that
   //    the scope is treated as having contain:layout.
-  if (child_fragment.IsHiddenForPaint() ||
+  if (child_fragment.IsHiddenDueToLayout() ||
       IsA<ViewTransitionTransitionElement>(child_fragment.GetNode())) {
     return {};
   }

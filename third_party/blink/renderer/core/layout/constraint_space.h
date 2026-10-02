@@ -170,7 +170,9 @@ class CORE_EXPORT ConstraintSpace final {
     return bitfields_.is_orthogonal_writing_mode_root;
   }
 
-  bool IsHiddenForPaint() const { return bitfields_.is_hidden_for_paint; }
+  bool IsHiddenDueToLayout() const {
+    return bitfields_.is_hidden_due_to_layout;
+  }
 
   bool IsLineClampClippedFloat() const {
     return bitfields_.is_line_clamp_clipped_float;
@@ -1597,7 +1599,7 @@ class CORE_EXPORT ConstraintSpace final {
              is_orthogonal_writing_mode_root ==
                  other.is_orthogonal_writing_mode_root &&
              is_painted_atomically == other.is_painted_atomically &&
-             is_hidden_for_paint == other.is_hidden_for_paint &&
+             is_hidden_due_to_layout == other.is_hidden_due_to_layout &&
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
                  other.ancestor_has_clearance_past_adjoining_floats &&
@@ -1637,7 +1639,7 @@ class CORE_EXPORT ConstraintSpace final {
     unsigned is_orthogonal_writing_mode_root : 1 = false;
 
     unsigned is_painted_atomically : 1 = false;
-    unsigned is_hidden_for_paint : 1 = false;
+    unsigned is_hidden_due_to_layout : 1 = false;
     unsigned use_first_line_style : 1 = false;
     unsigned ancestor_has_clearance_past_adjoining_floats : 1 = false;
 

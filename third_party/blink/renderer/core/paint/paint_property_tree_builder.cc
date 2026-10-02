@@ -3133,7 +3133,8 @@ static bool NeedsLineClampFloatClip(const LayoutObject& object,
   }
 
   DCHECK(fragment);
-  return !fragment->IsHiddenForPaint() && fragment->IsLineClampClippedFloat();
+  return !fragment->IsHiddenDueToLayout() &&
+         fragment->IsLineClampClippedFloat();
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateLineClampFloatClip() {

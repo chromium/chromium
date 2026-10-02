@@ -157,7 +157,7 @@ class CORE_EXPORT FragmentItem final {
   bool IsBlockInInline() const;
   bool IsFloating() const;
   bool IsEmptyLineBox() const;
-  bool IsHiddenForPaint() const { return is_hidden_for_paint_; }
+  bool IsHiddenDueToLayout() const { return is_hidden_due_to_layout_; }
   bool IsListMarker() const;
 
   bool IsSvgText() const {
@@ -595,13 +595,13 @@ class CORE_EXPORT FragmentItem final {
                const ShapeResultView* shape_result,
                const TextOffsetRange& text_offset,
                const PhysicalSize& size,
-               bool is_hidden_for_paint);
+               bool is_hidden_due_to_layout);
   // Create a generated text item.
   FragmentItem(const InlineItem& inline_item,
                const ShapeResultView* shape_result,
                const String& text_content,
                const PhysicalSize& size,
-               bool is_hidden_for_paint);
+               bool is_hidden_due_to_layout);
   FragmentItem(const LayoutObject& layout_object,
                TextItemType text_type,
                StyleVariant style_variant,
@@ -609,7 +609,7 @@ class CORE_EXPORT FragmentItem final {
                const ShapeResultView* shape_result,
                const String& text_content,
                const PhysicalSize& size,
-               bool is_hidden_for_paint);
+               bool is_hidden_due_to_layout);
 
   InkOverflow::Type InkOverflowType() const {
     return static_cast<InkOverflow::Type>(ink_overflow_type_);
@@ -669,7 +669,7 @@ class CORE_EXPORT FragmentItem final {
   const unsigned const_type_ : kConstTypeBits;  // ItemType
   unsigned sub_type_ : kSubTypeBits;            // TextItemType or LineBoxType
   unsigned style_variant_ : 2;                  // StyleVariant
-  unsigned is_hidden_for_paint_ : 1;
+  unsigned is_hidden_due_to_layout_ : 1;
   // Note: For |TextItem| and |GeneratedTextItem|, |text_direction_| equals to
   // |ShapeResult::Direction()|.
   unsigned text_direction_ : 1;  // TextDirection.

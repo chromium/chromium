@@ -31,7 +31,7 @@ struct InlineContainingBlockGeometry {
   //
   // TODO(crbug.com/40267498): Remove along with non-FragmentedOofInCb code.
   LogicalOffset relative_offset;
-  bool is_hidden_for_paint;
+  bool is_hidden_due_to_layout;
 };
 
 // Containing block information for each LayoutInline that contain out-of-flow

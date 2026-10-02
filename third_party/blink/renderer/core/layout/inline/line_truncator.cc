@@ -512,7 +512,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
   }
 
   if (child->inline_item) {
-    child->is_hidden_for_paint = true;
+    child->is_hidden_due_to_layout = true;
     return;
   }
 

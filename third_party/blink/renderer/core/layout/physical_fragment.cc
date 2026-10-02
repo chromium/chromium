@@ -211,7 +211,7 @@ class FragmentTreeDumper {
       const PhysicalFragment* box = current.BoxFragment();
       if (box && !box->IsInlineBox()) {
         Vector<String> attributes;
-        if (current->IsHiddenForPaint()) {
+        if (current->IsHiddenDueToLayout()) {
           attributes.push_back("hidden");
         }
         Append(box, current.OffsetInContainerFragment(), attributes, indent);
@@ -328,7 +328,7 @@ PhysicalFragment::PhysicalFragment(FragmentBuilder* builder,
       type_(type),
       sub_type_(sub_type),
       style_variant_((unsigned)builder->style_variant_),
-      is_hidden_for_paint_(builder->is_hidden_for_paint_),
+      is_hidden_due_to_layout_(builder->is_hidden_due_to_layout_),
       has_floating_descendants_for_paint_(false),
       has_running_anchor_transform_animation_(
           builder->has_running_anchor_transform_animation_),
@@ -389,7 +389,7 @@ PhysicalFragment::PhysicalFragment(const PhysicalFragment& other)
       type_(other.type_),
       sub_type_(other.sub_type_),
       style_variant_(other.style_variant_),
-      is_hidden_for_paint_(other.is_hidden_for_paint_),
+      is_hidden_due_to_layout_(other.is_hidden_due_to_layout_),
       has_floating_descendants_for_paint_(
           other.has_floating_descendants_for_paint_),
       has_adjoining_object_descendants_(

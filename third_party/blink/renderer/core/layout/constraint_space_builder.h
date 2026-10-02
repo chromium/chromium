@@ -238,13 +238,13 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
     EnsureRareData()->is_monolithic_overflow_propagation_disabled = true;
   }
 
-  void SetIsHiddenForPaint(bool is_hidden_for_paint) {
+  void SetIsHiddenDueToLayout(bool is_hidden_due_to_layout) {
 #if DCHECK_IS_ON()
-    DCHECK(!is_hidden_for_paint_set_);
-    is_hidden_for_paint_set_ = true;
+    DCHECK(!is_hidden_due_to_layout_set_);
+    is_hidden_due_to_layout_set_ = true;
 #endif
-    if (is_hidden_for_paint) {
-      space_.bitfields_.is_hidden_for_paint = true;
+    if (is_hidden_due_to_layout) {
+      space_.bitfields_.is_hidden_due_to_layout = true;
     }
   }
 
@@ -718,7 +718,7 @@ class CORE_EXPORT ConstraintSpaceBuilder final {
   bool force_orthogonal_writing_mode_root_;
 
 #if DCHECK_IS_ON()
-  bool is_hidden_for_paint_set_ = false;
+  bool is_hidden_due_to_layout_set_ = false;
   bool is_available_size_set_ = false;
   bool is_percentage_resolution_size_set_ = false;
   bool is_fragmentainer_block_size_set_ = false;

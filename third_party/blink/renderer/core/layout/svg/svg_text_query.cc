@@ -148,7 +148,7 @@ std::tuple<const FragmentItem*, gfx::RectF> ScaledCharacterRectInContainer(
       FindFragmentItemForAddressableCodeUnitIndex(query_root, code_unit_index);
   DCHECK(item);
   DCHECK(item->IsSvgText());
-  if (item->IsHiddenForPaint()) {
+  if (item->IsHiddenDueToLayout()) {
     return {item, gfx::RectF()};
   }
   auto char_rect =
@@ -163,7 +163,7 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
                                QueryPosition pos) {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root, index);
   DCHECK(item->IsSvgText());
-  if (item->IsHiddenForPaint()) {
+  if (item->IsHiddenDueToLayout()) {
     return gfx::PointF();
   }
   const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
@@ -252,7 +252,7 @@ gfx::PointF SvgTextQuery::EndPositionOfCharacter(unsigned index) const {
 gfx::RectF SvgTextQuery::ExtentOfCharacter(unsigned index) const {
   auto [item, char_rect] = ScaledCharacterRectInContainer(query_root_, index);
   DCHECK(item->IsSvgText());
-  if (item->IsHiddenForPaint()) {
+  if (item->IsHiddenDueToLayout()) {
     return gfx::RectF();
   }
   if (item->HasSvgTransformForPaint()) {
@@ -267,7 +267,7 @@ float SvgTextQuery::RotationOfCharacter(unsigned index) const {
       FindFragmentItemForAddressableCodeUnitIndex(query_root_, index);
   DCHECK(item);
   DCHECK(item->IsSvgText());
-  if (item->IsHiddenForPaint()) {
+  if (item->IsHiddenDueToLayout()) {
     return 0.0f;
   }
   float rotation = item->GetSvgFragmentData()->angle;
@@ -310,7 +310,7 @@ int SvgTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
 
   const FragmentItem* hit_item = nullptr;
   for (const auto* item : item_list) {
-    if (!item->IsHiddenForPaint() && item->InclusiveContains(position)) {
+    if (!item->IsHiddenDueToLayout() && item->InclusiveContains(position)) {
       hit_item = item;
       break;
     }

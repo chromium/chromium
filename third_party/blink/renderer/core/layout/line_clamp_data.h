@@ -96,14 +96,14 @@ struct LineClampData {
     return IsClampByLines() && lines_until_clamp <= 0;
   }
 
-  bool ShouldHideForPaint() const {
+  bool IsHidden() const {
     return RuntimeEnabledFeatures::CSSLineClampEnabled() && IsPastClampPoint();
   }
 
   // Floats inside a line-clamp container can be hidden, or they can be clipped
   // to the container's bottom-end content edge.
   LineClampFloatState FloatState() const {
-    if (ShouldHideForPaint()) {
+    if (IsHidden()) {
       return LineClampFloatState::kHide;
     }
     if (RuntimeEnabledFeatures::CSSLineClampEnabled() && IsLineClampContext()) {

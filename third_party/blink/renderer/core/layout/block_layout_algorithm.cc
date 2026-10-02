@@ -3501,8 +3501,8 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
   }
 
-  if (line_clamp_data_.ShouldHideForPaint()) [[unlikely]] {
-    builder.SetIsHiddenForPaint(true);
+  if (line_clamp_data_.IsHidden()) [[unlikely]] {
+    builder.SetIsHiddenDueToLayout(true);
   }
 
   builder.SetAvailableSize(child_available_size);

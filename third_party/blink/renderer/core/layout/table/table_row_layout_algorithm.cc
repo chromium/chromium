@@ -249,7 +249,7 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(max_cell_block_size);
   container_builder_.SetFragmentsTotalBlockSize(row_block_size);
   if (row.is_collapsed)
-    container_builder_.SetIsHiddenForPaint(true);
+    container_builder_.SetIsHiddenDueToLayout(true);
   container_builder_.SetIsTablePart();
 
   if (should_propagate_child_break_values) {

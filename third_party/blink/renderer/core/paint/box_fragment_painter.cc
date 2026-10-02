@@ -100,8 +100,9 @@ inline bool HasSelection(const LayoutObject* layout_object) {
 
 inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
                              const ComputedStyle& style) {
-  if (fragment.IsHiddenForPaint())
+  if (fragment.IsHiddenDueToLayout()) {
     return false;
+  }
   if (style.Visibility() != EVisibility::kVisible) {
     auto display = style.Display();
     // Hidden section/row backgrounds still paint into cells.
@@ -112,18 +113,19 @@ inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
     }
   }
 
-  // When |LineTruncator| sets |IsHiddenForPaint|, it sets to the fragment in
+  // When |LineTruncator| sets |IsHiddenDueToLayout|, it sets to the fragment in
   // the line. However, when it has self-painting layer, the fragment stored in
-  // |LayoutBlockFlow| will be painted. Check |IsHiddenForPaint| of the fragment
-  // in the inline formatting context.
+  // |LayoutBlockFlow| will be painted. Check |IsHiddenDueToLayout| of the
+  // fragment in the inline formatting context.
   if (fragment.IsAtomicInline() && fragment.HasSelfPaintingLayer())
       [[unlikely]] {
     const LayoutObject* layout_object = fragment.GetLayoutObject();
     if (layout_object->IsInLayoutNGInlineFormattingContext()) {
       InlineCursor cursor;
       cursor.MoveTo(*layout_object);
-      if (cursor && cursor.Current().IsHiddenForPaint())
+      if (cursor && cursor.Current().IsHiddenDueToLayout()) {
         return false;
+      }
     }
   }
 
@@ -132,7 +134,7 @@ inline bool IsVisibleToPaint(const PhysicalFragment& fragment,
 
 inline bool IsVisibleToPaint(const FragmentItem& item,
                              const ComputedStyle& style) {
-  return !item.IsHiddenForPaint() &&
+  return !item.IsHiddenDueToLayout() &&
          style.Visibility() == EVisibility::kVisible;
 }
 
@@ -149,8 +151,9 @@ inline bool IsVisibleToHitTest(const FragmentItem& item,
     return IsVisibleToPaint(item, style) && IsVisibleToHitTest(style, request);
   }
 
-  if (item.IsHiddenForPaint())
+  if (item.IsHiddenDueToLayout()) {
     return false;
+  }
   PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgTextHitTesting,
                                   request, style.UsedPointerEvents());
   if (hit_rules.require_visible &&
@@ -298,8 +301,9 @@ Vector<PhysicalRect> BuildBackplate(InlineCursor* descendants,
   // inlines.
   for (; *descendants; descendants->MoveToNext()) {
     if (const FragmentItem* child_item = descendants->CurrentItem()) {
-      if (child_item->IsHiddenForPaint())
+      if (child_item->IsHiddenDueToLayout()) {
         continue;
+      }
       if (child_item->IsText()) {
         if (child_item->IsLineBreak()) {
           backplates.AddLineBreak();
@@ -620,7 +624,7 @@ void BoxFragmentPainter::PaintFragment(const PhysicalBoxFragment& fragment,
     return;
   }
 
-  if (fragment.IsHiddenForPaint() ||
+  if (fragment.IsHiddenDueToLayout() ||
       (!fragment.IsFirstForNode() && !CanPaintMultipleFragments(fragment))) {
     return;
   }
@@ -642,7 +646,7 @@ void BoxFragmentPainter::PaintFragment(const PhysicalBoxFragment& fragment,
 }
 
 void BoxFragmentPainter::Paint(const PaintInfo& paint_info) {
-  if (GetPhysicalFragment().IsHiddenForPaint()) {
+  if (GetPhysicalFragment().IsHiddenDueToLayout()) {
     return;
   }
   auto* layout_object = box_fragment_.GetLayoutObject();
@@ -1761,7 +1765,7 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundForBlockInInline(
         children->MoveToNextSkippingChildren();
         continue;
       }
-      if (fragment->IsBlockInInline() && !fragment->IsHiddenForPaint()) {
+      if (fragment->IsBlockInInline() && !fragment->IsHiddenDueToLayout()) {
         PaintBoxItem(*item, *fragment, *children, paint_info, paint_offset);
       }
     }
@@ -1851,13 +1855,15 @@ void BoxFragmentPainter::PaintInlineItems(const PaintInfo& paint_info,
     switch (item->Type()) {
       case FragmentItem::kText:
       case FragmentItem::kGeneratedText:
-        if (!item->IsHiddenForPaint())
+        if (!item->IsHiddenDueToLayout()) {
           PaintTextItem(*cursor, paint_info, paint_offset, parent_offset);
+        }
         cursor->MoveToNext();
         break;
       case FragmentItem::kBox:
-        if (!item->IsHiddenForPaint())
+        if (!item->IsHiddenDueToLayout()) {
           PaintBoxItem(*item, *cursor, paint_info, paint_offset, parent_offset);
+        }
         cursor->MoveToNextSkippingChildren();
         break;
       case FragmentItem::kLine: {
@@ -2041,7 +2047,7 @@ void BoxFragmentPainter::PaintBoxItem(const FragmentItem& item,
   DCHECK_EQ(item.Type(), FragmentItem::kBox);
   DCHECK_EQ(&item, cursor.Current().Item());
   DCHECK_EQ(item.PostLayoutBoxFragment(), &child_fragment);
-  DCHECK(!child_fragment.IsHiddenForPaint());
+  DCHECK(!child_fragment.IsHiddenDueToLayout());
   if (child_fragment.HasSelfPaintingLayer()) {
     if (paint_info.phase != PaintPhase::kTextClip) {
       // Replaced normal flow stacking contexts (like <video>) need to be

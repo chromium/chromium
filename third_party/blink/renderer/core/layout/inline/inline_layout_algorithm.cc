@@ -342,7 +342,7 @@ ALWAYS_INLINE InlineLayoutAlgorithm::LineClampState
 InlineLayoutAlgorithm::GetLineClampState(const LineInfo* line_info) const {
   const ConstraintSpace& space = GetConstraintSpace();
   LineClampData line_clamp_data = space.GetLineClampData();
-  if (line_clamp_data.ShouldHideForPaint()) {
+  if (line_clamp_data.IsHidden()) {
     return LineClampState::kHide;
   }
   if (!(line_info && line_info->IsBlockInInline()) &&
@@ -456,11 +456,11 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
   }
 
   // With the CSSLineClamp feature, if we're past the clamp point, we mark every
-  // inline item in the line as hidden for paint.
+  // inline item in the line as hidden due to layout.
   if (line_clamp_state == LineClampState::kHide) [[unlikely]] {
-    container_builder_.SetIsHiddenForPaint(true);
+    container_builder_.SetIsHiddenDueToLayout(true);
     for (auto& child : *line_box) {
-      child.is_hidden_for_paint = true;
+      child.is_hidden_due_to_layout = true;
     }
   }
 

@@ -155,8 +155,9 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
             *physical_fragment.GetFrameSetLayoutData()));
   }
 
-  if (physical_fragment.IsHiddenForPaint())
-    container_builder_.SetIsHiddenForPaint(true);
+  if (physical_fragment.IsHiddenDueToLayout()) {
+    container_builder_.SetIsHiddenDueToLayout(true);
+  }
 
   if (auto* gap_geometry = physical_fragment.GetGapGeometry()) {
     container_builder_.SetGapGeometry(gap_geometry);

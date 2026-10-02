@@ -112,12 +112,12 @@ void GatherInlineContainerFragmentsFromItems(
       // If the first line box of an inline CB is hidden after the clamp point,
       // all of its following line boxes will be hidden, and so will all of the
       // CB's fragments.
-      bool should_hide_abspos = linebox->IsHiddenForPaint();
+      bool should_hide_abspos = linebox->IsHiddenDueToLayout();
 
       containing_block_geometry = InlineContainingBlockGeometry{
           fragment_rect, fragment_rect,
           containing_block_geometry->relative_offset,
-          /*is_hidden_for_paint=*/should_hide_abspos};
+          /*is_hidden_due_to_layout=*/should_hide_abspos};
     }
 
     if (containing_lineboxes.end == linebox) {
