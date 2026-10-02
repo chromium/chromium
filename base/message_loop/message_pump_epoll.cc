@@ -417,6 +417,8 @@ void MessagePumpEpoll::UnregisterInterest(
     const scoped_refptr<Interest>& interest) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  interest->set_active(false);
+
   const int fd = interest->params().fd;
   auto entry_it = entries_.find(fd);
   CHECK(entry_it != entries_.end());
