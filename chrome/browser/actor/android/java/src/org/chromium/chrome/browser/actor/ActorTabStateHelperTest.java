@@ -67,6 +67,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -378,6 +380,73 @@ public class ActorTabStateHelperTest {
                         eq(mTab),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
+    }
+
+    @Test
+    public void testCreateAndInsertPlaceholder_IndexPositioningWithMockTabModelSelector() {
+        MockTabModelSelector selector =
+                new MockTabModelSelector(
+                        mProfile,
+                        mProfile,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* delegate= */ null);
+        MockTabModel mockModel = (MockTabModel) selector.getModel(false);
+        mockModel.setTabCreatorForTesting(mTabCreator);
+        mockModel.setTabRemoverForTesting(mTabRemover);
+
+        Tab tab0 = mock(Tab.class);
+        when(tab0.getId()).thenReturn(200);
+        when(tab0.getIsPinned()).thenReturn(false);
+
+        Tab tab1 = mock(Tab.class);
+        when(tab1.getId()).thenReturn(201);
+        when(tab1.getIsPinned()).thenReturn(false);
+
+        Tab tab2 = mock(Tab.class);
+        when(tab2.getId()).thenReturn(202);
+        when(tab2.getIsPinned()).thenReturn(false);
+
+        mockModel.addTab(
+                tab0, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mockModel.addTab(
+                tab1, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mockModel.addTab(
+                tab2, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        assertEquals(3, mockModel.getCount());
+        assertEquals(0, mockModel.indexOf(tab0));
+        assertEquals(1, mockModel.indexOf(tab1));
+        assertEquals(2, mockModel.indexOf(tab2));
+
+        TabState tab1State = new TabState();
+        TabStateExtractor.setTabStateForTesting(201, tab1State);
+
+        Tab placeholder = mock(Tab.class);
+        when(placeholder.getId()).thenReturn(300);
+
+        when(mTabCreator.createFrozenTab(eq(tab1State), anyInt(), eq(2)))
+                .thenAnswer(
+                        invocation -> {
+                            int targetIndex = invocation.getArgument(2);
+                            mockModel.addTab(
+                                    placeholder,
+                                    targetIndex,
+                                    TabLaunchType.FROM_RESTORE,
+                                    TabCreationState.FROZEN_ON_RESTORE);
+                            return placeholder;
+                        });
+
+        Tab result = ActorTabStateHelper.createAndInsertPlaceholder(tab1, mockModel);
+
+        assertEquals(placeholder, result);
+        assertEquals(4, mockModel.getCount());
+        assertEquals(tab0, mockModel.getTabAt(0));
+        assertEquals(tab1, mockModel.getTabAt(1));
+        assertEquals(placeholder, mockModel.getTabAt(2));
+        assertEquals(tab2, mockModel.getTabAt(3));
+        assertEquals(2, mockModel.indexOf(placeholder));
+        assertEquals(3, mockModel.indexOf(tab2));
     }
 
     @Test

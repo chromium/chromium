@@ -100,7 +100,7 @@ public class ActorTabStateHelper {
         List<BackgroundSession> sessions = new ArrayList<>();
         TabGroupSyncService syncService = getTabGroupSyncService(model);
 
-        for (Tab originalTab : model) {
+        for (Tab originalTab : TabModelUtils.convertTabListToListOfTabs(model)) {
             if (originalTab == null) continue;
 
             Integer taskId = activeTabIdToTaskId.get(originalTab.getId());
