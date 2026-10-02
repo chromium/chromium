@@ -35,6 +35,7 @@
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -560,6 +561,234 @@ TEST_F(ContextualTasksWebViewTest,
       web_contents.get(), GURL("https://example.com"));
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents.get(), GURL("https://ai.google.com/search?q=test"));
+}
+
+class MockTabWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  MOCK_METHOD(content::WebContents*,
+              OpenURLFromTab,
+              (content::WebContents * source,
+               const content::OpenURLParams& params,
+               base::OnceCallback<void(content::NavigationHandle&)>
+                   navigation_handle_callback),
+              (override));
+};
+
+TEST_F(ContextualTasksWebViewTest, OpenURLFromTab_RejectsNonWebSchemes) {
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  NiceMock<MockTabWebContentsDelegate> tab_delegate;
+  tab_contents->SetDelegate(&tab_delegate);
+  ON_CALL(mock_tab, GetContents()).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(*browser_window_, GetActiveTabInterface())
+      .WillByDefault(Return(&mock_tab));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(panel_contents.get());
+
+  EXPECT_CALL(tab_delegate, OpenURLFromTab(_, _, _)).Times(0);
+  EXPECT_CALL(*browser_window_, OpenURL(_, _)).Times(0);
+
+  const GURL kNonWebUrls[] = {
+      GURL("chrome://settings"), GURL("javascript:alert(1)"),
+      GURL("data:text/html,hi"), GURL("file:///etc/passwd"),
+      GURL("about:blank"),
+  };
+  for (const GURL& url : kNonWebUrls) {
+    content::OpenURLParams params(url, content::Referrer(),
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  ui::PAGE_TRANSITION_LINK,
+                                  /*is_renderer_initiated=*/true);
+    params.user_gesture = true;
+    EXPECT_EQ(nullptr, web_view_->OpenURLFromTab(panel_contents.get(), params,
+                                                 base::NullCallback()));
+  }
+
+  tab_contents->SetDelegate(nullptr);
+}
+
+TEST_F(
+    ContextualTasksWebViewTest,
+    OpenURLFromTab_SanitizesSpoofedGestureAndDispositionAndRoutesThroughActiveTab) {
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  NiceMock<MockTabWebContentsDelegate> tab_delegate;
+  tab_contents->SetDelegate(&tab_delegate);
+  ON_CALL(mock_tab, GetContents()).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(*browser_window_, GetActiveTabInterface())
+      .WillByDefault(Return(&mock_tab));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(panel_contents.get());
+
+  content::RenderFrameHost* panel_rfh = panel_contents->GetPrimaryMainFrame();
+  ASSERT_FALSE(panel_rfh->HasTransientUserActivation());
+
+  const GURL kTargetUrl("https://example.com/target");
+  content::OpenURLParams params(kTargetUrl, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/true);
+  params.user_gesture = true;
+  params.source_render_process_id = panel_rfh->GetProcess()->GetDeprecatedID();
+  params.source_render_frame_id = panel_rfh->GetRoutingID();
+  params.frame_tree_node_id = panel_rfh->GetFrameTreeNodeId();
+
+  EXPECT_CALL(*browser_window_, OpenURL(_, _)).Times(0);
+  EXPECT_CALL(tab_delegate, OpenURLFromTab(tab_contents.get(), _, _))
+      .WillOnce([&](content::WebContents* source,
+                    const content::OpenURLParams& forwarded_params,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+        EXPECT_EQ(kTargetUrl, forwarded_params.url);
+        EXPECT_FALSE(forwarded_params.user_gesture);
+        EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                  forwarded_params.disposition);
+        EXPECT_TRUE(forwarded_params.frame_tree_node_id.is_null());
+        return tab_contents.get();
+      });
+
+  EXPECT_EQ(tab_contents.get(),
+            web_view_->OpenURLFromTab(panel_contents.get(), params,
+                                      base::NullCallback()));
+
+  tab_contents->SetDelegate(nullptr);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       OpenURLFromTab_PreservesVerifiedUserActivation) {
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  NiceMock<MockTabWebContentsDelegate> tab_delegate;
+  tab_contents->SetDelegate(&tab_delegate);
+  ON_CALL(mock_tab, GetContents()).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(*browser_window_, GetActiveTabInterface())
+      .WillByDefault(Return(&mock_tab));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(panel_contents.get());
+
+  content::RenderFrameHost* panel_rfh = panel_contents->GetPrimaryMainFrame();
+  content::RenderFrameHostTester::For(panel_rfh)->SimulateUserActivation();
+  ASSERT_TRUE(panel_rfh->HasTransientUserActivation());
+
+  content::OpenURLParams params(
+      GURL("https://example.com/target"), content::Referrer(),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  params.user_gesture = true;
+  params.source_render_process_id = panel_rfh->GetProcess()->GetDeprecatedID();
+  params.source_render_frame_id = panel_rfh->GetRoutingID();
+
+  EXPECT_CALL(tab_delegate, OpenURLFromTab(tab_contents.get(), _, _))
+      .WillOnce([&](content::WebContents* source,
+                    const content::OpenURLParams& forwarded_params,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+        EXPECT_TRUE(forwarded_params.user_gesture);
+        EXPECT_EQ(WindowOpenDisposition::NEW_BACKGROUND_TAB,
+                  forwarded_params.disposition);
+        return tab_contents.get();
+      });
+
+  EXPECT_EQ(tab_contents.get(),
+            web_view_->OpenURLFromTab(panel_contents.get(), params,
+                                      base::NullCallback()));
+
+  tab_contents->SetDelegate(nullptr);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       OpenURLFromTab_RejectsCrossWebContentsInitiatorActivation) {
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  NiceMock<MockTabWebContentsDelegate> tab_delegate;
+  tab_contents->SetDelegate(&tab_delegate);
+  ON_CALL(mock_tab, GetContents()).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(*browser_window_, GetActiveTabInterface())
+      .WillByDefault(Return(&mock_tab));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(panel_contents.get());
+
+  // Activate `tab_contents` (outside the panel) and attempt to spoof its frame
+  // ID as the source of a panel OpenURL request.
+  content::RenderFrameHostTester::For(tab_contents->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+  ASSERT_TRUE(
+      tab_contents->GetPrimaryMainFrame()->HasTransientUserActivation());
+
+  content::OpenURLParams params(
+      GURL("https://example.com/target"), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/true);
+  params.user_gesture = true;
+  params.source_render_process_id =
+      tab_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  params.source_render_frame_id =
+      tab_contents->GetPrimaryMainFrame()->GetRoutingID();
+
+  EXPECT_CALL(tab_delegate, OpenURLFromTab(tab_contents.get(), _, _))
+      .WillOnce([&](content::WebContents* source,
+                    const content::OpenURLParams& forwarded_params,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+        EXPECT_FALSE(forwarded_params.user_gesture);
+        return nullptr;
+      });
+
+  web_view_->OpenURLFromTab(panel_contents.get(), params, base::NullCallback());
+
+  tab_contents->SetDelegate(nullptr);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       OpenURLFromTab_ContextMenuPreservesDispositionAndGesture) {
+  tabs::MockTabInterface mock_tab;
+  std::unique_ptr<content::WebContents> tab_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  NiceMock<MockTabWebContentsDelegate> tab_delegate;
+  tab_contents->SetDelegate(&tab_delegate);
+  ON_CALL(mock_tab, GetContents()).WillByDefault(Return(tab_contents.get()));
+  ON_CALL(*browser_window_, GetActiveTabInterface())
+      .WillByDefault(Return(&mock_tab));
+
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> panel_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(panel_contents.get());
+
+  content::OpenURLParams params(
+      GURL("https://example.com/incognito"), content::Referrer(),
+      WindowOpenDisposition::OFF_THE_RECORD, ui::PAGE_TRANSITION_LINK,
+      /*is_renderer_initiated=*/false);
+  params.user_gesture = true;
+  params.started_from_context_menu = true;
+
+  EXPECT_CALL(tab_delegate, OpenURLFromTab(tab_contents.get(), _, _))
+      .WillOnce([&](content::WebContents* source,
+                    const content::OpenURLParams& forwarded_params,
+                    base::OnceCallback<void(content::NavigationHandle&)>) {
+        EXPECT_TRUE(forwarded_params.user_gesture);
+        EXPECT_EQ(WindowOpenDisposition::OFF_THE_RECORD,
+                  forwarded_params.disposition);
+        return tab_contents.get();
+      });
+
+  EXPECT_EQ(tab_contents.get(),
+            web_view_->OpenURLFromTab(panel_contents.get(), params,
+                                      base::NullCallback()));
+
+  tab_contents->SetDelegate(nullptr);
 }
 
 }  // namespace
