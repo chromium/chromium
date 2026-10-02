@@ -6,25 +6,6 @@ found in the LICENSE file.
 -->
 
 <resources>
-    <style name="TextAppearance.TaskManagerCategoryChip"
-        parent="TextAppearance.TextAccentMediumThick">
-        <item name="android:textColor">
-            @color/task_manager_category_chip_text_color
-        </item>
-    </style>
-
-    <style name="TaskManagerCategoryChip" parent="SuggestionChip">
-        <item name="chipColor">
-            @color/task_manager_category_chip_bg_color
-        </item>
-        <item name="primaryTextAppearance">
-            @style/TextAppearance.TaskManagerCategoryChip
-        </item>
-        <item name="solidColorChip">true</item>
-        <item name="cornerRadius">@dimen/task_manager_chip_corner_radius</item>
-        <item name="verticalInset">0dp</item>
-    </style>
-
     <style name="TaskManagerHeaderColumn">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>

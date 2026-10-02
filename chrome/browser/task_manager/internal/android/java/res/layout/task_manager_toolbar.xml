@@ -26,27 +26,27 @@ found in the LICENSE file.
 
         <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/category_chip_tabs"
-            style="@style/TaskManagerCategoryChip"
+            style="@style/SuggestionChip"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/task_manager_chip_height"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/task_manager_chip_margin_end"
             app:icon="@drawable/ic_tab_24dp"
             android:text="@string/task_manager_category_tabs_and_extensions_name" />
 
         <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/category_chip_browser"
-            style="@style/TaskManagerCategoryChip"
+            style="@style/SuggestionChip"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/task_manager_chip_height"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/task_manager_chip_margin_end"
             app:icon="@drawable/ic_chrome"
             android:text="@string/task_manager_category_browser_name" />
 
         <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/category_chip_all"
-            style="@style/TaskManagerCategoryChip"
+            style="@style/SuggestionChip"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/task_manager_chip_height"
+            android:layout_height="wrap_content"
             app:icon="@drawable/ic_data_table_fill_24dp"
             android:text="@string/task_manager_category_all_name" />
 
