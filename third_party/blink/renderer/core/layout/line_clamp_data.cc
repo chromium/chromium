@@ -69,8 +69,7 @@ CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
   return *this;
 }
 
-LayoutUnit LineClampAncestorChain::InnerFinalLineClampBlockSize(
-    LayoutUnit bfc_offset_override,
+LayoutUnit LineClampAncestorChain::FinalLineClampBlockSize(
     LayoutUnit inflow_block_offset,
     MarginStrut margin_strut) const {
   LayoutUnit block_size = inflow_block_offset;
@@ -93,17 +92,10 @@ LayoutUnit LineClampAncestorChain::InnerFinalLineClampBlockSize(
 
     margin_strut.Append(end_margin_, /* is_quirky */ false);
 
-    // TODO(abotella@igalia.com): is this enough to correctly resolve the BFC
-    // offset of all ancestors, even when pushed by floats?
-    LayoutUnit bfc_offset = bfc_offset_.value_or(bfc_offset_override);
-    LayoutUnit parent_bfc_offset =
-        parent_->bfc_offset_.value_or(bfc_offset_override);
-    return parent_->InnerFinalLineClampBlockSize(
-        bfc_offset, bfc_offset + clamped_size - parent_bfc_offset,
-        margin_strut);
+    return parent_->FinalLineClampBlockSize(
+        bfc_offset_ + clamped_size - parent_->bfc_offset_, margin_strut);
   } else {
-    DCHECK(bfc_offset_.has_value());
-    DCHECK_EQ(*bfc_offset_, LayoutUnit());
+    DCHECK_EQ(bfc_offset_, LayoutUnit());
     DCHECK(margin_strut.IsEmpty());
     return block_size;
   }

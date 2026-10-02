@@ -171,13 +171,6 @@ struct LineClampData {
 // represents the data for the line-clamp container. Otherwise, it represents
 // the data for one of its descendent block boxes, and `parent` points to its
 // parent's data.
-//
-// An instance of this class might be created when the corresponding block box's
-// BFC offset hasn't been resolved yet. To deal with this, the `bfc_offset`
-// field is mutable. If the BFC offset isn't known, calling `ResolveBfcOffset`
-// will update that field with the resolved value for this node and its
-// ancestors in the chain. (If it *is* known, calling `ResolveBfcOffset` will
-// DCHECK that the passed offset is correct.)
 class CORE_EXPORT LineClampAncestorChain final
     : public GarbageCollected<LineClampAncestorChain> {
  public:
@@ -186,7 +179,7 @@ class CORE_EXPORT LineClampAncestorChain final
         end_border_padding_(end_border_padding),
         block_min_max_sizes_(
             {.min_size = LayoutUnit(), .max_size = LayoutUnit::Max()}) {}
-  LineClampAncestorChain(std::optional<LayoutUnit> bfc_offset,
+  LineClampAncestorChain(LayoutUnit bfc_offset,
                          LayoutUnit end_border_padding,
                          LayoutUnit end_margin,
                          MinMaxSizes block_size_constraints,
@@ -199,29 +192,11 @@ class CORE_EXPORT LineClampAncestorChain final
     DCHECK(parent);
   }
 
-  bool HasBfcOffset() const { return bfc_offset_.has_value(); }
-
-  const LineClampAncestorChain* WithResolvedBfcOffset(
-      LayoutUnit new_bfc_offset) const {
-    if (bfc_offset_.has_value()) {
-      DCHECK_EQ(*bfc_offset_, new_bfc_offset);
-      return this;
-    } else {
-      return MakeGarbageCollected<LineClampAncestorChain>(
-          new_bfc_offset, end_border_padding_, end_margin_,
-          block_min_max_sizes_, parent_);
-    }
-  }
-
   // Computes the block size that the line-clamp container would have for a
   // clamp point directly contained in the block box corresponding to this node,
   // with the passed inflow block offset and margin strut.
   LayoutUnit FinalLineClampBlockSize(LayoutUnit inflow_block_offset,
-                                     MarginStrut margin_strut) const {
-    DCHECK(bfc_offset_);
-    return InnerFinalLineClampBlockSize(*bfc_offset_, inflow_block_offset,
-                                        margin_strut);
-  }
+                                     MarginStrut margin_strut) const;
 
   void Trace(Visitor*) const;
 
@@ -232,11 +207,8 @@ class CORE_EXPORT LineClampAncestorChain final
   }
 
  private:
-  LayoutUnit InnerFinalLineClampBlockSize(LayoutUnit bfc_offset_override,
-                                          LayoutUnit inflow_block_offset,
-                                          MarginStrut margin_strut) const;
-
-  const std::optional<LayoutUnit> bfc_offset_;
+  // The BFC offset might be optimistic, but we'll relayout if it's wrong.
+  const LayoutUnit bfc_offset_;
   const LayoutUnit end_border_padding_;
   const LayoutUnit end_margin_;
   const MinMaxSizes block_min_max_sizes_;

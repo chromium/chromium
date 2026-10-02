@@ -863,6 +863,14 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
 
   line_clamp_data_.Setup(node_, container_builder_);
 
+  // When we're line-clamping by height, the ancestor chain uses our expected
+  // BFC offset to decide when to clamp. If that ends up being wrong, we'll need
+  // to relayout.
+  if (!constraint_space.IsNewFormattingContext() &&
+      line_clamp_data_.ancestor_chain) {
+    abort_when_bfc_block_offset_updated_ = true;
+  }
+
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
 
   PreviousInflowPosition previous_inflow_position = {
@@ -3623,13 +3631,6 @@ ConstraintSpace BlockLayoutAlgorithm::CreateConstraintSpaceForChild(
           container_builder_.GetAdjoiningObjectTypes());
     }
     builder.SetLineClampData(line_clamp_data_.data);
-    if (container_builder_.BfcBlockOffset() &&
-        line_clamp_data_.ancestor_chain &&
-        !line_clamp_data_.ancestor_chain->HasBfcOffset()) {
-      line_clamp_data_.ancestor_chain =
-          line_clamp_data_.ancestor_chain->WithResolvedBfcOffset(
-              *container_builder_.BfcBlockOffset());
-    }
     builder.SetLineClampAncestorChain(line_clamp_data_.ancestor_chain);
     builder.SetShouldTextBoxTrimInsideWhenLineClamp(
         line_clamp_data_.data.IsLineClampContext() &&
@@ -4258,7 +4259,7 @@ void BlockLineClampData::Setup(const BlockNode& node,
       LayoutUnit end_margin =
           ComputeMarginsForSelf(constraint_space, style).block_end;
       ancestor_chain = MakeGarbageCollected<LineClampAncestorChain>(
-          container_builder.BfcBlockOffset(),
+          constraint_space.ExpectedBfcBlockOffset(),
           container_builder.BorderPadding().block_end, end_margin,
           block_min_max_sizes, constraint_space.GetLineClampAncestorChain());
     }
@@ -4312,11 +4313,6 @@ bool BlockLineClampData::UpdateAfterLayout(
                    -container_builder.Padding().block_end);
     }
 
-    DCHECK(ancestor_chain);
-    if (!ancestor_chain->HasBfcOffset()) {
-      ancestor_chain = ancestor_chain->WithResolvedBfcOffset(
-          *container_builder.BfcBlockOffset());
-    }
     LayoutUnit bfc_offset = ancestor_chain->FinalLineClampBlockSize(
         previous_inflow_position.logical_block_offset +
             padding_annotation_overflow,
