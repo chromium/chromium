@@ -108,4 +108,8 @@ tast.health.RunCameraFrameAnalysisRoutine
 # b/559243046: Consistent failures with no obvious cause
 tast.crostini.AudioPlaybackConfigurations.bookworm_stable@brya
 
+# b/568738156
+# TODO(b/568738156): Re-enable tast.arc.Print.vm_t.
+tast.arc.Print.vm_t
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
