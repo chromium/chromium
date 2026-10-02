@@ -11,11 +11,8 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
-#include "base/trace_event/memory_usage_estimator.h"
 #include "build/build_config.h"
-#include "net/base/cronet_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_util.h"
 #include "url/url_canon.h"
@@ -197,19 +194,6 @@ void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
 #endif
 
   ParseHostsWithCommaMode(contents, dns_hosts, comma_mode);
-
-  // TODO(crbug.com/40874231): Remove this when we have enough data.
-  base::UmaHistogramCounts100000("Net.DNS.DnsHosts.Count", dns_hosts->size());
-
-#if !BUILDFLAG(CRONET_BUILD)
-  // Cronet disables tracing and doesn't provide an implementation of
-  // base::trace_event::EstimateMemoryUsage for DnsHosts. Having this
-  // conditional is preferred over a fake implementation to avoid reporting fake
-  // metrics.
-  base::UmaHistogramMemoryKB(
-      "Net.DNS.DnsHosts.EstimateMemoryUsage",
-      base::trace_event::EstimateMemoryUsage(*dns_hosts));
-#endif  // !BUILDFLAG(CRONET_BUILD)
 }
 
 DnsHostsParser::~DnsHostsParser() = default;
@@ -233,9 +217,6 @@ bool DnsHostsFileParser::ParseHosts(DnsHosts* dns_hosts) const {
   // Reject HOSTS files larger than |kMaxHostsSize| bytes.
   const int64_t kMaxHostsSize = 1 << 25;  // 32MB
 
-  // TODO(crbug.com/40874231): Remove this when we have enough data.
-  base::UmaHistogramCustomCounts("Net.DNS.DnsHosts.FileSize", size.value(), 1,
-                                 kMaxHostsSize * 2, 50);
   if (size.value() > kMaxHostsSize) {
     return false;
   }

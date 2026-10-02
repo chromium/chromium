@@ -2482,35 +2482,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.DNS.DnsHosts.Count" units="count"
-    expires_after="2024-09-01">
-  <owner>horo@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    The number of hosts parsed from a Hosts file. Reported whenever a Hosts file
-    is read and parsed.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsHosts.EstimateMemoryUsage" units="bytes"
-    expires_after="2024-09-01">
-  <owner>horo@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    Estimated memory usage to keep the parsed result of a Hosts file. Reported
-    whenever a Hosts file is read and parsed.
-  </summary>
-</histogram>
-
-<histogram name="Net.DNS.DnsHosts.FileSize" units="bytes"
-    expires_after="2024-09-01">
-  <owner>horo@chromium.org</owner>
-  <owner>net-dev@chromium.org</owner>
-  <summary>
-    The file size of a Hosts file. Reported whenever a Hosts file is read.
-  </summary>
-</histogram>
-
 <histogram name="Net.DNS.DnsPlatformAndroidAttempt.FdAlreadyReadable"
     enum="Boolean" expires_after="2027-05-22">
   <owner>stefanoduo@chromium.org</owner>
