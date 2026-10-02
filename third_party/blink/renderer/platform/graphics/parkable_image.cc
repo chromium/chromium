@@ -467,8 +467,9 @@ void ParkableImageImpl::Unpark() {
                      base::Unretained(on_disk_metadata_.get())),
       size());
 
-  base::TimeDelta elapsed = timer.Elapsed();
-  base::TimeDelta time_since_freeze = base::TimeTicks::Now() - frozen_time_;
+  base::TimeTicks now;
+  base::TimeDelta elapsed = timer.Elapsed(&now);
+  base::TimeDelta time_since_freeze = now - frozen_time_;
 
   RecordReadStatistics(on_disk_metadata_->size(), elapsed, time_since_freeze);
 
