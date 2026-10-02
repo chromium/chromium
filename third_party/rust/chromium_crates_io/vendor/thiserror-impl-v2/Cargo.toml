@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.71"
+rust-version = "1.77"
 name = "thiserror-impl"
-version = "2.0.20"
+version = "2.0.21"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = false
 autolib = false

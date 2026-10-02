@@ -116,3 +116,18 @@ fn test_assoc_type_equality_constraint() {
         },
     );
 }
+
+// Regression test for https://github.com/dtolnay/thiserror/issues/332
+#[test]
+fn test_turbofish() {
+    #[derive(Error, Debug)]
+    #[error(
+        "{} {} {}",
+        None::<i32>.is_some(),
+        Vec::<Vec<u8>>::new().len(),
+        (0..3).filter(|_| Option::<Box<dyn Fn(u8) -> u8>>::None.is_none()).count(),
+    )]
+    pub struct Error;
+
+    assert("false 0 3", Error);
+}

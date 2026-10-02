@@ -195,6 +195,7 @@ fn parse_error_attribute<'a>(attrs: &mut Attrs<'a>, attr: &'a Attribute) -> Resu
 
 fn parse_token_expr(input: ParseStream, mut begin_expr: bool) -> Result<TokenStream> {
     let mut tokens = Vec::new();
+    let mut turbofish = 0usize;
     while !input.is_empty() {
         if input.peek(token::Group) {
             let group: TokenTree = input.parse()?;
@@ -247,6 +248,18 @@ fn parse_token_expr(input: ParseStream, mut begin_expr: bool) -> Result<TokenStr
             }
         }
 
+        let closes_turbofish = if input.peek(Token![<]) {
+            if turbofish > 0 || follows_path_sep(&tokens) {
+                turbofish += 1;
+            }
+            false
+        } else if turbofish > 0 && input.peek(Token![>]) && !follows_hyphen(&tokens) {
+            turbofish -= 1;
+            true
+        } else {
+            false
+        };
+
         begin_expr = input.peek(Token![break])
             || input.peek(Token![continue])
             || input.peek(Token![if])
@@ -262,7 +275,7 @@ fn parse_token_expr(input: ParseStream, mut begin_expr: bool) -> Result<TokenStr
             || input.peek(Token![,])
             || input.peek(Token![/])
             || input.peek(Token![=])
-            || input.peek(Token![>])
+            || input.peek(Token![>]) && !closes_turbofish
             || input.peek(Token![<])
             || input.peek(Token![|])
             || input.peek(Token![%])
@@ -297,6 +310,24 @@ fn parse_token_expr(input: ParseStream, mut begin_expr: bool) -> Result<TokenStr
         tokens.push(token);
     }
     Ok(TokenStream::from_iter(tokens))
+}
+
+fn follows_path_sep(tokens: &[TokenTree]) -> bool {
+    matches!(
+        tokens.last_chunk(),
+        Some([TokenTree::Punct(p), TokenTree::Punct(q)])
+            if p.spacing() == Spacing::Joint
+                && p.as_char() == ':'
+                && q.as_char() == ':',
+    )
+}
+
+fn follows_hyphen(tokens: &[TokenTree]) -> bool {
+    matches!(
+        tokens.last(),
+        Some(TokenTree::Punct(p))
+            if p.spacing() == Spacing::Joint && p.as_char() == '-',
+    )
 }
 
 impl ToTokens for Display<'_> {
