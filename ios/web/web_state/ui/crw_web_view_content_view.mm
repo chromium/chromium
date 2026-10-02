@@ -388,6 +388,13 @@ const CGFloat kBackgroundRGBComponents[] = {0.75f, 0.74f, 0.76f};
       // Only apply the viewport insets if the web view's frame is large enough
       // to accommodate them.
       if (_webView.window && isFrameLargeEnough) {
+        if (UIEdgeInsetsEqualToEdgeInsets(_webView.minimumViewportInset,
+                                          effectiveMinInset) &&
+            UIEdgeInsetsEqualToEdgeInsets(_webView.maximumViewportInset,
+                                          effectiveMaxInset)) {
+          _hasPendingViewportInsets = NO;
+          break;
+        }
         [_webView setMinimumViewportInset:effectiveMinInset
                      maximumViewportInset:effectiveMaxInset];
         _hasPendingViewportInsets = NO;

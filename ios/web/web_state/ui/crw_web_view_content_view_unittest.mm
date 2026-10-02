@@ -290,4 +290,44 @@ TEST_F(CRWWebViewContentViewTest, FrameAdjustedForSafeAreaInFrameMode) {
   EXPECT_TRUE(CGRectEqualToRect(expectedFrame, webView.frame));
 }
 
+// Test that calling `setMinimumViewportInset:maximumViewportInset:` repeatedly
+// with identical effective insets only forwards to the underlying web view
+// once.
+TEST_F(CRWWebViewContentViewTest, ViewportInsetsDeduplicatedWhenUnchanged) {
+  CRWWebView* webView =
+      [[CRWWebView alloc] initWithFrame:CGRectMake(0, 0, 800, 1000)];
+  webView.autoresizingMask =
+      UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  UIScrollView* scrollView = [[UIScrollView alloc] init];
+  [webView addSubview:scrollView];
+  id mockWebView = OCMPartialMock(webView);
+
+  CRWWebViewContentView* contentView = [[CRWWebViewContentView alloc]
+      initWithWebView:webView
+           scrollView:scrollView
+      fullscreenState:CrFullscreenState::kNotInFullScreen];
+  contentView.webViewResizingType = WebViewResizingType::kContentInset;
+
+  UIWindow* window = [[UIWindow alloc] init];
+  [window addSubview:contentView];
+  contentView.frame = CGRectMake(0, 0, 800, 1000);
+  [contentView layoutIfNeeded];
+
+  const UIEdgeInsets minInset = UIEdgeInsetsMake(20, 0, 0, 0);
+  const UIEdgeInsets maxInset = UIEdgeInsetsMake(70, 0, 50, 0);
+
+  __block int insetCallCount = 0;
+  [[[[mockWebView stub] andDo:^(NSInvocation* invocation) {
+    insetCallCount++;
+  }] andForwardToRealObject] setMinimumViewportInset:minInset
+                                maximumViewportInset:maxInset];
+
+  [contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  EXPECT_EQ(1, insetCallCount);
+
+  // Calling again with identical insets should be a no-op.
+  [contentView setMinimumViewportInset:minInset maximumViewportInset:maxInset];
+  EXPECT_EQ(1, insetCallCount);
+}
+
 }  // namespace
