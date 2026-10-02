@@ -926,9 +926,15 @@ public class MediaNotificationController {
             if (mIsForeground) {
                 ForegroundServiceUtils.getInstance()
                         .stopForeground(mService, Service.STOP_FOREGROUND_REMOVE);
+                // Clear mIsForeground before handleFallbackOnStop() so
+                // tryFallbackPromotion() -> oldController.demote() is a no-op and does not
+                // call stopForeground(STOP_FOREGROUND_DETACH) or re-post the notification via
+                // updateNotification().
+                mIsForeground = false;
+                MediaNotificationManager.handleFallbackOnStop(
+                        getMediaTypeId(), mDelegate.getNotificationId());
             }
             mService = null;
-            mIsForeground = false;
             return;
         }
 

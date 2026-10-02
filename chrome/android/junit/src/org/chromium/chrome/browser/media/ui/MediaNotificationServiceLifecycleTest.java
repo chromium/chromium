@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -412,6 +413,81 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         // Stopping activeController should see isServiceNeeded() == false and stop the service.
         activeController.stopListenerService();
         verify(mService).stopSelf();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testStopListenerServicePromotesFallbackPlayingControllerWhenServiceStillNeeded() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        setUpService();
+        getController().mService = mService;
+        getController().mMediaNotificationInfo =
+                mMediaNotificationInfoBuilder.setPaused(false).build();
+
+        MediaNotificationInfo activeTabInfo =
+                mMediaNotificationInfoBuilder.setInstanceId(99).setPaused(false).build();
+        ChromeMediaNotificationManager.show(activeTabInfo);
+        int activeNotificationId = MediaNotificationManager.getUniqueId(99, getNotificationId());
+        MediaNotificationController activeController =
+                MediaNotificationManager.getControllerByNotificationId(activeNotificationId);
+        activeController.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+        activeController.onServiceStarted(mService);
+        assertTrue(activeController.isForeground());
+        assertFalse(getController().isForeground());
+        clearInvocations(mMockForegroundServiceUtils);
+
+        activeController.stopListenerService();
+        waitForAsync();
+
+        InOrder order = inOrder(mMockForegroundServiceUtils);
+        order.verify(mMockForegroundServiceUtils)
+                .stopForeground(eq(mService), eq(Service.STOP_FOREGROUND_REMOVE));
+        order.verify(mMockForegroundServiceUtils)
+                .startForeground(
+                        eq(mService),
+                        eq(getNotificationId()),
+                        any(Notification.class),
+                        eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
+        assertFalse(activeController.isForeground());
+        assertTrue(getController().isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(getNotificationId()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testStopListenerServiceClearsActiveIdWhenFallbackPromotionFails() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        setUpService();
+        getController().mService = mService;
+        getController().mMediaNotificationInfo =
+                mMediaNotificationInfoBuilder.setPaused(false).build();
+
+        MediaNotificationInfo activeTabInfo =
+                mMediaNotificationInfoBuilder.setInstanceId(99).setPaused(false).build();
+        ChromeMediaNotificationManager.show(activeTabInfo);
+        int activeNotificationId = MediaNotificationManager.getUniqueId(99, getNotificationId());
+        MediaNotificationController activeController =
+                MediaNotificationManager.getControllerByNotificationId(activeNotificationId);
+        activeController.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+        activeController.onServiceStarted(mService);
+        assertTrue(activeController.isForeground());
+        assertTrue(MediaNotificationManager.isNotificationActive(activeNotificationId));
+
+        doThrow(new RuntimeException("FGS restricted"))
+                .when(mMockForegroundServiceUtils)
+                .startForeground(any(), anyInt(), any(), anyInt());
+
+        activeController.stopListenerService();
+        waitForAsync();
+
+        assertFalse(activeController.isForeground());
+        assertFalse(getController().isForeground());
+        assertFalse(MediaNotificationManager.isNotificationActive(activeNotificationId));
+        assertFalse(MediaNotificationManager.isNotificationActive(getNotificationId()));
     }
 
     @Test
