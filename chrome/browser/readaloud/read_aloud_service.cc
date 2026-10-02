@@ -65,8 +65,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
   }
 
   // Start or resume audio playback.
-  CHECK(active_session_);
-  active_session_->NotifyPlaybackStarted();
+  CHECK(media_session_);
+  media_session_->NotifyPlaybackStarted();
 
   if (utility_player_.is_bound()) {
     utility_player_->Play();
@@ -74,8 +74,8 @@ void ReadAloudService::Play(content::WebContents* new_web_contents) {
 }
 
 void ReadAloudService::Pause() {
-  if (active_session_) {
-    active_session_->NotifyPlaybackPaused();
+  if (media_session_) {
+    media_session_->NotifyPlaybackPaused();
   }
 
   if (utility_player_.is_bound()) {
@@ -84,7 +84,7 @@ void ReadAloudService::Pause() {
 
   // TODO(b/562011435): Handle late kPlaying updates arriving from utility
   // after Pause() is called.
-  if (active_session_ && active_session_->is_playback_in_progress()) {
+  if (media_session_ && media_session_->is_playback_in_progress()) {
     NotifyPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
   }
 }
@@ -99,9 +99,9 @@ void ReadAloudService::ResetPlayback() {
   Observe(nullptr);
 
   // Stop active audio playback and release media session resources.
-  if (active_session_) {
-    active_session_->NotifyPlaybackStopped();
-    active_session_.reset();
+  if (media_session_) {
+    media_session_->NotifyPlaybackStopped();
+    media_session_.reset();
   }
 
   // Cancel any ongoing page distillation request and reset timing metrics.
@@ -191,7 +191,7 @@ void ReadAloudService::OnSessionResumed() {
 }
 
 bool ReadAloudService::IsPlaybackPaused() const {
-  return !active_session_ || active_session_->is_paused();
+  return !media_session_ || media_session_->is_paused();
 }
 
 
@@ -296,7 +296,7 @@ void ReadAloudService::Initialize(content::WebContents* new_web_contents) {
   }
   ResetPlayback();
   Observe(new_web_contents);
-  active_session_ =
+  media_session_ =
       std::make_unique<ReadAloudPlaybackSession>(new_web_contents, this);
 
   current_duration_ = base::Seconds(0);
@@ -443,7 +443,7 @@ void ReadAloudService::OnPlaybackStateChanged(
   switch (state) {
     case read_aloud::mojom::PlaybackState::kPaused:
       // TODO(b/562011435): Utility-initiated pauses do not reach MediaSession.
-      // active_session_->NotifyPlaybackPaused() should be called so the OS
+      // media_session_->NotifyPlaybackPaused() should be called so the OS
       // notification reflects the paused state.
     case read_aloud::mojom::PlaybackState::kBuffering:
     case read_aloud::mojom::PlaybackState::kPlaying:

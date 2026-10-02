@@ -278,7 +278,7 @@ class ReadAloudService
   mojo::Receiver<read_aloud::mojom::ReadAloudPlaybackControllerClient>
       utility_observer_receiver_{this};
 
-  std::unique_ptr<ReadAloudPlaybackSession> active_session_;
+  std::unique_ptr<ReadAloudPlaybackSession> media_session_;
   std::unique_ptr<SpeechSynthesisBroker> speech_synthesis_broker_;
   PlaybackMode playback_mode_ = PlaybackMode::kClassic;
 
