@@ -6,6 +6,7 @@ source_set("registry") {
   public = [
     "tool_definition.h",
     "tool_registry.h",
+    "tool_schema_builder.h",
   ]
   public_deps = [ "//base" ]
 }
@@ -14,6 +15,7 @@ source_set("impl") {
   sources = [
     "tool_definition.cc",
     "tool_registry.cc",
+    "tool_schema_builder.cc",
   ]
   deps = [
     ":registry",
@@ -28,6 +30,7 @@ source_set("unit_tests") {
   sources = [
     "tool_definition_unittest.cc",
     "tool_registry_unittest.cc",
+    "tool_schema_builder_unittest.cc",
   ]
   deps = [
     ":impl",
