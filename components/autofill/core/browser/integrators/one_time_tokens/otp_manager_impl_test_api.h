@@ -57,6 +57,10 @@ class OtpManagerImplTestApi {
     return manager_->currently_focused_field_id_;
   }
 
+  const std::string& last_triggered_otp_value() const LIFETIME_BOUND {
+    return manager_->last_triggered_otp_value_;
+  }
+
   const AutofillField* GetFocusedOtpField() const {
     return manager_->GetFocusedOtpField();
   }

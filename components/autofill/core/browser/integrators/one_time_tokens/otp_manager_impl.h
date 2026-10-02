@@ -123,10 +123,14 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   void MaybeShowOtpSuggestionsForSms(one_time_tokens::OneTimeToken token,
                                      OneTimeTokensPhishGuardVerdict verdict);
   void MaybeShowOtpSuggestionsForGmail(one_time_tokens::OneTimeToken token,
+                                       LocalFrameToken frame_token,
                                        OneTimeTokensPhishGuardVerdict verdict);
 
   // Returns the currently focused field if it exists and has `ONE_TIME_CODE`
   // type, or nullptr otherwise.
+  // TODO(crbug.com/556170646): Rework this method to return a target
+  // `ONE_TIME_CODE` field even when no OTP field is currently focused, so
+  // proactive suggestions can be triggered without requiring field focus.
   const AutofillField* GetFocusedOtpField() const;
 
   // Returns true if an OTP must not be delivered to the caller in an autofill
@@ -167,6 +171,10 @@ class OtpManagerImpl : public OtpManager, public AutofillManager::Observer {
   // Tracks the currently focused form and field, if any.
   std::optional<FormGlobalId> currently_focused_form_id_;
   std::optional<FieldGlobalId> currently_focused_field_id_;
+
+  // Value of the last OTP that proactively triggered suggestions via the
+  // renderer, used to avoid duplicate triggers.
+  std::string last_triggered_otp_value_;
 
   base::ScopedObservation<BrowserAutofillManager, AutofillManager::Observer>
       autofill_manager_observation_{this};
