@@ -289,18 +289,6 @@ cr-composebox-contextual-entrypoint-and-menu,
   top: 10px;
 }
 
-:host([is-fusebox-enabled][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(
-      var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
-:host([is-fusebox-enabled][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.voice {
-  inset-inline-end: calc(var(--cr-searchbox-voice-lens-size)
-      + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
 :host([is-fusebox-enabled][is-dragging-file]) {
   --cr-searchbox-compose-button-z-index: 99;
 }

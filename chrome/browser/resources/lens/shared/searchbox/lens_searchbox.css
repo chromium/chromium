@@ -119,12 +119,6 @@ cr-searchbox-icon,
   z-index: 100;
 }
 
-:host([searchbox-layout-mode='Compact'][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(var(--cr-searchbox-icon-spacing)
-      + var(--cr-compose-button-width));
-}
-
 #thumbnailContainer {
   align-self: center;
   padding-inline: 10px;

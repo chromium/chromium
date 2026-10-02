@@ -356,17 +356,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   top: 10px;
 }
 
-:host([ntp-realbox-next-enabled][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
-:host([ntp-realbox-next-enabled][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.voice {
-  inset-inline-end: calc(var(--cr-searchbox-voice-lens-size)
-      + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
 :host([ntp-realbox-next-enabled][is-dragging-file]) {
   --cr-searchbox-compose-button-z-index: 99;
 }

@@ -622,11 +622,6 @@ error-page {
     height: 30%;
   }
 
-  :host([is-zero-state_]:not([enable-native-zero-state-suggestions_])
-      [is-shown-in-tab_]) #flexCenterContainer {
-    height: calc(30% - 88px);
-  }
-
   :host([is-zero-state_]:not([enable-native-zero-state-suggestions_]):not([is-shown-in-tab_]))
       #flexCenterContainer {
     padding-top: 50px;
