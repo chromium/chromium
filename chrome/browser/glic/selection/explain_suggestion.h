@@ -5,17 +5,25 @@
 #ifndef CHROME_BROWSER_GLIC_SELECTION_EXPLAIN_SUGGESTION_H_
 #define CHROME_BROWSER_GLIC_SELECTION_EXPLAIN_SUGGESTION_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/selection/explain_fulfillment.mojom.h"
 #include "chrome/browser/selection/suggestion.h"
+#include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
+namespace optimization_guide {
+class ModelQualityLogEntry;
+struct OptimizationGuideModelExecutionResult;
+}  // namespace optimization_guide
+
 namespace tabs {
 class TabInterface;
-}
+}  // namespace tabs
 
 namespace glic {
 
@@ -24,13 +32,8 @@ namespace glic {
 class ExplainSuggestion : public ::selection::Suggestion,
                           public selection::ExplainFulfillment {
  public:
-  // The text the card shows.
-  // TODO(liuwilliam): Wire up the response from
-  // `OptimizationGuideModelExecutionResult`.
-  static constexpr char kPlaceholderText[] =
-      "An explanation of your selection will appear here.";
-
-  explicit ExplainSuggestion(tabs::TabInterface& tab);
+  ExplainSuggestion(tabs::TabInterface& tab,
+                    optimization_guide::proto::QuickAnswersRequest request);
   ExplainSuggestion(const ExplainSuggestion&) = delete;
   ExplainSuggestion& operator=(const ExplainSuggestion&) = delete;
   ~ExplainSuggestion() override;
@@ -49,10 +52,16 @@ class ExplainSuggestion : public ::selection::Suggestion,
  private:
   void Bind(
       mojo::PendingAssociatedReceiver<selection::ExplainFulfillment> receiver);
+  void OnModelExecutionResponse(
+      optimization_guide::OptimizationGuideModelExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   const raw_ref<tabs::TabInterface> tab_;
+  const optimization_guide::proto::QuickAnswersRequest request_;
   const std::u16string label_ = u"Explain";
+  GetExplanationCallback pending_callback_;
   mojo::AssociatedReceiver<selection::ExplainFulfillment> receiver_{this};
+  base::WeakPtrFactory<ExplainSuggestion> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

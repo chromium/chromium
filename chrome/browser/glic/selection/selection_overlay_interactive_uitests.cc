@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,11 +19,12 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/static_selection_suggestion_tool.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -39,6 +41,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
@@ -1673,6 +1677,21 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
                        ClickExplainChipShowsCard) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  static constexpr char kExpectedExplanation[] =
+      "An explanation of your selection.";
+  optimization_guide::proto::QuickAnswersResponse response_msg;
+  response_msg.set_answer(kExpectedExplanation);
+  optimization_guide::proto::Any any;
+  any.set_value(response_msg.SerializeAsString());
+  any.set_type_url(
+      base::StrCat({"type.googleapis.com/", response_msg.GetTypeName()}));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+      ->AddExecutionResultForTesting(
+          optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              std::move(any), nullptr));
+
   static constexpr char kCardTextJs[] = R"js(
     el => el.shadowRoot.querySelector(
         '#inlineFulfillmentHost > glic-explain-fulfillment > .explanation')
@@ -1687,7 +1706,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       OpenExplainCard(kActiveTab, kOverlayWebContentsId),
       // The card shows the explanation in place of the chips.
       WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardTextJs,
-                        ExplainSuggestion::kPlaceholderText),
+                        kExpectedExplanation),
       CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kChipsHiddenJs),
       // The overlay stays up for inline fulfillment.
       CheckResult(GetOverlayVisibilityAt(0), true));

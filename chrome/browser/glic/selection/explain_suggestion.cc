@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -12,8 +13,16 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page_navigator.h"
@@ -21,13 +30,17 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace glic {
 
-ExplainSuggestion::ExplainSuggestion(tabs::TabInterface& tab) : tab_(tab) {
+ExplainSuggestion::ExplainSuggestion(
+    tabs::TabInterface& tab,
+    optimization_guide::proto::QuickAnswersRequest request)
+    : tab_(tab), request_(std::move(request)) {
   // Unretained is safe: `this` owns the binder.
   SetInterface<selection::ExplainFulfillment>(
       base::BindRepeating(&ExplainSuggestion::Bind, base::Unretained(this)));
@@ -49,8 +62,31 @@ void ExplainSuggestion::OnSuggestionExecuted() {}
 }
 
 void ExplainSuggestion::GetExplanation(GetExplanationCallback callback) {
-  // TODO(liuwilliam): Wire it up to the real response.
-  std::move(callback).Run(kPlaceholderText);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  if (pending_callback_) {
+    std::move(pending_callback_)
+        .Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+  }
+
+  Profile* profile = tab_->GetProfile();
+  if (!profile) {
+    std::move(callback).Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  OptimizationGuideKeyedService* opt_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  if (!opt_guide) {
+    std::move(callback).Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  pending_callback_ = std::move(callback);
+  opt_guide->ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey::kQuickAnswers, request_,
+      /*options=*/{},
+      base::BindOnce(&ExplainSuggestion::OnModelExecutionResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
@@ -100,8 +136,35 @@ void ExplainSuggestion::AskGemini() {
 void ExplainSuggestion::Bind(
     mojo::PendingAssociatedReceiver<selection::ExplainFulfillment> receiver) {
   // Each click shows a new card with its own channel. Drop the old card's.
+  weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
+  pending_callback_.Reset();
   receiver_.Bind(std::move(receiver));
+}
+
+void ExplainSuggestion::OnModelExecutionResponse(
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  if (!pending_callback_) {
+    return;
+  }
+  if (!result.response.has_value()) {
+    std::move(pending_callback_)
+        .Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  std::optional<optimization_guide::proto::QuickAnswersResponse> response =
+      optimization_guide::ParsedAnyMetadata<
+          optimization_guide::proto::QuickAnswersResponse>(
+          result.response.value());
+  if (!response || response->answer().empty()) {
+    std::move(pending_callback_)
+        .Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+    return;
+  }
+
+  std::move(pending_callback_).Run(response->answer());
 }
 
 }  // namespace glic

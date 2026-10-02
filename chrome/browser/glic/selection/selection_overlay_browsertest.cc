@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -11,6 +12,8 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
@@ -18,6 +21,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -361,10 +366,26 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
   content::WebContents* web_contents = tab->GetContents();
 
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds,
+                                selection::InteractionOptions::New());
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -372,12 +393,6 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
 
   auto* handler =
       static_cast<selection::SelectionOverlayPageHandler*>(controller);
-  handler->AdjustRegion(
-      selection::SelectedRegion::New(
-          base::UnguessableToken::Create(),
-          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
-      /*is_using_keyboard=*/false);
-
   TestSuggestedActionsListener listener;
   handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
   listener.WaitForBatches(1);
@@ -387,6 +402,18 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
   ASSERT_TRUE(actions[0]->action->is_inline_fulfillment());
   EXPECT_EQ(actions[0]->action->get_inline_fulfillment()->resource_name,
             "explain_fulfillment.js");
+
+  // Adjusting the region without text selection should not present the Explain
+  // suggestion.
+  handler->AdjustRegion(
+      selection::SelectedRegion::New(
+          base::UnguessableToken::Create(),
+          selection::RegionShape::NewRect(gfx::RectF(0.5f, 0.5f, 0.2f, 0.2f))),
+      /*is_using_keyboard=*/false);
+  TestSuggestedActionsListener adjusted_listener;
+  handler->GetSuggestedActions(adjusted_listener.BindNewPipeAndPassRemote());
+  adjusted_listener.WaitForBatches(1);
+  EXPECT_TRUE(adjusted_listener.actions().empty());
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
@@ -932,13 +959,28 @@ void Connect(ExplainSuggestion& suggestion,
 using ExplainSuggestionBrowserTest = SelectionOverlayBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, GetExplanation) {
-  ExplainSuggestion suggestion(*CreateAndActivateTab(GetSimpleTestUrl()));
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  static constexpr char kExpectedExplanation[] =
+      "An explanation of your selection.";
+  optimization_guide::proto::QuickAnswersResponse response_msg;
+  response_msg.set_answer(kExpectedExplanation);
+  optimization_guide::proto::Any any;
+  any.set_value(response_msg.SerializeAsString());
+  any.set_type_url(
+      base::StrCat({"type.googleapis.com/", response_msg.GetTypeName()}));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(tab->GetProfile())
+      ->AddExecutionResultForTesting(
+          optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              std::move(any), nullptr));
+
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
   Connect(suggestion, remote);
 
   base::test::TestFuture<const std::string&> explanation;
   remote->GetExplanation(explanation.GetCallback());
-  EXPECT_EQ(explanation.Get(), ExplainSuggestion::kPlaceholderText);
+  EXPECT_EQ(explanation.Get(), kExpectedExplanation);
 }
 
 namespace {
@@ -979,7 +1021,7 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
   content::RenderFrameHost* overlay = ShowOverlay(tab);
   ASSERT_TRUE(overlay);
 
-  ExplainSuggestion suggestion(*tab);
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
   Connect(suggestion, remote);
   auto* tabs = GetTabListInterface();
@@ -1003,7 +1045,7 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
                              GetTestUrl("page.html?q={searchTerms}"));
   ASSERT_TRUE(ShowOverlay(tab));
 
-  ExplainSuggestion suggestion(*tab);
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
   Connect(suggestion, remote);
   auto* tabs = GetTabListInterface();
@@ -1017,7 +1059,7 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, AskGeminiOpensGlic) {
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
-  ExplainSuggestion suggestion(*tab);
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
   Connect(suggestion, remote);
 

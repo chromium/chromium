@@ -37,6 +37,7 @@ source_set("selection") {
 
   deps = [
     "//base",
+    "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/glic:mojo_bindings",
@@ -87,11 +88,14 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/frame:multi_contents_view",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
@@ -112,11 +116,14 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/common:constants",
     "//chrome/test:test_interfaces",
     "//chrome/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//content/test:test_support",
     "//testing/gtest",
@@ -129,6 +136,7 @@ source_set("unit_tests") {
   sources = [
     "explain_selection_trigger_unittest.cc",
     "inline_cue_blocklist_utils_unittest.cc",
+    "quick_answers_tool_unittest.cc",
   ]
   deps = [
     ":selection",
@@ -143,6 +151,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/common",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
