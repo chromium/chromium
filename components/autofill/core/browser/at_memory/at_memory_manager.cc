@@ -78,6 +78,9 @@ namespace {
 // Duration between advances of the fetching suggestion message.
 constexpr base::TimeDelta kFetchingMessageInterval = base::Seconds(3);
 
+// Maximum number of impressions for the keyboard shortcut settings promo.
+constexpr int kMaxShortcutSettingsPromoImpressions = 2;
+
 constexpr std::array<int, 3> kFetchingStringIds = std::to_array<int>({
     IDS_AUTOFILL_AT_MEMORY_FETCHING_FINDING_INFO_WITH_GEMINI,
     IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS,
@@ -409,7 +412,8 @@ AtMemoryManager::~AtMemoryManager() = default;
 
 AtMemorySearchState AtMemoryManager::GetStateForField(
     const FieldGlobalId& field_id,
-    const url::Origin& field_origin) {
+    const url::Origin& field_origin,
+    std::optional<AutofillSuggestionTriggerSource> trigger_source) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
     if (const std::optional<AtMemorySearchState>& state =
@@ -419,7 +423,8 @@ AtMemorySearchState AtMemoryManager::GetStateForField(
   } else {
     target_field_origin_ = field_origin;
   }
-  return {.suggestions = GetEmptyQuerySuggestions()};
+  return {.suggestions =
+              GetEmptyQuerySuggestions(/*on_popup_open=*/true, trigger_source)};
 }
 
 const url::Origin& AtMemoryManager::target_field_origin() const {
@@ -745,6 +750,15 @@ void AtMemoryManager::RecordLoyaltyCardUse(
   vdm->RecordLoyaltyCardUsed(*valuable_id, base::Time::Now());
 }
 
+void AtMemoryManager::RecordShortcutSettingsPromoImpression() {
+  if (PrefService* prefs = client_->GetPrefs()) {
+    const int count =
+        prefs->GetInteger(prefs::kAutofillAtMemoryShortcutPromoImpressionCount);
+    prefs->SetInteger(prefs::kAutofillAtMemoryShortcutPromoImpressionCount,
+                      count + 1);
+  }
+}
+
 bool AtMemoryManager::IsSearching() const {
   if (base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
@@ -788,6 +802,31 @@ void AtMemoryManager::MaybeAppendPreviouslyFilledSuggestions(
   suggestions.insert(suggestions.end(),
                      std::make_move_iterator(prev_suggestions.rbegin()),
                      std::make_move_iterator(prev_suggestions.rend()));
+}
+
+void AtMemoryManager::MaybeAppendShortcutSettingsPromo(
+    bool on_popup_open,
+    std::optional<AutofillSuggestionTriggerSource> trigger_source,
+    std::vector<Suggestion>& suggestions) const {
+  if (!on_popup_open ||
+      trigger_source == AutofillSuggestionTriggerSource::kAtMemoryContextMenu) {
+    return;
+  }
+  const PrefService* prefs = client_->GetPrefs();
+  if (!prefs ||
+      prefs->GetInteger(prefs::kAutofillAtMemoryShortcutPromoImpressionCount) >=
+          kMaxShortcutSettingsPromoImpressions) {
+    return;
+  }
+  if (!suggestions.empty()) {
+    suggestions.emplace_back(SuggestionType::kSeparator);
+    suggestions.back().filtration_policy =
+        Suggestion::FiltrationPolicy::kStatic;
+  }
+  suggestions.emplace_back(SuggestionType::kAtMemoryShortcutSettingsPromo);
+  suggestions.back().acceptability =
+      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+  suggestions.back().filtration_policy = Suggestion::FiltrationPolicy::kStatic;
 }
 
 void AtMemoryManager::ExecuteQuery(const std::u16string& filter) {
@@ -959,16 +998,18 @@ void AtMemoryManager::ShowFetchingStateSuggestions() {
   SendSuggestions(std::move(suggestions));
 }
 
-std::vector<Suggestion> AtMemoryManager::GetEmptyQuerySuggestions() const {
+std::vector<Suggestion> AtMemoryManager::GetEmptyQuerySuggestions(
+    bool on_popup_open,
+    std::optional<AutofillSuggestionTriggerSource> trigger_source) const {
   std::vector<Suggestion> suggestions;
   MaybeAppendPreviouslyFilledSuggestions(suggestions);
   MaybeAppendPersonalContextNotice(suggestions);
+  MaybeAppendShortcutSettingsPromo(on_popup_open, trigger_source, suggestions);
   return suggestions;
 }
 
 void AtMemoryManager::ShowEmptyQuerySuggestions() {
-  std::vector<Suggestion> suggestions = GetEmptyQuerySuggestions();
-  SendSuggestions(std::move(suggestions));
+  SendSuggestions(GetEmptyQuerySuggestions(/*on_popup_open=*/false));
 }
 
 void AtMemoryManager::ShowQueryTypingSuggestions(const std::u16string& query) {

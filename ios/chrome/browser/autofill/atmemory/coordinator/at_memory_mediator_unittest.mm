@@ -233,7 +233,7 @@ TEST_F(AtMemoryMediatorTest, FillWithSuggestionRecordsInAtMemoryManager) {
   VerifyMocks();
 
   std::vector<Suggestion> empty_query_suggestions =
-      at_memory_manager_->GetEmptyQuerySuggestions();
+      at_memory_manager_->GetEmptyQuerySuggestions(/*on_popup_open=*/false);
   ASSERT_GE(empty_query_suggestions.size(), 2u);
   EXPECT_EQ(empty_query_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_query_suggestions[1].type,

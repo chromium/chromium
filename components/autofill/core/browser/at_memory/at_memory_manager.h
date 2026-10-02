@@ -69,8 +69,11 @@ class AtMemoryManager : public AutofillManager::Observer {
   // Returns the state (suggestions and filter) for `field_id`.
   // If search statefulness is enabled and persisted state exists, returns
   // the persisted state. Otherwise, returns empty query suggestions.
-  AtMemorySearchState GetStateForField(const FieldGlobalId& field_id,
-                                       const url::Origin& field_origin);
+  AtMemorySearchState GetStateForField(
+      const FieldGlobalId& field_id,
+      const url::Origin& field_origin,
+      std::optional<AutofillSuggestionTriggerSource> trigger_source =
+          std::nullopt);
 
   // Called when suggestions are shown. The manager initiates an AtMemory
   // session if the `trigger_source` is an AtMemory one.
@@ -147,6 +150,9 @@ class AtMemoryManager : public AutofillManager::Observer {
   void RecordLoyaltyCardUse(
       const Suggestion::AtMemoryPayload::Identifier& identifier);
 
+  // Records an impression for the keyboard shortcut settings promo.
+  void RecordShortcutSettingsPromoImpression();
+
   // Returns true if a search is currently in progress.
   bool IsSearching() const;
 
@@ -155,7 +161,11 @@ class AtMemoryManager : public AutofillManager::Observer {
   // * kPersonalContextNotice (optional)
   // * kTitle (optional)
   // * kAtMemorySearchResult (repeated)
-  std::vector<Suggestion> GetEmptyQuerySuggestions() const;
+  // * kAtMemoryShortcutSettingsPromo (optional, on popup open)
+  std::vector<Suggestion> GetEmptyQuerySuggestions(
+      bool on_popup_open,
+      std::optional<AutofillSuggestionTriggerSource> trigger_source =
+          std::nullopt) const;
 
   // Appends the personal context notice to the suggestions if necessary.
   void MaybeAppendPersonalContextNotice(
@@ -216,6 +226,13 @@ class AtMemoryManager : public AutofillManager::Observer {
 
   // Appends previously filled suggestions to the list of suggestions.
   void MaybeAppendPreviouslyFilledSuggestions(
+      std::vector<Suggestion>& suggestions) const;
+
+  // Appends the keyboard shortcut settings promo to the suggestions if the
+  // conditions are met.
+  void MaybeAppendShortcutSettingsPromo(
+      bool on_popup_open,
+      std::optional<AutofillSuggestionTriggerSource> trigger_source,
       std::vector<Suggestion>& suggestions) const;
 
   // Shows all the suggestions in the empty state.

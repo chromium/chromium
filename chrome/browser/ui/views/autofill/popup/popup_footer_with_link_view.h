@@ -78,6 +78,12 @@ std::unique_ptr<PopupFooterWithLinkView> CreateAtMemoryAiDisclosureView(
     base::WeakPtr<AutofillPopupController> controller,
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate);
 
+// Creates a `PopupFooterWithLinkView` for the AtMemory shortcut settings promo.
+std::unique_ptr<PopupFooterWithLinkView>
+CreateAtMemoryShortcutSettingsPromoView(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate);
+
 }  // namespace autofill
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_FOOTER_WITH_LINK_VIEW_H_

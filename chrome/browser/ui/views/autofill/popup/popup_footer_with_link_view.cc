@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -199,6 +200,17 @@ std::unique_ptr<PopupFooterWithLinkView> CreateAtMemoryAiDisclosureView(
       IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE,
       IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK,
       chrome::kSuggestionsFromGeminiSubPage, /*icon=*/nullptr);
+}
+
+std::unique_ptr<PopupFooterWithLinkView>
+CreateAtMemoryShortcutSettingsPromoView(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate) {
+  return std::make_unique<PopupFooterWithLinkView>(
+      std::move(controller), a11y_selection_delegate,
+      IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO,
+      IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO_LINK,
+      chrome::kSuggestionsFromGeminiSubPage, &vector_icons::kLightbulbIcon);
 }
 
 }  // namespace autofill

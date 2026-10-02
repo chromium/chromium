@@ -89,6 +89,10 @@ inline constexpr char kAutofillAtMemoryDoubleCtrlTriggerEnabled[] =
 // String representing the keyboard shortcut configured for AtMemory.
 inline constexpr char kAutofillAtMemoryShortcut[] =
     "autofill.at_memory.shortcut";
+// Integer tracking the number of times the AtMemory keyboard shortcut
+// educational promo has been shown.
+inline constexpr char kAutofillAtMemoryShortcutPromoImpressionCount[] =
+    "autofill.at_memory.shortcut_promo_impression_count";
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =

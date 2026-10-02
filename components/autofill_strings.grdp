@@ -877,6 +877,12 @@
   <message name="IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK" desc="Link text for the AI disclosure that points to a settings page." translateable="false">
     More about relevant data sent to Google
   </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO" desc="The text shown at the bottom of the AtMemory search popup to inform the user that the keyboard shortcut can be changed in settings. $1 is the link text." translateable="false">
+    You can change keyboard shortcut in <ph name="SETTINGS_LINK">$1</ph>
+  </message>
+  <message name="IDS_AUTOFILL_AT_MEMORY_SHORTCUT_SETTINGS_PROMO_LINK" desc="Link text for the AtMemory shortcut promo that points to a settings page." translateable="false">
+    settings
+  </message>
   <message name="IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION" desc="Message shown when AtMemory search fails to connect to the server." translateable="false">
     Couldn't connect
   </message>

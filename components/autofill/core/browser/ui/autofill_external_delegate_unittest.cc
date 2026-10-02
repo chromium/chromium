@@ -5150,6 +5150,26 @@ TEST_F(AutofillExternalDelegateTest,
             2);
 }
 
+// Tests that showing the AtMemory shortcut settings promo increments the
+// impression count pref.
+TEST_F(AutofillExternalDelegateTest,
+       OnSuggestionsShown_AtMemoryShortcutSettingsPromo) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAtMemory};
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillAtMemoryShortcutPromoImpressionCount),
+            0);
+
+  external_delegate().OnSuggestionsShown(
+      std::vector<Suggestion>{
+          Suggestion(SuggestionType::kAtMemoryShortcutSettingsPromo)},
+      /*metadata=*/{});
+
+  EXPECT_EQ(autofill_client().GetPrefs()->GetInteger(
+                prefs::kAutofillAtMemoryShortcutPromoImpressionCount),
+            1);
+}
+
 // Tests that the personal context notice is removed and the pref is updated for
 // ambient autofill.
 TEST_F(AutofillExternalDelegateTest,

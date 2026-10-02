@@ -1251,8 +1251,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (AtMemoryManager* amm = client().GetAtMemoryManager();
       amm && IsAtMemoryTriggerSource(trigger_source)) {
-    AtMemorySearchState state =
-        amm->GetStateForField(field.global_id(), field.origin());
+    AtMemorySearchState state = amm->GetStateForField(
+        field.global_id(), field.origin(), trigger_source);
 
     // Show suggestions with a search bar to start the flow.
     external_delegate_->OnSuggestionsReturned(

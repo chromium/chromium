@@ -300,7 +300,7 @@ class AtMemoryManagerTestBase : public Test,
       const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata = {},
       ukm::SourceId ukm_source_id = ukm::kInvalidSourceId) {
     auto [form_id, field_id] = SeeForm();
-    manager().GetStateForField(field_id, form_origin());
+    manager().GetStateForField(field_id, form_origin(), trigger_source);
     manager().OnPopupShown(autofill_manager(), form_id, field_id,
                            trigger_source, metadata, update_callback_.Get(),
                            ukm_source_id);
@@ -3108,7 +3108,8 @@ TEST_F(AtMemoryManagerTestBase,
   auto [form_id, field_id] = SeeForm();
 
   // Initially empty query contains no header when no suggestions were accepted.
-  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+  EXPECT_TRUE(
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false).empty());
 
   // Accept suggestion 1.
   Suggestion s1(u"Suggestion 1", SuggestionType::kAtMemorySearchResult);
@@ -3127,7 +3128,7 @@ TEST_F(AtMemoryManagerTestBase,
   // Verify empty query suggestions contain header followed by s2 then s1
   // (newest to oldest).
   std::vector<Suggestion> empty_suggestions =
-      manager().GetEmptyQuerySuggestions();
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
   ASSERT_EQ(empty_suggestions.size(), 3u);
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"Suggestion 2");
@@ -3151,7 +3152,8 @@ TEST_F(AtMemoryManagerTestBase,
   manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
                              /*metadata=*/std::nullopt);
 
-  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+  EXPECT_TRUE(
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false).empty());
 }
 
 // Tests that empty query does not display previously filled suggestions when
@@ -3171,7 +3173,8 @@ TEST_F(AtMemoryManagerTestBase,
   manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
                              /*metadata=*/std::nullopt);
 
-  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+  EXPECT_TRUE(
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false).empty());
 }
 
 // Tests that empty query does not display previously filled suggestions when
@@ -3192,7 +3195,8 @@ TEST_F(AtMemoryManagerTestBase,
   manager().FillSearchResult(autofill_manager(), form_id, field_id, s1,
                              /*metadata=*/std::nullopt);
 
-  EXPECT_TRUE(manager().GetEmptyQuerySuggestions().empty());
+  EXPECT_TRUE(
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false).empty());
 }
 
 // Tests that accepting a secondary suggestion from search results stores its
@@ -3237,7 +3241,7 @@ TEST_F(AtMemoryManagerTestBase,
   // Empty query suggestions should contain the title and the parent primary
   // suggestion (with its child intact).
   std::vector<Suggestion> empty_suggestions =
-      manager().GetEmptyQuerySuggestions();
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
   ASSERT_EQ(empty_suggestions.size(), 2u);
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"John Doe");
@@ -3274,7 +3278,7 @@ TEST_F(
                              primary_suggestion, /*metadata=*/std::nullopt);
 
   std::vector<Suggestion> empty_suggestions =
-      manager().GetEmptyQuerySuggestions();
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
   ASSERT_EQ(empty_suggestions.size(), 2u);
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
@@ -3286,7 +3290,8 @@ TEST_F(
 
   // Verify that previously filled suggestions contain the deduplicated primary
   // suggestion (not `child_suggestion`).
-  empty_suggestions = manager().GetEmptyQuerySuggestions();
+  empty_suggestions =
+      manager().GetEmptyQuerySuggestions(/*on_popup_open=*/false);
   ASSERT_EQ(empty_suggestions.size(), 2u);
   EXPECT_EQ(empty_suggestions[0].type, SuggestionType::kTitle);
   EXPECT_EQ(empty_suggestions[1].main_text.value, u"123 Main St");
@@ -3574,6 +3579,65 @@ TEST_F(AtMemoryManagerTestBase,
       &profile);
 
   task_environment_.FastForwardBy(base::Seconds(10));
+}
+
+// Tests that the shortcut settings promo is shown on popup open for the first
+// 2 impressions when triggered via keyboard shortcut.
+TEST_P(AtMemoryManagerTest,
+       ShortcutSettingsPromo_ShownOnlyForFirstTwoImpressions) {
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_THAT(
+      manager()
+          .GetStateForField(
+              field_id, form_origin(),
+              AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl)
+          .suggestions,
+      SuggestionVectorIdsAre(SuggestionType::kAtMemoryShortcutSettingsPromo));
+
+  // Record 1st impression.
+  manager().RecordShortcutSettingsPromoImpression();
+  EXPECT_THAT(
+      manager()
+          .GetStateForField(
+              field_id, form_origin(),
+              AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl)
+          .suggestions,
+      SuggestionVectorIdsAre(SuggestionType::kAtMemoryShortcutSettingsPromo));
+
+  // Record 2nd impression -> promo should no longer be shown.
+  manager().RecordShortcutSettingsPromoImpression();
+  EXPECT_THAT(manager()
+                  .GetStateForField(
+                      field_id, form_origin(),
+                      AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl)
+                  .suggestions,
+              IsEmpty());
+}
+
+// Tests that the shortcut settings promo is not shown when AtMemory is
+// triggered from the context menu.
+TEST_P(AtMemoryManagerTest, ShortcutSettingsPromo_NotShownForContextMenu) {
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_THAT(manager()
+                  .GetStateForField(
+                      field_id, form_origin(),
+                      AutofillSuggestionTriggerSource::kAtMemoryContextMenu)
+                  .suggestions,
+              IsEmpty());
+}
+
+// Tests that the shortcut settings promo is not shown if the user deletes
+// their text to return to 0-state.
+TEST_P(AtMemoryManagerTest, ShortcutSettingsPromo_NotRestoredOnClearing) {
+  SeeFormAndShowPopup(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl);
+  manager().OnFilterChanged(u"query");
+
+  EXPECT_CALL(
+      update_callback_,
+      Run(IsEmpty(), AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+  manager().OnFilterChanged(u"");
 }
 
 }  // namespace

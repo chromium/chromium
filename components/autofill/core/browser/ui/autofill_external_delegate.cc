@@ -703,6 +703,13 @@ void AutofillExternalDelegate::OnSuggestionsShown(
         }
       }
     }
+
+    if (shown_suggestion_types.contains(
+            SuggestionType::kAtMemoryShortcutSettingsPromo)) {
+      if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
+        amm->RecordShortcutSettingsPromoImpression();
+      }
+    }
   }
 
   manager_->DidShowSuggestions(

@@ -187,6 +187,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterStringPref(kAutofillAtMemoryShortcut, "",
                                user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(kAutofillAtMemoryShortcutPromoImpressionCount,
+                                0);
 
   registry->RegisterDictionaryPref(
       kAutofillHomeMetadata,

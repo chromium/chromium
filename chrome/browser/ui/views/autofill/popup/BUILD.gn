@@ -472,6 +472,7 @@ source_set("popup_footer_with_link_view") {
     "//chrome/common",
     "//components/strings:components_strings",
     "//components/user_education/views",
+    "//components/vector_icons",
     "//content/public/browser",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",

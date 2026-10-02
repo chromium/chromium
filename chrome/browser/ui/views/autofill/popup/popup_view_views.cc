@@ -1516,6 +1516,10 @@ void PopupViewViews::CreateSuggestionViews() {
       footer_builder.AddRow(CreateAtMemoryAiDisclosureView(
           controller(), /*a11y_selection_delegate=*/*this));
     } else if (suggestions[current_line_number].type ==
+               SuggestionType::kAtMemoryShortcutSettingsPromo) {
+      footer_builder.AddRow(CreateAtMemoryShortcutSettingsPromoView(
+          controller(), /*a11y_selection_delegate=*/*this));
+    } else if (suggestions[current_line_number].type ==
                SuggestionType::kPersonalContextNotice) {
       footer_builder.AddRow(CreatePersonalContextNoticeView(
           *this, a11y_announcer_, controller(), current_line_number));
