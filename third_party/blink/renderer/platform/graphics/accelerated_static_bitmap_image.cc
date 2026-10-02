@@ -162,7 +162,23 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   if (!resource_provider->IsValid()) {
     return nullptr;
   }
-  return resource_provider->resource()->Bitmap();
+
+  auto shared_image = resource_provider->resource()->GetSharedImage();
+  auto release_callback = blink::BindOnce(
+      [](scoped_refptr<gpu::ClientSharedImage> shared_image,
+         const gpu::SyncToken& sync_token, bool is_lost) {
+        if (sync_token.HasData()) {
+          shared_image->UpdateDestructionSyncToken(sync_token);
+        }
+      },
+      shared_image);
+
+  return CreateFromCanvasSharedImage(
+      std::move(shared_image), resource_provider->resource()->sync_token(),
+      alpha_type, hdr_metadata, std::move(context_provider_wrapper),
+      base::PlatformThread::CurrentRef(),
+      ThreadScheduler::Current()->CleanupTaskRunner(),
+      std::move(release_callback));
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
