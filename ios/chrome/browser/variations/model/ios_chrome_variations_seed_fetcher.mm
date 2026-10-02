@@ -12,6 +12,7 @@
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/escape.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_util.h"
@@ -285,6 +286,13 @@ BASE_FEATURE(kVariationsRestrictDogfood, base::FEATURE_DISABLED_BY_DEFAULT);
   BOOL dateParsed = base::Time::FromUTCString(
       base::SysNSStringToUTF8(dateString).c_str(), &date);
   base::UmaHistogramBoolean("Variations.SeedDateMissing", !dateParsed);
+  if (dateParsed) {
+    base::UmaHistogramCustomCounts(
+        "Variations.SeedDateClockSkew",
+        base::saturated_cast<int>(
+            (base::Time::Now() - date).magnitude().InSeconds()),
+        1, base::checked_cast<int>(base::Days(30).InSeconds()), 50);
+  }
 
   // Returned seed should have been gzip compressed.
   NSCharacterSet* whitespace = [NSCharacterSet whitespaceCharacterSet];

@@ -31,6 +31,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/runtime_field_trial_overrides.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -1200,6 +1201,12 @@ void VariationsService::OnSimpleLoaderComplete(
   // tracker with the headers time.
   if (response_date) {
     DCHECK(!response_date->is_null());
+    base::UmaHistogramCustomCounts(
+        "Variations.SeedDateClockSkew",
+        base::saturated_cast<int>((base::Time::Now() - response_date.value())
+                                      .magnitude()
+                                      .InSeconds()),
+        1, base::checked_cast<int>(base::Days(30).InSeconds()), 50);
 
     const base::TimeDelta latency = now - last_request_started_time_;
     client_->GetNetworkTimeTracker()->UpdateNetworkTime(

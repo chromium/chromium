@@ -46,6 +46,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /** Fetches the variations seed before the actual first run of Chrome. */
 @NullMarked
@@ -119,6 +120,7 @@ public class VariationsSeedFetcher {
             "Variations.FirstRun.DeltaCompression";
 
     public static final String SEED_DATE_MISSING_HISTOGRAM = "Variations.SeedDateMissing";
+    public static final String SEED_DATE_CLOCK_SKEW_HISTOGRAM = "Variations.SeedDateClockSkew";
 
     // UMA constant for logging the request and response status of delta compression when requesting
     // a finch seed.
@@ -581,8 +583,18 @@ public class VariationsSeedFetcher {
                 "Variations.FirstRun.SeedConnectTime", timeDeltaMillis);
     }
 
-    private void recordSeedDateMissing(boolean isDateMissing) {
+    private void recordSeedDateMetrics(long seedDateMillis) {
+        boolean isDateMissing = (seedDateMillis == 0);
         RecordHistogram.recordBooleanHistogram(SEED_DATE_MISSING_HISTOGRAM, isDateMissing);
+        if (!isDateMissing) {
+            long diffMillis = Math.abs(System.currentTimeMillis() - seedDateMillis);
+            RecordHistogram.recordCustomCountHistogram(
+                    SEED_DATE_CLOCK_SKEW_HISTOGRAM,
+                    (int) Math.min(TimeUnit.MILLISECONDS.toSeconds(diffMillis), Integer.MAX_VALUE),
+                    /* min= */ 1,
+                    /* max= */ (int) TimeUnit.DAYS.toSeconds(30),
+                    /* numBuckets= */ 50);
+        }
     }
 
     /**
@@ -622,7 +634,7 @@ public class VariationsSeedFetcher {
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
                 seedInfo.date = connection.getHeaderFieldDate("Date", 0);
-                recordSeedDateMissing(seedInfo.date == 0);
+                recordSeedDateMetrics(seedInfo.date);
 
                 InstanceManipulations receivedIm =
                         VariationsCompressionUtils.getInstanceManipulations(
@@ -663,7 +675,7 @@ public class VariationsSeedFetcher {
                 // seed, so it's appropriate to always modify the latest seed's date.
                 fetchInfo.seedInfo = assumeNonNull(currInfo);
                 fetchInfo.seedInfo.date = connection.getHeaderFieldDate("Date", 0);
-                recordSeedDateMissing(fetchInfo.seedInfo.date == 0);
+                recordSeedDateMetrics(fetchInfo.seedInfo.date);
             } else {
                 String errorMsg = "Non-OK response code = " + responseCode;
                 Log.w(TAG, errorMsg);

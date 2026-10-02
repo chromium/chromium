@@ -63,9 +63,6 @@ public class AwVariationsSeedFetcher extends JobService {
     @VisibleForTesting public static final String PERIODIC_FAST_MODE = "PeriodicFastMode";
 
     @VisibleForTesting
-    public static final String SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME = "Variations.SeedDateClockSkew";
-
-    @VisibleForTesting
     public static final String SEED_REQUEST_HAS_RESTRICT_PARAM_HISTOGRAM_NAME =
             "Variations.SeedRequestHasRestrictParam";
 
@@ -423,7 +420,6 @@ public class AwVariationsSeedFetcher extends JobService {
                 needsReschedule = (requestCount <= JOB_MAX_REQUEST_COUNT);
             }
             if (fetchInfo.seedInfo != null) {
-                recordSeedDateMetrics(fetchInfo.seedInfo);
                 VariationsSeedHolder.getInstance()
                         .updateSeed(
                                 fetchInfo.seedInfo,
@@ -520,18 +516,6 @@ public class AwVariationsSeedFetcher extends JobService {
     public static void setDateForTesting(Date date) {
         sDateForTesting = date;
         ResettersForTesting.register(() -> sDateForTesting = null);
-    }
-
-    public static void recordSeedDateMetrics(SeedInfo seedInfo) {
-        if (seedInfo.date != 0) {
-            long diffMillis = Math.abs(currentTimeMillis() - seedInfo.date);
-            RecordHistogram.recordCustomCountHistogram(
-                    SEED_DATE_CLOCK_SKEW_HISTOGRAM_NAME,
-                    (int) Math.min(TimeUnit.MILLISECONDS.toSeconds(diffMillis), Integer.MAX_VALUE),
-                    /* min= */ 1,
-                    /* max= */ (int) TimeUnit.DAYS.toSeconds(30),
-                    /* numBuckets= */ 50);
-        }
     }
 
     /** Determines whether the currently scheduled job is in Fast Mode and periodic. */

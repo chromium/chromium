@@ -644,12 +644,12 @@ chromium-metrics-reviews@google.com.
 <histogram name="Variations.SeedDateClockSkew" units="seconds"
     expires_after="2027-09-01">
   <owner>caitlinfischer@google.com</owner>
-  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/base/metrics/OWNERS</owner>
   <summary>
     The absolute value of the difference (in seconds) between the local time in
-    the app and the time in SeedInfo.date provided by the variations server.
-    Recorded on Android WebView after successfully fetching a seed when
-    SeedInfo.date is non-zero.
+    the app and the time in the Date header provided by the variations server.
+    Recorded when a seed is fetched over HTTPS with response code 200 or 304 and
+    the Date header is present.
   </summary>
 </histogram>
 
