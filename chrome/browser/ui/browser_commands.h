@@ -384,6 +384,7 @@ void ProcessInterceptedChromeURLNavigationInIncognito(BrowserWindowInterface* br
                                                       const GURL& url);
 void ExecLensOverlay(BrowserWindowInterface* browser);
 void ExecLensRegionSearch(BrowserWindowInterface* browser);
+void ExecAskGoogleAboutThisPage(BrowserWindowInterface* browser);
 
 }  // namespace chrome
 

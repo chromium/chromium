@@ -127,6 +127,8 @@ class RenderViewContextMenu
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGlicShareImageMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLinkInSplitMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRegionSearchItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAskGoogleAboutThisPageItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContextualTasksSubmenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForImageItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSearchForVideoFrameItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kVideoFrameSubmenuItem);
@@ -568,6 +570,9 @@ class RenderViewContextMenu
 
   // Inspect sub-menu handling.
   ui::SimpleMenuModel inspect_submenu_model_;
+
+  // Contextual tasks sub-menu handling.
+  ui::SimpleMenuModel contextual_tasks_submenu_model_;
 
   // Video frame sub-menu handling.
   ui::SimpleMenuModel video_frame_submenu_model_;
