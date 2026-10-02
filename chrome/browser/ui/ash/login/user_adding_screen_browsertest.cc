@@ -363,11 +363,10 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, LockScreenWhileAddingUser) {
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::ACTIVE);
 
-  UserAddingScreen::Get()->Start();
+  test::ShowUserAddingScreen();
   EXPECT_EQ(user_adding_started(), 1);
   EXPECT_EQ(session_manager::SessionManager::Get()->session_state(),
             session_manager::SessionState::LOGIN_SECONDARY);
-  base::RunLoop().RunUntilIdle();
 
   ScreenLockerController::Get().HandleShowLockScreenRequest();
 }
