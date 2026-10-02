@@ -5,10 +5,11 @@
 import {ExtensionPageCallbackRouter, PageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {ComposeboxPosition, ContextInfo, ContextualTaskId, ContextualWindowId, ExtensionPageHandlerInterface, ExtensionPageRemote, InjectedInput, PageHandlerInterface, PageInterface, PageRemote} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import type {BrowserProxy, ExtensionBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {PageCallbackRouter as ToolbarPageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
-import type {PageHandlerInterface as ToolbarPageHandlerInterface, PageRemote as ToolbarPageRemote} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
+import {ContextualTasksToolbarUIObserverCallbackRouter, PageCallbackRouter as ToolbarPageCallbackRouter} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
+import type {ContextualTasksToolbarUIObserverRemote, ContextualTasksToolbarUIServiceInterface, InitialState, PageHandlerInterface as ToolbarPageHandlerInterface, PageRemote as ToolbarPageRemote} from 'chrome://contextual-tasks/contextual_tasks_toolbar.mojom-webui.js';
 import type {ToolbarBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {PostMessageHandler} from 'chrome://contextual-tasks/post_message_handler.js';
+import type {LhsChipIdentifier} from 'chrome://contextual-tasks/toolbar_ui_api_data_model.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -609,6 +610,88 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 }
 
 /**
+ * Test version of the ContextualTasksToolbarUIService used to verify calls
+ * to the browser from the toolbar WebUI.
+ */
+export class TestContextualTasksToolbarUiService extends TestBrowserProxy
+    implements ContextualTasksToolbarUIServiceInterface {
+  private initialState_: InitialState = {
+    state: {
+      indicatorChip: createFakePermissionChip(),
+      requestChip: createFakePermissionChip(),
+      isDividerVisible: false,
+    },
+    updateStream: null as any,
+  };
+
+  constructor() {
+    super([
+      'getInitialState',
+      'onChipMousePressed',
+      'onChipClicked',
+      'onChipPointerEntered',
+      'onChipPointerExited',
+      'onChipExpandAnimationEnded',
+      'onChipCollapseAnimationEnded',
+    ]);
+  }
+
+  setInitialState(state: InitialState) {
+    this.initialState_ = state;
+  }
+
+  getInitialState(): Promise<InitialState> {
+    this.methodCalled('getInitialState');
+    return Promise.resolve(this.initialState_);
+  }
+
+  onChipMousePressed(identifier: LhsChipIdentifier) {
+    this.methodCalled('onChipMousePressed', identifier);
+  }
+
+  onChipClicked(identifier: LhsChipIdentifier, isMouseInteraction: boolean) {
+    this.methodCalled('onChipClicked', [identifier, isMouseInteraction]);
+  }
+
+  onChipPointerEntered(identifier: LhsChipIdentifier) {
+    this.methodCalled('onChipPointerEntered', identifier);
+  }
+
+  onChipPointerExited(identifier: LhsChipIdentifier) {
+    this.methodCalled('onChipPointerExited', identifier);
+  }
+
+  onChipExpandAnimationEnded(identifier: LhsChipIdentifier) {
+    this.methodCalled('onChipExpandAnimationEnded', identifier);
+  }
+
+  onChipCollapseAnimationEnded(identifier: LhsChipIdentifier) {
+    this.methodCalled('onChipCollapseAnimationEnded', identifier);
+  }
+}
+
+/**
+ * Returns a fake PermissionChipState with default values, overridden by
+ * `overrides`.
+ */
+export function createFakePermissionChip(overrides = {}) {
+  return {
+    isVisible: false,
+    isFullyCollapsed: false,
+    theme: 0,
+    promptStyle: 0,
+    userDecision: 0,
+    shouldShowBlockedIcon: false,
+    iconName: '',
+    message: '',
+    tooltip: '',
+    accessibilityName: '',
+    stateToken: 1,
+    ...overrides,
+  };
+}
+
+/**
  * Test version of the ToolbarBrowserProxy used in connecting the Contextual
  * Tasks toolbar WebUI to the browser.
  */
@@ -617,6 +700,9 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
   callbackRouter: ToolbarPageCallbackRouter;
   callbackRouterRemote: ToolbarPageRemote;
   handler: TestToolbarPageHandler;
+  toolbarUiService: TestContextualTasksToolbarUiService;
+  toolbarUiObserverCallbackRouter:
+      ContextualTasksToolbarUIObserverCallbackRouter;
 
   constructor() {
     super([]);
@@ -624,5 +710,16 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
     this.callbackRouterRemote =
         this.callbackRouter.$.bindNewPipeAndPassRemote();
     this.handler = new TestToolbarPageHandler();
+    this.toolbarUiService = new TestContextualTasksToolbarUiService();
+    this.toolbarUiObserverCallbackRouter =
+        new ContextualTasksToolbarUIObserverCallbackRouter();
+  }
+
+  /**
+   * Binds `toolbarUiObserverCallbackRouter` and returns a remote that tests
+   * can use to push observer updates to the WebUI.
+   */
+  bindToolbarUiObserverRemote(): ContextualTasksToolbarUIObserverRemote {
+    return this.toolbarUiObserverCallbackRouter.$.bindNewPipeAndPassRemote();
   }
 }

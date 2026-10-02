@@ -19,6 +19,15 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 import {assertHTMLElement} from './contextual_tasks_test_utils.js';
 import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
+// clang-format off
+// <if expr="not is_android">
+import {LhsChipIdentifier} from 'chrome://contextual-tasks/toolbar_ui_api_data_model.mojom-webui.js';
+
+import {createFakePermissionChip as createFakeChip} from './test_contextual_tasks_browser_proxy.js';
+import type {TestContextualTasksToolbarUiService} from './test_contextual_tasks_browser_proxy.js';
+// </if>
+// clang-format on
+
 suite('TopToolbarTest', () => {
   let topToolbar: TopToolbarElement;
   let proxy: TestContextualTasksBrowserProxy;
@@ -960,32 +969,18 @@ suite('TopToolbarTest', () => {
 
   // <if expr="not is_android">
   suite('Permission Dashboard Integration', () => {
+    let toolbarUiService: TestContextualTasksToolbarUiService;
+
     setup(async () => {
       loadTimeData.overrideValues({
         contextualTasksSidePanelRearchitectureEnabled: true,
       });
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      toolbarUiService = toolbarProxy.toolbarUiService;
       topToolbar = document.createElement('top-toolbar');
       document.body.appendChild(topToolbar);
       await microtasksFinished();
     });
-
-    function createFakeChip(overrides = {}) {
-      return {
-        isVisible: false,
-        isFullyCollapsed: false,
-        theme: 0,
-        promptStyle: 0,
-        userDecision: 0,
-        shouldShowBlockedIcon: false,
-        iconName: '',
-        message: '',
-        tooltip: '',
-        accessibilityName: '',
-        stateToken: 1,
-        ...overrides,
-      };
-    }
 
     test(
         'hides and shows permission-dashboard, and hides and shows logo' +
@@ -1014,7 +1009,10 @@ suite('TopToolbarTest', () => {
           topToolbar.permissionDashboardState = fakeState;
           await microtasksFinished();
 
-          assertTrue(!!topRow.querySelector('permission-dashboard'));
+          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
+              'permission-dashboard');
+          assertTrue(!!dashboard);
+          assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
 
           // Remove the visible chip, so that the permission dashboard no longer
@@ -1064,7 +1062,10 @@ suite('TopToolbarTest', () => {
           topToolbar.permissionDashboardState = fakeState;
           await microtasksFinished();
 
-          assertTrue(!!topRow.querySelector('permission-dashboard'));
+          const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
+              'permission-dashboard');
+          assertTrue(!!dashboard);
+          assertTrue(!!dashboard.delegate);
           assertTrue(logoContainer.hidden);
 
           // Remove the visible chip, so that the permission dashboard no longer
@@ -1079,6 +1080,83 @@ suite('TopToolbarTest', () => {
           assertFalse(!!topRow.querySelector('permission-dashboard'));
           assertFalse(logoContainer.hidden);
         });
+
+    test(
+        'loads initial state and updates on onPermissionDashboardStateChanged',
+        async () => {
+          await toolbarUiService.whenCalled('getInitialState');
+
+          const topRow = topToolbar.shadowRoot.querySelector('#top-row');
+          assertTrue(!!topRow);
+          assertFalse(!!topRow.querySelector('permission-dashboard'));
+
+          // Push an update over the observer callback router.
+          const observerRemote = toolbarProxy.bindToolbarUiObserverRemote();
+          const pushedState = {
+            indicatorChip: createFakeChip(),
+            requestChip:
+                createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+            isDividerVisible: false,
+          };
+          observerRemote.onPermissionDashboardStateChanged(pushedState);
+          await observerRemote.$.flushForTesting();
+          await microtasksFinished();
+
+          assertDeepEquals(pushedState, topToolbar.permissionDashboardState);
+          assertTrue(!!topRow.querySelector('permission-dashboard'));
+        });
+
+    test('forwards permission chip delegate calls to service', async () => {
+      topToolbar.permissionDashboardState = {
+        indicatorChip: createFakeChip(),
+        requestChip: createFakeChip({isVisible: true, iconName: 'kMicIcon'}),
+        isDividerVisible: false,
+      };
+      await microtasksFinished();
+
+      const topRow = topToolbar.shadowRoot.querySelector('#top-row');
+      assertTrue(!!topRow);
+      const dashboard = topRow.querySelector<HTMLElement&{delegate: any}>(
+          'permission-dashboard');
+      assertTrue(!!dashboard);
+      assertTrue(!!dashboard.delegate);
+
+      dashboard.delegate.onChipClicked(
+          LhsChipIdentifier.kPermissionRequest, true);
+      assertDeepEquals(
+          [LhsChipIdentifier.kPermissionRequest, true],
+          await toolbarUiService.whenCalled('onChipClicked'));
+
+      dashboard.delegate.onChipPointerEntered(
+          LhsChipIdentifier.kPermissionRequest);
+      assertEquals(
+          LhsChipIdentifier.kPermissionRequest,
+          await toolbarUiService.whenCalled('onChipPointerEntered'));
+
+      dashboard.delegate.onChipPointerExited(
+          LhsChipIdentifier.kPermissionRequest);
+      assertEquals(
+          LhsChipIdentifier.kPermissionRequest,
+          await toolbarUiService.whenCalled('onChipPointerExited'));
+
+      dashboard.delegate.onChipMousePressed(
+          LhsChipIdentifier.kPermissionRequest);
+      assertEquals(
+          LhsChipIdentifier.kPermissionRequest,
+          await toolbarUiService.whenCalled('onChipMousePressed'));
+
+      dashboard.delegate.onChipExpandAnimationEnded(
+          LhsChipIdentifier.kPermissionIndicator);
+      assertEquals(
+          LhsChipIdentifier.kPermissionIndicator,
+          await toolbarUiService.whenCalled('onChipExpandAnimationEnded'));
+
+      dashboard.delegate.onChipCollapseAnimationEnded(
+          LhsChipIdentifier.kPermissionIndicator);
+      assertEquals(
+          LhsChipIdentifier.kPermissionIndicator,
+          await toolbarUiService.whenCalled('onChipCollapseAnimationEnded'));
+    });
 
     test(
         'registers super G button help bubble anchor only when logo is shown',
