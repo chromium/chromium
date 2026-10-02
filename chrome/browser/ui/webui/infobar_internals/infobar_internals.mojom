@@ -96,6 +96,10 @@ enum InfoBarType {
   [EnableIf=is_win|is_mac|is_linux]
   kSessionRestore,
 
+  // Sign-in QR code infobar.
+  [EnableIf=enable_dice_support]
+  kSigninQRCode,
+
   // Startup launch infobar. Can only be triggered on Windows.
   [EnableIf=is_win]
   kStartupLaunch,
