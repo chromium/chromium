@@ -603,6 +603,18 @@ public class PictureInPictureActivityTest {
                 PIP_TIMEOUT_MILLISECONDS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
+        // The compositor view is created in finishNativeInitialization(), which runs
+        // asynchronously and can complete after the activity has already entered PiP mode.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Compositor view was never created",
+                            activity.getViewForTesting(),
+                            Matchers.notNullValue());
+                },
+                PIP_TIMEOUT_MILLISECONDS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
         Rational ratio = activity.getAspectRatio();
         Criteria.checkThat(
                 ratio,
