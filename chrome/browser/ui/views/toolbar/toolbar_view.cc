@@ -712,6 +712,15 @@ void ToolbarView::Init() {
     glic_split_button_controller_->SetVerticalTabsDelegate(this);
   }
 
+  // Notify the WebUI toolbar views last, once every toolbar component they
+  // depend on (e.g. the location bar) has finished initializing.
+  if (toolbar_webview_) {
+    toolbar_webview_->ToolbarInitialized();
+  }
+  if (detached_toolbar_webview_) {
+    detached_toolbar_webview_->ToolbarInitialized();
+  }
+
   initialized_ = true;
 }
 

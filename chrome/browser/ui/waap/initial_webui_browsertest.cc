@@ -25,7 +25,11 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service.h"
 #include "chrome/browser/ui/waap/initial_webui_profile_service_factory.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
@@ -1131,6 +1135,68 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIProfileServiceShutdownBrowserTest,
   ProfileDestructionWaiter waiter(&secondary_profile);
   profile_manager->ClearFirstBrowserWindowKeepAlive(&secondary_profile);
   waiter.Wait();
+}
+
+class InitialWebUIProfilePrewarmOmniboxBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ public:
+  InitialWebUIProfilePrewarmOmniboxBrowserTest()
+      : InitialWebUIBrowserTestBase(
+            {{features::kWebUILocationBar, {}},
+             {features::kWebUIReloadButton,
+              {{"WebUIReloadButtonPrewarmWebUI", "true"},
+               {"WebUIReloadButtonProfilePrewarming", "true"},
+               {"WebUIReloadButtonPrewarmWebUIPreNavigate", "true"}}}}) {}
+};
+
+// Verifies that when a profile-prewarmed WebUI toolbar has finished navigation
+// before the first browser window is created, the WebUIToolbarUI is properly
+// initialized with a valid OmniboxController after WebUILocationBar::Init()
+// runs, rather than race-initializing prematurely in the WebUIToolbarWebView
+// constructor with a null controller (b/563226016).
+IN_PROC_BROWSER_TEST_F(InitialWebUIProfilePrewarmOmniboxBrowserTest,
+                       PrewarmedToolbarInitializesOmniboxController) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath new_path =
+      profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Secondary"));
+  Profile& secondary_profile =
+      profiles::testing::CreateProfileSync(profile_manager, new_path);
+
+  auto* service =
+      InitialWebUIProfileServiceFactory::GetForProfile(&secondary_profile);
+  ASSERT_TRUE(service);
+  ASSERT_TRUE(service->has_toolbar_contents_for_testing());
+
+  content::WebContents* prewarmed_contents =
+      service->toolbar_web_contents_for_testing();
+  ASSERT_TRUE(prewarmed_contents);
+
+  // Wait for the background prewarm navigation to commit.
+  content::TestNavigationObserver observer(prewarmed_contents);
+  observer.Wait();
+  ASSERT_TRUE(observer.last_navigation_succeeded());
+
+  // Create the first browser window for this profile, which will consume the
+  // prewarmed toolbar contents.
+  BrowserWindowInterface* new_browser = CreateBrowser(&secondary_profile);
+  ASSERT_TRUE(new_browser);
+
+  auto* toolbar_button_provider = ToolbarButtonProvider::From(new_browser);
+  ASSERT_TRUE(toolbar_button_provider);
+  auto* webview = toolbar_button_provider->GetWebUIToolbarViewForTesting();
+  ASSERT_TRUE(webview);
+  content::WebContents* web_contents = webview->web_contents();
+  ASSERT_TRUE(web_contents);
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  ASSERT_TRUE(web_ui);
+  auto* webui = web_ui->GetController()->GetAs<WebUIToolbarUI>();
+  ASSERT_TRUE(webui);
+
+  // Verify that the OmniboxController was properly wired up and is non-null.
+  EXPECT_NE(nullptr, webui->omnibox_controller_for_testing());
+  EXPECT_TRUE(webui->is_initialized());
+  EXPECT_EQ(webview->GetOmniboxController(),
+            webui->omnibox_controller_for_testing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

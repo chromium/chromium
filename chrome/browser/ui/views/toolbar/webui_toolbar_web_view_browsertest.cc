@@ -1690,6 +1690,17 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<TestBrowserElements> browser_elements;
   };
 
+  // Creates a standalone `WebUIToolbarWebView` and signals that its WebUI
+  // dependencies are ready, as `ToolbarView::Init()` does in production.
+  std::unique_ptr<WebUIToolbarWebView> CreateInitializedToolbarView(
+      LifecycleTestSetup& setup) {
+    auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
+        &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
+        /*location_bar=*/nullptr);
+    toolbar_view->ToolbarInitialized();
+    return toolbar_view;
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1896,9 +1907,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
   auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
   observer.Wait();
 
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
 
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams widget_params(
@@ -1927,9 +1936,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
 
   auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
 
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
 
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams widget_params(
@@ -1976,9 +1983,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedBrowserTest,
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
   // Create the view and set the back button state to enabled.
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
   toolbar_view->SetBackForwardEnabled(IDC_BACK, true);
 
   auto widget = std::make_unique<views::Widget>();
@@ -2021,9 +2026,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleRendererOnlyPrewarmedBrowserTest,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
   toolbar_view->SetBackForwardEnabled(IDC_BACK, true);
 
   auto widget = std::make_unique<views::Widget>();
@@ -2057,9 +2060,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecycleNonPrewarmedBrowserTest,
 
   auto manager = std::make_unique<InitialWebUIManager>(&setup.mock_browser);
 
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
 
   auto widget = std::make_unique<views::Widget>();
   views::Widget::InitParams widget_params(
@@ -2143,9 +2144,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
 
   // Construct the WebUIToolbarWebView. It should consume the prewarmed
   // contents.
-  auto toolbar_view = std::make_unique<WebUIToolbarWebView>(
-      &setup.mock_browser, chrome::BrowserCommandController::From(browser()),
-      /*location_bar=*/nullptr);
+  auto toolbar_view = CreateInitializedToolbarView(setup);
   auto* webview_ptr = toolbar_view.get();
 
   // Add it to a widget. This should trigger the deferred navigation.
@@ -2160,7 +2159,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarLifecyclePrewarmedDeferredBrowserTest,
 
   auto* web_ui = webview_ptr->GetWebUIToolbarUIForTesting();
   ASSERT_TRUE(web_ui);
-  EXPECT_FALSE(web_ui->has_been_initialized_for_testing());
+  EXPECT_FALSE(web_ui->is_initialized());
 
   // Test for searchbox CreatePageHandler request happening before this
   // navigation completes --- see crbug.com/559041124

@@ -37,6 +37,10 @@ class InitialWebUIProfileService : public KeyedService {
     return toolbar_web_contents_ != nullptr;
   }
 
+  content::WebContents* toolbar_web_contents_for_testing() {
+    return toolbar_web_contents_.get();
+  }
+
  private:
   void PrewarmWebUI();
 

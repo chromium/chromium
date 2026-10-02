@@ -166,9 +166,11 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // UIs.
   static const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers();
 
-  bool has_been_initialized_for_testing() const {
-    return toolbar_ui_service_ != nullptr;
+  OmniboxController* omnibox_controller_for_testing() const {
+    return omnibox_controller_;
   }
+
+  bool is_initialized() const { return is_initialized_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
@@ -189,6 +191,7 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
 
+  bool is_initialized_ = false;
   raw_ptr<OmniboxController> omnibox_controller_ = nullptr;
 
   // Must outlive `omnibox_handler_`.

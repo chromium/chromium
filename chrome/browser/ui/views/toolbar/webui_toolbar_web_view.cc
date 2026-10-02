@@ -429,15 +429,19 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       // `WebUIToolbarWebView::AddedToWidget()`.
       SetInitializationState(InitializationState::kPending);
       // When preload is not enabled, the `WebUIToolbarUI` init is done in
-      // `WebUIToolbarWebView::DidFinishNavigation()`. Here since the
-      // `WebContents` is pre-created, it might finish navigation before we
-      // install the observer, so we have to manually init the `WebUIToolbarUI`.
-      if (!pre_created_contents->IsLoading() &&
-          pre_created_contents->GetController().GetLastCommittedEntry()) {
-        if (auto* ui =
-                GetWebUIToolbarUIFromWebContents(pre_created_contents.get())) {
-          ui->Init(this);
-        }
+      // `WebUIToolbarWebView::DidFinishNavigation()`. If the pre-created
+      // WebContents has already committed the WebUI before we installed the
+      // observer, record that it has navigated so `ToolbarInitialized()` will
+      // initialize it once the inner parts (e.g. location bar) are ready.
+      // Note that `GetWebUIToolbarUIFromWebContents()` can already be non-null
+      // as soon as `LoadURL()` starts when the initial RenderFrameHost shares
+      // the WebUI SiteInstance, see the comments of `GetLastCommittedEntry()`,
+      // so also check `!entry->IsInitialEntry()`.
+      auto* entry =
+          pre_created_contents->GetController().GetLastCommittedEntry();
+      if (entry && !entry->IsInitialEntry() &&
+          GetWebUIToolbarUIFromWebContents(pre_created_contents.get())) {
+        is_webui_navigation_finished_ = true;
       }
     }
     Observe(pre_created_contents.get());
@@ -1048,6 +1052,11 @@ void WebUIToolbarWebView::DidStartNavigation(
   }
 }
 
+void WebUIToolbarWebView::ToolbarInitialized() {
+  is_toolbar_initialized_ = true;
+  MaybeInitWebUI();
+}
+
 void WebUIToolbarWebView::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -1055,10 +1064,22 @@ void WebUIToolbarWebView::DidFinishNavigation(
     return;
   }
 
-  // Explicitly do another fetch to check if browser is in a shutdown state.
-  auto* bwi = webui::GetBrowserWindowInterface(web_view_->GetWebContents());
-  auto shutting_down = bwi == nullptr;
-  if (shutting_down) {
+  is_webui_navigation_finished_ = true;
+  MaybeInitWebUI();
+}
+
+void WebUIToolbarWebView::MaybeInitWebUI() {
+  if (!is_toolbar_initialized_ || !is_webui_navigation_finished_) {
+    return;
+  }
+
+  auto* web_contents = web_view_->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  auto* bwi = webui::GetBrowserWindowInterface(web_contents);
+  if (!bwi) {
     LOG(WARNING) << "browser is shutting down, aborting Init()";
     return;
   }
@@ -1066,11 +1087,15 @@ void WebUIToolbarWebView::DidFinishNavigation(
   // Devtools navigates to about:blank when doing a "reload" in performance
   // tracing.
   if (base::FeatureList::IsEnabled(features::kDebugTopChromeWebUI) &&
-      navigation_handle->GetURL().IsAboutBlank()) {
+      web_contents->GetLastCommittedURL().IsAboutBlank()) {
     return;
   }
+
   auto* ui = GetWebUIToolbarUI();
   CHECK(ui) << "Could not find the web ui for the toolbar";
+  if (ui->is_initialized()) {
+    return;
+  }
   ui->Init(this);
 }
 

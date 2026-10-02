@@ -383,6 +383,8 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
     return;
   }
 
+  is_initialized_ = true;
+
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
   CHECK(browser);
@@ -401,6 +403,11 @@ void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   InitToolbarUIService(*dependency_provider);
 
   omnibox_controller_ = dependency_provider->GetOmniboxController();
+  // The omnibox controller must be ready before Init() whenever the WebUI
+  // location bar is enabled, otherwise the searchbox handler is never bound.
+  // TODO(crbug.com/563226016): Convert to CHECK once no dumps are reported.
+  DUMP_WILL_BE_CHECK(omnibox_controller_ ||
+                     !features::IsWebUILocationBarEnabled());
   if (delayed_searchbox_receiver_.is_valid()) {
     CreatePageHandler(std::move(delayed_searchbox_page_),
                       std::move(delayed_searchbox_receiver_));
@@ -538,10 +545,13 @@ void WebUIToolbarUI::FinishCreateHelpBubbleHandler(
 void WebUIToolbarUI::CreatePageHandler(
     mojo::PendingRemote<searchbox::mojom::Page> page,
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
-  if (!omnibox_controller_) {
+  if (!is_initialized_) {
     // Init() hasn't been called yet, save the params so it can call us again.
     delayed_searchbox_page_ = std::move(page);
     delayed_searchbox_receiver_ = std::move(receiver);
+    return;
+  }
+  if (!omnibox_controller_) {
     return;
   }
 
