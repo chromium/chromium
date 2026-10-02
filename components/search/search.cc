@@ -54,6 +54,14 @@ bool TemplateURLIsGoogle(const TemplateURL* template_url,
     return false;
   }
 
+  // Fast-path prepopulated engines to avoid expensive dynamic URL generation
+  // and parsing on every call (crbug.com/566161572). Prepopulated engines are
+  // built into Chromium and cannot be hijacked or spoofed by OpenSearch
+  // auto-discovery.
+  if (template_url->prepopulate_id() != 0) {
+    return true;
+  }
+
   // The search URL must be valid and use HTTPS (or localhost in tests).
   const GURL search_url = template_url->GenerateSearchURL(search_terms_data);
   if (!IsCryptographicOrLocalhost(search_url)) {

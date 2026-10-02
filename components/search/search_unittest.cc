@@ -140,6 +140,44 @@ TEST(SearchTest, TemplateURLIsGoogle) {
     TemplateURL loopback_turl(loopback_data);
     EXPECT_TRUE(TemplateURLIsGoogle(&loopback_turl, search_terms_data));
   }
+
+  // Prepopulated Google engine returns true (fast path).
+  TemplateURLData prepopulated_google_data;
+  prepopulated_google_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  prepopulated_google_data.suggestions_url =
+      "https://www.google.com/complete/search?q={searchTerms}";
+  prepopulated_google_data.prepopulate_id = 1;
+  TemplateURL prepopulated_google_turl(prepopulated_google_data);
+  EXPECT_TRUE(
+      TemplateURLIsGoogle(&prepopulated_google_turl, search_terms_data));
+
+  // Verifies that prepopulated Google engines take the fast path and bypass
+  // dynamic suggestion URL generation (crbug.com/566161572). In production,
+  // prepopulated engines are statically compiled with trusted endpoints and
+  // cannot be spoofed. Here, a synthetic external suggestion endpoint confirms
+  // that the slow validation path is short-circuited.
+  TemplateURLData prepopulated_google_spoofed_suggest_data;
+  prepopulated_google_spoofed_suggest_data.SetURL(
+      "https://www.google.com/search?q={searchTerms}");
+  prepopulated_google_spoofed_suggest_data.suggestions_url =
+      "https://attacker.com/complete/search?q={searchTerms}";
+  prepopulated_google_spoofed_suggest_data.prepopulate_id = 1;
+  TemplateURL prepopulated_google_spoofed_suggest_turl(
+      prepopulated_google_spoofed_suggest_data);
+  EXPECT_TRUE(TemplateURLIsGoogle(&prepopulated_google_spoofed_suggest_turl,
+                                  search_terms_data));
+
+  // Prepopulated non-Google engine returns false even with prepopulate_id != 0.
+  TemplateURLData prepopulated_non_google_data;
+  prepopulated_non_google_data.SetURL(
+      "https://attacker.com/search?q={searchTerms}");
+  prepopulated_non_google_data.suggestions_url =
+      "https://attacker.com/complete/search?q={searchTerms}";
+  prepopulated_non_google_data.prepopulate_id = 2;
+  TemplateURL prepopulated_non_google_turl(prepopulated_non_google_data);
+  EXPECT_FALSE(
+      TemplateURLIsGoogle(&prepopulated_non_google_turl, search_terms_data));
 }
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
