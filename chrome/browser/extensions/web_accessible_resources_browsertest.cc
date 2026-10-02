@@ -22,6 +22,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/declarative_net_request/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/buildflags/buildflags.h"
@@ -715,18 +717,23 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest, DNRRedirect) {
 // Succeed when DNR redirects a script to a WAR where the redirect URL contains
 // both a query and a ref.
 // Regression test for crbug.com/461824106.
-// TODO(crbug.com/512084385): Flaky on Android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_DNRRedirectWithQueryAndRef DISABLED_DNRRedirectWithQueryAndRef
-#else
-#define MAYBE_DNRRedirectWithQueryAndRef DNRRedirectWithQueryAndRef
-#endif
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
-                       MAYBE_DNRRedirectWithQueryAndRef) {
+                       DNRRedirectWithQueryAndRef) {
+  // Observe the ruleset manager before loading the extension, so that the
+  // static ruleset load can be waited on below.
+  declarative_net_request::RulesetManagerObserver ruleset_manager_observer(
+      declarative_net_request::RulesMonitorService::Get(profile())
+          ->ruleset_manager());
+
   auto file_path = test_data_dir_.AppendASCII(
       "web_accessible_resources/dnr/redirect_query_and_ref");
   const Extension* extension = LoadExtension(file_path);
   ASSERT_TRUE(extension);
+
+  // Static DNR rulesets are loaded asynchronously after the extension loads.
+  // Wait for them, otherwise the main frame navigation below may not be
+  // redirected.
+  ruleset_manager_observer.WaitForExtensionsWithRulesetsCount(1);
 
   // Navigate to a non-extension page (main frame).
   content::WebContents* web_contents = GetActiveWebContents();
@@ -734,14 +741,11 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesBrowserTest,
       embedded_test_server()->GetURL("example.com", "/simple_with_script.html");
   GURL expected_commit_url = extension->url().Resolve("ok.html?foo=bar#baz");
 
-  // Track the navigation event and allow us to wait for it to complete.
+  // Track the navigation event.
   content::TestNavigationObserver navigation_observer(web_contents);
 
-  // Start the navigation to the initial URL.
+  // Navigate to the initial URL and wait for it to be redirected.
   ASSERT_TRUE(content::NavigateToURL(web_contents, url, expected_commit_url));
-
-  // Wait for the navigation.
-  navigation_observer.WaitForNavigationFinished();
 
   // Ensure the navigation was successful and check the final redirected URL.
   EXPECT_EQ(navigation_observer.last_net_error_code(), net::Error::OK);
