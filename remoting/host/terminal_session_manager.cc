@@ -43,20 +43,21 @@ void TerminalSessionManager::Start(OutputCallback output_callback,
                      weak_factory_.GetWeakPtr()));
 }
 
-base::expected<int32_t, TerminalError>
-TerminalSessionManager::CreateTerminal() {
+void TerminalSessionManager::CreateTerminal(CreateTerminalCallback callback) {
   if (is_restoring_) {
     TerminalError error(
         FROM_HERE, TerminalError::Reason::kBusy,
         "Cannot create terminal while restoring persistent terminals");
     LOG(ERROR) << error;
-    return base::unexpected(std::move(error));
+    std::move(callback).Run(base::unexpected(std::move(error)));
+    return;
   }
   if (next_id_ == std::numeric_limits<int32_t>::max()) {
     TerminalError error(FROM_HERE, TerminalError::Reason::kInternalError,
                         "Maximum terminal ID reached");
     LOG(ERROR) << error;
-    return base::unexpected(std::move(error));
+    std::move(callback).Run(base::unexpected(std::move(error)));
+    return;
   }
   int32_t id = next_id_++;
 
@@ -71,19 +72,14 @@ TerminalSessionManager::CreateTerminal() {
     TerminalError error(FROM_HERE, TerminalError::Reason::kInternalError,
                         "Terminal sessions are not supported on this platform");
     LOG(ERROR) << error;
-    return base::unexpected(std::move(error));
+    std::move(callback).Run(base::unexpected(std::move(error)));
+    return;
   }
   auto* session_ptr = session.get();
   terminal_sessions_[id] = std::move(session);
-  base::WeakPtr<TerminalSessionManager> weak_this = weak_factory_.GetWeakPtr();
-  base::expected<void, TerminalError> start_result = session_ptr->Start();
-  if (!start_result.has_value()) {
-    if (weak_this) {
-      weak_this->terminal_sessions_.erase(id);
-    }
-    return base::unexpected(std::move(start_result).error());
-  }
-  return id;
+  session_ptr->Start(base::BindOnce(&TerminalSessionManager::OnTerminalStarted,
+                                    weak_factory_.GetWeakPtr(), id,
+                                    std::move(callback)));
 }
 
 void TerminalSessionManager::WriteTerminal(const int32_t terminal_id,
@@ -154,19 +150,44 @@ std::vector<int32_t> TerminalSessionManager::GetTerminalSessionIds() {
 }
 
 void TerminalSessionManager::OnTerminalExited(int32_t terminal_id) {
+  RemoveSessionSoon(terminal_id);
+
+  if (exit_callback_) {
+    exit_callback_.Run(terminal_id);
+  }
+}
+
+void TerminalSessionManager::OnTerminalStarted(
+    int32_t terminal_id,
+    CreateTerminalCallback callback,
+    base::expected<void, TerminalError> result) {
+  if (!result.has_value()) {
+    RemoveSessionSoon(terminal_id);
+    std::move(callback).Run(base::unexpected(std::move(result).error()));
+    return;
+  }
+  std::move(callback).Run(terminal_id);
+}
+
+void TerminalSessionManager::OnRestoredTerminalStarted(
+    int32_t terminal_id,
+    base::expected<void, TerminalError> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Failed to restore terminal session for ID: " << terminal_id;
+    RemoveSessionSoon(terminal_id);
+  }
+}
+
+void TerminalSessionManager::RemoveSessionSoon(int32_t terminal_id) {
   auto it = terminal_sessions_.find(terminal_id);
   if (it != terminal_sessions_.end()) {
     std::unique_ptr<TerminalSession> session = std::move(it->second);
     terminal_sessions_.erase(it);
 
-    // Post a task to close the terminal session so the TerminalSession object
-    // is not deleted synchronously while executing its own exit callback.
+    // Post a task to delete the terminal session so the TerminalSession object
+    // is not deleted synchronously while executing one of its own callbacks.
     base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(session));
-  }
-
-  if (exit_callback_) {
-    exit_callback_.Run(terminal_id);
   }
 }
 
@@ -214,17 +235,11 @@ void TerminalSessionManager::RestoreTerminal(int32_t terminal_id) {
   }
   auto* session_ptr = session.get();
   terminal_sessions_[terminal_id] = std::move(session);
-  base::WeakPtr<TerminalSessionManager> weak_this = weak_factory_.GetWeakPtr();
-  // Start the terminal session. If it fails, remove the session from the
+  // Start the terminal session. If it fails, the session is removed from the
   // terminal sessions map.
-  base::expected<void, TerminalError> start_result = session_ptr->Start();
-  if (!start_result.has_value()) {
-    if (weak_this) {
-      weak_this->terminal_sessions_.erase(terminal_id);
-    }
-    LOG(ERROR) << "Failed to restore terminal session for ID: " << terminal_id;
-    return;
-  }
+  session_ptr->Start(
+      base::BindOnce(&TerminalSessionManager::OnRestoredTerminalStarted,
+                     weak_factory_.GetWeakPtr(), terminal_id));
 }
 
 }  // namespace remoting

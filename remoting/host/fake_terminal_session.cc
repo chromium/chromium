@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/no_destructor.h"
 #include "base/types/expected.h"
 #include "remoting/host/terminal_error.h"
@@ -36,6 +37,11 @@ std::vector<int32_t>& GetPersistentSessionIdList() {
 std::optional<TerminalError>& GetNextStartError() {
   static base::NoDestructor<std::optional<TerminalError>> next_start_error;
   return *next_start_error;
+}
+
+bool& GetDeferStart() {
+  static bool defer_start = false;
+  return defer_start;
 }
 }  // namespace
 
@@ -65,6 +71,7 @@ void FakeTerminalSession::ResetTerminatedIds() {
 // static
 void FakeTerminalSession::ResetStaticState() {
   GetNextStartError().reset();
+  GetDeferStart() = false;
   ResetTerminatedIds();
   GetPersistentSessionIdList().clear();
 }
@@ -73,6 +80,11 @@ void FakeTerminalSession::ResetStaticState() {
 void FakeTerminalSession::SetNextStartError(
     std::optional<TerminalError> error) {
   GetNextStartError() = std::move(error);
+}
+
+// static
+void FakeTerminalSession::SetDeferStart(bool defer) {
+  GetDeferStart() = defer;
 }
 
 // static
@@ -122,15 +134,30 @@ FakeTerminalSession::~FakeTerminalSession() {
   std::erase(active_session_list, this);
 }
 
-base::expected<void, TerminalError> FakeTerminalSession::Start() {
+void FakeTerminalSession::Start(StartCallback callback) {
+  CHECK(!pending_start_callback_);
   std::optional<TerminalError>& next_start_error = GetNextStartError();
   if (next_start_error.has_value()) {
     TerminalError error = std::move(*next_start_error);
     next_start_error.reset();
-    return base::unexpected(std::move(error));
+    std::move(callback).Run(base::unexpected(std::move(error)));
+    return;
   }
-  is_started_ = true;
-  return base::ok();
+  pending_start_callback_ = std::move(callback);
+  if (!GetDeferStart()) {
+    CompleteStart(base::ok());
+  }
+}
+
+void FakeTerminalSession::CompleteStart(
+    base::expected<void, TerminalError> result) {
+  CHECK(pending_start_callback_);
+  StartCallback callback = std::move(pending_start_callback_);
+  if (is_detached_ || is_terminated_) {
+    return;
+  }
+  is_started_ = result.has_value();
+  std::move(callback).Run(std::move(result));
 }
 
 void FakeTerminalSession::Write(const std::string& data) {

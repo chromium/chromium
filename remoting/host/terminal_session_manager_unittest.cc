@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "remoting/host/fake_terminal_session.h"
 #include "remoting/host/terminal_error.h"
@@ -40,6 +41,20 @@ class TerminalSessionManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  // Calls CreateTerminal() and returns the result, which is expected to be
+  // available synchronously because FakeTerminalSession starts synchronously
+  // unless SetDeferStart() is used.
+  base::expected<int32_t, TerminalError> CreateTerminal() {
+    base::test::TestFuture<base::expected<int32_t, TerminalError>> future;
+    manager_.CreateTerminal(future.GetCallback());
+    if (!future.IsReady()) {
+      ADD_FAILURE() << "CreateTerminal() did not complete synchronously";
+      return base::unexpected(TerminalError(
+          FROM_HERE, TerminalError::Reason::kInternalError, "Not ready"));
+    }
+    return future.Take();
+  }
+
   base::test::TaskEnvironment task_environment_;
   TerminalSessionManager manager_;
   base::MockCallback<TerminalSessionManager::OutputCallback> output_callback_;
@@ -50,9 +65,9 @@ class TerminalSessionManagerTest : public testing::Test {
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalAndAssignsId) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
-  ASSERT_OK_AND_ASSIGN(int32_t id2, manager_.CreateTerminal());
-  ASSERT_OK_AND_ASSIGN(int32_t id3, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id2, CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id3, CreateTerminal());
   ASSERT_EQ(id, 1);
   ASSERT_EQ(id2, 2);
   ASSERT_EQ(id3, 3);
@@ -72,12 +87,124 @@ TEST_F(TerminalSessionManagerTest, StartFailureReturnsError) {
   StartManager();
   FakeTerminalSession::SetNextStartError(TerminalError(
       FROM_HERE, TerminalError::Reason::kPtyError, "start failed", 42));
-  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  base::expected<int32_t, TerminalError> result = CreateTerminal();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().reason, TerminalError::Reason::kPtyError);
   EXPECT_EQ(result.error().message, "start failed");
   EXPECT_EQ(result.error().system_error_code, 42);
   EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return FakeTerminalSession::GetActiveSessions().empty(); }));
+}
+
+TEST_F(TerminalSessionManagerTest, CreateTerminalWaitsForAsyncStart) {
+  StartManager();
+  FakeTerminalSession::SetDeferStart(true);
+  base::test::TestFuture<base::expected<int32_t, TerminalError>> future;
+  manager_.CreateTerminal(future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  ASSERT_TRUE(sessions[0]->has_pending_start());
+  sessions[0]->CompleteStart(base::ok());
+
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_OK_AND_ASSIGN(int32_t id, future.Take());
+  EXPECT_EQ(id, 1);
+  EXPECT_EQ(manager_.GetTerminalSession(id), sessions[0].get());
+}
+
+TEST_F(TerminalSessionManagerTest, AsyncStartFailureReturnsError) {
+  StartManager();
+  FakeTerminalSession::SetDeferStart(true);
+  base::test::TestFuture<base::expected<int32_t, TerminalError>> future;
+  manager_.CreateTerminal(future.GetCallback());
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_CALL(exit_callback_, Run).Times(0);
+  sessions[0]->CompleteStart(base::unexpected(TerminalError(
+      FROM_HERE, TerminalError::Reason::kLaunchFailed, "launch failed")));
+
+  ASSERT_TRUE(future.IsReady());
+  base::expected<int32_t, TerminalError> result = future.Take();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().reason, TerminalError::Reason::kLaunchFailed);
+  EXPECT_EQ(result.error().message, "launch failed");
+  EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return FakeTerminalSession::GetActiveSessions().empty(); }));
+}
+
+TEST_F(TerminalSessionManagerTest, OverlappingCreatesCompleteInStartOrder) {
+  StartManager();
+  FakeTerminalSession::SetDeferStart(true);
+  base::test::TestFuture<base::expected<int32_t, TerminalError>> future1;
+  base::test::TestFuture<base::expected<int32_t, TerminalError>> future2;
+  manager_.CreateTerminal(future1.GetCallback());
+  manager_.CreateTerminal(future2.GetCallback());
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 2u);
+
+  // IDs are assigned when the request is made, but each callback is run when
+  // its session finishes starting, so callbacks may run out of request order.
+  sessions[1]->CompleteStart(base::ok());
+  EXPECT_FALSE(future1.IsReady());
+  ASSERT_TRUE(future2.IsReady());
+  ASSERT_OK_AND_ASSIGN(int32_t id2, future2.Take());
+  EXPECT_EQ(id2, 2);
+
+  sessions[0]->CompleteStart(base::ok());
+  ASSERT_TRUE(future1.IsReady());
+  ASSERT_OK_AND_ASSIGN(int32_t id1, future1.Take());
+  EXPECT_EQ(id1, 1);
+}
+
+TEST_F(TerminalSessionManagerTest, CloseTerminalWhileStartPending) {
+  StartManager();
+  FakeTerminalSession::SetDeferStart(true);
+  base::MockCallback<TerminalSessionManager::CreateTerminalCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  manager_.CreateTerminal(callback.Get());
+  ASSERT_EQ(FakeTerminalSession::GetActiveSessions().size(), 1u);
+
+  manager_.CloseTerminal(1);
+  EXPECT_TRUE(FakeTerminalSession::WasTerminated(1));
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
+  EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+}
+
+TEST_F(TerminalSessionManagerTest, DetachAllSessionsWhileStartPending) {
+  StartManager();
+  FakeTerminalSession::SetDeferStart(true);
+  base::MockCallback<TerminalSessionManager::CreateTerminalCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+  manager_.CreateTerminal(callback.Get());
+  ASSERT_EQ(FakeTerminalSession::GetActiveSessions().size(), 1u);
+
+  manager_.DetachAllSessions();
+  EXPECT_FALSE(FakeTerminalSession::WasTerminated(1));
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
+  EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+}
+
+TEST_F(TerminalSessionManagerTest, RestoredTerminalAsyncStartFailure) {
+  FakeTerminalSession::SetPersistentTerminalIds({10});
+  FakeTerminalSession::SetDeferStart(true);
+  StartManager();
+
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  EXPECT_THAT(manager_.GetTerminalSessionIds(), testing::ElementsAre(10));
+
+  EXPECT_CALL(exit_callback_, Run).Times(0);
+  sessions[0]->CompleteStart(base::unexpected(TerminalError(
+      FROM_HERE, TerminalError::Reason::kLaunchFailed, "launch failed")));
+  EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return FakeTerminalSession::GetActiveSessions().empty(); }));
 }
 
 TEST_F(TerminalSessionManagerTest, CreateTerminalFailsWhenMaxIdReached) {
@@ -85,7 +212,7 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsWhenMaxIdReached) {
       {std::numeric_limits<int32_t>::max()});
   StartManager();
 
-  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  base::expected<int32_t, TerminalError> result = CreateTerminal();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().reason, TerminalError::Reason::kInternalError);
   EXPECT_FALSE(result.error().message.empty());
@@ -96,7 +223,7 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsWhenMaxIdReached) {
 
 TEST_F(TerminalSessionManagerTest, WriteTerminalRoutesCorrectly) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -110,7 +237,7 @@ TEST_F(TerminalSessionManagerTest, WriteTerminalRoutesCorrectly) {
 
 TEST_F(TerminalSessionManagerTest, ResizeTerminalRoutesCorrectly) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -125,7 +252,7 @@ TEST_F(TerminalSessionManagerTest, ResizeTerminalRoutesCorrectly) {
 
 TEST_F(TerminalSessionManagerTest, CloseTerminalDestroysAndTerminates) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -142,8 +269,8 @@ TEST_F(TerminalSessionManagerTest, GetTerminalSessionAndIds) {
   StartManager();
   EXPECT_TRUE(manager_.GetTerminalSessionIds().empty());
 
-  ASSERT_OK_AND_ASSIGN(int32_t id1, manager_.CreateTerminal());
-  ASSERT_OK_AND_ASSIGN(int32_t id2, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id1, CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id2, CreateTerminal());
 
   std::vector<int32_t> ids = manager_.GetTerminalSessionIds();
   ASSERT_EQ(ids.size(), 2u);
@@ -153,7 +280,7 @@ TEST_F(TerminalSessionManagerTest, GetTerminalSessionAndIds) {
 
 TEST_F(TerminalSessionManagerTest, DetachAllSessionsDetachesSessions) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
   ASSERT_EQ(id, 1);
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
@@ -184,7 +311,7 @@ TEST_F(TerminalSessionManagerTest, RestorePersistentTerminalsWithoutCollision) {
   EXPECT_NE(manager_.GetTerminalSession(10), nullptr);
   EXPECT_NE(manager_.GetTerminalSession(20), nullptr);
 
-  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, CreateTerminal());
   EXPECT_EQ(post_restore_id, 21);
 }
 
@@ -213,7 +340,7 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
                  process_info_callback_.Get());
 
   // Calling CreateTerminal while restore is in flight should return an error.
-  base::expected<int32_t, TerminalError> result = manager_.CreateTerminal();
+  base::expected<int32_t, TerminalError> result = CreateTerminal();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().reason, TerminalError::Reason::kBusy);
   EXPECT_FALSE(result.error().message.empty());
@@ -223,13 +350,13 @@ TEST_F(TerminalSessionManagerTest, CreateTerminalFailsDuringRestore) {
       [this] { return manager_.GetTerminalSessionIds().size() == 2u; }));
 
   // After restoration completes, CreateTerminal should succeed without collision.
-  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t post_restore_id, CreateTerminal());
   EXPECT_EQ(post_restore_id, 21);
 }
 
 TEST_F(TerminalSessionManagerTest, ProcessInfoRoutesCorrectly) {
   StartManager();
-  ASSERT_OK_AND_ASSIGN(int32_t id, manager_.CreateTerminal());
+  ASSERT_OK_AND_ASSIGN(int32_t id, CreateTerminal());
 
   auto sessions = FakeTerminalSession::GetActiveSessions();
   ASSERT_EQ(sessions.size(), 1u);

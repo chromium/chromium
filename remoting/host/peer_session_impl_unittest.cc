@@ -26,6 +26,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -203,6 +204,10 @@ class PeerSessionImplTest : public testing::Test {
   void ConnectPeerSession(const SessionPolicies& session_policies = {},
                           const SessionOptions& session_options = {});
 
+  // Enables terminal mode and waits for the restoration of persistent
+  // terminals to finish.
+  void EnableTerminalMode();
+
   // Add a fake display to the layout list. Used in conjunction with
   // NotifyDesktopDisplaySize.
   void AddDisplayToLayout(protocol::VideoLayout* displays,
@@ -351,6 +356,19 @@ void PeerSessionImplTest::ConnectPeerSession(
   // Stubs should be set only after connection is authenticated.
   EXPECT_TRUE(connection_->clipboard_stub());
   EXPECT_TRUE(connection_->input_stub());
+}
+
+void PeerSessionImplTest::EnableTerminalMode() {
+  protocol::Capabilities capabilities;
+  capabilities.set_capabilities(protocol::kTerminalModeCapability);
+  peer_session_->SetCapabilities(capabilities);
+  // Wait for terminal restoration to finish: flush the ThreadPool task, then
+  // wait for its reply, which is queued on the main thread ahead of `future`.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::test::TestFuture<void> future;
+  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
+                                                        future.GetCallback());
+  ASSERT_TRUE(future.Wait());
 }
 
 void PeerSessionImplTest::AddDisplayToLayout(protocol::VideoLayout* displays,
@@ -779,17 +797,7 @@ TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminal) {
 TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminalFailure) {
   CreatePeerSession();
   ConnectPeerSession();
-
-  protocol::Capabilities capabilities;
-  capabilities.set_capabilities(protocol::kTerminalModeCapability);
-  peer_session_->SetCapabilities(capabilities);
-  // Wait for terminal restoration to finish: flush the ThreadPool task, then
-  // wait for its reply, which is queued on the main thread ahead of `future`.
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::test::TestFuture<void> future;
-  task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
-                                                        future.GetCallback());
-  ASSERT_TRUE(future.Wait());
+  ASSERT_NO_FATAL_FAILURE(EnableTerminalMode());
 
   const TerminalError error(FROM_HERE, TerminalError::Reason::kPtyError,
                             "start failed", 42);
@@ -818,9 +826,98 @@ TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminalFailure) {
   EXPECT_EQ(error_proto.file_name(), error.location.file_name());
   EXPECT_EQ(error_proto.line_number(),
             static_cast<uint32_t>(error.location.line_number()));
-  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return FakeTerminalSession::GetActiveSessions().empty(); }));
 
   peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  peer_session_.reset();
+}
+
+TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminalWaitsForAsyncStart) {
+  CreatePeerSession();
+  ConnectPeerSession();
+  ASSERT_NO_FATAL_FAILURE(EnableTerminalMode());
+  FakeTerminalSession::SetDeferStart(true);
+
+  std::vector<protocol::TerminalControl> sent;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillRepeatedly([&sent](const protocol::TerminalControl& control) {
+        sent.push_back(control);
+      });
+
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+
+  // No response should be sent until the terminal session has started.
+  EXPECT_TRUE(sent.empty());
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  sessions[0]->CompleteStart(base::ok());
+
+  ASSERT_EQ(sent.size(), 1u);
+  ASSERT_TRUE(sent[0].has_create_response());
+  EXPECT_FALSE(sent[0].create_response().has_error());
+  EXPECT_EQ(sent[0].create_response().terminal_id(), 1);
+
+  peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  peer_session_.reset();
+}
+
+TEST_F(PeerSessionImplTest, ControlTerminal_CreateTerminalAsyncFailure) {
+  CreatePeerSession();
+  ConnectPeerSession();
+  ASSERT_NO_FATAL_FAILURE(EnableTerminalMode());
+  FakeTerminalSession::SetDeferStart(true);
+
+  std::vector<protocol::TerminalControl> sent;
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_))
+      .WillRepeatedly([&sent](const protocol::TerminalControl& control) {
+        sent.push_back(control);
+      });
+
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+
+  EXPECT_TRUE(sent.empty());
+  auto sessions = FakeTerminalSession::GetActiveSessions();
+  ASSERT_EQ(sessions.size(), 1u);
+  sessions[0]->CompleteStart(base::unexpected(TerminalError(
+      FROM_HERE, TerminalError::Reason::kLaunchFailed, "launch failed")));
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return FakeTerminalSession::GetActiveSessions().empty(); }));
+
+  // Only the error response should be sent; in particular, there should be no
+  // close_terminal message for the failed session.
+  ASSERT_EQ(sent.size(), 1u);
+  ASSERT_TRUE(sent[0].has_create_response());
+  ASSERT_TRUE(sent[0].create_response().has_error());
+  EXPECT_EQ(
+      sent[0].create_response().error().reason(),
+      protocol::TerminalControl::CreateTerminalResponse::Error::LAUNCH_FAILED);
+  EXPECT_EQ(sent[0].create_response().error().error_message(), "launch failed");
+
+  peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  peer_session_.reset();
+}
+
+TEST_F(PeerSessionImplTest, ControlTerminal_DisconnectWhileCreatePending) {
+  CreatePeerSession();
+  ConnectPeerSession();
+  ASSERT_NO_FATAL_FAILURE(EnableTerminalMode());
+  FakeTerminalSession::SetDeferStart(true);
+
+  EXPECT_CALL(client_stub_, DeliverTerminalControl(_)).Times(0);
+  protocol::TerminalControl create_req;
+  create_req.mutable_create_request();
+  peer_session_->ControlTerminal(create_req);
+  ASSERT_EQ(FakeTerminalSession::GetActiveSessions().size(), 1u);
+
+  // The pending session should be detached and destroyed without a response
+  // being sent.
+  peer_session_->DisconnectSession(ErrorCode::OK, {}, FROM_HERE);
+  EXPECT_TRUE(FakeTerminalSession::GetActiveSessions().empty());
   peer_session_.reset();
 }
 

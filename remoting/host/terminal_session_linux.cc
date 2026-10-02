@@ -170,13 +170,16 @@ class TerminalPreExecDelegate : public base::LaunchOptions::PreExecDelegate {
   }
 };
 
-base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
+base::expected<base::Process, TerminalError> LaunchShellProcess(
+    int32_t id,
+    base::ScopedFD subsidiary_fd) {
   base::FilePath tmx2_path = FindTmx2Path();
   // If tmx2 is not available, then we cannot launch the terminal session.
   if (tmx2_path.empty()) {
-    LOG(ERROR)
-        << "tmx2 binary not found. Cannot launch terminal session.";
-    return base::Process();
+    return base::unexpected(TerminalError(
+        FROM_HERE, TerminalError::Reason::kTmuxMissing,
+        base::StrCat(
+            {kTmx2Path, " not found. Cannot launch terminal session."})));
   }
 
   std::vector<std::string> tmux_cmd = {
@@ -211,7 +214,13 @@ base::Process LaunchShellProcess(int32_t id, base::ScopedFD subsidiary_fd) {
   options.pre_exec_delegate = &delegate;
   options.environment["TERM"] = "xterm-256color";
 
-  return base::LaunchProcess(tmux_cmd, options);
+  base::Process process = base::LaunchProcess(tmux_cmd, options);
+  if (!process.IsValid()) {
+    return base::unexpected(
+        TerminalError(FROM_HERE, TerminalError::Reason::kLaunchFailed,
+                      "Failed to launch terminal shell process"));
+  }
+  return process;
 }
 
 class TerminalSessionLinux : public TerminalSession {
@@ -233,101 +242,75 @@ class TerminalSessionLinux : public TerminalSession {
 
   // Start the terminal session. This will start a new PTY session and launch a
   // bash process in the subsidiary end of the PTY.
-  base::expected<void, TerminalError> Start() override {
+  void Start(StartCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    base::ScopedFD pty_fd(
-        HANDLE_EINTR(posix_openpt(O_RDWR | O_NOCTTY | O_CLOEXEC)));
-    if (!pty_fd.is_valid()) {
-      return LogAndReturnError(TerminalError::FromSystemError(
-          FROM_HERE, TerminalError::Reason::kPtyError, "posix_openpt", errno));
+    DCHECK(!start_callback_);
+    base::expected<base::ScopedFD, TerminalError> subsidiary_fd = OpenPty();
+    if (!subsidiary_fd.has_value()) {
+      std::move(callback).Run(
+          base::unexpected(std::move(subsidiary_fd).error()));
+      return;
     }
-    if (grantpt(pty_fd.get()) != 0) {
-      return LogAndReturnError(TerminalError::FromSystemError(
-          FROM_HERE, TerminalError::Reason::kPtyError, "grantpt", errno));
-    }
-    if (unlockpt(pty_fd.get()) != 0) {
-      return LogAndReturnError(TerminalError::FromSystemError(
-          FROM_HERE, TerminalError::Reason::kPtyError, "unlockpt", errno));
-    }
-
-    char subsidiary_name[TTY_NAME_MAX];
-    int ptsname_result =
-        ptsname_r(pty_fd.get(), subsidiary_name, sizeof(subsidiary_name));
-    if (ptsname_result != 0) {
-      // ptsname_r returns the error code rather than setting errno.
-      return LogAndReturnError(TerminalError::FromSystemError(
-          FROM_HERE, TerminalError::Reason::kPtyError, "ptsname_r",
-          ptsname_result));
-    }
-
-    base::ScopedFD subsidiary_fd(
-        HANDLE_EINTR(open(subsidiary_name, O_RDWR | O_NOCTTY | O_CLOEXEC)));
-    if (!subsidiary_fd.is_valid()) {
-      return LogAndReturnError(TerminalError::FromSystemError(
-          FROM_HERE, TerminalError::Reason::kPtyError, "open subsidiary PTY",
-          errno));
-    }
-
-    struct termios ios;
-    if (tcgetattr(subsidiary_fd.get(), &ios) == 0) {
-      ios.c_iflag |= IUTF8;
-      tcsetattr(subsidiary_fd.get(), TCSANOW, &ios);
-    }
-
-    pty_fd_ = std::move(pty_fd);
+    start_callback_ = std::move(callback);
 
     writer_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        base::BindOnce(&LaunchShellProcess, id_, std::move(subsidiary_fd)),
+        base::BindOnce(&LaunchShellProcess, id_,
+                       std::move(subsidiary_fd).value()),
         base::BindOnce(
             [](base::WeakPtr<TerminalSessionLinux> weak_this,
                scoped_refptr<base::SequencedTaskRunner> writer_task_runner,
-               base::Process process) {
+               base::expected<base::Process, TerminalError> result) {
               if (weak_this) {
-                weak_this->OnProcessLaunched(std::move(process));
-              } else if (process.IsValid()) {
+                weak_this->OnProcessLaunched(std::move(result));
+              } else if (result.has_value()) {
                 writer_task_runner->PostTask(
                     FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
-                                              std::move(process)));
+                                              std::move(result).value()));
               }
             },
             weak_factory_.GetWeakPtr(), writer_task_runner_));
-    return base::ok();
   }
 
-  void OnProcessLaunched(base::Process process) {
+  void OnProcessLaunched(base::expected<base::Process, TerminalError> result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!process.IsValid()) {
-      LOG(ERROR) << "Failed to launch terminal shell process asynchronously";
-      CleanupLocalSession();
-      if (exit_callback_) {
-        std::move(exit_callback_).Run(id_);
+    // Note that the owner may delete `this` in response to `callback`, so it
+    // must be run last.
+    StartCallback callback = std::move(start_callback_);
+    // If the session was detached or terminated before the process was
+    // launched, terminate the process (if any) and return without running
+    // `callback`.
+    if (detached_ || terminated_) {
+      if (result.has_value() && writer_task_runner_) {
+        writer_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
+                                      std::move(result).value()));
       }
       return;
     }
-    // If the session was detached or terminated before the process was
-    // launched, terminate the process and return.
-    if (detached_ || terminated_) {
-      if (writer_task_runner_) {
-        writer_task_runner_->PostTask(
-            FROM_HERE, base::BindOnce(&TerminateProcessInBackground,
-                                      std::move(process)));
-      }
+    if (!result.has_value()) {
+      LOG(ERROR) << result.error();
+      CleanupLocalSession();
+      std::move(callback).Run(base::unexpected(std::move(result).error()));
       return;
     }
     // process_ will never be valid here since it's only set by
     // OnProcessLaunched(), which is only called once by Start().
     CHECK(!process_.IsValid());
-    process_ = std::move(process);
+    process_ = std::move(result).value();
 
     // Asynchronously retrieve and forward existing scrollback history before
     // starting to watch live PTY output to avoid stream interleaving. Sequence
     // through writer_task_runner_ to preserve order with lifecycle commands.
+    // Since this is asynchronous, `callback` is guaranteed to run before any
+    // output is delivered.
     writer_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&GetTmuxScrollback, id_),
         base::BindOnce(&TerminalSessionLinux::OnScrollbackRetrieved,
                        weak_factory_.GetWeakPtr()));
+
+    std::move(callback).Run(base::ok());
   }
 
   static void WriteToPtyManager(int fd, std::string payload) {
@@ -399,6 +382,53 @@ class TerminalSessionLinux : public TerminalSession {
   }
 
  private:
+  // Opens a new PTY, storing the manager end in `pty_fd_` and returning the
+  // subsidiary end.
+  base::expected<base::ScopedFD, TerminalError> OpenPty() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    base::ScopedFD pty_fd(
+        HANDLE_EINTR(posix_openpt(O_RDWR | O_NOCTTY | O_CLOEXEC)));
+    if (!pty_fd.is_valid()) {
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "posix_openpt", errno));
+    }
+    if (grantpt(pty_fd.get()) != 0) {
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "grantpt", errno));
+    }
+    if (unlockpt(pty_fd.get()) != 0) {
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "unlockpt", errno));
+    }
+
+    char subsidiary_name[TTY_NAME_MAX];
+    int ptsname_result =
+        ptsname_r(pty_fd.get(), subsidiary_name, sizeof(subsidiary_name));
+    if (ptsname_result != 0) {
+      // ptsname_r returns the error code rather than setting errno.
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "ptsname_r",
+          ptsname_result));
+    }
+
+    base::ScopedFD subsidiary_fd(
+        HANDLE_EINTR(open(subsidiary_name, O_RDWR | O_NOCTTY | O_CLOEXEC)));
+    if (!subsidiary_fd.is_valid()) {
+      return LogAndReturnError(TerminalError::FromSystemError(
+          FROM_HERE, TerminalError::Reason::kPtyError, "open subsidiary PTY",
+          errno));
+    }
+
+    struct termios ios;
+    if (tcgetattr(subsidiary_fd.get(), &ios) == 0) {
+      ios.c_iflag |= IUTF8;
+      tcsetattr(subsidiary_fd.get(), TCSANOW, &ios);
+    }
+
+    pty_fd_ = std::move(pty_fd);
+    return subsidiary_fd;
+  }
+
   void CleanupLocalSession() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (detached_) {
@@ -547,6 +577,8 @@ class TerminalSessionLinux : public TerminalSession {
   std::unique_ptr<TerminalProcessMonitorLinux> process_monitor_
       GUARDED_BY_CONTEXT(sequence_checker_);
   TerminalSessionManager::OutputCallback output_callback_;
+  // Set by Start() while the shell process is being launched.
+  StartCallback start_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
   TerminalSessionManager::ExitCallback exit_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
   TerminalSessionManager::ProcessInfoCallback process_info_callback_

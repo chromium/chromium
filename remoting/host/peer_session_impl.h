@@ -21,6 +21,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -38,6 +39,7 @@
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 #include "remoting/host/peer_session.h"
+#include "remoting/host/terminal_error.h"
 #include "remoting/proto/action.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/audio_sample_info.h"
@@ -283,6 +285,9 @@ class PeerSessionImpl : public PeerSession,
   // TODO: crbug.com/455622961 - Remove this method once the
   // clientRenderedHostCursor capability is fully rolled out.
   void SetComposeEnabledOnVideoStreams(bool enabled);
+
+  // Sends the response to a create-terminal request.
+  void OnTerminalCreated(base::expected<int32_t, TerminalError> result);
 
   void SendTerminalOutput(int32_t terminal_id, const std::string& data);
 

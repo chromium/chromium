@@ -146,6 +146,10 @@ ToProtoReason(remoting::TerminalError::Reason reason) {
       return ProtoError::BUSY;
     case remoting::TerminalError::Reason::kPtyError:
       return ProtoError::PTY_ERROR;
+    case remoting::TerminalError::Reason::kTmuxMissing:
+      return ProtoError::TMUX_MISSING;
+    case remoting::TerminalError::Reason::kLaunchFailed:
+      return ProtoError::LAUNCH_FAILED;
   }
   NOTREACHED();
 }
@@ -663,21 +667,12 @@ void PeerSessionImpl::ControlTerminal(
   }
 
   if (terminal_control.has_create_request()) {
-    // Create a new terminal session and store the ID. We'll use this ID to
-    // identify the terminal session when sending output to the client. Bind the
-    // callbacks to the weak factory to ensure that the callbacks are not
-    // called after the client session is disconnected.
-    base::expected<int32_t, TerminalError> result =
-        terminal_session_manager_->CreateTerminal();
-
-    protocol::TerminalControl response;
-    auto* create_response = response.mutable_create_response();
-    if (result.has_value()) {
-      create_response->set_terminal_id(*result);
-    } else {
-      SetCreateTerminalError(result.error(), create_response->mutable_error());
-    }
-    connection_->client_stub()->DeliverTerminalControl(response);
+    // Create a new terminal session. The response, containing either the ID
+    // that identifies the session in subsequent messages or an error, is sent
+    // once the session has started. Bind the callback to the weak factory to
+    // ensure that it is not called after the client session is disconnected.
+    terminal_session_manager_->CreateTerminal(base::BindOnce(
+        &PeerSessionImpl::OnTerminalCreated, weak_factory_.GetWeakPtr()));
 
   } else if (terminal_control.has_terminal_input()) {
     const auto& input = terminal_control.terminal_input();
@@ -693,6 +688,19 @@ void PeerSessionImpl::ControlTerminal(
     int32_t terminal_id = terminal_control.remove_request().terminal_id();
     terminal_session_manager_->CloseTerminal(terminal_id);
   }
+}
+
+void PeerSessionImpl::OnTerminalCreated(
+    base::expected<int32_t, TerminalError> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  protocol::TerminalControl response;
+  auto* create_response = response.mutable_create_response();
+  if (result.has_value()) {
+    create_response->set_terminal_id(*result);
+  } else {
+    SetCreateTerminalError(result.error(), create_response->mutable_error());
+  }
+  connection_->client_stub()->DeliverTerminalControl(response);
 }
 
 void PeerSessionImpl::SendTerminalOutput(int32_t terminal_id,

@@ -27,6 +27,10 @@ struct TerminalError {
     kBusy,
     // A pseudo-terminal could not be allocated.
     kPtyError,
+    // tmux is not installed.
+    kTmuxMissing,
+    // The terminal process could not be launched.
+    kLaunchFailed,
   };
 
   TerminalError(const base::Location& location,
