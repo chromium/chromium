@@ -12,6 +12,11 @@
 
 namespace optimization_guide {
 
+// Command-line switch to override the On-Device Models Manifest path for
+// testing and benchmarking.
+inline constexpr char kOptimizationGuideManifestOverrideSwitch[] =
+    "optimization-guide-manifest-override";
+
 // This class enables integration testing by allowing overrides for all of the
 // assets that would be provided by component updater.
 //

@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/optimization_guide/prediction/chrome_profile_download_service_tracker.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/delivery/prediction_manager.h"
@@ -26,9 +27,27 @@
 #include "components/optimization_guide/core/model_execution/android/model_broker_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+class PrefService;
+
 namespace optimization_guide {
 
 BASE_DECLARE_FEATURE(kOptimizationGuideManifestBroker);
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+// Overrides the default On-Device AI user setting (chrome://settings/ai) to
+// enabled on pre-Stable channels and custom developer builds.
+BASE_DECLARE_FEATURE(kOnDeviceAiDefaultEnabled);
+
+// Computes the default value for `localstate::kOnDeviceAiUserSettingsEnabled`
+// based on the release `channel`, whether this is an official branded build,
+// feature/switch overrides, and whether an on-device model is already
+// installed in `local_state`.
+bool ShouldEnableOnDeviceAiByDefault(const PrefService& local_state,
+                                     version_info::Channel channel,
+                                     bool is_official_branded_build);
+bool ShouldEnableOnDeviceAiByDefault(const PrefService& local_state,
+                                     version_info::Channel channel);
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 class OptimizationGuideGlobalFeature;
 class OptimizationGuideGlobalStateTest;

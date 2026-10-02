@@ -28,6 +28,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/document_user_data.h"
@@ -73,6 +74,7 @@ class OnDeviceSpeechRecognitionImplBrowserTest : public InProcessBrowserTest {
   }
 
   // InProcessBrowserTest
+  void SetUpLocalStatePrefService(PrefService* local_state) override;
   void SetUpOnMainThread() override;
 
   void OnDeviceWebSpeechAvailableCallback(
@@ -91,6 +93,15 @@ class OnDeviceSpeechRecognitionImplBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   media::mojom::AvailabilityStatus availability_status_;
 };
+
+void OnDeviceSpeechRecognitionImplBrowserTest::SetUpLocalStatePrefService(
+    PrefService* local_state) {
+  InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
+  local_state->SetBoolean(
+      optimization_guide::model_execution::prefs::localstate::
+          kOnDeviceAiUserSettingsEnabled,
+      true);
+}
 
 void OnDeviceSpeechRecognitionImplBrowserTest::SetUpOnMainThread() {
   host_resolver()->AddRule("*", "127.0.0.1");

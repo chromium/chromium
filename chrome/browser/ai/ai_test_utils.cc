@@ -197,6 +197,7 @@ void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
   SetupBroker();
+  SetOnDeviceAiUserSetting(true);
 
   SetupMockOptimizationGuideKeyedService();
   ai_manager_ =
