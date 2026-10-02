@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 
-#include "base/check.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -19,9 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/session_manager/core/session.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
 
@@ -73,6 +70,7 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
 
   // Don't allow policy-provided certificates for "special" Profiles except the
   // one listed above.
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
       profile->GetOriginalProfile());
   if (!user) {
@@ -83,11 +81,8 @@ std::unique_ptr<KeyedService> BuildServiceInstanceAsh(
   // users. Guest users don't have user policy, but set
   // `may_use_profile_wide_trust_anchors`=false for them out of caution against
   // future changes.
-  const session_manager::Session* primary_session =
-      session_manager::SessionManager::Get()->GetPrimarySession();
-  CHECK(primary_session);
   bool may_use_profile_wide_trust_anchors =
-      user->GetAccountId() == primary_session->account_id() &&
+      user == user_manager->GetPrimaryUser() &&
       user->GetType() != user_manager::UserType::kGuest;
 
   return std::make_unique<PolicyCertService>(

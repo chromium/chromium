@@ -90,7 +90,6 @@ source_set("onc") {
       "//components/policy/core/common",
       "//components/policy/core/common:common_constants",
       "//components/prefs",
-      "//components/session_manager/core",
       "//components/user_manager",
       "//dbus",
       "//extensions/browser",
