@@ -208,7 +208,7 @@ using UnloadControllerBrowserTest = InProcessBrowserTest;
 // Verifies that when a tab close (`ClosePage()`) is already in flight and
 // batched browser shutdown (`chrome::CloseAllBrowsers()` /
 // `UnloadController::RunBeforeUnloadForShutdown()`) begins before
-// `ClosePageIgnoringUnloadEvents()` runs, `UnloadController::CanCloseContents`
+// `ClosePageIgnoringUnloadEvents()` runs, `UnloadController::CloseContents`
 // does not attempt to close a `WebContents` that was already removed from
 // `TabStripModel` by `OnWindowClosing()`.
 IN_PROC_BROWSER_TEST_F(UnloadControllerBrowserTest,

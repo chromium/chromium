@@ -86,11 +86,18 @@ class UnloadController : public WebContentsCollection::Observer,
 
   ~UnloadController() override;
 
+  // Handles a `WebContentsDelegate::CloseContents()` request for `contents`
+  // after its unload handler (`ClosePage()`) has completed. When `browser_` is
+  // attempting to close, this clears `contents`'s unload state and advances
+  // pending tab processing; otherwise, if `CanCloseContents(contents)` is true,
+  // it closes `contents` in the tab strip.
+  void CloseContents(content::WebContents* contents);
+
   // Returns true if |contents| can be cleanly closed. When |browser_| is being
   // closed, this function will return false to indicate |contents| should not
   // be cleanly closed, since the fast shutdown path will just kill its
   // renderer.
-  bool CanCloseContents(content::WebContents* contents);
+  bool CanCloseContents(content::WebContents* contents) const;
 
   // Returns true if we need to run unload events for the |contents|.
   bool ShouldRunUnloadEventsHelper(content::WebContents* contents);
@@ -329,7 +336,7 @@ class UnloadController : public WebContentsCollection::Observer,
   // Note on single-tab close: Closing an individual tab (without closing the
   // window) calls RunUnloadListenerBeforeClosing() to dispatch beforeunload,
   // and BeforeUnloadFired() returns proceed = true so WebContents runs its own
-  // unload handler (ClosePage) and closes itself via CanCloseContents().
+  // unload handler (ClosePage) and closes itself via CloseContents().
   // UnloadController does not queue single-tab closes in
   // tabs_needing_before_unload_fired_ or tabs_needing_unload_fired_, and state_
   // remains kIdle.

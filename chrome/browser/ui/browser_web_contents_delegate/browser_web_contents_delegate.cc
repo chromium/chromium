@@ -768,9 +768,7 @@ void BrowserWebContentsDelegate::LoadingStateChanged(
 }
 
 void BrowserWebContentsDelegate::CloseContents(content::WebContents* source) {
-  if (unload_controller_->CanCloseContents(source)) {
-    chrome::CloseWebContents(&browser_.get(), source, true);
-  }
+  unload_controller_->CloseContents(source);
 }
 
 void BrowserWebContentsDelegate::SetContentsBounds(content::WebContents* source,

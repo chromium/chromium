@@ -258,18 +258,18 @@ void UnloadController::BeforeUnloadFired(content::WebContents* web_contents,
   *proceed_to_fire_unload = BeforeUnloadFired(web_contents, proceed);
 }
 
-bool UnloadController::CanCloseContents(content::WebContents* contents) {
-  // TODO(crbug.com/40075474): Despite its query-like name, CanCloseContents()
-  // has side effects via ClearUnloadState() (which can advance unload
-  // processing and even close the browser window). Separate the side-effecting
-  // unload completion notification from the pure closability check.
-  //
+void UnloadController::CloseContents(content::WebContents* contents) {
   // Don't try to close the tab when the whole browser is being closed, since
   // that avoids the fast shutdown path where we just kill all the renderers.
   if (is_attempting_to_close_browser()) {
     ClearUnloadState(contents, true);
   }
+  if (CanCloseContents(contents)) {
+    chrome::CloseWebContents(browser_, contents, true);
+  }
+}
 
+bool UnloadController::CanCloseContents(content::WebContents* contents) const {
   // In kIdle, kRunningBeforeUnloadForShutdown, and kBeforeUnloadConfirmed,
   // HandleBeforeClose() has not started closing this window
   // (RunBeforeUnloadForShutdown only runs beforeunload confirmation and never
@@ -279,11 +279,11 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
   //
   // Once HandleBeforeClose() starts closing this window
   // (kRunningBeforeUnloadForWindowClose, kRunningUnload, kUnloadCompleted),
-  // return false before inspecting `contents` (which `ClearUnloadState()` may
-  // have already detached and destroyed via `OnWindowClosing()` ->
-  // `CloseAllTabs()`). Keeping all tabs in TabStripModel until
-  // `OnWindowClosing()` ensures `TabRestoreService` records the full window and
-  // closes all tabs together via `TabStripModel::CloseAllTabs()`.
+  // return false before inspecting `contents` (which `ClearUnloadState()` in
+  // `CloseContents()` may have already detached and destroyed via
+  // `OnWindowClosing()` -> `CloseAllTabs()`). Keeping all tabs in TabStripModel
+  // until `OnWindowClosing()` ensures `TabRestoreService` records the full
+  // window and closes all tabs together via `TabStripModel::CloseAllTabs()`.
   switch (state_) {
     case State::kIdle:
     case State::kRunningBeforeUnloadForShutdown:
