@@ -27,6 +27,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/paint_image_builder.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -94,6 +95,7 @@
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -216,15 +218,47 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
 void BaseRenderingContext2D::CreateBitmapProvider() {
   bitmap_provider_ = Canvas2DBitmapProvider::CreateWithClear(
       Host()->Size(), color_params_.GetSharedImageFormat(),
-      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
-      color_params_.GetGfxHdrMetadata(), Host());
+      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(), Host());
+  if (bitmap_provider_) {
+    sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
+    sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
+    sw_snapshot_sk_image_id_ = 0u;
+  }
 }
 
-scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() const {
+scoped_refptr<StaticBitmapImage>
+BaseRenderingContext2D::UnacceleratedSnapshot() {
+  cc::PaintImage paint_image;
+  auto sk_image = bitmap_provider_->surface()->makeImageSnapshot();
+  if (sk_image) {
+    auto last_snapshot_sk_image_id = sw_snapshot_sk_image_id_;
+    sw_snapshot_sk_image_id_ = sk_image->uniqueID();
+
+    // Ensure that a new PaintImage::ContentId is used only when the underlying
+    // SkImage changes. This is necessary to ensure that the same image results
+    // in a cache hit in cc's ImageDecodeCache.
+    if (sw_snapshot_paint_image_content_id_ ==
+            cc::PaintImage::kInvalidContentId ||
+        last_snapshot_sk_image_id != sw_snapshot_sk_image_id_) {
+      sw_snapshot_paint_image_content_id_ = cc::PaintImage::GetNextContentId();
+    }
+
+    paint_image =
+        cc::PaintImageBuilder::WithDefault()
+            .set_id(sw_snapshot_paint_image_id_)
+            .set_image(std::move(sk_image), sw_snapshot_paint_image_content_id_)
+            .set_hdr_metadata(color_params_.GetGfxHdrMetadata())
+            .TakePaintImage();
+  }
+  DCHECK(!paint_image.IsTextureBacked());
+  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image));
+}
+
+scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
   if (shared_image_provider_) {
     return shared_image_provider_->Snapshot();
   }
-  return bitmap_provider_->Snapshot();
+  return UnacceleratedSnapshot();
 }
 
 bool BaseRenderingContext2D::WritePixelsToProvider(const SkImageInfo& orig_info,

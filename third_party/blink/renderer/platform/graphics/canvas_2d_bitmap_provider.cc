@@ -25,8 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,14 +39,11 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
     sk_sp<SkSurface> surface,
     viz::SharedImageFormat format,
     const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProviderDelegate* delegate)
     : format_(format),
       color_space_(color_space),
-      hdr_metadata_(hdr_metadata),
       delegate_(delegate),
-      surface_(std::move(surface)),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+      surface_(std::move(surface)) {
   CHECK(surface_);
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
@@ -117,38 +113,6 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
   return canvas_image_provider_.get();
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
-    ImageOrientation orientation) {
-  TRACE_EVENT0("blink", "Canvas2DBitmapProvider::Snapshot");
-
-  cc::PaintImage paint_image;
-
-  auto sk_image = surface_->makeImageSnapshot();
-  if (sk_image) {
-    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
-    snapshot_sk_image_id_ = sk_image->uniqueID();
-
-    // Ensure that a new PaintImage::ContentId is used only when the underlying
-    // SkImage changes. This is necessary to ensure that the same image results
-    // in a cache hit in cc's ImageDecodeCache.
-    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
-        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
-      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
-    }
-
-    paint_image =
-        PaintImageBuilder::WithDefault()
-            .set_id(snapshot_paint_image_id_)
-            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
-            .set_hdr_metadata(hdr_metadata_)
-            .TakePaintImage();
-  }
-
-  DCHECK(!paint_image.IsTextureBacked());
-  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                orientation);
-}
-
 void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
@@ -183,7 +147,6 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProviderDelegate* delegate) {
   const auto info = SkImageInfo::Make(
       size.width(), size.height(), viz::ToClosestSkColorType(format),
@@ -199,7 +162,7 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
       alpha_type == kOpaque_SkAlphaType ? SkColors::kBlack
                                         : SkColors::kTransparent);
   return base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-      std::move(surface), format, color_space, hdr_metadata, delegate));
+      std::move(surface), format, color_space, delegate));
 }
 
 }  // namespace blink

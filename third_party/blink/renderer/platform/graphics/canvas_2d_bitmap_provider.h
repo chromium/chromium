@@ -10,27 +10,25 @@
 
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "cc/paint/paint_image.h"
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/color_space.h"
+
+class SkCanvas;
+class SkSurface;
 
 namespace cc {
 class SkiaPaintCanvas;
 }  // namespace cc
 
 namespace gfx {
-class ColorSpace;
-struct HDRMetadata;
 class Size;
 }  // namespace gfx
 
@@ -56,13 +54,9 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
       const gfx::ColorSpace& color_space,
-      const gfx::HDRMetadata& hdr_metadata,
       CanvasResourceProviderDelegate* delegate = nullptr);
 
   ~Canvas2DBitmapProvider() override;
-
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault);
 
   void RasterRecord(cc::PaintRecord last_recording);
   SkSurface* surface() const { return surface_.get(); }
@@ -71,7 +65,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
                          viz::SharedImageFormat format,
                          const gfx::ColorSpace& color_space,
-                         const gfx::HDRMetadata& hdr_metadata,
                          CanvasResourceProviderDelegate* delegate);
 
   // CanvasMemoryDumpClient implementation.
@@ -88,14 +81,9 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   viz::SharedImageFormat format_;
   gfx::ColorSpace color_space_;
-  gfx::HDRMetadata hdr_metadata_;
   WeakPersistent<CanvasResourceProviderDelegate> delegate_;
   const sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
-  const cc::PaintImage::Id snapshot_paint_image_id_;
-  cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-  uint32_t snapshot_sk_image_id_ = 0u;
 
   // Even though this is a bitmap provider, it may be called upon to rasterize a
   // texture-backed resource, and that resource must be bound to a gpu context

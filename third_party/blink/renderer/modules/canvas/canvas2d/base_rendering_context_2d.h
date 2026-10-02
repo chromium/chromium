@@ -357,7 +357,7 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  FlushReason reason) {}
 
   void CreateBitmapProvider();
-  scoped_refptr<StaticBitmapImage> Snapshot() const;
+  scoped_refptr<StaticBitmapImage> Snapshot();
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
@@ -384,7 +384,13 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   void WillUseCurrentFont() const;
 
+  scoped_refptr<StaticBitmapImage> UnacceleratedSnapshot();
+
   std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
+  cc::PaintImage::Id sw_snapshot_paint_image_id_ = cc::PaintImage::kInvalidId;
+  cc::PaintImage::ContentId sw_snapshot_paint_image_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+  uint32_t sw_snapshot_sk_image_id_ = 0u;
   std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
   bool clear_frame_ = true;
   size_t max_recorded_op_bytes_ = 0;
