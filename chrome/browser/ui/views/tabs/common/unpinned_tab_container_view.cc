@@ -90,6 +90,7 @@ UnpinnedTabContainerView::UnpinnedTabContainerView(
           std::make_unique<UnpinnedTabContainerViewLayout>(
               collection_node->orientation()),
           /*delegate=*/*this,
+          collection_node->GetController()->animation_coordinator(),
           /*animation_axis=*/
           collection_node->orientation() == TabStripOrientation::kHorizontal
               ? TabCollectionAnimatingLayoutManager::AnimationAxis::kHorizontal

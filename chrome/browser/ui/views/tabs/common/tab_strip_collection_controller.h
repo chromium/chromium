@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_drag_handler.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
@@ -115,6 +116,11 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
     return tab_closing_helper_.get();
   }
 
+  TabCollectionAnimatingLayoutManager::AnimationCoordinator&
+  animation_coordinator() {
+    return animation_coordinator_;
+  }
+
   // Notifies BrowserCommandController that the tab with keyboard focus has
   // changed.
   void TabKeyboardFocusChangedTo(const tabs::TabInterface* tab);
@@ -171,6 +177,9 @@ class TabStripCollectionController : public TabContextMenuController::Delegate {
   const raw_ref<RootTabCollectionNode> root_node_;
   const raw_ref<TabDragHandler> drag_handler_;
   raw_ptr<TabHoverCardController> hover_card_controller_;
+
+  TabCollectionAnimatingLayoutManager::AnimationCoordinator
+      animation_coordinator_;
 
   std::unique_ptr<HorizontalTabClosingHelper> tab_closing_helper_;
 

@@ -10,6 +10,7 @@
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/base/class_property.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
@@ -70,25 +71,163 @@ std::optional<views::SizeBound> TabCollectionAnimatingLayoutManager::Delegate::
 
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
-TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
-    std::unique_ptr<LayoutManagerBase> target_layout_manager,
-    Delegate& delegate,
-    AnimationAxis animation_axis,
-    bool animate_host_size)
-    : views::AnimationDelegateViews(target_layout_manager->host_view()),
-      target_layout_manager_(
-          CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
-      animation_(this),
-      delegate_(delegate),
-      animation_axis_(animation_axis),
-      animate_host_size_(animate_host_size) {
+TabCollectionAnimatingLayoutManager::AnimationCoordinator::AnimationCoordinator(
+    views::View& view)
+    : views::AnimationDelegateViews(&view) {
   animation_.SetSlideDuration(
       gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
   animation_.SetTweenType(gfx::Tween::EASE_IN_OUT);
 }
 
-TabCollectionAnimatingLayoutManager::~TabCollectionAnimatingLayoutManager() =
-    default;
+TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    ~AnimationCoordinator() = default;
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::RegisterManager(
+    TabCollectionAnimatingLayoutManager* manager) {
+  if (!std::ranges::contains(managers_, manager)) {
+    managers_.push_back(manager);
+  }
+}
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    UnregisterManager(TabCollectionAnimatingLayoutManager* manager) {
+  const bool was_animating = manager->is_animating_;
+  manager->is_animating_ = false;
+  std::erase(managers_, manager);
+  if (was_animating && !HasAnimatingManagers()) {
+    animation_.Reset(1.0);
+    starting_offset_ = 0.0;
+    current_offset_ = 1.0;
+  }
+}
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    StartOrUpdateAnimation(
+        TabCollectionAnimatingLayoutManager* requesting_manager) {
+  // If we haven't actually rendered a frame yet since the shared animation
+  // started or retargeted in this UI turn, synchronize `requesting_manager`
+  // with the current turn's `starting_offset_`.
+  if (animation_.is_animating() && current_offset_ == starting_offset_) {
+    if (!requesting_manager->is_animating_) {
+      requesting_manager->SetStartingLayoutToCurrent();
+      requesting_manager->is_animating_ = true;
+    }
+    return;
+  }
+
+  constexpr double kResetAnimationThreshold = 0.8;
+  if (!HasAnimatingManagers() || current_offset_ > kResetAnimationThreshold) {
+    // Either no managers are currently animating, or we are far enough along
+    // that we should start a "fresh" animation from 0% to avoid awkward
+    // slow-downs at the end of the curve. Re-baseline all active managers to
+    // 0.0 so they continue smoothly along the reset curve.
+    starting_offset_ = 0.0;
+    current_offset_ = 0.0;
+    requesting_manager->is_animating_ = true;
+    for (TabCollectionAnimatingLayoutManager* manager : managers_) {
+      if (manager->is_animating_) {
+        manager->SetStartingLayoutToCurrent();
+      }
+    }
+    animation_.Reset(0.0);
+    animation_.SetSlideDuration(
+        gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
+    animation_.Show();
+  } else {
+    // We are still early in the animation. Simply update the starting offset
+    // and re-baseline all active managers to `current_offset_`. The animation
+    // remains running and we calculate a new slope in `GetCurrentProgress()`.
+    starting_offset_ = current_offset_;
+    requesting_manager->is_animating_ = true;
+    for (TabCollectionAnimatingLayoutManager* manager : managers_) {
+      if (manager->is_animating_) {
+        manager->SetStartingLayoutToCurrent();
+      }
+    }
+    if (!animation_.is_animating()) {
+      animation_.Show();
+    }
+  }
+}
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::StopAnimation(
+    TabCollectionAnimatingLayoutManager* manager) {
+  if (!manager->is_animating_) {
+    return;
+  }
+  manager->is_animating_ = false;
+  if (!HasAnimatingManagers()) {
+    animation_.Reset(1.0);
+    starting_offset_ = 0.0;
+    current_offset_ = 1.0;
+  }
+  manager->OnAnimationEnded();
+}
+
+double
+TabCollectionAnimatingLayoutManager::AnimationCoordinator::GetCurrentProgress()
+    const {
+  double denominator = 1.0 - starting_offset_;
+  double percent = (current_offset_ - starting_offset_) / denominator;
+  return std::clamp(percent, 0.0, 1.0);
+}
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    AnimationProgressed(const gfx::Animation* animation) {
+  if (current_offset_ == animation->GetCurrentValue()) {
+    return;
+  }
+  current_offset_ = animation->GetCurrentValue();
+  for (TabCollectionAnimatingLayoutManager* manager : managers_) {
+    if (manager->is_animating_) {
+      manager->OnAnimationProgressed();
+    }
+  }
+}
+
+void TabCollectionAnimatingLayoutManager::AnimationCoordinator::AnimationEnded(
+    const gfx::Animation* animation) {
+  current_offset_ = 1.0;
+  starting_offset_ = 0.0;
+  absl::InlinedVector<TabCollectionAnimatingLayoutManager*, 8>
+      animating_managers;
+  for (TabCollectionAnimatingLayoutManager* manager : managers_) {
+    if (manager->is_animating_) {
+      manager->is_animating_ = false;
+      animating_managers.push_back(manager);
+    }
+  }
+  for (TabCollectionAnimatingLayoutManager* manager : animating_managers) {
+    if (std::ranges::contains(managers_, manager)) {
+      manager->OnAnimationEnded();
+    }
+  }
+}
+
+bool TabCollectionAnimatingLayoutManager::AnimationCoordinator::
+    HasAnimatingManagers() const {
+  return std::ranges::any_of(
+      managers_, &TabCollectionAnimatingLayoutManager::is_animating);
+}
+
+TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
+    std::unique_ptr<LayoutManagerBase> target_layout_manager,
+    Delegate& delegate,
+    AnimationCoordinator& animation_coordinator,
+    AnimationAxis animation_axis,
+    bool animate_host_size)
+    : target_layout_manager_(
+          CHECK_DEREF(AddOwnedLayout(std::move(target_layout_manager)))),
+      animation_coordinator_(animation_coordinator),
+      delegate_(delegate),
+      animation_axis_(animation_axis),
+      animate_host_size_(animate_host_size) {
+  animation_coordinator_->RegisterManager(this);
+}
+
+TabCollectionAnimatingLayoutManager::~TabCollectionAnimatingLayoutManager() {
+  animation_coordinator_->UnregisterManager(this);
+}
 
 bool TabCollectionAnimatingLayoutManager::OnViewAdded(views::View* host,
                                                       views::View* view) {
@@ -121,8 +260,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // layout manager.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host);
-  if (animate_host_size_ && animation_.is_animating() &&
-      !delegate_->IsDragging()) {
+  if (animate_host_size_ && is_animating_ && !delegate_->IsDragging()) {
     if (IsVerticalOrWrappingVertically()) {
       target_preferred_size.set_height(current_layout_content_size_);
     } else {
@@ -143,8 +281,7 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetPreferredSize(
   // layout manager.
   gfx::Size target_preferred_size =
       target_layout_manager_->GetPreferredSize(host, available_size);
-  if (animate_host_size_ && animation_.is_animating() &&
-      !delegate_->IsDragging()) {
+  if (animate_host_size_ && is_animating_ && !delegate_->IsDragging()) {
     if (IsVerticalOrWrappingVertically()) {
       target_preferred_size.set_height(current_layout_content_size_);
     } else {
@@ -180,12 +317,7 @@ void TabCollectionAnimatingLayoutManager::OnLayoutChanged() {
   LayoutManagerBase::OnLayoutChanged();
 }
 
-void TabCollectionAnimatingLayoutManager::AnimationProgressed(
-    const gfx::Animation* animation) {
-  if (current_offset_ == animation->GetCurrentValue()) {
-    return;
-  }
-
+void TabCollectionAnimatingLayoutManager::OnAnimationProgressed() {
   // Pre-calculate the interpolated `current_layout_` and content height for
   // this frame so that `GetPreferredSize()` returns the correct bounds during
   // animation when queried by the parent.
@@ -196,8 +328,7 @@ void TabCollectionAnimatingLayoutManager::AnimationProgressed(
   InvalidateHost(/*mark_layouts_changed=*/false);
 }
 
-void TabCollectionAnimatingLayoutManager::AnimationEnded(
-    const gfx::Animation* animation) {
+void TabCollectionAnimatingLayoutManager::OnAnimationEnded() {
   // Do not invalidate the target layout as the animation progresses, only the
   // animating layout manager requires invalidation.
   InvalidateHost(/*mark_layouts_changed=*/false);
@@ -221,9 +352,9 @@ TabCollectionAnimatingLayoutManager::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   // If we are animating, return the current interpolated state. Otherwise,
   // return the target state.
-  return animation_.is_animating() ? current_layout_
-                                   : target_layout_manager_->GetProposedLayout(
-                                         size_bounds, PassKey());
+  return is_animating_ ? current_layout_
+                       : target_layout_manager_->GetProposedLayout(size_bounds,
+                                                                   PassKey());
 }
 
 void TabCollectionAnimatingLayoutManager::LayoutImpl() {
@@ -232,13 +363,11 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
   // dependency on this behavior. Once this has been resolved remove this call.
   RecalculateTarget();
 
-  if (animation_.is_animating()) {
+  if (is_animating_) {
     UpdateCurrentLayout();
     ApplyLayout(current_layout_);
   } else {
     // Ensure we are snapped to target.
-    current_offset_ = 1.0;
-    starting_offset_ = 0.0;
     current_layout_ = target_layout_;
     SetStartingLayout(target_layout_);
     ApplyLayout(target_layout_);
@@ -249,7 +378,6 @@ void TabCollectionAnimatingLayoutManager::LayoutImpl() {
 
 void TabCollectionAnimatingLayoutManager::OnInstalled(views::View* host) {
   LayoutManagerBase::OnInstalled(host);
-  views::AnimationDelegateViews::SetView(host);
   host->SetProperty(kHasAnimatingLayoutManagerKey, true);
   RecalculateTarget();
 }
@@ -323,10 +451,8 @@ void TabCollectionAnimatingLayoutManager::SetStartingLayoutToCurrent() {
 }
 
 void TabCollectionAnimatingLayoutManager::UpdateCurrentLayout() {
-  current_offset_ = animation_.GetCurrentValue();
-  double denominator = 1.0 - starting_offset_;
-  double percent = (current_offset_ - starting_offset_) / denominator;
-  percent = std::clamp(percent, 0.0, 1.0);
+  const double percent =
+      is_animating_ ? animation_coordinator_->GetCurrentProgress() : 1.0;
   current_layout_ = InterpolateLayout(percent);
 }
 
@@ -387,39 +513,12 @@ bool TabCollectionAnimatingLayoutManager::RecalculateTarget() {
     current_layout_ = new_target;
     SetStartingLayout(new_target);
     SetTargetLayout(new_target);
-    starting_offset_ = 0.0;
-    current_offset_ = 1.0;
+    animation_coordinator_->StopAnimation(this);
     return true;
   }
 
   SetTargetLayout(new_target);
-
-  // If we haven't actually rendered a frame yet keep the original
-  // starting_layout.
-  if (animation_.is_animating() && current_offset_ == starting_offset_) {
-    return true;
-  }
-
-  constexpr double kResetAnimationThreshold = 0.8;
-
-  if (current_offset_ > kResetAnimationThreshold) {
-    // We are far enough along that we should start a "fresh" animation
-    // from 0% to avoid awkward slow-downs at the end of the curve.
-    SetStartingLayoutToCurrent();
-    starting_offset_ = 0.0;
-    current_offset_ = 0.0;
-    animation_.Reset(0.0);
-  } else {
-    // We are still early in the animation. Simply update the starting offset.
-    // The timer remains running and we just calculate a new slope in
-    // LayoutImpl.
-    SetStartingLayoutToCurrent();
-    starting_offset_ = current_offset_;
-  }
-
-  if (!animation_.is_animating()) {
-    animation_.Show();
-  }
+  animation_coordinator_->StartOrUpdateAnimation(this);
   return true;
 }
 

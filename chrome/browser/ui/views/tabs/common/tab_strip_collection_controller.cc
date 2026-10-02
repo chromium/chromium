@@ -6,6 +6,7 @@
 
 #include <variant>
 
+#include "base/check_deref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -68,7 +69,8 @@ TabStripCollectionController::TabStripCollectionController(
       browser_view_(browser_view),
       root_node_(root_node),
       drag_handler_(drag_handler),
-      hover_card_controller_(hover_card_controller) {
+      hover_card_controller_(hover_card_controller),
+      animation_coordinator_(CHECK_DEREF(browser_view)) {
   CHECK(browser_view_);
 
   if (orientation == TabStripOrientation::kHorizontal) {

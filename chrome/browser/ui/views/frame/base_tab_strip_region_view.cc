@@ -56,6 +56,7 @@ BaseTabStripRegionView::~BaseTabStripRegionView() {
   on_active_tab_changed_subscription_.reset();
 
   if (root_node_) {
+    root_node_->Deinitialize();
     root_node_->SetController(nullptr);
   }
   tab_strip_controller_.reset();

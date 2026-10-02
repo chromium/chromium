@@ -22,6 +22,7 @@
 #include "ui/views/layout/layout_manager_base.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -119,18 +120,26 @@ class TabCollectionAnimatingLayoutManagerTest
 
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     host_view_ = widget_->SetContentsView(std::make_unique<views::View>());
+    animation_coordinator_ = std::make_unique<
+        TabCollectionAnimatingLayoutManager::AnimationCoordinator>(*host_view_);
+    // Detach from the widget's compositor animation runner so animations are
+    // driven deterministically by `MOCK_TIME` timers rather than asynchronous
+    // GPU swap acks.
+    animation_coordinator_->SetView(nullptr);
     layout_manager_delegate_ = std::make_unique<
         testing::NiceMock<MockAnimatingLayoutManagerDelegate>>();
     layout_manager_ = host_view_->SetLayoutManager(
         std::make_unique<TabCollectionAnimatingLayoutManager>(
             std::make_unique<TestLayoutManager>(animation_axis()),
-            *layout_manager_delegate_.get(), animation_axis()));
+            *layout_manager_delegate_.get(), *animation_coordinator_,
+            animation_axis()));
     widget_->Show();
   }
   void TearDown() override {
     layout_manager_ = nullptr;
     host_view_ = nullptr;
     widget_.reset();
+    animation_coordinator_.reset();
     layout_manager_delegate_.reset();
     animation_mode_.reset();
     views::ViewsTestBase::TearDown();
@@ -146,6 +155,10 @@ class TabCollectionAnimatingLayoutManagerTest
   }
   MockAnimatingLayoutManagerDelegate* layout_manager_delegate() {
     return layout_manager_delegate_.get();
+  }
+  TabCollectionAnimatingLayoutManager::AnimationCoordinator&
+  animation_coordinator() {
+    return *animation_coordinator_;
   }
   views::View* host_view() { return host_view_; }
   views::Widget* widget() { return widget_.get(); }
@@ -167,6 +180,8 @@ class TabCollectionAnimatingLayoutManagerTest
       render_mode_lock_;
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_mode_;
   std::unique_ptr<MockAnimatingLayoutManagerDelegate> layout_manager_delegate_;
+  std::unique_ptr<TabCollectionAnimatingLayoutManager::AnimationCoordinator>
+      animation_coordinator_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::View> host_view_;
   raw_ptr<TabCollectionAnimatingLayoutManager> layout_manager_;
@@ -230,7 +245,7 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
   // Setup the layout manager and initial child views.
   SetLayoutManager(std::make_unique<TabCollectionAnimatingLayoutManager>(
       std::make_unique<TestLayoutManager>(animation_axis()),
-      *layout_manager_delegate(), animation_axis(),
+      *layout_manager_delegate(), animation_coordinator(), animation_axis(),
       /*animate_host_size=*/true));
 
   widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -301,6 +316,208 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
     EXPECT_EQ(child2->bounds(), gfx::Rect(0, 0, 20, 100));
     EXPECT_EQ(child1->bounds(), gfx::Rect(20, 0, 20, 100));
   }
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       AnimationCoordinatorSynchronizesMidAnimationJoin) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> second_delegate;
+  auto second_host = std::make_unique<views::View>();
+  auto* second_layout_manager = second_host->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(animation_axis()),
+          second_delegate, animation_coordinator(), animation_axis()));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  second_host->SetBounds(0, 0, 100, 100);
+  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(second_host.get());
+  while (layout_manager()->is_animating() ||
+         second_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(second_host.get());
+  }
+
+  // Start an animation on the first manager and advance until the animation
+  // coordinator is mid-flight (< kResetAnimationThreshold).
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  while (animation_coordinator().current_offset() == 0.0) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+  }
+
+  ASSERT_TRUE(layout_manager()->is_animating());
+  ASSERT_FALSE(second_layout_manager->is_animating());
+  ASSERT_GT(animation_coordinator().current_offset(), 0.0);
+  ASSERT_LT(animation_coordinator().current_offset(), 0.8);
+
+  // In the same UI turn, add a child to both managers. Both should synchronize
+  // to the current animation coordinator offset and progress in lockstep.
+  auto* child_a = host_view()->AddChildView(std::make_unique<views::View>());
+  auto* child_b = second_host->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  second_host->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(second_host.get());
+
+  EXPECT_TRUE(layout_manager()->is_animating());
+  EXPECT_TRUE(second_layout_manager->is_animating());
+  EXPECT_EQ(animation_coordinator().starting_offset(),
+            animation_coordinator().current_offset());
+
+  while (layout_manager()->is_animating() ||
+         second_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(second_host.get());
+
+    // Both managers must remain in lockstep at every tick and finish on the
+    // exact same tick.
+    EXPECT_EQ(layout_manager()->is_animating(),
+              second_layout_manager->is_animating());
+    if (is_vertical) {
+      EXPECT_EQ(child_a->height(), child_b->height());
+    } else {
+      EXPECT_NEAR(child_a->width(), child_b->width(), 1);
+    }
+  }
+
+  EXPECT_EQ(is_vertical ? child_a->height() : child_a->width(), 20);
+  EXPECT_EQ(is_vertical ? child_b->height() : child_b->width(), 20);
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       AnimationCoordinatorSynchronizesResetAboveThreshold) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  const bool is_vertical =
+      animation_axis() ==
+      TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical;
+
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> second_delegate;
+  auto second_host = std::make_unique<views::View>();
+  auto* second_layout_manager = second_host->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(animation_axis()),
+          second_delegate, animation_coordinator(), animation_axis()));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  second_host->SetBounds(0, 0, 100, 100);
+  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(second_host.get());
+  while (layout_manager()->is_animating() ||
+         second_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(second_host.get());
+  }
+
+  // Start an animation on the first manager and advance until the animation
+  // coordinator is past `kResetAnimationThreshold` (0.8).
+  auto* child_a = host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  while (animation_coordinator().current_offset() <= 0.8) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+  }
+
+  ASSERT_TRUE(layout_manager()->is_animating());
+  ASSERT_GT(animation_coordinator().current_offset(), 0.8);
+  const int size_before_reset =
+      is_vertical ? child_a->height() : child_a->width();
+  ASSERT_GT(size_before_reset, 0);
+
+  // Trigger a new animation on the second manager. This resets the animation
+  // coordinator to 0.0, and the first manager must re-baseline its starting
+  // layout to its current interpolated state rather than jumping backward to 0.
+  second_host->AddChildView(std::make_unique<views::View>());
+  second_host->InvalidateLayout();
+  views::test::RunScheduledLayout(second_host.get());
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_EQ(animation_coordinator().current_offset(), 0.0);
+  EXPECT_EQ(animation_coordinator().starting_offset(), 0.0);
+  EXPECT_GE(is_vertical ? child_a->height() : child_a->width(),
+            size_before_reset);
+
+  while (layout_manager()->is_animating() ||
+         second_layout_manager->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(second_host.get());
+  }
+
+  EXPECT_FALSE(layout_manager()->is_animating());
+  EXPECT_FALSE(second_layout_manager->is_animating());
+  EXPECT_EQ(is_vertical ? child_a->height() : child_a->width(), 20);
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       AnimationCoordinatorSurvivesChildManagerDestruction) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  testing::NiceMock<MockAnimatingLayoutManagerDelegate> second_delegate;
+  auto second_host = std::make_unique<views::View>();
+  second_host->SetLayoutManager(
+      std::make_unique<TabCollectionAnimatingLayoutManager>(
+          std::make_unique<TestLayoutManager>(animation_axis()),
+          second_delegate, animation_coordinator(), animation_axis()));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  second_host->SetBounds(0, 0, 100, 100);
+  host_view()->AddChildView(std::make_unique<views::View>());
+  second_host->AddChildView(std::make_unique<views::View>());
+  widget()->LayoutRootViewIfNecessary();
+  views::test::RunScheduledLayout(second_host.get());
+
+  while (animation_coordinator().current_offset() == 0.0) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+    views::test::RunScheduledLayout(second_host.get());
+  }
+  ASSERT_TRUE(layout_manager()->is_animating());
+
+  // Destroy the second host and its layout manager mid-animation.
+  second_host.reset();
+  EXPECT_TRUE(layout_manager()->is_animating());
+
+  while (layout_manager()->is_animating()) {
+    task_environment()->FastForwardBy(base::Milliseconds(10));
+    widget()->LayoutRootViewIfNecessary();
+  }
+  EXPECT_FALSE(layout_manager()->is_animating());
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest,
+       StopAnimationNotifiesOnAnimationEnded) {
+  gfx::ScopedAnimationDurationScaleMode normal_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  widget()->LayoutRootViewIfNecessary();
+
+  // Add a child to start an animation.
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+  ASSERT_TRUE(layout_manager()->is_animating());
+
+  // Resize along the cross-axis mid-animation, which triggers `StopAnimation()`
+  // and should synchronously notify the delegate that the animation ended.
+  EXPECT_CALL(*layout_manager_delegate(), OnAnimationEnded()).Times(1);
+  widget()->SetBounds(gfx::Rect(0, 0, 150, 150));
+  widget()->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(layout_manager()->is_animating());
 }
 
 INSTANTIATE_TEST_SUITE_P(
