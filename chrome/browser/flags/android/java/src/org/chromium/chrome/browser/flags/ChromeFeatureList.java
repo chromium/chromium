@@ -1385,7 +1385,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSettingsInTabDesktop =
             newCachedFlag(SETTINGS_IN_TAB_DESKTOP, /* defaultValue= */ true);
     public static final CachedFlag sSettingsInTabUrlNav =
-            newCachedFlag(SETTINGS_IN_TAB_URL_NAV, /* defaultValue= */ false);
+            newCachedFlag(SETTINGS_IN_TAB_URL_NAV, /* defaultValue= */ true);
     public static final CachedFlag sSettingsMultiColumn =
             newCachedFlag(SETTINGS_MULTI_COLUMN, /* defaultValue= */ true);
     public static final CachedFlag sSettingsSingleActivity =
