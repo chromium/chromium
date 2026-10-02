@@ -409,17 +409,17 @@ class PrintSession implements PdfGenerator {
                             () -> {
                                 if (mDestroyed) return;
                                 if (mPrintingState != PRINTING_STATE_STARTED_FROM_ONWRITE) return;
+                                mPrintingState = PRINTING_STATE_READY;
                                 closeFileDescriptor();
                                 if (finalCanceled) {
                                     assumeNonNull(mOnWriteCallback).onWriteCancelled();
                                 } else if (finalSuccess) {
-                                    mPrintingState = PRINTING_STATE_READY;
                                     assumeNonNull(mOnWriteCallback)
                                             .onWriteFinished(new PageRange[] {PageRange.ALL_PAGES});
                                 } else {
                                     assumeNonNull(mOnWriteCallback).onWriteFailed(mErrorMessage);
-                                    resetCallbacks();
                                 }
+                                resetCallbacks();
                             });
                 });
     }
