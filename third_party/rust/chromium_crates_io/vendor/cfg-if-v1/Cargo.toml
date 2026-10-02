@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.32"
 name = "cfg-if"
-version = "1.0.4"
+version = "1.0.5"
 authors = ["Alex Crichton <alex@alexcrichton.com>"]
 build = false
 autolib = false

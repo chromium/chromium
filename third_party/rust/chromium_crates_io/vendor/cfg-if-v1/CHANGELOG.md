@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5](https://github.com/rust-lang/cfg-if/compare/v1.0.4...v1.0.5) - 2026-09-16
+
+- Add a note that this crate is deprecated, suggesting `cfg_select!` instead
+
 ## [1.0.4](https://github.com/rust-lang/cfg-if/compare/v1.0.3...v1.0.4) - 2025-10-15
 
 - Support `cfg(true)` and `cfg(false)` ([#99](https://github.com/rust-lang/cfg-if/pull/99))

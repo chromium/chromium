@@ -1,5 +1,10 @@
 # cfg-if
 
+> [!WARNING]
+> This crate has been "replaced" by the [`cfg_select!`] macro, which is stable since Rust 1.95.0 with a slightly different syntax. Barring breakages and security fixes, this crate will no longer be updated.
+
+[`cfg_select!`]: https://doc.rust-lang.org/std/macro.cfg_select.html
+
 [Documentation](https://docs.rs/cfg-if)
 
 A macro to ergonomically define an item depending on a large number of #[cfg]

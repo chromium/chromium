@@ -1,3 +1,9 @@
+//! <div class="warning">
+//!
+//! This crate has been "replaced" by the [`cfg_select!`] macro, which is stable since Rust 1.95.0 with a slightly different syntax. Barring breakages and security fixes, this crate will no longer be updated.
+//!
+//! </div>
+//!
 //! A macro for defining `#[cfg]` if-else statements.
 //!
 //! The macro provided by this crate, `cfg_if`, is similar to the `if/elif` C
