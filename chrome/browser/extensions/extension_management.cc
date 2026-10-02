@@ -105,7 +105,7 @@ BASE_FEATURE(kDisableForceInstalledExtensionsInLowTrustEnviromentWhenGreylisted,
 
 // Blocks DSE/NTP override policy extensions in low-trust environments.
 BASE_FEATURE(kBlockPolicyDseNtpOverridesInLowTrust,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 ExtensionManagement::ExtensionManagement(Profile* profile)
