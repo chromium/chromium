@@ -27,7 +27,7 @@ found in the LICENSE file.
         android:background="?android:attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/back"
         app:tint="@color/default_icon_color_tint_list"/>
-    <EditText
+    <org.chromium.chrome.browser.settings.search.ResizeAwareEditText
         android:id="@+id/search_query"
         android:layout_width="0dp"
         android:layout_weight="1"

@@ -43,6 +43,11 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
 import android.provider.Settings;
+import android.transition.ChangeBounds;
+import android.transition.Transition;
+import android.transition.TransitionListenerAdapter;
+import android.transition.TransitionManager;
+import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -90,7 +95,11 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Integration tests for {@link SettingsPage} inside a native tab. Most tests use a mix of onView()
@@ -1070,6 +1079,160 @@ public class SettingsPageTest {
                 "Search icon should align horizontally after rotating back",
                 searchIconBounds.left,
                 searchIconBoundsAfterRotate.left);
+    }
+
+    /**
+     * Regression test for https://crbug.com/568207264. In RTL, the search query hint moved or
+     * disappeared when the side UI (vertical tab strip / side panel) resized the settings container
+     * while the search UI was open.
+     */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    public void testSearchQueryHintAlignmentOnContainerResized_Rtl() {
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    LocalizationUtils.setRtlForTesting(true);
+                    var activity = mActivityTestRule.getActivity();
+                    Configuration config =
+                            new Configuration(activity.getResources().getConfiguration());
+                    config.setLayoutDirection(new Locale("ar"));
+                    activity.getResources()
+                            .updateConfiguration(
+                                    config, activity.getResources().getDisplayMetrics());
+                    activity.getWindow()
+                            .getDecorView()
+                            .setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
+                });
+
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+
+        // Skip test if portrait mode happens to be wide enough for two-column mode. The bug only
+        // affects the single-column search UI hosted in the toolbar.
+        var isSingleColumn =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var hostFragment =
+                                    SettingsHostFragment.get(mActivityTestRule.getActivity());
+                            if (hostFragment == null) return false;
+                            var activeFragment = hostFragment.getActiveFragment();
+                            if (activeFragment instanceof MultiColumnSettings multiColumn) {
+                                return !multiColumn.isTwoColumn();
+                            }
+                            return false;
+                        });
+        Assume.assumeTrue("Test requires single-column mode in portrait.", isSingleColumn);
+
+        // The test device runs in English, so the hint resource is LTR text. Use an RTL hint
+        // (Arabic "Search in settings") so the hint is laid out RTL as in the bug. Set it before
+        // entering search so that focusing the query field lays it out fresh.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TextView queryEdit =
+                            mActivityTestRule.getActivity().findViewById(R.id.search_query);
+                    assertNotNull(queryEdit);
+                    queryEdit.setHint("البحث في الإعدادات");
+                });
+
+        onViewWaiting(withId(R.id.search_box)).perform(click());
+        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.search_query)).check(matches(isFocused()));
+
+        final int originalWidth = getViewScreenBounds(R.id.search_query).width();
+        assertQueryScrollMatchesWidth("initially");
+
+        // Simulate opening the side panel (shrinking the container width).
+        final int narrowWidth =
+                Math.min(800, getViewScreenBounds(R.id.settings_activity).width() - 200);
+        resizeSettingsContainerWithChangeBounds(narrowWidth);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View queryEdit =
+                            mActivityTestRule.getActivity().findViewById(R.id.search_query);
+                    return queryEdit != null
+                            && queryEdit.getWidth() > 0
+                            && queryEdit.getWidth() < originalWidth;
+                },
+                "Query field should shrink with the container.");
+        assertQueryScrollMatchesWidth("after shrinking the container");
+
+        // Simulate closing the side panel (restoring the container width).
+        resizeSettingsContainerWithChangeBounds(ViewGroup.LayoutParams.MATCH_PARENT);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View queryEdit =
+                            mActivityTestRule.getActivity().findViewById(R.id.search_query);
+                    return queryEdit != null && queryEdit.getWidth() == originalWidth;
+                },
+                "Query field should grow back with the container.");
+        assertQueryScrollMatchesWidth("after restoring the container");
+    }
+
+    /**
+     * Resizes the settings container inside a {@link ChangeBounds} transition that targets the
+     * settings view and all of its descendants, as the side UI does (see {@code
+     * CompositorViewHolder#onPreSideUiSpecsChange}). A plain relayout does not reproduce the bug:
+     * ChangeBounds resizes the views through {@code View#setLeftTopRightBottom} without a measure
+     * pass, which is what leaves the TextView scroll offset stale. Blocks until the transition has
+     * ended.
+     */
+    private void resizeSettingsContainerWithChangeBounds(int width) {
+        AtomicBoolean transitionEnded = new AtomicBoolean();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View settingsActivity =
+                            mActivityTestRule.getActivity().findViewById(R.id.settings_activity);
+                    assertNotNull(settingsActivity);
+                    ChangeBounds changeBounds = new ChangeBounds();
+                    changeBounds.addTarget(settingsActivity);
+                    List<View> descendants = new ArrayList<>();
+                    ViewUtils.getAllDescendants(
+                            settingsActivity, descendants, Collections.emptySet());
+                    for (View view : descendants) changeBounds.addTarget(view);
+                    Transition transition =
+                            new TransitionSet()
+                                    .setDuration(350L)
+                                    .setOrdering(TransitionSet.ORDERING_TOGETHER)
+                                    .addTransition(changeBounds)
+                                    .addListener(
+                                            new TransitionListenerAdapter() {
+                                                @Override
+                                                public void onTransitionEnd(Transition t) {
+                                                    transitionEnded.set(true);
+                                                }
+                                            });
+                    ViewGroup sceneRoot = (ViewGroup) settingsActivity.getRootView();
+                    TransitionManager.beginDelayedTransition(sceneRoot, transition);
+                });
+        setSettingsContainerWidth(width);
+        CriteriaHelper.pollUiThread(transitionEnded::get, "ChangeBounds transition should end.");
+    }
+
+    /**
+     * Asserts that the query field's horizontal scroll offset is the one TextView computes for its
+     * current width. A single-line TextView positions RTL text (and its hint) by scrolling a very
+     * wide layout, so the offset depends on the width; a stale offset draws the hint shifted or
+     * clipped. {@link TextView#bringPointIntoView} recomputes the offset and reports whether it had
+     * to change it.
+     */
+    private void assertQueryScrollMatchesWidth(String when) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TextView queryEdit =
+                            mActivityTestRule.getActivity().findViewById(R.id.search_query);
+                    int scrollX = queryEdit.getScrollX();
+                    queryEdit.bringPointIntoView(queryEdit.getSelectionEnd());
+                    assertEquals(
+                            "Query field scroll offset should match its width " + when,
+                            queryEdit.getScrollX(),
+                            scrollX);
+                });
     }
 
     /** Returns the on-screen bounds of the view with the given id. */
