@@ -1913,3 +1913,107 @@ if (use_nss_certs && use_aura) {
     ]
   }
 }
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [
+      "browser_accelerator_interactive_uitest.cc",
+      "certificate_selector_interactive_uitest.cc",
+      "constrained_window_views_interactive_uitest.cc",
+      "content_setting_bubble_contents_interactive_uitest.cc",
+      "content_test_utils.cc",
+      "content_test_utils.h",
+      "external_protocol_dialog_interactive_uitest.cc",
+      "find_bar_views_interactive_uitest.cc",
+      "menu_controller_interactive_uitest.cc",
+      "menu_interactive_uitest.cc",
+      "menu_item_view_interactive_uitest.cc",
+      "menu_model_adapter_interactive_uitest.cc",
+      "menu_test_base.cc",
+      "menu_test_base.h",
+      "menu_view_drag_and_drop_interactive_uitest.cc",
+      "occlusion_visibility_interactive_uitest.cc",
+      "session_crashed_bubble_view_interactive_uitest.cc",
+      "ssl_client_certificate_selector_interactive_uitest.cc",
+      "web_dialog_view_interactive_uitest.cc",
+      "webview_interactive_uitest.cc",
+    ]
+
+    if (!is_linux) {
+      # TODO(port): This times out on desktop Linux.
+      sources += [ "keyboard_access_interactive_uitest.cc" ]
+    }
+
+    if (is_mac || is_linux || is_win) {
+      sources += [ "default_link_capturing_interactive_uitest.cc" ]
+    }
+
+    if (use_aura) {
+      sources += [
+        "drag_and_drop_interactive_uitest.cc",
+        "tooltip/tooltip_interactive_uitest.cc",
+      ]
+    }
+
+    if (is_win) {
+      sources += [
+        "tooltip/tooltip_aura_interactive_uitest_win.cc",
+        "touch_events_interactive_uitest_win.cc",
+      ]
+    }
+
+    deps = [
+      ":content_setting_bubble_contents",
+      ":external_protocol_dialog",
+      ":external_protocol_dialog_test_support",
+      ":find_bar_views",
+      ":session_crashed_bubble_view",
+      ":ssl_client_certificate_selector",
+      ":tab_modal_confirm_dialog_views",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/focus",
+      "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/toolbar:interactive_ui_tests",
+      "//chrome/browser/ui/webui:chrome_web_contents_handler",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base:test_browser_window",
+      "//components/enterprise/data_controls/content/browser",
+      "//components/enterprise/data_controls/core/browser:test_support",
+      "//content/test:browsertest_support",
+      "//ui/base:ozone_buildflags",
+      "//ui/base/clipboard:clipboard_test_support",
+      "//ui/events:test_support",
+      "//ui/web_dialogs:test_support",
+    ]
+
+    if (is_mac || is_linux || is_win) {
+      deps += [
+        ":intent_picker_bubble_view",
+        "//chrome/browser/apps/link_capturing",
+        "//chrome/browser/apps/link_capturing:test_support",
+        "//chrome/browser/ui:intent_picker_tab_helper",
+        "//chrome/test/user_education",
+        "//components/user_education/views",
+      ]
+    }
+
+    if (use_aura && !is_chromeos) {
+      deps += [ ":native_widget_factory" ]
+    }
+
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+
+    if (is_win) {
+      deps += [ "//chrome/browser/ui/views/accessibility:uia_test_support" ]
+    }
+  }
+}

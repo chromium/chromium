@@ -2775,8 +2775,6 @@ if (!is_android) {
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
       "../app/chrome_main_delegate_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
-      "../browser/ui/views/content_test_utils.cc",
-      "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
@@ -7767,23 +7765,13 @@ if (!is_android && !is_chromeos_device) {
     use_xvfb = use_xvfb_in_this_config
 
     sources = [
-      "../browser/ui/views/content_test_utils.cc",
-      "../browser/ui/views/content_test_utils.h",
       "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
-      "../browser/ui/views/session_crashed_bubble_view_interactive_uitest.cc",
       "../browser/ui/views/side_panel/comments/comments_side_panel_coordinator_interactive_uitest.cc",
       "../browser/ui/views/side_panel/extensions/extension_side_panel_interactive_uitest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
-      "../browser/ui/views/web_dialog_view_interactive_uitest.cc",
-      "../browser/ui/views/webview_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
     ]
-
-    if (is_mac || is_linux || is_win) {
-      sources +=
-          [ "../browser/ui/views/default_link_capturing_interactive_uitest.cc" ]
-    }
 
     if (is_mac || is_linux || is_win || is_chromeos) {
       sources += [ "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc" ]
@@ -7811,9 +7799,10 @@ if (!is_android && !is_chromeos_device) {
     ldflags = []
 
     allow_circular_includes_from = [
-      # bookmark_bar_view_event_interactive_uitest.cc includes
-      # ../browser/ui/views/test/view_event_test_base.h, which is compiled
-      # directly into this target's own sources rather than a separate one.
+      # These targets include ../browser/ui/views/test/view_event_test_base.h,
+      # which is compiled directly into this target's own sources rather than
+      # a separate one.
+      "//chrome/browser/ui/views:interactive_ui_tests",
       "//chrome/browser/ui/views/bookmarks:interactive_ui_tests",
     ]
 
@@ -7974,6 +7963,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/toasts:interactive_ui_tests",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views:content_setting_bubble_contents",
+      "//chrome/browser/ui/views:interactive_ui_tests",
       "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
       "//chrome/browser/ui/views/accessibility:interactive_ui_tests",
       "//chrome/browser/ui/views/autofill:edit_address_profile_view",
@@ -8289,8 +8279,6 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (use_aura) {
-      sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
-
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
         "//chrome/browser/ui/views/eye_dropper:interactive_ui_tests",
@@ -8311,26 +8299,10 @@ if (!is_android && !is_chromeos_device) {
 
     if (toolkit_views) {
       sources += [
-        "../browser/ui/views/browser_accelerator_interactive_uitest.cc",
-        "../browser/ui/views/certificate_selector_interactive_uitest.cc",
-        "../browser/ui/views/constrained_window_views_interactive_uitest.cc",
-        "../browser/ui/views/content_setting_bubble_contents_interactive_uitest.cc",
-        "../browser/ui/views/external_protocol_dialog_interactive_uitest.cc",
-        "../browser/ui/views/find_bar_views_interactive_uitest.cc",
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
-        "../browser/ui/views/keyboard_access_interactive_uitest.cc",
         "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest.cc",
-        "../browser/ui/views/menu_controller_interactive_uitest.cc",
-        "../browser/ui/views/menu_interactive_uitest.cc",
-        "../browser/ui/views/menu_item_view_interactive_uitest.cc",
-        "../browser/ui/views/menu_model_adapter_interactive_uitest.cc",
-        "../browser/ui/views/menu_test_base.cc",
-        "../browser/ui/views/menu_test_base.h",
-        "../browser/ui/views/menu_view_drag_and_drop_interactive_uitest.cc",
-        "../browser/ui/views/occlusion_visibility_interactive_uitest.cc",
         "../browser/ui/views/page_action/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
         "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
-        "../browser/ui/views/ssl_client_certificate_selector_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
       ]
@@ -8371,16 +8343,10 @@ if (!is_android && !is_chromeos_device) {
         "//chrome/browser/ui/translate:test_support",
         "//chrome/browser/ui/user_education",
         "//chrome/browser/ui/user_education:interactive_ui_tests",
-        "//chrome/browser/ui/views:certificate_selector",
         "//chrome/browser/ui/views:chrome_constrained_window_views_client",
         "//chrome/browser/ui/views:content_setting_site_row_view",
-        "//chrome/browser/ui/views:external_protocol_dialog_test_support",
-        "//chrome/browser/ui/views:find_bar_views",
         "//chrome/browser/ui/views:layout_provider",
-        "//chrome/browser/ui/views:session_crashed_bubble_view",
-        "//chrome/browser/ui/views:ssl_client_certificate_selector",
         "//chrome/browser/ui/views:tab_icon_view",
-        "//chrome/browser/ui/views:tab_modal_confirm_dialog_views",
         "//chrome/browser/ui/views/autofill/payments:filled_card_information_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
         "//chrome/browser/ui/views/autofill/payments:virtual_card_enroll_bubble_views",
@@ -8541,19 +8507,7 @@ if (!is_android && !is_chromeos_device) {
         ]
       }
 
-      if (is_linux) {
-        # Desktop linux.
-        sources -= [
-          # TODO(port): This times out. Attempts have been made to fix the
-          # individual failures, but each time I disable a test from these
-          # suites, it seems like one or another starts timing out too.
-          "../browser/ui/views/keyboard_access_interactive_uitest.cc",
-        ]
-      }
-
       if (use_aura) {
-        sources +=
-            [ "../browser/ui/views/tooltip/tooltip_interactive_uitest.cc" ]
         deps += [ "//ui/wm/public" ]
       }
       if (use_aura && !is_chromeos) {
@@ -8573,9 +8527,6 @@ if (!is_android && !is_chromeos_device) {
           "//chrome/browser/ui/views/status_icons:interactive_ui_tests",
           "//chrome/browser/web_applications/extensions",
         ]
-        if (use_aura) {
-          sources += [ "../browser/ui/views/tooltip/tooltip_aura_interactive_uitest_win.cc" ]
-        }
       }
     }
 
@@ -8620,7 +8571,6 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_win) {
       sources += [
-        "../browser/ui/views/touch_events_interactive_uitest_win.cc",
         "//ui/base/clipboard/clipboard_win_unittest.cc",
         "//ui/display/win/test/virtual_display_util_win_interactive_uitest.cc",
       ]
