@@ -2222,16 +2222,6 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(
                             TabList.INVALID_TAB_INDEX,
                             mCollectionModel.representativeIndexOf(null));
-                    mCollectionModel.setIndex(0, TabSelectionType.FROM_USER); // Select tab0
-                    assertEquals(0, mCollectionModel.getCurrentRepresentativeTabIndex());
-                    mCollectionModel.setIndex(1, TabSelectionType.FROM_USER); // Select tab1
-                    assertEquals(1, mCollectionModel.getCurrentRepresentativeTabIndex());
-
-                    mCollectionModel.setIndex(2, TabSelectionType.FROM_USER); // Select tab3
-                    assertEquals(1, mCollectionModel.getCurrentRepresentativeTabIndex());
-
-                    mCollectionModel.setIndex(3, TabSelectionType.FROM_USER); // Select tab2
-                    assertEquals(2, mCollectionModel.getCurrentRepresentativeTabIndex());
                 });
     }
 

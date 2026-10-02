@@ -403,12 +403,6 @@ public interface TabModel extends TabList {
     int getIndividualTabAndGroupCount();
 
     /**
-     * Returns the current representative tab's index or {@link TabModel.INVALID_TAB_INDEX} if none
-     * is selected.
-     */
-    int getCurrentRepresentativeTabIndex();
-
-    /**
      * Returns the representative tab for an index or null if one does not exist. For an individual
      * tab this is the tab itself. For a tab group this is the most recently selected tab in the
      * group.

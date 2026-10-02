@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -317,6 +318,26 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         return controller;
     }
 
+    private void setUpTwoTabsAndSelectSecond(boolean stubRelatedTabs) {
+        MockTab tab0 = MockTab.createAndInitialize(/* id= */ 1, mProfile);
+        MockTab tab1 = MockTab.createAndInitialize(/* id= */ 2, mProfile);
+        mTabModel.addTab(
+                tab0,
+                /* index= */ 0,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1,
+                /* index= */ 1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
+        if (stubRelatedTabs) {
+            when(mTabModel.getRelatedTabList(/* tabId= */ 2)).thenReturn(List.of(tab1));
+        }
+        mTabModel.setIndex(1, TabSelectionType.FROM_USER);
+        mCoordinator.resetWithListOfTabs(List.of(tab0, tab1));
+    }
+
     @After
     public void tearDown() {
         mCoordinator.destroy();
@@ -348,13 +369,14 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testSetInitialScrollIndexOffset() {
-        int index = 8;
-        when(mTabModel.getCurrentRepresentativeTabIndex()).thenReturn(index);
+        setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ false);
+
         mCoordinator.setInitialScrollIndexOffset();
 
         assertEquals(
-                index,
+                1,
                 mCoordinator
                         .getContainerViewModelForTesting()
                         .get(INITIAL_SCROLL_INDEX)
@@ -362,13 +384,44 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testSetInitialScrollIndexOffset_RefactorDisabled() {
+        setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ true);
+
+        mCoordinator.setInitialScrollIndexOffset();
+
+        assertEquals(
+                1,
+                mCoordinator
+                        .getContainerViewModelForTesting()
+                        .get(INITIAL_SCROLL_INDEX)
+                        .intValue());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
     public void testRequestAccessibilityFocusOnCurrentTab() {
-        int index = 2;
-        when(mTabModel.getCurrentRepresentativeTabIndex()).thenReturn(index);
+        setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ false);
+
         mCoordinator.requestAccessibilityFocusOnCurrentTab();
 
         assertEquals(
-                index,
+                1,
+                mCoordinator
+                        .getContainerViewModelForTesting()
+                        .get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY)
+                        .intValue());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testRequestAccessibilityFocusOnCurrentTab_RefactorDisabled() {
+        setUpTwoTabsAndSelectSecond(/* stubRelatedTabs= */ true);
+
+        mCoordinator.requestAccessibilityFocusOnCurrentTab();
+
+        assertEquals(
+                1,
                 mCoordinator
                         .getContainerViewModelForTesting()
                         .get(FOCUS_TAB_INDEX_FOR_ACCESSIBILITY)
@@ -424,9 +477,6 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabModel.representativeIndexOf(tab)).thenReturn(index);
-        when(mTabModel.getRepresentativeTabAt(index)).thenReturn(tab);
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
         when(mTabModel.getRelatedTabList(tabId)).thenReturn(Collections.singletonList(tab));
 
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);

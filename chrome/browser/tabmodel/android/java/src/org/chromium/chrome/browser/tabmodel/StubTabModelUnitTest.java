@@ -54,7 +54,6 @@ public class StubTabModelUnitTest {
                             "getTabModel",
                             "getRepresentativeTabList",
                             "getIndividualTabAndGroupCount",
-                            "getCurrentRepresentativeTabIndex",
                             "getRepresentativeTabAt",
                             "representativeIndexOf",
                             "getTabGroupCount",

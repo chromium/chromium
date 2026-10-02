@@ -350,11 +350,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getCurrentRepresentativeTabIndex() {
-        return TabModel.INVALID_TAB_INDEX;
-    }
-
-    @Override
     public @Nullable Tab getRepresentativeTabAt(int index) {
         return null;
     }

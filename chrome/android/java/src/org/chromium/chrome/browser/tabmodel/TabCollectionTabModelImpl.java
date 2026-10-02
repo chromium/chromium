@@ -1145,11 +1145,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public int getCurrentRepresentativeTabIndex() {
-        return representativeIndexOf(mCurrentTabSupplier.get());
-    }
-
-    @Override
     public @Nullable Tab getRepresentativeTabAt(int index) {
         // TODO(crbug.com/428692223): Revisit the performance of this method by doing it in C++.
         List<Tab> representativeTabList = getRepresentativeTabList();
