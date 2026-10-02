@@ -95,12 +95,6 @@ DOCUMENT_USER_DATA_KEY_IMPL(ContextualTasksExtensionHandler);
 ContextualTasksExtensionHandler::ContextualTasksExtensionHandler(
     content::RenderFrameHost* rfh)
     : content::DocumentUserData<ContextualTasksExtensionHandler>(rfh) {
-  if (auto* browser_context = rfh->GetBrowserContext()) {
-    if (auto* ui_service = contextual_tasks::ContextualTasksUiServiceFactory::
-            GetForBrowserContext(browser_context)) {
-      ui_service_observation_.Observe(ui_service);
-    }
-  }
   if (auto* web_contents = content::WebContents::FromRenderFrameHost(rfh)) {
     contextual_tasks::ContextualTasksWebContentsUserData::
         GetOrCreateForWebContents(web_contents)
@@ -189,6 +183,13 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
       user_data->UpdateExtensionFrameBound(this, /*is_page_bound=*/true);
     }
   }
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    if (controller->IsShowingUI()) {
+      contextual_tasks_page_->OnLensOverlayStateChanged(/*is_showing=*/true);
+    }
+  }
+#endif
   InitializeInputStateModel();
 }
 

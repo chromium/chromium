@@ -66,13 +66,11 @@ class ContextualTasksExtensionHandler
       public composebox::mojom::PageHandler,
       public searchbox::mojom::PageHandler,
       public contextual_tasks::AimMessagePoster,
-      public PermissionPromptObserver::Observer,
-      public contextual_tasks::ContextualTasksUiService::Observer {
+      public PermissionPromptObserver::Observer {
  public:
   ~ContextualTasksExtensionHandler() override;
 
-  // contextual_tasks::ContextualTasksUiService::Observer:
-  void OnLensOverlayStateChanged(bool is_showing) override;
+  void OnLensOverlayStateChanged(bool is_showing);
 
   // PermissionPromptObserver::Observer:
   void OnPermissionPromptChanged(bool is_showing,
@@ -310,9 +308,6 @@ class ContextualTasksExtensionHandler
   base::ScopedObservation<PermissionPromptObserver,
                           PermissionPromptObserver::Observer>
       permission_prompt_observation_{this};
-  base::ScopedObservation<contextual_tasks::ContextualTasksUiService,
-                          contextual_tasks::ContextualTasksUiService::Observer>
-      ui_service_observation_{this};
 
   std::optional<base::Uuid> task_id_;
   omnibox::ToolMode active_tool_ = omnibox::TOOL_MODE_UNSPECIFIED;
