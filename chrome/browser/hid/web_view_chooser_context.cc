@@ -4,6 +4,8 @@
 
 #include "chrome/browser/hid/web_view_chooser_context.h"
 
+#include <set>
+
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
@@ -32,6 +34,10 @@ bool WebViewChooserContext::HasDevicePermission(
     const url::Origin& origin,
     const url::Origin& embedding_origin,
     const device::mojom::HidDeviceInfo& device) const {
+  if (!chooser_context_->HasDevicePermission(embedding_origin, device)) {
+    return false;
+  }
+
   auto* origins_per_device = base::FindOrNull(device_access_, embedding_origin);
   if (!origins_per_device) {
     return false;
@@ -68,6 +74,42 @@ void WebViewChooserContext::RevokeDevicePermission(
   if (revoked_permission) {
     chooser_context_->PermissionForWebViewRevoked(origin);
   }
+}
+
+std::vector<url::Origin> WebViewChooserContext::RevokeEphemeralPermissions(
+    const ContentSettingsPattern& primary_pattern,
+    bool unconditional) {
+  auto should_revoke = [&](const url::Origin& origin) {
+    return primary_pattern.Matches(origin.GetURL()) &&
+           (unconditional ||
+            !chooser_context_->CanRequestObjectPermission(origin));
+  };
+
+  std::set<url::Origin> revoked_guest_origins;
+  std::erase_if(device_access_, [&](auto& embedder_entry) {
+    auto& [embedding_origin, origins_per_device] = embedder_entry;
+    if (should_revoke(embedding_origin)) {
+      for (const auto& [device_guid, guest_origins] : origins_per_device) {
+        revoked_guest_origins.insert(guest_origins.begin(),
+                                     guest_origins.end());
+      }
+      return true;
+    }
+    std::erase_if(origins_per_device, [&](auto& device_entry) {
+      std::erase_if(device_entry.second, [&](const url::Origin& guest_origin) {
+        if (!should_revoke(guest_origin)) {
+          return false;
+        }
+        revoked_guest_origins.insert(guest_origin);
+        return true;
+      });
+      return device_entry.second.empty();
+    });
+    return origins_per_device.empty();
+  });
+
+  return std::vector<url::Origin>(revoked_guest_origins.begin(),
+                                  revoked_guest_origins.end());
 }
 
 void WebViewChooserContext::OnPermissionRevoked(const url::Origin& origin) {

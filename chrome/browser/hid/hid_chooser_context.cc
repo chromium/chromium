@@ -21,7 +21,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 #include "chrome/browser/hid/hid_policy_allowed_devices_factory.h"
-#include "chrome/browser/hid/web_view_chooser_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -403,6 +402,14 @@ std::vector<url::Origin> HidChooserContext::RevokeEphemeralPermissions(
     }
     return false;
   });
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::vector<url::Origin> revoked_web_view_origins =
+      web_view_chooser_context_.RevokeEphemeralPermissions(primary_pattern,
+                                                           unconditional);
+  revoked_origins.insert(revoked_origins.end(),
+                         revoked_web_view_origins.begin(),
+                         revoked_web_view_origins.end());
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return revoked_origins;
 }
 

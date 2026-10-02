@@ -1582,4 +1582,92 @@ TEST_F(HidChooserContextWebViewTest, WebsitePermissionDoesNotLeakToWebView) {
   EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
                                               kEmbeddingOrigin));
 }
+
+// Tests that clearing HID_CHOOSER_DATA via HostContentSettingsMap (e.g. from
+// Clear Browsing Data or Profile Reset) revokes WebView device permissions and
+// notifies observers for each revoked guest origin.
+TEST_F(HidChooserContextWebViewTest, ClearSettingsRevokesWebViewGrants) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin1 = url::Origin::Create(GURL("https://google.com"));
+  const auto kWebViewOrigin2 =
+      url::Origin::Create(GURL("https://chromium.org"));
+
+  // Connect an ephemeral device and grant permission to the embedder and two
+  // WebViews.
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  GrantDevicePermissionBlocking(kWebViewOrigin1, *device, kEmbeddingOrigin);
+  GrantDevicePermissionBlocking(kWebViewOrigin2, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin1, *device,
+                                             kEmbeddingOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin2, *device,
+                                             kEmbeddingOrigin));
+
+  // Clear HID_CHOOSER_DATA as Clear Browsing Data and ProfileResetter do.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .Times(testing::AtLeast(1));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kEmbeddingOrigin));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kWebViewOrigin1));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kWebViewOrigin2));
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->ClearSettingsForOneType(ContentSettingsType::HID_CHOOSER_DATA);
+
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin1, *device,
+                                              kEmbeddingOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin2, *device,
+                                              kEmbeddingOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+}
+
+// Tests that a WebView loses device access when the embedder loses access
+// without a revocation notification, e.g. the embedder's guard is set to BLOCK.
+TEST_F(HidChooserContextWebViewTest,
+       WebViewPermissionRequiresEmbedderPermission) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+
+  SetContentSettingDefaultForOrigin(kEmbeddingOrigin, CONTENT_SETTING_BLOCK);
+
+  EXPECT_FALSE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                              kEmbeddingOrigin));
+}
+
+// Tests that global settings updates with all content types (where
+// unconditional is false) do not revoke ephemeral guest permissions when
+// the guard setting is ASK.
+TEST_F(HidChooserContextWebViewTest, GlobalSettingsUpdatePreservesGuestGrants) {
+  const auto kEmbeddingOrigin = url::Origin::Create(
+      GURL("chrome-extension://" + std::string(kTestExtensionId)));
+  const auto kWebViewOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  auto device = ConnectEphemeralDeviceBlocking();
+  GrantDevicePermissionBlocking(kEmbeddingOrigin, *device);
+  GrantDevicePermissionBlocking(kWebViewOrigin, *device, kEmbeddingOrigin);
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+
+  // Simulate a global settings update where all content types are included.
+  // Ephemeral permissions should be preserved when the guard setting is ASK.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(testing::_)).Times(0);
+  context()->OnContentSettingChanged(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsTypeSet::AllTypes());
+
+  EXPECT_TRUE(context()->HasDevicePermission(kWebViewOrigin, *device,
+                                             kEmbeddingOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kEmbeddingOrigin, *device));
+}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

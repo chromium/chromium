@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -38,6 +39,10 @@ class WebViewChooserContext
   void RevokeDevicePermission(const url::Origin& origin,
                               const url::Origin& embedding_origin,
                               const device::mojom::HidDeviceInfo& device);
+
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional);
 
   // permissions::ObjectPermissionContextBase::PermissionObserver:
   void OnPermissionRevoked(const url::Origin& origin) override;
