@@ -2369,6 +2369,20 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testActivateTabWithUrl) {
   ExecuteJsTest();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_P(GlicApiTest, testActivateTabWithUrlAcrossWindows) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  BrowserWindowInterface* second_browser =
+      PlatformBrowserTest::CreateBrowser(GetProfile());
+  ASSERT_TRUE(second_browser);
+  second_browser->GetWindow()->Activate();
+
+  ContinueJsTest();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCreateTab) {
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);

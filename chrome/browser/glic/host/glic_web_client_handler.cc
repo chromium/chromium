@@ -717,16 +717,24 @@ class GlicWebClientHandler
         exact_match_tab ? exact_match_tab : pattern_match_tab;
 
     if (found_tab) {
+      const tabs::TabHandle tab_handle = found_tab->GetHandle();
       BrowserWindowInterface* browser = found_tab->GetBrowserWindowInterface();
-      if (browser) {
-        if (browser->GetWindow()) {
-          browser->GetWindow()->Activate();
-        }
-        if (TabListInterface* tab_list = TabListInterface::From(browser)) {
-          tab_list->ActivateTab(found_tab->GetHandle());
+      if (browser && browser->GetWindow()) {
+        browser->GetWindow()->Activate();
+      }
+      tabs::TabInterface* const tab_to_activate = tab_handle.Get();
+      if (!tab_to_activate) {
+        std::move(callback).Run(nullptr);
+        return;
+      }
+      if (BrowserWindowInterface* active_browser =
+              tab_to_activate->GetBrowserWindowInterface()) {
+        if (TabListInterface* tab_list =
+                TabListInterface::From(active_browser)) {
+          tab_list->ActivateTab(tab_handle);
         }
       }
-      mojom::TabDataPtr tab_data = CreateTabData(found_tab);
+      mojom::TabDataPtr tab_data = CreateTabData(tab_to_activate);
       std::move(callback).Run(std::move(tab_data));
       return;
     }

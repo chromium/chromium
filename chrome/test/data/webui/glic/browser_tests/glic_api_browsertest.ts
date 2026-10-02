@@ -1513,6 +1513,22 @@ class ApiTests extends ApiTestFixtureBase {
     assertEquals(fallbackCreated.url, fallbackUrl);
   }
 
+  async testActivateTabWithUrlAcrossWindows() {
+    assertDefined(this.host.createTab);
+    assertDefined(this.host.activateTabWithUrl);
+    const targetUrl = location.href + '#target_in_second_window';
+    const createdTab = await this.host.createTab(targetUrl, {});
+    assertEquals(createdTab.url, targetUrl);
+    assertTrue(await this.browser.navigateTab(createdTab.tabId, targetUrl));
+
+    await this.advanceToNextStep();
+
+    const activated = await this.host.activateTabWithUrl(targetUrl, {});
+    assertDefined(activated);
+    assertEquals(activated.tabId, createdTab.tabId);
+    assertEquals(activated.url, targetUrl);
+  }
+
   async testCreateTabFailsWithUnsupportedScheme() {
     assertDefined(this.host.createTab);
 
