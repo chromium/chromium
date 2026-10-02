@@ -157,3 +157,36 @@ TEST_F(UIViewWindowCoordinatesTest, WindowDeallocationRegressionTest) {
   // pointer.
   view_.cr_onWindowCoordinatesChanged = nil;
 }
+
+// Test that resetting `cr_onWindowCoordinatesChanged` while the view is in a
+// window removes the internal `NotifyingView` mirror from the window, and that
+// reassigning the callback multiple times never accumulates duplicate mirror
+// views.
+TEST_F(UIViewWindowCoordinatesTest, ResetAndReassignRemovesMirrorView) {
+  [window_ addSubview:view_];
+
+  auto count_notifying_views = ^NSUInteger() {
+    NSUInteger count = 0;
+    for (UIView* subview in window_.subviews) {
+      if ([NSStringFromClass([subview class])
+              containsString:@"NotifyingView"]) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
+  };
+  EXPECT_EQ(1u, count_notifying_views());
+
+  // Reassigning the closure while the view is already in the window must
+  // replace the existing mirror view rather than leaking it.
+  view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
+  };
+  EXPECT_EQ(1u, count_notifying_views());
+
+  // Clearing the closure must remove the mirror view from the window.
+  view_.cr_onWindowCoordinatesChanged = nil;
+  EXPECT_EQ(0u, count_notifying_views());
+}
