@@ -19,19 +19,24 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/memory/aligned_memory.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "skia/ext/skia_utils_base.h"
 // TODO(crbug.com/567908337): Remove //third_party/android_opengl/etc1 once the
 // Rust ETC1 decoder launches.
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 #include "ui/android/texture_compressor/cxx.rs.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -55,6 +60,8 @@ static_assert(kHeaderSize == 28);
 //   [4..8)   1.f / scale        (float, big-endian)
 constexpr size_t kTrailerSize = sizeof(uint32_t) + sizeof(float);
 static_assert(kTrailerSize == 8);
+
+constexpr int kBlockSize = 4;
 
 unsigned int NextPowerOfTwo(int a) {
   CHECK_GE(a, 0);
@@ -127,7 +134,6 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(const SkBitmap& raw_data,
   sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
       info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
 
-  constexpr int kBlockSize = 4;
   compress_etc1(
       CastToAlignedSlice<const uint32_t>(raw_data.getPixels(),
                                          raw_data.computeByteSize()),
@@ -136,6 +142,74 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(const SkBitmap& raw_data,
       encoded_size.width() / kBlockSize);
   etc1_pixel_ref->setImmutable();
   return etc1_pixel_ref;
+}
+
+// static
+SkBitmap Etc1::DecompressBitmap(const gfx::Size& content_size,
+                                const sk_sp<SkPixelRef>& compressed_data) {
+  if (content_size.IsEmpty() || !compressed_data ||
+      !compressed_data->pixels()) {
+    return SkBitmap();
+  }
+
+  const gfx::Size buffer_size(compressed_data->width(),
+                              compressed_data->height());
+  if ((buffer_size.width() % kBlockSize) != 0 ||
+      (buffer_size.height() % kBlockSize) != 0 ||
+      compressed_data->rowBytes() != ETC1RowBytes(buffer_size.width()) ||
+      content_size.width() > buffer_size.width() ||
+      content_size.height() > buffer_size.height()) {
+    return SkBitmap();
+  }
+
+  if (base::FeatureList::IsEnabled(kUseNewEtc1Decoder)) {
+    SkBitmap raw_data_small;
+    raw_data_small.allocPixels(SkImageInfo::MakeN32(
+        content_size.width(), content_size.height(), kOpaque_SkAlphaType));
+    size_t encoded_bytes = 0;
+    if (!base::CheckMul(compressed_data->rowBytes(),
+                        static_cast<size_t>(buffer_size.height()))
+             .AssignIfValid(&encoded_bytes)) {
+      return SkBitmap();
+    }
+    decompress_etc1(
+        CastToAlignedSlice<const uint8_t>(compressed_data->pixels(),
+                                          encoded_bytes),
+        CastToAlignedSlice<uint32_t>(raw_data_small.getPixels(),
+                                     raw_data_small.computeByteSize()),
+        content_size.width(), content_size.height(),
+        buffer_size.width() / kBlockSize, raw_data_small.rowBytesAsPixels());
+    raw_data_small.setImmutable();
+    return raw_data_small;
+  }
+
+  // TODO(crbug.com/567908337): Remove the legacy C ETC1 decoder and encoder in
+  // //third_party/android_opengl/etc1 once kUseNewEtc1Decoder launches.
+  SkBitmap raw_data;
+  raw_data.allocPixels(SkImageInfo::MakeN32(
+      buffer_size.width(), buffer_size.height(), kOpaque_SkAlphaType));
+  const bool success =
+      etc1_decode_image(static_cast<const uint8_t*>(compressed_data->pixels()),
+                        reinterpret_cast<unsigned char*>(raw_data.getPixels()),
+                        buffer_size.width(), buffer_size.height(),
+                        raw_data.bytesPerPixel(), raw_data.rowBytes());
+  raw_data.setImmutable();
+  if (!success) {
+    return SkBitmap();
+  }
+  if (content_size == buffer_size) {
+    return raw_data;
+  }
+
+  // The content size is smaller than the buffer size (likely because of
+  // block alignment or power-of-two rounding), so deep copy the bitmap.
+  SkBitmap raw_data_small;
+  raw_data_small.allocPixels(SkImageInfo::MakeN32(
+      content_size.width(), content_size.height(), kOpaque_SkAlphaType));
+  SkCanvas small_canvas(raw_data_small);
+  small_canvas.drawImage(raw_data.asImage(), 0, 0);
+  raw_data_small.setImmutable();
+  return raw_data_small;
 }
 
 bool Etc1::WriteToFile(base::File* file,

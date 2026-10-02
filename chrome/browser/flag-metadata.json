@@ -9976,6 +9976,15 @@
     "expiry_milestone": 125
   },
   {
+    "name": "use-new-etc1-decoder",
+    "owners": [
+      "ckitagawa@chromium.org",
+      "ishitatsuyuki@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "use-new-feed-eligibility-service",
     "owners": [ "ginnyhuang@chromium.org" ],
     "expiry_milestone": 142

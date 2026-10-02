@@ -13,7 +13,15 @@ mod ffi {
             src_row_width: u32,
             dst_row_width: u32,
         );
+        fn decompress_etc1(
+            src: &[u8],
+            dst: &mut [u32],
+            dst_width: u32,
+            dst_height: u32,
+            src_row_width: u32,
+            dst_row_width: u32,
+        );
     }
 }
 
-use crate::compress_etc1;
+use crate::{compress_etc1, decompress_etc1};

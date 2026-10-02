@@ -13364,6 +13364,7 @@ from previous Chrome versions.
   <int value="-487294731" label="EnablePerfettoSystemTracing:disabled"/>
   <int value="-487009324" label="HttpHeadersInjection:disabled"/>
   <int value="-486491020" label="ReadAnythingWithScreen2x:enabled"/>
+  <int value="-485022474" label="UseNewEtc1Decoder:enabled"/>
   <int value="-484870143" label="GlicShareImage:disabled"/>
   <int value="-483747852" label="HardenUrlProvisionFetcher:enabled"/>
   <int value="-482494879"
@@ -15295,6 +15296,7 @@ from previous Chrome versions.
   <int value="108328828" label="PersistDeviceBoundSessions:enabled"/>
   <int value="108874121" label="InstanceSwitcher:disabled"/>
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
+  <int value="109635791" label="UseNewEtc1Decoder:disabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
   <int value="111889632" label="ContextualTasksUpdatedEntryPoints:disabled"/>
   <int value="112126033"

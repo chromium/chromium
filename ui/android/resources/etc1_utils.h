@@ -29,6 +29,12 @@ class UI_ANDROID_EXPORT Etc1 {
   static sk_sp<SkPixelRef> CompressBitmap(const SkBitmap& raw_data,
                                           bool supports_etc_npot);
 
+  // Decompresses `compressed_data` using ETC1 decompression into an SkBitmap
+  // of size `content_size`. Can be called on any thread. Returns an empty
+  // SkBitmap on failure.
+  static SkBitmap DecompressBitmap(const gfx::Size& content_size,
+                                   const sk_sp<SkPixelRef>& compressed_data);
+
   static bool WriteToFile(base::File* file,
                           const gfx::Size& content_size,
                           float scale,

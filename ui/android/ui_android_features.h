@@ -104,6 +104,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidUpdateDisplayForContext);
 // Kill switch to turn off new supportKeyabord method
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kSupportKeyboard);
 
+// Enables the new Rust ETC1 decoder (used in tab thumbnails).
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kUseNewEtc1Decoder);
+
 // Conducts a check to determine if the View is eligible to a Hit. This is a
 // mitigation of when the prerendered view (hidden) somehow receives the touch
 // event even though it is hidden, due to the ordering of the `children_` in

@@ -70,6 +70,8 @@ BASE_FEATURE(kAndroidUpdateDisplayForContext, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSupportKeyboard, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseNewEtc1Decoder, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCheckHitEligibility, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTouchpadOverscrollHistoryNavigation,

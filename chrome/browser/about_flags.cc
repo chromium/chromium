@@ -14171,6 +14171,12 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::kCopyTextJourneysDescription,
      kOsDesktop, FEATURE_VALUE_TYPE(contextual_tasks::kCopyTextJourneys)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"use-new-etc1-decoder", flag_descriptions::kUseNewEtc1DecoderName,
+     flag_descriptions::kUseNewEtc1DecoderDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kUseNewEtc1Decoder)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

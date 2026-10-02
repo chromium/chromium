@@ -6704,6 +6704,10 @@ inline constexpr char kUseAngleDescriptionAndroid[] =
 inline constexpr char kUseAngleGLES[] = "OpenGL ES";
 inline constexpr char kUseAngleVulkan[] = "Vulkan";
 
+inline constexpr char kUseNewEtc1DecoderName[] = "Enable new ETC1 decoder";
+inline constexpr char kUseNewEtc1DecoderDescription[] =
+    "Enables the new Rust ETC1 decoder implementation for tab thumbnails.";
+
 inline constexpr char kUseWebUiBookmarksAndroidName[] =
     "Use WebUI Bookmarks on Android";
 inline constexpr char kUseWebUiBookmarksAndroidDescription[] =

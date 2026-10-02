@@ -18968,6 +18968,21 @@
             ]
         }
     ],
+    "UseNewEtc1Decoder": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseNewEtc1Decoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "UsePersistentCacheForCodeCache": [
         {
             "platforms": [

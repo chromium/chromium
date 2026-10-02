@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/thumbnail/cc/etc1_thumbnail_helper.h"
 
-#include <array>
-
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,9 +12,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
-#include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkImage.h"
 #include "ui/android/resources/etc1_utils.h"
 
 namespace thumbnail {
@@ -112,42 +106,12 @@ void DeleteAllExceptForIdsTask(base::FilePath base_path_,
 void DecompressTask(
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
     sk_sp<SkPixelRef> compressed_data,
-    float scale,
     const gfx::Size& content_size) {
-  SkBitmap raw_data_small;
-  bool success = false;
-
-  if (compressed_data) {
-    gfx::Size buffer_size =
-        gfx::Size(compressed_data->width(), compressed_data->height());
-
-    SkBitmap raw_data;
-    raw_data.allocPixels(SkImageInfo::MakeN32(
-        buffer_size.width(), buffer_size.height(), kOpaque_SkAlphaType));
-    success = etc1_decode_image(
-        reinterpret_cast<unsigned char*>(compressed_data->pixels()),
-        reinterpret_cast<unsigned char*>(raw_data.getPixels()),
-        buffer_size.width(), buffer_size.height(), raw_data.bytesPerPixel(),
-        raw_data.rowBytes());
-    raw_data.setImmutable();
-
-    if (!success) {
-      // Leave raw_data_small empty for consistency with other failure modes.
-    } else if (content_size == buffer_size) {
-      // Shallow copy the pixel reference.
-      raw_data_small = raw_data;
-    } else {
-      // The content size is smaller than the buffer size (likely because of
-      // a power-of-two rounding), so deep copy the bitmap.
-      raw_data_small.allocPixels(SkImageInfo::MakeN32(
-          content_size.width(), content_size.height(), kOpaque_SkAlphaType));
-      SkCanvas small_canvas(raw_data_small);
-      small_canvas.drawImage(raw_data.asImage(), 0, 0);
-      raw_data_small.setImmutable();
-    }
-  }
-
-  std::move(post_decompression_callback).Run(success, raw_data_small);
+  SkBitmap raw_data_small =
+      ui::Etc1::DecompressBitmap(content_size, compressed_data);
+  const bool success = !raw_data_small.empty();
+  std::move(post_decompression_callback)
+      .Run(success, std::move(raw_data_small));
 }
 
 }  // anonymous namespace
@@ -227,7 +191,7 @@ void Etc1ThumbnailHelper::DeleteAllExceptForIds(std::vector<int> tab_ids) {
 void Etc1ThumbnailHelper::Decompress(
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompression_callback,
     sk_sp<SkPixelRef> compressed_data,
-    float scale,
+    float /*scale*/,
     const gfx::Size& content_size) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
   base::ThreadPool::PostTask(
@@ -237,7 +201,7 @@ void Etc1ThumbnailHelper::Decompress(
       base::BindOnce(&DecompressTask,
                      base::BindPostTask(default_task_runner_,
                                         std::move(post_decompression_callback)),
-                     compressed_data, scale, content_size));
+                     compressed_data, content_size));
 }
 
 base::FilePath Etc1ThumbnailHelper::GetFilePath(TabId tab_id) {
