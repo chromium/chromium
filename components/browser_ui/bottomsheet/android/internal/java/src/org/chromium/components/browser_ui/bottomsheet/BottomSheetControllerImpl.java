@@ -250,7 +250,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             int layoutId =
                     isLargeFormFactor() ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
             LayoutInflater.from(rootView.getContext()).inflate(layoutId, mBottomSheetContainer);
-            mBottomSheet = new BottomSheet(rootView.findViewById(R.id.bottom_sheet));
+            mBottomSheet = new BottomSheetCoordinator(rootView.findViewById(R.id.bottom_sheet));
         }
 
         mBottomSheet.init(
@@ -646,10 +646,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     BottomSheetCoordinator getBottomSheetForTesting() {
         return assumeNonNull(mBottomSheet);
-    }
-
-    BottomSheet getBottomSheetViewForTesting() {
-        return (BottomSheet) assumeNonNull(mBottomSheet);
     }
 
     ViewGroup getBottomSheetContainerForTesting() {

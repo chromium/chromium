@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
@@ -751,6 +752,143 @@ class BottomSheetMediator implements TouchHandler {
             Rect visibleViewportRect) {
         int newHeight = (int) MathUtils.clamp(currentOffsetPx, halfHeightPx, fullHeightPx);
         return Math.min(visibleViewportRect.height(), newHeight);
+    }
+
+    /**
+     * Updates the vertical layout properties of the bottom sheet content container and background
+     * in the model in a single pass.
+     *
+     * @param viewportBottomInset The viewport bottom inset in pixels.
+     * @param visibleViewportRect The visible viewport bounds.
+     * @param decorHeight The window decor view height in pixels.
+     * @param handlebarHeight The measured handlebar height in pixels.
+     * @param currentOffsetPx The current vertical offset of the sheet from the bottom in pixels.
+     * @param isLargeFormFactorUiEnabled Whether large form factor popup UI is enabled.
+     * @param isFullHeightResizeContent Whether the sheet resizes content at full height.
+     * @param halfHeightPx The sheet height for the HALF state in pixels.
+     * @param fullHeightPx The sheet height for the FULL state in pixels.
+     * @param stateHeightPx The sheet height for the target or current state in pixels.
+     */
+    void updateVerticalLayout(
+            @Px int viewportBottomInset,
+            Rect visibleViewportRect,
+            @Px int decorHeight,
+            @Px int handlebarHeight,
+            float currentOffsetPx,
+            boolean isLargeFormFactorUiEnabled,
+            boolean isFullHeightResizeContent,
+            float halfHeightPx,
+            float fullHeightPx,
+            @Px int stateHeightPx) {
+        setContentTopMargin(handlebarHeight);
+        setContainerHeight(
+                calculateTargetContainerHeight(
+                        isLargeFormFactorUiEnabled,
+                        isFullHeightResizeContent,
+                        halfHeightPx,
+                        fullHeightPx,
+                        currentOffsetPx,
+                        visibleViewportRect,
+                        stateHeightPx,
+                        handlebarHeight));
+        setContentBottomPadding(
+                calculateContentBottomPadding(
+                        isLargeFormFactorUiEnabled,
+                        isFullHeightResizeContent,
+                        viewportBottomInset));
+        setBackgroundHeight(
+                calculateTargetBackgroundHeight(isLargeFormFactorUiEnabled, fullHeightPx));
+        setKeyboardCurtainHeight(decorHeight);
+        updateVisibleBackgroundHeight(isLargeFormFactorUiEnabled, currentOffsetPx, fullHeightPx);
+    }
+
+    /**
+     * Calculates the vertical translation of the sheet view in pixels, clamped to {@code >= 0f}.
+     *
+     * @param containerHeight The height of the sheet container in pixels.
+     * @param currentOffsetPx The current vertical offset of the sheet from the bottom in pixels.
+     * @param browserControlsOffset The vertical offset from browser controls in pixels.
+     * @param e2eBottomInset The edge-to-edge bottom inset in pixels.
+     * @return The non-negative vertical translation in pixels.
+     */
+    float calculateSheetTranslationY(
+            @Px int containerHeight,
+            float currentOffsetPx,
+            float browserControlsOffset,
+            @Px int e2eBottomInset) {
+        // The browser controls offset is added here so that the sheet's toolbar behaves like the
+        // browser controls do.
+        int bottomInsetAdjustment = (mTargetState == SheetState.HIDDEN) ? 0 : e2eBottomInset;
+        float translationY =
+                (containerHeight - currentOffsetPx) + browserControlsOffset - bottomInsetAdjustment;
+        return Math.max(0f, translationY);
+    }
+
+    int calculateTargetContainerHeight(
+            boolean isLargeFormFactorUiEnabled,
+            boolean isFullHeightResizeContent,
+            float halfHeightPx,
+            float fullHeightPx,
+            float currentOffsetPx,
+            Rect visibleViewportRect,
+            @Px int stateHeightPx,
+            @Px int handlebarHeight) {
+        if (isFullHeightResizeContent) {
+            return calculateContentContainerHeight(
+                    halfHeightPx, fullHeightPx, currentOffsetPx, visibleViewportRect);
+        }
+        if (!isLargeFormFactorUiEnabled) {
+            return ViewGroup.LayoutParams.MATCH_PARENT;
+        }
+        if (isFullHeightWrapContent()) {
+            return ViewGroup.LayoutParams.WRAP_CONTENT;
+        }
+        return stateHeightPx - handlebarHeight;
+    }
+
+    @Px
+    int calculateContentBottomPadding(
+            boolean isLargeFormFactorUiEnabled,
+            boolean isFullHeightResizeContent,
+            @Px int viewportBottomInset) {
+        return (isFullHeightResizeContent || isLargeFormFactorUiEnabled) ? 0 : viewportBottomInset;
+    }
+
+    int calculateTargetBackgroundHeight(boolean isLargeFormFactorUiEnabled, float fullHeightPx) {
+        return isLargeFormFactorUiEnabled
+                ? (int) fullHeightPx
+                : ViewGroup.LayoutParams.MATCH_PARENT;
+    }
+
+    /**
+     * Shrinks the background and shadow to match the visible height of the sheet on LFF (desktop
+     * currently).
+     *
+     * <p>When a user drags the sheet downward, the internal view doesn't actually resize; it just
+     * gets pushed off-screen. This method visually trims the background to ensure the bottom
+     * rounded corners and drop shadows stay perfectly aligned with the bottom of the window instead
+     * of disappearing below it.
+     */
+    void updateVisibleBackgroundHeight(
+            boolean isLargeFormFactorUiEnabled, float currentOffsetPx, float fullHeightPx) {
+        if (!isLargeFormFactorUiEnabled) {
+            setVisibleBackgroundHeight(0);
+            return;
+        }
+
+        // The true visual height of the sheet's cosmetic wrapper.
+        int visibleHeight = (int) Math.max(0, currentOffsetPx);
+        if (visibleHeight == 0) {
+            return;
+        }
+
+        // Ensure we don't accidentally ask for a bounds size larger than the actual layout limits.
+        int targetFullHeight = (int) fullHeightPx;
+        if (targetFullHeight > 0) {
+            visibleHeight = Math.min(visibleHeight, targetFullHeight);
+        }
+
+        setVisibleBackgroundHeight(visibleHeight);
     }
 
     /**

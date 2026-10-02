@@ -45,9 +45,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests for a real {@link BottomSheetControllerImpl} and {@link BottomSheet} hiding one content and
- * then showing the next queued content, which happens re-entrantly while observers are being
- * notified of {@link SheetState#HIDDEN}.
+ * Tests for a real {@link BottomSheetControllerImpl} and {@link BottomSheetCoordinator} hiding one
+ * content and then showing the next queued content, which happens re-entrantly while observers are
+ * being notified of {@link SheetState#HIDDEN}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomSheetHideReentrancyUnitTest {
@@ -244,8 +244,8 @@ public class BottomSheetHideReentrancyUnitTest {
         mActivity.finish();
     }
 
-    private BottomSheet getSheet() {
-        return (BottomSheet) mController.getBottomSheetViewForTesting();
+    private BottomSheetCoordinator getSheet() {
+        return mController.getBottomSheetForTesting();
     }
 
     /** Shows {@code content} and ends its opening animation. */

@@ -12,10 +12,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
@@ -1510,7 +1512,7 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
 
         assertThrows(IllegalStateException.class, mBottomSheet::endAnimationsForTesting);
-        assertEquals(1 + BottomSheet.MAX_ANIMATIONS_ENDED_FOR_TESTING, settleCount[0]);
+        assertEquals(1 + BottomSheetCoordinator.MAX_ANIMATIONS_ENDED_FOR_TESTING, settleCount[0]);
     }
 
     @Test
@@ -2449,5 +2451,68 @@ public class BottomSheetCoordinatorUnitTest {
                 mBottomSheet.getSheetHeightForState(SheetState.HIDDEN),
                 mBottomSheet.getCurrentOffsetPx(),
                 MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_SkipsRedundantEventsWhenTranslationUnchanged() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        assertEquals(76f, mBottomSheet.getView().getTranslationY(), 0.0f);
+
+        mBottomSheet.addObserver(mBottomSheetObserver);
+
+        // Repeating the identical 100f offset while already open with unchanged translation and
+        // container height must be a no-op and not dispatch a redundant notification.
+        mBottomSheet.setSheetOffsetFromBottom(100f, StateChangeReason.SWIPE);
+        verify(mBottomSheetObserver, never()).onSheetOffsetChanged(anyFloat(), anyFloat());
+
+        // Moving to 150f changes translationY from 76f to 26f and dispatches the new offset.
+        mBottomSheet.setSheetOffsetFromBottom(150f, StateChangeReason.SWIPE);
+        assertEquals(26f, mBottomSheet.getView().getTranslationY(), 0.0f);
+        verify(mBottomSheetObserver).onSheetOffsetChanged(150f / 200f, 150f);
+    }
+
+    @Test
+    public void testOnLayoutChange_UpdatesTranslationAndNotifiesWhenBottomInsetChanges() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 200);
+        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 0));
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        assertEquals(100f, mBottomSheet.getView().getTranslationY(), 0.0f);
+
+        mBottomSheet.addObserver(mBottomSheetObserver);
+
+        // When edge-to-edge bottom inset changes and a layout pass occurs on mSheetContainer,
+        // updateContentContainerHeight() must not prematurely mutate SHEET_TRANSLATION_Y before
+        // setSheetState(getSheetState(), false) runs, so setSheetOffsetFromBottom detects the
+        // translation change (100f -> 76f) and dispatches onSheetOffsetChanged.
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+        mSheetContainer.requestLayout();
+        mSheetContainer.measure(
+                View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_HEIGHT, View.MeasureSpec.EXACTLY));
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
+
+        assertEquals(76f, mBottomSheet.getView().getTranslationY(), 0.0f);
+        verify(mBottomSheetObserver).onSheetOffsetChanged(0.5f, 100f);
     }
 }
