@@ -16,6 +16,7 @@ import androidx.annotation.IntDef;
 import org.hamcrest.Matcher;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -49,6 +50,7 @@ import java.util.List;
  */
 @NullMarked
 public abstract class ConditionalState {
+    private static final String TAG = "Transit";
     @Phase private int mLifecyclePhase = Phase.NEW;
     private final Elements mConsolidatedElements = new Elements(this);
     protected final Elements.Builder mElements = mConsolidatedElements.newBuilder();
@@ -209,6 +211,30 @@ public abstract class ConditionalState {
     /** Should be used only by {@link EntryPointSentinelStation}. */
     void setStateActiveWithoutTransition() {
         mLifecyclePhase = Phase.ACTIVE;
+    }
+
+    /**
+     * Move to FINISHED from any phase, running the transition hooks that would normally run.
+     *
+     * <p>Should be used only by {@link TrafficControl#hopOffPublicTransit()}, which abandons
+     * Stations it does not trust: a Station left in TRANSITIONING_FROM by a failed Transition must
+     * not make the next hop off fail too.
+     */
+    void setStateFinishedForcibly() {
+        if (mLifecyclePhase == Phase.FINISHED) return;
+        if (mLifecyclePhase != Phase.TRANSITIONING_FROM) {
+            if (mLifecyclePhase != Phase.ACTIVE) {
+                Log.w(
+                        TAG,
+                        "Forcibly finishing %s from phase %s",
+                        this,
+                        phaseToString(mLifecyclePhase));
+            }
+            mLifecyclePhase = Phase.TRANSITIONING_FROM;
+            onTransitionFromStarted();
+        }
+        mLifecyclePhase = Phase.FINISHED;
+        onTransitionFromFinished();
     }
 
     /**

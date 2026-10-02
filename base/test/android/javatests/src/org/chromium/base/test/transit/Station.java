@@ -68,6 +68,22 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         return facilities;
     }
 
+    /**
+     * Forcibly finish this Station and all its Facilities that are not FINISHED yet.
+     *
+     * <p>Used when Public Transit abandons a Station it does not trust anymore, e.g. {@link
+     * TrafficControl#hopOffPublicTransit()}. Finishing the Facilities too ensures their Elements
+     * fail loudly if read afterwards, instead of returning stale values.
+     */
+    void finishForcibly() {
+        // Iterate over a copy: finishing a Facility runs its transition hooks, which must not be
+        // able to invalidate the iteration by registering or removing Facilities.
+        for (Facility<?> facility : new ArrayList<>(mFacilities)) {
+            facility.setStateFinishedForcibly();
+        }
+        setStateFinishedForcibly();
+    }
+
     void registerFacility(Facility<?> facility) {
         facility.setHostStation(this);
         mFacilities.add(facility);
@@ -110,7 +126,19 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
             originStation.assertInPhase(Phase.ACTIVE);
             ActivityElement<?> originActivityElement = originStation.getActivityElement();
             if (originActivityElement != null) {
-                mActivityElement.requireToBeInSameTask(originActivityElement.value());
+                Activity originActivity = originActivityElement.value();
+                Class<?> declaredClass = mActivityElement.getActivityClass();
+                Class<?> originClass = originActivity.getClass();
+                // The origin Activity may be a subclass of the class this Station declares: a
+                // second window is a ChromeTabbedActivity2, while the Station declares
+                // ChromeTabbedActivity. Matching by exact class would skip it and then match the
+                // first window, which is in a different task, so the transition could never
+                // complete.
+                if (!declaredClass.equals(originClass)
+                        && declaredClass.isInstance(originActivity)) {
+                    mActivityElement.allowSubclasses();
+                }
+                mActivityElement.requireToBeInSameTask(originActivity);
             } else {
                 mActivityElement.requireNoParticularTask();
             }
@@ -121,6 +149,19 @@ public abstract class Station<HostActivityT extends Activity> extends Conditiona
         assertInPhase(Phase.NEW);
         if (mActivityElement != null) {
             mActivityElement.requireToBeInNewTask();
+        }
+    }
+
+    /**
+     * Resolve this Station's Activity to |activity| instead of searching for one by class.
+     *
+     * <p>Used when hopping on Public Transit: the caller already holds the Activity it is acting
+     * on, and searching by class is ambiguous once a second window is open.
+     */
+    void requireActivityInstance(Activity activity) {
+        assertInPhase(Phase.NEW);
+        if (mActivityElement != null) {
+            mActivityElement.requireInstance(activity);
         }
     }
 

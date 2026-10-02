@@ -38,6 +38,7 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
 
     private final Class<ActivityT> mActivityClass;
     private boolean mAllowSubclasses;
+    private @Nullable Activity mRequiredInstance;
 
     ActivityElement(Class<ActivityT> activityClass) {
         super("AE/" + activityClass.getCanonicalName());
@@ -76,6 +77,24 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         replaceEnterCondition(new ActivityExistsInAnyTaskCondition());
     }
 
+    /**
+     * Require the Element to resolve to this exact Activity instance.
+     *
+     * <p>Matching by class is ambiguous as soon as more than one window is open: two windows are
+     * either two instances of the same Activity class, or a subclass such as ChromeTabbedActivity2
+     * which an exact-class match rejects outright. When the caller already holds the Activity it
+     * wants to act on, name it instead of searching for it.
+     */
+    void requireInstance(Activity activity) {
+        if (mOwner != null) {
+            mOwner.assertInPhase(ConditionalState.Phase.NEW);
+        }
+        assert mActivityClass.isInstance(activity)
+                : String.format("%s is not a %s", activity, mActivityClass.getCanonicalName());
+        mRequiredInstance = activity;
+        replaceEnterCondition(new ActivityIsInstanceCondition());
+    }
+
     TripBuilder bringWindowToFrontTo() {
         return Triggers.runOnUiThreadTo(
                 () -> {
@@ -112,9 +131,17 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
             String reasonForTaskIdDifference = "";
             List<Activity> allActivities = ApplicationStatus.getRunningActivities();
             for (Activity activity : allActivities) {
-                if (mAllowSubclasses
-                        ? mActivityClass.isInstance(activity)
-                        : mActivityClass.equals(activity.getClass())) {
+                boolean matches;
+                if (mRequiredInstance != null) {
+                    // An explicitly named Activity is matched by identity, so neither the number
+                    // of open windows nor the exact runtime class matters.
+                    matches = activity == mRequiredInstance;
+                } else if (mAllowSubclasses) {
+                    matches = mActivityClass.isInstance(activity);
+                } else {
+                    matches = mActivityClass.equals(activity.getClass());
+                }
+                if (matches) {
                     ActivityT matched = mActivityClass.cast(activity);
                     candidateMatchingClass = matched;
                     reasonForTaskIdDifference = getReasonForTaskIdDifference(matched);
@@ -131,6 +158,10 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
                 }
             }
             if (candidateMatchingClass == null) {
+                if (mRequiredInstance != null) {
+                    return awaiting("Required instance not running: " + mRequiredInstance)
+                            .withoutResult();
+                }
                 return awaiting("No Activity with expected class").withoutResult();
             }
             if (candidateMatchingClassAndTask == null) {
@@ -172,6 +203,19 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         @Override
         public String buildDescription() {
             return super.buildDescription() + " in any task";
+        }
+    }
+
+    private class ActivityIsInstanceCondition extends ActivityExistsCondition {
+        @Override
+        protected @Nullable String getReasonForTaskIdDifference(ActivityT activity) {
+            // Matched by identity in resolveWithSuppliers(); the task is whichever it is in.
+            return null;
+        }
+
+        @Override
+        public String buildDescription() {
+            return super.buildDescription() + ", exact instance " + mRequiredInstance;
         }
     }
 

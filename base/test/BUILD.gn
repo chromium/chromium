@@ -867,6 +867,7 @@ if (is_android) {
 
     sources = [
       "android/javatests/src/org/chromium/base/test/transit/ElementFactoryUnitTest.java",
+      "android/javatests/src/org/chromium/base/test/transit/HopOnOffUnitTest.java",
       "android/javatests/src/org/chromium/base/test/transit/TransitionTimeoutUnitTest.java",
     ]
   }

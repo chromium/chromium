@@ -5,6 +5,7 @@
 package org.chromium.base.test.transit;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 
 import com.google.errorprone.annotations.CheckReturnValue;
 
@@ -40,6 +41,8 @@ public class TripBuilder {
     private @Nullable Facility<?> mContextFacility;
     private @Nullable State mContextState;
     private boolean mInNewTask;
+    private boolean mHopOn;
+    private @Nullable Activity mHopOnActivity;
     private boolean mIsComplete;
 
     public TripBuilder() {}
@@ -291,6 +294,60 @@ public class TripBuilder {
         return destination;
     }
 
+    /**
+     * Hop on Public Transit: enter |destination| in |activity| without coming from an origin
+     * Station.
+     *
+     * <p>This is the counterpart of {@link #arriveAt(Station, Facility[])} for code that is not
+     * running inside Public Transit, most notably test utils shared with non-migrated tests. No
+     * exit Conditions are checked, since there is no origin Station to exit.
+     *
+     * <p>Contract: hop on only when there is no live Station to transition from. A test util that
+     * takes an Activity rather than a Station is, by its signature, in that position: it cannot
+     * know where its caller is, so it hops on and the destination becomes the one ACTIVE Station.
+     * Code that does hold a live Station should transition from it with {@link #arriveAt(Station,
+     * Facility[])} instead, which verifies the exit Conditions and keeps the caller's Station
+     * usable. Hopping on over an ACTIVE Station in the same Activity is logged as a warning.
+     *
+     * <p>The Activity is required rather than searched for: hopping on means the UI already exists,
+     * so the caller always holds the Activity it is acting on, and with more than one window open,
+     * matching by class either finds the wrong window or matches two and fails. The flip side is
+     * that the instance must be the one that will be RESUMED: do not hop on by instance when an
+     * Activity recreation (e.g. a theme change) may be in flight.
+     *
+     * <p>Hopping on means being outside Public Transit, so any Stations still considered active, in
+     * every window, are hopped off from first; see {@link TrafficControl#hopOffPublicTransit()}.
+     * This happens before the trigger runs, so if the hop-on Transition fails there is no ACTIVE
+     * Station left: the next hop-on starts clean rather than inheriting a half-finished state.
+     */
+    @CheckReturnValue
+    public TripBuilder hopOnToAnd(Activity activity, Station<?> destination) {
+        assert mDestinationStation == null
+                : "Destination already set to " + mDestinationStation.getName();
+        assert !mInNewTask : "hopOnTo() cannot be combined with inNewTask()";
+        assert mContextStation == null
+                : String.format(
+                        "hopOnTo() enters Public Transit, so it cannot have %s as context Station",
+                        mContextStation.getName());
+        destination.assertInPhase(Phase.NEW);
+        mHopOn = true;
+        mHopOnActivity = activity;
+        mDestinationStation = destination;
+        return this;
+    }
+
+    /**
+     * Execute the transition synchronously, hopping on Public Transit at |destination| in
+     * |activity|.
+     *
+     * @see #hopOnToAnd(Activity, Station)
+     */
+    public <T extends Station<?>> T hopOnTo(
+            Activity activity, T destination, Facility<?>... facilities) {
+        enterFacilitiesAnd(facilities).hopOnToAnd(activity, destination).complete();
+        return destination;
+    }
+
     /** Exit |lastStation|. */
     @CheckReturnValue
     public TripBuilder reachLastStopAnd(Station<?> lastStation) {
@@ -316,9 +373,17 @@ public class TripBuilder {
         assert !mInNewTask || mDestinationStation != null
                 : "A new Station needs to be entered in the new task";
 
+        // Hopping on means entering Public Transit from outside of it: there is no origin Station
+        // to infer, and whatever was still considered active is abandoned.
+        if (mHopOn) {
+            warnIfHoppingOnOverActiveStation();
+            TrafficControl.hopOffPublicTransit();
+        }
+
         // If a context Station is required, infer it from the active Stations.
         // A context Station is required to travel to a Station or to enter Facilities.
-        if (mContextStation == null
+        if (!mHopOn
+                && mContextStation == null
                 && (mDestinationStation != null || !mFacilitiesToEnter.isEmpty())) {
             List<Station<?>> activeStations = TrafficControl.getActiveStations();
             if (activeStations.size() == 1) {
@@ -334,7 +399,10 @@ public class TripBuilder {
         }
 
         if (mDestinationStation != null) {
-            if (mInNewTask) {
+            if (mHopOn) {
+                assert mHopOnActivity != null;
+                mDestinationStation.requireActivityInstance(mHopOnActivity);
+            } else if (mInNewTask) {
                 mDestinationStation.requireToBeInNewTask();
             } else {
                 // If entering a station and not in a new task, assume to be exiting an active
@@ -384,6 +452,29 @@ public class TripBuilder {
 
         mIsComplete = true;
         return trip;
+    }
+
+    /**
+     * Hopping on is for code that is outside Public Transit. If an ACTIVE Station exists in the
+     * very Activity being hopped on at, the caller most likely is a Public Transit test calling a
+     * converted test util, and should transition from its Station instead. That is not an error,
+     * since the util cannot know whether that Station is still accurate, but it is worth surfacing:
+     * the discarded Station becomes unusable, and its exit Conditions are never checked.
+     */
+    private void warnIfHoppingOnOverActiveStation() {
+        assert mHopOnActivity != null && mDestinationStation != null;
+        for (Station<?> station : TrafficControl.getActiveStations()) {
+            ActivityElement<?> activityElement = station.getActivityElement();
+            if (activityElement == null || activityElement.get() != mHopOnActivity) continue;
+            Log.w(
+                    TAG,
+                    "hopOnTo(%s) discards %s, which is ACTIVE in the same Activity. If the caller"
+                            + " is a Public Transit test, transition from %s instead of calling a"
+                            + " util that hops on.",
+                    mDestinationStation.getName(),
+                    station.getName(),
+                    station.getName());
+        }
     }
 
     /**
