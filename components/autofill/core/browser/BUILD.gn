@@ -495,6 +495,25 @@ compiled_action("generate_country_native_names") {
   deps = [ "//third_party/icu:copy_icudata($default_toolchain)" ]
 }
 
+source_set("country_names_impl") {
+  visibility = [ ":browser" ]
+  public = []
+  sources = get_target_outputs(":generate_country_native_names") + [
+              "geo/country_names.cc",
+              "geo/country_names.h",
+              "geo/country_names_for_locale.h",
+            ]
+  deps = [
+    ":buildflags",
+    ":country_data",
+    ":generate_country_native_names",
+    "//base",
+    "//base:i18n",
+    "//components/autofill/core/common",
+    "//third_party/icu",
+  ]
+}
+
 proto_library("amount_extraction_heuristic_regexes_proto") {
   sources = [ "payments/amount_extraction_heuristic_regexes.proto" ]
 }
@@ -797,7 +816,6 @@ static_library("browser") {
     "geo/alternative_state_name_map_updater.h",
     "geo/autofill_country.cc",
     "geo/autofill_country.h",
-    "geo/country_names.cc",
     "geo/country_names.h",
     "geo/country_names_for_locale.cc",
     "geo/country_names_for_locale.h",
@@ -1356,7 +1374,6 @@ static_library("browser") {
     "webdata/valuables/valuables_table.h",
   ]
 
-  sources += get_target_outputs(":generate_country_native_names")
   sources += get_target_outputs(":regex_patterns_inl_h")
   sources += get_target_outputs(":entity_schema_enums_and_functions")
 
@@ -1480,8 +1497,8 @@ static_library("browser") {
     ":autofill_address_rewriter_resources",
     ":autofill_alternative_state_name_map_resources",
     ":buildflags",
+    ":country_names_impl",
     ":entity_schema_enums_and_functions",
-    ":generate_country_native_names",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",
