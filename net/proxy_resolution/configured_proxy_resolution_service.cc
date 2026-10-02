@@ -1309,9 +1309,9 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
     // This can be observed because the service destructor sets
     // `in_destruction_ = true` and synchronously calls
     // QueryComplete(ERR_ABORTED) on each pending request. QueryComplete
-    // synchronously calls QueryDidComplete, which in turn calls
-    // DidFinishResolvingProxy on this service before the request removes itself
-    // from `pending_requests_` and runs the user callback.
+    // removes the request from `pending_requests_` and synchronously calls
+    // QueryDidComplete, which in turn calls DidFinishResolvingProxy on this
+    // service, and then runs the user callback.
     if (resolver_error == ERR_ABORTED && in_destruction_ && !config_) {
       result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
       net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
@@ -1337,8 +1337,9 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
 
     if (reset_config) {
       ResetProxyConfig(false);
-      if (pending_requests_.size() > 1)
+      if (!pending_requests_.empty()) {
         ApplyProxyConfigIfAvailable();
+      }
     } else if (enable_pac_runtime_backoff_ &&
                resolver_error == ERR_PAC_SCRIPT_FAILED) {
       HandlePacScriptLoadError();
