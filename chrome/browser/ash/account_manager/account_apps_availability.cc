@@ -434,7 +434,9 @@ void AccountAppsAvailability::ReportMetrics(
   base::UmaHistogramExactLinear(kNumAccountsInArcMetricName, num_arc_accounts,
                                 kMaxNumAccountsInArcMetric + 1);
 
-  CHECK_GE(num_total_accounts, num_arc_accounts, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568536208): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_GE(num_total_accounts, num_arc_accounts);
   const int percent_arc_accounts =
       (num_arc_accounts * 100.0) / num_total_accounts;
   base::UmaHistogramPercentage(kPercentAccountsInArcMetricName,
