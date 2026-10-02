@@ -392,9 +392,9 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     if (key_event->GetModifiers() & ignore_modifiers)
       return false;
 
-    // Customizable-<select> keydown handling is done in
-    // HTMLOptionElement::DefaultEventHandlerInternal().
-    if (select_->IsAppearanceBase()) {
+    // Customizable-<select> and <select multiple size=1> keydown handling is
+    // done in HTMLOptionElement::DefaultEventHandlerInternal().
+    if (select_->IsAppearanceBase() || PickerIsPopover()) {
       return false;
     }
 
