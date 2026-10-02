@@ -4743,22 +4743,17 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) ||
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) {
-    // TODO(crbug.com/530097533): Investigate improved title handling when the
-    // user interacts with the right-click flow on a hyperlink (e.g., fetching
-    // the destination page title or using a domain fallback if anchor text is
-    // empty).
-    send_tab_to_self_submenu_delegate_ =
-        send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
-            embedder_web_contents_,
-            is_link ? send_tab_to_self::ShareEntryPoint::kLinkMenu
-                    : send_tab_to_self::ShareEntryPoint::kContentMenu,
-            target_url,
-            is_link ? base::UTF16ToUTF8(params_.link_text) : std::string());
-  }
+  // TODO(crbug.com/530097533): Investigate improved title handling when the
+  // user interacts with the right-click flow on a hyperlink (e.g., fetching
+  // the destination page title or using a domain fallback if anchor text is
+  // empty).
+  send_tab_to_self_submenu_delegate_ =
+      send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+          embedder_web_contents_,
+          is_link ? send_tab_to_self::ShareEntryPoint::kLinkMenu
+                  : send_tab_to_self::ShareEntryPoint::kContentMenu,
+          target_url,
+          is_link ? base::UTF16ToUTF8(params_.link_text) : std::string());
 
   if (send_tab_to_self_submenu_delegate_) {
     send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(

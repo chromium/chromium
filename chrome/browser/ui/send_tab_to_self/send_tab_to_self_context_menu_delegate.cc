@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -143,7 +144,32 @@ std::vector<TargetDeviceInfo> GetDevicesForDisplay(
   return devices;
 }
 
-bool ShouldShowSubmenu(EntryPointDisplayReason reason) {
+bool IsSubmenuEnabledForEntryPoint(ShareEntryPoint entry_point) {
+  switch (entry_point) {
+    case ShareEntryPoint::kTabMenu:
+      return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI);
+    case ShareEntryPoint::kContentMenu:
+      return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI) ||
+             base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUIv2);
+    case ShareEntryPoint::kLinkMenu:
+    case ShareEntryPoint::kShareMenu:
+      return base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUIv2);
+    case ShareEntryPoint::kToolbarIcon:
+    case ShareEntryPoint::kOmniboxMenu:
+    case ShareEntryPoint::kShareSheet:
+    case ShareEntryPoint::kGesture:
+    case ShareEntryPoint::kShareSheetDirectShare:
+      return false;
+  }
+  NOTREACHED();
+}
+
+bool ShouldShowSubmenu(ShareEntryPoint entry_point,
+                       EntryPointDisplayReason reason) {
+  if (!IsSubmenuEnabledForEntryPoint(entry_point)) {
+    return false;
+  }
+
   switch (reason) {
     case EntryPointDisplayReason::kOfferFeature:
       return true;
@@ -175,7 +201,7 @@ SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
 
   std::optional<EntryPointDisplayReason> reason = GetEntryPointDisplayReason(
       primary_web_contents, ResolveTargetUrl(target_url, primary_web_contents));
-  if (!reason.has_value() || !ShouldShowSubmenu(*reason)) {
+  if (!reason.has_value() || !ShouldShowSubmenu(entry_point, *reason)) {
     return nullptr;
   }
 

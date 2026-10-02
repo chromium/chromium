@@ -216,7 +216,26 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
           tab_strip_->GetWebContentsAt(index), web_contents_list,
           send_tab_to_self::ShareEntryPoint::kTabMenu);
   if (!send_tab_to_self_submenu_delegate_) {
-    BuildLegacySendTabToSelfItem();
+#if BUILDFLAG(IS_MAC)
+    if (features::IsMenuSimplificationEnabled()) {
+      AddItemWithIcon(
+          TabStripModel::CommandSendTabToSelf,
+          l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kDevicesIcon
+                                             : kDevicesOldIcon));
+    } else {
+      AddItem(TabStripModel::CommandSendTabToSelf,
+              l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
+    }
+#else
+    AddItemWithIcon(
+        TabStripModel::CommandSendTabToSelf,
+        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kDevicesIcon
+                                           : kDevicesOldIcon));
+#endif
     return;
   }
   send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
@@ -254,28 +273,6 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
                     UserEducationService::MaybeShowNewBadge(
                         tab_strip_->profile(),
                         send_tab_to_self::kSendTabToSelfEnhancedDesktopUI));
-}
-
-void TabMenuModel::BuildLegacySendTabToSelfItem() {
-#if BUILDFLAG(IS_MAC)
-  if (features::IsMenuSimplificationEnabled()) {
-    AddItemWithIcon(
-        TabStripModel::CommandSendTabToSelf,
-        l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                           ? kDevicesIcon
-                                           : kDevicesOldIcon));
-  } else {
-    AddItem(TabStripModel::CommandSendTabToSelf,
-            l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF));
-  }
-#else
-  AddItemWithIcon(
-      TabStripModel::CommandSendTabToSelf,
-      l10n_util::GetStringUTF16(IDS_CONTEXT_MENU_SEND_TAB_TO_SELF),
-      ui::ImageModel::FromVectorIcon(
-          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
-#endif
 }
 
 void TabMenuModel::AppendGlicItems(int index,
@@ -587,12 +584,7 @@ void TabMenuModel::Build(int index) {
   }
 
   if (display_send_to_self) {
-    if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
-      BuildSendTabToSelfSubmenu(index, indices);
-    } else {
-      BuildLegacySendTabToSelfItem();
-    }
+    BuildSendTabToSelfSubmenu(index, indices);
   }
 
   if (controller) {

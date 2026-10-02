@@ -893,12 +893,7 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           features::IsRoundedIconsEnabled() ? vector_icons::kLinkIcon
                                             : kLinkChromeRefreshOldIcon);
 
-      if (base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) {
-        BuildSendTabToSelfSubmenu(browser);
-      } else {
-        BuildSendTabToSelfSimpleItem();
-      }
+      BuildSendTabToSelfSubmenu(browser);
 
       AddItemWithStringIdAndVectorIcon(
           this, IDC_QRCODE_GENERATOR, IDS_APP_MENU_CREATE_QR_CODE,

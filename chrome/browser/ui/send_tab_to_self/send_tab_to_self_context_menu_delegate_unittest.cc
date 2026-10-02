@@ -55,7 +55,11 @@ class SendTabToSelfContextMenuDelegateTest
  public:
   SendTabToSelfContextMenuDelegateTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitWithFeatures(
+        {kSendTabToSelfEnhancedDesktopUI, kSendTabToSelfEnhancedDesktopUIv2},
+        {});
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
