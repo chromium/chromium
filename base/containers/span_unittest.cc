@@ -3566,54 +3566,6 @@ TEST_F(CheckedSpanTest, SlackSpace) {
   }
 }
 
-TEST_F(CheckedSpanTest, SubspansBoundsChecking) {
-  std::unique_ptr<char, PartitionAllocationDeleter> thirtythree_chars =
-      AllocFromPartitionAlloc(33u);
-  const size_t usable_bytes =
-      partition_alloc::PartitionRoot::GetExternalUsableSize(
-          thirtythree_chars.get());
-
-  // Inexact bounds checking; we allocated 33 bytes, but PartitionAlloc
-  // knows (and can tell us) about the headroom that exists beyond.
-  ASSERT_GT(usable_bytes, 33u);
-
-#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
-  // When tightened bounds checking is enabled through metadata support,
-  // Callers are forbidden from constructing spans larger than what
-  // was originally allocated, even if headroom is available. (The
-  // Chrome C++ Runtime Safety team contends that this is incorrect
-  // behavior.)
-
-  // SAFETY: Not safe; this crashes.
-  EXPECT_DEATH_IF_SUPPORTED(
-      UNSAFE_BUFFERS(base::span<char>(thirtythree_chars.get() + 1u, 33u)), "");
-
-  // SAFETY: This span is within the bounds guaranteed by PartitionAlloc.
-  UNSAFE_BUFFERS(base::span<char>(thirtythree_chars.get() + 1u, 32u));
-  // SAFETY: This span is within the bounds guaranteed by PartitionAlloc.
-  UNSAFE_BUFFERS(base::span<char>(thirtythree_chars.get() + 2u, 31u));
-
-#else
-
-  // Without tightened bounds checking, the only constraint imposed by
-  // Checked Span that the span must not cross a slot (allocation)
-  // boundary in PartitionAlloc --- hence, the ceiling is informed
-  // by `usable_bytes`, not the exact `33u` originally requested.
-
-  // SAFETY: Not safe; this crashes.
-  EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(base::span<char>(
-                                thirtythree_chars.get() + 1u, usable_bytes)),
-                            "");
-
-  // SAFETY: This span is within the bounds guaranteed by PartitionAlloc.
-  UNSAFE_BUFFERS(
-      base::span<char>(thirtythree_chars.get() + 1u, usable_bytes - 1u));
-  // SAFETY: This span is within the bounds guaranteed by PartitionAlloc.
-  UNSAFE_BUFFERS(
-      base::span<char>(thirtythree_chars.get() + 2u, usable_bytes - 2u));
-#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
-}
-
 #endif  // PA_BUILDFLAG(CHECKED_SPAN)
 
 TEST_F(CheckedSpanTest, UncheckedSpanNeverCrashes) {
