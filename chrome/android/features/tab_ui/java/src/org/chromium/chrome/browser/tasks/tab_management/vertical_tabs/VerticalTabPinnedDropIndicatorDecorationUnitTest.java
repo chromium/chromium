@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Canvas;
@@ -32,7 +31,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -43,22 +41,17 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /** Unit tests for {@link VerticalTabPinnedDropIndicatorDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        instrumentedPackages = {
-            "androidx.recyclerview.widget.RecyclerView" // required to mock final.
-        })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Canvas mCanvas;
-    @Mock private RecyclerView mPinnedTabsRecyclerView;
     @Mock private RecyclerView.State mState;
 
     @Captor private ArgumentCaptor<RectF> mRectCaptor;
     @Captor private ArgumentCaptor<Paint> mPaintCaptor;
 
     private Activity mActivity;
+    private RecyclerView mPinnedTabsRecyclerView;
     private VerticalTabPinnedDropIndicatorDecoration mDecoration;
     private int mThickness;
     private int mItemGap;
@@ -81,13 +74,9 @@ public class VerticalTabPinnedDropIndicatorDecorationUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_height);
 
-        when(mPinnedTabsRecyclerView.getContext()).thenReturn(mActivity);
-        when(mPinnedTabsRecyclerView.getWidth()).thenReturn(300);
-        when(mPinnedTabsRecyclerView.getHeight()).thenReturn(200);
-        when(mPinnedTabsRecyclerView.getPaddingLeft()).thenReturn(12);
-        when(mPinnedTabsRecyclerView.getPaddingRight()).thenReturn(12);
-        when(mPinnedTabsRecyclerView.getPaddingTop()).thenReturn(8);
-        when(mPinnedTabsRecyclerView.getPaddingBottom()).thenReturn(8);
+        mPinnedTabsRecyclerView = new RecyclerView(mActivity);
+        mPinnedTabsRecyclerView.setPadding(12, 8, 12, 8);
+        mPinnedTabsRecyclerView.layout(0, 0, 300, 200);
 
         mDecoration = new VerticalTabPinnedDropIndicatorDecoration(mActivity);
     }

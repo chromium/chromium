@@ -15,7 +15,9 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -46,17 +48,20 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link VerticalTabGroupSpineDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class VerticalTabGroupSpineDecorationUnitTest {
+    private static final int PARENT_WIDTH = 100;
+    private static final int ITEM_HEIGHT = 10;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private Canvas mCanvas;
-    @Mock private RecyclerView mParent;
     @Mock private Runnable mInvalidationTrigger;
     @Mock private RecyclerView.State mState;
 
+    private RecyclerView mParent;
+    private LinearLayoutManager mLayoutManager;
     private TabListModel mModel;
     private VerticalTabGroupSpineDecoration mSpineDecoration;
     private int mMarginBottom;
@@ -68,7 +73,10 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         mMarginBottom =
                 activity.getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_item_margin_bottom);
-        when(mParent.getContext()).thenReturn(activity);
+        mParent = new RecyclerView(activity);
+        mLayoutManager = new LinearLayoutManager(activity);
+        mParent.setLayoutManager(mLayoutManager);
+        mParent.setAdapter(new ItemAdapter());
 
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
@@ -109,15 +117,16 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         addTabModel(groupId);
 
         // Header is scrolled off, parent only has Tab 1 and Tab 2
-        when(mParent.getChildCount()).thenReturn(2);
+        layOutItems(/* firstPosition= */ 1);
+        assertEquals(1, mParent.getChildAdapterPosition(mParent.getChildAt(0)));
         // tab 1 (adapter position 1)
         int tab1Top = 50;
         int tab1Bottom = 150;
         float transY = 10f;
-        addView(tab1Top, tab1Bottom, transY, /* position= */ 0, /* adapterPosition= */ 1);
+        setUpChild(tab1Top, tab1Bottom, transY, /* childIndex= */ 0);
         // tab 2 (adapter position 2)
         int tab2Bottom = 260;
-        addView(/* top= */ 160, tab2Bottom, transY, /* position= */ 1, /* adapterPosition= */ 2);
+        setUpChild(/* top= */ 160, tab2Bottom, transY, /* childIndex= */ 1);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -142,17 +151,22 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         addGroupHeaderModel(groupId, /* isCollapsed= */ false);
         addTabModel(groupId);
 
-        when(mParent.getChildCount()).thenReturn(2);
         // DELIBERATELY SCRAMBLE the physical ViewGroup order:
         // parent.getChildAt(0) returns the child tab (Adapter position 1)
         // parent.getChildAt(1) returns the Header (Adapter position 0)
+        layOutItems(/* firstPosition= */ 0);
+        // Reorders children without a relayout (mParent is detached); adapter positions still come
+        // from each child's ViewHolder.
+        mParent.bringChildToFront(mParent.getChildAt(0));
+        assertEquals(1, mParent.getChildAdapterPosition(mParent.getChildAt(0)));
+        assertEquals(0, mParent.getChildAdapterPosition(mParent.getChildAt(1)));
         // tab view
         int tabBottom = 210;
         float transY = 20f;
-        addView(/* top= */ 110, tabBottom, transY, /* position= */ 0, /* adapterPosition= */ 1);
+        setUpChild(/* top= */ 110, tabBottom, transY, /* childIndex= */ 0);
         // header view
         int headerBottom = 100;
-        addView(/* top= */ 0, headerBottom, transY, /* position= */ 1, /* adapterPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, transY, /* childIndex= */ 1);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -190,17 +204,17 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         addTabModel(/* groupId= */ null);
 
         // Parent has Header, Tab, Sibling tab
-        when(mParent.getChildCount()).thenReturn(3);
         // header view
         int headerBottom = 100;
         float headerTransY = 10f;
-        addView(/* top= */ 0, headerBottom, headerTransY, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, headerTransY, /* childIndex= */ 0);
         // tab view
-        addView(/* top= */ 110, /* bottom= */ 210, /* translationY= */ 0, /* position= */ 1);
+        setUpChild(/* top= */ 110, /* bottom= */ 210, /* translationY= */ 0, /* childIndex= */ 1);
         // Sibling view
         int nextTop = 300;
         float nextTranslationY = 15f;
-        addView(nextTop, /* bottom= */ 400, nextTranslationY, /* position= */ 2);
+        setUpChild(nextTop, /* bottom= */ 400, nextTranslationY, /* childIndex= */ 2);
 
         // Trigger expand
         observer.didChangeTabGroupCollapsed(groupId, isCollapsing, true);
@@ -224,8 +238,8 @@ public class VerticalTabGroupSpineDecorationUnitTest {
 
         addGroupHeaderModel(groupId, /* isCollapsed= */ true);
 
-        when(mParent.getChildCount()).thenReturn(1);
-        addView(/* top= */ 0, /* bottom= */ 100, /* translationY= */ 0, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, /* bottom= */ 100, /* translationY= */ 0, /* childIndex= */ 0);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -243,13 +257,13 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         when(headerModel.get(TabProperties.DRAGGING_Y)).thenReturn(draggingY);
         addTabModel(groupId);
 
-        when(mParent.getChildCount()).thenReturn(2);
         // header view
         int headerBottom = 100;
-        addView(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* childIndex= */ 0);
         // tab view
         int tabBottom = 210;
-        addView(/* top= */ 110, tabBottom, /* translationY= */ 20f, /* position= */ 1);
+        setUpChild(/* top= */ 110, tabBottom, /* translationY= */ 20f, /* childIndex= */ 1);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -275,13 +289,13 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         float draggingY = 50f;
         when(tabModel.get(TabProperties.DRAGGING_Y)).thenReturn(draggingY);
 
-        when(mParent.getChildCount()).thenReturn(2);
         // header view
         int headerBottom = 100;
-        addView(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* childIndex= */ 0);
         // tab view
         int tabBottom = 210;
-        addView(/* top= */ 110, tabBottom, /* translationY= */ 20f, /* position= */ 1);
+        setUpChild(/* top= */ 110, tabBottom, /* translationY= */ 20f, /* childIndex= */ 1);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -307,15 +321,15 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         PropertyModel tabModel2 = addTabModel(groupId);
         when(tabModel2.get(TabProperties.DRAGGING_Y)).thenReturn(50f);
 
-        when(mParent.getChildCount()).thenReturn(3);
         // header view
         int headerBottom = 100;
-        addView(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, /* translationY= */ 20f, /* childIndex= */ 0);
         // tab view 1
-        addView(/* top= */ 110, /* bottom= */ 210, /* translationY= */ 20f, /* position= */ 1);
+        setUpChild(/* top= */ 110, /* bottom= */ 210, /* translationY= */ 20f, /* childIndex= */ 1);
         // tab view 2
         int tab2Bottom = 320;
-        addView(/* top= */ 220, tab2Bottom, /* translationY= */ 30f, /* position= */ 2);
+        setUpChild(/* top= */ 220, tab2Bottom, /* translationY= */ 30f, /* childIndex= */ 2);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -340,21 +354,21 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         addTabModel(groupId);
         addTabModel(groupId);
 
+        layOutItems(/* firstPosition= */ 0);
         // Parent has Other Tab (0), Header (1), Tab 1 (2), and Tab 2 (3)
-        when(mParent.getChildCount()).thenReturn(4);
         // Dragged view
-        addView(/* top= */ 0, /* bottom= */ 100, /* translationY= */ 20f, /* position= */ 0);
+        setUpChild(/* top= */ 0, /* bottom= */ 100, /* translationY= */ 20f, /* childIndex= */ 0);
         // header view
         int headerBottom = 210;
         float transY = 10f;
-        addView(/* top= */ 110, headerBottom, transY, /* position= */ 1);
+        setUpChild(/* top= */ 110, headerBottom, transY, /* childIndex= */ 1);
         // tab 1 (stable)
-        View tabView1 = addView(/* top= */ 220, /* bottom= */ 320, transY, /* position= */ 2);
-        when(tabView1.getAlpha()).thenReturn(1f);
+        View tabView1 = setUpChild(/* top= */ 220, /* bottom= */ 320, transY, /* childIndex= */ 2);
+        tabView1.setAlpha(1f);
         // tab 2 (animating out, alpha = 0.5)
         int tab2Bottom = 430;
-        View tabView2 = addView(/* top= */ 330, tab2Bottom, transY, /* position= */ 3);
-        when(tabView2.getAlpha()).thenReturn(0.5f);
+        View tabView2 = setUpChild(/* top= */ 330, tab2Bottom, transY, /* childIndex= */ 3);
+        tabView2.setAlpha(0.5f);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -379,19 +393,19 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         addTabModel(groupId);
         addTabModel(groupId);
 
-        when(mParent.getChildCount()).thenReturn(3);
         // header view
         int headerBottom = 110;
         float transY = 10f;
-        addView(/* top= */ 0, headerBottom, transY, /* position= */ 0);
+        layOutItems(/* firstPosition= */ 0);
+        setUpChild(/* top= */ 0, headerBottom, transY, /* childIndex= */ 0);
         // tab 1 (stable)
         int tab1Bottom = 220;
-        View tabView1 = addView(/* top= */ 110, tab1Bottom, transY, /* position= */ 1);
-        when(tabView1.getAlpha()).thenReturn(1f);
+        View tabView1 = setUpChild(/* top= */ 110, tab1Bottom, transY, /* childIndex= */ 1);
+        tabView1.setAlpha(1f);
         // tab 2 (animating out, alpha = 0.5)
         int tab2Bottom = 330;
-        View tabView2 = addView(/* top= */ 230, tab2Bottom, transY, /* position= */ 2);
-        when(tabView2.getAlpha()).thenReturn(0.5f);
+        View tabView2 = setUpChild(/* top= */ 230, tab2Bottom, transY, /* childIndex= */ 2);
+        tabView2.setAlpha(0.5f);
 
         mSpineDecoration.onDraw(mCanvas, mParent, mState);
 
@@ -420,21 +434,48 @@ public class VerticalTabGroupSpineDecorationUnitTest {
         return tabModel;
     }
 
-    private View addView(int top, int bottom, float translationY, int position) {
-        return addView(top, bottom, translationY, position, position);
+    /**
+     * Lays out {@link #mParent} so that its children are exactly the items from {@code
+     * firstPosition} to the end of {@link #mModel}, in adapter order. Item height is irrelevant
+     * (tests override child positions via {@link #setUpChild}); it only sizes the parent to fit.
+     */
+    private void layOutItems(int firstPosition) {
+        int itemCount = mModel.size() - firstPosition;
+        mParent.getAdapter().notifyDataSetChanged();
+        mLayoutManager.scrollToPositionWithOffset(firstPosition, 0);
+        mParent.measure(
+                View.MeasureSpec.makeMeasureSpec(PARENT_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(
+                        itemCount * ITEM_HEIGHT, View.MeasureSpec.EXACTLY));
+        mParent.layout(0, 0, PARENT_WIDTH, itemCount * ITEM_HEIGHT);
+        assertEquals(itemCount, mParent.getChildCount());
     }
 
-    private View addView(
-            int top, int bottom, float translationY, int position, int adapterPosition) {
-        View view = mock(View.class);
-        when(view.getTop()).thenReturn(top);
-        when(view.getBottom()).thenReturn(bottom);
-        when(view.getTranslationY()).thenReturn(translationY);
-        when(view.getAlpha()).thenReturn(1f);
-
-        when(mParent.getChildAt(position)).thenReturn(view);
-        when(mParent.getChildAdapterPosition(view)).thenReturn(adapterPosition);
-
+    /** Overrides the position of the laid out child at {@code childIndex}. */
+    private View setUpChild(int top, int bottom, float translationY, int childIndex) {
+        View view = mParent.getChildAt(childIndex);
+        view.layout(0, top, 0, bottom);
+        view.setTranslationY(translationY);
         return view;
+    }
+
+    /** Creates a plain, fixed-height item view for each entry in {@link #mModel}. */
+    private class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = new View(parent.getContext());
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ITEM_HEIGHT));
+            return new RecyclerView.ViewHolder(view) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return mModel.size();
+        }
     }
 }

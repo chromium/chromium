@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -68,6 +67,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -162,8 +162,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 /** Tests for {@link TabGridDialogMediator}. */
-// TODO(567604165): Remove mocking of Views / Activities
-@SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "DoNotMock"})
+@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGridDialogMediatorUnitTest {
@@ -190,14 +189,12 @@ public class TabGridDialogMediatorUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
-    @Mock private View mView;
     @Mock private TabGridDialogMediator.DialogController mDialogController;
     @Mock private TabCreator mTabCreator;
     @Mock private TabGridDialogMediator.AnimationSourceViewProvider mAnimationSourceViewProvider;
     @Mock private TabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
-    @Mock private EditText mTitleTextView;
     @Mock private Editable mEditable;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
@@ -220,9 +217,12 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private BookmarkModel mBookmarkModel;
-    @Mock private View mCardView;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+
+    private final View mView = new View(ContextUtils.getApplicationContext());
+    private final EditText mTitleTextView = new EditText(ContextUtils.getApplicationContext());
+    private final View mCardView = new View(ContextUtils.getApplicationContext());
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupObserver> mTabGroupObserverCaptor;
@@ -311,7 +311,6 @@ public class TabGridDialogMediatorUnitTest {
         doNothing().when(mTabModel).addTabGroupObserver(mTabGroupObserverCaptor.capture());
         when(mAnimationSourceViewProvider.getAnimationSourceViewForTabGroup(any()))
                 .thenReturn(mView);
-        when(mTitleTextView.getText()).thenReturn(mEditable);
         when(mEditable.toString()).thenReturn(CUSTOMIZED_DIALOG_TITLE);
         when(mRecyclerViewPositionSupplier.get()).thenReturn(null);
         when(mTabModel.getTabGroupTitle(any(Token.class))).thenReturn(UNSET_TAB_GROUP_TITLE);
@@ -1400,7 +1399,9 @@ public class TabGridDialogMediatorUnitTest {
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
-        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mock(View.class));
+        mModel.set(
+                TabGridDialogProperties.ANIMATION_SOURCE_VIEW,
+                new View(ContextUtils.getApplicationContext()));
         // Mock that tab1 and tab2 are in a group.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB_GROUP_ID);

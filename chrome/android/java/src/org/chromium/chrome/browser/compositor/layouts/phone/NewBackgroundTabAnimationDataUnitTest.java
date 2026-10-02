@@ -7,14 +7,16 @@ package org.chromium.chrome.browser.compositor.layouts.phone;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -48,8 +50,10 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link NewBackgroundTabAnimationData}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NewBackgroundTabAnimationDataUnitTest {
+    private static final int ROOT_WIDTH = 1000;
+    private static final int ROOT_HEIGHT = 2000;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private final NonNullObservableSupplier<Float> mNtpSearchBoxTransitionPercentageSupplier =
@@ -61,15 +65,13 @@ public class NewBackgroundTabAnimationDataUnitTest {
 
     @Mock private ToolbarManager mToolbarManager;
     @Mock private Tab mTab;
-    @Mock private View mToolbarTabSwitcherButton;
-    @Mock private View mBottomBarTabSwitcherButton;
-    @Mock private View mRootView;
-    @Mock private View mToolbarContainer;
-    @Mock private View mBottomBarContainer;
     @Mock private NtpCustomizationConfigManager mMockConfigManager;
     @Mock private NtpCustomizationPolicyManager mMockPolicyManager;
 
-    private Activity mActivity;
+    private View mToolbarTabSwitcherButton;
+    private View mBottomBarTabSwitcherButton;
+    private FrameLayout mToolbarContainer;
+    private FrameLayout mRootView;
     private NewBackgroundTabAnimationData mData;
     private int mToolbarButtonWidth;
     private int mToolbarHeight;
@@ -92,43 +94,46 @@ public class NewBackgroundTabAnimationDataUnitTest {
     }
 
     private void onActivity(Activity activity) {
-        mActivity = activity;
-        when(mRootView.getContext()).thenReturn(mActivity);
-        when(mRootView.findViewById(R.id.toolbar)).thenReturn(mToolbarContainer);
-        when(mRootView.findViewById(
-                        org.chromium.chrome.browser.ui.bottombar.R.id.bottom_bar_container))
-                .thenReturn(mBottomBarContainer);
-
-        when(mToolbarContainer.findViewById(R.id.tab_switcher_button))
-                .thenReturn(mToolbarTabSwitcherButton);
-        when(mBottomBarContainer.findViewById(R.id.tab_switcher_button))
-                .thenReturn(mBottomBarTabSwitcherButton);
-
         Resources res = activity.getResources();
         mToolbarButtonWidth = res.getDimensionPixelSize(R.dimen.toolbar_button_width);
         mToolbarHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
         mBottomBarHeight = BottomBarUtils.getBottomBarHeight(activity);
 
-        when(mToolbarTabSwitcherButton.getGlobalVisibleRect(any(Rect.class)))
-                .thenAnswer(
-                        invocation -> {
-                            Rect r = invocation.getArgument(0);
-                            if (ToolbarPositionController.shouldShowToolbarOnTop(mTab)) {
-                                r.set(0, 0, mToolbarButtonWidth, mToolbarHeight);
-                            } else {
-                                // Simulate toolbar being at the bottom of the screen (height 2000).
-                                r.set(0, 2000 - mToolbarHeight, mToolbarButtonWidth, 2000);
-                            }
-                            return true;
-                        });
+        mToolbarTabSwitcherButton = new View(activity);
+        mToolbarTabSwitcherButton.setId(R.id.tab_switcher_button);
+        mToolbarContainer = new FrameLayout(activity);
+        mToolbarContainer.setId(R.id.toolbar);
+        mToolbarContainer.addView(
+                mToolbarTabSwitcherButton,
+                new FrameLayout.LayoutParams(mToolbarButtonWidth, mToolbarHeight));
 
-        when(mBottomBarTabSwitcherButton.getGlobalVisibleRect(any(Rect.class)))
-                .thenAnswer(
-                        invocation -> {
-                            Rect r = invocation.getArgument(0);
-                            r.set(0, 2000 - mBottomBarHeight, mToolbarButtonWidth, 2000);
-                            return true;
-                        });
+        mBottomBarTabSwitcherButton = new View(activity);
+        mBottomBarTabSwitcherButton.setId(R.id.tab_switcher_button);
+        FrameLayout bottomBarContainer = new FrameLayout(activity);
+        bottomBarContainer.setId(
+                org.chromium.chrome.browser.ui.bottombar.R.id.bottom_bar_container);
+        bottomBarContainer.addView(
+                mBottomBarTabSwitcherButton,
+                new FrameLayout.LayoutParams(mToolbarButtonWidth, mBottomBarHeight));
+
+        mRootView = new FrameLayout(activity);
+        mRootView.addView(
+                mToolbarContainer,
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, mToolbarHeight, Gravity.TOP));
+        mRootView.addView(
+                bottomBarContainer,
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, mBottomBarHeight, Gravity.BOTTOM));
+        layOutRootView();
+    }
+
+    /** Measures and lays out {@link #mRootView} to fill a {@link #ROOT_HEIGHT} tall screen. */
+    private void layOutRootView() {
+        mRootView.measure(
+                View.MeasureSpec.makeMeasureSpec(ROOT_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(ROOT_HEIGHT, View.MeasureSpec.EXACTLY));
+        mRootView.layout(0, 0, ROOT_WIDTH, ROOT_HEIGHT);
     }
 
     @Test
@@ -168,8 +173,8 @@ public class NewBackgroundTabAnimationDataUnitTest {
         assertEquals(mToolbarButtonWidth, tabSwitcherButtonRect.width());
         assertEquals(mBottomBarHeight, tabSwitcherButtonRect.height());
 
-        assertEquals(2000 - mBottomBarHeight, tabSwitcherButtonRect.top);
-        assertEquals(2000, tabSwitcherButtonRect.bottom);
+        assertEquals(ROOT_HEIGHT - mBottomBarHeight, tabSwitcherButtonRect.top);
+        assertEquals(ROOT_HEIGHT, tabSwitcherButtonRect.bottom);
 
         assertEquals(
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT, mData.getAnimationType());
@@ -221,6 +226,12 @@ public class NewBackgroundTabAnimationDataUnitTest {
     public void testCaptureState_ToolbarPositionBottom() {
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
         AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+        // Move the toolbar to the bottom of the screen.
+        FrameLayout.LayoutParams toolbarParams =
+                (FrameLayout.LayoutParams) mToolbarContainer.getLayoutParams();
+        toolbarParams.gravity = Gravity.BOTTOM;
+        mToolbarContainer.setLayoutParams(toolbarParams);
+        layOutRootView();
 
         mData = new NewBackgroundTabAnimationData(mRootView, mToolbarManager);
         mData.captureState(mTab, /* isRegularNtp= */ false, /* expectedToolbarTop= */ 100);
@@ -230,8 +241,8 @@ public class NewBackgroundTabAnimationDataUnitTest {
         assertFalse(mData.isPositionOnTop());
 
         Rect tabSwitcherButtonRect = mData.getTabSwitcherButtonRect();
-        assertEquals(2000 - mToolbarHeight, tabSwitcherButtonRect.top);
-        assertEquals(2000, tabSwitcherButtonRect.bottom);
+        assertEquals(ROOT_HEIGHT - mToolbarHeight, tabSwitcherButtonRect.top);
+        assertEquals(ROOT_HEIGHT, tabSwitcherButtonRect.bottom);
 
         ToolbarPositionController.resetCachedToolbarConfigurationForTesting();
         AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);

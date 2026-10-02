@@ -21,14 +21,17 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
-import android.app.AppOpsManager;
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+
+import androidx.annotation.IdRes;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,9 +43,12 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowContextImpl;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -87,7 +93,6 @@ import java.util.function.Supplier;
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
     ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
     static class TestActivityTabWebContentsDelegateAndroid
             extends ActivityTabWebContentsDelegateAndroid {
@@ -162,7 +167,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock WebContents mWebContents;
     @Mock WebContents mNewWebContents;
@@ -180,10 +184,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Mock ExclusiveAccessManager mExclusiveAccessManager;
     @Mock FullscreenManager mFullscreenManager;
     @Mock RenderFrameHost mRenderFrameHost;
-    @Mock private View mUrlBar;
-    @Mock private View mMenuButton;
-    @Mock private View mTabSwitcherButton;
-    @Mock private View mTabSharingToolbar;
 
     @Captor private ArgumentCaptor<CompletableFuture<Boolean>> mFutureCaptor;
 
@@ -194,11 +194,25 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     private static final float TEST_DENSITY = 1.0f;
     private static final Rect TEST_BOUNDS = new Rect(0, 0, 1920, 1080);
     private static final Rect TEST_LOCAL_BOUNDS = new Rect(0, 0, 1920, 1080);
+    private static final int TEST_TASK_ID = 123;
 
+    private Activity mActivity;
+    private FrameLayout mContentView;
     private TestActivityTabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
+
+    /** An Activity with a fixed task id. */
+    private static class TaskIdActivity extends Activity {
+        @Override
+        public int getTaskId() {
+            return TEST_TASK_ID;
+        }
+    }
 
     @Before
     public void setup() {
+        mActivity = Robolectric.buildActivity(TaskIdActivity.class).setup().get();
+        mContentView = new FrameLayout(mActivity);
+        mActivity.setContentView(mContentView);
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         PopupCreatorFactory.setInstanceForTesting(mPopupCreator);
         mTabWebContentsDelegateAndroid =
@@ -217,7 +231,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mWebContents.getVisibleUrl()).thenReturn(URL_1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mTabCreator);
-        when(mActivity.getSystemService(Context.ACTIVITY_SERVICE)).thenReturn(mActivityManager);
+        ShadowContextImpl shadowContext = Shadow.extract(mActivity.getBaseContext());
+        shadowContext.setSystemService(Context.ACTIVITY_SERVICE, mActivityManager);
 
         when(mDisplayAndroid.getDisplayId()).thenReturn(TEST_DISPLAY_ID);
         when(mDisplayAndroid.getDipScale()).thenReturn(TEST_DENSITY);
@@ -225,6 +240,39 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         when(mDisplayAndroid.getLocalBounds()).thenReturn(TEST_LOCAL_BOUNDS);
 
         when(mDisplayAndroidManager.getDisplayMatching(any())).thenReturn(mDisplayAndroid);
+    }
+
+    /**
+     * Adds {@code view} with the given id to the Activity's content view. The view is wrapped in a
+     * container whose visibility determines {@code view.isShown()}, while the view itself stays
+     * visible, so an unexpected requestFocus() on a hidden view would still succeed and be caught.
+     */
+    private <T extends View> T addToContentView(T view, @IdRes int id, boolean shown) {
+        view.setId(id);
+        FrameLayout container = new FrameLayout(mActivity);
+        container.setVisibility(shown ? View.VISIBLE : View.GONE);
+        container.addView(view);
+        mContentView.addView(container);
+        return view;
+    }
+
+    private View addFocusableView(@IdRes int id, boolean shown, boolean focusable) {
+        View view = new View(mActivity);
+        view.setFocusable(focusable);
+        view.setFocusableInTouchMode(focusable);
+        return addToContentView(view, id, shown);
+    }
+
+    /** Adds a tab sharing toolbar containing two items. */
+    private ViewGroup addTabSharingToolbar(boolean shown, boolean hasFocusableItems) {
+        LinearLayout toolbar = new LinearLayout(mActivity);
+        for (int i = 0; i < 2; i++) {
+            View item = new View(mActivity);
+            item.setFocusable(hasFocusableItems);
+            item.setFocusableInTouchMode(hasFocusableItems);
+            toolbar.addView(item);
+        }
+        return addToContentView(toolbar, R.id.tab_sharing_toolbar_container, shown);
     }
 
     private void setRepositionPermission(boolean granted) {
@@ -528,13 +576,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION)
     public void testBringActivityToForeground() {
-        final int taskId = 123;
-        when(mActivity.getTaskId()).thenReturn(taskId);
-
         mTabWebContentsDelegateAndroid.bringActivityToForeground();
 
-        verify(mActivity).getSystemService(Context.ACTIVITY_SERVICE);
-        verify(mActivityManager).moveTaskToFront(taskId, 0);
+        verify(mActivityManager).moveTaskToFront(TEST_TASK_ID, 0);
     }
 
     @Test
@@ -659,105 +703,97 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
     @Test
     public void testTakeFocus_forward() {
-        when(mActivity.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
-        when(mUrlBar.requestFocus(View.FOCUS_FORWARD)).thenReturn(true);
+        View urlBar = addFocusableView(R.id.url_bar, /* shown= */ true, /* focusable= */ true);
 
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
-        verify(mUrlBar).requestFocus(View.FOCUS_FORWARD);
+        assertTrue(urlBar.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_menuButton() {
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(true);
-        when(mMenuButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ true, /* focusable= */ true);
 
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mMenuButton).requestFocus(View.FOCUS_BACKWARD);
+        assertTrue(menuButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_tabSharingToolbar() {
-        when(mActivity.findViewById(R.id.tab_sharing_toolbar_container))
-                .thenReturn(mTabSharingToolbar);
-        when(mTabSharingToolbar.isShown()).thenReturn(true);
-        when(mTabSharingToolbar.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(true);
+        ViewGroup tabSharingToolbar =
+                addTabSharingToolbar(/* shown= */ true, /* hasFocusableItems= */ true);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ true, /* focusable= */ true);
 
         // The tab sharing toolbar sits below the browser toolbar, so it must take focus first.
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mTabSharingToolbar).requestFocus(View.FOCUS_BACKWARD);
-        verify(mMenuButton, never()).requestFocus(anyInt());
+        // FOCUS_BACKWARD lands on the toolbar's last focusable item.
+        assertTrue(tabSharingToolbar.getChildAt(1).isFocused());
+        assertFalse(menuButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_tabSharingToolbarHidden() {
-        when(mActivity.findViewById(R.id.tab_sharing_toolbar_container))
-                .thenReturn(mTabSharingToolbar);
-        when(mTabSharingToolbar.isShown()).thenReturn(false);
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(true);
-        when(mMenuButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+        ViewGroup tabSharingToolbar =
+                addTabSharingToolbar(/* shown= */ false, /* hasFocusableItems= */ true);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ true, /* focusable= */ true);
 
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mTabSharingToolbar, never()).requestFocus(anyInt());
-        verify(mMenuButton).requestFocus(View.FOCUS_BACKWARD);
+        assertFalse(tabSharingToolbar.hasFocus());
+        assertTrue(menuButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_tabSharingToolbarNotFocusable() {
-        when(mActivity.findViewById(R.id.tab_sharing_toolbar_container))
-                .thenReturn(mTabSharingToolbar);
-        when(mTabSharingToolbar.isShown()).thenReturn(true);
-        when(mTabSharingToolbar.requestFocus(View.FOCUS_BACKWARD)).thenReturn(false);
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(true);
-        when(mMenuButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+        ViewGroup tabSharingToolbar =
+                addTabSharingToolbar(/* shown= */ true, /* hasFocusableItems= */ false);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ true, /* focusable= */ true);
 
         // If the toolbar has no focusable descendant, focus continues up to the browser toolbar.
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mTabSharingToolbar).requestFocus(View.FOCUS_BACKWARD);
-        verify(mMenuButton).requestFocus(View.FOCUS_BACKWARD);
+        assertFalse(tabSharingToolbar.hasFocus());
+        assertTrue(menuButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_tabSwitcherButton() {
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(false);
-        when(mActivity.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
-        when(mTabSwitcherButton.isShown()).thenReturn(true);
-        when(mTabSwitcherButton.requestFocus(View.FOCUS_BACKWARD)).thenReturn(true);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ false, /* focusable= */ true);
+        View tabSwitcherButton =
+                addFocusableView(
+                        R.id.tab_switcher_button, /* shown= */ true, /* focusable= */ true);
 
         assertTrue(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mTabSwitcherButton).requestFocus(View.FOCUS_BACKWARD);
+        assertFalse(menuButton.isFocused());
+        assertTrue(tabSwitcherButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_reverse_buttonsHidden() {
-        when(mActivity.findViewById(R.id.menu_button)).thenReturn(mMenuButton);
-        when(mMenuButton.isShown()).thenReturn(false);
-        when(mActivity.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
-        when(mTabSwitcherButton.isShown()).thenReturn(false);
+        View menuButton =
+                addFocusableView(R.id.menu_button, /* shown= */ false, /* focusable= */ true);
+        View tabSwitcherButton =
+                addFocusableView(
+                        R.id.tab_switcher_button, /* shown= */ false, /* focusable= */ true);
 
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
-        verify(mMenuButton, never()).requestFocus(anyInt());
-        verify(mTabSwitcherButton, never()).requestFocus(anyInt());
+        assertFalse(menuButton.isFocused());
+        assertFalse(tabSwitcherButton.isFocused());
     }
 
     @Test
     public void testTakeFocus_forward_requestFocusFails() {
-        when(mActivity.findViewById(R.id.url_bar)).thenReturn(mUrlBar);
-        when(mUrlBar.requestFocus(View.FOCUS_FORWARD)).thenReturn(false);
+        View urlBar = addFocusableView(R.id.url_bar, /* shown= */ true, /* focusable= */ false);
 
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
-        verify(mUrlBar).requestFocus(View.FOCUS_FORWARD);
+        assertFalse(urlBar.isFocused());
     }
 
     @Test
     public void testTakeFocus_nullViews() {
-        when(mActivity.findViewById(anyInt())).thenReturn(null);
-
+        // No views are added to the content view, so findViewById() returns null for all ids.
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ false));
         assertFalse(mTabWebContentsDelegateAndroid.takeFocus(/* reverse= */ true));
     }
@@ -814,21 +850,8 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
     public void testIsPictureInPictureEnabled_suppressedWhenAndroidAutoProjected() {
-        PackageManager packageManager = mock(PackageManager.class);
-        AppOpsManager appOpsManager = mock(AppOpsManager.class);
-        ApplicationInfo applicationInfo = new ApplicationInfo();
-        applicationInfo.uid = 1000;
-
-        when(mActivity.getApplicationContext()).thenReturn(mActivity);
-        when(mActivity.getPackageManager()).thenReturn(packageManager);
-        when(packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE))
-                .thenReturn(true);
-        when(mActivity.getSystemService(Context.APP_OPS_SERVICE)).thenReturn(appOpsManager);
-        when(mActivity.getApplicationInfo()).thenReturn(applicationInfo);
-        when(mActivity.getPackageName()).thenReturn("org.chromium.chrome");
-        when(appOpsManager.checkOpNoThrow(
-                        AppOpsManager.OPSTR_PICTURE_IN_PICTURE, 1000, "org.chromium.chrome"))
-                .thenReturn(AppOpsManager.MODE_ALLOWED);
+        Shadows.shadowOf(mActivity.getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
 
         BrowserUiUtils.setIsAndroidAutoProjectedForTesting(false);
         assertTrue(mTabWebContentsDelegateAndroid.isPictureInPictureEnabled());

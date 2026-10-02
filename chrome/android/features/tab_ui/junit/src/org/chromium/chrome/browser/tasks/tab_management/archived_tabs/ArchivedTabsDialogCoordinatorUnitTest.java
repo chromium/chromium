@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -36,7 +35,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -92,7 +90,6 @@ import java.util.List;
 
 /** Tests for {@link ArchivedTabsDialogCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ArchivedTabsDialogCoordinatorUnitTest {
     private static final Token TAB_GROUP_ID = Token.createRandom();
     private static final String TAB_GROUP_ID_STRING = TAB_GROUP_ID.toString();
@@ -104,8 +101,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Spy private ViewGroup mRootView;
-    @Spy private ViewGroup mTabSwitcherView;
     @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     @Mock private TabModelSelectorBase mArchivedTabModelSelector;
     @Mock private TabModel mArchivedTabModel;
@@ -121,7 +116,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private View mItemView1;
     @Mock private PaneManager mPaneManager;
     @Mock private TabSwitcherPaneBase mTabSwitcherPaneBase;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
@@ -129,6 +123,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private Destroyable mOrchestratorLease;
 
     private Activity mActivity;
+    private ViewGroup mRootView;
+    private ViewGroup mTabSwitcherView;
     private ArchivedTabsDialogCoordinator mCoordinator;
     private final SettableNonNullObservableSupplier<Boolean> mTabStateInitializedSupplier =
             ObservableSuppliers.createNonNull(true);
@@ -158,7 +154,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     private void onActivity(Activity activity) {
         mActivity = activity;
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mRootView = spy(new FrameLayout(mActivity));
+        mRootView = new FrameLayout(mActivity);
         mTabSwitcherView = new FrameLayout(mActivity);
         FrameLayout.LayoutParams layoutparams =
                 new FrameLayout.LayoutParams(
@@ -244,7 +240,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.show(mOnTabSelectingListener);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mRootView).addView(any());
+        assertEquals(mRootView, mCoordinator.getViewForTesting().getParent());
         verify(mTabListEditorController).show(any(), eq(Collections.emptyList()), eq(null));
         verify(mTabListEditorController).setNavigationProvider(any());
         verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive item");
@@ -305,7 +301,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         mCoordinator.getTabListEditorLifecycleObserver().willHide();
 
         RobolectricUtil.runAllBackgroundAndUi();
-        verify(mRootView).removeView(any());
+        assertNull(mCoordinator.getViewForTesting().getParent());
 
         mCoordinator.getTabListEditorLifecycleObserver().didHide();
         verify(mTabListEditorController).setLifecycleObserver(null);
@@ -323,7 +319,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         // Allow animations to finish.
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mRootView, atLeastOnce()).removeView(any());
+        assertNull(mCoordinator.getViewForTesting().getParent());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
     }
@@ -374,14 +370,14 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         TabListItemOnClickListenerProvider provider =
                 mCoordinator.getTabListItemOnClickListenerProviderForTesting();
         TabActionListener listener = provider.onTabGroupClicked(TAB_GROUP_ID_STRING);
-        listener.run(mItemView1, TAB_GROUP_ID_STRING, /* triggeringMotion= */ null);
+        listener.run(new View(mActivity), TAB_GROUP_ID_STRING, /* triggeringMotion= */ null);
 
         verify(mTabGroupUiActionHandler).openTabGroup(TAB_GROUP_ID_STRING);
 
         // Assert the dialog is hidden and destroyed.
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mRootView, atLeastOnce()).removeView(any());
+        assertNull(mCoordinator.getViewForTesting().getParent());
         verify(mTabListEditorController).setLifecycleObserver(null);
         verify(mBackPressManager).removeHandler(any());
 

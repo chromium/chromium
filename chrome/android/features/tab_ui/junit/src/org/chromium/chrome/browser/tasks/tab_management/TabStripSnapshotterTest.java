@@ -6,22 +6,23 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -34,8 +35,11 @@ import java.util.List;
 
 /** Unit tests for {@link TabStripSnapshotter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabStripSnapshotterTest {
+    private static final int ITEM_COUNT = 10;
+    private static final int ITEM_WIDTH = 100;
+    private static final int ITEM_HEIGHT = 10;
+    private static final int VISIBLE_WIDTH = 3 * ITEM_WIDTH;
     private static final PropertyKey[] PROPERTY_KEYS =
             new PropertyKey[] {
                 TabProperties.FAVICON_FETCHER,
@@ -45,14 +49,26 @@ public class TabStripSnapshotterTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Captor private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
-
-    @Mock private RecyclerView mRecyclerView;
     @Mock private TabFaviconFetcher mTabFaviconFetcherA;
     @Mock private TabFaviconFetcher mTabFaviconFetcherB;
     @Mock private TabFaviconFetcher mTabFaviconFetcherC;
 
     private final List<Object> mTokenList = new ArrayList<>();
+    private RecyclerView mRecyclerView;
+
+    @Before
+    public void setUp() {
+        Context context = ContextUtils.getApplicationContext();
+        mRecyclerView = new RecyclerView(context);
+        mRecyclerView.setLayoutManager(
+                new LinearLayoutManager(
+                        context, LinearLayoutManager.HORIZONTAL, /* reverseLayout= */ false));
+        mRecyclerView.setAdapter(new ItemAdapter());
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(VISIBLE_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(ITEM_HEIGHT, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, VISIBLE_WIDTH, ITEM_HEIGHT);
+    }
 
     private void onModelTokenChange(Object token) {
         mTokenList.add(token);
@@ -67,17 +83,25 @@ public class TabStripSnapshotterTest {
                 .build();
     }
 
+    /** Starts a fling (dispatching SCROLL_STATE_SETTLING) and then stops it (SCROLL_STATE_IDLE). */
+    private void settleScroll() {
+        // mRecyclerView is not attached to a window, so the fling's animation frames never run and
+        // the scroll offset is left unchanged.
+        mRecyclerView.smoothScrollBy(ITEM_WIDTH, 0);
+        assertEquals(RecyclerView.SCROLL_STATE_SETTLING, mRecyclerView.getScrollState());
+        mRecyclerView.stopScroll();
+        assertEquals(RecyclerView.SCROLL_STATE_IDLE, mRecyclerView.getScrollState());
+    }
+
     @Test
     public void testSnapshotterFetcher() {
-        when(mRecyclerView.computeHorizontalScrollOffset()).thenReturn(0);
+        assertEquals(0, mRecyclerView.computeHorizontalScrollOffset());
         ModelList modelList = new ModelList();
         PropertyModel propertyModel1 = makePropertyModel(mTabFaviconFetcherA, false, false);
         modelList.add(new ListItem(/* type= */ 0, propertyModel1));
         TabStripSnapshotter tabStripSnapshotter =
                 new TabStripSnapshotter(this::onModelTokenChange, modelList, mRecyclerView);
 
-        verify(mRecyclerView, times(1)).addOnScrollListener(mOnScrollListenerCaptor.capture());
-        OnScrollListener onScrollListener = mOnScrollListenerCaptor.getValue();
         assertEquals(1, mTokenList.size());
 
         PropertyModel propertyModel2 = makePropertyModel(mTabFaviconFetcherA, true, true);
@@ -102,23 +126,46 @@ public class TabStripSnapshotterTest {
         assertNotEquals(mTokenList.get(1), mTokenList.get(5));
         assertNotEquals(mTokenList.get(4), mTokenList.get(5));
 
-        when(mRecyclerView.computeHorizontalScrollOffset()).thenReturn(100);
-        onScrollListener.onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_DRAGGING);
-        onScrollListener.onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_SETTLING);
+        mRecyclerView.scrollBy(ITEM_WIDTH, 0);
+        assertEquals(ITEM_WIDTH, mRecyclerView.computeHorizontalScrollOffset());
+        // Scrolling alone, or entering the settling state, doesn't take a snapshot.
+        mRecyclerView.smoothScrollBy(ITEM_WIDTH, 0);
         assertEquals(6, mTokenList.size());
 
-        onScrollListener.onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_IDLE);
+        mRecyclerView.stopScroll();
         assertEquals(7, mTokenList.size());
         assertNotEquals(mTokenList.get(5), mTokenList.get(6));
 
-        when(mRecyclerView.computeHorizontalScrollOffset()).thenReturn(0);
-        onScrollListener.onScrollStateChanged(mRecyclerView, RecyclerView.SCROLL_STATE_IDLE);
+        mRecyclerView.scrollBy(-ITEM_WIDTH, 0);
+        assertEquals(0, mRecyclerView.computeHorizontalScrollOffset());
+        settleScroll();
         assertEquals(8, mTokenList.size());
         assertEquals(mTokenList.get(5), mTokenList.get(7));
 
         tabStripSnapshotter.destroy();
-        verify(mRecyclerView, times(1)).removeOnScrollListener(onScrollListener);
+        // The scroll listener has been removed.
+        settleScroll();
+        assertEquals(8, mTokenList.size());
         propertyModel1.set(TabProperties.FAVICON_FETCHER, mTabFaviconFetcherB);
         assertEquals(8, mTokenList.size());
+    }
+
+    /** Creates {@link #ITEM_COUNT} fixed-width items. */
+    private static class ItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = new View(parent.getContext());
+            view.setLayoutParams(
+                    new RecyclerView.LayoutParams(ITEM_WIDTH, ViewGroup.LayoutParams.MATCH_PARENT));
+            return new RecyclerView.ViewHolder(view) {};
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return ITEM_COUNT;
+        }
     }
 }

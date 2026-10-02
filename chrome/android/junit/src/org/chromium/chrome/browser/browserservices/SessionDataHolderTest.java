@@ -25,6 +25,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.Callback;
@@ -36,11 +37,20 @@ import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 
 /** Unit tests for {@link SessionDataHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SessionDataHolderTest {
 
     private static final int TASK_ID_1 = 10;
     private static final int TASK_ID_2 = 20;
+
+    /** An Activity whose task id is controlled by the test. */
+    private static class TaskIdActivity extends Activity {
+        int mTaskId;
+
+        @Override
+        public int getTaskId() {
+            return mTaskId;
+        }
+    }
 
     private Intent mIntent1;
     private Intent mIntent2;
@@ -51,9 +61,10 @@ public class SessionDataHolderTest {
     @Mock CustomTabsConnection mConnection;
     @Mock SessionHandler mHandler1;
     @Mock SessionHandler mHandler2;
-    @Mock Activity mActivityInTask1;
-    @Mock Activity mActivityInTask2;
     @Captor ArgumentCaptor<Callback<SessionHolder>> mDisconnectCallbackCaptor;
+
+    private TaskIdActivity mActivityInTask1;
+    private TaskIdActivity mActivityInTask2;
 
     @Before
     public void setUp() {
@@ -66,8 +77,10 @@ public class SessionDataHolderTest {
         doReturn(mSession2).when(mHandler2).getSession();
         doReturn(CustomTabActivity.class).when(mHandler1).getActivityClass();
         doReturn(TranslucentCustomTabActivity.class).when(mHandler2).getActivityClass();
-        when(mActivityInTask1.getTaskId()).thenReturn(TASK_ID_1);
-        when(mActivityInTask2.getTaskId()).thenReturn(TASK_ID_2);
+        mActivityInTask1 = Robolectric.buildActivity(TaskIdActivity.class).get();
+        mActivityInTask1.mTaskId = TASK_ID_1;
+        mActivityInTask2 = Robolectric.buildActivity(TaskIdActivity.class).get();
+        mActivityInTask2.mTaskId = TASK_ID_2;
         doNothing().when(mConnection).setDisconnectCallback(mDisconnectCallbackCaptor.capture());
         SessionDataHolder.setInstanceForTesting(new SessionDataHolder());
     }

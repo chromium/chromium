@@ -18,12 +18,9 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
 import android.os.Looper;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,9 +33,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.shadows.ShadowDisplay;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -75,7 +73,6 @@ import java.util.List;
 
 /** Unit tests for TabItemPickerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabItemPickerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -83,28 +80,25 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TabModelSelectorImpl mTabModelSelector;
     @Mock private Callback<Boolean> mCallback;
-    @Mock private Activity mActivity;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
-    @Mock private ViewGroup mRootView;
-    @Mock private ViewGroup mContainerView;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TabListEditorCoordinator.TabListEditorController mTabListEditorController;
-    @Mock private Window mWindow;
-    @Mock private ViewGroup mDecorView;
-    @Mock private Resources mResources;
-    @Mock private WindowManager mWindowManager;
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
     @Mock private WebContents mWebContents;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
+    private final ViewGroup mRootView = new FrameLayout(ContextUtils.getApplicationContext());
+    private final ViewGroup mContainerView = new FrameLayout(ContextUtils.getApplicationContext());
+    private Activity mActivity;
     private OneshotSupplierImpl<Profile> mProfileSupplierImpl;
     private TabItemPickerCoordinator mItemPickerCoordinator;
     private final int mWindowId = 5;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mProfileSupplierImpl = new OneshotSupplierImpl<>();
         TabItemPickerCoordinator realCoordinator =
                 new TabItemPickerCoordinator(
@@ -120,15 +114,6 @@ public class TabItemPickerCoordinatorUnitTest {
         mItemPickerCoordinator = Mockito.spy(realCoordinator);
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-
-        when(mActivity.getWindow()).thenReturn(mWindow);
-        when(mWindow.getDecorView()).thenReturn(mDecorView);
-
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mResources.getInteger(anyInt())).thenReturn(1);
-
-        when(mActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mWindowManager);
-        when(mWindowManager.getDefaultDisplay()).thenReturn(ShadowDisplay.getDefaultDisplay());
 
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mRegularTabModel.index()).thenReturn(0);
@@ -417,7 +402,7 @@ public class TabItemPickerCoordinatorUnitTest {
 
         observerCaptor.getValue().onDestroyed();
 
-        verify(mActivity).finish();
+        assertTrue(mActivity.isFinishing());
         verify(mTabModelSelector).removeObserver(observerCaptor.getValue());
     }
 
@@ -443,7 +428,7 @@ public class TabItemPickerCoordinatorUnitTest {
 
         observerCaptor.getValue().didBecomeEmpty();
 
-        verify(mActivity).finish();
+        assertTrue(mActivity.isFinishing());
         verify(incognitoTabModel).removeIncognitoObserver(observerCaptor.getValue());
     }
 

@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
-import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +25,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.AccessibilityDelegateCompat;
@@ -51,7 +51,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SettingsMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SettingsMenuHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -138,6 +137,19 @@ public class SettingsMenuHelperUnitTest {
         @Override
         public void onPrepareOptionsMenu(Menu menu) {
             mPrepareOptionsMenuCalled = true;
+        }
+    }
+
+    private static class TestOnBackPressedCallback extends OnBackPressedCallback {
+        boolean mBackPressed;
+
+        TestOnBackPressedCallback() {
+            super(/* enabled= */ true);
+        }
+
+        @Override
+        public void handleOnBackPressed() {
+            mBackPressed = true;
         }
     }
 
@@ -546,11 +558,12 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_ShowSingleColumn() {
-        Activity activity = mock(Activity.class);
+        TestOnBackPressedCallback backPressedCallback = new TestOnBackPressedCallback();
+        mActivity.getOnBackPressedDispatcher().addCallback(backPressedCallback);
 
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
-                activity,
+                mActivity,
                 /* shownInTab= */ false,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
@@ -565,7 +578,7 @@ public class SettingsMenuHelperUnitTest {
         assertTrue(navigationButton.hasOnClickListeners());
 
         navigationButton.performClick();
-        verify(activity).onBackPressed();
+        assertTrue(backPressedCallback.mBackPressed);
     }
 
     @Test
@@ -589,11 +602,12 @@ public class SettingsMenuHelperUnitTest {
 
     @Test
     public void testUpdateNavigationIcon_ShowSingleColumn_shownInTabDetailSettings() {
-        Activity activity = mock(Activity.class);
+        TestOnBackPressedCallback backPressedCallback = new TestOnBackPressedCallback();
+        mActivity.getOnBackPressedDispatcher().addCallback(backPressedCallback);
 
         SettingsMenuHelper.updateNavigationIcon(
                 mToolbar,
-                activity,
+                mActivity,
                 /* shownInTab= */ true,
                 /* show= */ true,
                 /* isMultiColumn= */ false,
@@ -609,7 +623,7 @@ public class SettingsMenuHelperUnitTest {
         assertNotNull(shadowOf(navigationButton).getOnClickListener());
 
         navigationButton.performClick();
-        verify(activity).onBackPressed();
+        assertTrue(backPressedCallback.mBackPressed);
     }
 
     @Test

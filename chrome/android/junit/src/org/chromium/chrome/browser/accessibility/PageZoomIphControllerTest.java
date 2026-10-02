@@ -4,11 +4,8 @@
 
 package org.chromium.chrome.browser.accessibility;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -33,26 +30,19 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Unit tests for {@link PageZoomIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageZoomIphControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mContext;
     @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private View mToolbarMenuButton;
     @Mock private UserEducationHelper mUserEducationHelper;
 
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
+    private final View mToolbarMenuButton = new View(ApplicationProvider.getApplicationContext());
     private PageZoomIphController mPageZoomIphController;
 
     @Before
     public void setUp() {
-
-        Resources resources = ApplicationProvider.getApplicationContext().getResources();
-        doReturn(resources).when(mContext).getResources();
-        doReturn(mContext).when(mToolbarMenuButton).getContext();
-
         mPageZoomIphController =
                 new PageZoomIphController(
                         mAppMenuHandler, mToolbarMenuButton, mUserEducationHelper);
