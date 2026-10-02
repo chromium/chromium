@@ -43,7 +43,7 @@ static_library("policy_util") {
     "//chromeos/components/kiosk",
     "//components/account_id",
     "//components/prefs",
-    "//components/user_manager",
+    "//components/session_manager/core",
     "//components/web_package",
     "//components/webapps/isolated_web_apps",
   ]

@@ -22,8 +22,8 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
@@ -32,9 +32,9 @@
 namespace {
 
 policy::DeviceLocalAccount GetCurrentDeviceLocalAccount() {
-  const user_manager::User& current_user =
-      CHECK_DEREF(user_manager::UserManager::Get()->GetPrimaryUser());
-  const AccountId& account_id = current_user.GetAccountId();
+  const AccountId& account_id =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id();
 
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(ash::CrosSettings::Get());
