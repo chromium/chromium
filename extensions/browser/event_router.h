@@ -488,7 +488,9 @@ class EventRouter : public KeyedService,
 
   // Reports a bad message when `process` is not authorized for `extension_id`,
   // recording crash keys to help diagnose unexpected renderer kills.
+  // `event_name` is the event whose listener was being updated.
   void ReportUnauthorizedExtensionProcess(const ExtensionId& extension_id,
+                                          std::string_view event_name,
                                           content::RenderProcessHost& process);
 
   // Validates a main-thread listener owner from a renderer-originated message.
@@ -499,6 +501,7 @@ class EventRouter : public KeyedService,
   // reported).
   bool ValidateMainThreadListenerOwner(
       const mojom::EventListenerOwner& listener_owner,
+      std::string_view event_name,
       content::RenderProcessHost& process,
       bool require_extension_process);
 
@@ -506,6 +509,7 @@ class EventRouter : public KeyedService,
   // acting for an extension-owned worker scope that `process` may host.
   bool ValidateServiceWorkerListenerForExtension(
       const ExtensionId& extension_id,
+      std::string_view event_name,
       const GURL& worker_scope_url,
       content::RenderProcessHost& process);
 
