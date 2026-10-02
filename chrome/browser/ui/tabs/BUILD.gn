@@ -192,10 +192,6 @@ if (!is_android) {
       "//components/commerce/core:feature_list",
       "//components/feed:feature_list",
     ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   source_set("tab_group") {
@@ -424,10 +420,6 @@ if (!is_android) {
       "//components/web_modal",
       "//components/webapps/common",
     ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   source_set("tabs") {
