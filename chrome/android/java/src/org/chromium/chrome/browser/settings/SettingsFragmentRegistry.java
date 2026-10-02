@@ -234,6 +234,17 @@ public class SettingsFragmentRegistry {
     static final ArrayMap<Class<? extends Fragment>, String> sFragmentToMainMenuAnchorMap =
             new ArrayMap<>();
 
+    /**
+     * The third-party cookies category, which the cookies page is opened from. The title is left
+     * out so that the page shows the category's localized name.
+     *
+     * <p>Declared before the static block that reads it, since it is not a compile-time constant.
+     */
+    private static final String THIRD_PARTY_COOKIES_CATEGORY_PATH =
+            "/siteSettings/category?category="
+                    + SiteSettingsCategory.preferenceKey(
+                            SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+
     static {
         // Root path mappings pointing to the top-level main settings fragment.
         registerMapping("", MainSettings.class);
@@ -263,7 +274,17 @@ public class SettingsFragmentRegistry {
         registerMapping("/privacy/universalOptOut", UniversalOptOutSettings.class);
         registerMapping("/privacyGuide", PrivacyGuideFragment.class);
         registerMapping("/clearBrowsingData", ClearBrowsingDataFragment.class);
-        registerMapping("/cookies", CookieSettings.class);
+        registerMapping("/cookies", CookieSettings.class)
+                .requireArgs(CookieSettings.EXTRA_COOKIE_PAGE_STATE)
+                .fallback(THIRD_PARTY_COOKIES_CATEGORY_PATH)
+                .validateWith(
+                        args -> {
+                            int mode = args.getInt(CookieSettings.EXTRA_COOKIE_PAGE_STATE);
+                            return mode == CookieControlsMode.BLOCK_THIRD_PARTY
+                                            || mode == CookieControlsMode.INCOGNITO_ONLY
+                                    ? null
+                                    : settingsUrlForPath(THIRD_PARTY_COOKIES_CATEGORY_PATH);
+                        });
         registerMapping("/doNotTrack", DoNotTrackSettings.class);
         registerMapping("/preloadPages", PreloadPagesSettingsFragment.class);
         registerMapping("/preloadPages/standard", StandardPreloadingSettingsFragment.class);
