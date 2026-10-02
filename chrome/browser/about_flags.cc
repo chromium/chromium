@@ -3811,12 +3811,14 @@ const FeatureEntry::FeatureVariation
         {"- Sticky", kDeviceBoundSessionsDsePrewarmerStickyParams, nullptr}};
 
 // Variations on pre-warming delays.
-const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
-    {"glic-warming-delay-ms", "5000"},
-    {"glic-panel-reset-delay-ms", "2000"}};
+const FeatureEntry::FeatureParam kGlicWarmingDelay20s[] = {
+    {"glic-warming-delay-ms", "20000"}};
+const FeatureEntry::FeatureParam kGlicWarmingDelay300s[] = {
+    {"glic-warming-delay-ms", "300000"}};
 
 const FeatureEntry::FeatureVariation kGlicWarmingVariations[] = {
-    {"with shorter delays", kGlicWarmingShorterDelays, nullptr}};
+    {"with 20s delay", kGlicWarmingDelay20s, nullptr},
+    {"with 300s delay", kGlicWarmingDelay300s, nullptr}};
 
 #if BUILDFLAG(ENABLE_PDF)
 const FeatureEntry::FeatureParam kPdfGlicSummarizeLongButtonText[] = {
