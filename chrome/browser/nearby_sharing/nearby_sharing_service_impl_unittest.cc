@@ -322,36 +322,14 @@ constexpr sharing::mojom::WifiCredentialsMetadata::SecurityType
 
 constexpr int64_t kFreeDiskSpace = 10000;
 
-const std::vector<uint8_t> kValidV1EndpointInfo = {
-    0, 0, 0, 0,  0,   0,   0,   0,   0,  0,   0,  0,  0,   0,
-    0, 0, 0, 10, 100, 101, 118, 105, 99, 101, 78, 97, 109, 101};
-
-const std::vector<uint8_t> kToken = {0, 1, 2};
 const char kFourDigitToken[] = "1953";
-
-const std::vector<uint8_t> kPrivateCertificateHashAuthToken = {
-    0x8b, 0xcb, 0xa2, 0xf8, 0xe4, 0x06};
-const std::vector<uint8_t> kIncomingConnectionSignedData = {
-    0x30, 0x45, 0x02, 0x20, 0x4f, 0x83, 0x72, 0xbd, 0x02, 0x70, 0xd9, 0xda,
-    0x62, 0x83, 0x5d, 0xb2, 0xdc, 0x6e, 0x3f, 0xa6, 0xa8, 0xa1, 0x4f, 0x5f,
-    0xd3, 0xe3, 0xd9, 0x1a, 0x5d, 0x2d, 0x61, 0xd2, 0x6c, 0xdd, 0x8d, 0xa5,
-    0x02, 0x21, 0x00, 0xd4, 0xe1, 0x1d, 0x14, 0xcb, 0x58, 0xf7, 0x02, 0xd5,
-    0xab, 0x48, 0xe2, 0x2f, 0xcb, 0xc0, 0x53, 0x41, 0x06, 0x50, 0x65, 0x95,
-    0x19, 0xa9, 0x22, 0x92, 0x00, 0x42, 0x01, 0x26, 0x25, 0xcb, 0x8c};
-const std::vector<uint8_t> kOutgoingConnectionSignedData = {
-    0x30, 0x45, 0x02, 0x21, 0x00, 0xf9, 0xc9, 0xa8, 0x89, 0x96, 0x6e, 0x5c,
-    0xea, 0x0a, 0x60, 0x37, 0x3a, 0x84, 0x7d, 0xf5, 0x31, 0x82, 0x74, 0xb9,
-    0xde, 0x3f, 0x64, 0x1b, 0xff, 0x4f, 0x54, 0x31, 0x1f, 0x9e, 0x63, 0x68,
-    0xca, 0x02, 0x20, 0x52, 0x43, 0x46, 0xa7, 0x6f, 0xcb, 0x96, 0x50, 0x86,
-    0xfd, 0x6f, 0x9f, 0x7e, 0x50, 0xa7, 0xa0, 0x9b, 0xdf, 0xae, 0x79, 0x42,
-    0x47, 0xd9, 0x60, 0x71, 0x91, 0x7a, 0xbb, 0x81, 0x9b, 0x0d, 0x2e};
 
 constexpr int kFilePayloadId = 111;
 constexpr int kPayloadSize = 1;
 constexpr int kWifiCredentialsId = 222;
 constexpr int kWifiCredentialsPayloadId = 333;
 
-const std::vector<int64_t> kValidIntroductionFramePayloadIds = {
+constexpr int64_t kValidIntroductionFramePayloadIds[] = {
     1, 2, 3, kFilePayloadId, kWifiCredentialsPayloadId};
 
 constexpr size_t kMaxCertificateDownloadsDuringDiscovery = 3u;
@@ -361,6 +339,39 @@ constexpr base::TimeDelta kCertificateDownloadDuringDiscoveryPeriod =
 // We will run tests with the following feature flags enabled and disabled in
 // all permutations. To add or a remove a feature you can just update this list.
 const std::vector<base::test::FeatureRef> kTestFeatures = {};
+
+std::vector<uint8_t> ValidV1EndpointInfo() {
+  return {0, 0, 0, 0,  0,   0,   0,   0,   0,  0,   0,  0,  0,   0,
+          0, 0, 0, 10, 100, 101, 118, 105, 99, 101, 78, 97, 109, 101};
+}
+
+std::vector<uint8_t> Token() {
+  return {0, 1, 2};
+}
+
+std::vector<uint8_t> PrivateCertificateHashAuthToken() {
+  return {0x8b, 0xcb, 0xa2, 0xf8, 0xe4, 0x06};
+}
+
+std::vector<uint8_t> IncomingConnectionSignedData() {
+  return {0x30, 0x45, 0x02, 0x20, 0x4f, 0x83, 0x72, 0xbd, 0x02, 0x70, 0xd9,
+          0xda, 0x62, 0x83, 0x5d, 0xb2, 0xdc, 0x6e, 0x3f, 0xa6, 0xa8, 0xa1,
+          0x4f, 0x5f, 0xd3, 0xe3, 0xd9, 0x1a, 0x5d, 0x2d, 0x61, 0xd2, 0x6c,
+          0xdd, 0x8d, 0xa5, 0x02, 0x21, 0x00, 0xd4, 0xe1, 0x1d, 0x14, 0xcb,
+          0x58, 0xf7, 0x02, 0xd5, 0xab, 0x48, 0xe2, 0x2f, 0xcb, 0xc0, 0x53,
+          0x41, 0x06, 0x50, 0x65, 0x95, 0x19, 0xa9, 0x22, 0x92, 0x00, 0x42,
+          0x01, 0x26, 0x25, 0xcb, 0x8c};
+}
+
+std::vector<uint8_t> OutgoingConnectionSignedData() {
+  return {0x30, 0x45, 0x02, 0x21, 0x00, 0xf9, 0xc9, 0xa8, 0x89, 0x96, 0x6e,
+          0x5c, 0xea, 0x0a, 0x60, 0x37, 0x3a, 0x84, 0x7d, 0xf5, 0x31, 0x82,
+          0x74, 0xb9, 0xde, 0x3f, 0x64, 0x1b, 0xff, 0x4f, 0x54, 0x31, 0x1f,
+          0x9e, 0x63, 0x68, 0xca, 0x02, 0x20, 0x52, 0x43, 0x46, 0xa7, 0x6f,
+          0xcb, 0x96, 0x50, 0x86, 0xfd, 0x6f, 0x9f, 0x7e, 0x50, 0xa7, 0xa0,
+          0x9b, 0xdf, 0xae, 0x79, 0x42, 0x47, 0xd9, 0x60, 0x71, 0x91, 0x7a,
+          0xbb, 0x81, 0x9b, 0x0d, 0x2e};
+}
 
 bool FileExists(const base::FilePath& file_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -839,21 +850,20 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                                           encryption_frame.end());
     EXPECT_CALL(mock_decoder_,
                 DecodeFrame(testing::Eq(encryption_bytes), testing::_))
-        .WillOnce(
-            [is_incoming](
-                const std::vector<uint8_t>& data,
-                ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
-                    callback) {
-              sharing::mojom::V1FramePtr mojo_v1frame =
-                  sharing::mojom::V1Frame::NewPairedKeyEncryption(
-                      sharing::mojom::PairedKeyEncryptionFrame::New(
-                          is_incoming ? kIncomingConnectionSignedData
-                                      : kOutgoingConnectionSignedData,
-                          kPrivateCertificateHashAuthToken, std::nullopt));
-              sharing::mojom::FramePtr mojo_frame =
-                  sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
-              std::move(callback).Run(std::move(mojo_frame));
-            });
+        .WillOnce([is_incoming](
+                      const std::vector<uint8_t>& data,
+                      ash::nearby::MockNearbySharingDecoder::DecodeFrameCallback
+                          callback) {
+          sharing::mojom::V1FramePtr mojo_v1frame =
+              sharing::mojom::V1Frame::NewPairedKeyEncryption(
+                  sharing::mojom::PairedKeyEncryptionFrame::New(
+                      is_incoming ? IncomingConnectionSignedData()
+                                  : OutgoingConnectionSignedData(),
+                      PrivateCertificateHashAuthToken(), std::nullopt));
+          sharing::mojom::FramePtr mojo_frame =
+              sharing::mojom::Frame::NewV1(std::move(mojo_v1frame));
+          std::move(callback).Run(std::move(mojo_frame));
+        });
     connection_.AppendReadableData(encryption_bytes);
 
     std::string encryption_result = "test_encryption_result";
@@ -960,8 +970,8 @@ class NearbySharingServiceImplTestBase : public testing::Test {
       bool for_self_share = false,
       int wifi_credentials_metadata_count = 1) {
     fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                                kToken);
-    SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                                Token());
+    SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                               /*return_empty_advertisement=*/false,
                               /*return_empty_device_name=*/false,
                               /*expected_number_of_calls=*/1u);
@@ -986,7 +996,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     SetUpKeyVerification(/*is_incoming=*/true,
                          sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
     SetUpForegroundReceiveSurface(callback);
-    service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+    service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                            &connection_);
     ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                              /*success=*/true, for_self_share);
@@ -1007,7 +1017,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
                          sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
 
     fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                                kToken);
+                                                                Token());
     fake_nearby_connections_manager_->set_nearby_connection(&connection_);
 
     return DiscoverShareTarget(transfer_callback, discovery_callback);
@@ -1019,7 +1029,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
     SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
     // Ensure decoder parses a valid endpoint advertisement.
-    SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+    SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                               /*return_empty_advertisement=*/false,
                               /*return_empty_device_name=*/false,
                               /*expected_number_of_calls=*/1u);
@@ -1041,7 +1051,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
         });
     fake_nearby_connections_manager_->OnEndpointFound(
         kEndpointId, nearby::connections::mojom::DiscoveredEndpointInfo::New(
-                         kValidV1EndpointInfo, kServiceId));
+                         ValidV1EndpointInfo(), kServiceId));
     ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                              /*success=*/true);
     run_loop.Run();
@@ -1234,7 +1244,7 @@ class NearbySharingServiceImplTestBase : public testing::Test {
   void FindEndpoint(const std::string& endpoint_id) {
     fake_nearby_connections_manager_->OnEndpointFound(
         endpoint_id, nearby::connections::mojom::DiscoveredEndpointInfo::New(
-                         kValidV1EndpointInfo, kServiceId));
+                         ValidV1EndpointInfo(), kServiceId));
   }
 
   void LoseEndpoint(const std::string& endpoint_id) {
@@ -2043,7 +2053,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   // Ensure decoder parses a valid endpoint advertisement.
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -2075,7 +2085,7 @@ TEST_P(NearbySharingServiceImplTest,
       });
   fake_nearby_connections_manager_->OnEndpointFound(
       kEndpointId, nearby::connections::mojom::DiscoveredEndpointInfo::New(
-                       kValidV1EndpointInfo, kServiceId));
+                       ValidV1EndpointInfo(), kServiceId));
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
   run_loop.Run();
@@ -2104,7 +2114,7 @@ TEST_P(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
   SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
   // Ensure decoder parses a valid endpoint advertisement.
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -2136,7 +2146,7 @@ TEST_P(NearbySharingServiceImplTest, RegisterSendSurfaceEmptyCertificate) {
       });
   fake_nearby_connections_manager_->OnEndpointFound(
       kEndpointId, nearby::connections::mojom::DiscoveredEndpointInfo::New(
-                       kValidV1EndpointInfo, kServiceId));
+                       ValidV1EndpointInfo(), kServiceId));
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/false);
   run_loop.Run();
@@ -2856,8 +2866,8 @@ TEST_P(NearbySharingServiceImplTest, UnregisterReceiveSurfaceNeverRegistered) {
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_ClosedReadingIntroduction) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -2869,7 +2879,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -2889,8 +2899,8 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_EmptyIntroductionFrame) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -2924,7 +2934,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -2944,8 +2954,8 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_ValidIntroductionFrame_InvalidCertificate) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -2977,7 +2987,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/false);
@@ -3029,8 +3039,8 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3090,7 +3100,7 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3102,8 +3112,8 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_OutOfStorage) {
 
 TEST_P(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3164,7 +3174,7 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3177,8 +3187,8 @@ TEST_P(NearbySharingServiceImplTest, IncomingConnection_FileSizeOverflow) {
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_ValidIntroductionFrame_ValidCertificate) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3214,7 +3224,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3229,8 +3239,8 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_InvalidWifiIntroductionPayload) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3294,7 +3304,7 @@ TEST_P(NearbySharingServiceImplTest,
   SetUpKeyVerification(/*is_incoming=*/true,
                        sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
   SetUpForegroundReceiveSurface(callback);
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3783,8 +3793,8 @@ TEST_P(NearbySharingServiceImplTest, RejectValidShareTarget) {
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_KeyVerificationRunnerStatusUnable) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3821,7 +3831,7 @@ TEST_P(NearbySharingServiceImplTest,
                        sharing::mojom::PairedKeyResultFrame_Status::kUnable);
   SetUpForegroundReceiveSurface(callback);
 
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3839,8 +3849,8 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_KeyVerificationRunnerStatusUnable_LowPower) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3881,7 +3891,7 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsAdvertising());
 
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3899,8 +3909,8 @@ TEST_P(NearbySharingServiceImplTest,
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_KeyVerificationRunnerStatusFail) {
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+                                                              Token());
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3919,7 +3929,7 @@ TEST_P(NearbySharingServiceImplTest,
       .Times(0);
   connection_.AppendReadableData(bytes);
 
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -3935,7 +3945,7 @@ TEST_P(NearbySharingServiceImplTest,
 
 TEST_P(NearbySharingServiceImplTest,
        IncomingConnection_EmptyAuthToken_KeyVerificationRunnerStatusFail) {
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/1u);
@@ -3952,7 +3962,7 @@ TEST_P(NearbySharingServiceImplTest,
       .Times(0);
   connection_.AppendReadableData(bytes);
 
-  service_->OnIncomingConnectionAccepted(kEndpointId, kValidV1EndpointInfo,
+  service_->OnIncomingConnectionAccepted(kEndpointId, ValidV1EndpointInfo(),
                                          &connection_);
   ProcessLatestPublicCertificateDecryption(/*expected_num_calls=*/1,
                                            /*success=*/true);
@@ -4131,7 +4141,7 @@ TEST_P(NearbySharingServiceImplTest, SendText_FailedKeyVerification) {
   SetUpKeyVerification(/*is_incoming=*/false,
                        sharing::mojom::PairedKeyResultFrame_Status::kFail);
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
+                                                              Token());
   fake_nearby_connections_manager_->set_nearby_connection(&connection_);
 
   EXPECT_EQ(
@@ -4158,7 +4168,7 @@ TEST_P(NearbySharingServiceImplTest, SendText_UnableToVerifyKey) {
   SetUpKeyVerification(/*is_incoming=*/false,
                        sharing::mojom::PairedKeyResultFrame_Status::kUnable);
   fake_nearby_connections_manager_->SetRawAuthenticationToken(kEndpointId,
-                                                              kToken);
+                                                              Token());
   fake_nearby_connections_manager_->set_nearby_connection(&connection_);
 
   EXPECT_EQ(
@@ -4803,7 +4813,7 @@ TEST_P(NearbySharingServiceImplTest, OrderedEndpointDiscoveryEvents) {
   //   - Nearby Share processes these four events in order.
 
   // Expect the advertisement decoder  to be invoked once for each discovery.
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/false,
                             /*expected_number_of_calls=*/3u);
@@ -4868,7 +4878,7 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(1u,
             certificate_manager()->num_download_public_certificates_calls());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/true,
                             /*expected_number_of_calls=*/1u);
@@ -4904,7 +4914,7 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(1u,
             certificate_manager()->num_download_public_certificates_calls());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/true,
                             /*expected_number_of_calls=*/6u);
@@ -4968,7 +4978,7 @@ TEST_P(NearbySharingServiceImplTest,
   EXPECT_EQ(1u,
             certificate_manager()->num_download_public_certificates_calls());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/true,
                             /*expected_number_of_calls=*/1u);
@@ -5012,7 +5022,7 @@ TEST_P(NearbySharingServiceImplTest, RetryDiscoveredEndpoints_DownloadLimit) {
   EXPECT_EQ(1u,
             certificate_manager()->num_download_public_certificates_calls());
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  SetUpAdvertisementDecoder(kValidV1EndpointInfo,
+  SetUpAdvertisementDecoder(ValidV1EndpointInfo(),
                             /*return_empty_advertisement=*/false,
                             /*return_empty_device_name=*/true,
                             /*expected_number_of_calls=*/2u +

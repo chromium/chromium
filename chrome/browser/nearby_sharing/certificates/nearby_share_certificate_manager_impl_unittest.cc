@@ -46,7 +46,6 @@ const char kDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
 const uint8_t kVisibilityCount = 3u;
 
-const std::vector<std::string> kPublicCertificateIds = {"id1", "id2", "id3"};
 
 void CaptureDecryptedPublicCertificateCallback(
     std::optional<NearbyShareDecryptedPublicCertificate>* dest,
@@ -340,7 +339,7 @@ class NearbyShareCertificateManagerImplTest
   void DownloadPublicCertificatesFlow(size_t num_pages,
                                       DownloadPublicCertificatesResult result) {
     size_t prev_num_results = download_scheduler_->handled_results().size();
-    cert_store_->SetPublicCertificateIds(kPublicCertificateIds);
+    cert_store_->SetPublicCertificateIds({"id1", "id2", "id3"});
 
     cert_manager_->Start();
     download_scheduler_->InvokeRequestCallback();

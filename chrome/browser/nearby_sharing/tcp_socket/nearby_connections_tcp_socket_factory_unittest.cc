@@ -24,10 +24,16 @@ namespace {
 constexpr uint32_t kBacklog = 10;
 const net::MutableNetworkTrafficAnnotationTag kAnnotation =
     net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
-const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 01),
-                                    ash::nearby::TcpServerSocketPort::kMin);
-const net::IPEndPoint kRemoteAddress(net::IPAddress(192, 168, 86, 02),
-                                     ash::nearby::TcpServerSocketPort::kMax);
+
+net::IPEndPoint LocalAddress() {
+  return net::IPEndPoint(net::IPAddress(192, 168, 86, 01),
+                         ash::nearby::TcpServerSocketPort::kMin);
+}
+
+net::IPEndPoint RemoteAddress() {
+  return net::IPEndPoint(net::IPAddress(192, 168, 86, 02),
+                         ash::nearby::TcpServerSocketPort::kMax);
+}
 
 }  // namespace
 
@@ -49,7 +55,7 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
         mojo::PendingReceiver<network::mojom::TCPServerSocket> socket,
         CreateTCPServerSocketCallback callback) override {
-      EXPECT_EQ(kLocalAddress, local_addr);
+      EXPECT_EQ(LocalAddress(), local_addr);
       EXPECT_EQ(kBacklog, options->backlog);
       EXPECT_EQ(traffic_annotation, net::MutableNetworkTrafficAnnotationTag(
                                         TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -64,9 +70,9 @@ class NearbyConnectionsTcpSocketFactoryTest : public ::testing::Test {
         mojo::PendingReceiver<network::mojom::TCPConnectedSocket> socket,
         mojo::PendingRemote<network::mojom::SocketObserver> observer,
         CreateTCPConnectedSocketCallback callback) override {
-      EXPECT_EQ(kLocalAddress, local_addr);
+      EXPECT_EQ(LocalAddress(), local_addr);
       EXPECT_EQ(1u, remote_addr_list.size());
-      EXPECT_EQ(kRemoteAddress, remote_addr_list[0]);
+      EXPECT_EQ(RemoteAddress(), remote_addr_list[0]);
       EXPECT_EQ(kAnnotation, traffic_annotation);
       if (should_invoke_connect_callback_) {
         std::move(callback).Run(
@@ -103,14 +109,14 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextExists) {
   {
     base::RunLoop run_loop;
     factory_->CreateTCPServerSocket(
-        kLocalAddress.address(),
-        *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
+        LocalAddress().address(),
+        *ash::nearby::TcpServerSocketPort::FromUInt16(LocalAddress().port()),
         kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&run_loop](int32_t result,
                         const std::optional<net::IPEndPoint>& local_addr) {
               EXPECT_EQ(net::OK, result);
-              EXPECT_EQ(kLocalAddress, local_addr);
+              EXPECT_EQ(LocalAddress(), local_addr);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -118,8 +124,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextExists) {
   {
     base::RunLoop run_loop;
     factory_->CreateTCPConnectedSocket(
-        /*timeout=*/base::Seconds(5), kLocalAddress,
-        net::AddressList(kRemoteAddress),
+        /*timeout=*/base::Seconds(5), LocalAddress(),
+        net::AddressList(RemoteAddress()),
         /*tcp_connected_socket_options=*/nullptr, kAnnotation,
         /*receiver=*/mojo::NullReceiver(),
         /*observer=*/mojo::NullRemote(),
@@ -130,8 +136,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextExists) {
                         mojo::ScopedDataPipeConsumerHandle receive_stream,
                         mojo::ScopedDataPipeProducerHandle send_stream) {
               EXPECT_EQ(net::OK, result);
-              EXPECT_EQ(kLocalAddress, local_addr);
-              EXPECT_EQ(kRemoteAddress, peer_addr);
+              EXPECT_EQ(LocalAddress(), local_addr);
+              EXPECT_EQ(RemoteAddress(), peer_addr);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -145,8 +151,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextDoesNotExist) {
   {
     base::RunLoop run_loop;
     factory_->CreateTCPServerSocket(
-        kLocalAddress.address(),
-        *ash::nearby::TcpServerSocketPort::FromUInt16(kLocalAddress.port()),
+        LocalAddress().address(),
+        *ash::nearby::TcpServerSocketPort::FromUInt16(LocalAddress().port()),
         kBacklog, kAnnotation, /*receiver=*/mojo::NullReceiver(),
         base::BindLambdaForTesting(
             [&run_loop](int32_t result,
@@ -160,8 +166,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, NetworkContextDoesNotExist) {
   {
     base::RunLoop run_loop;
     factory_->CreateTCPConnectedSocket(
-        /*timeout=*/base::Seconds(5), kLocalAddress,
-        net::AddressList(kRemoteAddress),
+        /*timeout=*/base::Seconds(5), LocalAddress(),
+        net::AddressList(RemoteAddress()),
         /*tcp_connected_socket_options=*/nullptr, kAnnotation,
         /*receiver=*/mojo::NullReceiver(),
         /*observer=*/mojo::NullRemote(),
@@ -187,8 +193,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, ConnectTimeout) {
   {
     base::RunLoop run_loop;
     factory_->CreateTCPConnectedSocket(
-        /*timeout=*/base::Seconds(5), kLocalAddress,
-        net::AddressList(kRemoteAddress),
+        /*timeout=*/base::Seconds(5), LocalAddress(),
+        net::AddressList(RemoteAddress()),
         /*tcp_connected_socket_options=*/nullptr, kAnnotation,
         /*receiver=*/mojo::NullReceiver(),
         /*observer=*/mojo::NullRemote(),
@@ -199,8 +205,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, ConnectTimeout) {
                         mojo::ScopedDataPipeConsumerHandle receive_stream,
                         mojo::ScopedDataPipeProducerHandle send_stream) {
               EXPECT_EQ(net::OK, result);
-              EXPECT_EQ(kLocalAddress, local_addr);
-              EXPECT_EQ(kRemoteAddress, peer_addr);
+              EXPECT_EQ(LocalAddress(), local_addr);
+              EXPECT_EQ(RemoteAddress(), peer_addr);
               run_loop.Quit();
             }));
     run_loop.Run();
@@ -214,8 +220,8 @@ TEST_F(NearbyConnectionsTcpSocketFactoryTest, ConnectTimeout) {
     fake_network_context_->should_invoke_connect_callback_ = false;
 
     factory_->CreateTCPConnectedSocket(
-        /*timeout=*/base::Seconds(5), kLocalAddress,
-        net::AddressList(kRemoteAddress),
+        /*timeout=*/base::Seconds(5), LocalAddress(),
+        net::AddressList(RemoteAddress()),
         /*tcp_connected_socket_options=*/nullptr, kAnnotation,
         /*receiver=*/mojo::NullReceiver(),
         /*observer=*/mojo::NullRemote(),
