@@ -48,6 +48,10 @@
 // Notifies that prompting to sign-in and the authentication flow are done.
 - (void)signinDidEnd:(SceneState*)sceneState;
 
+// Notifies when `multipleScenesAvailable` has changed.
+- (void)sceneState:(SceneState*)sceneState
+    multipleScenesAvailabilityDidChange:(BOOL)multipleScenesAvailable;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_COORDINATOR_SCENE_SCENE_STATE_OBSERVER_H_

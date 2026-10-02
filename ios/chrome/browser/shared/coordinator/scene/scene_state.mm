@@ -58,6 +58,8 @@
   NSInteger _numberOfSigninInProgress;
 }
 
+@synthesize multipleScenesAvailable = _multipleScenesAvailable;
+
 - (instancetype)init {
   if ((self = [super init])) {
     _observers = [SceneStateObserverList
@@ -153,6 +155,15 @@
 
 - (BOOL)signinInProgress {
   return _numberOfSigninInProgress > 0;
+}
+
+- (void)setMultipleScenesAvailable:(BOOL)available {
+  if (_multipleScenesAvailable == available) {
+    return;
+  }
+  _multipleScenesAvailable = available;
+  [_observers sceneState:self
+      multipleScenesAvailabilityDidChange:_multipleScenesAvailable];
 }
 
 - (void)setProfileState:(ProfileState*)profileState {

@@ -101,6 +101,10 @@ class SigninInProgress;
 // sign-in prompt UI.
 @property(nonatomic, readonly) BOOL signinInProgress;
 
+// YES if multiple scenes are supported and new windows can currently be opened
+// from this scene. Setting this property will notify observers.
+@property(nonatomic) BOOL multipleScenesAvailable;
+
 // Object containing the state of whether some incognito content is visible, for
 // example an incognito tab or the incognito tab switcher.
 @property(nonatomic, strong, readonly) IncognitoState* incognitoState;

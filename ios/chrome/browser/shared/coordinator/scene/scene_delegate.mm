@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/files/file_path.h"
+#import "base/ios/ios_util.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/breadcrumbs/core/breadcrumb_persistent_storage_util.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_window.h"
+#import "ios/public/provider/chrome/browser/multiwindow/multiwindow_api.h"
 
 namespace {
 
@@ -79,6 +81,13 @@ void SyncBreadcrumbsLog() {
   return _window;
 }
 
+- (void)windowScene:(UIWindowScene*)windowScene
+    didUpdateEffectiveGeometry:
+        (UIWindowSceneGeometry*)previousEffectiveGeometry {
+  _sceneState.multipleScenesAvailable =
+      [self multipleScenesAvailableForScene:_sceneState.scene];
+}
+
 #pragma mark - UISceneDelegate
 
 - (void)scene:(UIScene*)scene
@@ -98,6 +107,8 @@ void SyncBreadcrumbsLog() {
   _sceneState.currentOrigin = [self originFromSession:session
                                               options:connectionOptions];
   _sceneState.activationLevel = SceneActivationLevelBackground;
+  _sceneState.multipleScenesAvailable =
+      [self multipleScenesAvailableForScene:_sceneState.scene];
   if (IsEnableNewStartupFlowEnabled()) {
     if (connectionOptions.shortcutItem) {
       [self addTaskRequestForShortcutItem:connectionOptions.shortcutItem
@@ -171,6 +182,11 @@ void SyncBreadcrumbsLog() {
   }
 
   return origin;
+}
+
+- (BOOL)multipleScenesAvailableForScene:(UIWindowScene*)scene {
+  return base::ios::IsMultipleScenesSupported() &&
+         ios::provider::IsWindowSceneActivationAllowed(scene);
 }
 
 #pragma mark Transitioning to the Foreground

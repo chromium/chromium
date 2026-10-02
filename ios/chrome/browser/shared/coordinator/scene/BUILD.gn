@@ -237,6 +237,7 @@ source_set("scene") {
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/cobalt:cobalt_api",
     "//ios/public/provider/chrome/browser/google_one:google_one_api",
+    "//ios/public/provider/chrome/browser/multiwindow:multiwindow_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
     "//ios/web/common:features",
     "//ios/web/public/js_image_transcoder",
