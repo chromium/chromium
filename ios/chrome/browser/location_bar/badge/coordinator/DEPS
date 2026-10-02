@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils",
+  "+ios/chrome/browser/intelligence/contextual_cueing",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/reader_mode/ui/reader_mode_chip_visibility_delegate.h",
   # keep-sorted end

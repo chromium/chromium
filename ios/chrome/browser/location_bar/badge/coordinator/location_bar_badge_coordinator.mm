@@ -202,23 +202,23 @@
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {
-  CHECK(IsChromeNextIaEnabled());
   [_mediator updateBadgeConfig:config];
 }
 
 - (void)updateColorForIPH {
-  CHECK(IsChromeNextIaEnabled());
   [_mediator updateColorForIPH];
 }
 
 - (void)markDisplayedBadgeAsUnread:(BOOL)read {
-  CHECK(IsChromeNextIaEnabled());
   [_mediator markDisplayedBadgeAsUnread:read];
 }
 
 - (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type {
-  CHECK(IsChromeNextIaEnabled());
   // No-op.
+}
+
+- (void)hideBadgeForType:(LocationBarBadgeType)type {
+  [_mediator hideBadgeForType:type];
 }
 
 #pragma mark - Private

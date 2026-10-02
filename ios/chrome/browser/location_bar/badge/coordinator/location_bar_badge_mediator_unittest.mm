@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
@@ -193,6 +194,8 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     InfoBarManagerImpl::CreateForWebState(web_state.get());
     InfobarBadgeTabHelper::CreateForWebState(web_state.get());
     GeminiTabHelper::CreateForWebState(web_state.get());
+    contextual_cueing::ContextualCueingTabHelper::CreateForWebState(
+        web_state.get());
 
     web_state_list_->InsertWebState(
         std::move(web_state),
@@ -399,13 +402,22 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiContextualChipTimestampUpdated) {
 // Tests that tapping the gemini chip calls the BWG command handler and logs
 // FET metrics.
 TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
+  auto* tab_helper = contextual_cueing::ContextualCueingTabHelper::FromWebState(
+      web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(tab_helper);
+  optimization_guide::proto::ContextualCue cue;
+  cue.mutable_gemini_in_chrome_surface()->set_prompt("Summarize this page");
+  tab_helper->SetContextualCueForTesting(std::move(cue));
+
   OCMExpect([mock_delegate_
                   locationBarBadgeMediator:mediator_
       startGeminiEntryFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
                                                        GeminiStartupState*
                                                            state) {
-        return state.entryPoint == gemini::EntryPoint::OmniboxChip &&
-               state.prepopulatedPrompt == nil;
+        return state.entryPoint == gemini::EntryPoint::ContextualCueChip &&
+               [state.prepopulatedPrompt
+                   isEqualToString:@"Summarize this page"] &&
+               state.shouldAutoSubmit == NO;
       }]]);
 
   EXPECT_CALL(
@@ -416,6 +428,34 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipTapped) {
   config.badgeText = kTestAccessibilityLabel;
   [mediator_ badgeTapped:config];
   EXPECT_OCMOCK_VERIFY(mock_delegate_);
+}
+
+// Tests that hideBadgeForType hides the badge when the current badge type
+// matches, and ignores when it does not match.
+TEST_F(LocationBarBadgeMediatorTest, TestHideBadgeForType) {
+  LocationBarBadgeConfiguration* config =
+      CreateBadgeConfiguration(LocationBarBadgeType::kGeminiContextualCueChip);
+  config.badgeText = kTestAccessibilityLabel;
+  AllowGeminiChipToShow(/*show_gemini_chip=*/true, /*trigger_help_ui=*/true,
+                        /*badge_is_visible=*/false);
+  MockValidChipCheck();
+  [mediator_ updateBadgeConfig:config];
+  task_environment_.FastForwardBy(base::Seconds(3));
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Calling hide for an unrelated badge type should not hide the badge.
+  [[mock_consumer_ reject] hideBadge];
+  [mediator_ hideBadgeForType:LocationBarBadgeType::kPriceInsights];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
+
+  // Reset consumer to clear previous reject expectation before testing hide.
+  mock_consumer_ = OCMProtocolMock(@protocol(LocationBarBadgeConsumer));
+  mediator_.consumer = mock_consumer_;
+
+  // Calling hide for the matching badge type hides the badge.
+  OCMExpect([mock_consumer_ hideBadge]);
+  [mediator_ hideBadgeForType:LocationBarBadgeType::kGeminiContextualCueChip];
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 // Tests that the Gemini contextual cue chip is not shown if it was recently
 // displayed.

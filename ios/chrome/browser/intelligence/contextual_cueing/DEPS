@@ -16,6 +16,8 @@ include_rules = [
   "+ios/chrome/browser/intelligence/bwg/utils",
   "+ios/chrome/browser/intelligence/features",
   "+ios/chrome/browser/intelligence/on_device_category_classifier",
+  "+ios/chrome/browser/location_bar/badge/model",
+  "+ios/chrome/browser/location_bar/badge/ui",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",

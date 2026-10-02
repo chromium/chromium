@@ -775,6 +775,10 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   [self.viewController setCustomLeadingViewType:type];
 }
 
+- (void)hideBadgeForType:(LocationBarBadgeType)type {
+  [self.locationBarBadgeCoordinator hideBadgeForType:type];
+}
+
 - (void)togglePageActionMenuEntryPointHighlight:(BOOL)highlight {
   [self.viewController.pageActionMenuEntryPointHandler
       toggleEntryPointHighlight:highlight];

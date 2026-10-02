@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -287,6 +288,13 @@
     geminiTabHelper->SetHelpCommandsHandler(helpCommandsHandler);
   }
 
+  contextual_cueing::ContextualCueingTabHelper* contextualCueingTabHelper =
+      contextual_cueing::ContextualCueingTabHelper::FromWebState(webState);
+  if (contextualCueingTabHelper) {
+    contextualCueingTabHelper->SetLocationBarBadgeCommandsHandler(
+        id<LocationBarBadgeCommands>(_commandDispatcher));
+  }
+
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
   if (findTabHelper) {
     if (IsFullscreenRefactoringEnabled()) {
@@ -429,6 +437,12 @@
     geminiTabHelper->SetGeminiHandler(nil);
     geminiTabHelper->SetLocationBarBadgeCommandsHandler(nil);
     geminiTabHelper->SetHelpCommandsHandler(nil);
+  }
+
+  contextual_cueing::ContextualCueingTabHelper* contextualCueingTabHelper =
+      contextual_cueing::ContextualCueingTabHelper::FromWebState(webState);
+  if (contextualCueingTabHelper) {
+    contextualCueingTabHelper->SetLocationBarBadgeCommandsHandler(nil);
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);

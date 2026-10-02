@@ -10,6 +10,7 @@
 @class LocationBarBadgeConfiguration;
 
 enum class CustomLeadingViewType;
+enum class LocationBarBadgeType;
 
 // Protocol for location bar badge commands.
 @protocol LocationBarBadgeCommands
@@ -25,6 +26,9 @@ enum class CustomLeadingViewType;
 
 // Sets the type of custom leading view to display in the location bar.
 - (void)setBadgeCustomLeadingViewType:(CustomLeadingViewType)type;
+
+// Hides the badge if the currently displayed badge matches `type`.
+- (void)hideBadgeForType:(LocationBarBadgeType)type;
 
 @end
 
