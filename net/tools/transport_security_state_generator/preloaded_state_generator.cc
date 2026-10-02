@@ -92,7 +92,7 @@ std::string FormatVectorAsArray(const std::vector<uint8_t>& bytes) {
 std::string WritePinsetList(const std::string& name,
                             const std::vector<std::string>& pins) {
   std::string output = base::StrCat(
-      {"static constexpr SHA256HashValue const * ", name, "[] = {"});
+      {"static constexpr std::array<uint8_t, 32> const * ", name, "[] = {"});
   output.append(kNewLine);
 
   for (const auto& pin_name : pins) {
@@ -209,7 +209,7 @@ void PreloadedStateGenerator::ProcessSPKIHashes(const Pinsets& pinset,
     const std::string& name = current.first;
     const SPKIHash& hash = current.second;
 
-    base::StrAppend(&output, {"static constexpr SHA256HashValue ",
+    base::StrAppend(&output, {"static constexpr std::array<uint8_t, 32> ",
                               FormatSPKIName(name), " = {"});
     output.append(kNewLine);
 

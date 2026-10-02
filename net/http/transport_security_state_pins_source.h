@@ -11,22 +11,23 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
-#include "net/base/hash_value.h"
 
 namespace net {
 
 struct TransportSecurityStatePinsSource {
   struct Pinset {
     // RAW_PTR_EXCLUSION: accepted_pins always points to static data.
-    RAW_PTR_EXCLUSION const base::span<const SHA256HashValue* const>
+    RAW_PTR_EXCLUSION const base::span<const std::array<uint8_t, 32>* const>
         accepted_pins;
     // RAW_PTR_EXCLUSION: rejected_pins always points to static data.
-    RAW_PTR_EXCLUSION const base::span<const SHA256HashValue* const>
+    RAW_PTR_EXCLUSION const base::span<const std::array<uint8_t, 32>* const>
         rejected_pins;
   };
 
