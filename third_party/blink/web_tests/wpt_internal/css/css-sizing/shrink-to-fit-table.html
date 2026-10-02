@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+#outer {
+  width: 160px;
+}
+
+#outer > table {
+  max-content-sizing: shrink-to-fit;
+  font: 20px/1 Ahem;
+  width: fit-content;
+}
+
+#outer2 {
+  max-content-sizing: shrink-to-fit;
+  width: fit-content;
+  font: 20px/1 Ahem;
+}
+#outer2 > table {
+  width: fit-content;
+  max-width: 100px;
+}
+caption {
+  width: fit-content;
+}
+</style>
+
+<div id="outer">
+  <table title="The target width should be shrunk"
+         data-expected-width="100">
+    <caption style="width: max-content">abc defgh</caption>
+  </table>
+
+  <table title="The target width should not be smaller than min-width"
+         style="min-width: 120px;"
+         data-expected-width="120">
+    <caption style="width: max-content">abc defgh</caption>
+  </table>
+
+  <table title="The target width should not be larger than max-width"
+         style="max-width: 80px;"
+         data-expected-width="60">
+    <caption style="width: max-content">abc abc abc</caption>
+  </table>
+</div>
+
+<div id="outer2">
+  <table title="The target width should not be larger than max-width"
+         data-expected-width="60">
+    <caption style="width: max-content">abc abc abc</caption>
+  </table>
+  <table>
+    <caption title="The target width should not be larger than max-width"
+             data-expected-width="60">abc abc abc</caption>
+  </table>
+  <div style="display: grid; width: fit-content;"
+       title="Grid column sizing with baseline-aligned table and indefinite available inline-size"
+       data-expected-width="100">
+    <table style="justify-self: baseline; max-width: 100px;"
+           title="Indefinite available inline-size during grid baseline measurement"
+           data-expected-width="100">
+      <caption style="width: max-content">a b c d</caption>
+    </table>
+  </div>
+</div>
+
+<script>
+document.fonts.ready.then(() => checkLayout('[data-expected-width]'));
+</script>

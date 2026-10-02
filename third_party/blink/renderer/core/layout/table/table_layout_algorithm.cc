@@ -38,7 +38,8 @@ namespace {
 TableTypes::Caption ComputeCaptionConstraint(
     const ConstraintSpace& table_space,
     const ComputedStyle& table_style,
-    const TableGroupedChildren& grouped_children) {
+    const TableGroupedChildren& grouped_children,
+    const MinMaxSizesInput& input) {
   // Caption inline size constraints.
   TableTypes::Caption caption_min_max;
   for (const BlockNode& caption : grouped_children.captions) {
@@ -49,15 +50,43 @@ TableTypes::Caption ComputeCaptionConstraint(
     builder.SetAvailableBlockSize(kIndefiniteSize);
     const auto space = builder.ToConstraintSpace();
 
-    MinMaxSizes min_max_sizes = ComputeMinAndMaxContentContribution(
-                                    table_style, caption, space,
-                                    MinMaxSizesInput::UnconstrainedUntriaged())
-                                    .sizes;
+    MinMaxSizes min_max_sizes =
+        ComputeMinAndMaxContentContribution(table_style, caption, space, input)
+            .sizes;
     min_max_sizes +=
         ComputeMarginsFor(space, caption.Style(), table_space).InlineSum();
     caption_min_max.Encompass(min_max_sizes);
   }
   return caption_min_max;
+}
+
+TableTypes::Caption ComputeCaptionConstraint(
+    const TableNode& table,
+    const ConstraintSpace& table_space,
+    const BoxStrut& table_border_padding,
+    const TableGroupedChildren& grouped_children) {
+  if (grouped_children.captions.empty()) {
+    return TableTypes::Caption();
+  }
+  LayoutUnit available_inline_size = table_space.AvailableSize().inline_size;
+  if (available_inline_size == kIndefiniteSize) {
+    available_inline_size = LayoutUnit::Max();
+  }
+  if (table.Style().IsInShrinkToFitSubtree()) {
+    const MinMaxSizes min_max = ComputeMinMaxInlineSizes(
+        table_space, table, table_border_padding,
+        /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
+          return {{kIndefiniteSize, kIndefiniteSize},
+                  /* depends_on_block_constraints */ false};
+        });
+    available_inline_size =
+        (min_max.ClampSizeToMinAndMax(available_inline_size) -
+         table_border_padding.InlineSum())
+            .ClampNegativeToZero();
+  }
+  return ComputeCaptionConstraint(
+      table_space, table.Style(), grouped_children,
+      MinMaxSizesInput::Constrained(available_inline_size));
 }
 
 ConstraintSpace CreateCaptionConstraintSpace(
@@ -510,8 +539,8 @@ LayoutUnit TableLayoutAlgorithm::ComputeTableInlineSize(
   const scoped_refptr<const TableTypes::Columns> column_constraints =
       table.GetColumnConstraints(grouped_children, table_border_padding);
 
-  const TableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(space, table.Style(), grouped_children);
+  const TableTypes::Caption caption_constraint = ComputeCaptionConstraint(
+      table, space, table_border_padding, grouped_children);
 
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
       *column_constraints, table_border_padding.InlineSum(),
@@ -590,8 +619,8 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
   // - Generate fragment.
   const scoped_refptr<const TableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
-  const TableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(GetConstraintSpace(), Style(), grouped_children);
+  const TableTypes::Caption caption_constraint = ComputeCaptionConstraint(
+      Node(), GetConstraintSpace(), border_padding, grouped_children);
   // Compute assignable table inline size.
   // Standard: https://www.w3.org/TR/css-tables-3/#width-distribution
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
@@ -701,7 +730,7 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
@@ -710,8 +739,8 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
 
   const scoped_refptr<const TableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);
-  const TableTypes::Caption caption_constraint =
-      ComputeCaptionConstraint(GetConstraintSpace(), Style(), grouped_children);
+  const TableTypes::Caption caption_constraint = ComputeCaptionConstraint(
+      GetConstraintSpace(), Style(), grouped_children, input);
 
   const LayoutUnit undistributable_space = ComputeUndistributableTableSpace(
       *column_constraints, border_padding.InlineSum(),
