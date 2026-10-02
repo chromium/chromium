@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +35,7 @@ import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.GetCredentialResponse;
+import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
@@ -500,5 +502,96 @@ public class AuthenticatorImplTest {
         verify(callback, never()).call(anyInt(), any(), any());
         verify(mFido2CredentialRequestMock)
                 .handleMakeCredentialRequest(any(), any(), any(), any(), any());
+    }
+
+    /** Returns the "RequestMode" value of the last UKM event recorded with the given name. */
+    private int getLastRecordedRequestMode(String eventName, int expectedEventCount) {
+        ArgumentCaptor<UkmRecorder.Metric[]> metricsCaptor =
+                ArgumentCaptor.forClass(UkmRecorder.Metric[].class);
+        verify(mUkmRecorderNativesMock, times(expectedEventCount))
+                .recordEventWithMultipleMetrics(
+                        eq(mWebContents), eq(eventName), metricsCaptor.capture());
+        UkmRecorder.Metric[] metrics = metricsCaptor.getValue();
+        for (UkmRecorder.Metric metric : metrics) {
+            if (metric.mName.equals("RequestMode")) {
+                return metric.mValue;
+            }
+        }
+        throw new AssertionError("RequestMode metric not found.");
+    }
+
+    // The RequestMode tests below trigger requests that are blocked by the embedder. UKM is only
+    // recorded when a request completes with an outcome, and since Fido2CredentialRequest is
+    // mocked, regular requests never complete. Blocked requests complete synchronously with a
+    // BLOCKED_BY_EMBEDDER outcome after the request mode has been determined, which records the
+    // UKM event.
+    private void makeBlockedCredential(PublicKeyCredentialCreationOptions options) {
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+        mAuthenticator.makeCredential(options, mock(Authenticator.MakeCredential_Response.class));
+    }
+
+    private void getBlockedCredential(GetCredentialOptions options) {
+        when(mWebauthnBrowserBridgeNativesMock.shouldDisallowCredentialRequest(mRenderFrameHost))
+                .thenReturn(true);
+        mAuthenticator.getCredential(options, mock(Authenticator.GetCredential_Response.class));
+    }
+
+    @Test
+    public void testMakeCredential_modal_reportsModalRequestMode() {
+        makeBlockedCredential(new PublicKeyCredentialCreationOptions());
+
+        assertEquals(
+                AuthenticationRequestMode.MODAL_WEB_AUTHN,
+                getLastRecordedRequestMode("WebAuthn.RegisterCompletion", 1));
+    }
+
+    @Test
+    public void testMakeCredential_conditional_reportsPasskeyUpgradeRequestMode() {
+        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
+        options.isConditional = true;
+        makeBlockedCredential(options);
+
+        assertEquals(
+                AuthenticationRequestMode.PASSKEY_UPGRADE,
+                getLastRecordedRequestMode("WebAuthn.RegisterCompletion", 1));
+    }
+
+    @Test
+    public void testMakeCredential_payment_reportsPaymentRequestMode() {
+        PublicKeyCredentialCreationOptions options = new PublicKeyCredentialCreationOptions();
+        options.isPaymentCredentialCreation = true;
+        makeBlockedCredential(options);
+
+        assertEquals(
+                AuthenticationRequestMode.PAYMENT,
+                getLastRecordedRequestMode("WebAuthn.RegisterCompletion", 1));
+    }
+
+    @Test
+    public void testGetCredential_conditional_reportsConditionalRequestMode() {
+        GetCredentialOptions options = new GetCredentialOptions();
+        options.mediation = Mediation.CONDITIONAL;
+        getBlockedCredential(options);
+
+        assertEquals(
+                AuthenticationRequestMode.CONDITIONAL,
+                getLastRecordedRequestMode("WebAuthn.SignCompletion", 1));
+    }
+
+    @Test
+    public void testMakeCredential_afterConditionalGet_reportsModalRequestMode() {
+        GetCredentialOptions getOptions = new GetCredentialOptions();
+        getOptions.mediation = Mediation.CONDITIONAL;
+        getBlockedCredential(getOptions);
+        assertEquals(
+                AuthenticationRequestMode.CONDITIONAL,
+                getLastRecordedRequestMode("WebAuthn.SignCompletion", 1));
+
+        makeBlockedCredential(new PublicKeyCredentialCreationOptions());
+
+        assertEquals(
+                AuthenticationRequestMode.MODAL_WEB_AUTHN,
+                getLastRecordedRequestMode("WebAuthn.RegisterCompletion", 1));
     }
 }

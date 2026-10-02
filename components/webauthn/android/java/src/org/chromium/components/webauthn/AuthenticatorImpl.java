@@ -73,9 +73,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private final Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
 
     // Information about the request cached here for metric reporting purposes.
-    private boolean mIsConditionalRequest;
-    private boolean mIsPaymentRequest;
-    private boolean mIsImmediateRequest;
+    private @AuthenticationRequestMode int mRequestMode = AuthenticationRequestMode.MODAL_WEB_AUTHN;
 
     // StaticFieldLeak complains that this is a memory leak because
     // `Fido2CredentialRequest` contains a `Context`. But this field is only
@@ -174,7 +172,13 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
         log(TAG, "makeCredential");
 
-        mIsPaymentRequest = options.isPaymentCredentialCreation;
+        if (options.isPaymentCredentialCreation) {
+            mRequestMode = AuthenticationRequestMode.PAYMENT;
+        } else if (options.isConditional) {
+            mRequestMode = AuthenticationRequestMode.PASSKEY_UPGRADE;
+        } else {
+            mRequestMode = AuthenticationRequestMode.MODAL_WEB_AUTHN;
+        }
         mRequestCallback = requestCallback;
         mRequestCallback.setCompletionCallback(this::cleanupRequest);
 
@@ -288,9 +292,15 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
         mRequestCallback = requestCallback;
         mRequestCallback.setCompletionCallback(this::cleanupRequest);
-        mIsPaymentRequest = mPayment != null;
-        mIsConditionalRequest = options.mediation == Mediation.CONDITIONAL;
-        mIsImmediateRequest = options.mediation == Mediation.IMMEDIATE;
+        if (mPayment != null) {
+            mRequestMode = AuthenticationRequestMode.PAYMENT;
+        } else if (options.mediation == Mediation.CONDITIONAL) {
+            mRequestMode = AuthenticationRequestMode.CONDITIONAL;
+        } else if (options.mediation == Mediation.IMMEDIATE) {
+            mRequestMode = AuthenticationRequestMode.IMMEDIATE;
+        } else {
+            mRequestMode = AuthenticationRequestMode.MODAL_WEB_AUTHN;
+        }
 
         if (isChrome(mWebContents)
                 && WebauthnBrowserBridge.shouldDisallowCredentialRequest(mRenderFrameHost)) {
@@ -577,17 +587,9 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             return;
         }
 
-        @AuthenticationRequestMode int mode = AuthenticationRequestMode.MODAL_WEB_AUTHN;
-        if (mIsConditionalRequest) {
-            mode = AuthenticationRequestMode.CONDITIONAL;
-        } else if (mIsPaymentRequest) {
-            mode = AuthenticationRequestMode.PAYMENT;
-        } else if (mIsImmediateRequest) {
-            mode = AuthenticationRequestMode.IMMEDIATE;
-        }
         new UkmRecorder(mWebContents, event)
                 .addMetric(resultMetricName, resultMetricValue)
-                .addMetric("RequestMode", mode)
+                .addMetric("RequestMode", mRequestMode)
                 .record();
     }
 
