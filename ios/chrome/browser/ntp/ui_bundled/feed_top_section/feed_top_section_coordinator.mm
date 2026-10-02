@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -115,6 +116,8 @@ using base::UserMetricsAction;
                               authService:AuthenticationServiceFactory::
                                               GetForProfile(profile)
                               prefService:profile->GetPrefs()
+                accountPreviewDataService:AccountPreviewDataServiceFactory::
+                                              GetForProfile(profile)
                               syncService:syncService
                               accessPoint:signin_metrics::AccessPoint::
                                               kNtpFeedTopPromo

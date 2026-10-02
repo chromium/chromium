@@ -23,6 +23,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 @protocol SystemIdentity;
 
 namespace signin {
+class AccountPreviewDataService;
 class IdentityManager;
 enum class Tribool;
 }  // namespace signin
@@ -151,6 +152,8 @@ enum class SigninPromoAction {
                     (ChromeAccountManagerService*)accountManagerService
                           authService:(AuthenticationService*)authService
                           prefService:(PrefService*)prefService
+            accountPreviewDataService:
+                (signin::AccountPreviewDataService*)accountPreviewDataService
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                              delegate:

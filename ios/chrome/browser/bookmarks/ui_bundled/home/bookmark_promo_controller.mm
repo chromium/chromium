@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -76,6 +77,8 @@
                               authService:AuthenticationServiceFactory::
                                               GetForProfile(profile)
                               prefService:profile->GetPrefs()
+                accountPreviewDataService:AccountPreviewDataServiceFactory::
+                                              GetForProfile(profile)
                               syncService:syncService
                               accessPoint:signin_metrics::AccessPoint::
                                               kBookmarkManager

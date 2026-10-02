@@ -8,11 +8,14 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "build/branding_buildflags.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/core/browser/test_account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -116,6 +119,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
                                               GetForProfile(profile_)
                               authService:GetAuthenticationService()
                               prefService:profile_->GetPrefs()
+                accountPreviewDataService:&account_preview_data_service_
                               syncService:GetSyncService()
                               accessPoint:access_point
                                  delegate:signin_promo_mediator_delegate_
@@ -392,6 +396,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
+  signin::TestAccountPreviewDataService account_preview_data_service_;
 
   // Mediator used for the tests.
   SigninPromoViewMediator* mediator_;
@@ -753,6 +758,41 @@ TEST_F(SigninPromoViewMediatorTest,
                                                       kInstantSignin
                             authenticationService:GetAuthenticationService()
                                       prefService:profile->GetPrefs()]);
+}
+
+// Test that when there are multiple accounts on the device and the second
+// account is preferred, the second account is selected.
+TEST_F(SigninPromoViewMediatorTest,
+       PreferredAccountSelectedWithMultipleAccounts) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewPreferredAccount);
+  AddDefaultIdentity();
+  identity_ = [FakeSystemIdentity fakeIdentity2];
+  fake_system_identity_manager()->AddIdentity(identity_);
+  signin::AccountPreviewDataService::AccountPreviewPreference preference;
+  preference.gaia_id = identity_.gaiaId;
+  account_preview_data_service_.SetPreferredAccountForPromo(preference);
+
+  CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
+  EXPECT_EQ(identity_, mediator_.displayedIdentity);
+  CheckSigninWithAccountConfigurator([mediator_ createConfigurator],
+                                     SigninPromoViewStyleStandard);
+}
+
+// Test that when there are multiple accounts on the device and no account is
+// preferred, the first account is selected.
+TEST_F(SigninPromoViewMediatorTest,
+       FirstAccountSelectedWhenNoPreferredAccount) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewPreferredAccount);
+  AddDefaultIdentity();
+  fake_system_identity_manager()->AddIdentity(
+      [FakeSystemIdentity fakeIdentity2]);
+
+  CreateMediator(signin_metrics::AccessPoint::kRecentTabs);
+  EXPECT_EQ(identity_, mediator_.displayedIdentity);
+  CheckSigninWithAccountConfigurator([mediator_ createConfigurator],
+                                     SigninPromoViewStyleStandard);
 }
 
 }  // namespace

@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
+#import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -177,6 +178,8 @@
                                             GetForProfile(profile)
                             authService:authService
                             prefService:profile->GetPrefs()
+              accountPreviewDataService:AccountPreviewDataServiceFactory::
+                                            GetForProfile(profile)
                             syncService:_syncService
                             accessPoint:signin_metrics::AccessPoint::kRecentTabs
                                delegate:self

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_autofill_and_passwords_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_and_passwords_signin_promo_consumer.h"
+#import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -44,6 +45,7 @@
   raw_ptr<AuthenticationService> _authService;
   raw_ptr<PrefService> _prefService;
   raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
   raw_ptr<syncer::SyncService> _syncService;
 
   // Whether the consumer's view is loaded.
@@ -56,6 +58,8 @@
                       authService:(AuthenticationService*)authService
                   identityManager:(signin::IdentityManager*)identityManager
                       prefService:(PrefService*)prefService
+        accountPreviewDataService:
+            (signin::AccountPreviewDataService*)accountPreviewDataService
                       syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
@@ -63,6 +67,7 @@
     _authService = authService;
     _identityManager = identityManager;
     _prefService = prefService;
+    _accountPreviewDataService = accountPreviewDataService;
     _syncService = syncService;
 
     _identityManagerObserverBridge =
@@ -90,6 +95,7 @@
   _authService = nullptr;
   _prefService = nullptr;
   _identityManager = nullptr;
+  _accountPreviewDataService = nullptr;
   _syncService = nullptr;
 }
 
@@ -199,6 +205,7 @@
                   accountManagerService:_accountManagerService
                             authService:_authService
                             prefService:_prefService
+              accountPreviewDataService:_accountPreviewDataService
                             syncService:_syncService
                             accessPoint:signin_metrics::AccessPoint::
                                             kSettingsAutofillAndPasswords

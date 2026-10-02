@@ -14,7 +14,9 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/core/browser/account_preview_data_service.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
@@ -645,13 +647,29 @@ const char* AlreadySeenSigninViewPreferenceKey(
 id<SystemIdentity> GetDisplayedIdentity(
     AuthenticationService* authService,
     signin::IdentityManager* identityManager,
-    ChromeAccountManagerService* accountManagerService) {
+    ChromeAccountManagerService* accountManagerService,
+    signin::AccountPreviewDataService* accountPreviewDataService) {
   CHECK(authService);
   CHECK(identityManager);
   CHECK(accountManagerService);
 
   if (authService->HasPrimaryIdentity()) {
     return authService->GetPrimaryIdentity();
+  }
+
+  if (accountPreviewDataService &&
+      base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewPreferredAccount)) {
+    if (std::optional<
+            signin::AccountPreviewDataService::AccountPreviewPreference>
+            preference =
+                accountPreviewDataService->GetPreferredAccountForPromo()) {
+      id<SystemIdentity> identity =
+          accountManagerService->GetIdentityWithGaiaID(preference->gaia_id);
+      if (identity) {
+        return identity;
+      }
+    }
   }
 
   return signin::GetDefaultIdentityOnDevice(identityManager,
@@ -703,6 +721,8 @@ id<SystemIdentity> GetDisplayedIdentity(
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // IdentityManager used to retrieve identities.
   raw_ptr<signin::IdentityManager> _identityManager;
+  // AccountPreviewDataService to retrieve account preference.
+  raw_ptr<signin::AccountPreviewDataService> _accountPreviewDataService;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   // Sync service.
@@ -798,6 +818,8 @@ id<SystemIdentity> GetDisplayedIdentity(
                     (ChromeAccountManagerService*)accountManagerService
                           authService:(AuthenticationService*)authService
                           prefService:(PrefService*)prefService
+            accountPreviewDataService:
+                (signin::AccountPreviewDataService*)accountPreviewDataService
                           syncService:(syncer::SyncService*)syncService
                           accessPoint:(signin_metrics::AccessPoint)accessPoint
                              delegate:
@@ -817,6 +839,7 @@ id<SystemIdentity> GetDisplayedIdentity(
     _changeProfileContinuationProvider = changeProfileContinuationProvider;
     _authService = authService;
     _prefService = prefService;
+    _accountPreviewDataService = accountPreviewDataService;
     _syncService = syncService;
     _accessPoint = accessPoint;
     _signinPromoViewState = SigninPromoViewState::kNotYetDisplayed;
@@ -835,7 +858,8 @@ id<SystemIdentity> GetDisplayedIdentity(
         std::make_unique<SyncObserverBridge>(self, _syncService);
 
     id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
-        _authService, _identityManager, _accountManagerService);
+        _authService, _identityManager, _accountManagerService,
+        _accountPreviewDataService);
     if (displayedIdentity) {
       self.displayedIdentity = displayedIdentity;
     }
@@ -1001,6 +1025,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _authService = nullptr;
+  _accountPreviewDataService = nullptr;
   _syncService = nullptr;
   _identityManagerObserver.reset();
   _syncObserverBridge.reset();
@@ -1198,8 +1223,9 @@ id<SystemIdentity> GetDisplayedIdentity(
 
 - (void)accountsOnDeviceDidChange {
   id<SystemIdentity> currentIdentity = self.displayedIdentity;
-  id<SystemIdentity> displayedIdentity = GetDisplayedIdentity(
-      _authService, _identityManager, _accountManagerService);
+  id<SystemIdentity> displayedIdentity =
+      GetDisplayedIdentity(_authService, _identityManager,
+                           _accountManagerService, _accountPreviewDataService);
   if (![currentIdentity isEqual:displayedIdentity]) {
     // Don't update the the sign-in promo if the sign-in is in progress,
     // to avoid flashes of the promo.
