@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
@@ -81,7 +82,11 @@ public class ActorExternalTriggerSnackbarControllerTest {
         assertEquals(
                 mActivity.getString(R.string.actor_notification_title_preparing_to_start_task),
                 snackbar.getTextForTesting());
+        assertNull(snackbar.getActionText());
         assertEquals(Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER, snackbar.getIdentifierForTesting());
+        assertEquals(
+                ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs() * 2,
+                snackbar.getDuration());
         assertTrue(mController.isPendingTaskStartForTesting());
     }
 

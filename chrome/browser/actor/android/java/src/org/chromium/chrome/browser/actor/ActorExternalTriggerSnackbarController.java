@@ -126,12 +126,17 @@ public class ActorExternalTriggerSnackbarController
         }
         String message =
                 mActivity.getString(R.string.actor_notification_title_preparing_to_start_task);
+        // Use TYPE_NOTIFICATION to avoid TYPE_PERSISTENT's default "OK" button.
+        // Set duration to 2x the preparing timeout so mTimeoutRunnable fires before the
+        // SnackbarManager auto-dismisses the snackbar and calls onDismissNoAction().
         Snackbar snackbar =
                 Snackbar.make(
                         message,
                         this,
-                        Snackbar.TYPE_PERSISTENT,
-                        Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER);
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_ACTOR_EXTERNAL_TRIGGER)
+                        .setDuration(
+                                ActorTaskTimeoutParameters.getPreparingToStartTaskTimeoutMs() * 2);
         mSnackbarManager.showSnackbar(snackbar);
     }
 
