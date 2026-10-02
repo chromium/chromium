@@ -3187,6 +3187,10 @@ void RenderViewContextMenu::AppendDictationItems() {
     return;
   }
 
+  if (!params_.misspelled_word.empty()) {
+    return;
+  }
+
   if (!dictation_menu_observer_) {
     dictation_menu_observer_ =
         std::make_unique<dictation::DictationMenuObserver>(this);

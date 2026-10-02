@@ -165,6 +165,21 @@ IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
   EXPECT_TRUE(dictation_service().ShouldShowContextMenuItem());
 }
 
+// Talk to Type is elided when right-clicking a misspelled word, since that menu
+// is already long.
+IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
+                       ContextMenuHiddenForMisspelledWord) {
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  params.misspelled_word = u"helo";
+  params.dictionary_suggestions = {u"hello"};
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_DICTATION));
+}
+
 IN_PROC_BROWSER_TEST_P(DictationKeyedServiceBrowserTest,
                        ExecuteContextMenuCommand) {
   content::ContextMenuParams params;
