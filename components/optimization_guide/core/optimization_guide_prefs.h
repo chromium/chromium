@@ -47,29 +47,9 @@ enum class FeatureOptInState {
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 
-namespace localstate {
-
-// Local state prefs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelLastFetchAttempt[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelLastFetchSuccess[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelStoreMetadata[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kModelCacheKeyMapping[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kStoreFilePathsToDelete[];
-
-}  // namespace localstate
-
 // Registers the optimization guide's prefs.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
-// Registers the local state prefs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
 }  // namespace optimization_guide

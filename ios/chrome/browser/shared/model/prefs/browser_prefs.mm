@@ -51,6 +51,7 @@
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/zero_suggest_provider.h"
+#import "components/optimization_guide/core/delivery/prefs.h"
 #import "components/optimization_guide/core/feature_registry/feature_registration.h"
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"

@@ -6,8 +6,8 @@
 
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
+#include "components/optimization_guide/core/delivery/prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace optimization_guide {

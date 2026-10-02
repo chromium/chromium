@@ -6,8 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/core/delivery/prefs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "prediction_model_fetch_timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
