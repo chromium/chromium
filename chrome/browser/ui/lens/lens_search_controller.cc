@@ -9,9 +9,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +42,8 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
@@ -413,6 +418,66 @@ void LensSearchController::IssueTextSearchRequest(
   lens_overlay_controller_->IssueTextSearchRequest(
       query_text, additional_query_parameters, match_type,
       is_zero_prefix_suggestion, invocation_source);
+}
+
+void LensSearchController::StartZeroStateSessionInSidePanel(
+    omnibox::ChromeAimEntryPoint entry_point,
+    lens::LensOverlayInvocationSource invocation_source,
+    bool open_lens_overlay) {
+  if (!tab_ || !tab_->GetContents() || !tab_->GetBrowserWindowInterface()) {
+    return;
+  }
+
+  content::WebContents* web_contents = tab_->GetContents();
+  BrowserWindowInterface* bwi = tab_->GetBrowserWindowInterface();
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          bwi->GetProfile());
+  if (!ui_service) {
+    return;
+  }
+
+  GURL creation_url = ui_service->GetDefaultAiPageUrl();
+  auto* tab_helper =
+      ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+          web_contents);
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle = tab_helper->TakeSessionHandle();
+
+  if (!session_handle) {
+    auto* contextual_search_service =
+        ContextualSearchServiceFactory::GetForProfile(bwi->GetProfile());
+    if (contextual_search_service) {
+      session_handle = contextual_search_service->CreateSession(
+          contextual_tasks::CreateQueryControllerConfigParams(),
+          // TODO (crbug.com/554084129) - Update
+          // toContextualSearchSource::kOmnibox or something new to decouple
+          // from lens.
+          contextual_search::ContextualSearchSource::kLens, invocation_source);
+    }
+  }
+
+  // Verify enterprise content sharing settings for the session. This is
+  // required before ContextualSearchSessionHandle::CreateContextToken() can
+  // be called (e.g., when Lens Overlay calls this handle concurrently).
+  if (session_handle) {
+    session_handle->CheckSearchContentSharingSettings(
+        bwi->GetProfile()->GetPrefs());
+  }
+
+  if (open_lens_overlay) {
+    // Concurrently launch the Lens Overlay alongside the side panel
+    // opening.
+    OpenLensOverlay(invocation_source);
+  } else {
+    SetInvocationSource(invocation_source);
+  }
+
+  contextual_tasks::StartTaskUiOptions options;
+  options.entry_point = entry_point;
+
+  ui_service->StartTaskUiInSidePanel(bwi, tab_, creation_url,
+                                     std::move(session_handle), options);
 }
 
 void LensSearchController::CloseLensAsync(

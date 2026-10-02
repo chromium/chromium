@@ -31,6 +31,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/top_sites_factory.h"
@@ -124,11 +125,7 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/lens/jni_headers/LensSupportStatusHelper_jni.h"
 #else  // BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
-#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -841,61 +838,15 @@ void ChromeAutocompleteProviderClient::OpenCoBrowsePanel() {
   auto* tab = web_contents
                   ? tabs::TabInterface::MaybeGetFromContents(web_contents)
                   : nullptr;
-  BrowserWindowInterface* bwi =
-      tab ? tab->GetBrowserWindowInterface() : nullptr;
-  auto* ui_service = bwi ? contextual_tasks::ContextualTasksUiServiceFactory::
-                               GetForBrowserContext(bwi->GetProfile())
-                         : nullptr;
-
-  if (ui_service) {
-    GURL creation_url = ui_service->GetDefaultAiPageUrl();
-    auto* tab_helper =
-        ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
-            web_contents);
-    std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
-        session_handle = tab_helper->TakeSessionHandle();
-
-    if (!session_handle) {
-      auto* contextual_search_service =
-          ContextualSearchServiceFactory::GetForProfile(bwi->GetProfile());
-      if (contextual_search_service) {
-        session_handle = contextual_search_service->CreateSession(
-            omnibox::CreateQueryControllerConfigParams(),
-            // TODO (crbug.com/554084129) - Update
-            // toContextualSearchSource::kOmnibox or something new to decouple
-            // from lens.
-            contextual_search::ContextualSearchSource::kLens,
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
-      }
-    }
-
-    // Verify enterprise content sharing settings for the session. This is
-    // required before ContextualSearchSessionHandle::CreateContextToken() can
-    // be called (e.g., when Lens Overlay calls this handle concurrently).
-    if (session_handle) {
-      session_handle->CheckSearchContentSharingSettings(
-          bwi->GetProfile()->GetPrefs());
-    }
-
-    if (auto* lens_controller = LensSearchController::From(tab)) {
-      if (omnibox::kAskGCoBrowseWithVisualSelection.Get()) {
-        // Concurrently launch the Lens Overlay alongside the side panel
-        // opening.
-        lens_controller->OpenLensOverlay(
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
-      } else {
-        lens_controller->SetInvocationSource(
-            lens::LensOverlayInvocationSource::kOmniboxPageAction);
-      }
-    }
-    contextual_tasks::StartTaskUiOptions options;
-    options.entry_point =
-        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION;
-
-    ui_service->StartTaskUiInSidePanel(bwi, tab, creation_url,
-                                       std::move(session_handle), options);
+  if (auto* lens_controller = LensSearchController::From(tab)) {
+    lens_controller->StartZeroStateSessionInSidePanel(
+        omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION,
+        lens::LensOverlayInvocationSource::kOmniboxPageAction,
+        /*open_lens_overlay=*/omnibox::kAskGCoBrowseWithVisualSelection.Get());
 
     // Focus the side panel so that focus is not left on the omnibox.
+    BrowserWindowInterface* bwi =
+        tab ? tab->GetBrowserWindowInterface() : nullptr;
     if (auto* controller =
             contextual_tasks::ContextualTasksPanelController::From(bwi)) {
       if (auto* side_panel_contents = controller->GetActiveWebContents()) {
