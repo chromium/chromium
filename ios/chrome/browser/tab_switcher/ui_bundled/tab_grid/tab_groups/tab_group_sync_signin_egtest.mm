@@ -130,11 +130,13 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
       assertWithMatcher:grey_notNil()];
 
   // Check that the group with `kGroup1Name` exists in the Tab Groups panel.
+  // Wait as the cell may not be sufficiently visible until the panel
+  // transition completes.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 
   // Wait for the Saved Tab Group entities to reach the sync server.
   WaitForEntitiesOnFakeServer(2);
@@ -181,11 +183,13 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
       waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(0)];
 
   // Check that the group with `kGroup1Name` exists in the Tab Groups panel.
+  // Wait as the cell may not be sufficiently visible until the panel
+  // transition completes.
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:TabGroupsPanelCellWithName(
+                                              kGroup1Name, 1)];
 
   // Clean up all saved groups.
   DeleteAllSavedGroups();
