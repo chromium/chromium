@@ -1,0 +1,17 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/shared/ui/brick_configurations/animation_brick_configuration.h"
+
+@implementation AnimationBrickConfiguration
+
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _useLegacyDarkMode = YES;
+  }
+  return self;
+}
+
+@end

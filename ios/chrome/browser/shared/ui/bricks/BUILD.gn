@@ -1,0 +1,22 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("bricks") {
+  sources = [
+    "animation_brick.h",
+    "animation_brick.mm",
+    "layout_brick.h",
+    "layout_brick.mm",
+    "title_brick.h",
+    "title_brick.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/animated_promo:utils",
+    "//ios/chrome/browser/shared/ui/brick_configurations",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+  ]
+}

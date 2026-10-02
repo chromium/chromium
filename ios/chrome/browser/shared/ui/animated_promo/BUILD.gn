@@ -4,12 +4,18 @@
 
 source_set("animated_promo") {
   sources = [
+    "animated_promo_configuration.h",
+    "animated_promo_configuration.mm",
     "animated_promo_view_controller.h",
     "animated_promo_view_controller.mm",
+    "animated_promo_with_bricks_view_controller.h",
+    "animated_promo_with_bricks_view_controller.mm",
   ]
   deps = [
     ":utils",
     "//base",
+    "//ios/chrome/browser/shared/ui/brick_configurations",
+    "//ios/chrome/browser/shared/ui/bricks",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
@@ -19,6 +25,7 @@ source_set("animated_promo") {
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
