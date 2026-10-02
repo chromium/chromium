@@ -43,23 +43,6 @@ android_library("java") {
   srcjar_deps = [ ":message_enums_java" ]
 }
 
-android_library("unit_device_javatests") {
-  testonly = true
-  sources =
-      [ "java/src/org/chromium/components/messages/MessageContainerTest.java" ]
-  deps = [
-    ":java",
-    ":java_resources",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//third_party/androidx:androidx_core_core_java",
-    "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-    "//ui/android:ui_java_test_support",
-  ]
-}
-
 android_resources("java_resources") {
   sources = [ "java/res/values/dimens.xml" ]
   deps = [
@@ -172,18 +155,22 @@ static_library("feature_flags") {
 
 robolectric_library("junit") {
   resources_package = "org.chromium.components.messages"
-  sources =
-      [ "java/src/org/chromium/components/messages/MessageWrapperTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/messages/MessageContainerTest.java",
+    "java/src/org/chromium/components/messages/MessageWrapperTest.java",
+  ]
   deps = [
     ":java",
+    ":java_resources",
     ":jni_headers_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_swiperefreshlayout_swiperefreshlayout_java",
-    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
