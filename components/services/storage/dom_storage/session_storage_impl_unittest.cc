@@ -357,9 +357,8 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   // namespace so it can be loaded again.
   session_storage()->DeleteNamespace(namespace_id1, true);
   ShutDownSessionStorage();
-  int expected_storage_areas_shutdown = 1;
-  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
+  histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
+                              0);
 
   // This will re-initialize Session Storage and load the persisted namespace.
   session_storage()->CreateNamespace(namespace_id1);
@@ -371,21 +370,12 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   EXPECT_EQ(1ul, data.size());
   area_n1.reset();
 
-  // On low end devices, `BindStorageArea()` purges the storage area loaded from
-  // disk before rebinding.
-  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    ++expected_storage_areas_shutdown;
-  }
-  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
-
   // Delete the namespace, shut down Session Storage, and do not persist the
   // data.
   session_storage()->DeleteNamespace(namespace_id1, false);
   ShutDownSessionStorage();
-  ++expected_storage_areas_shutdown;
-  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
+  histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
+                              0);
 
   // This will re-initialize Session Storage and the namespace should be empty.
   session_storage()->CreateNamespace(namespace_id1);
@@ -427,9 +417,8 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
       "Storage.SessionStorage.Duration.PutMetadata.OnDisk", 0);
 
   ShutDownSessionStorage();
-  ++expected_storage_areas_shutdown;
   histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
+                                false, 1);
 }
 
 TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
@@ -455,11 +444,10 @@ TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
 
   // Reload the database.
   ShutDownSessionStorage();
-  int expected_storage_areas_shutdown = 1;
   histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
+                                false, 1);
   histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
-                              expected_storage_areas_shutdown);
+                              1);
   EnsureDatabaseOpen();
 
   // Re-open the namespace.
@@ -478,16 +466,6 @@ TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
   StorageAreaImpl* storage_area_impl =
       session_storage_area_impl->data_map()->storage_area();
 
-  // On low end devices, `BindStorageArea()` purges the storage area loaded from
-  // disk before rebinding.
-  if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    ++expected_storage_areas_shutdown;
-  }
-  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
-                                false, expected_storage_areas_shutdown);
-  histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
-                              expected_storage_areas_shutdown);
-
   // Create a `RunLoop` that quits when the storage area starts loading.
   base::RunLoop storage_area_loading_run_loop;
   storage_area_impl->SetLoadingStartedCallbackForTesting(
@@ -503,16 +481,15 @@ TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
   // Shutdown immediately after the area starts loading.
   storage_area_loading_run_loop.Run();
   ResetSessionStorage();
-  ++expected_storage_areas_shutdown;
 
   // Shutdown discards the put, which prevents `key2` and `value2` from
   // persisting to the database.
   histograms.ExpectBucketCount("Storage.SessionStorage.ShutdownDroppedChanges",
                                true, 1);
   histograms.ExpectBucketCount("Storage.SessionStorage.ShutdownDroppedChanges",
-                               false, expected_storage_areas_shutdown - 1);
+                               false, 1);
   histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
-                              expected_storage_areas_shutdown);
+                              2);
 
   // Re-open the database, which allows test tear down to wait for shutdown to
   // complete.
@@ -1876,6 +1853,119 @@ TEST_F(SessionStorageImplMigrationTest,
                       /*expected_entries=*/{{key, new_value}}));
   histograms.ExpectTotalCount(
       "Storage.SessionStorage.Recovery.CommitErrorThresholdExceeded", 0);
+}
+
+// Shutting down during migration drops uncommitted changes because commits
+// wait for migration to finish. `SessionStorageImpl` must record the dropped
+// changes in the `MigrationDroppedChanges` histogram.
+TEST_F(SessionStorageImplMigrationTest,
+       ShutdownDuringMigrationRecordsDroppedChanges) {
+  const std::string namespace_id =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  const blink::StorageKey changed_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example1.com");
+  const blink::StorageKey unchanged_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example2.com");
+
+  const DomStorageDatabase::Key key1 = StringViewToUint8Vector("key1");
+  const DomStorageDatabase::Value value1 = StringViewToUint8Vector("value1");
+  const DomStorageDatabase::Value value2 = StringViewToUint8Vector("value2");
+
+  ASSERT_NO_FATAL_FAILURE(CreateLevelDbWithEntries(
+      {{namespace_id, changed_storage_key, "key1", "value1"},
+       {namespace_id, unchanged_storage_key, "key1", "value2"}}));
+
+  {
+    // Pause migration after it starts. The override runs on the database
+    // sequence and gives the test a closure that resumes the real migration.
+    // The test never resumes the migration.
+    DomStorageDatabaseFactory::MigrationCallback default_migration_callback =
+        GetDefaultMigrationCallback();
+
+    base::test::TestFuture<base::OnceClosure> migration_started_future;
+    base::OnceCallback<void(base::OnceClosure)> migration_started_callback =
+        migration_started_future.GetSequenceBoundCallback();
+
+    ScopedDomStorageDatabaseFactoryForTesting scoped_database_factory(
+        /*migration_callback=*/base::BindLambdaForTesting(
+            [&](StorageType storage_type, const base::FilePath& dir_to_open,
+                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                    memory_dump_id,
+                DomStorageDatabaseFactory::OpenResultCallback callback,
+                DomStorageDatabase* source) {
+              std::move(migration_started_callback)
+                  .Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+                      default_migration_callback, storage_type, dir_to_open,
+                      memory_dump_id, std::move(callback),
+                      base::Unretained(source))));
+            }));
+
+    EnsureDatabaseOpen();
+    EXPECT_FALSE(IsSqlite());
+
+    // Load both storage areas before migration starts.
+    session_storage()->CreateNamespace(namespace_id);
+    mojo::Remote<blink::mojom::StorageArea> changed_area;
+    session_storage()->BindStorageArea(
+        changed_storage_key, namespace_id,
+        changed_area.BindNewPipeAndPassReceiver());
+    EXPECT_EQ(test::GetSync(changed_area.get(), key1), value1);
+
+    mojo::Remote<blink::mojom::StorageArea> unchanged_area;
+    session_storage()->BindStorageArea(
+        unchanged_storage_key, namespace_id,
+        unchanged_area.BindNewPipeAndPassReceiver());
+    EXPECT_EQ(test::GetSync(unchanged_area.get(), key1), value2);
+
+    // Start the migration and wait for it to pause.
+    task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+    base::OnceClosure resume_migration = migration_started_future.Take();
+    ASSERT_TRUE(
+        session_storage_impl()->GetDatabaseForTesting()->is_migrating());
+
+    // Change one storage area during migration, which creates a pending
+    // commit.
+    base::test::TestFuture<bool> put_future;
+    changed_area->Put(key1, value2, /*client_old_value=*/std::nullopt,
+                      test::MakeStorageAreaSource(), put_future.GetCallback());
+    EXPECT_TRUE(put_future.Take());
+
+    ASSERT_TRUE(session_storage_impl()
+                    ->GetNamespaceForTesting(namespace_id)
+                    ->GetStorageAreaForTesting(changed_storage_key)
+                    ->data_map()
+                    ->storage_area()
+                    ->HasPendingCommit());
+    ASSERT_FALSE(session_storage_impl()
+                     ->GetNamespaceForTesting(namespace_id)
+                     ->GetStorageAreaForTesting(unchanged_storage_key)
+                     ->data_map()
+                     ->storage_area()
+                     ->HasPendingCommit());
+
+    // Shut down while migrating. Only the changed storage area drops changes.
+    base::HistogramTester histograms;
+    ShutDownSessionStorage();
+    histograms.ExpectBucketCount(
+        "Storage.SessionStorage.MigrationDroppedChanges", true, 1);
+    histograms.ExpectBucketCount(
+        "Storage.SessionStorage.MigrationDroppedChanges", false, 1);
+    histograms.ExpectBucketCount(
+        "Storage.SessionStorage.ShutdownDroppedChanges", false, 2);
+  }
+
+  // The dropped change did not persist to the LevelDB, which shutdown left
+  // intact.
+  EXPECT_TRUE(LevelDbDirHasContents());
+  EnsureDatabaseOpen();
+  ASSERT_FALSE(IsSqlite());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(namespace_id, changed_storage_key,
+                      /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectMapEquals(namespace_id, unchanged_storage_key,
+                      /*expected_entries=*/{{key1, value2}}));
 }
 
 // Test fixture for tests that use fake database implementations. These tests

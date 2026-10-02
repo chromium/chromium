@@ -1990,6 +1990,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Storage.{DomStorageType}.MigrationDroppedChanges"
+    enum="Boolean" expires_after="2027-07-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>stevebe@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records whether data loss occurs for {DomStorageType} because a database
+    migration was in progress during shutdown. Recorded once for each
+    {DomStorageType} when it shuts down.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.{DomStorageType}.Recovery.{DomStorageRecoveryReason}.InMemory"
     enum="BooleanSuccess" expires_after="2027-02-24">

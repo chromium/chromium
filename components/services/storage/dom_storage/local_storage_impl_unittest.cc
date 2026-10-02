@@ -2320,6 +2320,105 @@ TEST_F(LocalStorageImplMigrationTest,
       "Storage.LocalStorage.Recovery.CommitErrorThresholdExceeded", 0);
 }
 
+// Shutting down during migration drops uncommitted changes because commits
+// wait for migration to finish. `StorageAreaImpl` must record the dropped
+// changes in the `MigrationDroppedChanges` histogram.
+TEST_F(LocalStorageImplMigrationTest,
+       ShutdownDuringMigrationRecordsDroppedChanges) {
+  const blink::StorageKey changed_storage_key = StorageKeyForExampleHost(1);
+  const blink::StorageKey unchanged_storage_key = StorageKeyForExampleHost(2);
+
+  const std::vector<uint8_t> key1 = StdStringToUint8Vector("key1");
+  const std::vector<uint8_t> value1 = StdStringToUint8Vector("value1");
+
+  const std::vector<uint8_t> key2 = StdStringToUint8Vector("key2");
+  const std::vector<uint8_t> value2 = StdStringToUint8Vector("value2");
+
+  ASSERT_NO_FATAL_FAILURE(
+      CreateLevelDbWithEntries({{changed_storage_key, key1, value1},
+                                {unchanged_storage_key, key2, value2}}));
+
+  {
+    // Pause migration after it starts. The override runs on the database
+    // sequence and gives the test a closure that resumes the real migration.
+    // The test never resumes the migration.
+    DomStorageDatabaseFactory::MigrationCallback default_migration_callback =
+        GetDefaultMigrationCallback();
+
+    base::test::TestFuture<base::OnceClosure> migration_started_future;
+    base::OnceCallback<void(base::OnceClosure)> migration_started_callback =
+        migration_started_future.GetSequenceBoundCallback();
+
+    ScopedDomStorageDatabaseFactoryForTesting scoped_database_factory(
+        /*migration_callback=*/base::BindLambdaForTesting(
+            [&](StorageType storage_type, const base::FilePath& dir_to_open,
+                const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+                    memory_dump_id,
+                DomStorageDatabaseFactory::OpenResultCallback callback,
+                DomStorageDatabase* source) {
+              std::move(migration_started_callback)
+                  .Run(base::BindPostTaskToCurrentDefault(base::BindOnce(
+                      default_migration_callback, storage_type, dir_to_open,
+                      memory_dump_id, std::move(callback),
+                      base::Unretained(source))));
+            }));
+
+    InitializeStorage(storage_path());
+    WaitForDatabaseOpen();
+    ASSERT_FALSE(IsSqlite());
+
+    // Load both storage areas before migration starts.
+    mojo::Remote<blink::mojom::StorageArea> changed_area;
+    context()->BindStorageArea(changed_storage_key,
+                               changed_area.BindNewPipeAndPassReceiver());
+    EXPECT_EQ(test::GetSync(changed_area.get(), key1), value1);
+
+    mojo::Remote<blink::mojom::StorageArea> unchanged_area;
+    context()->BindStorageArea(unchanged_storage_key,
+                               unchanged_area.BindNewPipeAndPassReceiver());
+    EXPECT_EQ(test::GetSync(unchanged_area.get(), key2), value2);
+
+    // Start the migration and wait for it to pause.
+    task_environment().FastForwardBy(kExceedMigrationInactivityTimeout);
+    base::OnceClosure resume_migration = migration_started_future.Take();
+    ASSERT_TRUE(context()->GetDatabaseForTesting()->is_migrating());
+
+    // Change one storage area during migration, which creates a pending
+    // commit.
+    base::test::TestFuture<bool> put_future;
+    changed_area->Put(key1, value2, /*client_old_value=*/std::nullopt,
+                      test::MakeStorageAreaSource(), put_future.GetCallback());
+    EXPECT_TRUE(put_future.Take());
+
+    ASSERT_TRUE(context()
+                    ->GetStorageAreaForTesting(changed_storage_key)
+                    ->HasPendingCommit());
+    ASSERT_FALSE(context()
+                     ->GetStorageAreaForTesting(unchanged_storage_key)
+                     ->HasPendingCommit());
+
+    // Shut down while migrating. Only the changed storage area drops changes.
+    base::HistogramTester histograms;
+    ShutDownStorage();
+    histograms.ExpectBucketCount("Storage.LocalStorage.MigrationDroppedChanges",
+                                 true, 1);
+    histograms.ExpectBucketCount("Storage.LocalStorage.MigrationDroppedChanges",
+                                 false, 1);
+    histograms.ExpectBucketCount("Storage.LocalStorage.ShutdownDroppedChanges",
+                                 false, 2);
+  }
+
+  // The dropped change did not persist to the LevelDB, which shutdown left
+  // intact.
+  EXPECT_TRUE(LevelDbDirHasContents());
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      changed_storage_key, /*expected_entries=*/{{key1, value1}}));
+  ASSERT_NO_FATAL_FAILURE(ExpectMapEquals(
+      unchanged_storage_key, /*expected_entries=*/{{key2, value2}}));
+}
+
 // Test fixture for tests that use fake database implementations. These tests
 // do not depend on the real SQLite/LevelDB backend and run only once.
 class LocalStorageImplFakeDbTest : public LocalStorageImplTestBase {

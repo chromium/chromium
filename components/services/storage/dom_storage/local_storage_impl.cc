@@ -299,9 +299,8 @@ void LocalStorageImpl::ShutDown() {
   // Nothing to do if no connection to the database was ever finished.
   if (connection_state_ == CONNECTION_FINISHED) {
     // Flush any uncommitted data.
-    for (const auto& it : areas_) {
-      auto* area = it.second->storage_area();
-      area->ScheduleImmediateCommit();
+    for (const auto& [storage_key, storage_area_holder] : areas_) {
+      storage_area_holder->storage_area()->ScheduleImmediateCommit();
     }
 
     if (database_ && !force_keep_session_state_ &&
@@ -309,6 +308,23 @@ void LocalStorageImpl::ShutDown() {
       database_->PurgeOriginsForShutdown(
           std::move(origins_to_purge_on_shutdown_));
     }
+  }
+
+  for (const auto& [storage_key, storage_area_holder] : areas_) {
+    StorageAreaImpl* area = storage_area_holder->storage_area();
+    // Record data loss, which happens when this storage area destructs before
+    // persisting changes to `database_`.
+    //
+    // TODO(crbug.com/503422295): Monitor these histograms and if dropping
+    // changes is common then handle that here.
+    const bool data_loss_during_migration =
+        area->HasPendingCommit() && database_ && database_->is_migrating();
+
+    base::UmaHistogramBoolean("Storage.LocalStorage.MigrationDroppedChanges",
+                              data_loss_during_migration);
+
+    base::UmaHistogramBoolean("Storage.LocalStorage.ShutdownDroppedChanges",
+                              area->has_pending_load_read_write_tasks());
   }
 }
 

@@ -361,10 +361,26 @@ void SessionStorageImpl::ShutDown() {
   // Nothing to do if no connection to the database was ever finished.
   if (connection_state_ == CONNECTION_FINISHED) {
     // Flush any uncommitted data.
-    for (const auto& it : data_maps_) {
-      auto* area = it.second->storage_area();
-      area->ScheduleImmediateCommit();
+    for (const auto& [map_id, data_map] : data_maps_) {
+      data_map->storage_area()->ScheduleImmediateCommit();
     }
+  }
+
+  for (const auto& [map_id, data_map] : data_maps_) {
+    StorageAreaImpl* area = data_map->storage_area();
+    // Record data loss, which happens when this storage area destructs before
+    // persisting changes to `database_`.
+    //
+    // TODO(crbug.com/503422295): Monitor these histograms and if dropping
+    // changes is common then handle that here.
+    const bool data_loss_during_migration =
+        area->HasPendingCommit() && database_ && database_->is_migrating();
+
+    base::UmaHistogramBoolean("Storage.SessionStorage.MigrationDroppedChanges",
+                              data_loss_during_migration);
+
+    base::UmaHistogramBoolean("Storage.SessionStorage.ShutdownDroppedChanges",
+                              area->has_pending_load_read_write_tasks());
   }
 }
 

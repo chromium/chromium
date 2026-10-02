@@ -83,21 +83,6 @@ StorageAreaImpl::StorageAreaImpl(
 }
 
 StorageAreaImpl::~StorageAreaImpl() {
-  // For local storage, the map ID is unknown where `database_` must use the
-  // area's storage key to look up the map ID.
-  bool is_session_storage = map_locator_->map_id().has_value();
-
-  // Record data loss, which happens when this storage area destructs before
-  // persisting changes to `database_`.
-  //
-  // TODO(crbug.com/503422295): Monitor this histogram and if dropping changes
-  // is common then handle that here.
-  std::string histogram_name =
-      absl::StrFormat("Storage.%s.ShutdownDroppedChanges",
-                      is_session_storage ? "SessionStorage" : "LocalStorage");
-  base::UmaHistogramBoolean(histogram_name,
-                            has_pending_load_read_write_tasks());
-
   CommitChanges();
   if (database_) {
     database_->RemoveCommitter(this);
