@@ -203,8 +203,7 @@ class ProfileManagementDisclaimerService
       base::WeakPtr<ResetableState> state_weak_ptr,
       const CoreAccountId& account_id,
       std::optional<policy::UserManagementStatus> status,
-      std::optional<policy::ProfileSeparationPolicies>
-          profile_separation_policies);
+      policy::ProfileSeparationPolicies profile_separation_policies);
 
   // Opens the device signals disclaimer dialog if the following conditions
   // apply for the current profile:

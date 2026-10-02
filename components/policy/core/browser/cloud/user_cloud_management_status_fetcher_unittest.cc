@@ -43,7 +43,7 @@ const char kTestAccessToken[] = "test_access_token";
 
 struct FetchTestResult {
   std::optional<UserManagementStatus> status;
-  std::optional<ProfileSeparationPolicies> policies;
+  ProfileSeparationPolicies policies;
 };
 
 class UserCloudManagementStatusFetcherTestBase : public testing::Test {
@@ -69,7 +69,7 @@ class UserCloudManagementStatusFetcherTestBase : public testing::Test {
         should_fetch_policies,
         base::BindLambdaForTesting(
             [&](std::optional<UserManagementStatus> status,
-                std::optional<ProfileSeparationPolicies> policies) {
+                ProfileSeparationPolicies policies) {
               result.status = std::move(status);
               result.policies = std::move(policies);
             }));
@@ -112,11 +112,18 @@ class UserCloudManagementStatusFetcherLifecycleTest
         base::BindOnce(
             [](base::OnceCallback<void(FetchTestResult)> callback,
                std::optional<UserManagementStatus> status,
-               std::optional<ProfileSeparationPolicies> policies) {
+               ProfileSeparationPolicies policies) {
               std::move(callback).Run(
                   FetchTestResult{std::move(status), std::move(policies)});
             },
             std::move(callback)));
+  }
+
+  // Creates a caller-owned fetcher, to be started with `Start()`.
+  std::unique_ptr<UserCloudManagementStatusFetcher> CreateFetcher() {
+    return std::make_unique<UserCloudManagementStatusFetcher>(
+        &service_, test_url_loader_factory_.GetSafeWeakWrapper(),
+        IncludePolicies());
   }
 };
 
@@ -191,6 +198,69 @@ TEST_P(UserCloudManagementStatusFetcherLifecycleTest, Failure_DMServerError) {
   EXPECT_FALSE(result_status.has_value());
 }
 
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
+       DestroyedDuringAccessTokenFetch_CallbackNeverRuns) {
+  bool callback_called = false;
+  auto fetcher = CreateFetcher();
+  fetcher->Start(
+      identity_test_env_.identity_manager(), account_id_,
+      base::BindLambdaForTesting(
+          [&](std::optional<UserManagementStatus> status,
+              ProfileSeparationPolicies policies) { callback_called = true; }));
+
+  fetcher.reset();
+  // Fast forward past the 10.0s timeout.
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  EXPECT_FALSE(callback_called);
+}
+
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
+       DestroyedDuringDMServerRequest_CallbackNeverRuns) {
+  // The DMServer job is created but never answered.
+  EXPECT_CALL(job_creation_handler_, OnJobCreation(testing::_));
+
+  bool callback_called = false;
+  auto fetcher = CreateFetcher();
+  fetcher->Start(
+      identity_test_env_.identity_manager(), account_id_,
+      base::BindLambdaForTesting(
+          [&](std::optional<UserManagementStatus> status,
+              ProfileSeparationPolicies policies) { callback_called = true; }));
+  RespondWithAccessToken();
+  testing::Mock::VerifyAndClearExpectations(&job_creation_handler_);
+
+  fetcher.reset();
+  // Fast forward past the 10.0s timeout.
+  task_environment_.FastForwardBy(base::Seconds(11));
+
+  EXPECT_FALSE(callback_called);
+}
+
+TEST_P(UserCloudManagementStatusFetcherLifecycleTest,
+       CallbackCanDestroyFetcher) {
+  EXPECT_CALL(job_creation_handler_, OnJobCreation(testing::_))
+      .WillOnce(
+          service_.SendJobResponseAsync(net::ERR_FAILED, 500, std::string()));
+
+  bool callback_called = false;
+  auto fetcher = CreateFetcher();
+  fetcher->Start(
+      identity_test_env_.identity_manager(), account_id_,
+      base::BindLambdaForTesting([&](std::optional<UserManagementStatus> status,
+                                     ProfileSeparationPolicies policies) {
+        callback_called = true;
+        EXPECT_FALSE(status.has_value());
+        // Destroying the fetcher from its own callback must be
+        // safe.
+        fetcher.reset();
+      }));
+  RespondWithAccessToken();
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(fetcher);
+}
+
 using UserCloudManagementStatusFetcherParsingTest =
     UserCloudManagementStatusFetcherTestBase;
 
@@ -211,7 +281,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.status->is_chrome_profile_management_enabled);
   EXPECT_TRUE(result.status->CanBeSubjectedToEnterprisePolicies());
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -231,7 +301,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_FALSE(result.status->is_account_managed);
   EXPECT_FALSE(result.status->is_chrome_profile_management_enabled);
   EXPECT_FALSE(result.status->CanBeSubjectedToEnterprisePolicies());
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -270,18 +340,17 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   EXPECT_TRUE(result.status->is_account_managed);
   EXPECT_TRUE(result.status->is_chrome_profile_management_enabled);
 
-  ASSERT_TRUE(result.policies.has_value());
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
-  EXPECT_EQ(result.policies->profile_separation_settings(),
+  EXPECT_EQ(result.policies.profile_separation_settings(),
             std::optional<int>(ProfileSeparationSettings::ENFORCED));
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(
-      result.policies->profile_separation_data_migration_settings(),
+      result.policies.profile_separation_data_migration_settings(),
       std::optional<int>(ProfileSeparationDataMigrationSettings::USER_OPT_OUT));
 #endif
 #if !BUILDFLAG(IS_IOS)
-  EXPECT_EQ(result.policies->managed_accounts_signin_restrictions(),
+  EXPECT_EQ(result.policies.managed_accounts_signin_restrictions(),
             std::optional<std::string>("strict"));
 #endif
 }
@@ -329,8 +398,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   FetchTestResult result = FetchSync(/*should_fetch_policies=*/true);
 
   ASSERT_TRUE(result.status.has_value());
-  ASSERT_TRUE(result.policies.has_value());
-  EXPECT_TRUE(result.policies->Empty());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -352,12 +420,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
   FetchTestResult result = FetchSync(/*should_fetch_policies=*/true);
 
   ASSERT_TRUE(result.status.has_value());
-  ASSERT_TRUE(result.policies.has_value());
-  EXPECT_EQ(*result.policies, ProfileSeparationPolicies());
+  EXPECT_EQ(result.policies, ProfileSeparationPolicies());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_PolicyFetchResponseErrorCodeReturnsNulloptPolicies) {
+       PoliciesFetcher_PolicyFetchResponseErrorCodeReturnsEmptyPolicies) {
   enterprise_management::DeviceManagementResponse response;
   auto* status_response =
       response.mutable_user_management_status_and_policies_response();
@@ -373,11 +440,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_PolicyFetchResponseErrorMessageReturnsNulloptPolicies) {
+       PoliciesFetcher_PolicyFetchResponseErrorMessageReturnsEmptyPolicies) {
   enterprise_management::DeviceManagementResponse response;
   auto* status_response =
       response.mutable_user_management_status_and_policies_response();
@@ -393,11 +460,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_MissingPolicyValueReturnsNulloptPolicies) {
+       PoliciesFetcher_MissingPolicyValueReturnsEmptyPolicies) {
   enterprise_management::PolicyData policy_data;
   policy_data.set_policy_type(dm_protocol::GetChromeUserPolicyType());
 
@@ -416,11 +483,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_EmptyPolicyDataReturnsNulloptPolicies) {
+       PoliciesFetcher_EmptyPolicyDataReturnsEmptyPolicies) {
   enterprise_management::DeviceManagementResponse response;
   auto* status_response =
       response.mutable_user_management_status_and_policies_response();
@@ -435,11 +502,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_CorruptedPolicyDataReturnsNulloptPolicies) {
+       PoliciesFetcher_CorruptedPolicyDataReturnsEmptyPolicies) {
   enterprise_management::DeviceManagementResponse response;
   auto* status_response =
       response.mutable_user_management_status_and_policies_response();
@@ -455,11 +522,11 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
-       PoliciesFetcher_CorruptedPolicyValueReturnsNulloptPolicies) {
+       PoliciesFetcher_CorruptedPolicyValueReturnsEmptyPolicies) {
   enterprise_management::PolicyData policy_data;
   policy_data.set_policy_value("corrupted_cloud_policy_settings");
 
@@ -478,7 +545,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,
@@ -496,7 +563,7 @@ TEST_F(UserCloudManagementStatusFetcherParsingTest,
 
   ASSERT_TRUE(result.status.has_value());
   EXPECT_TRUE(result.status->is_account_managed);
-  EXPECT_FALSE(result.policies.has_value());
+  EXPECT_TRUE(result.policies.Empty());
 }
 
 TEST_F(UserCloudManagementStatusFetcherParsingTest,

@@ -21,6 +21,7 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/policy/core/browser/cloud/user_cloud_management_status_fetcher.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -41,7 +42,7 @@ class WebContents;
 
 namespace policy {
 class UserCloudSigninRestrictionPolicyFetcher;
-}
+}  // namespace policy
 
 namespace metrics {
 class ProfileMetricsService;
@@ -193,6 +194,12 @@ class DiceWebSigninInterceptor : public KeyedService,
   void SetInterceptedAccountProfileSeparationPoliciesForTesting(
       std::optional<policy::ProfileSeparationPolicies> value) {
     intercepted_account_profile_separation_policies_response_for_testing_ =
+        std::move(value);
+  }
+
+  void SetInterceptedAccountManagementStatusForTesting(
+      std::optional<policy::UserManagementStatus> value) {
+    intercepted_account_management_status_response_for_testing_ =
         std::move(value);
   }
 
@@ -378,18 +385,42 @@ class DiceWebSigninInterceptor : public KeyedService,
   // this account.
   bool HasUserDeclinedProfileCreation(std::string_view email) const;
 
-  // Fetches the value of the cloud user level value of the
-  // ManagedAccountsSigninRestriction policy for 'account_info' and runs
-  // `callback` with the result. This is a network call that has a 5 seconds
-  // timeout.
+  // Fetches the user management status and the cloud user level value of the
+  // profile separation policies for `account_info` and runs `callback` with the
+  // result. The fetch is attempted at most once per interception. This is a
+  // network call that has a 5 seconds timeout.
   void EnsureAccountLevelSigninRestrictionFetchInProgress(
       const AccountInfo& account_info,
-      base::OnceCallback<void(policy::ProfileSeparationPolicies)> callback);
+      base::OnceCallback<void(std::optional<policy::UserManagementStatus>,
+                              policy::ProfileSeparationPolicies)> callback);
 
-  // Called when the the value of the cloud user level value of the
-  // ManagedAccountsSigninRestriction is received.
+  // Fetches account-level management status and profile separation policies via
+  // the Device Management (DM) Server.
+  void FetchAccountLevelSigninRestrictionWithDmServer(
+      const AccountInfo& account_info,
+      base::OnceCallback<void(std::optional<policy::UserManagementStatus>,
+                              policy::ProfileSeparationPolicies)> callback);
+
+  // Fetches account-level profile separation policies via the legacy
+  // SecureConnect API.
+  void FetchAccountLevelSigninRestrictionWithSecureConnect(
+      const AccountInfo& account_info,
+      base::OnceCallback<void(std::optional<policy::UserManagementStatus>,
+                              policy::ProfileSeparationPolicies)> callback);
+
+  // Returns whether enterprise policies can be applied to the intercepted
+  // account. With `kMigrateSecureConnectApiToDmServer`, only the DM Server
+  // management status is used, and this fails open (returns false) if it is
+  // unavailable. Must only be called once the required extended account info
+  // is available.
+  bool CanApplyEnterprisePoliciesToInterceptedAccount(
+      const AccountInfo& intercepted_account_info) const;
+
+  // Called when the user management status and the value of the cloud user
+  // level value of the ManagedAccountsSigninRestriction are received.
   void OnAccountLevelManagedAccountsSigninRestrictionReceived(
       const AccountInfo& account_info,
+      std::optional<policy::UserManagementStatus> management_status,
       policy::ProfileSeparationPolicies profile_separation_policies);
 
   // Records the heuristic outcome and latency metrics.
@@ -446,10 +477,23 @@ class DiceWebSigninInterceptor : public KeyedService,
     // time.
     std::unique_ptr<policy::UserCloudSigninRestrictionPolicyFetcher>
         account_level_signin_restriction_policy_fetcher_;
+    std::unique_ptr<policy::UserCloudManagementStatusFetcher>
+        account_level_management_status_fetcher_;
+    // Value of the management status for the intercepted account, set only if
+    // the `kMigrateSecureConnectApiToDmServer` feature is enabled and the DM
+    // Server fetch succeeded.
+    std::optional<policy::UserManagementStatus>
+        intercepted_account_management_status_;
     // Value of  the profile separation policies for the intercepted account. If
     // no value is set, then we have not yet received the policy value.
     std::optional<policy::ProfileSeparationPolicies>
         intercepted_account_profile_separation_policies_;
+    // Whether the account level fetch was started for this interception.
+    bool account_level_signin_restriction_fetch_attempted_ = false;
+    // Whether the account level fetch completed (successfully or not), or the
+    // interception info fetch timed out. Once true, no more asynchronous
+    // information is awaited.
+    bool account_level_signin_restriction_fetch_completed_ = false;
 
     base::ScopedClosureRunner disable_management_disclaimer_until_reset_;
 
@@ -496,6 +540,8 @@ class DiceWebSigninInterceptor : public KeyedService,
   // reset this value, it is expected to be sticky across tests.
   std::optional<policy::ProfileSeparationPolicies>
       intercepted_account_profile_separation_policies_response_for_testing_;
+  std::optional<policy::UserManagementStatus>
+      intercepted_account_management_status_response_for_testing_;
 
   base::WeakPtrFactory<DiceWebSigninInterceptor> weak_factory_{this};
 };

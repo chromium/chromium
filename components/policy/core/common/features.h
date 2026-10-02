@@ -110,6 +110,9 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kMigrateSecureConnectApiToDmServer);
 POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kMigrateSecureConnectApiToDmServerFetchTimeout;
 
+// Returns true if `kMigrateSecureConnectApiToDmServer` is enabled.
+POLICY_EXPORT bool IsMigrateSecureConnectApiToDmServerEnabled();
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

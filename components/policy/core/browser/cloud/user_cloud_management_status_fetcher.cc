@@ -131,7 +131,7 @@ void UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
       [](std::unique_ptr<UserCloudManagementStatusFetcher> fetcher,
          FetchStatusAndPoliciesCallback callback,
          std::optional<UserManagementStatus> status,
-         std::optional<ProfileSeparationPolicies> profile_separation_policies) {
+         ProfileSeparationPolicies profile_separation_policies) {
         std::move(callback).Run(std::move(status),
                                 std::move(profile_separation_policies));
       },
@@ -147,8 +147,7 @@ UserCloudManagementStatusFetcher::UserCloudManagementStatusFetcher(
     : service_(CHECK_DEREF(service)),
       url_loader_factory_(std::move(url_loader_factory)),
       should_fetch_policies_(should_fetch_policies) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kMigrateSecureConnectApiToDmServer));
+  CHECK(features::IsMigrateSecureConnectApiToDmServerEnabled());
   CHECK(url_loader_factory_);
 }
 
@@ -158,6 +157,10 @@ void UserCloudManagementStatusFetcher::Start(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     FetchStatusAndPoliciesCallback callback) {
+  CHECK(!callback_);
+  CHECK(!token_fetcher_);
+  CHECK(identity_manager);
+  CHECK(!account_id.empty());
   callback_ = std::move(callback);
 
   // Start the fetch timeout timer.
@@ -183,7 +186,7 @@ void UserCloudManagementStatusFetcher::OnAccessTokenFetchComplete(
     LOG_POLICY(WARNING, POLICY_FETCHING)
         << "Failed to fetch access token for management status check: "
         << error.ToString();
-    Finish(std::nullopt, std::nullopt);
+    Finish(std::nullopt, ProfileSeparationPolicies());
     return;
   }
 
@@ -219,7 +222,7 @@ void UserCloudManagementStatusFetcher::OnJobDone(DMServerJobResult result) {
         << "UserManagementStatusAndPolicies failed with status: "
         << result.dm_status;
     // Fail open on error.
-    Finish(std::nullopt, std::nullopt);
+    Finish(std::nullopt, ProfileSeparationPolicies());
     return;
   }
 
@@ -231,10 +234,11 @@ void UserCloudManagementStatusFetcher::OnJobDone(DMServerJobResult result) {
   status.is_chrome_profile_management_enabled =
       status_response.is_chrome_profile_management_enabled();
 
-  std::optional<ProfileSeparationPolicies> profile_separation_policies;
+  ProfileSeparationPolicies profile_separation_policies;
   if (status_response.has_policy_fetch_response()) {
     profile_separation_policies = ExtractProfileSeparationPolicies(
-        status_response.policy_fetch_response());
+                                      status_response.policy_fetch_response())
+                                      .value_or(ProfileSeparationPolicies());
   }
 
   Finish(status, std::move(profile_separation_policies));
@@ -244,12 +248,12 @@ void UserCloudManagementStatusFetcher::OnTimeout() {
   LOG_POLICY(WARNING, POLICY_FETCHING)
       << "UserCloudManagementStatusFetcher timed out.";
   // Fail open on timeout.
-  Finish(std::nullopt, std::nullopt);
+  Finish(std::nullopt, ProfileSeparationPolicies());
 }
 
 void UserCloudManagementStatusFetcher::Finish(
     std::optional<UserManagementStatus> status,
-    std::optional<ProfileSeparationPolicies> profile_separation_policies) {
+    ProfileSeparationPolicies profile_separation_policies) {
   timeout_timer_.Stop();
   token_fetcher_.reset();
   fetch_job_.reset();

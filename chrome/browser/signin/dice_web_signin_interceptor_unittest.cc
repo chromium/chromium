@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -40,6 +41,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -3372,4 +3374,367 @@ TEST_F(DiceWebSigninInterceptorTest,
   // sign-in.
   histogram_tester.ExpectTotalCount(
       "Signin.Dice.LinkedAccounts.Latency.InterceptionDeferral", 0);
+}
+
+// Tests for the `kMigrateSecureConnectApiToDmServer` flow, where the management
+// status of the intercepted account is fetched from the DM Server.
+class DiceWebSigninInterceptorDmServerTest
+    : public DiceWebSigninInterceptorTest {
+ protected:
+  // Empty hosted domain, stored as `kNoHostedDomainFound` (unmanaged).
+  static constexpr char kNoHostedDomain[] = "";
+
+  // Makes a valid account available. `is_subject_to_enterprise_features` is
+  // left unknown if `std::nullopt`.
+  AccountInfo MakeAccount(const std::string& email,
+                          const std::string& hosted_domain,
+                          std::optional<bool> is_subject_to_enterprise_features,
+                          bool is_primary = false) {
+    AccountInfo account_info =
+        is_primary ? identity_test_env()->MakePrimaryAccountAvailable(
+                         email, signin::ConsentLevel::kSignin)
+                   : identity_test_env()->MakeAccountAvailable(email);
+    MakeValidAccountInfoWithoutCapabilities(&account_info, hosted_domain);
+    SetEnterpriseCapability(account_info, is_subject_to_enterprise_features);
+    return account_info;
+  }
+
+  void SetEnterpriseCapability(
+      AccountInfo& account_info,
+      std::optional<bool> is_subject_to_enterprise_features) {
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_is_subject_to_parental_controls(false);
+    if (is_subject_to_enterprise_features.has_value()) {
+      mutator.set_is_subject_to_enterprise_features(
+          *is_subject_to_enterprise_features);
+    }
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
+
+  // The primary account has a different given name than the accounts created
+  // by `MakeAccount()`, so that the multi-user bubble can be shown.
+  void MakeUnmanagedPrimaryAccount() {
+    AccountInfo account_info =
+        MakeAccount("primary@gmail.com", kNoHostedDomain,
+                    /*is_subject_to_enterprise_features=*/false,
+                    /*is_primary=*/true);
+    account_info =
+        AccountInfo::Builder(account_info).SetGivenName("Bob").Build();
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType interception_type) {
+    EXPECT_CALL(*mock_delegate(),
+                ShowSigninInterceptionBubble(
+                    web_contents(),
+                    testing::Field(&WebSigninInterceptor::Delegate::
+                                       BubbleParameters::interception_type,
+                                   interception_type),
+                    testing::_))
+        .WillOnce(testing::Return(testing::ByMove(
+            std::make_unique<TestScopedWebSigninInterceptionBubbleHandle>())));
+  }
+
+  void SetLocalStrictProfileSeparation() {
+    profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                     "primary_account_strict");
+  }
+
+  static policy::UserManagementStatus MakeManagementStatus(
+      bool is_account_managed,
+      bool is_chrome_profile_management_enabled) {
+    policy::UserManagementStatus status;
+    status.is_account_managed = is_account_managed;
+    status.is_chrome_profile_management_enabled =
+        is_chrome_profile_management_enabled;
+    return status;
+  }
+
+  static policy::ProfileSeparationPolicies EnforcedCloudPolicies() {
+    return policy::ProfileSeparationPolicies(
+        policy::ProfileSeparationSettings::ENFORCED,
+        /*profile_separation_data_migration_settings=*/std::nullopt);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      policy::features::kMigrateSecureConnectApiToDmServer};
+};
+
+// Accounts that are not subject to enterprise features are treated as
+// unmanaged without fetching the DM Server status, even if the hosted domain
+// is set and profile separation is enforced by policy.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       NotSubjectToEnterpriseFeatures_SkipsFetch) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", "example.com",
+                  /*is_subject_to_enterprise_features=*/false);
+  SetLocalStrictProfileSeparation();
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      EnforcedCloudPolicies());
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  MaybeIntercept(account_info.GetAccountId());
+
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  // The fetch was not started, so the testing override was not consumed.
+  EXPECT_FALSE(interceptor()
+                   ->intercepted_account_profile_separation_policies()
+                   .has_value());
+}
+
+// If the enterprise capability is still unknown at timeout, the DM Server
+// status is not fetched and the interception fails open: the account is treated
+// as unmanaged even if it has a hosted domain and separation is enforced
+// locally.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       EnterpriseCapabilityUnknownAtTimeout_FailsOpen) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", "example.com",
+                  /*is_subject_to_enterprise_features=*/std::nullopt);
+  SetLocalStrictProfileSeparation();
+
+  base::HistogramTester histogram_tester;
+  MaybeIntercept(account_info.GetAccountId());
+  // Waiting for the enterprise capability.
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  task_environment()->FastForwardBy(base::Seconds(5));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kInterceptMultiUser, 1);
+}
+
+// When the enterprise capability arrives, the DM Server status is fetched and
+// the interception proceeds without waiting for the timeout.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       EnterpriseCapabilityArrivesLater_FetchesStatus) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/std::nullopt);
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      EnforcedCloudPolicies());
+
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+  testing::Mock::VerifyAndClearExpectations(mock_delegate());
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  SetEnterpriseCapability(account_info,
+                          /*is_subject_to_enterprise_features=*/true);
+}
+
+// If the DM Server fetch fails, the interception fails open: the account is
+// treated as unmanaged even if it has a hosted domain and separation is
+// enforced locally.
+TEST_F(DiceWebSigninInterceptorDmServerTest, FetchFailure_FailsOpen) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", "example.com",
+                  /*is_subject_to_enterprise_features=*/true);
+  SetLocalStrictProfileSeparation();
+  // Simulate a DM Server fetch failure: the management status is
+  // `std::nullopt`.
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies());
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+// The DM Server status is authoritative over the hosted domain.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ManagedStatusAndEnforcedCloudPolicy_ForcesSeparation) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/true);
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      EnforcedCloudPolicies());
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ManagedStatusAndLocalStrictPolicy_ForcesSeparation) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", "example.com",
+                  /*is_subject_to_enterprise_features=*/true);
+  SetLocalStrictProfileSeparation();
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+// Without separation policies, a managed account gets the (optional)
+// enterprise bubble.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ManagedStatusWithoutSeparationPolicy_ShowsEnterpriseBubble) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/true);
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kEnterprise);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+// A managed account without Chrome profile management is treated as a consumer
+// account, even if the hosted domain is set and separation is enforced locally.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ManagedWithoutChromeProfileManagement_TreatedAsConsumer) {
+  MakeUnmanagedPrimaryAccount();
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", "example.com",
+                  /*is_subject_to_enterprise_features=*/true);
+  SetLocalStrictProfileSeparation();
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/false));
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kMultiUser);
+  MaybeIntercept(account_info.GetAccountId());
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+// Reauth of a managed primary account is intercepted if the user has not
+// accepted management yet.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ReauthPrimaryAccount_ManagementNotAccepted_ForcesSeparation) {
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/true,
+                  /*is_primary=*/true);
+  SetLocalStrictProfileSeparation();
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+
+  ExpectInterceptionBubble(
+      WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/false,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+}
+
+// Reauth of a managed primary account is not intercepted if the user already
+// accepted management.
+TEST_F(DiceWebSigninInterceptorDmServerTest,
+       ReauthPrimaryAccount_ManagementAccepted_NotIntercepted) {
+  AccountInfo account_info =
+      MakeAccount("alice@example.com", kNoHostedDomain,
+                  /*is_subject_to_enterprise_features=*/true,
+                  /*is_primary=*/true);
+  SetLocalStrictProfileSeparation();
+  profile_attributes_storage()
+      ->GetProfileAttributesWithPath(profile()->GetPath())
+      ->SetUserAcceptedAccountManagement(true);
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      MakeManagementStatus(/*is_account_managed=*/true,
+                           /*is_chrome_profile_management_enabled=*/true));
+
+  base::HistogramTester histogram_tester;
+  // The strict mock delegate fails the test if a bubble is shown.
+  interceptor()->MaybeInterceptWebSignin(
+      web_contents(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/false,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortAccountNotNew, 1);
+}
+
+// Parameterized by whether `kMigrateSecureConnectApiToDmServer` is enabled.
+class DiceWebSigninInterceptorTabClosedTest
+    : public DiceWebSigninInterceptorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DiceWebSigninInterceptorTabClosedTest() {
+    feature_list_.InitWithFeatureState(
+        policy::features::kMigrateSecureConnectApiToDmServer, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DiceWebSigninInterceptorTabClosedTest,
+                         testing::Bool());
+
+// The interception is aborted if the tab is closed while waiting for
+// asynchronous information, in a case where separation would be enforced.
+TEST_P(DiceWebSigninInterceptorTabClosedTest,
+       TabClosedWhileWaiting_EnforcedSeparation) {
+  profile()->GetPrefs()->SetString(prefs::kManagedAccountsSigninRestriction,
+                                   "primary_account_strict");
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  // No capabilities: the interception waits for them.
+  MakeValidAccountInfoWithoutCapabilities(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  // Only used when `kMigrateSecureConnectApiToDmServer` is enabled.
+  policy::UserManagementStatus management_status;
+  management_status.is_account_managed = true;
+  management_status.is_chrome_profile_management_enabled = true;
+  interceptor()->SetInterceptedAccountManagementStatusForTesting(
+      management_status);
+
+  std::unique_ptr<content::WebContents> closing_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  base::HistogramTester histogram_tester;
+  interceptor()->MaybeInterceptWebSignin(
+      closing_web_contents.get(), account_info.GetAccountId(),
+      signin_metrics::AccessPoint::kWebSignin, /*is_new_account=*/true,
+      /*is_chrome_signin=*/false,
+      /*primary_is_connected=*/signin::Tribool::kUnknown);
+  EXPECT_TRUE(interceptor()->is_interception_in_progress());
+
+  // Close the tab, then make the capabilities available. The strict mock
+  // delegate fails the test if a bubble or an error is shown.
+  closing_web_contents.reset();
+  MakeValidAccountCapabilities(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  EXPECT_FALSE(interceptor()->is_interception_in_progress());
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortTabClosed, 1);
 }

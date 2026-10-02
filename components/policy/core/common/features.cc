@@ -106,6 +106,11 @@ BASE_FEATURE(kMigrateSecureConnectApiToDmServer,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>
     kMigrateSecureConnectApiToDmServerFetchTimeout{
-        &kMigrateSecureConnectApiToDmServer, "fetch_timeout", base::Seconds(10)};
+        &kMigrateSecureConnectApiToDmServer, "fetch_timeout",
+        base::Seconds(10)};
+
+bool IsMigrateSecureConnectApiToDmServerEnabled() {
+  return base::FeatureList::IsEnabled(kMigrateSecureConnectApiToDmServer);
+}
 
 }  // namespace policy::features

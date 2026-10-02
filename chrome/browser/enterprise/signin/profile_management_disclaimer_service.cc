@@ -312,8 +312,7 @@ void ProfileManagementDisclaimerService::
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          policy::features::kMigrateSecureConnectApiToDmServer)) {
+  if (policy::features::IsMigrateSecureConnectApiToDmServerEnabled()) {
     state_->is_fetching_management_status = true;
     if (profile_separation_policies_for_testing_.has_value() ||
         user_choice_for_testing_.has_value() || auto_accept_management_) {
@@ -564,8 +563,7 @@ void ProfileManagementDisclaimerService::OnManagementStatusFetched(
     base::WeakPtr<ResetableState> state_weak_ptr,
     const CoreAccountId& account_id,
     std::optional<policy::UserManagementStatus> status,
-    std::optional<policy::ProfileSeparationPolicies>
-        profile_separation_policies) {
+    policy::ProfileSeparationPolicies profile_separation_policies) {
   // Ensure the fetched management status corresponds to the active state and
   // account currently being evaluated. This protects against stale callbacks if
   // `Reset()`, an account switch, or signout occurred while the asynchronous
@@ -594,8 +592,7 @@ void ProfileManagementDisclaimerService::OnManagementStatusFetched(
     return;
   }
 
-  OnProfileSeparationPoliciesFetched(profile_separation_policies.value_or(
-      policy::ProfileSeparationPolicies()));
+  OnProfileSeparationPoliciesFetched(std::move(profile_separation_policies));
 }
 
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(
@@ -702,8 +699,7 @@ void ProfileManagementDisclaimerService::OnManagedProfileCreationResult(
 
   // In the new flow (`kMigrateSecureConnectApiToDmServer`), we should never
   // register for policies nor fetch policies.
-  if (base::FeatureList::IsEnabled(
-          policy::features::kMigrateSecureConnectApiToDmServer)) {
+  if (policy::features::IsMigrateSecureConnectApiToDmServerEnabled()) {
     CHECK(!policy_fetch_tracker_by_account_id_.contains(state_->account_id));
     Reset();
     return;

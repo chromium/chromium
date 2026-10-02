@@ -52,17 +52,27 @@ struct POLICY_EXPORT UserManagementStatus {
   bool is_chrome_profile_management_enabled = false;
 };
 
-// Asynchronously fetches user cloud management status and optional profile
-// separation policies from DMServer.
+// Asynchronously fetches user cloud management status and profile separation
+// policies from DMServer.
 //
-// This is a one-shot fetcher that manages its own lifecycle and executes at
-// most one fetch per request. Callers are responsible for storing the returned
-// results as needed.
+// The result is passed to a `FetchStatusAndPoliciesCallback`:
+// - The `UserManagementStatus` is `std::nullopt` if the fetch failed (access
+//   token error, DMServer error or timeout).
+// - The `ProfileSeparationPolicies` are empty if the fetch failed, if policies
+//   were not requested, or if the server did not return any valid policies.
+//
+// Each instance executes at most one fetch. The fetcher supports two ownership
+// modes:
+// - Caller-owned: the caller creates an instance, calls `Start()` and keeps
+//   the instance alive until the callback runs. Destroying the instance
+//   cancels the fetch and the callback never runs.
+// - Self-managed: `FetchStatusAndPolicies()` creates an internal instance that
+//   lives until the callback runs.
 class POLICY_EXPORT UserCloudManagementStatusFetcher {
  public:
   using FetchStatusAndPoliciesCallback =
       base::OnceCallback<void(std::optional<UserManagementStatus>,
-                              std::optional<ProfileSeparationPolicies>)>;
+                              ProfileSeparationPolicies)>;
 
   // Constructs a fetcher instance. `service` and `url_loader_factory` must not
   // be null. `should_fetch_policies` specifies whether to request profile
@@ -77,6 +87,19 @@ class POLICY_EXPORT UserCloudManagementStatusFetcher {
   UserCloudManagementStatusFetcher& operator=(
       const UserCloudManagementStatusFetcher&) = delete;
   ~UserCloudManagementStatusFetcher();
+
+  // Initiates the fetch workflow for `account_id`. Must be called at most once
+  // per instance.
+  //
+  // RAII Cancellation: Destroying this fetcher instance immediately cancels
+  // any in-flight OAuth token fetch, DMServer network request, and timeout
+  // timer, and `callback` is never run.
+  //
+  // `callback` may destroy this fetcher instance: no member is accessed after
+  // `callback` runs.
+  void Start(signin::IdentityManager* identity_manager,
+             const CoreAccountId& account_id,
+             FetchStatusAndPoliciesCallback callback);
 
   // Asynchronously fetches user management status and optional profile
   // separation policies for `account_id`.
@@ -97,12 +120,6 @@ class POLICY_EXPORT UserCloudManagementStatusFetcher {
       FetchStatusAndPoliciesCallback callback);
 
  private:
-  // Starts the fetch workflow by setting up the timeout timer and initiating
-  // the OAuth access token fetch for `account_id`.
-  void Start(signin::IdentityManager* identity_manager,
-             const CoreAccountId& account_id,
-             FetchStatusAndPoliciesCallback callback);
-
   // Called when the OAuth access token request completes. If successful,
   // proceeds to send the DMServer request; otherwise calls Finish() with
   // null parameters.
@@ -123,9 +140,8 @@ class POLICY_EXPORT UserCloudManagementStatusFetcher {
 
   // Cleans up internal state, stops timers, and passes the final results
   // to `callback_`.
-  void Finish(
-      std::optional<UserManagementStatus> status,
-      std::optional<ProfileSeparationPolicies> profile_separation_policies);
+  void Finish(std::optional<UserManagementStatus> status,
+              ProfileSeparationPolicies profile_separation_policies);
 
   raw_ref<DeviceManagementService> service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
