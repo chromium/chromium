@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/uuid.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -511,20 +512,14 @@ void BlobRegistryImpl::Bind(
 
 void BlobRegistryImpl::Register(
     mojo::PendingReceiver<blink::mojom::Blob> blob,
-    const std::string& uuid,
     const std::string& content_type,
     const std::string& content_disposition,
     std::vector<blink::mojom::DataElementPtr> elements,
     RegisterCallback callback) {
-  if (!context_) {
-    std::move(callback).Run();
-    return;
-  }
+  const std::string uuid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
-  if (uuid.empty() || context_->registry().HasEntry(uuid) ||
-      blobs_under_construction_.contains(uuid)) {
-    receivers_.ReportBadMessage(
-        "Invalid UUID passed to BlobRegistry::Register");
+  if (!context_) {
+    std::move(callback).Run(uuid);
     return;
   }
 
@@ -541,7 +536,7 @@ void BlobRegistryImpl::Register(
             uuid, content_type, content_disposition,
             BlobStatus::ERR_REFERENCED_FILE_UNAVAILABLE);
         BlobImpl::Create(std::move(handle), std::move(blob));
-        std::move(callback).Run();
+        std::move(callback).Run(uuid);
         return;
       }
       if (file->length == std::numeric_limits<uint64_t>::max()) {
@@ -569,7 +564,7 @@ void BlobRegistryImpl::Register(
 
   blobs_under_construction_[uuid]->StartTransportation(std::move(blob_impl));
 
-  std::move(callback).Run();
+  std::move(callback).Run(uuid);
 }
 
 void BlobRegistryImpl::RegisterFromStream(

@@ -26,11 +26,11 @@ interface ProgressClient {
 interface BlobRegistry {
   // Registers a new blob with the blob registry.
   // TODO(crbug.com/974616): Make this method non-sync and get rid of the UUID
-  // parameter once enough of the rest of the system doesn't rely on the UUID
+  // return value once enough of the rest of the system doesn't rely on the UUID
   // anymore.
-  [Sync] Register(pending_receiver<blink.mojom.Blob> blob, string uuid,
+  [Sync] Register(pending_receiver<blink.mojom.Blob> blob,
                   string content_type, string content_disposition,
-                  array<DataElement> elements) => ();
+                  array<DataElement> elements) => (string uuid);
 
   // Creates a new blob out of a data pipe.
   // |length_hint| is only used as a hint, to decide if the blob should be

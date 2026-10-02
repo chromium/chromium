@@ -340,8 +340,6 @@ class BackendDatabaseWithMockedClose
 class IDBRequestTest : public testing::Test {
  protected:
   void SetUp() override {
-    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
-
     url_loader_mock_factory_ = URLLoaderMockFactory::GetSingletonInstance();
     WebURLResponse response;
     response.SetCurrentRequestUrl(KURL("blob:"));
@@ -351,7 +349,6 @@ class IDBRequestTest : public testing::Test {
 
   void TearDown() override {
     url_loader_mock_factory_->UnregisterAllURLsAndClearMemoryCache();
-    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
   }
 
   void BuildTransaction(V8TestingScope& scope,
@@ -475,10 +472,8 @@ class IDBRequestTest : public testing::Test {
 
   // Setup the blob registry to test get all requests that include results with
   // IDB values wrapped in a blob.
-  FakeBlobRegistry fake_blob_registry_{/*support_binary_blob_bodies=*/true};
-  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
-  mojo::Receiver<mojom::blink::BlobRegistry> blob_registry_receiver_{
-      &fake_blob_registry_, blob_registry_remote_.BindNewPipeAndPassReceiver()};
+  ScopedFakeBlobRegistry fake_blob_registry_{
+      /*support_binary_blob_bodies=*/true};
 
   static constexpr int64_t kTransactionId = 1234;
   static constexpr int64_t kStoreId = 5678;
