@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -89,16 +90,14 @@ class ExtensionsSitePermissionsPageViewBrowserTest
 
   // ExtensionsToolbarBrowserTest:
   void TearDownOnMainThread() override;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 ExtensionsSitePermissionsPageViewBrowserTest::
-    ExtensionsSitePermissionsPageViewBrowserTest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kExtensionsMenuAccessControl);
-}
+    ExtensionsSitePermissionsPageViewBrowserTest()
+    : ExtensionsToolbarBrowserTest(
+          /*enabled_features=*/{extensions_features::
+                                    kExtensionsMenuAccessControl},
+          /*disabled_features=*/{features::kWebUIExtensionsContainer}) {}
 
 void ExtensionsSitePermissionsPageViewBrowserTest::ShowMenu() {
   std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
