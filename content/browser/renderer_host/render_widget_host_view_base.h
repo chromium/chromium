@@ -429,7 +429,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // processing.
   //
   // Once the last `input::ScopedInputDispatchPin` has been removed
-  // `DestroyImpl` is called to actually `delete this`.
+  // `DestroyImpl` is called to actually `delete this`. Pins that are both
+  // acquired and released while `DestroyOrDefer` is executing (e.g. by an
+  // observer synchronously dispatching input) never trigger `DestroyImpl`;
+  // `DestroyOrDefer` itself decides once teardown is complete.
   void DestroyOrDefer();
   virtual void DestroyImpl() = 0;
   virtual void OnDestroyOrDefer() {}
@@ -802,6 +805,12 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // early-exit visual updates that are no longer required. So that we can
   // gracefully clean up input dispatch.
   bool destroy_pending_ = false;
+  // `true` while `DestroyOrDefer` is on the stack. Observers notified during
+  // teardown can synchronously dispatch input to, and pin, `this`. Releasing
+  // such a pin must not call `DestroyImpl` while `DestroyOrDefer` is still
+  // executing, otherwise `this` would be deleted out from under it, and then
+  // deleted a second time when `DestroyOrDefer` completes.
+  bool in_destroy_or_defer_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
 };

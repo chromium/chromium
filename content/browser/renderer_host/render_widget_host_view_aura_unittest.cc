@@ -37,6 +37,7 @@
 #include "components/input/mouse_wheel_event_queue.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/render_widget_host_view_input.h"
+#include "components/input/render_widget_host_view_input_observer.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
@@ -99,6 +100,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -8124,6 +8126,59 @@ TEST_F(RenderWidgetHostViewAuraTest,
   target_view->OnMouseEvent(&mouse_press);
 
   EXPECT_TRUE(parent_delegate.fired());
+}
+
+// Regression test for crbug.com/567673405. An observer notified during
+// DestroyOrDefer() may synchronously dispatch input to the view, taking and
+// releasing a ScopedInputDispatchPin. Releasing that pin must not delete the
+// view while DestroyOrDefer() is still on the stack; otherwise the remainder
+// of teardown would use a freed object, and DestroyImpl() would run twice.
+TEST_F(RenderWidgetHostViewAuraTest,
+       PinReleasedDuringDestroyNotificationDoesNotDestroyEarly) {
+  InitViewForFrame(nullptr);
+  aura::client::ParentWindowWithContext(
+      view_->GetNativeView(), aura_test_helper_->GetContext(), gfx::Rect(),
+      display::kInvalidDisplayId);
+
+  class PinningObserver : public input::RenderWidgetHostViewInputObserver {
+   public:
+    explicit PinningObserver(aura::WindowTracker* tracker)
+        : tracker_(tracker) {}
+
+    void OnRenderWidgetHostViewInputDestroyed(
+        input::RenderWidgetHostViewInput* view) override {
+      view->RemoveObserver(this);
+      aura::Window* window =
+          static_cast<RenderWidgetHostViewAura*>(view)->GetNativeView();
+      // Simulate a synchronous input dispatch to |view| during teardown.
+      {
+        input::ScopedInputDispatchPin pin(view);
+      }
+      // DestroyImpl() deletes the native window; it must not have run yet.
+      notified_ = true;
+      window_survived_unpin_ = tracker_->Contains(window);
+    }
+
+    bool notified() const { return notified_; }
+    bool window_survived_unpin() const { return window_survived_unpin_; }
+
+   private:
+    raw_ptr<aura::WindowTracker> tracker_;
+    bool notified_ = false;
+    bool window_survived_unpin_ = false;
+  };
+
+  aura::Window* window = view_->GetNativeView();
+  aura::WindowTracker tracker({window});
+  PinningObserver observer(&tracker);
+  view_->AddObserver(&observer);
+
+  view_.ExtractAsDangling()->DestroyOrDefer();
+
+  EXPECT_TRUE(observer.notified());
+  EXPECT_TRUE(observer.window_survived_unpin());
+  // DestroyImpl() ran once DestroyOrDefer() finished, deleting the window.
+  EXPECT_FALSE(tracker.Contains(window));
 }
 
 }  // namespace content

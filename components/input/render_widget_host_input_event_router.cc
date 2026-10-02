@@ -396,22 +396,38 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
     touch_emulator->OnViewDestroyed(view);
   }
 
-  // Must be cleared before UpdateQueueAfterTargetDestroyed(), which can
-  // synchronously flush touch acks and route a GestureFlingCancel. Otherwise
-  // that cancel would be dispatched to, and pin, |view| while it is being
-  // destroyed.
+  // Teardown is split into two phases. |view| is mid-destruction, so:
+  //
+  // Phase 1 drops every reference to |view| that event routing could follow.
+  // Nothing in this phase may call out of the router.
+  //
+  // Phase 2 flushes queued touch acks, which can synchronously generate
+  // gestures and synthetic events (e.g. a GestureFlingCancel, a
+  // GestureScrollEnd for scroll bubbling, or a wheel-end dispatched on
+  // GestureScrollBegin). Because of phase 1, none of these can be routed to,
+  // and pin, |view|.
+
+  // Phase 1: Detach.
   if (view == last_fling_start_target_) {
     last_fling_start_target_ = nullptr;
+  }
+
+  if (view == wheel_target_) {
+    wheel_target_ = nullptr;
+  }
+
+  if (view == mouse_capture_target_) {
+    mouse_capture_target_ = nullptr;
+  }
+
+  if (view == touchpad_gesture_target_) {
+    touchpad_gesture_target_ = nullptr;
   }
 
   if (view == touch_target_) {
     touch_target_ = nullptr;
     active_touches_ = 0;
   }
-  touch_event_ack_queue_->UpdateQueueAfterTargetDestroyed(view);
-
-  if (view == wheel_target_)
-    wheel_target_ = nullptr;
 
   // If the target that's being destroyed is in the gesture target map, we
   // replace it with nullptr so that we maintain the 1:1 correspondence between
@@ -421,16 +437,12 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
       it.second = nullptr;
   }
 
-  if (view == mouse_capture_target_)
-    mouse_capture_target_ = nullptr;
-
   if (view == touchscreen_gesture_target_.get()) {
     ClearTouchscreenGestureTarget();
   }
 
-  if (view == touchpad_gesture_target_)
-    touchpad_gesture_target_ = nullptr;
-
+  // With |bubbling_view_is_being_destroyed| set, this does not dispatch a
+  // GestureScrollEnd to |view|.
   if (view == bubbling_gesture_scroll_target_) {
     CancelScrollBubbling(/*bubbling_view_is_being_destroyed=*/true);
   } else if (view == bubbling_gesture_scroll_origin_) {
@@ -462,7 +474,12 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
   if (view == last_emulated_event_root_view_)
     last_emulated_event_root_view_ = nullptr;
 
+  // Clears the targeter's cached middle-click autoscroll target, which would
+  // otherwise receive every web input event routed during phase 2.
   event_targeter_->ViewWillBeDestroyed(view);
+
+  // Phase 2: Flush. This must remain last.
+  touch_event_ack_queue_->UpdateQueueAfterTargetDestroyed(view);
 }
 
 void RenderWidgetHostInputEventRouter::ClearAllObserverRegistrations() {
