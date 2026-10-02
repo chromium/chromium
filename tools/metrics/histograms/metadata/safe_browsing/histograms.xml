@@ -2431,7 +2431,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.NotificationsGlobalCacheList.OriginIsListed"
-    enum="BooleanMatched" expires_after="2026-10-11">
+    enum="BooleanMatched" expires_after="2027-10-11">
   <owner>skrakowi@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2442,7 +2442,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.NotificationsGlobalCacheList.Size"
-    units="entries" expires_after="2026-10-11">
+    units="entries" expires_after="2027-10-11">
   <owner>skrakowi@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
