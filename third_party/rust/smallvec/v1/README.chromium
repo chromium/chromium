@@ -1,7 +1,7 @@
 Name: smallvec
 URL: https://crates.io/crates/smallvec
-Version: 1.16.1
-Revision: 700e1c3ff899cda7799b18e0804889105fc8beea
+Version: 1.16.2
+Revision: ccf5fc71044d491c46a3d79e7ed53948e6da1590
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/smallvec-v1/LICENSE-APACHE
