@@ -9581,13 +9581,20 @@ void ChromeContentBrowserClient::BindLanguageDetectionDriver(
     base::SupportsUserData* context_user_data,
     mojo::PendingReceiver<
         language_detection::mojom::ContentLanguageDetectionDriver> receiver) {
-  auto language_detection_driver =
-      std::make_unique<language_detection::ContentLanguageDetectionDriver>(
-          LanguageDetectionModelServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context)));
+  if (!context_user_data->GetUserData(
+          kContentLanguageDetectionDriverUserDataKey)) {
+    context_user_data->SetUserData(
+        kContentLanguageDetectionDriverUserDataKey,
+        std::make_unique<language_detection::ContentLanguageDetectionDriver>(
+            LanguageDetectionModelServiceFactory::GetForProfile(
+                Profile::FromBrowserContext(browser_context))));
+  }
+
+  auto* language_detection_driver =
+      static_cast<language_detection::ContentLanguageDetectionDriver*>(
+          context_user_data->GetUserData(
+              kContentLanguageDetectionDriverUserDataKey));
   language_detection_driver->AddReceiver(std::move(receiver));
-  context_user_data->SetUserData(kContentLanguageDetectionDriverUserDataKey,
-                                 std::move(language_detection_driver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -18,9 +18,11 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/supports_user_data.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/language_detection/language_detection_model_service_factory.h"
@@ -30,13 +32,17 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "components/language_detection/core/browser/language_detection_model_provider.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -763,6 +769,69 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "AI.Session.LanguageDetector.PromptResponseStatus", 3);
   histogram_tester.ExpectTotalCount(
       "AI.Session.LanguageDetector.ResponseCompleteTime", 3);
+}
+
+class DummySupportsUserData : public base::SupportsUserData {};
+
+// Verifies that binding multiple ContentLanguageDetectionDriver receivers to
+// the same SupportsUserData context (e.g., when both Page Translate and the
+// web-exposed LanguageDetector API bind to the same document) reuses the
+// existing driver instance rather than destroying the previous receiver and
+// dropping pending callbacks.
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
+                       BindLanguageDetectionDriverMultipleReceivers) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  ASSERT_TRUE(language_detection_model_service());
+
+  DummySupportsUserData context_user_data;
+
+  // Bind the first receiver and queue a GetLanguageDetectionModel() request
+  // before the model is available.
+  mojo::Remote<mojom::ContentLanguageDetectionDriver> driver_remote_1;
+  content::GetContentClientForTesting()->browser()->BindLanguageDetectionDriver(
+      GetProfile(), &context_user_data,
+      driver_remote_1.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<base::File> model_future_1;
+  driver_remote_1->GetLanguageDetectionModel(model_future_1.GetCallback());
+  EXPECT_FALSE(model_future_1.IsReady());
+
+  // Bind a second receiver to the same `context_user_data` and queue another
+  // request. This must not disconnect `driver_remote_1`.
+  mojo::Remote<mojom::ContentLanguageDetectionDriver> driver_remote_2;
+  content::GetContentClientForTesting()->browser()->BindLanguageDetectionDriver(
+      GetProfile(), &context_user_data,
+      driver_remote_2.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<base::File> model_future_2;
+  driver_remote_2->GetLanguageDetectionModel(model_future_2.GetCallback());
+
+  // Flush the second receiver and verify the first receiver is still connected.
+  base::test::TestFuture<mojom::LanguageDetectionModelStatus> status_future_2;
+  driver_remote_2->GetLanguageDetectionModelStatus(
+      status_future_2.GetCallback());
+  EXPECT_EQ(status_future_2.Get(),
+            mojom::LanguageDetectionModelStatus::kAfterDownload);
+  EXPECT_TRUE(driver_remote_1.is_connected());
+  EXPECT_TRUE(driver_remote_2.is_connected());
+
+  // Provide the model via OptimizationGuide and verify both pending callbacks
+  // resolve with valid model files and both remotes remain functional.
+  OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile())
+      ->OverrideTargetModelForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          optimization_guide::ModelInfo{
+              .model_file_path = model_file_path(),
+          });
+
+  EXPECT_TRUE(model_future_1.Take().IsValid());
+  EXPECT_TRUE(model_future_2.Take().IsValid());
+
+  base::test::TestFuture<mojom::LanguageDetectionModelStatus> status_future_1;
+  driver_remote_1->GetLanguageDetectionModelStatus(
+      status_future_1.GetCallback());
+  EXPECT_EQ(status_future_1.Get(),
+            mojom::LanguageDetectionModelStatus::kReadily);
 }
 
 }  // namespace
