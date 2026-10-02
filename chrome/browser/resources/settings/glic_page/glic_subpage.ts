@@ -250,7 +250,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
 
     this.browserProxy_.getWebActuationToggleVisibility().then(
         (visible: boolean) => {
-            this.onWebActuationToggleVisibilityChanged_(visible);
+          this.onWebActuationToggleVisibilityChanged_(visible);
         });
 
     this.browserProxy_.getWebActuationEnabled().then((enabled: boolean) => {
@@ -344,6 +344,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     const isGlobal = (event.target as SettingsToggleButtonElement).checked;
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.HotkeyScope.' + (isGlobal ? 'Global' : 'Chrome'));
+    this.browserProxy_.onHotkeyScopeSettingsChange(isGlobal);
   }
 
   protected onGeolocationToggleSettingsBooleanControlChange_(
@@ -472,8 +473,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     const target = event.target as SettingsToggleButtonElement;
     const enabled = target.checked;
     this.metricsBrowserProxy_.recordAction(
-        'Glic.Settings.ShakeTrigger' +
-        (enabled ? '.Enabled' : '.Disabled'));
+        'Glic.Settings.ShakeTrigger' + (enabled ? '.Enabled' : '.Disabled'));
   }
 
   private onWebActuationEnabledChanged_(enabled: boolean) {

@@ -41,6 +41,7 @@ export interface GlicBrowserProxy {
   setExperimentalTriggeringEnabled(enabled: boolean): void;
   startObservingActorLoginPermissions(): void;
   stopObservingActorLoginPermissions(): void;
+  onHotkeyScopeSettingsChange(isGlobal: boolean): void;
 }
 
 export class GlicBrowserProxyImpl implements GlicBrowserProxy {
@@ -115,6 +116,10 @@ export class GlicBrowserProxyImpl implements GlicBrowserProxy {
 
   stopObservingActorLoginPermissions() {
     chrome.send('stopObservingActorLoginPermissions');
+  }
+
+  onHotkeyScopeSettingsChange(isGlobal: boolean) {
+    chrome.send('onHotkeyScopeSettingsChange', [isGlobal]);
   }
 
   static getInstance(): GlicBrowserProxy {

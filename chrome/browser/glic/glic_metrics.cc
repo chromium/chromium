@@ -1043,4 +1043,9 @@ ChromeRelativePosition GlicMetrics::GetChromeRelativePositionOfPoint(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+void RecordHotkeyScopeChange(GlicHotkeyScopeChange scope_change) {
+  base::UmaHistogramEnumeration("Glic.Preferences.HotkeyScopeChange",
+                                scope_change);
+}
+
 }  // namespace glic

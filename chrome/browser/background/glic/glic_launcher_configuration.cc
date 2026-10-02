@@ -4,6 +4,8 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
@@ -61,7 +63,8 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
     // TODO(b/563018760): Remove this migration logic in 6-12 months once
     // existing users have migrated.
     if (base::FeatureList::IsEnabled(features::kGlicHotkeyLocalScope) &&
-        !local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2)) {
+        local_state->GetInteger(prefs::kGlicDefaultHotkeyScope) ==
+            std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated)) {
       // Existing users who completed FRE default to global scope, while new
       // users default to local scope.
       // We check `prefs::kGlicLauncherEnabled` in local_state rather than the
@@ -81,13 +84,20 @@ GlicLauncherConfiguration::GlicLauncherConfiguration(Observer* manager)
         }
         const std::string hotkey_str =
             local_state->GetString(prefs::kGlicLauncherHotkey);
+        const bool is_global = !hotkey_str.empty();
         local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled,
-                                !hotkey_str.empty());
+                                is_global);
+        local_state->SetInteger(
+            prefs::kGlicDefaultHotkeyScope,
+            std::to_underlying(is_global ? prefs::DefaultHotkeyScope::kGlobal
+                                         : prefs::DefaultHotkeyScope::kLocal));
       } else {
         // New users default to local scope.
         local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
+        local_state->SetInteger(
+            prefs::kGlicDefaultHotkeyScope,
+            std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
       }
-      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
     }
 
     pref_registrar_.Init(local_state);

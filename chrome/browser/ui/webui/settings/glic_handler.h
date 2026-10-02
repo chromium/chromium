@@ -64,6 +64,7 @@ class GlicHandler : public SettingsPageUIHandler,
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateShortcutSuspension);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, UpdateGlicShortcut);
+  FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, OnHotkeyScopeSettingsChange);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest,
                            ToggleActorLoginPermissionsObservation);
   FRIEND_TEST_ALL_PREFIXES(GlicHandlerBrowserTest, GetActorLoginPermissions);
@@ -111,6 +112,9 @@ class GlicHandler : public SettingsPageUIHandler,
   // Updates the glic focus toggle hotkey with the one provided in
   // `args`.
   void HandleSetGlicFocusToggleShortcut(const base::ListValue& args);
+
+  // Handles hotkey scope changes from the settings page and records metrics.
+  void HandleOnHotkeyScopeSettingsChange(const base::ListValue& args);
 
   // Sends the client whether glic is disallowed by the admin or not.
   void HandleGetGlicDisallowedByAdmin(const base::ListValue& args);

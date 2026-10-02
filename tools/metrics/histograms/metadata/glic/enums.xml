@@ -550,6 +550,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/public/glic_api_metrics.h:GlicHostApiRequestId) -->
 
+<!-- LINT.IfChange(GlicHotkeyScopeChange) -->
+
+<enum name="GlicHotkeyScopeChange">
+  <int value="0" label="DefaultGlobalToGlobal"/>
+  <int value="1" label="DefaultGlobalToLocal"/>
+  <int value="2" label="DefaultLocalToGlobal"/>
+  <int value="3" label="DefaultLocalToLocal"/>
+  <int value="4" label="NotMigrated"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicHotkeyScopeChange) -->
+
 <!-- LINT.IfChange(GlicHotkeyUsage) -->
 
 <enum name="GlicHotkeyUsage">

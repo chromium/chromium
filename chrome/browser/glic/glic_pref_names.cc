@@ -177,6 +177,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
           LocalHotkeyManager::GetDefaultAccelerator(
               LocalHotkeyManager::Command::kFocusToggle)));
   registry->RegisterBooleanPref(prefs::kGlicHotkeyGlobalScopeEnabled, false);
+  registry->RegisterIntegerPref(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
   registry->RegisterBooleanPref(prefs::kGlicHotkeyGlobalScopeMigratedV2, false);
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetAutopush, "");
   registry->RegisterStringPref(prefs::kGlicGuestUrlPresetStaging, "");

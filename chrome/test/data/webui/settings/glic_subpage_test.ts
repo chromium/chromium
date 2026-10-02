@@ -710,17 +710,14 @@ suite('GlicSubpage', function() {
     test('ShakeTriggerToggleEnabled', () => {
       prefService.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, true);
 
-      assertTrue(
-          $<SettingsToggleButtonElement>(
-              'shakeTriggerToggle')!.checked);
+      assertTrue($<SettingsToggleButtonElement>('shakeTriggerToggle')!.checked);
     });
 
     test('ShakeTriggerToggleDisabled', () => {
       prefService.setPrefValue(PrefName.SHAKE_TRIGGER_ENABLED, false);
 
       assertFalse(
-          $<SettingsToggleButtonElement>(
-              'shakeTriggerToggle')!.checked);
+          $<SettingsToggleButtonElement>('shakeTriggerToggle')!.checked);
     });
 
     test('ShakeTriggerToggleChanged', async () => {
@@ -734,15 +731,13 @@ suite('GlicSubpage', function() {
       assertTrue(
           prefService.getPref<boolean>(PrefName.SHAKE_TRIGGER_ENABLED).value);
       assertTrue(shakeTriggerToggle.checked);
-      await verifyUserAction(
-          'Glic.Settings.ShakeTrigger.Enabled');
+      await verifyUserAction('Glic.Settings.ShakeTrigger.Enabled');
 
       shakeTriggerToggle.click();
       assertFalse(
           prefService.getPref<boolean>(PrefName.SHAKE_TRIGGER_ENABLED).value);
       assertFalse(shakeTriggerToggle.checked);
-      await verifyUserAction(
-          'Glic.Settings.ShakeTrigger.Disabled');
+      await verifyUserAction('Glic.Settings.ShakeTrigger.Disabled');
     });
   });
 
@@ -950,7 +945,8 @@ suite('GlicSubpage', function() {
         showGlicExperimentalTriggering: true,
       });
       await createGlicPage('⌃A', true);
-      const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
+      const toggle =
+          $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
       assertTrue(!!toggle);
       assertTrue(isVisible(toggle));
     });
@@ -961,7 +957,8 @@ suite('GlicSubpage', function() {
         showGlicExperimentalTriggering: false,
       });
       await createGlicPage('⌃A', true);
-      const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
+      const toggle =
+          $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
       assertFalse(isVisible(toggle));
     });
 
@@ -1266,32 +1263,28 @@ suite('GlicSubpage', function() {
     });
 
     test('IsVisible', () => {
-      const toggle =
-          $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
+      const toggle = $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
       assertTrue(isVisible(toggle));
     });
 
     test('Enabled', () => {
       prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, true);
-      const toggle =
-          $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
+      const toggle = $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
       assertTrue(toggle.checked);
     });
 
     test('Disabled', () => {
       prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
-      const toggle =
-          $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
+      const toggle = $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
       assertFalse(toggle.checked);
     });
 
     test('Changed', () => {
       prefService.setPrefValue(PrefName.MEDIA_UNDERSTANDING_ENABLED, false);
-      const toggle =
-          $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
+      const toggle = $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
 
       toggle.click();
@@ -1308,15 +1301,15 @@ suite('GlicSubpage', function() {
     });
 
     test('LinkClick', async () => {
-      const toggle =
-          $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
+      const toggle = $<SettingsToggleButtonElement>('mediaUnderstandingToggle');
       assertTrue(!!toggle);
 
       const link = toggle.shadowRoot!.querySelector('a');
       assertTrue(!!link);
       link.click();
       const url = await openWindowProxy.whenCalled('openUrl');
-      assertEquals('https://support.google.com/chrome?p=gic_media_questions', url);
+      assertEquals(
+          'https://support.google.com/chrome?p=gic_media_questions', url);
     });
   });
 
@@ -1358,6 +1351,11 @@ suite('GlicSubpage', function() {
           prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
               .value);
       await verifyUserAction('Glic.Settings.HotkeyScope.Global');
+      let isGlobal =
+          await glicBrowserProxy.whenCalled('onHotkeyScopeSettingsChange');
+      assertTrue(isGlobal);
+
+      glicBrowserProxy.reset();
 
       // Click again should make it false.
       scopeToggle.click();
@@ -1365,6 +1363,9 @@ suite('GlicSubpage', function() {
           prefService.getPref<boolean>(PrefName.HOTKEY_GLOBAL_SCOPE_ENABLED)
               .value);
       await verifyUserAction('Glic.Settings.HotkeyScope.Chrome');
+      isGlobal =
+          await glicBrowserProxy.whenCalled('onHotkeyScopeSettingsChange');
+      assertFalse(isGlobal);
     });
 
     test('MainShortcutVisibleEvenIfLauncherDisabled', async () => {

@@ -8,6 +8,7 @@
 #include <cstdio>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64.h"
@@ -554,8 +555,9 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
 
   if (g_browser_process->local_state()) {
     payload->hotkey_global_scope_migrated_v2 =
-        g_browser_process->local_state()->GetBoolean(
-            prefs::kGlicHotkeyGlobalScopeMigratedV2);
+        g_browser_process->local_state()->GetInteger(
+            prefs::kGlicDefaultHotkeyScope) !=
+        std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated);
   }
 
   payload->config = std::move(config);
@@ -999,7 +1001,9 @@ void GlicInternalsPageHandler::RevokeGlicConsent() {
       local_state->ClearPref(prefs::kGlicLauncherEnabled);
       local_state->ClearPref(prefs::kGlicLauncherHotkey);
       local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
-      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+      local_state->SetInteger(
+          prefs::kGlicDefaultHotkeyScope,
+          std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
     }
   }
 }
@@ -1013,9 +1017,13 @@ void GlicInternalsPageHandler::RevokeActuationConsent() {
 void GlicInternalsPageHandler::SetHotkeyGlobalScopeMigratedV2(bool migrated) {
   if (PrefService* local_state = g_browser_process->local_state()) {
     if (migrated) {
-      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
+      local_state->SetInteger(
+          prefs::kGlicDefaultHotkeyScope,
+          std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
     } else {
-      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+      local_state->SetInteger(
+          prefs::kGlicDefaultHotkeyScope,
+          std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
       local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
     }
   }

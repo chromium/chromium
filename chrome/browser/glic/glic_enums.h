@@ -21,6 +21,20 @@ enum class ZoomSource {
   kMaxValue = kScroll,
 };
 
+// Represents hotkey scope changes in settings.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GlicHotkeyScopeChange)
+enum class GlicHotkeyScopeChange {
+  kDefaultGlobalToGlobal = 0,
+  kDefaultGlobalToLocal = 1,
+  kDefaultLocalToGlobal = 2,
+  kDefaultLocalToLocal = 3,
+  kNotMigrated = 4,
+  kMaxValue = kNotMigrated,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicHotkeyScopeChange)
+
 // Error types for when attempting to extract context from a tab.
 // LINT.IfChange(GlicGetContextFromTabError)
 enum class GlicGetContextFromTabError {

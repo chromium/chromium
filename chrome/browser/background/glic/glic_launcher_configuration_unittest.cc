@@ -4,6 +4,8 @@
 
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 
+#include <utility>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
@@ -43,14 +45,14 @@ class GlicLauncherConfigurationTest : public testing::Test {
     local_state()->ClearPref(prefs::kGlicLauncherEnabled);
     local_state()->ClearPref(prefs::kGlicLauncherHotkey);
     local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
-    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+    local_state()->ClearPref(prefs::kGlicDefaultHotkeyScope);
   }
 
   void TearDown() override {
     local_state()->ClearPref(prefs::kGlicLauncherEnabled);
     local_state()->ClearPref(prefs::kGlicLauncherHotkey);
     local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
-    local_state()->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+    local_state()->ClearPref(prefs::kGlicDefaultHotkeyScope);
   }
 
  private:
@@ -141,7 +143,8 @@ TEST_F(GlicLauncherConfigurationTest,
   GlicLauncherConfiguration config{&observer};
   // Should migrate to true (Global scope).
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(local_state()->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
   EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(),
             LocalHotkeyManager::GetDefaultAccelerator(
                 LocalHotkeyManager::Command::kPanelToggle));
@@ -162,7 +165,8 @@ TEST_F(GlicLauncherConfigurationTest,
   GlicLauncherConfiguration config{&observer};
   // Should migrate to true.
   EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(local_state()->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
   EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(), hotkey);
 }
 
@@ -180,7 +184,8 @@ TEST_F(GlicLauncherConfigurationTest,
   // false.
   EXPECT_TRUE(GlicLauncherConfiguration::GetToggleHotkey().IsEmpty());
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(local_state()->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
 }
 
 TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_NewUser) {
@@ -195,7 +200,8 @@ TEST_F(GlicLauncherConfigurationTest, HotkeyScope_Migration_NewUser) {
   GlicLauncherConfiguration config{&observer};
   // Should migrate to false (Local scope).
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
-  EXPECT_TRUE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  EXPECT_EQ(local_state()->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kLocal));
   // Default hotkey is still preserved for local scope.
   EXPECT_EQ(GlicLauncherConfiguration::GetToggleHotkey(),
             LocalHotkeyManager::GetDefaultAccelerator(
@@ -210,13 +216,17 @@ TEST_F(GlicLauncherConfigurationTest, HotkeyScope_AlreadyMigrated) {
   const ui::Accelerator hotkey(ui::VKEY_K, ui::EF_ALT_DOWN);
   local_state()->SetString(prefs::kGlicLauncherHotkey,
                            ui::Command::AcceleratorToString(hotkey));
-  local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
+  local_state()->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
   local_state()->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, false);
 
   MockObserver observer;
   GlicLauncherConfiguration config{&observer};
   // Should NOT change because already migrated.
   EXPECT_FALSE(local_state()->GetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_EQ(local_state()->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
 }
 
 }  // namespace glic

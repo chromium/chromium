@@ -20,6 +20,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -91,6 +93,10 @@ void GlicHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setGlicFocusToggleShortcut",
       base::BindRepeating(&GlicHandler::HandleSetGlicFocusToggleShortcut,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "onHotkeyScopeSettingsChange",
+      base::BindRepeating(&GlicHandler::HandleOnHotkeyScopeSettingsChange,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "setShortcutSuspensionState",
@@ -270,6 +276,31 @@ void GlicHandler::HandleSetGlicFocusToggleShortcut(
 
   AllowJavascript();
   ResolveJavascriptCallback(callback_id, base::Value());
+}
+
+void GlicHandler::HandleOnHotkeyScopeSettingsChange(
+    const base::ListValue& args) {
+  CHECK_EQ(1U, args.size());
+  const bool is_global = args[0].GetBool();
+
+  int default_scope_int = g_browser_process->local_state()->GetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope);
+  auto default_scope =
+      static_cast<glic::prefs::DefaultHotkeyScope>(default_scope_int);
+
+  if (default_scope == glic::prefs::DefaultHotkeyScope::kGlobal) {
+    glic::RecordHotkeyScopeChange(
+        is_global ? glic::GlicHotkeyScopeChange::kDefaultGlobalToGlobal
+                  : glic::GlicHotkeyScopeChange::kDefaultGlobalToLocal);
+  } else if (default_scope == glic::prefs::DefaultHotkeyScope::kLocal) {
+    glic::RecordHotkeyScopeChange(
+        is_global ? glic::GlicHotkeyScopeChange::kDefaultLocalToGlobal
+                  : glic::GlicHotkeyScopeChange::kDefaultLocalToLocal);
+  } else {
+    // This should never be recorded to unless users change internal
+    // preferences.
+    glic::RecordHotkeyScopeChange(glic::GlicHotkeyScopeChange::kNotMigrated);
+  }
 }
 
 void GlicHandler::HandleSetShortcutSuspensionState(

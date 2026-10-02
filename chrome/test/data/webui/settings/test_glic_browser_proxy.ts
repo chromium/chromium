@@ -41,6 +41,7 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
       'setWebActuationEnabled',
       'getExperimentalTriggeringEnabled',
       'setExperimentalTriggeringEnabled',
+      'onHotkeyScopeSettingsChange',
     ]);
   }
 
@@ -180,5 +181,9 @@ export class TestGlicBrowserProxy extends TestBrowserProxy implements
   setGlicSelectionShortcut(shortcut: string) {
     this.methodCalled('setGlicSelectionShortcut', shortcut);
     return Promise.resolve();
+  }
+
+  onHotkeyScopeSettingsChange(isGlobal: boolean) {
+    this.methodCalled('onHotkeyScopeSettingsChange', isGlobal);
   }
 }

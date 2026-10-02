@@ -424,5 +424,8 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
 
+// Records the hotkey scope change preference metric.
+void RecordHotkeyScopeChange(GlicHotkeyScopeChange scope_change);
+
 }  // namespace glic
 #endif  // CHROME_BROWSER_GLIC_GLIC_METRICS_H_

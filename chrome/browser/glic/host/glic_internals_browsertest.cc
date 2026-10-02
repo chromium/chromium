@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "base/run_loop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -229,8 +231,10 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
   PrefService* local_state = g_browser_process->local_state();
   ASSERT_TRUE(local_state);
 
-  // Set initial state to false.
-  local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, false);
+  // Set initial state to not migrated.
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
 
   constexpr char kSwitchToDebugControlsAndVerifyInitial[] = R"js(
     (async () => {
@@ -271,8 +275,7 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
     base::RunLoop run_loop;
     PrefChangeRegistrar pref_registrar;
     pref_registrar.Init(local_state);
-    pref_registrar.Add(prefs::kGlicHotkeyGlobalScopeMigratedV2,
-                       run_loop.QuitClosure());
+    pref_registrar.Add(prefs::kGlicDefaultHotkeyScope, run_loop.QuitClosure());
 
     constexpr char kClickCheckbox[] = R"js(
       (() => {
@@ -289,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
 
     EXPECT_EQ("ok", content::EvalJs(contents, kClickCheckbox));
     run_loop.Run();
-    EXPECT_TRUE(
-        local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+    EXPECT_NE(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+              std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
   }
 
   // Toggle checkbox off.
@@ -298,8 +301,7 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
     base::RunLoop run_loop;
     PrefChangeRegistrar pref_registrar;
     pref_registrar.Init(local_state);
-    pref_registrar.Add(prefs::kGlicHotkeyGlobalScopeMigratedV2,
-                       run_loop.QuitClosure());
+    pref_registrar.Add(prefs::kGlicDefaultHotkeyScope, run_loop.QuitClosure());
 
     constexpr char kClickCheckbox[] = R"js(
       (() => {
@@ -316,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
 
     EXPECT_EQ("ok", content::EvalJs(contents, kClickCheckbox));
     run_loop.Run();
-    EXPECT_FALSE(
-        local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+    EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+              std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
   }
 }
 

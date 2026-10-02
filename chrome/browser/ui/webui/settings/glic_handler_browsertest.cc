@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -180,6 +182,61 @@ IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, UpdateGlicShortcut) {
   saved_hotkey = glic::GlicLauncherConfiguration::GetToggleHotkey();
   EXPECT_EQ(valid_shortcut.key_code(), saved_hotkey.key_code());
   EXPECT_EQ(valid_shortcut.modifiers(), saved_hotkey.modifiers());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, OnHotkeyScopeSettingsChange) {
+  base::HistogramTester histogram_tester;
+
+  // Test when default is global:
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kGlobal));
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(false));
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Preferences.HotkeyScopeChange",
+      glic::GlicHotkeyScopeChange::kDefaultGlobalToLocal, 1);
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(true));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyScopeChange",
+      glic::GlicHotkeyScopeChange::kDefaultGlobalToGlobal, 1);
+
+  // Test when default is local:
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kLocal));
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(true));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyScopeChange",
+      glic::GlicHotkeyScopeChange::kDefaultLocalToGlobal, 1);
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(false));
+  histogram_tester.ExpectBucketCount(
+      "Glic.Preferences.HotkeyScopeChange",
+      glic::GlicHotkeyScopeChange::kDefaultLocalToLocal, 1);
+
+  // Test when default is not migrated:
+  g_browser_process->local_state()->SetInteger(
+      glic::prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(glic::prefs::DefaultHotkeyScope::kNotMigrated));
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(true));
+  histogram_tester.ExpectBucketCount("Glic.Preferences.HotkeyScopeChange",
+                                     glic::GlicHotkeyScopeChange::kNotMigrated,
+                                     1);
+
+  glic_handler()->HandleOnHotkeyScopeSettingsChange(
+      base::ListValue().Append(false));
+  histogram_tester.ExpectBucketCount("Glic.Preferences.HotkeyScopeChange",
+                                     glic::GlicHotkeyScopeChange::kNotMigrated,
+                                     2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicHandlerBrowserTest, GetActorLoginPermissions) {

@@ -2655,6 +2655,17 @@ chromium-metrics-reviews@google.com.
   <token key="Event" variants="PanelEvent"/>
 </histogram>
 
+<histogram name="Glic.Preferences.HotkeyScopeChange"
+    enum="GlicHotkeyScopeChange" expires_after="2027-02-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-glic@google.com</owner>
+  <summary>
+    Recorded when the hotkey global scope is changed in Glic settings. Records
+    the transition from the default hotkey scope established at migration to the
+    newly selected scope.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Preferences.{Preference}" enum="BooleanEnabled"
     expires_after="2027-02-07">
   <owner>birnie@google.com</owner>

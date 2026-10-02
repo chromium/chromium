@@ -40,7 +40,24 @@ inline constexpr char kGlicLauncherHotkey[] = "glic.launcher_hotkey";
 inline constexpr char kGlicHotkeyGlobalScopeEnabled[] =
     "glic.hotkey_global_scope_enabled";
 
-// Boolean pref that tracks if the hotkey scope has been migrated.
+// Values for the "glic.default_hotkey_scope" pref.
+// TODO(b/563018760): Deprecate and remove after 6-12 months.
+enum class DefaultHotkeyScope {
+  kMinValue = 0,
+
+  kNotMigrated = kMinValue,
+  kGlobal = 1,
+  kLocal = 2,
+
+  kMaxValue = kLocal
+};
+
+// Integer pref that tracks the default hotkey scope determined during
+// migration: NotMigrated (0), Global (1), or Local (2).
+// TODO(b/563018760): Deprecate and remove after 6-12 months.
+inline constexpr char kGlicDefaultHotkeyScope[] = "glic.default_hotkey_scope";
+
+// Deprecated prefs to be removed after 6-12 months.
 // TODO(b/563018760): Deprecate and remove after 6-12 months.
 inline constexpr char kGlicHotkeyGlobalScopeMigratedV2[] =
     "glic.hotkey_global_scope_migrated_v2";
