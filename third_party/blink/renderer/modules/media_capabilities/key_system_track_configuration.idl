@@ -6,5 +6,5 @@
 
 dictionary KeySystemTrackConfiguration {
   DOMString robustness = "";
-  [RuntimeEnabled=KeySystemTrackConfigurationEncryptionScheme] DOMString? encryptionScheme;
+  DOMString? encryptionScheme;
 };

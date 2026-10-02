@@ -1302,9 +1302,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     // attribute to config.keySystemConfiguration.audio.robustness.
     if (key_system_config->hasAudio()) {
       audio_capability->setRobustness(key_system_config->audio()->robustness());
-      if (RuntimeEnabledFeatures::
-              KeySystemTrackConfigurationEncryptionSchemeEnabled() &&
-          key_system_config->audio()->hasEncryptionScheme()) {
+      if (key_system_config->audio()->hasEncryptionScheme()) {
         audio_capability->setEncryptionScheme(
             key_system_config->audio()->encryptionScheme());
       }
@@ -1325,9 +1323,7 @@ ScriptPromise<MediaCapabilitiesDecodingInfo> MediaCapabilities::GetEmeSupport(
     // attribute to config.keySystemConfiguration.video.robustness.
     if (key_system_config->hasVideo()) {
       video_capability->setRobustness(key_system_config->video()->robustness());
-      if (RuntimeEnabledFeatures::
-              KeySystemTrackConfigurationEncryptionSchemeEnabled() &&
-          key_system_config->video()->hasEncryptionScheme()) {
+      if (key_system_config->video()->hasEncryptionScheme()) {
         video_capability->setEncryptionScheme(
             key_system_config->video()->encryptionScheme());
       }

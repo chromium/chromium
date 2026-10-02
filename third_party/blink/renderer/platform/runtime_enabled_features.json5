@@ -3922,13 +3922,6 @@
       base_feature: "none",
     },
     {
-      // Adds `encryptionScheme` field based on
-      // https://www.w3.org/TR/media-capabilities/#keysystemtrackconfiguration.
-      // See https://crbug.com/498284510 for more details.
-      name: "KeySystemTrackConfigurationEncryptionScheme",
-      status: "stable",
-    },
-    {
       // Checks interactive content using EventPath captured at
       // dispatch start instead of current DOM state. This was
       // added in M145 and can be removed after M147.

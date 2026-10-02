@@ -46,7 +46,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/audio_codec_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -1294,8 +1293,6 @@ TEST_F(MediaCapabilitiesWebrtcTests, EncodeOverridePowerEfficientIsSmooth) {
 }
 
 TEST(MediaCapabilitiesTests, KeySystemTrackConfiguration_EncryptionScheme) {
-  ScopedKeySystemTrackConfigurationEncryptionSchemeForTest
-      scoped_encryption_scheme_for_test(true);
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
 
