@@ -712,6 +712,15 @@ experimental domain CSS
       # Boolean indicating if this is on or off.
       boolean forced
 
+  # Forces a position-try option for the given node.
+  command forcePositionTryOption
+    parameters
+      # The element id for which to force the position-try option.
+      DOM.NodeId nodeId
+      # The 1-based index of the position-try fallback option, 0 for base position (no fallback),
+      # or omitted to clear the forced state.
+      optional integer index
+
   command getBackgroundColors
     parameters
       # Id of the node to get background colors for.

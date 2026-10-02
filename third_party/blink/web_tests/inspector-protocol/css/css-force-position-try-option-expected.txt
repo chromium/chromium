@@ -1,0 +1,106 @@
+Test CSS.forcePositionTryOption command.
+--- Initial state (base 250x250 overflows 200x200; falls back to --medium 100x100, index 1) ---
+w: 100, h: 100, child color: rgb(0, 0, 0)
+Dumping CSS position-try rules: 
+@position-try --medium (active) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (inactive) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 1
+
+--- Force index 0 (base style 250x250) ---
+w: 250, h: 250, child color: rgb(0, 0, 255)
+Dumping CSS position-try rules: 
+@position-try --medium (inactive) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (inactive) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: undefined
+
+--- Force index 1 (flip-block 250x250, index 0 in position-try-fallbacks) ---
+w: 250, h: 250, child color: rgb(0, 255, 0)
+Dumping CSS position-try rules: 
+@position-try --medium (inactive) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (inactive) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 0
+
+--- Force index 3 (--large 300x300, index 2 in position-try-fallbacks, overflows containing block) ---
+w: 300, h: 300, child color: rgb(255, 0, 0)
+Dumping CSS position-try rules: 
+@position-try --medium (inactive) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (active) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 2
+
+--- Clear forced option (omitting index) -> restores natural fallback (--medium 100x100, index 1) ---
+w: 100, h: 100, child color: rgb(0, 0, 0)
+Dumping CSS position-try rules: 
+@position-try --medium (active) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (inactive) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 1
+

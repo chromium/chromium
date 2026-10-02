@@ -207,6 +207,7 @@ interface CoreProbes {
   ParseHTML(Document* document, HTMLDocumentParser* parser);
   void ForcePseudoState([Keep] Element* element, CSSSelector::PseudoType pseudo_state, bool* result);
   void ForceStartingStyle([Keep] Element* element, bool* result);
+  void ForcePositionTryOption([Keep] Element* element, std::optional<wtf_size_t>* forced_index);
   void ShouldForceCorsPreflight(ExecutionContext*, bool* result);
   void ShouldBlockRequest(CoreProbeSink*, const KURL&, bool* result);
   void ShouldBypassServiceWorker(ExecutionContext* context, bool* result);

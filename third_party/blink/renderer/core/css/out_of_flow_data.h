@@ -150,6 +150,8 @@ class CORE_EXPORT OutOfFlowData final : public GarbageCollected<OutOfFlowData>,
     pending_remembered_scroll_offsets_ = nullptr;
   }
 
+  void ClearLastSuccessfulPositionFallback() { ResetAnchorData(); }
+
   void Trace(Visitor*) const override;
 
  private:

@@ -163,6 +163,11 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void ForcePseudoState(Element*, CSSSelector::PseudoType, bool* result);
   void ForceStartingStyle(Element*, bool* result);
+  // Sets `*forced_index` to 0 to force the base position (without fallbacks),
+  // or to 1..N to force the 1-based index into `position-try-fallbacks`. Leaves
+  // `*forced_index` unchanged if no option is forced for `element`.
+  void ForcePositionTryOption(Element*,
+                              std::optional<wtf_size_t>* forced_index);
   void DidCommitLoadForLocalFrame(LocalFrame*) override;
   void Restore() override;
   void FlushPendingProtocolNotifications() override;
@@ -315,6 +320,8 @@ class CORE_EXPORT InspectorCSSAgent final
       int node_id,
       std::unique_ptr<protocol::Array<String>> forced_pseudo_classes) override;
   protocol::Response forceStartingStyle(int node_id, bool forced) override;
+  protocol::Response forcePositionTryOption(int node_id,
+                                            std::optional<int> index) override;
   protocol::Response getMediaQueries(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSMedia>>*) override;
   protocol::Response getLayersForNode(
@@ -402,6 +409,7 @@ class CORE_EXPORT InspectorCSSAgent final
   typedef HashMap<int, unsigned> NodeIdToForcedPseudoState;
   typedef HashMap<int, unsigned> NodeIdToNumberFocusedChildren;
   typedef HashSet<int> NodeIdToForcedStartingStyle;
+  typedef HashMap<int, wtf_size_t> NodeIdToForcedPositionTryOption;
 
   void ResourceContentLoaded(std::unique_ptr<EnableCallback>);
   void CompleteEnabled();
@@ -559,6 +567,7 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void ResetPseudoStates();
   void ResetStartingStyles();
+  void ResetPositionTryOptions();
 
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
@@ -590,6 +599,7 @@ class CORE_EXPORT InspectorCSSAgent final
   NodeIdToForcedPseudoState node_id_to_forced_pseudo_state_;
   NodeIdToNumberFocusedChildren node_id_to_number_focused_children_;
   NodeIdToForcedStartingStyle node_id_to_forced_starting_style_;
+  NodeIdToForcedPositionTryOption node_id_to_forced_position_try_option_;
 
   HeapHashMap<WeakMember<Document>, Member<CSSStyleSheet>>
       default_inspector_stylesheets_;

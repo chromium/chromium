@@ -80,6 +80,7 @@
         "FontsUpdated",
         "ForcePseudoState",
         "ForceStartingStyle",
+        "ForcePositionTryOption",
         "MediaQueryResultChanged",
         "WillChangeStyleElement",
         "LocalFontsEnabled",
