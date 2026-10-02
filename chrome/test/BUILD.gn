@@ -4866,6 +4866,7 @@ test("unit_tests") {
     "//chrome/browser/password_manager:impl",
     "//chrome/browser/password_manager:test_support",
     "//chrome/browser/password_manager:unit_tests",
+    "//chrome/browser/password_manager/actor_login:unit_tests",
     "//chrome/browser/password_manager/actor_login/internal:unit_tests",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/password_manager/ode:unit_tests",
