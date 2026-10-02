@@ -1057,6 +1057,7 @@ source_set("policy") {
     "//chrome/browser/profiles:profile_util",
     "//chrome/common:constants",
     "//components/enterprise",
+    "//components/enterprise/client_certificates/core",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
@@ -1092,10 +1093,6 @@ source_set("policy") {
 
   if (enable_devtools_frontend) {
     public += [ "developer_tools_availability_list_policy_handler.h" ]
-  }
-
-  if (enterprise_client_certificates) {
-    public_deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (is_android) {
@@ -1367,9 +1364,8 @@ source_set("impl") {
 
   # These targets back browser (machine) scope provisioning via Chrome Browser
   # Cloud Management (BrowserDMTokenStorage / BrowserCloudManagementDelegate),
-  # which does not exist on ChromeOS even though enterprise_client_certificates
-  # is enabled there.
-  if (enterprise_client_certificates && !is_chromeos) {
+  # which does not exist on ChromeOS.
+  if (!is_chromeos) {
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//components/enterprise/client_certificates/core:management_delegate",

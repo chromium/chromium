@@ -22,17 +22,14 @@
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/enterprise/browser/reporting/report_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
+#include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/device_trust/core/common_types.h"  // nogncheck
 #include "components/enterprise/device_trust/core/device_trust_connector_service.h"  // nogncheck
 #include "components/prefs/pref_service.h"
 #include "crypto/sha2.h"
-
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
-#include "components/enterprise/client_certificates/core/private_key.h"  // nogncheck
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
@@ -42,7 +39,6 @@ namespace enterprise_connectors::utils {
 
 namespace {
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 std::string BufferToString(base::span<const uint8_t> buffer) {
   return std::string(buffer.begin(), buffer.end());
 }
@@ -117,7 +113,6 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
       certificate->subject().GetDisplayName(),
       certificate->issuer().GetDisplayName());
 }
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 }  // namespace
 
@@ -144,8 +139,6 @@ connectors_internals::mojom::KeyType AlgorithmToType(
       return connectors_internals::mojom::KeyType::UNKNOWN;
   }
 }
-
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 connectors_internals::mojom::ClientIdentityPtr GetIdentity(
     client_certificates::CertificateProvisioningService* provisioning_service,
@@ -206,8 +199,6 @@ CreateClientCertificateState(
       std::move(enabled_levels), std::move(managed_profile_identity),
       std::move(managed_browser_identity));
 }
-
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 std::string HashAndEncodeString(const std::string& spki_bytes) {
   std::string encoded_string;

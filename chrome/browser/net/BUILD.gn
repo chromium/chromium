@@ -4,7 +4,6 @@
 
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
-import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -198,6 +197,7 @@ source_set("impl") {
     "//components/embedder_support",
     "//components/embedder_support:user_agent",
     "//components/enterprise",
+    "//components/enterprise/client_certificates/core",
     "//components/enterprise/connectors/core",
     "//components/enterprise/encryption/cache",
     "//components/language/core/browser",
@@ -292,10 +292,6 @@ source_set("impl") {
 
   if (enable_offline_pages) {
     deps += [ "//chrome/browser/offline_pages" ]
-  }
-
-  if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (use_nss_certs) {

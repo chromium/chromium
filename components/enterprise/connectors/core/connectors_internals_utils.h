@@ -16,13 +16,10 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/client_certificates/core/client_identity.h"
+#include "components/enterprise/client_certificates/core/upload_client_error.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
 #include "crypto/sign.h"
-
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#include "components/enterprise/client_certificates/core/client_identity.h"
-#include "components/enterprise/client_certificates/core/upload_client_error.h"  // nogncheck
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 namespace enterprise_net {
@@ -57,8 +54,6 @@ inline constexpr char kBrowserLevel[] = "Browser";
 inline constexpr char kProfileLevel[] = "Profile";
 inline constexpr char kUserLevel[] = "User";
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-
 // Fetches the identity from `provisioning_service` if the policy is enabled.
 // If enabled, `enabled_level` is added to `enabled_levels`.
 connectors_internals::mojom::ClientIdentityPtr GetIdentity(
@@ -82,8 +77,6 @@ CreateClientCertificateState(
         browser_certificate_provisioning_service,
     client_certificates::CertificateProvisioningService*
         profile_certificate_provisioning_service);
-
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 

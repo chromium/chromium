@@ -49,7 +49,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
@@ -114,7 +114,6 @@ void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
 
 void ConnectorsInternalsPageHandler::GetClientCertificateState(
     GetClientCertificateStateCallback callback) {
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   auto* profile_certificate_provisioning_service =
       client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
           profile_);
@@ -131,12 +130,6 @@ void ConnectorsInternalsPageHandler::GetClientCertificateState(
   std::move(callback).Run(utils::CreateClientCertificateState(
       browser_certificate_provisioning_service,
       profile_certificate_provisioning_service));
-
-#else
-  std::move(callback).Run(
-      connectors_internals::mojom::ClientCertificateState::New(
-          std::vector<std::string>(), nullptr, nullptr));
-#endif
 }
 
 void ConnectorsInternalsPageHandler::GetSignalsReportingState(

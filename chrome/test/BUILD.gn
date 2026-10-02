@@ -1088,12 +1088,11 @@ source_set("platform_browser_tests") {
     }
   }
 
-  # This test exercises CBCM browser/machine-level provisioning APIs
+  # These tests exercise CBCM browser/machine-level provisioning APIs
   # (cloud machine policies, ChromeBrowserCloudManagementController, and the
-  # ProvisionManagedClientCertificateFor{User,Browser} policies), none of which
-  # exist on ChromeOS even though enterprise_client_certificates is enabled
-  # there.
-  if (enterprise_client_certificates && !is_chromeos) {
+  # ProvisionManagedClientCertificateForBrowser policy), which do not exist on
+  # ChromeOS.
+  if (!is_chromeos) {
     deps += [
       "//chrome/browser/enterprise/client_certificates:platform_browser_tests",
       "//chrome/browser/enterprise/test:test_support",
@@ -4790,6 +4789,7 @@ test("unit_tests") {
     "//chrome/browser/engagement",
     "//chrome/browser/engagement:unit_tests",
     "//chrome/browser/enterprise:unit_tests",
+    "//chrome/browser/enterprise/client_certificates:unit_tests",
     "//chrome/browser/enterprise/connectors:unit_tests",
     "//chrome/browser/enterprise/connectors/analysis:unit_tests",
     "//chrome/browser/enterprise/connectors/device_trust:unit_tests",
@@ -6928,10 +6928,6 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/management:unit_tests",
       "//components/enterprise/device_trust/core:test_support",
     ]
-  }
-
-  if (enterprise_client_certificates) {
-    deps += [ "../browser/enterprise/client_certificates:unit_tests" ]
   }
 
   if (is_linux || is_chromeos || is_mac || is_win) {

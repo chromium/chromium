@@ -135,6 +135,7 @@ static_library("enterprise") {
   # Include certain intermediate targets as public deps so consumers
   # can start using them as needed.
   public_deps = [
+    "//components/enterprise/client_certificates/core",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/reporting/client:report_queue_configuration",
     "//components/reporting/util:status",
@@ -151,10 +152,6 @@ static_library("enterprise") {
       "//components/enterprise/device_trust/core",
       "//third_party/abseil-cpp:absl",
     ]
-  }
-
-  if (enterprise_client_certificates) {
-    public_deps += [ "//components/enterprise/client_certificates/core" ]
   }
 
   if (!is_ios && !is_android) {
@@ -241,6 +238,7 @@ source_set("unit_tests") {
     "//components/device_signals/core/common:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
+    "//components/enterprise/client_certificates:unit_tests",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:saas_usage_report_event",
     "//components/enterprise/connectors/core:constants",
@@ -281,10 +279,6 @@ source_set("unit_tests") {
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
     ]
-  }
-
-  if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates:unit_tests" ]
   }
 
   if (is_android) {

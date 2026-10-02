@@ -27,6 +27,7 @@ source_set("connectors_internals") {
     "//components/device_signals/core/browser",
     "//components/enterprise",
     "//components/enterprise/buildflags",
+    "//components/enterprise/client_certificates/core",
     "//components/enterprise/connectors:mojom",
     "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/resources",
@@ -42,9 +43,6 @@ source_set("connectors_internals") {
   ]
   if (enterprise_proxy) {
     deps += [ "//components/enterprise/net" ]
-  }
-  if (enterprise_client_certificates) {
-    deps += [ "//components/enterprise/client_certificates/core" ]
   }
   if (is_mac) {
     deps += [ "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac" ]

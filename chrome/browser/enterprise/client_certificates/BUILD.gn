@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/enterprise/buildflags/buildflags.gni")
-
 source_set("unit_tests") {
   testonly = true
   configs += [ "//components/enterprise:extra_warnings" ]
@@ -47,7 +45,7 @@ source_set("unit_tests") {
   }
 }
 
-if (enterprise_client_certificates && !is_chromeos) {
+if (!is_chromeos) {
   source_set("platform_browser_tests") {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

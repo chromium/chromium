@@ -13,6 +13,11 @@ source_set("enterprise") {
     "browser_management/browser_management_status_provider.h",
     "browser_management/management_service_factory.h",
     "chrome_browser_main_extra_parts_enterprise.h",
+    "client_certificates/browser_context_delegate.h",
+    "client_certificates/cert_utils.h",
+    "client_certificates/certificate_provisioning_service_factory.h",
+    "client_certificates/certificate_store_factory.h",
+    "client_certificates/profile_context_delegate.h",
     "connectors/analysis/analysis_service_settings.h",
     "connectors/connectors_manager.h",
     "connectors/connectors_service.h",
@@ -163,9 +168,13 @@ source_set("enterprise") {
   }
 
   if (is_chromeos) {
-    public_deps += [ "//components/enterprise/device_trust/core/signals" ]
+    public_deps += [
+      "//chromeos/ash/components/kcer",
+      "//components/enterprise/device_trust/core/signals",
+    ]
 
     public += [
+      "client_certificates/ash/kcer_certificate_store.h",
       "connectors/analysis/file_transfer_analysis_delegate.h",
       "connectors/analysis/source_destination_matcher_ash.h",
       "connectors/device_trust/ash/ash_attestation_policy_observer.h",
@@ -251,21 +260,6 @@ source_set("enterprise") {
         "data_protection/clipboard_toast_tracker.h",
         "data_protection/paste_allowed_request.h",
       ]
-    }
-  }
-
-  if (enterprise_client_certificates) {
-    public += [
-      "client_certificates/browser_context_delegate.h",
-      "client_certificates/cert_utils.h",
-      "client_certificates/certificate_provisioning_service_factory.h",
-      "client_certificates/certificate_store_factory.h",
-      "client_certificates/profile_context_delegate.h",
-    ]
-
-    if (is_chromeos) {
-      public += [ "client_certificates/ash/kcer_certificate_store.h" ]
-      public_deps += [ "//chromeos/ash/components/kcer" ]
     }
   }
 
@@ -416,6 +410,11 @@ source_set("impl") {
     "browser_management/browser_management_status_provider.cc",
     "browser_management/management_service_factory.cc",
     "chrome_browser_main_extra_parts_enterprise.cc",
+    "client_certificates/browser_context_delegate.cc",
+    "client_certificates/cert_utils.cc",
+    "client_certificates/certificate_provisioning_service_factory.cc",
+    "client_certificates/certificate_store_factory.cc",
+    "client_certificates/profile_context_delegate.cc",
     "connectors/analysis/analysis_service_settings.cc",
     "connectors/connectors_manager.cc",
     "connectors/connectors_service.cc",
@@ -478,6 +477,7 @@ source_set("impl") {
     "//chrome/browser/devtools",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
+    "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/enterprise/connectors/reporting:impl",
     "//chrome/browser/enterprise/core",
@@ -509,6 +509,10 @@ source_set("impl") {
     "//components/dom_distiller/core",
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
+    "//components/enterprise/client_certificates/core",
+    "//components/enterprise/client_certificates/core:cloud_management_delegate",
+    "//components/enterprise/client_certificates/core:dm_server_client",
+    "//components/enterprise/client_certificates/core:management_delegate",
     "//components/enterprise/common:files_scan_data",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/enterprise/common/proto:extensions_workflow_events_proto",
@@ -604,6 +608,7 @@ source_set("impl") {
 
   if (is_chromeos) {
     sources += [
+      "client_certificates/ash/kcer_certificate_store.cc",
       "connectors/analysis/file_transfer_analysis_delegate.cc",
       "connectors/analysis/source_destination_matcher_ash.cc",
       "connectors/device_trust/ash/ash_attestation_policy_observer.cc",
@@ -619,6 +624,7 @@ source_set("impl") {
       "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/file_manager",
       "//chrome/browser/ash/guest_os/public",
+      "//chrome/browser/ash/kcer",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/profiles",
       "//chrome/browser/ash/settings",
@@ -626,11 +632,14 @@ source_set("impl") {
       "//chrome/services/system_signals/public/cpp/browser",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/install_attributes",
+      "//chromeos/ash/components/kcer",
       "//chromeos/ash/components/network",
       "//chromeos/ash/components/system",
       "//chromeos/components/mgs",
       "//chromeos/dbus/constants",
       "//components/device_signals/core/browser/ash",
+      "//components/user_manager",
+      "//net",
       "//ui/strings:ui_strings__strings_grit",
     ]
   } else {
@@ -709,34 +718,6 @@ source_set("impl") {
     }
     if (enable_print_preview) {
       deps += [ "//chrome/browser/printing" ]
-    }
-  }
-
-  if (enterprise_client_certificates) {
-    sources += [
-      "client_certificates/browser_context_delegate.cc",
-      "client_certificates/cert_utils.cc",
-      "client_certificates/certificate_provisioning_service_factory.cc",
-      "client_certificates/certificate_store_factory.cc",
-      "client_certificates/profile_context_delegate.cc",
-    ]
-    deps += [
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
-      "//components/enterprise/client_certificates/core",
-      "//components/enterprise/client_certificates/core:cloud_management_delegate",
-      "//components/enterprise/client_certificates/core:dm_server_client",
-      "//components/enterprise/client_certificates/core:management_delegate",
-    ]
-
-    if (is_chromeos) {
-      sources += [ "client_certificates/ash/kcer_certificate_store.cc" ]
-      deps += [
-        "//chrome/browser/ash/kcer",
-        "//chrome/browser/ash/profiles",
-        "//chromeos/ash/components/kcer",
-        "//components/user_manager",
-        "//net",
-      ]
     }
   }
 

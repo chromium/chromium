@@ -9,14 +9,11 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "components/enterprise/client_certificates/core/prefs.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/enterprise/device_trust/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
-
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#include "components/enterprise/client_certificates/core/prefs.h"
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 namespace enterprise_connectors {
 
@@ -110,9 +107,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOnFileAttachedScopePref, 0);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterProfilePrefs(registry);
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   registry->RegisterBooleanPref(kCacheEncryptionEnabledPref, false);
@@ -124,9 +119,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(kLatestCrashReportCreationTime, 0);
   registry->RegisterInt64Pref(kLatestTelomereReportCreationTime, 0);
 
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   client_certificates::RegisterLocalStatePrefs(registry);
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 }
 
 }  // namespace enterprise_connectors
