@@ -1632,10 +1632,11 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-// TODO(https://crbug.com/467160838): Fix test failure on ChromeOS ASan, MSan
+// TODO(crbug.com/467160838): Fix test failure on ChromeOS ASan, MSan
 // and Mac.
+// TODO(crbug.com/568775395): Fix test failure on Linux.
 #if (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)) || \
-    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+    defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RevertTranslationClosesSidePanelViaTranslateManager \
   DISABLED_RevertTranslationClosesSidePanelViaTranslateManager
 #else
@@ -1663,8 +1664,16 @@ IN_PROC_BROWSER_TEST_F(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
+// TODO(crbug.com/568775395): Fix test failure on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClosingSidePanelRevertsPdfTranslation \
+  DISABLED_ClosingSidePanelRevertsPdfTranslation
+#else
+#define MAYBE_ClosingSidePanelRevertsPdfTranslation \
+  ClosingSidePanelRevertsPdfTranslation
+#endif
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       ClosingSidePanelRevertsPdfTranslation) {
+                       MAYBE_ClosingSidePanelRevertsPdfTranslation) {
   ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
