@@ -47,9 +47,12 @@ UIView* CreateMostVisitedContainerView(
     MostVisitedTilesCollectionView* collectionView,
     BOOL hasBackground);
 
-/// Calculates the layout height of Most Visited Tiles given its container
-/// or inner collection view (using system layout fitting when bounds are zero).
-CGFloat MostVisitedContainerHeight(UIView* containerView,
-                                   UIView* mostVisitedView);
+/// Calculates the layout height of Most Visited Tiles given its inner
+/// collection view, falling back to system layout fitting on `fallbackView` or
+/// `collectionView.intrinsicContentSize` if `collectionView` is nil or has not
+/// calculated its content size.
+CGFloat MostVisitedContainerHeight(
+    MostVisitedTilesCollectionView* collectionView,
+    UIView* fallbackView = nil);
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_UTILS_H_

@@ -63,18 +63,26 @@ TEST_F(NewTabPageUtilsTest, TestCreateMostVisitedContainerViewNoBackground) {
   EXPECT_FALSE(has_card_background);
 }
 
-// Tests that MostVisitedContainerHeight returns bounds height when positive.
-TEST_F(NewTabPageUtilsTest, TestMostVisitedContainerHeightWithBounds) {
-  UIView* container = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 150)];
-  UIView* content = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 150)];
+// Tests that MostVisitedContainerHeight returns collectionView contentSize plus
+// bottom padding when the collection view has positive contentSize.
+TEST_F(NewTabPageUtilsTest,
+       TestMostVisitedContainerHeightWithCollectionViewContentSize) {
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedTilesCollectionView* collection_view =
+      [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
 
-  EXPECT_FLOAT_EQ(150.0, MostVisitedContainerHeight(container, content));
+  constexpr CGFloat kContentHeight = 91.33;
+  constexpr CGFloat kExpectedTotalHeight = 101.33;
+  [collection_view setContentSize:CGSizeMake(390, kContentHeight)];
+
+  EXPECT_FLOAT_EQ(kExpectedTotalHeight,
+                  MostVisitedContainerHeight(collection_view, nil));
 }
 
-// Tests that MostVisitedContainerHeight uses fitting size when bounds height is
-// zero.
+// Tests that MostVisitedContainerHeight uses fitting size when collectionView
+// is nil.
 TEST_F(NewTabPageUtilsTest, TestMostVisitedContainerHeightWithFittingFallback) {
-  UIView* container = [[UIView alloc] initWithFrame:CGRectZero];
   UIView* content = [[UIView alloc] init];
   content.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
@@ -82,12 +90,50 @@ TEST_F(NewTabPageUtilsTest, TestMostVisitedContainerHeightWithFittingFallback) {
     [content.widthAnchor constraintEqualToConstant:300.0],
   ]];
 
-  EXPECT_FLOAT_EQ(120.0, MostVisitedContainerHeight(container, content));
+  EXPECT_FLOAT_EQ(120.0, MostVisitedContainerHeight(nil, content));
 }
 
-// Tests that MostVisitedContainerHeight returns 0 when container is nil.
-TEST_F(NewTabPageUtilsTest, TestMostVisitedContainerHeightNilContainer) {
+// Tests that MostVisitedContainerHeight prioritizes collectionView contentSize
+// over fallbackView fitting size.
+TEST_F(NewTabPageUtilsTest,
+       TestMostVisitedContainerHeightPrioritizesCollectionViewOverFallback) {
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedTilesCollectionView* collection_view =
+      [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
+  [collection_view setContentSize:CGSizeMake(390, 100.0)];
+
+  UIView* fallback = [[UIView alloc] init];
+  fallback.translatesAutoresizingMaskIntoConstraints = NO;
+  [NSLayoutConstraint activateConstraints:@[
+    [fallback.heightAnchor constraintEqualToConstant:64.0],
+    [fallback.widthAnchor constraintEqualToConstant:300.0],
+  ]];
+
+  EXPECT_FLOAT_EQ(110.0, MostVisitedContainerHeight(collection_view, fallback));
+}
+
+// Tests that MostVisitedContainerHeight returns 0 when both arguments are nil.
+TEST_F(NewTabPageUtilsTest, TestMostVisitedContainerHeightNil) {
   EXPECT_FLOAT_EQ(0.0, MostVisitedContainerHeight(nil, nil));
+}
+
+// Tests that MostVisitedContainerHeight falls back to collectionView
+// intrinsicContentSize plus bottom padding when contentSize is zero.
+TEST_F(NewTabPageUtilsTest,
+       TestMostVisitedContainerHeightFallbackToIntrinsicContentSize) {
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedTilesCollectionView* collection_view =
+      [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
+
+  CGFloat intrinsic_height = [collection_view intrinsicContentSize].height;
+  ASSERT_GT(intrinsic_height, 0.0);
+
+  constexpr CGFloat kContainerBottomPadding = 10.0;
+  CGFloat expected_total_height = intrinsic_height + kContainerBottomPadding;
+  EXPECT_FLOAT_EQ(expected_total_height,
+                  MostVisitedContainerHeight(collection_view, nil));
 }
 
 // Tests that CreateMostVisitedContainerView returns nil when collectionView is

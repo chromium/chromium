@@ -788,19 +788,150 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   UIView* mvt_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
   [mvt_view.heightAnchor constraintEqualToConstant:120.0].active = YES;
 
-  [view_controller_ embedMostVisitedView:mvt_view];
+  [view_controller_ embedMostVisitedView:mvt_view collectionView:nil];
   [view_controller_.view layoutIfNeeded];
 
-  UIView* container =
-      [view_controller_ valueForKey:@"_mostVisitedContainerView"];
-  ASSERT_TRUE(container != nil);
-  EXPECT_EQ(mvt_view.superview, container);
+  ASSERT_NE(mvt_view.superview, nil);
+  EXPECT_TRUE([mvt_view isDescendantOfView:view_controller_.view]);
   EXPECT_GT(scroll_view.contentInset.top, insets_without_mvt);
 
   // Detach by passing nil.
-  [view_controller_ embedMostVisitedView:nil];
+  [view_controller_ embedMostVisitedView:nil collectionView:nil];
   [view_controller_.view layoutIfNeeded];
 
   EXPECT_EQ(mvt_view.superview, nil);
   EXPECT_EQ(scroll_view.contentInset.top, insets_without_mvt);
+}
+
+// Tests that the feed scroll view content offset is initialized to match
+// the negative top content inset.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedScrollViewInitialContentOffsetMatchesTopInset) {
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_GT(scroll_view.contentInset.top, 0.0);
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, -scroll_view.contentInset.top);
+}
+
+// Tests that dynamic content inset updates while scrolled into feed content
+// preserve the scroll offset delta.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedInsetsDynamicUpdatePreservesScrollOffsetDelta) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kMVTInBottomSheet);
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat initial_top_inset = scroll_view.contentInset.top;
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, -initial_top_inset);
+
+  // Expand the sheet and scroll into feed content.
+  [view_controller_
+      setSheetStateForTesting:BottomSheetSnappingState::kExpanded];
+  scroll_view.contentOffset = CGPointMake(0, 50);
+
+  // Embed MVT, which increases top inset.
+  UIView* mvt_view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 300, 120)];
+  [mvt_view.heightAnchor constraintEqualToConstant:120.0].active = YES;
+  [view_controller_ embedMostVisitedView:mvt_view collectionView:nil];
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat new_top_inset = scroll_view.contentInset.top;
+  CGFloat delta = new_top_inset - initial_top_inset;
+  EXPECT_GT(delta, 0.0);
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, 50 - delta);
+}
+
+// Tests that updateFeedInsets strictly reclamps contentOffset.y to -topInset
+// in resting state even if the offset was drifted or insets did not change.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedInsetsReclampsContentOffsetInRestingState) {
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat top_inset = scroll_view.contentInset.top;
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, -top_inset);
+
+  // Manually perturb the scroll view's offset (simulate drift/overscroll).
+  scroll_view.contentOffset = CGPointMake(0, -top_inset + 40.0);
+
+  // Calling updateFeedInsets in resting state must reclamp to -top_inset.
+  [view_controller_ updateFeedInsets];
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, -top_inset);
+
+  // Simulate negative overscroll beyond top inset.
+  scroll_view.contentOffset = CGPointMake(0, -top_inset - 25.0);
+  [view_controller_ updateFeedInsets];
+  EXPECT_FLOAT_EQ(scroll_view.contentOffset.y, -top_inset);
+}
+
+// Tests that header height increases with larger dynamic type categories.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestHeaderHeightUsesDynamicType) {
+  [view_controller_ loadViewIfNeeded];
+
+  CGFloat default_height = [view_controller_ headerHeight];
+
+  view_controller_.traitOverrides.preferredContentSizeCategory =
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge;
+  [view_controller_.view layoutIfNeeded];
+
+  CGFloat scaled_height = [view_controller_ headerHeight];
+  EXPECT_GT(scaled_height, default_height);
+}
+
+// Tests that transitioning from regular to compact layout attaches the magic
+// stack to the feed hierarchy and updates headerHeight.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestTransitionFromRegularToCompactAttachesMagicStackToFeed) {
+  UIView* superview =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1024, 768)];
+  [superview addSubview:view_controller_.view];
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  MagicStackCollectionViewController* magic_stack_vc =
+      [[MagicStackCollectionViewController alloc] init];
+  view_controller_.magicStackViewController = magic_stack_vc;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, 1000)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_ setupSuperviewConstraints];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_FLOAT_EQ(0.0, [view_controller_ headerHeight]);
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_ updateLayoutModeForCurrentTraitCollection];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_GT([view_controller_ headerHeight], 0.0);
+  EXPECT_EQ(feed_vc, magic_stack_vc.parentViewController);
 }

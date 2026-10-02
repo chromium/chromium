@@ -111,16 +111,22 @@ UIView* CreateMostVisitedContainerView(
   return container;
 }
 
-CGFloat MostVisitedContainerHeight(UIView* containerView,
-                                   UIView* mostVisitedView) {
-  if (!containerView) {
-    return 0.0;
+CGFloat MostVisitedContainerHeight(
+    MostVisitedTilesCollectionView* collectionView,
+    UIView* fallbackView) {
+  if (collectionView && collectionView.contentSize.height > 0) {
+    return collectionView.contentSize.height + kMVTContainerBottomPadding;
   }
-  CGFloat mvtHeight = CGRectGetHeight(containerView.bounds);
-  if (mvtHeight <= 0 && mostVisitedView) {
-    mvtHeight = [mostVisitedView
-                    systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-                    .height;
+  if (fallbackView) {
+    return
+        [fallbackView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+            .height;
   }
-  return mvtHeight;
+  if (collectionView) {
+    CGSize intrinsicSize = [collectionView intrinsicContentSize];
+    if (intrinsicSize.height > 0) {
+      return intrinsicSize.height + kMVTContainerBottomPadding;
+    }
+  }
+  return 0.0;
 }

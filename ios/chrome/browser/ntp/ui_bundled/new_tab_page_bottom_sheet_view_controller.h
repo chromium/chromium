@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class MagicStackCollectionViewController;
+@class MostVisitedTilesCollectionView;
 @class NewTabPageBottomSheetViewController;
 
 // Delegate for events in the bottom sheet view controller.
@@ -72,14 +73,18 @@ enum class BottomSheetSnappingState {
 @property(nonatomic, strong)
     MagicStackCollectionViewController* magicStackViewController;
 
-// Embeds the Most Visited view.
-- (void)embedMostVisitedView:(UIView*)mostVisitedView;
+// Embeds the Most Visited view and its collection view.
+- (void)embedMostVisitedView:(UIView*)mostVisitedView
+              collectionView:(MostVisitedTilesCollectionView*)collectionView;
 
 // Clears state and delegates.
 - (void)invalidate;
 
 // Handles layout and insets when the feed top section promo is closed.
 - (void)handleFeedTopSectionClosed;
+
+// Updates feed content insets and scroll offsets.
+- (void)updateFeedInsets;
 
 // Triggers re-layout and inset recalculation when feed content or promos
 // update.

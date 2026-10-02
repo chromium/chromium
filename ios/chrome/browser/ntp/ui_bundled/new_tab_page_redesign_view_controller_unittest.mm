@@ -841,6 +841,44 @@ TEST_F(NewTabPageRedesignViewControllerTest,
   EXPECT_TRUE([magic_stack.view isDescendantOfView:view_controller_.view]);
 }
 
+// Tests that resizing from iPad regular to compact layout with a feed does not
+// crash due to view hierarchy inconsistency, and correctly reparents the
+// Magic Stack.
+TEST_F(NewTabPageRedesignViewControllerTest,
+       TestResizeToCompactHorizontalSizeClassWithFeedDoesNotCrash) {
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 800, 1000)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  MagicStackCollectionViewController* magic_stack =
+      [[MagicStackCollectionViewController alloc] init];
+  [view_controller_ setMagicStackViewController:magic_stack];
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(view_controller_, magic_stack.parentViewController);
+
+  // Transition to compact layout and trigger trait changes.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(feed_vc, magic_stack.parentViewController);
+
+  // Transition back to regular layout.
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_EQ(view_controller_, magic_stack.parentViewController);
+}
+
 // Tests that Most Visited Tiles view hierarchy updates correctly between
 // iPad regular and compact/iPhone layouts.
 TEST_F(NewTabPageRedesignViewControllerTest,

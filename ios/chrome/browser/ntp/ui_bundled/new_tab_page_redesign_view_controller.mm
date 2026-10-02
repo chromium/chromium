@@ -139,6 +139,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   FakeLocationBarView* _fakeLocationBar;
   UIView* _mostVisitedContainerView;
   UIView* _mostVisitedView;
+  MostVisitedTilesCollectionView* _mostVisitedCollectionView;
   UIView* _magicStackContainerView;
   NSArray<NSLayoutConstraint*>* _magicStackConstraints;
   UIVisualEffectView* _backdropBlurView;
@@ -500,6 +501,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 
   _bottomSheetViewController =
       [[NewTabPageBottomSheetViewController alloc] init];
+  _bottomSheetViewController.traitOverrides.horizontalSizeClass =
+      self.traitCollection.horizontalSizeClass;
   _bottomSheetViewController.delegate = self;
   _bottomSheetViewController.feedViewController = _feedViewController;
   _bottomSheetViewController.feedTopSectionViewController =
@@ -567,11 +570,13 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 }
 
 - (void)handleTraitChanges {
-  [self updateMostVisitedHierarchy];
-  [self updateMagicStackHierarchy];
   if (_bottomSheetViewController) {
+    _bottomSheetViewController.traitOverrides.horizontalSizeClass =
+        self.traitCollection.horizontalSizeClass;
     [_bottomSheetViewController updateLayoutModeForCurrentTraitCollection];
   }
+  [self updateMostVisitedHierarchy];
+  [self updateMagicStackHierarchy];
   _centerContentContainerView.transform = CGAffineTransformIdentity;
   [self updateLogoConstraints];
   _fakeLocationBarTopConstraint.constant = [self centeredFakeOmniboxTop];
@@ -883,19 +888,21 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
   if (!config) {
     _mostVisitedView = nil;
+    _mostVisitedCollectionView = nil;
     [self updateMostVisitedHierarchy];
     return;
   }
 
-  MostVisitedTilesCollectionView* collectionView =
+  _mostVisitedCollectionView =
       [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
 
   __weak __typeof(self) weakSelf = self;
-  collectionView.onContentSizeChanged = ^(CGSize) {
+  _mostVisitedCollectionView.onContentSizeChanged = ^(CGSize) {
     [weakSelf handleMostVisitedTilesContentSizeChanged];
   };
 
-  _mostVisitedView = CreateMostVisitedContainerView(collectionView, YES);
+  _mostVisitedView =
+      CreateMostVisitedContainerView(_mostVisitedCollectionView, YES);
 
   [self updateMostVisitedHierarchy];
 
@@ -1148,6 +1155,11 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
 // Handles content size updates from Most Visited Tiles to reposition the bottom
 // sheet.
 - (void)handleMostVisitedTilesContentSizeChanged {
+  if (IsMVTInBottomSheetEnabled() && ![self isIPadRegularLayout]) {
+    [_bottomSheetViewController.view setNeedsLayout];
+    [_bottomSheetViewController.view layoutIfNeeded];
+    [_bottomSheetViewController updateFeedInsets];
+  }
   [_bottomSheetViewController updateBottomSheetPositionAnimated:YES];
 }
 
@@ -1167,11 +1179,13 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
       [_mostVisitedView removeFromSuperview];
     }
     if (_bottomSheetViewController) {
-      [_bottomSheetViewController embedMostVisitedView:_mostVisitedView];
+      [_bottomSheetViewController
+          embedMostVisitedView:_mostVisitedView
+                collectionView:_mostVisitedCollectionView];
     }
   } else {
     if (_bottomSheetViewController) {
-      [_bottomSheetViewController embedMostVisitedView:nil];
+      [_bottomSheetViewController embedMostVisitedView:nil collectionView:nil];
     }
     if (_mostVisitedContainerView) {
       _mostVisitedContainerView.hidden = NO;
@@ -1254,8 +1268,8 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 
   if (![self shouldPlaceMVTInBottomSheet]) {
-    height +=
-        MostVisitedContainerHeight(_mostVisitedContainerView, _mostVisitedView);
+    height += MostVisitedContainerHeight(_mostVisitedCollectionView,
+                                         _mostVisitedView);
   }
 
   if ([self isIPadRegularLayout] && _magicStackViewController) {
