@@ -54,6 +54,7 @@
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/plugins/plugin_observer_android.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
@@ -107,6 +108,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/buildflags/buildflags.h"
+#include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -444,6 +446,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   recent_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
           *tab, *tab, web_contents);
+
+  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
+    auto_picture_in_picture_tab_helper_ =
+        GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
+            *tab, *tab, web_contents);
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

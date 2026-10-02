@@ -4158,6 +4158,7 @@ source_set("core_unit_tests") {
     "//components/services/unzip/public/mojom",
     "//components/site_isolation",
     "//components/sync_preferences:test_support",
+    "//components/tabs:public",
     "//components/tabs:test_support",
     "//components/ukm",
     "//components/universal_optout",

@@ -35,6 +35,7 @@ source_set("picture_in_picture") {
     "//components/safe_browsing/core/browser/db:util",
     "//content/public/browser",
     "//third_party/blink/public/common",
+    "//ui/base/unowned_user_data",
     "//ui/gfx/geometry",
     "//url",
   ]
@@ -110,6 +111,7 @@ source_set("impl") {
     "//components/content_settings/core/browser",
     "//components/permissions",
     "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
+    "//components/tabs:public",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/buildflags",

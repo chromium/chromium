@@ -43,6 +43,7 @@
 
 class AboutThisSiteTabHelper;
 class AskBeforeHttpDialogController;
+class AutoPictureInPictureTabHelper;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
 class BrowserSyncedTabDelegate;
@@ -968,6 +969,9 @@ class TabFeatures {
 #endif
 
   std::unique_ptr<SearchTabHelper> search_tab_helper_;
+
+  std::unique_ptr<AutoPictureInPictureTabHelper>
+      auto_picture_in_picture_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

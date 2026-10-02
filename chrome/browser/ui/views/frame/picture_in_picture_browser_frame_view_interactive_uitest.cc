@@ -1345,12 +1345,9 @@ IN_PROC_BROWSER_TEST_P(PictureInPictureTitleActivationTest,
   // Pretend that we're in auto-pip so that we get an overlay view.
   content::WebContents* web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
-  // Ensure that there is a helper for `web_contents`.  This will no-op if
-  // something has already created it, but right now it's dependent on having
-  // the feature enabled.
-  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
   auto* auto_pip_tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(auto_pip_tab_helper);
   auto_pip_tab_helper->set_is_in_auto_picture_in_picture_for_testing(true);
   ASSERT_NO_FATAL_FAILURE(SetUpDocumentPIP());
 

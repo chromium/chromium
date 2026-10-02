@@ -158,6 +158,8 @@ source_set("unit_tests") {
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/strings:components_strings",
     "//components/subresource_filter/content/browser",
+    "//components/tabs:public",
+    "//components/tabs:test_support",
     "//content/test:test_support",
     "//net:test_support",
     "//services/device/public/cpp:test_support",

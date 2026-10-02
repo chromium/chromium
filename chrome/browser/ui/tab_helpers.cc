@@ -44,7 +44,6 @@
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
@@ -244,14 +243,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
         autofill::AutofillClientProviderFactory::GetForProfile(profile);
     autofill_client_provider.CreateClientForWebContents(web_contents);
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(media::kAutoPictureInPictureAndroid)) {
-    AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
-  }
-#else
-  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents);
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // The sensitive content client has to be instantiated after the autofill

@@ -163,6 +163,8 @@
 #include "chrome/common/child_module/child_module_helper.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/child_process_host.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
@@ -763,7 +765,10 @@ TEST_F(ChromeContentBrowserClientTestWithWebContents,
        GetAutoPipInfo_AutoPipReason) {
   ChromeContentBrowserClient client;
 
-  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  AutoPictureInPictureTabHelper tab_helper_instance(mock_tab, web_contents());
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents());
   ASSERT_NE(nullptr, tab_helper);

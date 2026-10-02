@@ -123,6 +123,7 @@ class V8CompileHintsTabHelper;
 }  // namespace v8_compile_hints
 
 class AboutThisSiteTabHelper;
+class AutoPictureInPictureTabHelper;
 class ChainedBackNavigationTracker;
 class ConnectionHelpTabHelper;
 class ExternalProtocolObserver;
@@ -286,6 +287,8 @@ class TabFeatures {
   std::unique_ptr<SupervisedUserNavigationObserver>
       supervised_user_navigation_observer_;
   std::unique_ptr<offline_pages::RecentTabHelper> recent_tab_helper_;
+  std::unique_ptr<AutoPictureInPictureTabHelper>
+      auto_picture_in_picture_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

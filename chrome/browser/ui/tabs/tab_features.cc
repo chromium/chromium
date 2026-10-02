@@ -53,6 +53,7 @@
 #include "chrome/browser/page_info/about_this_site_tab_helper.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/payments/web_payments_observer.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/preloading/bookmarkbar_preload/bookmarkbar_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
@@ -1071,6 +1072,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     search_tab_helper_ = GetUserDataFactory().CreateInstance<SearchTabHelper>(
         tab, tab, tab.GetContents());
   }
+
+  auto_picture_in_picture_tab_helper_ =
+      GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
+          tab, tab, tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1497,6 +1502,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     search_tab_helper_ = GetUserDataFactory().CreateInstance<SearchTabHelper>(
         *tab, *tab, new_contents);
   }
+
+  auto_picture_in_picture_tab_helper_.reset();
+  auto_picture_in_picture_tab_helper_ =
+      GetUserDataFactory().CreateInstance<AutoPictureInPictureTabHelper>(
+          *tab, *tab, new_contents);
 }
 
 customize_chrome::SidePanelController*

@@ -16,7 +16,7 @@ namespace picture_in_picture {
 static void JNI_AutoPictureInPictureTabHelperTestUtils_InitializeForTesting(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  AutoPictureInPictureTabHelper::GetOrCreateForWebContents(web_contents);
+  CHECK(AutoPictureInPictureTabHelper::FromWebContents(web_contents));
 }
 
 static bool JNI_AutoPictureInPictureTabHelperTestUtils_IsInAutoPictureInPicture(

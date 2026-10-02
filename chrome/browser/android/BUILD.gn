@@ -181,6 +181,7 @@ source_set("tabs_impl") {
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_info",
     "//chrome/browser/payments",
+    "//chrome/browser/picture_in_picture",
     "//chrome/browser/plugins",
     "//chrome/browser/preloading/new_tab_page_preload",
     "//chrome/browser/preloading/prefetch/no_state_prefetch",
@@ -225,6 +226,7 @@ source_set("tabs_impl") {
     "//components/tabs:public",
     "//content/public/browser",
     "//extensions/buildflags",
+    "//media",
     "//ui/base",
   ]
   if (enable_webui_ntp) {

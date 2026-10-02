@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -53,6 +55,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/buildflags.h"
@@ -61,10 +64,13 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/web_contents_tester.h"
+#include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -82,11 +88,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
-
-#include "chrome/common/chrome_features.h"
-#include "chrome/common/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "media/base/media_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
@@ -793,7 +794,10 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionShownOnChange) {
   std::set<ContentSettingsType> expected_visible_permissions;
 
   // Create the tab helper.
-  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  AutoPictureInPictureTabHelper tab_helper_instance(mock_tab, web_contents());
 
   // Initially, the permission should not be shown.
   page_info()->PresentSitePermissionsForTesting();
@@ -2337,7 +2341,11 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoIncognito) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
 
-  AutoPictureInPictureTabHelper::CreateForWebContents(incognito_web_contents());
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(incognito_web_contents(),
+                                                       &mock_tab);
+  AutoPictureInPictureTabHelper tab_helper_instance(mock_tab,
+                                                    incognito_web_contents());
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(incognito_web_contents());
   std::vector<media_session::mojom::MediaSessionAction> actions;
@@ -2359,7 +2367,10 @@ TEST_F(PageInfoTest, AutoPictureInPicturePermissionInfoRegular) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(media::kAutoPictureInPictureAndroid);
 
-  AutoPictureInPictureTabHelper::CreateForWebContents(web_contents());
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab);
+  AutoPictureInPictureTabHelper tab_helper_instance(mock_tab, web_contents());
   auto* tab_helper =
       AutoPictureInPictureTabHelper::FromWebContents(web_contents());
   std::vector<media_session::mojom::MediaSessionAction> actions;

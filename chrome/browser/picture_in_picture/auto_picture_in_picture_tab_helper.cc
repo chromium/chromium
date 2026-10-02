@@ -25,6 +25,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,18 +49,49 @@
 using OcclusionState =
     AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState;
 
+DEFINE_USER_DATA(AutoPictureInPictureTabHelper);
+
+// static
+AutoPictureInPictureTabHelper* AutoPictureInPictureTabHelper::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+const AutoPictureInPictureTabHelper* AutoPictureInPictureTabHelper::From(
+    const tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+AutoPictureInPictureTabHelper* AutoPictureInPictureTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
+
+// static
+const AutoPictureInPictureTabHelper*
+AutoPictureInPictureTabHelper::FromWebContents(
+    const content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
+
 AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<AutoPictureInPictureTabHelper>(
-          *web_contents),
       host_content_settings_map_(HostContentSettingsMapFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       auto_blocker_(PermissionDecisionAutoBlockerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       media_engagement_service_(MediaEngagementService::Get(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
-      clock_(base::DefaultTickClock::GetInstance()) {
+      clock_(base::DefaultTickClock::GetInstance()),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   // `base::Unretained` is safe here since we own `tab_observer_helper_`.
   tab_observer_helper_ = AutoPictureInPictureTabObserverHelperBase::Create(
       web_contents,
@@ -1097,5 +1129,3 @@ void AutoPictureInPictureTabHelper::OnTabBecameActive() {
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AutoPictureInPictureTabHelper);
