@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
+#include "chrome/browser/actor/tools/registry/tool_registry.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -48,7 +49,7 @@ namespace ui {
 class ActorUiStateManager;
 class ActorUiStateManagerInterface;
 class UiEventDispatcher;
-}
+}  // namespace ui
 
 class ActorSurfaceRegistry;
 class EnterprisePolicyChecker;
@@ -130,6 +131,11 @@ class ActorKeyedService : public KeyedService,
 
   // The registry of surfaces the actor can act on for the associated profile.
   ActorSurfaceRegistry& GetSurfaceRegistry() LIFETIME_BOUND;
+
+  // The shared browser tool registry for the associated profile.
+  const ToolRegistry& tool_registry() const LIFETIME_BOUND {
+    return tool_registry_;
+  }
 
   // The associated ActorUiStateManager for the associated profile.
   ui::ActorUiStateManager* GetActorUiStateManager(
@@ -361,6 +367,9 @@ class ActorKeyedService : public KeyedService,
 
   // Owns this.
   raw_ptr<Profile> profile_;
+
+  // Catalog of shared browser tool definitions returned by `tool_registry()`.
+  ToolRegistry tool_registry_;
 
   base::WeakPtrFactory<ActorKeyedService> weak_ptr_factory_{this};
 };

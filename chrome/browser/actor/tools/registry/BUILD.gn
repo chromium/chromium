@@ -3,25 +3,39 @@
 # found in the LICENSE file.
 
 source_set("registry") {
-  public = [ "tool_definition.h" ]
+  public = [
+    "tool_definition.h",
+    "tool_registry.h",
+  ]
   public_deps = [ "//base" ]
 }
 
 source_set("impl") {
-  sources = [ "tool_definition.cc" ]
+  sources = [
+    "tool_definition.cc",
+    "tool_registry.cc",
+  ]
   deps = [
     ":registry",
     "//base",
+    "//chrome/browser/actor",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tool_definition_unittest.cc" ]
+  sources = [
+    "tool_definition_unittest.cc",
+    "tool_registry_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":registry",
     "//base",
+    "//base/test:test_support",
+    "//chrome/browser/actor",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }
