@@ -31,6 +31,10 @@ class ChildStatusReportRequest;
 
 class Profile;
 
+namespace supervised_user {
+class FamilyLinkSettingsService;
+}  // namespace supervised_user
+
 namespace ash {
 namespace app_time {
 class AppId;
@@ -76,7 +80,9 @@ class ChildUserService : public KeyedService,
 
   static const char* GetTimeLimitPolicyTypesHistogramNameForTest();
 
-  explicit ChildUserService(content::BrowserContext* context);
+  ChildUserService(
+      content::BrowserContext* context,
+      supervised_user::FamilyLinkSettingsService& family_link_settings_service);
   ChildUserService(const ChildUserService&) = delete;
   ChildUserService& operator=(const ChildUserService&) = delete;
   ~ChildUserService() override;

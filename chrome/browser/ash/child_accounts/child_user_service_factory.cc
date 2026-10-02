@@ -6,9 +6,13 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 
 namespace ash {
 
@@ -45,7 +49,10 @@ ChildUserServiceFactory::~ChildUserServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ChildUserServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<ChildUserService>(context);
+  return std::make_unique<ChildUserService>(
+      context,
+      CHECK_DEREF(supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+          Profile::FromBrowserContext(context)->GetProfileKey())));
 }
 
 }  // namespace ash

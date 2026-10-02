@@ -16,8 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -69,13 +67,12 @@ void OnNotificationClick(const GURL& url) {
 
 }  // namespace
 
-WebsiteApprovalNotifier::WebsiteApprovalNotifier(Profile* profile)
+WebsiteApprovalNotifier::WebsiteApprovalNotifier(
+    Profile* profile,
+    supervised_user::FamilyLinkSettingsService& family_link_settings_service)
     : profile_(profile) {
-  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
-      supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
-          profile_->GetProfileKey());
   website_approval_subscription_ =
-      family_link_settings_service->SubscribeForNewWebsiteApproval(
+      family_link_settings_service.SubscribeForNewWebsiteApproval(
           base::BindRepeating(
               &WebsiteApprovalNotifier::MaybeShowApprovalNotification,
               weak_ptr_factory_.GetWeakPtr()));

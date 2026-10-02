@@ -9,11 +9,14 @@
 
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "base/check_deref.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/supervised_user/family_link_settings_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/test/user_session_test_environment.h"
@@ -64,9 +67,13 @@ class WebsiteApprovalNotifierTest : public testing::Test {
     user_session_test_environment_->LogIn(user->GetAccountId());
     user_hash_ = user->username_hash();
 
-    notifier_ =
-        std::make_unique<WebsiteApprovalNotifier>(Profile::FromBrowserContext(
-            BrowserContextHelper::Get()->GetBrowserContextByUser(user)));
+    Profile* const profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+    notifier_ = std::make_unique<WebsiteApprovalNotifier>(
+        profile,
+        CHECK_DEREF(
+            supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
+                profile->GetProfileKey())));
   }
 
   void TearDown() override {

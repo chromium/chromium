@@ -13,6 +13,10 @@
 
 class Profile;
 
+namespace supervised_user {
+class FamilyLinkSettingsService;
+}  // namespace supervised_user
+
 namespace ash {
 
 // Displays system notifications when new websites are remotely approved for
@@ -20,7 +24,11 @@ namespace ash {
 // for new remote approvals.
 class WebsiteApprovalNotifier {
  public:
-  explicit WebsiteApprovalNotifier(Profile* profile);
+  // `family_link_settings_service` is the one belonging to `profile`; it is
+  // only used to subscribe, and is not retained.
+  WebsiteApprovalNotifier(
+      Profile* profile,
+      supervised_user::FamilyLinkSettingsService& family_link_settings_service);
 
   WebsiteApprovalNotifier(const WebsiteApprovalNotifier&) = delete;
   WebsiteApprovalNotifier& operator=(const WebsiteApprovalNotifier&) = delete;

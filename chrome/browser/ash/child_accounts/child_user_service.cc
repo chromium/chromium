@@ -71,13 +71,15 @@ const char* ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest() {
   return kTimeLimitPolicyTypesHistogramName;
 }
 
-ChildUserService::ChildUserService(content::BrowserContext* context)
+ChildUserService::ChildUserService(
+    content::BrowserContext* context,
+    supervised_user::FamilyLinkSettingsService& family_link_settings_service)
     : profile_(Profile::FromBrowserContext(context)),
       app_time_controller_(std::make_unique<app_time::AppTimeController>(
           profile_,
           base::BindRepeating(&ChildUserService::ReportTimeLimitPolicy,
                               base::Unretained(this)))),
-      website_approval_notifier_(profile_) {
+      website_approval_notifier_(profile_, family_link_settings_service) {
   CHECK(profile_, base::NotFatalUntil::M160);
   app_time_controller_->Init();
 

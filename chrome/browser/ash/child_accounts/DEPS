@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/supervised_user",
   "+chrome/grit",
 
   # Dependencies outside of //chrome:
@@ -26,6 +25,15 @@ include_rules = [
 # Whenever possible, avoid adding new //chrome dependencies to this list.
 # These dependencies are only used in tests.
 specific_include_rules = {
+  # The keyed service factories are the //chrome seam: they resolve the
+  # //components/supervised_user services the ash classes take by
+  # constructor.
+  "(child_user_service|family_user_metrics_service)_factory\\.cc": [
+    "+chrome/browser/supervised_user",
+  ],
+  ".*(unittest|browsertest)\\.cc": [
+    "+chrome/browser/supervised_user",
+  ],
   ".*_base_test\\.h|.*_(unit|browser|api|integration_|ui|base_)test\\.cc": [
     "+chrome/browser/ash/app_restore",
     "+chrome/browser/ash/login/test",
