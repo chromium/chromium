@@ -55,10 +55,7 @@ class CORE_EXPORT QualifiedNameImpl : public RefCounted<QualifiedNameImpl> {
   static scoped_refptr<QualifiedNameImpl> Create(StringImpl* prefix,
                                                  StringImpl* local_name,
                                                  StringImpl* namespace_uri,
-                                                 bool is_static) {
-    return base::AdoptRef(
-        new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
-  }
+                                                 bool is_static);
 
   ~QualifiedNameImpl();
 

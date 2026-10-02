@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
@@ -49,6 +50,24 @@ static QualifiedNameCache& GetQualifiedNameCache() {
   DCHECK(IsMainThread());
   static QualifiedNameCache* g_name_cache = new QualifiedNameCache;
   return *g_name_cache;
+}
+
+scoped_refptr<QualifiedNameImpl> QualifiedNameImpl::Create(
+    StringImpl* prefix,
+    StringImpl* local_name,
+    StringImpl* namespace_uri,
+    bool is_static) {
+  if (is_static) {
+    // Static QualifiedNameImpl objects are process-lifetime singletons with
+    // refcounting disabled. Disable LSan to prevent false-positive leak
+    // reports on exit when shutting down without running destructors
+    // (matching StringImpl::CreateStatic).
+    LEAK_SANITIZER_DISABLED_SCOPE;
+    return base::AdoptRef(
+        new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
+  }
+  return base::AdoptRef(
+      new QualifiedNameImpl(prefix, local_name, namespace_uri, is_static));
 }
 
 struct QNameComponentsTranslator {
