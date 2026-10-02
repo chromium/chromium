@@ -87,7 +87,6 @@ source_set("private_ai") {
   ]
   deps = [
     ":proto",
-    ":proto_extras",
     "//base",
     "//components/keyed_service/core",
     "//components/private_ai/attestation",
@@ -106,7 +105,6 @@ source_set("private_ai") {
     "//services/network/public/mojom",
     "//third_party/boringssl",
     "//third_party/oak:oak_proto",
-    "//third_party/oak:oak_proto_extras",
     "//url",
   ]
 }

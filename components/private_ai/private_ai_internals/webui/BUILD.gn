@@ -14,6 +14,28 @@ mojom("mojo_bindings") {
 }
 
 source_set("page_handler") {
+  public = [ "private_ai_internals_page_handler.h" ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//components/private_ai",
+    "//components/private_ai/common",
+    "//components/version_info",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+  ]
+
+  deps = [ ":page_handler_impl" ]
+}
+
+# private_ai_internals_page_handler.cc is split into an internal source_set
+# with public = [] to isolate the dependency on proto_extras_ostream, which
+# otherwise propagates heavy order-only build dependencies (hard_deps) to
+# downstream targets.
+source_set("page_handler_impl") {
+  visibility = [ ":*" ]
+  public = []
   sources = [
     "private_ai_internals_page_handler.cc",
     "private_ai_internals_page_handler.h",
@@ -21,15 +43,17 @@ source_set("page_handler") {
 
   deps = [
     ":mojo_bindings",
+    "//base",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/proto:optimization_guide_proto_extras_ostream",
     "//components/private_ai",
     "//components/private_ai:proto",
-    "//components/private_ai:proto_extras",
+    "//components/private_ai:proto_extras_ostream",
     "//components/private_ai/common",
     "//components/private_ai/phosphor",
     "//components/version_info",
+    "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
   ]
 }
