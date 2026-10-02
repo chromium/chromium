@@ -73,10 +73,7 @@ static_library("android") {
 android_library("unit_device_javatests") {
   testonly = true
 
-  sources = [
-    "javatests/src/org/chromium/components/external_intents/ExternalNavigationHandlerTest.java",
-    "javatests/src/org/chromium/components/external_intents/RedirectHandlerTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/components/external_intents/ExternalNavigationHandlerTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
@@ -134,4 +131,17 @@ generate_jni("test_support_java_jni_headers") {
   testonly = true
 
   sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
+}
+
+robolectric_library("junit") {
+  sources = [ "junit/src/org/chromium/components/external_intents/RedirectHandlerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/junit",
+    "//ui/android:ui_java",
+    "//ui/base:ui_base_types_java",
+  ]
 }

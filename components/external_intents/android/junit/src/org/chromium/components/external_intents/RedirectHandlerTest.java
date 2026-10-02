@@ -4,26 +4,16 @@
 
 package org.chromium.components.external_intents;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.SystemClock;
-import android.test.mock.MockPackageManager;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.AdvancedMockContext;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.base.PageTransition;
 
@@ -34,20 +24,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 
 /** Unittests for tab redirect handler. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class RedirectHandlerTest {
     private static final int TRANS_TYPE_OF_LINK_FROM_INTENT =
             PageTransition.LINK | PageTransition.FROM_API;
-    private static final String TEST_PACKAGE_NAME = "test.package.name";
     private static Intent sYtIntent;
     private static Intent sMoblieYtIntent;
     private static Intent sFooIntent;
 
     private final Function<Intent, List<ResolveInfo>> mQueryIntentFunction =
             (Intent intent) -> queryIntentActivities(intent);
-
-    private Context mContextToRestore;
 
     static {
         try {
@@ -59,18 +45,7 @@ public class RedirectHandlerTest {
         }
     }
 
-    @Before
-    public void setUp() {
-        mContextToRestore = ContextUtils.getApplicationContext();
-        ContextUtils.initApplicationContextForTests(new TestContext());
-    }
-
-    private List<ResolveInfo> queryIntentActivities(Intent intent) {
-        return PackageManagerUtils.queryIntentActivities(intent, 0);
-    }
-
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testRealIntentRedirect() {
         RedirectHandler handler = RedirectHandler.create();
@@ -93,7 +68,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testEffectiveIntentRedirect_linkNavigation() {
         RedirectHandler handler = RedirectHandler.create();
@@ -116,7 +90,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testEffectiveIntentRedirect_formSubmit() {
         RedirectHandler handler = RedirectHandler.create();
@@ -139,7 +112,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testNoIntent() {
         RedirectHandler handler = RedirectHandler.create();
@@ -162,7 +134,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testClear() {
         RedirectHandler handler = RedirectHandler.create();
@@ -191,7 +162,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testNonLinkFromIntent() {
         RedirectHandler handler = RedirectHandler.create();
@@ -214,7 +184,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testUserInteraction() {
         RedirectHandler handler = RedirectHandler.create();
@@ -246,7 +215,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testRedirectFromCurrentNavigationShouldNotOverrideUrlLoading() {
         /////////////////////////////////////////////////////
@@ -288,7 +256,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testNavigationWithUninitializedUserInteractionTime() {
         RedirectHandler handler = RedirectHandler.create();
@@ -309,7 +276,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testLastCommittedIndexPersistsThroughClear() {
         int lastIndex = 1234;
@@ -327,7 +293,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testNavigationChainExpired() {
         AtomicLong currentTime = new AtomicLong(0);
@@ -350,7 +315,6 @@ public class RedirectHandlerTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"IntentHandling"})
     public void testCctPrefetch() {
         RedirectHandler handler = RedirectHandler.create();
@@ -363,37 +327,22 @@ public class RedirectHandlerTest {
         Assert.assertFalse(handler.getInitialNavigationState().isFromIntent);
     }
 
-    private static class TestPackageManager extends MockPackageManager {
-        @Override
-        public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
-            List<ResolveInfo> resolves = new ArrayList<>();
-            if (intent.getDataString().startsWith("http://m.youtube.com")
-                    || intent.getDataString().startsWith("http://youtube.com")) {
-                ResolveInfo youTubeApp = new ResolveInfo();
-                youTubeApp.activityInfo = new ActivityInfo();
-                youTubeApp.activityInfo.packageName = "youtube";
-                youTubeApp.activityInfo.name = "youtube";
-                resolves.add(youTubeApp);
-            } else {
-                ResolveInfo fooApp = new ResolveInfo();
-                fooApp.activityInfo = new ActivityInfo();
-                fooApp.activityInfo.packageName = "foo";
-                fooApp.activityInfo.name = "foo";
-                resolves.add(fooApp);
-            }
-            return resolves;
+    private static List<ResolveInfo> queryIntentActivities(Intent intent) {
+        List<ResolveInfo> resolves = new ArrayList<>();
+        if (intent.getDataString().startsWith("http://m.youtube.com")
+                || intent.getDataString().startsWith("http://youtube.com")) {
+            ResolveInfo youTubeApp = new ResolveInfo();
+            youTubeApp.activityInfo = new ActivityInfo();
+            youTubeApp.activityInfo.packageName = "youtube";
+            youTubeApp.activityInfo.name = "youtube";
+            resolves.add(youTubeApp);
+        } else {
+            ResolveInfo fooApp = new ResolveInfo();
+            fooApp.activityInfo = new ActivityInfo();
+            fooApp.activityInfo.packageName = "foo";
+            fooApp.activityInfo.name = "foo";
+            resolves.add(fooApp);
         }
-    }
-
-    private static class TestContext extends AdvancedMockContext {
-        @Override
-        public PackageManager getPackageManager() {
-            return new TestPackageManager();
-        }
-
-        @Override
-        public String getPackageName() {
-            return TEST_PACKAGE_NAME;
-        }
+        return resolves;
     }
 }
