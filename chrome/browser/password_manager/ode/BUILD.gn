@@ -20,6 +20,11 @@ source_set("ode") {
     public += [ "chrome_passkey_on_device_encryption_state_tracker.h" ]
     sources += [ "chrome_passkey_on_device_encryption_state_tracker.cc" ]
     public_deps += [ "//chrome/browser/webauthn" ]
+  } else {
+    deps += [
+      "//chrome/browser/trusted_vault",
+      "//components/trusted_vault",
+    ]
   }
 }
 
