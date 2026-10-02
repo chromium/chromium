@@ -703,13 +703,6 @@ public final class ChromePreferenceKeys {
     public static final String PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS =
             "Chrome.OfflineIndicatorV2.HasPersistentOfflineContent";
 
-    /**
-     * Indicates whether Page Insights Hub's Privacy Notice has been closed by user; used to ensure
-     * user does not see it again.
-     */
-    public static final String PIH_PRIVACY_NOTICE_CLOSED =
-            "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser";
-
     /** Whether NTP magic stack cards are enabled (if false, no cards can show). */
     public static final String HOME_MODULE_CARDS_ENABLED = "Chrome.HomeModules.Enabled";
 
@@ -1293,7 +1286,6 @@ public final class ChromePreferenceKeys {
                 OS_ADVANCED_PROTECTION_SETTING_UPDATED_TIME,
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
-                PIH_PRIVACY_NOTICE_CLOSED,
                 POLICY_USER_FEEDBACK_ALLOWED,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
