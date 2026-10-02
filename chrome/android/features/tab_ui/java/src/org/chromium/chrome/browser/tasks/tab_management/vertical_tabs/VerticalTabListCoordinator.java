@@ -170,6 +170,7 @@ public class VerticalTabListCoordinator {
     private final TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private final NonNullObservableSupplier<Boolean> mVerticalTabsActiveSupplier;
     private final VerticalTabRailCollapseController mCollapseController;
+    private final VerticalTabRailHoverController mRailHoverController;
     private final Callback<Boolean> mActiveObserver = this::setActive;
     private final PropertyModel mContainerModel;
     private final VerticalExternalViewDragDropReorderStrategy mReorderStrategy;
@@ -410,6 +411,12 @@ public class VerticalTabListCoordinator {
         mContainerView.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mRailHoverController =
+                new VerticalTabRailHoverController(
+                        mContainerView,
+                        mCollapseController,
+                        mWindowAndroid,
+                        this::isAnyContextMenuShowing);
 
         mTabHoverController =
                 new VerticalTabHoverController(
@@ -574,9 +581,6 @@ public class VerticalTabListCoordinator {
                         .with(
                                 VerticalTabListProperties.ON_COLLAPSE_CLICK_LISTENER,
                                 v -> mCollapseController.toggleCollapseState())
-                        .with(
-                                VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER,
-                                mCollapseController::expandOrCollapseOnHover)
                         .with(
                                 VerticalTabListProperties.IS_COLLAPSE_BUTTON_ENABLED,
                                 !mCollapseController.isForcedCollapsed())
@@ -916,6 +920,7 @@ public class VerticalTabListCoordinator {
         mPinnedTabsRecyclerView.removeOnLayoutChangeListener(mPinnedTabsLayoutChangeListener);
         mRecyclerView.removeOnScrollListener(mOnScrollListener);
 
+        mRailHoverController.destroy();
         mCollapseController.destroy();
         if (mTabUnderlineManager != null) {
             mTabUnderlineManager.destroy();
@@ -2087,7 +2092,7 @@ public class VerticalTabListCoordinator {
                                             toPrevious),
                             TabClosingSource.VERTICAL_TAB_STRIP,
                             TabStripLayoutType.VERTICAL,
-                            mTabHoverController::resetHoverState);
+                            this::onContextMenuDismissed);
         }
         mTabHoverController.hideHoverCard();
         mTabGroupContextMenuCoordinator.showMenu(rectProvider, tabGroupId);
@@ -2146,7 +2151,7 @@ public class VerticalTabListCoordinator {
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.VERTICAL,
                             mDataSharingTabManager.getTabGroupUiActionHandler(),
-                            mTabHoverController::resetHoverState);
+                            this::onContextMenuDismissed);
         }
         mTabHoverController.hideHoverCard();
         mTabContextMenuCoordinator.showMenu(rectProvider, anchorInfo);
@@ -2164,12 +2169,21 @@ public class VerticalTabListCoordinator {
                             this::handleNewTabButtonClick,
                             mCanActivateTabLayoutToggleMenuSupplier,
                             TabStripLayoutType.VERTICAL,
-                            mTabHoverController::resetHoverState);
+                            this::onContextMenuDismissed);
         }
 
         boolean isIncognito = mTabModelSelector.getCurrentModel().isIncognitoBranded();
         mTabHoverController.hideHoverCard();
         mTabStripContextMenuCoordinator.showMenu(rectProvider, isIncognito, activity);
+    }
+
+    /** Called when any of the rail's context menus is dismissed. */
+    private void onContextMenuDismissed() {
+        mTabHoverController.resetHoverState();
+        // Ignore if another context menu replaced the dismissed one.
+        if (!isAnyContextMenuShowing()) {
+            mRailHoverController.onContextMenuDismissed();
+        }
     }
 
     private RectProvider getItemViewAnchorRectProvider(View itemView) {

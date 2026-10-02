@@ -25,7 +25,8 @@ import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidth
  *   <li>The user preference, {@link RailCollapseState#EXPANDED} or {@link
  *       RailCollapseState#COLLAPSED}, changed by {@link #toggleCollapseState()} and persisted in
  *       shared prefs.
- *   <li>Whether the pointer is hovering the rail, from {@link #expandOrCollapseOnHover(int)}.
+ *   <li>Whether the pointer is hovering the rail, fed by {@link VerticalTabRailHoverController}
+ *       through {@link #setHovering(boolean)}.
  *   <li>The window width constraint, from {@link #setWindowWidthBoundary(int)}, supplied by {@link
  *       VerticalTabsSideUiCoordinator}.
  * </ul>
@@ -137,15 +138,15 @@ class VerticalTabRailCollapseController {
     }
 
     /**
-     * Records whether the pointer is hovering the rail. Hover is tracked even while the rail cannot
-     * expand (narrow window), so that a hover exit is never missed.
+     * Feeds whether the pointer is hovering the rail, as tracked by {@link
+     * VerticalTabRailHoverController}. Hover is recorded even while the rail cannot expand (narrow
+     * window), so that a hover exit is never missed.
      *
-     * @param targetState {@link RailCollapseState#EXPANDED_FOR_HOVERING} on hover enter, {@link
-     *     RailCollapseState#COLLAPSED} on hover exit.
+     * @param isHovering Whether the pointer is hovering the rail.
      */
-    void expandOrCollapseOnHover(@RailCollapseState int targetState) {
+    void setHovering(boolean isHovering) {
         @RailCollapseState int previousState = getEffectiveRailCollapseState();
-        mIsHoverExpanded = targetState == RailCollapseState.EXPANDED_FOR_HOVERING;
+        mIsHoverExpanded = isHovering;
         requestEffectiveStateChangeByUser(previousState);
     }
 
@@ -182,7 +183,7 @@ class VerticalTabRailCollapseController {
     // Derived state.
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    /** Returns the final effective rail collapse state derived from all three inputs. */
+    /** Returns the final effective rail collapse state derived from all inputs. */
     @RailCollapseState
     int getEffectiveRailCollapseState() {
         if (mIsForcedCollapsed) return RailCollapseState.COLLAPSED;
@@ -190,15 +191,6 @@ class VerticalTabRailCollapseController {
         return mIsHoverExpanded
                 ? RailCollapseState.EXPANDED_FOR_HOVERING
                 : RailCollapseState.COLLAPSED;
-    }
-
-    /**
-     * Returns whether the rail is currently expanded only because the pointer is hovering it. The
-     * rail renders expanded over the web contents in this state, but keeps reserving its collapsed
-     * width, so the web contents are neither resized nor repositioned.
-     */
-    boolean isHoverExpanded() {
-        return getEffectiveRailCollapseState() == RailCollapseState.EXPANDED_FOR_HOVERING;
     }
 
     /**

@@ -37,6 +37,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /** Controller for tab and tab group hover operations in vertical tabs. */
+// TODO(crbug.com/542280452): Rename to VerticalTabItemHoverController, as it handles the hover
+// state of individual rail items, as opposed to VerticalTabRailHoverController.
 @NullMarked
 public class VerticalTabHoverController {
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER_MS = 300;

@@ -26,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.TooltipCompat;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
@@ -36,7 +35,7 @@ import org.chromium.ui.base.ViewUtils;
 
 /**
  * Root layout for the vertical tab rail container. Encapsulates child view layout styling based on
- * collapse state and intercepts mouse motion events to detect hover state transitions.
+ * collapse state and forwards raw pointer events to a {@link RailEventListener}.
  */
 // TODO(crbug.com/527641177): Migrate remaining view-only logic (e.g. empty space touch and context
 // click handlers) from VerticalTabListCoordinator to VerticalTabRailLayout.
@@ -54,7 +53,23 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         boolean onKeyEvent(KeyEvent event);
     }
 
-    private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
+    /**
+     * Receives the raw pointer events dispatched to the rail, before its children handle them. A
+     * parent view only sees the events its children consume from its dispatch methods, so the rail
+     * forwards them as they are and the listener interprets them.
+     */
+    interface RailEventListener {
+        /** Called for every generic motion event (e.g. a mouse hover) dispatched to the rail. */
+        void onGenericMotionEventDispatched(MotionEvent event);
+
+        /** Called for every touch event dispatched to the rail. */
+        void onTouchEventDispatched(MotionEvent event);
+
+        /** Called for every drag event dispatched to the rail. */
+        void onDragEventDispatched(DragEvent event);
+    }
+
+    private @Nullable RailEventListener mRailEventListener;
     private @Nullable KeyEventListener mKeyEventListener;
     private VerticalTabListRecyclerView mRecyclerView;
     private VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
@@ -271,10 +286,9 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mSpacerView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
-    /** Sets the hover listener to be notified when hover state transitions occur. */
-    void setExpandOrCollapseOnHoverListener(
-            @Nullable Callback<@RailCollapseState Integer> listener) {
-        mExpandOrCollapseOnHoverListener = listener;
+    /** Sets the listener that receives the raw pointer events dispatched to the rail. */
+    void setRailEventListener(@Nullable RailEventListener listener) {
+        mRailEventListener = listener;
     }
 
     /** Updates internal child view styling based on the current rail collapse state. */
@@ -318,30 +332,20 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     @Override
-    public void onWindowFocusChanged(boolean hasWindowFocus) {
-        super.onWindowFocusChanged(hasWindowFocus);
-        if (!hasWindowFocus && mExpandOrCollapseOnHoverListener != null) {
-            // If the current state is EXPANDED, this will be ignored safely in
-            // VerticalTabRailCollapseController.
-            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
-        }
+    public boolean dispatchDragEvent(DragEvent event) {
+        if (mRailEventListener != null) mRailEventListener.onDragEventDispatched(event);
+        return super.dispatchDragEvent(event);
     }
 
     @Override
-    public boolean onDragEvent(DragEvent event) {
-        int action = event.getAction();
-        if ((action == DragEvent.ACTION_DRAG_EXITED || action == DragEvent.ACTION_DRAG_ENDED)
-                && mExpandOrCollapseOnHoverListener != null) {
-            // If the current state is EXPANDED, this will be ignored safely in
-            // VerticalTabRailCollapseController.
-            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
-        }
-        return super.onDragEvent(event);
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (mRailEventListener != null) mRailEventListener.onTouchEventDispatched(event);
+        return super.dispatchTouchEvent(event);
     }
 
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent event) {
-        expandOrCollapseOnHover(event);
+        if (mRailEventListener != null) mRailEventListener.onGenericMotionEventDispatched(event);
         if (super.dispatchGenericMotionEvent(event)) return true;
         // Prevent mouse button presses/releases from falling back to the window's
         // focused view (ContentView), which would send out-of-bounds mouse events to Blink and
@@ -367,35 +371,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
             return true;
         }
         return super.dispatchKeyEvent(event);
-    }
-
-    private void expandOrCollapseOnHover(@Nullable MotionEvent event) {
-        if (mExpandOrCollapseOnHoverListener == null) return;
-        if (!VerticalTabUtils.isExpandOnHoverEnabled()) return;
-        if (event == null || !event.isFromSource(InputDevice.SOURCE_MOUSE)) return;
-        if (!mCollapseButton.isEnabled()) return;
-
-        int action = event.getActionMasked();
-        if (mCollapseState == RailCollapseState.EXPANDED_FOR_HOVERING
-                && action == MotionEvent.ACTION_HOVER_MOVE) {
-            return;
-        }
-
-        float rawX = event.getRawX();
-        float rawY = event.getRawY();
-        boolean isInside = containsRawPoint(this, rawX, rawY);
-
-        // Do not hover-expand over the collapse button so clicking it triggers a full
-        // collapsed-to-expanded animation instead of cutting an in-flight hover animation short.
-        boolean isOverCollapseButton = containsRawPoint(mCollapseButton, rawX, rawY);
-        boolean isHoverEnterOrMove =
-                action == MotionEvent.ACTION_HOVER_ENTER || action == MotionEvent.ACTION_HOVER_MOVE;
-
-        if (isInside && !isOverCollapseButton && isHoverEnterOrMove) {
-            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.EXPANDED_FOR_HOVERING);
-        } else if (!isInside && action == MotionEvent.ACTION_HOVER_EXIT) {
-            mExpandOrCollapseOnHoverListener.onResult(RailCollapseState.COLLAPSED);
-        }
     }
 
     /** Updates header child view styling and layout parameters based on the rail collapse state. */
@@ -553,16 +528,6 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         incognitoParams.setMarginStart(
                 (!isCollapsed && isIncognitoVisible) ? mFooterButtonGapPx : 0);
         mIncognitoButton.setLayoutParams(incognitoParams);
-    }
-
-    /** Returns whether the given screen coordinates fall inside {@code view}'s bounds. */
-    private static boolean containsRawPoint(View view, float rawX, float rawY) {
-        int[] location = new int[2];
-        view.getLocationOnScreen(location);
-        return rawX >= location[0]
-                && rawX < location[0] + view.getWidth()
-                && rawY >= location[1]
-                && rawY < location[1] + view.getHeight();
     }
 
     @Px

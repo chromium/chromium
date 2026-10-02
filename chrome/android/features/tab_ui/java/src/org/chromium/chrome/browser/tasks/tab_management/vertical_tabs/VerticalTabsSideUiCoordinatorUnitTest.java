@@ -324,7 +324,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
 
         // Hover enter: the rail renders expanded over the web contents, but keeps reserving its
         // collapsed width so nothing outside the rail moves.
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.setHovering(true);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -333,7 +333,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover exit: rail collapses back
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
+        mCollapseController.setHovering(false);
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
         assertShowableSize(mCollapsedRailWidth, mCollapsedRailWidth, mWideWindowWidth);
         verify(mMockSideUiCoordinator, times(3))
@@ -349,7 +349,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
                 .updateUi(any(SideUiCoordinator.UiUpdateRequest.class));
 
         // Hover expand
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.setHovering(true);
         assertEquals(
                 RailCollapseState.EXPANDED_FOR_HOVERING,
                 mCoordinator.getRailCollapseStateForTesting());
@@ -382,10 +382,10 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         mCollapseController.toggleCollapseState();
         assertFalse(mCoordinator.supportsManualResize());
 
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.setHovering(true);
         assertFalse(mCoordinator.supportsManualResize());
 
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.COLLAPSED);
+        mCollapseController.setHovering(false);
         assertFalse(mCoordinator.supportsManualResize());
 
         mCollapseController.toggleCollapseState();
@@ -411,7 +411,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
 
         // The hover overlay always renders at the fixed container width.
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.setHovering(true);
         assertShowableSize(mCollapsedRailWidth, mExpandedRailWidth, mWideWindowWidth);
     }
 
@@ -425,7 +425,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
 
         // The hover overlay always renders at the fixed container width.
-        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mCollapseController.setHovering(true);
         assertShowableSize(mCollapsedRailWidth, mExpandedRailWidth, mMediumWindowWidth);
     }
 

@@ -1,0 +1,453 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
+import android.app.Activity;
+import android.content.res.Configuration;
+import android.view.DragEvent;
+import android.view.InputDevice;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
+
+import org.chromium.base.FeatureOverrides;
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailHoverController.PointerState;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.util.concurrent.TimeUnit;
+
+/** Unit tests for {@link VerticalTabRailHoverController}. */
+@RunWith(BaseRobolectricTestRunner.class)
+public class VerticalTabRailHoverControllerUnitTest {
+    private static final int RAIL_WIDTH = 200;
+    private static final int RAIL_HEIGHT = 500;
+    private static final float INSIDE_X = 100f;
+    private static final float OUTSIDE_X = 500f;
+    private static final float Y = 250f;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private VerticalTabRailCollapseController mCollapseController;
+    @Mock private WindowAndroid mWindowAndroid;
+
+    private VerticalTabRailLayout mRailLayout;
+    private VerticalTabRailHoverController mHoverController;
+    private boolean mIsContextMenuShowing;
+
+    @Before
+    public void setUp() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(true);
+
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        Configuration config = activity.getResources().getConfiguration();
+        config.smallestScreenWidthDp = 600;
+        activity.getResources()
+                .updateConfiguration(config, activity.getResources().getDisplayMetrics());
+
+        mRailLayout =
+                (VerticalTabRailLayout)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_layout, null, false);
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        mRailLayout.measure(
+                View.MeasureSpec.makeMeasureSpec(RAIL_WIDTH, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(RAIL_HEIGHT, View.MeasureSpec.EXACTLY));
+        mRailLayout.layout(0, 0, RAIL_WIDTH, RAIL_HEIGHT);
+
+        mHoverController =
+                new VerticalTabRailHoverController(
+                        mRailLayout,
+                        mCollapseController,
+                        mWindowAndroid,
+                        () -> mIsContextMenuShowing);
+        verify(mWindowAndroid).addActivityStateObserver(mHoverController);
+    }
+
+    @Test
+    public void testHoverInsideRail_SetsHovering() {
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+
+        verify(mCollapseController).setHovering(true);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverOverCollapseButton_DoesNotSetHovering() {
+        View collapseButton = mRailLayout.getCollapseButton();
+        int[] location = new int[2];
+        collapseButton.getLocationOnScreen(location);
+
+        dispatchMouseHover(
+                MotionEvent.ACTION_HOVER_MOVE,
+                location[0] + collapseButton.getWidth() / 2f,
+                location[1] + collapseButton.getHeight() / 2f);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverMoveOutsideRail_Ignored() {
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, OUTSIDE_X, Y);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitOutsideRail_StopsHovering() {
+        hoverInsideRail();
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testHoverExitInsideRail_KeepsHovering() {
+        hoverInsideRail();
+
+        // A mouse button press or a covering window ends hover while the pointer is still inside.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testNonMouseHover_Ignored() {
+        MotionEvent event =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y, 0);
+        event.setSource(InputDevice.SOURCE_STYLUS);
+        mRailLayout.dispatchGenericMotionEvent(event);
+        event.recycle();
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+    }
+
+    @Test
+    public void testMouseRelease_OutsideRailStopsHovering() {
+        hoverInsideRail();
+        // Pressing a mouse button ends hover inside the rail.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+
+        dispatchMouseTouch(MotionEvent.ACTION_UP, OUTSIDE_X, Y);
+
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testMouseRelease_InsideRailIgnored() {
+        hoverInsideRail();
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+
+        dispatchMouseTouch(MotionEvent.ACTION_UP, INSIDE_X, Y);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+    }
+
+    @Test
+    public void testTouch_NonMouseAndNonReleaseIgnored() {
+        hoverInsideRail();
+
+        dispatchMouseTouch(MotionEvent.ACTION_DOWN, OUTSIDE_X, Y);
+        MotionEvent fingerUp = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, OUTSIDE_X, Y, 0);
+        fingerUp.setSource(InputDevice.SOURCE_TOUCHSCREEN);
+        mRailLayout.dispatchTouchEvent(fingerUp);
+        fingerUp.recycle();
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+    }
+
+    @Test
+    public void testDrag_StopsHoveringWhenDragEnds() {
+        hoverInsideRail();
+
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDrag_IgnoredWhenPointerOutside() {
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_ENDED));
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testContextMenu_DismissedWhileCoveringPointer_StopsHoveringAfterTimeout() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+
+        // The menu popup covers the pointer, so hover ends while the pointer is inside the rail.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE_UNCONFIRMED, mHoverController.getPointerStateForTesting());
+
+        // The menu is dismissed: hovering continues while waiting for a confirming hover event.
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        // No hover event confirms the pointer over the rail in time: hovering stops once the
+        // timeout elapses, and not before.
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS - 1);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        idleMainLooper(1);
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testContextMenu_DismissedWhileCoveringPointer_HoverInTimeKeepsHovering() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+
+        // Once the popup is gone, a hover event confirms the pointer is still over the rail.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS);
+
+        verify(mCollapseController, never()).setHovering(false);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testContextMenu_DismissedWithPointerSeenInsideKeepsHovering() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+
+        // The pointer is seen over an uncovered part of the rail before the menu is dismissed.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS);
+
+        verify(mCollapseController, never()).setHovering(false);
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testContextMenu_DismissedThenHoverOverCollapseButton_KeepsHovering() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+
+        // Once the popup is gone, a hover event confirms the pointer is over the collapse button.
+        View collapseButton = mRailLayout.getCollapseButton();
+        int[] location = new int[2];
+        collapseButton.getLocationOnScreen(location);
+        dispatchMouseHover(
+                MotionEvent.ACTION_HOVER_ENTER,
+                location[0] + collapseButton.getWidth() / 2f,
+                location[1] + collapseButton.getHeight() / 2f);
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testContextMenu_DismissedWhileCoveringPointer_HoverExitStopsHoveringOnce() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+
+        // The pointer is seen leaving the rail: hovering stops right away.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        verify(mCollapseController).setHovering(false);
+
+        // The confirmation wait is cancelled, so hovering is not stopped again.
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS);
+        verify(mCollapseController, times(1)).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDestroy_CancelsMenuDismissTimeout() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+
+        mHoverController.destroy();
+        idleMainLooper(VerticalTabRailHoverController.MENU_DISMISS_TIMEOUT_MS);
+
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+    }
+
+    @Test
+    public void testTopResumedLost_StopsHovering() {
+        hoverInsideRail();
+
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        mHoverController.onActivityTopResumedChanged(false);
+
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testTopResumedLost_WhileContextMenuShowing_DefersUntilDismissed() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+
+        // Another activity comes to the front while the menu is showing: hovering continues.
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(false);
+        mHoverController.onActivityTopResumedChanged(false);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        // Dismissing the menu stops hovering.
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+        verify(mCollapseController).setHovering(false);
+    }
+
+    @Test
+    public void testHoverWhileNotTopResumed_ExpandsOnlyAfterTopResumed() {
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(false);
+
+        // Hover events reach a window that is not in front, but the rail does not expand.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        assertEquals(PointerState.INSIDE, mHoverController.getPointerStateForTesting());
+
+        // The activity becomes top resumed: the next hover event expands the rail.
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(true);
+        mHoverController.onActivityTopResumedChanged(true);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_MOVE, INSIDE_X, Y);
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
+    public void testContextMenu_DefersHoverCollapseUntilDismissed() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+
+        // The pointer leaves the rail while the menu is showing: hovering continues.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        // Dismissing the menu stops hovering.
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+        verify(mCollapseController).setHovering(false);
+    }
+
+    @Test
+    public void testContextMenu_HoverEnterCancelsPendingCollapse() {
+        hoverInsideRail();
+        mIsContextMenuShowing = true;
+
+        // The pointer leaves the rail and comes back before the menu is dismissed.
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+
+        verify(mCollapseController, never()).setHovering(false);
+    }
+
+    @Test
+    public void testExpandOnHoverDisabled_IgnoresEvents() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+        dispatchMouseTouch(MotionEvent.ACTION_UP, OUTSIDE_X, Y);
+        mRailLayout.dispatchDragEvent(mockDragEvent(DragEvent.ACTION_DRAG_STARTED));
+        mHoverController.onActivityTopResumedChanged(false);
+
+        verifyNoInteractions(mCollapseController);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testDestroy_StopsObservingRail() {
+        mHoverController.destroy();
+        verify(mWindowAndroid).removeActivityStateObserver(mHoverController);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+
+        verifyNoInteractions(mCollapseController);
+    }
+
+    /** Hovers the rail, then forgets the resulting interaction with the collapse controller. */
+    private void hoverInsideRail() {
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        verify(mCollapseController).setHovering(true);
+        clearInvocations(mCollapseController);
+    }
+
+    private void dispatchMouseHover(int action, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, action, x, y, 0);
+        event.setSource(InputDevice.SOURCE_MOUSE);
+        mRailLayout.dispatchGenericMotionEvent(event);
+        event.recycle();
+    }
+
+    private void dispatchMouseTouch(int action, float x, float y) {
+        MotionEvent event = MotionEvent.obtain(0, 0, action, x, y, 0);
+        event.setSource(InputDevice.SOURCE_MOUSE);
+        mRailLayout.dispatchTouchEvent(event);
+        event.recycle();
+    }
+
+    private static void idleMainLooper(long delayMs) {
+        ShadowLooper.idleMainLooper(delayMs, TimeUnit.MILLISECONDS);
+    }
+
+    private static DragEvent mockDragEvent(int action) {
+        DragEvent event = mock(DragEvent.class);
+        when(event.getAction()).thenReturn(action);
+        return event;
+    }
+}

@@ -315,6 +315,7 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.iterator()).thenReturn(Collections.emptyIterator());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mWindowAndroid.isTopResumedActivity()).thenReturn(true);
         when(mTabContentManagerSupplier.get()).thenReturn(mTabContentManager);
         GlicEnabling.setEnabledForTesting(false);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);

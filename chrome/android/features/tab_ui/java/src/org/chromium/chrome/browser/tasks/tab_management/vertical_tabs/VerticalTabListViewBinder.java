@@ -36,10 +36,7 @@ public class VerticalTabListViewBinder {
      */
     public static void bind(
             PropertyModel model, VerticalTabRailLayout view, PropertyKey propertyKey) {
-        if (VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER == propertyKey) {
-            view.setExpandOrCollapseOnHoverListener(
-                    model.get(VerticalTabListProperties.EXPAND_OR_COLLAPSE_ON_HOVER_LISTENER));
-        } else if (VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER == propertyKey) {
+        if (VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER == propertyKey) {
             view.getSearchButton()
                     .setOnClickListener(
                             model.get(VerticalTabListProperties.ON_SEARCH_CLICK_LISTENER));
