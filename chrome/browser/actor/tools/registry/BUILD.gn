@@ -19,6 +19,7 @@ source_set("impl") {
     ":registry",
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:variants",
   ]
 }
 
@@ -34,6 +35,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:variants",
     "//chrome/test:test_support",
     "//content/test:test_support",
     "//testing/gtest",

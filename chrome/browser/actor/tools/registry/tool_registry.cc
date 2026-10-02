@@ -4,17 +4,37 @@
 
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
 
+#include <optional>
+#include <type_traits>
+#include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/no_destructor.h"
+#include "chrome/browser/actor/tool_request_variant.h"
 
 namespace actor {
 
 namespace {
 
-std::vector<ToolDefinition> BuildAllToolDefinitions() {
+template <typename T>
+void AppendToolDefinitionIfPresent(std::vector<ToolDefinition>& tools) {
+  if (std::optional<ToolDefinition> tool = T::GetToolDefinition()) {
+    tools.push_back(std::move(*tool));
+  }
+}
+
+template <typename... Ts>
+std::vector<ToolDefinition> BuildToolDefinitionsForVariant(
+    std::type_identity<std::variant<Ts...>>) {
   std::vector<ToolDefinition> tools;
+  (AppendToolDefinitionIfPresent<Ts>(tools), ...);
   return tools;
+}
+
+std::vector<ToolDefinition> BuildAllToolDefinitions() {
+  return BuildToolDefinitionsForVariant(
+      std::type_identity<ToolRequestVariant>{});
 }
 
 const std::vector<ToolDefinition>& GetStaticToolCatalog() {
@@ -25,7 +45,10 @@ const std::vector<ToolDefinition>& GetStaticToolCatalog() {
 
 }  // namespace
 
-ToolRegistry::ToolRegistry() = default;
+ToolRegistry::ToolRegistry() {
+  // Ensure the static tool catalog is initialized once at service creation.
+  GetStaticToolCatalog();
+}
 
 ToolRegistry::~ToolRegistry() = default;
 

@@ -13,6 +13,7 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -37,6 +38,14 @@ class ToolRequest {
   virtual ~ToolRequest();
   ToolRequest(const ToolRequest& other);
   ToolRequest& operator=(const ToolRequest& other);
+
+  // Returns the model-facing tool schema definition for this request class, or
+  // std::nullopt if this request class does not expose a tool schema.
+  // Subclasses shadow this method to register their tool schema in
+  // ToolRegistry. Unmigrated subclasses inherit this fallback, which returns
+  // std::nullopt. In DCHECK-enabled builds it also logs NOTIMPLEMENTED(); the
+  // log names ToolRequest::GetToolDefinition(), not the subclass.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   bool IsTabScoped() const;
 

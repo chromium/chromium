@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "base/notimplemented.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -25,6 +27,11 @@ ToolRequest::ToolRequest() = default;
 ToolRequest::~ToolRequest() = default;
 ToolRequest::ToolRequest(const ToolRequest& other) = default;
 ToolRequest& ToolRequest::operator=(const ToolRequest& other) = default;
+
+std::optional<ToolDefinition> ToolRequest::GetToolDefinition() {
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
 
 bool ToolRequest::IsFollowup() const {
   return is_followup_;
