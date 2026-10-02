@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
@@ -42,6 +43,9 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
                 new PropertyModel.Builder(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.ALL_KEYS)
                         .with(
+                                AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON,
+                                getHeaderIconResId(treatmentArm))
+                        .with(
                                 AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE,
                                 context.getString(getTitleResId(treatmentArm)))
                         .with(
@@ -55,6 +59,23 @@ public class AutofillPaymentsChurnedUsersBottomSheetCoordinator {
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mModel, mView, AutofillPaymentsChurnedUsersBottomSheetViewBinder::bind);
+    }
+
+    private static @DrawableRes int getHeaderIconResId(
+            @AutofillEnableResurrectingPaymentsUsersTreatmentArm int treatmentArm) {
+        switch (treatmentArm) {
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY:
+                return R.drawable.autofill_payments_churned_users_security_illustration;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.CONVENIENCE:
+                return R.drawable.autofill_payments_churned_users_convenience_illustration;
+            case AutofillEnableResurrectingPaymentsUsersTreatmentArm.MESSAGE:
+            // The MESSAGE arm displays an Android Message banner via AutofillMessageController
+            // rather than this bottom sheet, so the bottom sheet should never be created for
+            // this arm.
+            default:
+                assert false : "Unhandled treatment arm: " + treatmentArm;
+                return R.drawable.autofill_payments_churned_users_security_illustration;
+        }
     }
 
     private static @StringRes int getTitleResId(

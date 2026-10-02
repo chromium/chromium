@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.autofill.R;
 @NullMarked
 /*package*/ class AutofillPaymentsChurnedUsersBottomSheetView {
     private final View mContentView;
+    private final ImageView mHeaderIcon;
     private final TextView mTitleText;
     private final TextView mDescriptionText;
 
@@ -25,12 +27,17 @@ import org.chromium.chrome.browser.autofill.R;
                         .inflate(
                                 R.layout.autofill_payments_churned_users_bottom_sheet,
                                 /* root= */ null);
+        mHeaderIcon = mContentView.findViewById(R.id.payments_churned_users_header_icon);
         mTitleText = mContentView.findViewById(R.id.payments_churned_users_title);
         mDescriptionText = mContentView.findViewById(R.id.payments_churned_users_description);
     }
 
     View getContentView() {
         return mContentView;
+    }
+
+    ImageView getHeaderIcon() {
+        return mHeaderIcon;
     }
 
     TextView getTitleText() {

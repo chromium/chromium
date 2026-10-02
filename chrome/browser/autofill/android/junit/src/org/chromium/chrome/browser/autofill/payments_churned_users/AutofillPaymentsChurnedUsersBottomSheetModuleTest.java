@@ -6,13 +6,17 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -82,6 +86,16 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
 
     @Test
     public void testInitialModelValues_convenienceArm() {
+        ImageView headerIconView =
+                mCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_header_icon);
+        assertThat(headerIconView.getDrawable(), notNullValue());
+        assertThat(
+                shadowOf(headerIconView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.autofill_payments_churned_users_convenience_illustration));
+        assertThat(headerIconView.getVisibility(), equalTo(View.VISIBLE));
+
         TextView titleView =
                 mCoordinator
                         .getContentViewForTesting()
@@ -109,6 +123,16 @@ public class AutofillPaymentsChurnedUsersBottomSheetModuleTest {
                         mActivity,
                         mBottomSheetController,
                         AutofillEnableResurrectingPaymentsUsersTreatmentArm.SECURITY);
+        ImageView headerIconView =
+                securityCoordinator
+                        .getContentViewForTesting()
+                        .findViewById(R.id.payments_churned_users_header_icon);
+        assertThat(headerIconView.getDrawable(), notNullValue());
+        assertThat(
+                shadowOf(headerIconView.getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.autofill_payments_churned_users_security_illustration));
+        assertThat(headerIconView.getVisibility(), equalTo(View.VISIBLE));
+
         TextView titleView =
                 securityCoordinator
                         .getContentViewForTesting()

@@ -235,9 +235,13 @@ android_resources("java_resources") {
     "//ui/android:ui_java_resources",
   ]
   sources = [
+    "java/res/drawable-night/autofill_payments_churned_users_convenience_illustration.xml",
+    "java/res/drawable-night/autofill_payments_churned_users_security_illustration.xml",
     "java/res/drawable-night/autofill_wallet_reminder_notice_illustration.xml",
     "java/res/drawable/account_box.xml",
     "java/res/drawable/autofill_editor_notice_background.xml",
+    "java/res/drawable/autofill_payments_churned_users_convenience_illustration.xml",
+    "java/res/drawable/autofill_payments_churned_users_security_illustration.xml",
     "java/res/drawable/autofill_wallet_reminder_notice_illustration.xml",
     "java/res/drawable/calendar_month_24dp.xml",
     "java/res/drawable/finance.xml",

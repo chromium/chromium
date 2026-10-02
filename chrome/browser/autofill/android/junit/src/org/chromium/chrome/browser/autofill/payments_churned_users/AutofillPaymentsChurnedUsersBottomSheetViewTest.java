@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.autofill.payments_churned_users;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -48,12 +51,35 @@ public class AutofillPaymentsChurnedUsersBottomSheetViewTest {
     @Test
     public void testViewAccessors() {
         assertThat(mView.getContentView(), notNullValue());
+        assertThat(mView.getHeaderIcon(), notNullValue());
         assertThat(mView.getTitleText(), notNullValue());
+        assertThat(mView.getHeaderIcon().getId(), equalTo(R.id.payments_churned_users_header_icon));
         assertThat(mView.getTitleText().getId(), equalTo(R.id.payments_churned_users_title));
         assertThat(mView.getDescriptionText(), notNullValue());
         assertThat(
                 mView.getDescriptionText().getId(),
                 equalTo(R.id.payments_churned_users_description));
+    }
+
+    @Test
+    public void testHeaderIcon() {
+        bind(
+                mModelBuilder.with(
+                        AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON,
+                        R.drawable.autofill_payments_churned_users_security_illustration));
+
+        assertThat(mView.getHeaderIcon().getDrawable(), notNullValue());
+        assertThat(
+                shadowOf(mView.getHeaderIcon().getDrawable()).getCreatedFromResId(),
+                equalTo(R.drawable.autofill_payments_churned_users_security_illustration));
+        assertThat(mView.getHeaderIcon().getVisibility(), equalTo(View.VISIBLE));
+    }
+
+    @Test
+    public void testHeaderIcon_hiddenWhenZero() {
+        bind(mModelBuilder.with(AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON, 0));
+
+        assertThat(mView.getHeaderIcon().getVisibility(), equalTo(View.GONE));
     }
 
     @Test

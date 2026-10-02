@@ -7,6 +7,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -14,6 +15,14 @@ found in the LICENSE file.
     android:paddingEnd="@dimen/autofill_bottom_sheet_padding_horizontal"
     android:paddingTop="@dimen/autofill_bottom_sheet_spacing_medium"
     android:paddingBottom="@dimen/autofill_bottom_sheet_spacing_large">
+
+    <ImageView
+        android:id="@+id/payments_churned_users_header_icon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_medium"
+        android:importantForAccessibility="no"
+        tools:src="@drawable/autofill_payments_churned_users_security_illustration" />
 
     <TextView
         android:id="@+id/payments_churned_users_title"

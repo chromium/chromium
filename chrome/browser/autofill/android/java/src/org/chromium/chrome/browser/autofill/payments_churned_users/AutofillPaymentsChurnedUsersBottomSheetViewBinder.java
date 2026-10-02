@@ -5,7 +5,10 @@
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.DESCRIPTION;
+import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.HEADER_ICON;
 import static org.chromium.chrome.browser.autofill.payments_churned_users.AutofillPaymentsChurnedUsersBottomSheetProperties.TITLE;
+
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -22,6 +25,14 @@ import org.chromium.ui.modelutil.PropertyModel;
             view.getTitleText().setText(model.get(TITLE));
         } else if (propertyKey == DESCRIPTION) {
             view.getDescriptionText().setText(model.get(DESCRIPTION));
+        } else if (propertyKey == HEADER_ICON) {
+            int iconRes = model.get(HEADER_ICON);
+            if (iconRes != 0) {
+                view.getHeaderIcon().setImageResource(iconRes);
+                view.getHeaderIcon().setVisibility(View.VISIBLE);
+            } else {
+                view.getHeaderIcon().setVisibility(View.GONE);
+            }
         } else {
             assert false : "Unhandled update to property: " + propertyKey;
         }
