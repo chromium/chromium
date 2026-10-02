@@ -57,7 +57,9 @@
 }
 
 - (void)start {
-  ProfileIOS* profile = self.browser->GetProfile();
+  // The welcome screen can be presented over an incognito browser, but the
+  // `AuthenticationService` only exists for the original profile.
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
