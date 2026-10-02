@@ -208,21 +208,27 @@ HRESULT GetVideoType(const VideoDecoderConfig& config,
   }
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_SUBTYPE, mf_subtype));
 
-  UINT32 width = config.visible_rect().width();
-  UINT32 height = config.visible_rect().height();
-  RETURN_IF_FAILED(
-      MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE, width, height));
+  // Frame size is the encoded pixel raster; cropping is described separately
+  // by the geometric aperture below.
+  UINT32 coded_width = config.coded_size().width();
+  UINT32 coded_height = config.coded_size().height();
+  RETURN_IF_FAILED(MFSetAttributeSize(media_type.Get(), MF_MT_FRAME_SIZE,
+                                      coded_width, coded_height));
 
   UINT32 natural_width = config.natural_size().width();
   UINT32 natural_height = config.natural_size().height();
   RETURN_IF_FAILED(
       MFSetAttributeRatio(media_type.Get(), MF_MT_PIXEL_ASPECT_RATIO,
-                          height * natural_width, width * natural_height));
+                          config.visible_rect().height() * natural_width,
+                          config.visible_rect().width() * natural_height));
 
   MFVideoArea area;
   area.OffsetX = MakeOffset(static_cast<float>(config.visible_rect().x()));
   area.OffsetY = MakeOffset(static_cast<float>(config.visible_rect().y()));
-  area.Area = config.natural_size().ToSIZE();
+  // Aperture is in source pixels, not aspect-corrected display pixels. Using
+  // natural_size here applies the pixel aspect ratio twice and can describe
+  // an aperture larger than the frame for anamorphic video.
+  area.Area = config.visible_rect().size().ToSIZE();
   RETURN_IF_FAILED(media_type->SetBlob(MF_MT_GEOMETRIC_APERTURE, (UINT8*)&area,
                                        sizeof(area)));
 

@@ -125,6 +125,57 @@ class MediaFoundationStreamWrapperTest : public testing::Test {
     waitRequestSample.Wait();
   }
 
+  void VerifyVideoGeometry(const gfx::Size& coded_size,
+                           const gfx::Rect& visible_rect,
+                           const gfx::Size& natural_size) {
+    VideoDecoderConfig config(VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+                              VideoDecoderConfig::AlphaMode::kIsOpaque,
+                              VideoColorSpace::REC709(), VideoTransformation(),
+                              coded_size, visible_rect, natural_size, {},
+                              EncryptionScheme::kUnencrypted);
+    ASSERT_TRUE(config.IsValidConfig());
+    video_stream_->set_video_decoder_config(config);
+
+    ComPtr<MediaFoundationStreamWrapper> wrapper;
+    ASSERT_EQ(
+        MediaFoundationStreamWrapper::Create(
+            0, nullptr, video_stream_.get(), std::make_unique<NullMediaLog>(),
+            stream_wrapper_task_runner_, &wrapper),
+        S_OK);
+    ComPtr<IMFStreamDescriptor> descriptor;
+    ASSERT_EQ(wrapper->GetStreamDescriptor(&descriptor), S_OK);
+    ComPtr<IMFMediaTypeHandler> handler;
+    ASSERT_EQ(descriptor->GetMediaTypeHandler(&handler), S_OK);
+    ComPtr<IMFMediaType> type;
+    ASSERT_EQ(handler->GetMediaTypeByIndex(0, &type), S_OK);
+
+    UINT32 width = 0;
+    UINT32 height = 0;
+    ASSERT_EQ(MFGetAttributeSize(type.Get(), MF_MT_FRAME_SIZE, &width, &height),
+              S_OK);
+    EXPECT_EQ(gfx::Size(width, height), coded_size);
+    MFVideoArea area = {};
+    ASSERT_EQ(
+        type->GetBlob(MF_MT_GEOMETRIC_APERTURE, reinterpret_cast<UINT8*>(&area),
+                      sizeof(area), nullptr),
+        S_OK);
+    EXPECT_EQ(area.OffsetX.value, visible_rect.x());
+    EXPECT_EQ(area.OffsetY.value, visible_rect.y());
+    EXPECT_EQ(gfx::Size(area.Area.cx, area.Area.cy), visible_rect.size());
+
+    UINT32 numerator = 0;
+    UINT32 denominator = 0;
+    ASSERT_EQ(MFGetAttributeRatio(type.Get(), MF_MT_PIXEL_ASPECT_RATIO,
+                                  &numerator, &denominator),
+              S_OK);
+    // MF derives display aspect from aperture times pixel aspect. It must
+    // agree with natural_size without applying aspect correction twice.
+    EXPECT_EQ(
+        static_cast<uint64_t>(area.Area.cx) * numerator * natural_size.height(),
+        static_cast<uint64_t>(area.Area.cy) * denominator *
+            natural_size.width());
+  }
+
   void VerifyExpectedSampleEvent(ComPtr<IMFMediaEvent> spMediaEvent,
                                  ComPtr<IUnknown> spExpectedToken) {
     MediaEventType met;
@@ -248,6 +299,22 @@ class MediaFoundationStreamWrapperTest : public testing::Test {
   std::unique_ptr<StrictMock<MockDemuxerStream>> video_stream_;
   scoped_refptr<DecoderBuffer> video_buffer_;
 };
+
+TEST_F(MediaFoundationStreamWrapperTest, VideoGeometrySquarePixels) {
+  VerifyVideoGeometry({1920, 1080}, {0, 0, 1920, 1080}, {1920, 1080});
+}
+
+TEST_F(MediaFoundationStreamWrapperTest, VideoGeometryAnamorphic) {
+  VerifyVideoGeometry({1920, 1080}, {0, 0, 1920, 1080}, {2420, 1080});
+}
+
+TEST_F(MediaFoundationStreamWrapperTest, VideoGeometryCodedPadding) {
+  VerifyVideoGeometry({1920, 1088}, {0, 0, 1920, 1080}, {1920, 1080});
+}
+
+TEST_F(MediaFoundationStreamWrapperTest, VideoGeometryCroppedAnamorphic) {
+  VerifyVideoGeometry({720, 480}, {8, 0, 704, 480}, {640, 480});
+}
 
 TEST_F(MediaFoundationStreamWrapperTest, VerifySampleProcessingPostStart) {
   ComPtr<IMFMediaEvent> spMediaEvent;
