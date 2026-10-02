@@ -17,7 +17,7 @@ use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
     init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
     render_handlebars_named_template, run_command, run_command_and_suppress_output,
-    without_cargo_config_toml,
+    OFFLINE_CARGO_CONFIG,
 };
 use crate::VendorCommandArgs;
 
@@ -52,7 +52,7 @@ use std::path::{Path, PathBuf};
 pub fn vendor(args: VendorCommandArgs, paths: &paths::ChromiumPaths) -> Result<()> {
     // Vendoring needs to work with real crates.io, not with our locally
     // vendored crates.
-    without_cargo_config_toml(paths, || download_crates(&args, paths))?;
+    download_crates(&args, paths)?;
 
     // Updating metadata should be performed on the locally vendored crates
     update_vendored_metadata(&args, paths)?;
@@ -170,12 +170,10 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
 
     // Fetch the package graph again based on the locally vendored crates, to
     // ensure that locally applied patches which impact the package graph
-    // are considered. Although --offline is passed, this function also
-    // expects to be executed with a cargo config.toml that uses the locally
-    // vendored crates.
+    // are considered.
     let graph = get_guppy_package_graph(
         paths.third_party_cargo_root.into(),
-        vec!["--offline".to_string()],
+        vec!["--offline".to_string(), "--config".to_string(), OFFLINE_CARGO_CONFIG.to_string()],
         HashMap::new(),
     )?;
     // TODO(crbug.com/468223119): Remove this once exact_length_collection is

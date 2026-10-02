@@ -1,5 +1,15 @@
-[source.crates-io]
-replace-with = 'vendored-sources'
-
-[source.vendored-sources]
-directory = "vendor"
+# Only consider crate versions that have been published for at least 14 days,
+# to reduce the risk of ingesting a malicious release before it is detected
+# and yanked.  See https://crbug.com/562192366 and "Minimum publish age" in
+# //tools/crates/create_update_cl.md (including how to override this for
+# urgent security fixes).
+#
+# This applies to all `cargo` commands that run in this directory and talk to
+# crates.io (e.g. `gnrt add`, `gnrt update`, or the 1st step of `gnrt vendor`).
+#
+# The configuration for working offline, against the crates vendored under
+# `vendor/`, lives in `offline-config.toml`.  `cargo` doesn't pick it up
+# automatically - commands that need it (e.g. `gnrt gen`, or the 2nd step of
+# `gnrt vendor`) pass `--config .cargo/offline-config.toml`.
+[registry]
+global-min-publish-age = "14 days"

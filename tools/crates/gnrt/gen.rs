@@ -10,6 +10,7 @@ use crate::paths::{self, get_build_dir_for_package};
 use crate::util::{
     check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
     get_guppy_package_graph, init_handlebars_with_template_paths, render_handlebars,
+    OFFLINE_CARGO_CONFIG,
 };
 use crate::GenCommandArgs;
 
@@ -224,8 +225,11 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
     );
 
     let cargo_extra_options = vec![
-        // Use offline to constrain dependency resolution to locally vendored crates.
+        // Use `--offline` and `--config` to constrain dependency resolution to
+        // locally vendored crates.
         "--offline".to_string(),
+        "--config".to_string(),
+        OFFLINE_CARGO_CONFIG.to_string(),
         // Use locked to prevent updating dependencies at the same time as generating
         // metadata.
         "--locked".to_string(),

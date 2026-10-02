@@ -39,6 +39,10 @@ def CheckCargoMetadataLockedOffline(input_api, output_api):
         'metadata',
         '--locked',
         '--offline',
+        # Resolve crates from the checked-in `vendor/` directory.  This is
+        # no longer the default - see `.cargo/offline-config.toml`.
+        '--config',
+        input_api.os_path.join('.cargo', 'offline-config.toml'),
     ]
     test = input_api.Command(
         name='Check `cargo metadata --locked --offline` for `third_party/rust`',

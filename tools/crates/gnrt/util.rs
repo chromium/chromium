@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::paths::ChromiumPaths;
-
 use anyhow::{ensure, format_err, Context, Result};
 use handlebars::{handlebars_helper, Renderable};
 use serde::Serialize;
@@ -80,28 +78,11 @@ pub fn create_dirs_if_needed(path: &Path) -> Result<()> {
         .with_context(|| format_err!("Could not create directories for {}", path.to_string_lossy()))
 }
 
-/// Runs a function with the `.cargo/config.toml` file removed for the duration
-/// of the function. This allows access to the online crates.io repository
-/// instead of using our vendor/ directory as the source of truth. It should
-/// only be done for actions like adding or updating crates.
-pub fn without_cargo_config_toml<T>(
-    paths: &ChromiumPaths,
-    f: impl FnOnce() -> Result<T>,
-) -> Result<T> {
-    let config_file = paths.third_party_cargo_root.join(".cargo").join("config.toml");
-    let config_contents =
-        std::fs::read_to_string(&config_file).context("reading .cargo/config.toml");
-    if config_contents.is_ok() {
-        std::fs::remove_file(&config_file)?;
-    }
-
-    let r = f();
-
-    if let Ok(contents) = config_contents {
-        std::fs::write(config_file, contents).context("writing .cargo/config.toml")?;
-    }
-    r
-}
+/// Path (relative to `third_party_cargo_root`) of the `cargo` config that
+/// makes `cargo` use our vendor/ directory instead of the online crates.io
+/// repository. `cargo` doesn't pick it up automatically - it should be passed
+/// via `--config` for actions that need to work offline.
+pub const OFFLINE_CARGO_CONFIG: &str = ".cargo/offline-config.toml";
 
 /// Same as `run_cargo_metadata` but built on top of `guppy`.
 pub fn get_guppy_package_graph(
