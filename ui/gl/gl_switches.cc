@@ -5,9 +5,16 @@
 #include "ui/gl/gl_switches.h"
 
 #include <array>
+#include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "ui/gl/buildflags.h"
@@ -15,6 +22,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
+#include "third_party/re2/src/re2/re2.h"
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN) && \
@@ -178,6 +187,10 @@ const char kDirectCompositionVideoSwapChainFormat[] =
 // in DWM, but to help understand `SwapChainPresenter` state.
 const char kTintDcLayer[] = "tint-dc-layer";
 
+// Indicate that the this is being used by Android WebView and its draw functor
+// is using vulkan.
+const char kWebViewDrawFunctorUsesVulkan[] = "webview-draw-functor-uses-vulkan";
+
 // This is the list of switches passed from this file that are passed from the
 // GpuProcessHost to the GPU Process. Add your switch to this list if you need
 // to read it in the GPU process, else don't add it.
@@ -245,6 +258,87 @@ std::optional<base::TimeDelta> GetFakeVsyncIntervalFromCommandLine() {
 
 namespace features {
 
+namespace {
+
+#if BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+
+constexpr uint32_t kVendorARM = 0x13b5;
+constexpr uint32_t kVendorQualcomm = 0x5143;
+constexpr uint32_t kVendorImagination = 0x1010;
+constexpr uint32_t kVendorIntel = 0x8086;
+constexpr uint32_t kVendorGoogle = 0x1AE0;
+constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
+
+bool IsDeviceBlocked(std::string_view field, std::string_view block_list) {
+  auto disable_patterns = base::SplitString(
+      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_pattern : disable_patterns) {
+    if (base::MatchPattern(field, disable_pattern)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+int GetEMUIVersion() {
+  // TODO(crbug.com/40136096): check Honor devices as well.
+  if (base::android::android_info::manufacturer() != "HUAWEI") {
+    return -1;
+  }
+
+  // Huawei puts EMUI version in the build version incremental.
+  // Example: 11.0.0.130C00
+  int version = 0;
+  if (UNSAFE_TODO(
+          sscanf(base::android::android_info::version_incremental().c_str(),
+                 "%d.", &version)) != 1) {
+    return -1;
+  }
+
+  return version;
+}
+
+bool IsBlockedByBuildInfo() {
+  const char* kBlockListByHardware = "mt*";
+  const char* kBlockListByBrand = "HONOR";
+  const char* kBlockListByDevice = "OP4863|OP4883";
+  const char* kBlockListByBoard =
+      "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk";
+
+  if (IsDeviceBlocked(base::android::android_info::hardware(),
+                      kBlockListByHardware)) {
+    return true;
+  }
+  if (IsDeviceBlocked(base::android::android_info::brand(),
+                      kBlockListByBrand)) {
+    return true;
+  }
+  if (IsDeviceBlocked(base::android::android_info::device(),
+                      kBlockListByDevice)) {
+    return true;
+  }
+  if (IsDeviceBlocked(base::android::android_info::board(),
+                      kBlockListByBoard)) {
+    return true;
+  }
+
+  return false;
+}
+
+// Everything that passed 2022 deQP tests.
+bool HasMinDeqpLevelForMediaTek() {
+  // We require at least android V deqp test to pass for v2.
+  constexpr int32_t kVulkanDEQPAndroidV = 0x7e80301;
+  if (base::android::device_info::vulkan_deqp_level() < kVulkanDEQPAndroidV) {
+    return false;
+  }
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_VULKAN) && BUILDFLAG(IS_ANDROID)
+
+}  // namespace
+
 // Enable DComp debug visualizations. This can be useful to determine how much
 // work DWM is doing when we update our tree.
 //
@@ -309,6 +403,21 @@ BASE_FEATURE(kVulkanFromANGLE,
 // Enable skipping the Vulkan blocklist.
 BASE_FEATURE(kSkipVulkanBlocklist,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable Vulkan graphics backend for compositing and rasterization. Defaults to
+// native implementation if --use-vulkan flag is not used. Otherwise
+// --use-vulkan will be followed.
+// Note Android WebView uses kWebViewDrawFunctorUsesVulkan instead of this.
+BASE_FEATURE(kVulkan,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties() = default;
+VulkanPhysicalDeviceProperties::~VulkanPhysicalDeviceProperties() = default;
 
 bool IsDefaultANGLEVulkan() {
   // Force on if DefaultANGLEVulkan feature is enabled from command line.
@@ -452,6 +561,139 @@ bool IsDefaultANGLEVulkan() {
 
   return base::FeatureList::IsEnabled(kDefaultANGLEVulkan);
 #endif  // !defined(MEMORY_SANITIZER)
+}
+
+bool IsUsingVulkan() {
+#if BUILDFLAG(IS_ANDROID)
+  // Force on if Vulkan feature is enabled from command line.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverriddenFromCommandLine(
+          features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+    return true;
+  }
+
+  // WebView checks, which do not use (and disables) kVulkan.
+  // Do this above the Android version check because there are test devices
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewDrawFunctorUsesVulkan)) {
+    return true;
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  return base::FeatureList::IsEnabled(kVulkan);
+#else
+  return false;
+#endif
+}
+
+bool CheckVulkanCompatibilities(
+    const VulkanPhysicalDeviceProperties& device_properties) {
+#if !BUILDFLAG(ENABLE_VULKAN)
+  return false;
+#elif !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX) && !defined(OZONE_PLATFORM_IS_X11)
+  // Vulkan is only supported with X11 on Linux for now.
+  return false;
+#else
+  return true;
+#endif
+#else   // BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
+    return true;
+  }
+
+  if (IsBlockedByBuildInfo() && !HasMinDeqpLevelForMediaTek()) {
+    return false;
+  }
+
+  if (device_properties.vendor_id == kVendorARM) {
+    int emui_version = GetEMUIVersion();
+    // TODO(crbug.com/40136096) Display problem with Huawei EMUI < 11 and Honor
+    // devices with Mali GPU. The Mali driver version is < 19.0.0.
+    if (device_properties.driver_version < VK_MAKE_VERSION(19, 0, 0) &&
+        emui_version < 11) {
+      return false;
+    }
+
+    // Remove "Mali-" prefix.
+    std::string_view device_name(device_properties.device_name);
+    if (!base::StartsWith(device_name, "Mali-")) {
+      LOG(ERROR) << "Unexpected device_name " << device_name;
+      return false;
+    }
+    device_name.remove_prefix(5);
+
+    // Remove anything trailing a space (e.g. "G76 MC4" => "G76").
+    device_name = device_name.substr(0, device_name.find(" "));
+
+    // Older Mali GPUs are not performant with Vulkan -- this blocks all Utgard
+    // gen, Midgard gen, and some Bifrost 1st & 2nd gen.
+    std::vector<const char*> slow_gpus = {"2??", "3??", "4??", "T???",
+                                          "G31", "G51", "G52"};
+    for (std::string_view slow_gpu : slow_gpus) {
+      if (base::MatchPattern(device_name, slow_gpu)) {
+        return false;
+      }
+    }
+
+    // Most Mali-G57 devices had vkCreateInstance() fail and would use GL. Add
+    // them to the blocklist to keep these devices from using Vulkan with
+    // Graphite. The exception is devices with driver version >= 41 had
+    // vkCreateInstance() pass and were running Vulkan. See
+    // https://crbug.com/384531040 for more info.
+    if (device_name == "G57" &&
+        device_properties.driver_version < VK_MAKE_VERSION(41, 0, 0)) {
+      return false;
+    }
+
+    // Allow remaining Mali GPUs that aren't MediaTek. https://crbug.com/1183702
+    if (!IsDeviceBlocked(device_properties.device_name, "*Mali-G?? M*")) {
+      return true;
+    }
+
+    // MediaTek Mali-G57 has problems initializing Vulkan even with 2022 deQP
+    // tests passed, devices that init successfully show performance regression.
+    if (device_name == "G57") {
+      return false;
+    }
+
+    // For MediaTek allow everything that passed 2022 deQP tests.
+    return HasMinDeqpLevelForMediaTek();
+  }
+
+  if (device_properties.vendor_id == kVendorQualcomm) {
+    // Only Adreno 630 with drivers newer than 444.0. This was launched for
+    // Pixel 3 in the original Vulkan launch but otherwise Vulkan hasn't
+    // performan as well as GL. https://crbug.com/1165783
+    return device_properties.device_name ==
+               std::string_view("Adreno (TM) 630") &&
+           device_properties.driver_version > VK_MAKE_VERSION(512, 444, 0);
+  }
+
+  if (device_properties.vendor_id == kVendorImagination) {
+    // Only newer PowerVR GPU series allowed. Older PowerVR GPUs showed poor
+    // performance and stability problems, see https://crbug.com/1122650.
+    return RE2::FullMatch(device_properties.device_name,
+                          "PowerVR ([CDE]-Series)? [CDE]X.*");
+  }
+
+  // Some devices implement Vulkan using Swiftshader. We do not want those,
+  // because of performance, and stability (crbug.com/1479335).
+  if (device_properties.vendor_id == kVendorGoogle &&
+      device_properties.device_id == kDeviceSwiftShader) {
+    return false;
+  }
+
+  // Some android x86 devices (e.g older gpu on auto devices) don't report
+  // format support correctly. See crbug.com/379205391
+  if (device_properties.vendor_id == kVendorIntel) {
+    return false;
+  }
+
+  return true;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Use waitable swap chain on Windows to reduce display latency.

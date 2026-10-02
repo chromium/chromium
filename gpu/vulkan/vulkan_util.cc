@@ -5,15 +5,11 @@
 #include "gpu/vulkan/vulkan_util.h"
 
 #include <algorithm>
-#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/strings/pattern.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -21,13 +17,7 @@
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_info.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/re2/src/re2/re2.h"
 #include "ui/gl/gl_switches.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_info.h"
-#include "base/android/device_info.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/linux/drm_util_linux.h"  //nogncheck
@@ -46,89 +36,15 @@
 
 namespace gpu {
 
-namespace {
-
-#if BUILDFLAG(IS_ANDROID)
-
-bool IsDeviceBlocked(std::string_view field, std::string_view block_list) {
-  auto disable_patterns = base::SplitString(
-      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& disable_pattern : disable_patterns) {
-    if (base::MatchPattern(field, disable_pattern)) {
-      return true;
-    }
-  }
-  return false;
+VulkanPhysicalDeviceProperties MakeVulkanPhysicalDeviceProperties(
+    const VkPhysicalDeviceProperties& properties) {
+  VulkanPhysicalDeviceProperties result;
+  result.driver_version = properties.driverVersion;
+  result.vendor_id = properties.vendorID;
+  result.device_id = properties.deviceID;
+  result.device_name = properties.deviceName;
+  return result;
 }
-
-int GetEMUIVersion() {
-  // TODO(crbug.com/40136096): check Honor devices as well.
-  if (base::android::android_info::manufacturer() != "HUAWEI") {
-    return -1;
-  }
-
-  // Huawei puts EMUI version in the build version incremental.
-  // Example: 11.0.0.130C00
-  int version = 0;
-  if (UNSAFE_TODO(
-          sscanf(base::android::android_info::version_incremental().c_str(),
-                 "%d.", &version)) != 1) {
-    return -1;
-  }
-
-  return version;
-}
-
-bool IsBlockedByBuildInfo() {
-  const char* kBlockListByHardware = "mt*";
-  const char* kBlockListByBrand = "HONOR";
-  const char* kBlockListByDevice = "OP4863|OP4883";
-  const char* kBlockListByBoard =
-      "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk";
-
-  if (IsDeviceBlocked(base::android::android_info::hardware(),
-                      kBlockListByHardware)) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::brand(),
-                      kBlockListByBrand)) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::device(),
-                      kBlockListByDevice)) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::board(),
-                      kBlockListByBoard)) {
-    return true;
-  }
-
-  return false;
-}
-
-// Everything that passed 2022 deQP tests.
-bool HasMinDeqpLevelForMediaTek() {
-  // We require at least android V deqp test to pass for v2.
-  constexpr int32_t kVulkanDEQPAndroidV = 0x7e80301;
-  if (base::android::device_info::vulkan_deqp_level() < kVulkanDEQPAndroidV) {
-    return false;
-  }
-
-  return true;
-}
-#endif
-}  // namespace
-
-VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties() = default;
-
-VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties(
-    const VkPhysicalDeviceProperties& properties)
-    : driver_version(properties.driverVersion),
-      vendor_id(properties.vendorID),
-      device_id(properties.deviceID),
-      device_name(properties.deviceName) {}
-
-VulkanPhysicalDeviceProperties::~VulkanPhysicalDeviceProperties() = default;
 
 bool SubmitSignalVkSemaphores(VkQueue vk_queue,
                               const base::span<VkSemaphore>& vk_semaphores,
@@ -272,114 +188,14 @@ bool CheckVulkanCompatibilities(
     const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
     if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
         !gfx::HasExtension(extensions, kSemaphoreExtension)) {
-        DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
-                    << " is not supported.";
-        return false;
-    }
-  }
-
-#if BUILDFLAG(IS_LINUX) && !defined(OZONE_PLATFORM_IS_X11)
-  // Vulkan is only supported with X11 on Linux for now.
-  return false;
-#else
-  return true;
-#endif
-#else   // BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
-    return true;
-  }
-
-  if (IsBlockedByBuildInfo() && !HasMinDeqpLevelForMediaTek()) {
-    return false;
-  }
-
-  if (device_properties.vendor_id == kVendorARM) {
-    int emui_version = GetEMUIVersion();
-    // TODO(crbug.com/40136096) Display problem with Huawei EMUI < 11 and Honor
-    // devices with Mali GPU. The Mali driver version is < 19.0.0.
-    if (device_properties.driver_version < VK_MAKE_VERSION(19, 0, 0) &&
-        emui_version < 11) {
+      DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
+                  << " is not supported.";
       return false;
     }
-
-    // Remove "Mali-" prefix.
-    std::string_view device_name(device_properties.device_name);
-    if (!base::StartsWith(device_name, "Mali-")) {
-      LOG(ERROR) << "Unexpected device_name " << device_name;
-      return false;
-    }
-    device_name.remove_prefix(5);
-
-    // Remove anything trailing a space (e.g. "G76 MC4" => "G76").
-    device_name = device_name.substr(0, device_name.find(" "));
-
-    // Older Mali GPUs are not performant with Vulkan -- this blocks all Utgard
-    // gen, Midgard gen, and some Bifrost 1st & 2nd gen.
-    std::vector<const char*> slow_gpus = {"2??", "3??", "4??", "T???",
-                                          "G31", "G51", "G52"};
-    for (std::string_view slow_gpu : slow_gpus) {
-      if (base::MatchPattern(device_name, slow_gpu)) {
-        return false;
-      }
-    }
-
-    // Most Mali-G57 devices had vkCreateInstance() fail and would use GL. Add
-    // them to the blocklist to keep these devices from using Vulkan with
-    // Graphite. The exception is devices with driver version >= 41 had
-    // vkCreateInstance() pass and were running Vulkan. See
-    // https://crbug.com/384531040 for more info.
-    if (device_name == "G57" &&
-        device_properties.driver_version < VK_MAKE_VERSION(41, 0, 0)) {
-      return false;
-    }
-
-    // Allow remaining Mali GPUs that aren't MediaTek. https://crbug.com/1183702
-    if (!IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*")) {
-      return true;
-    }
-
-    // MediaTek Mali-G57 has problems initializing Vulkan even with 2022 deQP
-    // tests passed, devices that init successfully show performance regression.
-    if (device_name == "G57") {
-      return false;
-    }
-
-    // For MediaTek allow everything that passed 2022 deQP tests.
-    return HasMinDeqpLevelForMediaTek();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-  if (device_properties.vendor_id == kVendorQualcomm) {
-    // Only Adreno 630 with drivers newer than 444.0. This was launched for
-    // Pixel 3 in the original Vulkan launch but otherwise Vulkan hasn't
-    // performan as well as GL. https:://crbug.com/1165783
-    return device_properties.device_name ==
-               std::string_view("Adreno (TM) 630") &&
-           !IsDeviceBlocked(gpu_info.gpu.driver_version,
-                            "324.0|331.0|334.0|378.0|415.0|420.0|444.0");
-  }
-
-  if (device_properties.vendor_id == kVendorImagination) {
-    // Only newer PowerVR GPU series allowed. Older PowerVR GPUs showed poor
-    // performance and stability problems, see https://crbug.com/1122650.
-    return RE2::FullMatch(device_properties.device_name,
-                          "PowerVR ([CDE]-Series)? [CDE]X.*");
-  }
-
-  // Some devices implement Vulkan using Swiftshader. We do not want those,
-  // because of performance, and stability (crbug.com/1479335).
-  if (device_properties.vendor_id == kVendorGoogle &&
-      device_properties.device_id == kDeviceSwiftShader) {
-    return false;
-  }
-
-  // Some android x86 devices (e.g older gpu on auto devices) don't report
-  // format support correctly. See crbug.com/379205391
-  if (device_properties.vendor_id == kVendorIntel) {
-    return false;
-  }
-
-  return true;
-#endif  // BUILDFLAG(IS_ANDROID)
+  return features::CheckVulkanCompatibilities(device_properties);
 }
 
 VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout) {

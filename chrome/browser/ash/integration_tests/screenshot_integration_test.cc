@@ -21,11 +21,11 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gl/gl_switches.h"
 
 namespace {
 

@@ -122,10 +122,6 @@ if (enable_vulkan) {
 
     defines = [ "IS_VULKAN_IMPL" ]
 
-    if (ozone_platform == "x11") {
-      defines += [ "OZONE_PLATFORM_IS_X11" ]
-    }
-
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
     deps = [
@@ -133,7 +129,6 @@ if (enable_vulkan) {
       "//base",
       "//components/crash/core/common:crash_key",
       "//components/viz/common/resources:shared_image_format",
-      "//third_party/re2",
       "//third_party/vulkan_memory_allocator",
       "//ui/base:ozone_buildflags",
       "//ui/gfx",

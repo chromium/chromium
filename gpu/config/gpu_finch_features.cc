@@ -258,18 +258,6 @@ bool IsShaderDiskCacheEnabled(const base::CommandLine* command_line) {
   return base::FeatureList::IsEnabled(kGpuShaderDiskCache);
 }
 
-// Enable Vulkan graphics backend for compositing and rasterization. Defaults to
-// native implementation if --use-vulkan flag is not used. Otherwise
-// --use-vulkan will be followed.
-// Note Android WebView uses kWebViewDrawFunctorUsesVulkan instead of this.
-BASE_FEATURE(kVulkan,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 // Force enable WebGPU interop when enabled. When disabled the webgpu interop
 // mechanism will default to auto detection in 'GetWebGPUOnVulkanViaGLInterop'
 // function.
@@ -528,31 +516,6 @@ bool IsForceEnableWebGpuInterop() {
   return base::FeatureList::IsEnabled(kForceEnableWebGpuInterop);
 }
 #endif
-
-bool IsUsingVulkan() {
-#if BUILDFLAG(IS_ANDROID)
-  // Force on if Vulkan feature is enabled from command line.
-  base::FeatureList* feature_list = base::FeatureList::GetInstance();
-  if (feature_list &&
-      feature_list->IsFeatureOverriddenFromCommandLine(
-          features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
-    return true;
-  }
-
-  // WebView checks, which do not use (and disables) kVulkan.
-  // Do this above the Android version check because there are test devices
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewDrawFunctorUsesVulkan)) {
-    return true;
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_VULKAN)
-  return base::FeatureList::IsEnabled(kVulkan);
-#else
-  return false;
-#endif
-}
 
 bool IsUsingThreadSafeMediaForWebView() {
 #if BUILDFLAG(IS_ANDROID)

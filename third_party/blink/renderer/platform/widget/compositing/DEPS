@@ -16,11 +16,11 @@ specific_include_rules = {
   ],
   "layer_tree_settings\\.cc": [
     "+base/base_switches.h",
-    "+gpu/config/gpu_finch_features.h",
     "+gpu/command_buffer/service/gpu_switches.h",
     "+media/base/media_switches.h",
     "+ui/base/ui_base_features.h",
     "+ui/base/ui_base_switches.h",
+    "+ui/gl/gl_switches.h",
     "+ui/native_theme/features/native_theme_features.h",
     "+ui/native_theme/native_theme.h",
     "+ui/native_theme/overlay_scrollbar_constants.h",

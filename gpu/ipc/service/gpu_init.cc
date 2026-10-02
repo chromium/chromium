@@ -1472,8 +1472,9 @@ bool GpuInit::InitializeVulkan() {
     return false;
   }
 
-  VulkanPhysicalDeviceProperties device_properties(
-      vulkan_info.physical_devices.front().properties);
+  VulkanPhysicalDeviceProperties device_properties =
+      MakeVulkanPhysicalDeviceProperties(
+          vulkan_info.physical_devices.front().properties);
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompatibilities(device_properties, gpu_info_)) {
     vulkan_implementation_.reset();

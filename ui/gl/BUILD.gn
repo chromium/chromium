@@ -201,11 +201,15 @@ component("gl") {
   if (enable_gpu_service_logging) {
     defines += [ "GPU_ENABLE_SERVICE_LOGGING" ]
   }
+  if (ozone_platform == "x11") {
+    defines += [ "OZONE_PLATFORM_IS_X11" ]
+  }
 
   deps = [
     ":buildflags",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
+    "//third_party/re2",
     "//ui/base:ozone_buildflags",
     "//ui/gfx/mojom",
   ]
@@ -428,6 +432,7 @@ component("gl") {
     deps += [
       ":gl_jni_headers",
       "//third_party/angle:angle_gpu_info_util",
+      "//third_party/re2",
     ]
   }
 

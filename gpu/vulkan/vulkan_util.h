@@ -17,30 +17,17 @@
 #include "base/containers/span.h"
 #include "gpu/vulkan/semaphore_handle.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "ui/gl/gl_switches.h"
 
 namespace gpu {
 
-inline constexpr uint32_t kVendorARM = 0x13b5;
-inline constexpr uint32_t kVendorQualcomm = 0x5143;
-inline constexpr uint32_t kVendorImagination = 0x1010;
-inline constexpr uint32_t kVendorIntel = 0x8086;
-inline constexpr uint32_t kVendorGoogle = 0x1AE0;
-inline constexpr uint32_t kDeviceSwiftShader = 0xC0DE;
-
 struct GPUInfo;
 
-// Mirrors a subset of information from VkPhysicalDeviceProperties.
-struct COMPONENT_EXPORT(VULKAN) VulkanPhysicalDeviceProperties {
-  VulkanPhysicalDeviceProperties();
-  explicit VulkanPhysicalDeviceProperties(
-      const VkPhysicalDeviceProperties& properties);
-  ~VulkanPhysicalDeviceProperties();
+using VulkanPhysicalDeviceProperties = features::VulkanPhysicalDeviceProperties;
 
-  uint32_t driver_version = 0;
-  uint32_t vendor_id = 0;
-  uint32_t device_id = 0;
-  std::string device_name;
-};
+COMPONENT_EXPORT(VULKAN)
+VulkanPhysicalDeviceProperties MakeVulkanPhysicalDeviceProperties(
+    const VkPhysicalDeviceProperties& properties);
 
 // Submits semaphores to be signaled to the vulkan queue. Semaphores are
 // signaled once this submission is executed. vk_fence is an optional handle
