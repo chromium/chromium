@@ -34,6 +34,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -118,11 +119,13 @@ public class ActorBackgroundActuationManagerTest {
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager = new ActorBackgroundActuationManager();
     }
 
     @After
     public void tearDown() {
+        ActorMetrics.resetForTesting();
         ProfileResolverJni.setInstanceForTesting(null);
         ProfileManager.resetForTesting();
         BackgroundTabPoolManager.resetForTesting();
@@ -171,6 +174,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testStartBackgroundActuation_Success() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
 
         // Verify offscreen rendering started
@@ -182,6 +189,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+        watcher.assertExpected();
 
         // Verify the tab was prepared and set on ActorKeyedService
         verify(mActorKeyedService).setPreparedBackgroundTab(mTab, MESSAGE_ID_SUCCESS);
@@ -198,6 +206,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testStartBackgroundActuation_PageLoadFailed() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_FAIL);
 
         // Capture observer and trigger page load failure
@@ -206,6 +218,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onPageLoadFailed(mTab, 404);
+        watcher.assertExpected();
 
         // Verify setup failed notification was sent to native
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_FAIL);
@@ -217,6 +230,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testStartBackgroundActuation_Crash() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_CRASH);
 
         // Capture observer and trigger renderer crash
@@ -225,6 +242,7 @@ public class ActorBackgroundActuationManagerTest {
         TabObserver observer = captor.getValue();
 
         observer.onCrash(mTab);
+        watcher.assertExpected();
 
         // Verify setup failed and cleanup was executed
         verify(mActorKeyedService).notifyBackgroundSetupFailed(MESSAGE_ID_CRASH);
@@ -235,6 +253,10 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testStartBackgroundActuation_CancelledBeforeLoadFinished() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
         mManager.startBackgroundActuation(mProfile, MESSAGE_ID_CANCELLED);
 
         // Capture observer
@@ -252,6 +274,7 @@ public class ActorBackgroundActuationManagerTest {
 
         // Now trigger page load finish
         observer.onPageLoadFinished(mTab, new GURL(TEST_URL));
+        watcher.assertExpected();
 
         // Verify setPreparedBackgroundTab was NOT called because session was cleaned up
         verify(mActorKeyedService, never()).setPreparedBackgroundTab(any(), any());
@@ -269,8 +292,15 @@ public class ActorBackgroundActuationManagerTest {
         when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(123)).thenReturn(task);
 
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        watcher.assertExpected();
 
         // Verify offscreen rendering was started for the transitioned tab
         verify(mOffscreenRenderingManager).startOffscreenRendering(eq(mTab), anyInt(), anyInt());
@@ -292,6 +322,258 @@ public class ActorBackgroundActuationManagerTest {
     }
 
     @Test
+    public void testTransitionActiveTasksToBackground_DuplicateTransition_OnlyRecordsOnce() {
+        setupTransitionMocks();
+        TabStateExtractor.setTabStateForTesting(100, new TabState());
+
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.getProfile()).thenReturn(mProfile);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(123);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(123)).thenReturn(task);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+
+        // First transition records the metric.
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        // Second transition for the same task should be deduplicated and not record again.
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        watcher.assertExpected();
+
+        TabStateExtractor.resetTabStatesForTesting();
+    }
+
+    @Test
+    public void
+            testTransitionActiveTasksToBackground_FcmInitiatedTask_DoesNotRecordChromeTrigger() {
+        setupTransitionMocks();
+        TabStateExtractor.setTabStateForTesting(100, new TabState());
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.hasParentCollection()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+
+        // 1. Start background actuation via FCM and complete page load.
+        var fcmWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_FCM);
+        mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
+        triggerPageLoadFinished();
+        fcmWatcher.assertExpected();
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        // 2. Restore the FCM-initiated tab to the foreground window.
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        List<BackgroundSession> restored =
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mManager.getBackgroundSessions(),
+                        mTabDelegateFactory);
+        mManager.removeBackgroundSessions(restored);
+        assertEquals(0, mManager.getBackgroundSessions().size());
+
+        // 3. Subsequently transition active tasks back to the background.
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(123);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(123)).thenReturn(task);
+
+        var transitionWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        transitionWatcher.assertExpected();
+
+        // 4. Restore the tab to foreground, complete the FCM task, and verify a subsequent
+        // non-FCM task on the same tab records TASK_INIT_BY_CHROME.
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        List<BackgroundSession> restoredAgain =
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mManager.getBackgroundSessions(),
+                        mTabDelegateFactory);
+        mManager.removeBackgroundSessions(restoredAgain);
+        mManager.onTaskCompleted(123);
+        ActorMetrics.getInstance().onTaskStateChangedForTesting(123, ActorTaskState.FINISHED);
+
+        ActorTask newTask = mock(ActorTask.class);
+        when(newTask.getId()).thenReturn(456);
+        when(newTask.isUnderActorControl()).thenReturn(true);
+        when(newTask.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(456);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(newTask));
+        when(mActorKeyedService.getTask(456)).thenReturn(newTask);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        var newChromeTaskWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        newChromeTaskWatcher.assertExpected();
+
+        TabStateExtractor.resetTabStatesForTesting();
+    }
+
+    @Test
+    public void testOnTaskCompleted_FcmInitiatedTaskCompletedInForeground_CleansUpTabForReuse() {
+        setupTransitionMocks();
+        TabStateExtractor.setTabStateForTesting(100, new TabState());
+        when(mTab.getId()).thenReturn(100);
+        when(mTab.hasParentCollection()).thenReturn(false);
+        when(mTab.isDestroyed()).thenReturn(false);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+
+        // 1. Start background actuation via FCM and complete page load.
+        mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
+        triggerPageLoadFinished();
+        assertEquals(1, mManager.getBackgroundSessions().size());
+
+        // 2. Restore the FCM-initiated tab to the foreground window.
+        when(mTabModel.indexOf(mTab)).thenReturn(TabModel.INVALID_TAB_INDEX);
+        List<BackgroundSession> restored =
+                ActorBackgroundActuationManager.restoreActiveWindowBackgroundTabs(
+                        mTabModelSelector,
+                        42,
+                        mWindowAndroid,
+                        mManager.getBackgroundSessions(),
+                        mTabDelegateFactory);
+        mManager.removeBackgroundSessions(restored);
+        assertEquals(0, mManager.getBackgroundSessions().size());
+
+        // 3. The FCM task finishes while running in the foreground (never transitioned back to bg).
+        ActorTask fcmTask = mock(ActorTask.class);
+        when(fcmTask.getId()).thenReturn(123);
+        when(fcmTask.getTabs()).thenReturn(Collections.emptySet());
+        when(fcmTask.getLastActuatedTabId()).thenReturn(100);
+        when(mActorKeyedService.getTask(123)).thenReturn(fcmTask);
+        mManager.onTaskCompleted(123);
+
+        // 4. Launch a new non-FCM foreground task on the reused tab and transition to background.
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        ActorTask newTask = mock(ActorTask.class);
+        when(newTask.getId()).thenReturn(456);
+        when(newTask.isUnderActorControl()).thenReturn(true);
+        when(newTask.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(456);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(newTask));
+        when(mActorKeyedService.getTask(456)).thenReturn(newTask);
+
+        var chromeWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        chromeWatcher.assertExpected();
+
+        TabStateExtractor.resetTabStatesForTesting();
+    }
+
+    @Test
+    public void testStartBackgroundActuation_TabDestroyed_CleansUpFcmInitiatedTabId() {
+        setupTransitionMocks();
+        TabStateExtractor.setTabStateForTesting(100, new TabState());
+        when(mTab.getId()).thenReturn(100);
+
+        mManager.startBackgroundActuation(mProfile, MESSAGE_ID_SUCCESS);
+        triggerPageLoadFinished();
+
+        // Notify all observers attached to the prepared FCM tab of onDestroyed.
+        ArgumentCaptor<TabObserver> captor = ArgumentCaptor.forClass(TabObserver.class);
+        verify(mTab, atLeastOnce()).addObserver(captor.capture());
+        for (TabObserver observer : captor.getAllValues()) {
+            observer.onDestroyed(mTab);
+        }
+
+        // If a new tab with the same ID is later used for a Chrome-initiated task, it should
+        // record TASK_INIT_BY_CHROME.
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.getCount()).thenReturn(1);
+        when(mTabModel.getTabAt(0)).thenReturn(mTab);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        ActorTask task = mock(ActorTask.class);
+        when(task.getId()).thenReturn(789);
+        when(task.isUnderActorControl()).thenReturn(true);
+        when(task.getTabs()).thenReturn(Collections.singleton(100));
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
+        when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(789);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
+        when(mActorKeyedService.getTask(789)).thenReturn(task);
+
+        var chromeWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.BackgroundActuation.Trigger",
+                        ActorMetrics.ActorBackgroundActuationTrigger.TASK_INIT_BY_CHROME);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+        chromeWatcher.assertExpected();
+
+        TabStateExtractor.resetTabStatesForTesting();
+    }
+
+    @Test
+    public void testTransitionActiveTasksToBackground_NoActiveTasks_NoMetricRecorded() {
+        when(mActorKeyedService.getActiveTasksCount()).thenReturn(0);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.emptyList());
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Actor.BackgroundActuation.Trigger")
+                        .build();
+
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        mManager.transitionActiveTasksToBackground(mTabModelSelector);
+
+        watcher.assertExpected();
+    }
+
+    @Test
     public void testTransitionActiveTasksToBackground_MultipleTabs() {
         setupTransitionMocks();
         TabStateExtractor.setTabStateForTesting(200, new TabState());
@@ -299,7 +581,8 @@ public class ActorBackgroundActuationManagerTest {
         Tab tab2 = mock(Tab.class);
         when(tab2.getId()).thenReturn(200);
         when(mTabModel.indexOf(tab2)).thenReturn(1);
-        when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
+
+        when(mTabModel.iterator()).thenAnswer(inv -> Arrays.asList(mTab, tab2).iterator());
 
         Tab placeholderTab2 = mock(Tab.class);
         when(placeholderTab2.getId()).thenReturn(201);
@@ -316,6 +599,7 @@ public class ActorBackgroundActuationManagerTest {
         when(task.getTabs()).thenReturn(new LinkedHashSet<>(Arrays.asList(100, 200)));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
         // Verify offscreen rendering is started for both tabs
@@ -377,6 +661,7 @@ public class ActorBackgroundActuationManagerTest {
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
         @SuppressWarnings("unchecked")
@@ -589,6 +874,7 @@ public class ActorBackgroundActuationManagerTest {
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
         assertEquals(1, mManager.getBackgroundSessions().size());
 
@@ -880,6 +1166,7 @@ public class ActorBackgroundActuationManagerTest {
 
         setupTransitionMocks();
 
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
         assertEquals(1, mManager.getBackgroundSessions().size());
 

@@ -118,6 +118,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/ui/ui_event_debugstring.h:GetUiEventName) -->
 
+<histogram name="Actor.BackgroundActuation.Trigger"
+    enum="ActorBackgroundActuationTrigger" expires_after="2027-10-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when background actuation is triggered, capturing whether the task
+    was initiated by Chrome (transitioning from foreground) or by FCM (message
+    triggered). Note that this metric is only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.DomNodeGeometry.GetDomNodeResult"
     enum="GetDomNodeResult" expires_after="2027-08-11">
   <owner>kmg@google.com</owner>
