@@ -1104,11 +1104,11 @@ def AddJUnitTestOptions(parser):
         '--json-config', help='Runs only tests listed in this config.'
     )
     parser.add_argument(
-        '--shards',
+        '-j',
+        '--jobs',
         type=int,
-        help='Number of shards to run junit tests in parallel on. Only 1 shard '
-        'is supported when test-filter is specified. Values less than 1 will '
-        'use auto select.',
+        help='Number of concurrent worker processes to run JUnit tests. '
+        'Values less than 1 will use auto select.',
     )
     parser.add_argument(
         '--shard-filter', help='Comma separated list of shard indices to run.'

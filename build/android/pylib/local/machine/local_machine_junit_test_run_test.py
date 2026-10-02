@@ -131,7 +131,7 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
     def testChooseNumWorkers(self):
         test_instance = MagicMock()
         test_instance.debug_socket = None
-        test_instance.shards = None
+        test_instance.jobs = None
         obj = local_machine_junit_test_run.LocalMachineJunitTestRun(
             MagicMock(), test_instance
         )
@@ -156,20 +156,20 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
         test_instance.debug_socket = '8701'
         self.assertEqual(obj._ChooseNumWorkers(32), 1)
 
-        # Explicit shards override
+        # Explicit jobs override
         test_instance.debug_socket = None
-        test_instance.shards = 4
+        test_instance.jobs = 4
         self.assertEqual(obj._ChooseNumWorkers(32), 4)
         self.assertEqual(obj._ChooseNumWorkers(2), 2)
 
         # Values less than 1 fall back to auto-select
-        test_instance.shards = 0
+        test_instance.jobs = 0
         with (
             patch('multiprocessing.cpu_count', return_value=16),
             patch('psutil.virtual_memory', return_value=mock_vm_64gb),
         ):
             self.assertEqual(obj._ChooseNumWorkers(32), 16)
-        test_instance.shards = -1
+        test_instance.jobs = -1
         with (
             patch('multiprocessing.cpu_count', return_value=16),
             patch('psutil.virtual_memory', return_value=mock_vm_64gb),

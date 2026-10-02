@@ -225,10 +225,10 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         if self._test_instance.debug_socket:
             num_workers = 1
         elif (
-            self._test_instance.shards is not None
-            and self._test_instance.shards > 0
+            self._test_instance.jobs is not None
+            and self._test_instance.jobs > 0
         ):
-            num_workers = self._test_instance.shards
+            num_workers = self._test_instance.jobs
         else:
             available_gb = psutil.virtual_memory().available // (1024**3)
             num_workers = min(
@@ -501,7 +501,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
             print(
                 f'To re-run the {len(failed_jobs)} failed shard(s), use: '
-                f'--shards {num_workers} --shard-filter',
+                f'-j {num_workers} --shard-filter',
                 ','.join(str(j.shard_id) for j in failed_jobs),
             )
 
