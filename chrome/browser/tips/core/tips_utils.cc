@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace tips {
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 // TODO(crbug.com/559296862): Deprecate GetTipsNotificationsFeatureTypeMap after
@@ -87,7 +88,6 @@ notifications::NotificationData GetTipsNotificationData(
                                     it->second.second);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 std::string GetFeatureTypePref(TipsNotificationsFeatureType feature_type) {
   switch (feature_type) {
     case TipsNotificationsFeatureType::kEnhancedSafeBrowsing:

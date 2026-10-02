@@ -13,6 +13,7 @@
 
 namespace tips {
 
+#if BUILDFLAG(IS_ANDROID)
 // Constructs and returns the NotificationData object for the requested feature
 // using the provided title and subtitle string resource IDs.
 notifications::NotificationData CreateTipsNotificationData(
@@ -26,7 +27,6 @@ notifications::NotificationData CreateTipsNotificationData(
 notifications::NotificationData GetTipsNotificationData(
     TipsNotificationsFeatureType feature_type);
 
-#if BUILDFLAG(IS_ANDROID)
 // Returns the string representing the pref for recording whether the
 // notification for the feature type in question has been shown before.
 // |feature_type| the feature in question to return the pref for.
