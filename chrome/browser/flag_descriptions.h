@@ -8859,12 +8859,6 @@ inline constexpr char kShowFrozenUpdateNotificationName[] =
 inline constexpr char kShowFrozenUpdateNotificationDescription[] =
     "Enables showing Frozen Update Notifications on ChromeOS Flex devices.";
 
-inline constexpr char kEnableDlpFileSystemApiName[] =
-    "Enable DLP upload scans for FileSystem API.";
-inline constexpr char kEnableDlpFileSystemApiDescription[] =
-    "Enable DLP upload scan support for FileSystem API-backed cloud storage on "
-    "ChromeOS.";
-
 inline constexpr char kAntivirusTelemetryForDownloadsName[] =
     "Antivirus telemetry for downloads";
 inline constexpr char kAntivirusTelemetryForDownloadsDescription[] =
