@@ -1540,6 +1540,13 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 PaymentFeatureList.PAYMENT_REQUEST_ENFORCE_LNA_WITH_CLIENT_SECURITY_STATE,
                 "When enabled, the PaymentRequest will enforce LNA with ClientSecurityState."),
+        Flag.baseFeature(
+                BlinkFeatures.RESAMPLING_SCROLL_EVENTS,
+                "Enables resampling GestureScrollUpdate events at VSync time."),
+        Flag.baseFeature(
+                BlinkFeatures.SCROLL_PREDICTOR_REFINED_HAS_PREDICTION,
+                "Refines ScrollPredictor::HasPrediction() to check prediction availability before"
+                        + " generating synthetic scroll updates."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
