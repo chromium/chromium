@@ -13983,12 +13983,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(payments::android::kGooglePayViaAndroidIntents)},
 #endif
 
-    {"autofill-add-chrome-user-context-fields",
-     flag_descriptions::kAutofillAddChromeUserContextFieldsName,
-     flag_descriptions::kAutofillAddChromeUserContextFieldsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAddChromeUserContextFields)},
-
     {"autofill-enable-card-on-device-verification-enforcement",
      flag_descriptions::kAutofillEnableCardOnDeviceVerificationEnforcementName,
      flag_descriptions::

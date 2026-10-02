@@ -5,13 +5,11 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_create_card_request_test_api.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request_test_api.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,9 +31,6 @@ std::unique_ptr<GetDetailsForCreateCardRequest> CreateRequest() {
 
 TEST(GetDetailsForCreateCardRequestTest,
      GetRequestContent_ContainsExpectedData) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAddChromeUserContextFields);
-
   std::unique_ptr<GetDetailsForCreateCardRequest> request = CreateRequest();
   base::DictValue expected_request_content =
       base::DictValue()

@@ -2815,12 +2815,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kDomainLevelSitePermissionsName,
      flag_descriptions::kDomainLevelSitePermissionsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDomainLevelSitePermissions)},
-    {"autofill-add-chrome-user-context-fields",
-     flag_descriptions::kAutofillAddChromeUserContextFieldsName,
-     flag_descriptions::kAutofillAddChromeUserContextFieldsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillAddChromeUserContextFields)},
     {"enable-account-preview-preferred-account",
      flag_descriptions::kEnableAccountPreviewPreferredAccountName,
      flag_descriptions::kEnableAccountPreviewPreferredAccountDescription,

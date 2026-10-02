@@ -6,10 +6,8 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request_test_api.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -76,9 +74,6 @@ TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest,
 }
 
 TEST_F(GetBnplPaymentInstrumentForFetchingUrlRequestTest, GetRequestContent) {
-  base::test::ScopedFeatureList feature_list(
-      autofill::features::kAutofillAddChromeUserContextFields);
-
   Dict expected_request_dict =
       Dict()
           .Set("context",

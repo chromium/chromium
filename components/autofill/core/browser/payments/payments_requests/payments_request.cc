@@ -26,7 +26,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/version_info/version_info.h"
 
 namespace autofill::payments {
@@ -106,13 +105,10 @@ base::DictValue PaymentsRequest::BuildChromeUserContext(
   base::DictValue chrome_user_context;
 
   // Set client type and major version metadata.
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillAddChromeUserContextFields)) {
-    chrome_user_context.Set("client_type",
-                            static_cast<int>(GetChromeUserContextClientType()));
-    chrome_user_context.Set("chrome_major_version",
-                            version_info::GetMajorVersionNumberAsInt());
-  }
+  chrome_user_context.Set("client_type",
+                          static_cast<int>(GetChromeUserContextClientType()));
+  chrome_user_context.Set("chrome_major_version",
+                          version_info::GetMajorVersionNumberAsInt());
 
   // Set client behavior signals, if they exist.
   if (!client_behavior_signals.empty()) {
