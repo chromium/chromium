@@ -442,6 +442,9 @@ void ClipboardHistoryControllerImpl::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   ClipboardNudgeController::RegisterProfilePrefs(registry);
   registry->RegisterTimePref(prefs::kMultipasteMenuLastTimeShown, base::Time());
+  registry->RegisterIntegerPref(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
 }
 
 void ClipboardHistoryControllerImpl::Shutdown() {

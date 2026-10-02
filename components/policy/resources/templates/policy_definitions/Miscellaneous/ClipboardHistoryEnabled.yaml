@@ -1,0 +1,33 @@
+caption: Enable ChromeOS Clipboard History
+default: 0
+desc: |-
+  This policy controls whether the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Clipboard History feature is enabled.
+
+  Setting the policy to Enabled or not set means that the Clipboard History is enabled and users can access previously copied items using the Clipboard History keyboard shortcut.
+
+  Setting the policy to Disabled means that the Clipboard History is disabled, the Clipboard History menu cannot be opened, and any stored clipboard history items are cleared.
+example_value: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable Clipboard History
+  name: Enabled
+  value: 0
+- caption: Disable Clipboard History
+  name: Disabled
+  value: 1
+owners:
+- aidazolic@google.com
+- file://ash/clipboard/OWNERS
+schema:
+  # These values correspond to the `clipboard_history_util::PolicyValue` enum.
+  # Existing values must never be renumbered and new values must be appended.
+  enum:
+  - 0
+  - 1
+  type: integer
+future_on:
+- chrome_os
+tags: []
+type: int-enum

@@ -2165,6 +2165,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
+  { key::kClipboardHistoryEnabled,
+    ash::prefs::kClipboardHistoryEnabled,
+    base::Value::Type::INTEGER },
   { key::kDeskAPIThirdPartyAccessEnabled,
     prefs::kDeskAPIThirdPartyAccessEnabled,
     base::Value::Type::BOOLEAN },

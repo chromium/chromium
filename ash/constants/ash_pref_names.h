@@ -1917,6 +1917,11 @@ inline constexpr char kMouseReverseScroll[] = "settings.mouse.reverse_scroll";
 inline constexpr char kMultipasteMenuLastTimeShown[] =
     "ash.clipboard.multipaste_menu.last_time_shown";
 
+// An integer pref that indicates whether Clipboard History is enabled by
+// policy. Values correspond to `clipboard_history_util::PolicyValue`.
+inline constexpr char kClipboardHistoryEnabled[] =
+    "ash.clipboard.history_enabled";
+
 // A dictionary storing the number of times and most recent time the multipaste
 // contextual nudge was shown.
 inline constexpr char kMultipasteNudges[] = "ash.clipboard.multipaste_nudges";

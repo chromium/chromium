@@ -37,6 +37,20 @@ constexpr int kMaxClipboardItems = kMaxItemCommandId - kFirstItemCommandId + 1;
 // A value greater than the maximum command ID, used to record histograms.
 constexpr int kCommandIdBoundary = kMaxItemCommandId + 1;
 
+// The value of the `ClipboardHistoryEnabled` policy, stored as an integer in
+// the `prefs::kClipboardHistoryEnabled` pref. These values are part of the
+// enterprise policy contract: existing values must never be renumbered and new
+// values must be appended. Keep in sync with the `ClipboardHistoryEnabled`
+// policy schema in `components/policy/resources/templates/policy_definitions`.
+enum class PolicyValue {
+  // Clipboard history is available to the user.
+  kEnabled = 0,
+
+  // Clipboard history is turned off: the menu cannot be opened and stored
+  // items are cleared.
+  kDisabled = 1,
+};
+
 // The type of the action to take when the clipboard history menu item is
 // activated.
 enum class Action {

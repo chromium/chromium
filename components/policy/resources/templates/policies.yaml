@@ -1490,6 +1490,7 @@ policies:
   1489: LaunchOnStartupEnabled
   1490: DynamicPatchingEnabled
   1491: AllHttpAuthSchemesAllowedForProxies
+  1492: ClipboardHistoryEnabled
 
 atomic_groups:
   1: Homepage
