@@ -136,12 +136,26 @@ LayoutSVGResourceContainer* SVGResource::ResourceContainerNoCycleCheck() const {
   return DynamicTo<LayoutSVGResourceContainer>(target->GetLayoutObject());
 }
 
+LayoutSVGResourceContainer* SVGResource::ResourceContainerForCycleCheck()
+    const {
+  if (auto* container = ResourceContainerNoCycleCheck()) {
+    // Clear the invalidation mask when performing the cycle-check so that it
+    // doesn't block any future invalidations from invalidating the cycle-cache.
+    //
+    // This makes calls to ClearInvalidationMask() from painting code
+    // redundant.
+    container->ClearInvalidationMask();
+    return container;
+  }
+  return nullptr;
+}
+
 LayoutSVGResourceContainer* SVGResource::ResourceContainer(
     SVGResourceClient& client) const {
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return nullptr;
-  auto* container = ResourceContainerNoCycleCheck();
+  auto* container = ResourceContainerForCycleCheck();
   if (!container)
     return nullptr;
   if (it->value.cached_cycle_check == kNeedCheck) {
@@ -164,7 +178,7 @@ bool SVGResource::FindCycle(SVGResourceClient& client) const {
   auto it = clients_.find(&client);
   if (it == clients_.end())
     return false;
-  auto* container = ResourceContainerNoCycleCheck();
+  auto* container = ResourceContainerForCycleCheck();
   if (!container)
     return false;
   ClientEntry& entry = it->value;

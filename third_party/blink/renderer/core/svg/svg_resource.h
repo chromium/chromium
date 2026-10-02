@@ -103,6 +103,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
  protected:
   SVGResource();
 
+  LayoutSVGResourceContainer* ResourceContainerForCycleCheck() const;
   void InvalidateCycleCache();
   virtual void UpdateContentLifecycleForUse() const = 0;
   void NotifyContentChanged();
