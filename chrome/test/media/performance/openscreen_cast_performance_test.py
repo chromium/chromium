@@ -98,10 +98,7 @@ def should_run_vp9_tests(args) -> bool:
             cpu_cmd = (
                 'powershell -Command "(Get-CimInstance Win32_Processor).Name"')
             try:
-                cpu_res = common.send_ssh_command(args.sender,
-                                                  args.username,
-                                                  cpu_cmd,
-                                                  blocking=True)
+                cpu_res = common.make_sender(args).run(cpu_cmd)
                 cpu_name = cpu_res.stdout.upper()
             except Exception as e:
                 logging.warning("Failed to check remote CPU: %s", e)
@@ -150,7 +147,8 @@ def setup_test_environment(args,
         tuple: A tuple containing the WebDriver, the tunnel process, and the
                actual chrome version used.
     """
-    common.verify_sender_connectivity(args)
+    sender = common.make_sender(args)
+    sender.verify_connectivity()
     if chrome_options_list is None:
         chrome_options_list = CHROME_OPTIONS
 
@@ -171,19 +169,16 @@ def setup_test_environment(args,
         enable_tab_mirroring(driver)
         return driver, cb_platform, actual_version, trace_file_path
 
-    common.terminate_old_chromedriver(args)
-    remote_app_path, actual_version = common.install_and_setup_chrome(
-        args, chrome_version)
-    common.wait_for_chromedriver(args, actual_version, codec_name)
-    tunnel_proc = common.start_ssh_tunnel(args)
+    sender.terminate_chromedriver()
+    remote_app_path, actual_version = sender.install_chrome(chrome_version)
+    sender.wait_for_chromedriver()
+    tunnel_proc = sender.start_tunnel()
 
     chrome_options = ChromeOptions()
 
     # Enable native Chrome tracing to file for the entire session.
     video_key = f"{codec_name}_{video_name}" if video_name else codec_name
-    trace_file_path = (
-        f'{common.WIN_REMOTE_TMP_DIR}/{video_key}_sender.perfetto-trace' if
-        args.sender_os == 'win' else f'/tmp/{video_key}_sender.perfetto-trace')
+    trace_file_path = f'{sender.TMP_DIR}/{video_key}_sender.perfetto-trace'
     chrome_options.add_argument('--trace-startup')
     chrome_options.add_argument(f'--trace-startup-file={trace_file_path}')
     chrome_options.add_argument(
@@ -194,10 +189,7 @@ def setup_test_environment(args,
         chrome_options.add_argument(option)
 
     # Dynamically set the --log-file path.
-    video_key = f"{codec_name}_{video_name}" if video_name else codec_name
-    log_file_path = (
-        f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug_{video_key}.log'
-        if args.sender_os == 'win' else f'/tmp/chrome_debug_{video_key}.log')
+    log_file_path = f'{sender.TMP_DIR}/chrome_debug_{video_key}.log'
     chrome_options.add_argument(f'--log-file={log_file_path}')
 
     binary_path = None
@@ -567,14 +559,9 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
                 log_file_path = f'/tmp/chrome_debug_{video_key}.log'
             sender_log_local_path = os.path.join(
                 common.TRACES_DIR, f"{video_key}_chrome_debug.log")
-            key_path = os.path.expanduser('~/.ssh/id_ed25519')
-            subprocess.run([
-                'scp', '-i', key_path, '-o', 'StrictHostKeyChecking=no',
-                f'{args.username}@{args.sender}:{log_file_path}',
-                sender_log_local_path
-            ],
-                           check=False,
-                           timeout=30)
+            common.make_sender(args).copy_from(log_file_path,
+                                               sender_log_local_path,
+                                               timeout=30)
         except Exception as e:
             logging.error("Failed to collect sender log: %s", e)
 
@@ -845,15 +832,10 @@ def main():
                             sender_trace_local_path = os.path.join(
                                 common.TRACES_DIR,
                                 f"{video_key}_sender.perfetto-trace")
-                            key_path = os.path.expanduser('~/.ssh/id_ed25519')
-                            subprocess.run([
-                                'scp', '-i', key_path, '-o',
-                                'StrictHostKeyChecking=no',
-                                f'{args.username}@{args.sender}:'
-                                f'{trace_file_path}', sender_trace_local_path
-                            ],
-                                           check=False,
-                                           timeout=60)
+                            common.make_sender(args).copy_from(
+                                trace_file_path,
+                                sender_trace_local_path,
+                                timeout=60)
                         except Exception as e:
                             logging.error(
                                 "Failed to collect sender perfetto trace: %s",

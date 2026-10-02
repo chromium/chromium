@@ -18,4 +18,9 @@
 ../../../../fuchsia_web/av_testing/server.py
 ../../../../fuchsia_web/av_testing/video_analyzer.py
 common.py
+cros_setup.py
+media_metrics.py
 openscreen_cast_performance_test.py
+perf_config.py
+remote_transport.py
+senders.py

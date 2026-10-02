@@ -7,7 +7,14 @@ import("//build/config/vpython.gni")
 
 python_library("common") {
   testonly = true
-  data = [ "common.py" ]
+  data = [
+    "common.py",
+    "cros_setup.py",
+    "media_metrics.py",
+    "perf_config.py",
+    "remote_transport.py",
+    "senders.py",
+  ]
 }
 
 python_library("videostack_performance_test") {

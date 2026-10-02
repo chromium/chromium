@@ -80,11 +80,11 @@ def setup_test_environment(args, chrome_version):
         return common.setup_cros_environment(args, chrome_version,
                                              CHROME_OPTIONS)
 
-    common.terminate_old_chromedriver(args)
-    remote_app_path, actual_version = common.install_and_setup_chrome(
-        args, chrome_version)
-    common.wait_for_chromedriver(args)
-    tunnel_proc = common.start_ssh_tunnel(args)
+    sender = common.make_sender(args)
+    sender.terminate_chromedriver()
+    remote_app_path, actual_version = sender.install_chrome(chrome_version)
+    sender.wait_for_chromedriver()
+    tunnel_proc = sender.start_tunnel()
 
     chrome_options = ChromeOptions()
     for option in CHROME_OPTIONS:
