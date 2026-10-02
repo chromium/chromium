@@ -14,7 +14,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -897,6 +899,9 @@ void ContextualTasksExtensionHandler::AddTabContext(
     session_handle->AddDelayedTabContext(
         *result, session_id.id(), tab_contents->GetLastCommittedURL(),
         base::UTF16ToUTF8(tab_contents->GetTitle()));
+    // Associate the tab with the task as soon as it is attached as context so
+    // the task knows which tabs are part of it.
+    AssociateTabWithTask(session_id);
     UpdateContextLibraryInputState();
   }
 
@@ -930,6 +935,7 @@ void ContextualTasksExtensionHandler::DeleteContext(
     input_state_model_->OnContextChanged();
   }
   UpdateContextLibraryInputState();
+  RefreshActiveTaskContext();
 }
 
 void ContextualTasksExtensionHandler::DeleteTabContext(int32_t tab_id) {
@@ -976,6 +982,7 @@ void ContextualTasksExtensionHandler::DeleteTabContext(int32_t tab_id) {
     input_state_model_->OnContextChanged();
   }
   UpdateContextLibraryInputState();
+  RefreshActiveTaskContext();
 }
 
 void ContextualTasksExtensionHandler::ClearFiles(
@@ -997,6 +1004,7 @@ void ContextualTasksExtensionHandler::ClearFiles(
     input_state_model_->OnContextChanged();
   }
   UpdateContextLibraryInputState();
+  RefreshActiveTaskContext();
 }
 void ContextualTasksExtensionHandler::SubmitQuery(const std::string& query_text,
                                                   uint8_t mouse_button,
@@ -1105,6 +1113,31 @@ ContextualTasksExtensionHandler::GetBrowserWindowInterface() const {
   auto* tab = tabs::TabInterface::MaybeGetFromContents(host_contents);
   return tab ? tab->GetBrowserWindowInterface()
              : webui::GetBrowserWindowInterface(host_contents);
+}
+
+void ContextualTasksExtensionHandler::AssociateTabWithTask(
+    SessionID tab_session_id) {
+  if (!task_id_.has_value() || !tab_session_id.is_valid()) {
+    return;
+  }
+  Profile* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  if (auto* service =
+          contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
+              profile)) {
+    service->AssociateTabWithTask(*task_id_, tab_session_id);
+  }
+}
+
+void ContextualTasksExtensionHandler::RefreshActiveTaskContext() {
+  auto* browser_window_interface = GetBrowserWindowInterface();
+  if (!browser_window_interface) {
+    return;
+  }
+  if (auto* provider = contextual_tasks::ActiveTaskContextProvider::From(
+          browser_window_interface)) {
+    provider->RefreshContext();
+  }
 }
 
 bool ContextualTasksExtensionHandler::IsEmbeddedInSidePanel() const {

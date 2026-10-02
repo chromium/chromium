@@ -22,6 +22,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_observer.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -252,6 +253,13 @@ class ContextualTasksExtensionHandler
   BrowserWindowInterface* GetBrowserWindowInterface() const;
   bool IsEmbeddedInSidePanel() const;
   std::vector<contextual_search::TabInfo> GetSelectedTabs();
+
+  // Associates `tab_session_id` with the handler's task, if any, so the task
+  // knows which tabs have been attached as context.
+  void AssociateTabWithTask(SessionID tab_session_id);
+  // Asks the browser window's ActiveTaskContextProvider to recompute the
+  // active task context (e.g. tab underlines) after context was removed.
+  void RefreshActiveTaskContext();
 
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
