@@ -77,6 +77,7 @@
 #include "content/public/browser/page.h"
 #include "content/public/browser/visibility.h"
 #else
+#include "chrome/browser/ui/browser_command_controller.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
@@ -531,6 +532,21 @@ void ChromeTranslateClient::OnLanguageDetermined(
   if (manual_translate_on_ready_) {
     GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true);
     manual_translate_on_ready_ = false;
+  }
+#else
+  // The availability of the app menu's Translate command depends on the
+  // detected source language. Language detection may complete after the last
+  // tab state update (e.g. for PDFs, where detection runs once the document
+  // text is available), so refresh the browser's command state here.
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+          web_contents());
+  if (browser &&
+      web_contents() == browser->GetTabStripModel()->GetActiveWebContents()) {
+    if (auto* command_controller =
+            chrome::BrowserCommandController::From(browser)) {
+      command_controller->TabStateChanged();
+    }
   }
 #endif
 }

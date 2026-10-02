@@ -69,10 +69,13 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/scoped_observation.h"
 #include "base/test/test_future.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/translate/content/browser/pdf_translation_coordinator.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_driver.h"
+#include "net/base/network_change_notifier.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace translate {
@@ -1742,6 +1745,32 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerPdfBrowserTest,
   ASSERT_TRUE(coordinator);
   EXPECT_EQ(coordinator->status(),
             PDFTranslationCoordinator::TranslatabilityStatus::kTranslatable);
+}
+
+// Test that the app menu's Translate command is enabled once the language of a
+// full-page PDF has been determined. PDF language detection completes after
+// the page has loaded, so the command state must be refreshed when the
+// language is determined rather than relying on navigation/load updates.
+IN_PROC_BROWSER_TEST_F(TranslateManagerPdfBrowserTest,
+                       ShowTranslateCommandEnabledAfterPdfLanguageDetermined) {
+  TranslateManager::SetIgnoreMissingKeyForTesting(true);
+  net::NetworkChangeNotifier::CreateMockIfNeeded();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/pdf/accessibility/paragraphs-and-heading-untagged.pdf")));
+
+  ChromeTranslateClient* client = GetChromeTranslateClient();
+  ASSERT_TRUE(client);
+
+  // Wait for PDF language detection to complete. Do not explicitly trigger a
+  // tab state update; the command state should be refreshed automatically.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !client->GetLanguageState().source_language().empty(); }));
+
+  EXPECT_TRUE(chrome::BrowserCommandController::From(browser())
+                  ->IsCommandEnabled(IDC_SHOW_TRANSLATE));
 }
 
 // Test that loading an HTML page with an embedded PDF drops PDF translation
