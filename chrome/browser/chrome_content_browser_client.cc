@@ -8359,7 +8359,10 @@ ChromeContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  if (profile->GetPrefs()->GetBoolean(
+  // The opt-out preference below is only registered for profiles that support
+  // enterprise policies. Skip the check for profiles that do not support them.
+  if (profile->GetProfilePolicyConnector() &&
+      profile->GetPrefs()->GetBoolean(
           prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut)) {
     return content::ContentBrowserClient::
         LocalNetworkAccessRequestPolicyOverride::kWarnInsteadOfBlock;
