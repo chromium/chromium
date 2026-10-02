@@ -11,6 +11,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace glic {
@@ -53,6 +54,33 @@ IN_PROC_BROWSER_TEST_P(GlicDragAndDropBrowserTest, testDragAndDropFile) {
   }));
   host_relative_point = GetGuestCenterInHost(*glic_host);
   ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
+
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicDragAndDropBrowserTest,
+                       testDragAndDropTextRejected) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  ASSERT_TRUE(
+      simulator.SimulateDragEnter(host_relative_point, "Disallowed text"));
+  ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
+
+  // In the Webview variant (!GetParam()), flush the outer WebUI main frame
+  // first so its async Viz hit-test callback finishes and queues any
+  // forwarded DragTarget* IPCs to the inner guest frame before
+  // ContinueJsTest() evaluates on the guest frame.
+  if (!GetParam()) {
+    ASSERT_TRUE(
+        content::ExecJs(glic_host->webui_contents()->GetPrimaryMainFrame(), "",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  }
 
   ContinueJsTest();
 }
