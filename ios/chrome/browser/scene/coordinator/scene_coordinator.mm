@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
 #import "base/cancelable_callback.h"
-#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -1102,7 +1101,7 @@ inline LayoutStateScenePassKey PassKey() {
 }
 
 - (void)openNewWindowWithActivity:(NSUserActivity*)userActivity {
-  if (!base::ios::IsMultipleScenesSupported()) {
+  if (!self.sceneState.multipleScenesAvailable) {
     return;  // silent no-op.
   }
 

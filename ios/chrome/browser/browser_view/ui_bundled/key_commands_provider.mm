@@ -25,6 +25,8 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -60,7 +62,7 @@
 using base::RecordAction;
 using base::UserMetricsAction;
 
-@interface KeyCommandsProvider () {
+@interface KeyCommandsProvider () <SceneStateObserver> {
   // The current browser object.
   base::WeakPtr<Browser> _browser;
 }
@@ -99,6 +101,7 @@ using base::UserMetricsAction;
   self = [super init];
   if (self) {
     _browser = browser->AsWeakPtr();
+    [browser->GetSceneState() addObserver:self];
     [[NSNotificationCenter defaultCenter]
         addObserver:self
            selector:@selector(keyboardDidShow)
@@ -250,6 +253,10 @@ using base::UserMetricsAction;
     // Don't open incognito tab if incognito is disabled by policy.
     return !IsIncognitoModeDisabled(_browser->GetProfile()->GetPrefs());
   }
+  if (sel_isEqual(action, @selector(keyCommand_openNewWindow)) ||
+      sel_isEqual(action, @selector(keyCommand_openNewIncognitoWindow))) {
+    return _browser->GetSceneState().multipleScenesAvailable;
+  }
   if (sel_isEqual(action, @selector(keyCommand_clearBrowsingData))) {
     // Clear Browsing Data shouldn't be available in incognito mode.
     return !_browser->GetProfile()->IsOffTheRecord();
@@ -282,6 +289,13 @@ using base::UserMetricsAction;
     command.discoverabilityTitle = newTitle;
   }
   [super validateCommand:command];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    multipleScenesAvailabilityDidChange:(BOOL)multipleScenesAvailable {
+  [UIMenuSystem.mainSystem setNeedsRevalidate];
 }
 
 #pragma mark - Key Command Actions

@@ -243,11 +243,21 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewTab"));
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewRegularTab"));
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoTab"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_openNewWindow"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_goToTabGrid"));
+}
+
+// Test whether KeyCommandsProvider can perform the open new window actions
+// based on `scene_state_.multipleScenesAvailable`.
+TEST_F(KeyCommandsProviderTest, CanPerform_OpenNewWindowActions) {
+  scene_state_.multipleScenesAvailable = NO;
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewWindow"));
+  EXPECT_FALSE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
+
+  scene_state_.multipleScenesAvailable = YES;
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewWindow"));
+  EXPECT_TRUE(CanPerform(@"keyCommand_openNewIncognitoWindow"));
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are always
