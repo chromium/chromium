@@ -13,8 +13,8 @@
 
 namespace {
 
-const SelectFileDialogExtension::RoutingID kDefaultRoutingID =
-    SelectFileDialogExtension::RoutingID();
+// RoutingID is a std::string; the default one is empty.
+constexpr char kDefaultRoutingID[] = "";
 
 }  // namespace
 

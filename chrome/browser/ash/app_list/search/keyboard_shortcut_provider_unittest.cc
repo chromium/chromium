@@ -21,8 +21,8 @@
 namespace app_list::test {
 namespace {
 
-constexpr std::u16string kText = u"fake query";
-constexpr std::u16string kIrrelevantText = u"irrelevant";
+constexpr char16_t kText[] = u"fake query";
+constexpr char16_t kIrrelevantText[] = u"irrelevant";
 
 constexpr double kResultRelevanceThreshold = 0.79;
 constexpr size_t kMaxResults = 3u;

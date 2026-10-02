@@ -114,9 +114,7 @@ constexpr char kKbdDefaultCustomTopRowLayout[] =
     "01 02 03 04 05 06 07 08 09 0a 0b 0c 0d 0e 0f";
 
 // Tag used to mark events as being for quick insert.
-constexpr std::pair<std::string, std::vector<uint8_t>> kPropertyQuickInsert = {
-    "quick_insert_event",
-    {}};
+constexpr char kPropertyQuickInsert[] = "quick_insert_event";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kCros1pInputMethodIdPrefix[] =
@@ -1718,9 +1716,9 @@ TEST_F(EventRewriterTest, TestRewriteToQuickInsert) {
     SCOPED_TRACE(keyboard.name);
     SetUpKeyboard(keyboard);
 
-    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
+    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {{kPropertyQuickInsert, {}}}),
               RunRewriter(KeyLControl::Typed()));
-    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
+    EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {{kPropertyQuickInsert, {}}}),
               RunRewriter(KeyLMeta::Typed()));
   }
 }
@@ -1833,7 +1831,7 @@ TEST_F(EventRewriterTest, TestRewriteFromQuickInsert) {
   SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
 
   // Test that identity is working as expected.
-  EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
+  EXPECT_EQ(KeyQuickInsert::Typed(ui::EF_NONE, {{kPropertyQuickInsert, {}}}),
             RunRewriter(KeyLaunchAssistant::Typed()));
 
   // Remap QuickInsert to Control
@@ -4435,15 +4433,15 @@ TEST_F(EventRewriterTest, CapsLockRemappingFnBased) {
 
   for (const auto flag :
        {ui::EF_NONE, ui::EF_CONTROL_DOWN, ui::EF_SHIFT_DOWN, ui::EF_ALT_DOWN}) {
-    EXPECT_EQ(
-        KeyCapsLock::Typed(flag | ui::EF_CAPS_LOCK_ON),
-        RunRewriter(KeyQuickInsert::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
-                    ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(KeyCapsLock::Typed(flag | ui::EF_CAPS_LOCK_ON),
+              RunRewriter(KeyQuickInsert::Typed(ui::EF_NONE,
+                                                {{kPropertyQuickInsert, {}}}),
+                          ui::EF_FUNCTION_DOWN | flag));
     EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
     EXPECT_EQ(KeyCapsLock::Typed(flag),
               RunRewriter(KeyQuickInsert::Typed(ui::EF_CAPS_LOCK_ON,
-                                                {kPropertyQuickInsert}),
+                                                {{kPropertyQuickInsert, {}}}),
                           ui::EF_FUNCTION_DOWN | flag));
     EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
   }
@@ -4453,14 +4451,14 @@ TEST_F(EventRewriterTest, CapsLockRemappingFnBasedJpnLayout) {
   SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
 
   EXPECT_EQ(KeyCapsLock::Typed(ui::EF_CAPS_LOCK_ON),
-            RunRewriter(
-                KeyJpnAlphanumeric::Typed(ui::EF_NONE, {kPropertyQuickInsert}),
-                ui::EF_FUNCTION_DOWN));
+            RunRewriter(KeyJpnAlphanumeric::Typed(ui::EF_NONE,
+                                                  {{kPropertyQuickInsert, {}}}),
+                        ui::EF_FUNCTION_DOWN));
   EXPECT_TRUE(fake_ime_keyboard_.IsCapsLockEnabled());
 
   EXPECT_EQ(KeyCapsLock::Typed(),
             RunRewriter(KeyJpnAlphanumeric::Typed(ui::EF_CAPS_LOCK_ON,
-                                                  {kPropertyQuickInsert}),
+                                                  {{kPropertyQuickInsert, {}}}),
                         ui::EF_FUNCTION_DOWN));
   EXPECT_FALSE(fake_ime_keyboard_.IsCapsLockEnabled());
 }
@@ -4487,14 +4485,14 @@ TEST_F(EventRewriterTest, CapsLockRemappingFnBasedReleaseOrdering) {
   EXPECT_EQ(
       std::vector<TestKeyEvent>({KeyCapsLock::Pressed(ui::EF_CAPS_LOCK_ON)}),
       RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Pressed(
-          ui::EF_FUNCTION_DOWN, {kPropertyQuickInsert})}));
+          ui::EF_FUNCTION_DOWN, {{kPropertyQuickInsert, {}}})}));
   EXPECT_EQ(std::vector<TestKeyEvent>(),
             RunRewriter(std::vector<TestKeyEvent>{
                 KeyFunction::Released(ui::EF_CAPS_LOCK_ON)}));
   EXPECT_EQ(
       std::vector<TestKeyEvent>({KeyCapsLock::Released(ui::EF_CAPS_LOCK_ON)}),
       RunRewriter(std::vector<TestKeyEvent>{KeyQuickInsert::Released(
-          ui::EF_CAPS_LOCK_ON, {kPropertyQuickInsert})}));
+          ui::EF_CAPS_LOCK_ON, {{kPropertyQuickInsert, {}}})}));
 }
 
 class ModifierPressedMetricsTest

@@ -46,7 +46,7 @@ constexpr char kTestAppActionUrl[] = "https://www.example.com/path/share";
 constexpr char kTestAppIcon[] = "https://www.example.com/icon.png";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestShareTextParam[] = "share_text";
-const std::u16string kTestAppTitle = u"Test App";
+constexpr char16_t kTestAppTitle[] = u"Test App";
 
 std::unique_ptr<web_app::WebAppInstallInfo> BuildDefaultWebAppInfo() {
   auto app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(

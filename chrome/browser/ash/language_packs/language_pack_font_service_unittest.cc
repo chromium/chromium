@@ -141,14 +141,14 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 struct ValidFontLanguageTestCase {
-  std::string test_name;
+  std::string_view test_name;
   std::string_view preferred_languages_one_locale;
   std::string_view preferred_languages_two_locales;
-  std::string dlc_prefix;
-  std::string dlc_path;
+  std::string_view dlc_prefix;
+  std::string_view dlc_path;
 };
 
-static const ValidFontLanguageTestCase kValidFontLanguageTestCases[] = {
+constexpr ValidFontLanguageTestCase kValidFontLanguageTestCases[] = {
     {"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
     {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}};
 
@@ -162,7 +162,7 @@ INSTANTIATE_TEST_SUITE_P(
     LanguagePackFontServiceValidFontLanguageTest,
     ValuesIn(kValidFontLanguageTestCases),
     [](const testing::TestParamInfo<ValidFontLanguageTestCase>& info) {
-      return info.param.test_name;
+      return std::string(info.param.test_name);
     });
 
 using LaddlValidFontLanguageTestCase =
@@ -313,7 +313,7 @@ TEST_P(LanguagePackFontServiceLaddlValidFontLanguageTest,
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-constexpr std::string kUnusedDlcPath = "/path/to/unused/dlc";
+constexpr char kUnusedDlcPath[] = "/path/to/unused/dlc";
 
 TEST_P(LanguagePackFontServiceLaddlTest, AddNothingOnUnrelatedLocaleChange) {
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));

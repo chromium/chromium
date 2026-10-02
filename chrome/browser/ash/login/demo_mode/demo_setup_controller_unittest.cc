@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -566,8 +567,8 @@ TEST_F(DemoSetupControllerTest, OnlineSuccessWithValidRetailerAndStore) {
 }
 
 struct RetailerNameCanonicalizationTestCase {
-  std::string retailer_name;
-  std::string canonicalized_retailer_name;
+  std::string_view retailer_name;
+  std::string_view canonicalized_retailer_name;
 };
 
 class RetailerNameCanonicalizationTest
@@ -580,12 +581,13 @@ class RetailerNameCanonicalizationTest
 };
 
 TEST_P(RetailerNameCanonicalizationTest, SetAndCanonicalizeRetailerName) {
-  tested_controller_->SetAndCanonicalizeRetailerName(GetParam().retailer_name);
+  tested_controller_->SetAndCanonicalizeRetailerName(
+      std::string(GetParam().retailer_name));
   ASSERT_EQ(tested_controller_->get_retailer_name_for_testing(),
             GetParam().canonicalized_retailer_name);
 }
 
-const RetailerNameCanonicalizationTestCase kRetailerNameTestCases[] = {
+constexpr RetailerNameCanonicalizationTestCase kRetailerNameTestCases[] = {
     {"retailer", "retailer"},
     {"RETAILER", "retailer"},
     {"ReTaiLeR", "retailer"},

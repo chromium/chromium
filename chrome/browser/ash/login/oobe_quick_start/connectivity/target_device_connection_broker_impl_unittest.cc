@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <array>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/command_line.h"
@@ -12,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -84,10 +86,10 @@ std::vector<uint8_t> Base64DecodeForgiving(base::span<uint8_t> input) {
 
 struct EndpointInfoTestCase {
   chromeos::DeviceType device_type;
-  std::string expected_display_name;
+  std::string_view expected_display_name;
 };
 
-const EndpointInfoTestCase kEndpointInfoTestCases[] = {
+constexpr EndpointInfoTestCase kEndpointInfoTestCases[] = {
     {chromeos::DeviceType::kChromebook, "Chromebook"},
     {chromeos::DeviceType::kChromebox, "Chromebox"},
     {chromeos::DeviceType::kChromebit, "Chromebit"},
@@ -602,8 +604,9 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
   }
   std::string display_name =
       std::string(display_name_bytes.begin(), display_name_bytes.end());
-  std::string expected_display_name = GetParam().expected_display_name + " (" +
-                                      advertising_id_.GetDisplayCode() + ")";
+  std::string expected_display_name =
+      base::StrCat({GetParam().expected_display_name, " (",
+                    advertising_id_.GetDisplayCode(), ")"});
   EXPECT_EQ(expected_display_name, display_name);
   i += j;
 

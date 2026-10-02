@@ -4,6 +4,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -50,8 +51,8 @@ constexpr char kTestAffiliationId[] = "test_affiliation_id";
 
 struct LockUnlockReporterBrowserTestData {
   bool success;
-  std::string user_password;
-  std::string entered_password;
+  std::string_view user_password;
+  std::string_view entered_password;
 };
 
 Record GetNextLockUnlockRecord(MissiveClientTestObserver* observer) {
@@ -125,8 +126,8 @@ class LockUnlockReporterBrowserTest
 
 IN_PROC_BROWSER_TEST_P(LockUnlockReporterBrowserTest, ReportLockAndUnlockTest) {
   bool success = GetParam().success;
-  std::string kUserPassword = GetParam().user_password;
-  std::string kEnteredPassword = GetParam().entered_password;
+  std::string kUserPassword(GetParam().user_password);
+  std::string kEnteredPassword(GetParam().entered_password);
   MissiveClientTestObserver observer(Destination::LOCK_UNLOCK_EVENTS);
   LoginUser(managed_user_);
 
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(LockUnlockReporterBrowserTest, ReportLockAndUnlockTest) {
               StrEq(kTestUserEmail));
 }
 
-const LockUnlockReporterBrowserTestData kTestingParams[] = {
+constexpr LockUnlockReporterBrowserTestData kTestingParams[] = {
     {.success = true, .user_password = "pass", .entered_password = "pass"},
     {.success = false, .user_password = "pass", .entered_password = "password"},
 };

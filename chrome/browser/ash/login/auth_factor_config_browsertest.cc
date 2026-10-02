@@ -44,17 +44,17 @@ namespace {
 
 // A complex password of length 12 containing lowercase and uppercase
 // characters, digits, and symbols.
-constexpr std::string kComplexPassword = "abcDEF123+-%";
+constexpr char kComplexPassword[] = "abcDEF123+-%";
 
 // A simple password of length 14. It passes the original check which was only
 // checking that the length was at least 8.
-constexpr std::string kSimplePassword = "simplepassword";
+constexpr char kSimplePassword[] = "simplepassword";
 
 // A short password of length 5.
-constexpr std::string kShortPassword = "short";
+constexpr char kShortPassword[] = "short";
 
 // An invalid token.
-constexpr std::string kInvalidToken = "invalid_token";
+constexpr char kInvalidToken[] = "invalid_token";
 
 // A PIN that fails complexity requirements.
 constexpr char kWeakPin[] = "111111";
@@ -232,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
 // insufficiently complex passwords.
 IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithLocalPassword,
                        UpdateLocalPasswordComplexityFailure) {
-  static const std::string kBadPassword = "asdfas∆";
+  static constexpr char kBadPassword[] = "asdfas∆";
 
   std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
   ASSERT_TRUE(auth_token.has_value());

@@ -39,7 +39,7 @@ constexpr char kTestAppActionUrl[] = "https://www.example.com/share";
 constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestShareTextParam[] = "share_text";
 constexpr char kTestWebApkPackageName[] = "org.chromium.webapk.some_package";
-const std::u16string kTestAppTitle = u"Test App";
+constexpr char16_t kTestAppTitle[] = u"Test App";
 
 std::unique_ptr<web_app::WebAppInstallInfo> BuildDefaultWebAppInfo(
     GURL app_url = GURL(kTestAppUrl)) {
