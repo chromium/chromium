@@ -418,7 +418,9 @@ suite('cr_lottie_test', function() {
     mockController.verifyMocks();
   });
 
-  test('TestDynamicFalseIgnoresThemeChange', async function() {
+  // TODO(crbug.com/568687585): Rendering the tokenized animation crashes the
+  // GPU process with a Checked Span CHECK.
+  test.skip('TestDynamicFalseIgnoresThemeChange', async function() {
     createLottieElement(/*autoplay=*/ true);
     assertFalse(crLottieElement.dynamic);
     crLottieElement.animationUrl = SAMPLE_LOTTIE_TOKENIZED;
@@ -440,7 +442,9 @@ suite('cr_lottie_test', function() {
     assertDeepEquals(GREEN_PIXEL, pixel);
   });
 
-  test('TestDynamicTrueUpdatesColorsOnThemeChange', async function() {
+  // TODO(crbug.com/568687585): Rendering the tokenized animation crashes the
+  // GPU process with a Checked Span CHECK.
+  test.skip('TestDynamicTrueUpdatesColorsOnThemeChange', async function() {
     createLottieElement(/*autoplay=*/ true);
     crLottieElement.dynamic = true;
     crLottieElement.animationUrl = SAMPLE_LOTTIE_TOKENIZED;
@@ -461,7 +465,9 @@ suite('cr_lottie_test', function() {
     await pollUntilRendered(BLUE_PIXEL);
   });
 
-  test(
+  // TODO(crbug.com/568687585): Rendering the tokenized animation crashes the
+  // GPU process with a Checked Span CHECK.
+  test.skip(
       'TestDynamicThemeChangeFiresInitializedWithColorsChangedReason',
       async () => {
         createLottieElement(/*autoplay=*/ true);
