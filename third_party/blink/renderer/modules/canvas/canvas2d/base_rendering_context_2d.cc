@@ -108,6 +108,8 @@
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -235,7 +237,8 @@ bool BaseRenderingContext2D::WritePixelsToProvider(const SkImageInfo& orig_info,
                                                y);
   }
   if (bitmap_provider_) {
-    return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+    return bitmap_provider_->surface()->getCanvas()->writePixels(
+        orig_info, pixels, row_bytes, x, y);
   }
   return false;
 }

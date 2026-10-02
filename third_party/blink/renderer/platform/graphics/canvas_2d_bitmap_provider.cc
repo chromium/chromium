@@ -178,15 +178,6 @@ void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
   }
 }
 
-bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
-                                         const void* pixels,
-                                         size_t row_bytes,
-                                         int x,
-                                         int y) {
-  TRACE_EVENT0("blink", "Canvas2DBitmapProvider::WritePixels");
-  return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x, y);
-}
-
 std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
     gfx::Size size,
     viz::SharedImageFormat format,

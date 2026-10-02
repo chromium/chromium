@@ -65,11 +65,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
       ImageOrientation = ImageOrientationEnum::kDefault);
 
   void RasterRecord(cc::PaintRecord last_recording);
-  bool WritePixels(const SkImageInfo& orig_info,
-                   const void* pixels,
-                   size_t row_bytes,
-                   int x,
-                   int y);
+  SkSurface* surface() const { return surface_.get(); }
 
  private:
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
