@@ -83,13 +83,14 @@ def _parse_and_resolve(filename, contents):
 def _parse_kotlin_file(filename,
                        contents,
                        package_prefix=None,
+                       allow_private_called_by_natives=False,
                        enable_safe_pointers=False):
   return kotlin_parse.parse_kotlin_file(
       filename,
       contents,
       package_prefix=package_prefix,
       package_prefix_filter=None,
-      allow_private_called_by_natives=False,
+      allow_private_called_by_natives=allow_private_called_by_natives,
       enable_safe_pointers=enable_safe_pointers)
 
 
@@ -1111,6 +1112,134 @@ class SafePointerTest {
       _parse_kotlin_file('SafePointerTest.kt',
                          contents_nullable_self,
                          enable_safe_pointers=True)
+
+  def testParseKotlinCalledByNative(self):
+    contents = """
+package org.jni_zero
+
+class MyFeature @CalledByNative constructor(val id: Long) {
+    @CalledByNative
+    constructor(name: String) : this(0)
+
+    @get:CalledByNative
+    val count: Int = 42
+
+    @get:CalledByNative
+    val isEnabled: Boolean = true
+
+    @CalledByNative
+    fun onEvent(code: Int, message: String): Boolean {
+        return true
+    }
+
+    @CalledByNativeForTesting
+    fun onForTesting() {}
+
+    @CalledByNativeUnchecked
+    fun onUnchecked(): Int = 1
+
+    companion object Factory {
+        @JvmStatic
+        @CalledByNative
+        fun create(id: Long): MyFeature = MyFeature(id)
+
+        @get:JvmStatic
+        @get:CalledByNative
+        val staticCount: Int = 42
+    }
+
+    object Helper {
+        @JvmStatic
+        @CalledByNative
+        fun help() {}
+    }
+
+    sealed interface State
+    data object Idle : State
+
+    class Inner {
+        @CalledByNative
+        fun innerMethod(): Int = 2
+    }
+}
+"""
+    expected = """\
+public class MyFeature {
+  public void <init>(long id);
+  public void <init>(String name);
+  public int getCount();
+  public boolean isEnabled();
+  public boolean onEvent(int code, String message);
+  public void onForTesting();
+  public int onUnchecked();
+  public static MyFeature create(long id);
+  public static int getStaticCount();
+}
+public class MyFeature.Helper {
+  public static void help();
+}
+public class MyFeature.Inner {
+  public int innerMethod();
+}
+"""
+    parsed_file = _parse_kotlin_file('MyFeature.kt', contents)
+    self._assert_golden(expected, parsed_file)
+    unchecked = [
+        cbn.name for c in parsed_file.classes_with_jni
+        for cbn in c.called_by_natives if cbn.unchecked
+    ]
+    self.assertEqual(unchecked, ['onUnchecked'])
+
+  def testParseKotlinCalledByNativeSingletonObject(self):
+    contents = """
+package org.jni_zero
+
+object MySingleton {
+    @JvmStatic
+    @CalledByNative
+    fun foo(): Int = 1
+}
+"""
+    expected = """\
+public class MySingleton {
+  public static int foo();
+}
+"""
+    parsed_file = _parse_kotlin_file('MySingleton.kt', contents)
+    self._assert_golden(expected, parsed_file)
+
+  def testParseKotlinCalledByNativeErrors(self):
+
+    def parse_members(members, **kwargs):
+      contents = f'package org.jni_zero\nclass MyFeature {{\n{members}}}\n'
+      return _parse_kotlin_file('MyFeature.kt', contents, **kwargs)
+
+    private_members = '@CalledByNative\nprivate fun secret() {}\n'
+    with self.assertRaisesRegex(parse_common.ParseError, 'must not be private'):
+      parse_members(private_members)
+    parsed_file = parse_members(private_members,
+                                allow_private_called_by_natives=True)
+    self.assertEqual(len(parsed_file.classes_with_jni[0].called_by_natives), 1)
+
+    # Declarations that would be mistranslated must not be silently skipped.
+    for members in [
+        '@set:CalledByNative\nvar count: Int = 0\n',
+        # Kotlin mangles the JVM names of internal members.
+        '@CalledByNative\ninternal fun foo() {}\n',
+        '@CalledByNative\nfun <T> foo(t: T) {}\n',
+        # Types are inferred when not explicit.
+        '@CalledByNative\nfun foo() = 1\n',
+        '@get:CalledByNative\nval count = 1\n',
+    ]:
+      with self.assertRaisesRegex(parse_common.ParseError,
+                                  'Could not parse @CalledByNative'):
+        parse_members(members)
+
+    with self.assertRaisesRegex(parse_common.ParseError,
+                                'return types must use JniPtr'):
+      parse_members(
+          '@CalledByNative\nfun get(): JniUniquePtr<NativeFoo> = TODO()\n',
+          enable_safe_pointers=True)
 
 
 if __name__ == '__main__':

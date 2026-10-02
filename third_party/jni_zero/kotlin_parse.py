@@ -60,15 +60,30 @@ _KOTLIN_CLASS_MAP = {
     'HashSet': java_types.JavaClass('java/util/HashSet'),
 }
 
-# Like java_parse._CLASSES_REGEX, but without "enum" (Kotlin spells it
-# "enum class", and so is matched by the "class" case), and with an optional
-# body. Bodyless classes (e.g. "class Foo(val x: Int)") are common in Kotlin,
-# and must be matched so that references to nested ones resolve correctly, and
-# so that the search for "{" does not run on into the next declaration.
+# Mirrors java_parse._MODIFIER_KEYWORDS. Modifiers that change a method's JVM
+# signature or name (e.g. "suspend", or "internal", which mangles names) are
+# deliberately absent so that declarations using them fail to parse rather than
+# being silently mistranslated.
+_MODIFIER_KEYWORDS = (r'(?:(?:' + '|'.join([
+    'abstract',
+    'final',
+    'open',
+    'override',
+    'private',
+    'protected',
+    'public',
+]) + r')\s+)*')
+
+# Like java_parse._CLASSES_REGEX, but with "object" (Kotlin's singleton),
+# without "enum" (Kotlin spells it "enum class", matched by the "class" case),
+# and with an optional body. Bodyless classes (e.g. "class Foo(val x: Int)")
+# are common in Kotlin, and must be matched so that references to nested ones
+# resolve correctly, and so that the search for "{" does not run on into the
+# next declaration.
 _CLASSES_REGEX = re.compile(
-    r'^((?:(?!\b(?:class|interface)\b)'
+    r'^((?:(?!\b(?:class|interface|object)\b)'
     r'(?:[^{}"]|"[^"]*"))*?)\b'
-    r'(?:class|interface)\b\s+\b([\w.$]+)'
+    r'(?:class|interface|object)\b\s+\b([\w.$]+)'
     r'(<[\s\S]*?>)?'
     # The header spans multiple lines only within parentheses (e.g. a primary
     # constructor), or after ":" or ",".
@@ -89,6 +104,10 @@ def _parse_kotlin_classes(contents,
     preamble, class_name, generics_str, open_brace = m.groups()
     # Ignore annotations like @Foo("contains the words class Bar")
     if preamble.count('"') % 2 != 0:
+      continue
+    # Companion objects are not parsed as classes (unnamed ones do not even
+    # match), since @JvmStatic puts their members on the enclosing class.
+    if preamble.rstrip().endswith('companion'):
       continue
 
     if generics_str and generics_str.count('<') != generics_str.count('>'):
@@ -136,7 +155,9 @@ def _parse_kotlin_classes(contents,
         continue
       type_resolver = type_resolver.add_child(java_class=java_class)
 
-    class_keyword_start = m.end()
+    # Unlike Java, the class range includes the header, since that is where
+    # primary constructors are declared.
+    class_keyword_start = m.end(1)
     if generics_str:
       type_resolver.type_params = _parse_type_params(type_resolver,
                                                      generics_str[1:-1])
@@ -235,7 +256,9 @@ def _parse_type_params(type_resolver, value):
 
 
 # E.g. names: @JniType("std::string") String
-_PARAM_REGEX = re.compile(r'(?P<name>\w+)\s*:\s*(?P<type>.+)', re.DOTALL)
+# "val" and "var" appear in the parameter lists of primary constructors.
+_PARAM_REGEX = re.compile(
+    r'(?:(?:val|var)\s+)?(?P<name>\w+)\s*:\s*(?P<type>[^=]+)')
 
 
 def _parse_param_list(type_resolver, value) -> java_types.JavaParamList:
@@ -287,6 +310,86 @@ def _iter_proxy_methods(type_resolver, interface_body):
         f'interface:\n{interface_body}')
 
 
+# Like java_parse._CALLED_BY_NATIVE_REGEX, but for functions, constructors
+# (which have no name), and property getters (which have no parameter list).
+_CALLED_BY_NATIVE_REGEX = re.compile(
+    # Annotations before and after @CalledByNative (e.g. @JvmStatic).
+    r'(?P<annotations>(?:@[\w.]+(?:\([^)]*\))?\s*)*?'
+    r'@CalledByNative(?P<Unchecked>(?:Unchecked)?|ForTesting)\s+'
+    r'(?:@[\w.]+(?:\([^)]*\))?\s+)*)'
+    r'(?P<modifiers>' + _MODIFIER_KEYWORDS + r')'
+    r'(?:(?:fun\s+(?P<name>\w+)|constructor)\s*\((?P<params>[\s\S]*?)\)'
+    r'|(?:val|var)\s+(?P<property>\w+)(?=\s*:))'
+    # Kotlin declarations have no trailing ";", so the type ends at the start of
+    # the body, or at the end of the line. Types are inferred when omitted, so
+    # they are required for properties and for expression bodies ("= ...").
+    r'(?:\s*:\s*(?P<return_type>[^={\n]+)|[ \t]*(?=[{\n]|$))')
+
+
+def _property_getter_name(name):
+  """Returns the name of the getter that Kotlin generates for a property."""
+  # "val isFoo" generates isFoo(), everything else generates getFoo().
+  if name.startswith('is') and name[2:3].isupper():
+    return name
+  return 'get' + common.capitalize(name)
+
+
+def _parse_called_by_natives(contents,
+                             parsed_classes,
+                             *,
+                             allow_private_called_by_natives=False):
+  for match in parse_common.find_iter_with_note(_CALLED_BY_NATIVE_REGEX,
+                                                contents):
+    is_private = 'private' in match.group('modifiers')
+    if is_private and not allow_private_called_by_natives:
+      raise parse_common.ParseError(
+          f'@CalledByNative methods must not be private. '
+          f'Found:\n{match.group(0)}\n')
+
+    # @JvmStatic is what makes a member static on the JVM. Without it, members
+    # of an object live on the singleton instance rather than on the class.
+    is_static = '@JvmStatic' in match.group('annotations')
+
+    # Companion objects are not parsed as classes, so members of one are
+    # attributed to the enclosing class - which is where @JvmStatic puts them.
+    parsed_class = parse_common.find_owning_class(parsed_classes, match)
+    type_resolver = parsed_class.type_resolver
+
+    return_type_str = match.group('return_type')
+    name = match.group('name')
+    if match.group('property'):
+      name = _property_getter_name(match.group('property'))
+    elif not name:
+      # What follows the ":" of a constructor is a delegation call or super
+      # class rather than a return type.
+      return_type_str = None
+      name = '<init>'
+    return_type = java_types.VOID
+    if return_type_str:
+      return_type = _parse_type(type_resolver, return_type_str)
+
+    params = _parse_param_list(type_resolver, match.group('params'))
+    signature = java_types.JavaSignature.from_params(return_type, params)
+    parse_common.check_called_by_native_return_type(name, return_type)
+    unchecked = 'Unchecked' in match.group('Unchecked')
+    parsed_class.called_by_natives.append(
+        parse_common.ParsedCalledByNative(
+            name=name,
+            signature=signature,
+            static=is_static,
+            type_params=java_types.EMPTY_TYPE_PARAM_LIST,
+            unchecked=unchecked))
+
+  # Check for any @CalledByNative occurrences that were not matched, including
+  # ones with unsupported use-site targets (e.g. "@set:CalledByNative").
+  unmatched_lines = _CALLED_BY_NATIVE_REGEX.sub('', contents).splitlines()
+  for i, line in enumerate(unmatched_lines):
+    if re.search(r'@(?:\w+:)?CalledByNative', line):
+      context = '\n'.join(unmatched_lines[i:i + 5])
+      raise parse_common.ParseError(
+          'Could not parse @CalledByNative method signature:\n' + context)
+
+
 def parse_kotlin_file(filename,
                       contents,
                       *,
@@ -295,7 +398,9 @@ def parse_kotlin_file(filename,
                       allow_private_called_by_natives,
                       type_catalog=None,
                       enable_safe_pointers=False):
-  contents = parse_common.remove_comments(contents)
+  # Of the annotation use-site targets, only "@get:" (for property getters) is
+  # supported. It is normalized away rather than taught to every regex.
+  contents = parse_common.remove_comments(contents).replace('@get:', '@')
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   parsed_classes = _parse_kotlin_classes(
@@ -317,6 +422,11 @@ def parse_kotlin_file(filename,
   parsed_proxy_natives = parse_common.parse_proxy_natives(
       type_resolver, contents, iter_methods=_iter_proxy_methods)
   jni_namespace = parse_common.parse_jni_namespace(contents)
+
+  _parse_called_by_natives(
+      contents,
+      parsed_classes,
+      allow_private_called_by_natives=allow_private_called_by_natives)
 
   classes_with_jni = sorted(
       c for c in parsed_classes
