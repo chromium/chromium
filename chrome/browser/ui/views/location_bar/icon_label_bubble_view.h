@@ -404,6 +404,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
           base::BindRepeating(&IconLabelBubbleView::OnTouchUiChanged,
                               base::Unretained(this)));
 
+  // Updates the label color when ink drop highlight visibility changes
+  // (forced-colors mode).
+  base::CallbackListSubscription ink_drop_highlighted_subscription_;
+
   std::optional<ui::ColorId> background_color_id_;
   std::optional<ui::ColorId> foreground_color_id_;
 

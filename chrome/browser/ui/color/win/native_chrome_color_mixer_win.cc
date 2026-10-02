@@ -202,6 +202,9 @@ void AddNativeHighContrastColors(ui::ColorMixer& mixer) {
   mixer[kColorToolbarButtonIconInactive] = {ui::kColorNativeGrayText};
   mixer[kColorToolbarContentAreaSeparator] = {kColorToolbarText};
   mixer[kColorToolbarInkDrop] = {ui::kColorNativeHighlight};
+  mixer[kColorOmniboxIconHover] = {kColorToolbarInkDrop};
+  mixer[kColorOmniboxActionIconHover] = {kColorToolbarInkDrop};
+  mixer[kColorOmniboxIconPressed] = {kColorToolbarInkDrop};
   mixer[kColorToolbarSeparator] = {ui::kColorNativeWindowText};
   mixer[kColorToolbarText] = {ui::kColorNativeBtnText};
   mixer[kColorToolbarTopSeparatorFrameActive] = {kColorToolbarSeparator};

@@ -17,6 +17,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/layer_textured.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -25,6 +27,8 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
@@ -1127,4 +1131,60 @@ TEST_F(IconLabelBubbleViewTest, InOutAnimationShrinkingThreshold) {
   EXPECT_DOUBLE_EQ(view()->slide_animation_for_testing().GetCurrentValue(),
                    0.9);
   EXPECT_TRUE(view()->IsShrinking());
+}
+
+namespace {
+
+class HighlightableTestInkDrop : public TestInkDrop {
+ public:
+  void SetHighlighted(bool highlighted) { highlighted_ = highlighted; }
+  bool IsHighlightFadingInOrVisible() const override { return highlighted_; }
+
+ private:
+  bool highlighted_ = false;
+};
+
+}  // namespace
+
+TEST_F(IconLabelBubbleViewTest, HighContrastInkDropLabelLayerAndColor) {
+  ui::MockOsSettingsProvider os_settings_provider;
+
+  // In normal mode, the label does not paint to a layer and subpixel rendering
+  // is enabled.
+  EXPECT_FALSE(view()->GetLabel()->layer());
+  EXPECT_TRUE(view()->GetLabel()->GetSubpixelRenderingEnabled());
+
+  // Enable forced colors and high contrast.
+  os_settings_provider.SetForcedColorsActive(true);
+  os_settings_provider.SetPreferredContrast(
+      ui::NativeTheme::PreferredContrast::kMore);
+
+  ASSERT_TRUE(view()->GetLabel()->layer());
+  EXPECT_FALSE(view()->GetLabel()->layer()->fills_bounds_opaquely());
+  EXPECT_FALSE(view()->GetLabel()->GetSubpixelRenderingEnabled());
+
+  auto test_ink_drop = std::make_unique<HighlightableTestInkDrop>();
+  auto* test_ink_drop_ptr = test_ink_drop.get();
+  InkDropHostTestApi(views::InkDrop::Get(view()))
+      .SetInkDrop(std::move(test_ink_drop));
+
+  const SkColor normal_color = view()->GetLabel()->GetEnabledColor();
+  const SkColor hover_color =
+      view()->GetColorProvider()->GetColor(ui::kColorIconHovered);
+
+  // Highlighting the ink drop updates the label color to kColorIconHovered.
+  test_ink_drop_ptr->SetHighlighted(true);
+  views::InkDrop::Get(view())->OnInkDropHighlightedChanged();
+  EXPECT_EQ(view()->GetLabel()->GetEnabledColor(), hover_color);
+
+  // Clearing the ink drop highlight restores the normal foreground color.
+  test_ink_drop_ptr->SetHighlighted(false);
+  views::InkDrop::Get(view())->OnInkDropHighlightedChanged();
+  EXPECT_EQ(view()->GetLabel()->GetEnabledColor(), normal_color);
+
+  // Disabling forced colors destroys the label layer and re-enables subpixel
+  // rendering.
+  os_settings_provider.SetForcedColorsActive(false);
+  EXPECT_FALSE(view()->GetLabel()->layer());
+  EXPECT_TRUE(view()->GetLabel()->GetSubpixelRenderingEnabled());
 }

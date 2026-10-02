@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -39,6 +40,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop_util.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -187,6 +189,10 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
         return host->delegate_->GetIconLabelBubbleInkDropColor();
       },
       this));
+  ink_drop_highlighted_subscription_ =
+      views::InkDrop::Get(this)->AddHighlightedChangedCallback(
+          base::BindRepeating(&IconLabelBubbleView::UpdateLabelColors,
+                              base::Unretained(this)));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
@@ -377,7 +383,12 @@ void IconLabelBubbleView::SetCustomBackgroundColorId(
 }
 
 void IconLabelBubbleView::UpdateLabelColors() {
-  SetEnabledTextColors(GetForegroundColor());
+  const bool use_high_contrast_hover_color =
+      views::UsingPlatformHighContrastInkDrop(this) &&
+      views::InkDrop::Get(this)->GetHighlighted();
+  SetEnabledTextColors(use_high_contrast_hover_color
+                           ? GetColorProvider()->GetColor(ui::kColorIconHovered)
+                           : GetForegroundColor());
   label()->SetBackgroundColor(GetBackgroundColor());
 }
 
@@ -502,6 +513,19 @@ void IconLabelBubbleView::OnThemeChanged() {
   // LabelButton::OnThemeChanged() sets a views::Background on the label
   // under certain conditions. We don't want that, so unset the background.
   label()->SetBackground(nullptr);
+
+  if (views::UsingPlatformHighContrastInkDrop(this)) {
+    SetTextSubpixelRenderingEnabled(false);
+    if (!label()->layer()) {
+      label()->SetPaintToLayer();
+      label()->layer()->SetFillsBoundsOpaquely(false);
+    }
+  } else {
+    if (label()->layer()) {
+      label()->DestroyLayer();
+    }
+    SetTextSubpixelRenderingEnabled(true);
+  }
 
   UpdateLabelColors();
   UpdateBackground();
