@@ -37,8 +37,6 @@ namespace {
 using ResponseFuture =
     base::test::TestFuture<base::expected<AppInstallData, QueryError>>;
 
-const PackageId kTestPackageId(PackageType::kWeb, "https://example.com/");
-
 }  // namespace
 
 class AppInstallAlmanacEndpointTest : public testing::Test {
@@ -55,6 +53,7 @@ class AppInstallAlmanacEndpointTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  protected:
+  const PackageId package_id_{PackageType::kWeb, "https://example.com/"};
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
@@ -132,7 +131,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoSuccessfulResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_TRUE(response_future.Get().has_value());
 
   AppInstallData expected_data(
@@ -202,7 +201,7 @@ TEST_F(AppInstallAlmanacEndpointTest,
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   ASSERT_TRUE(response_future.Get().has_value());
   const AppInstallData& data = response_future.Get().value();
 
@@ -225,7 +224,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMinimalResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
 
   AppInstallData expected_data(PackageId(PackageType::kArc, "com.foo.app"));
   expected_data.name = "Example";
@@ -246,7 +245,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoIncompleteResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -257,7 +256,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoMalformedResponse) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadResponse);
 }
 
@@ -288,7 +287,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoServerError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -300,7 +299,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNetworkError) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kConnectionError);
 }
 
@@ -313,7 +312,7 @@ TEST_F(AppInstallAlmanacEndpointTest, GetAppInstallInfoNotFound) {
 
   ResponseFuture response_future;
   app_install_almanac_endpoint::GetAppInstallInfo(
-      profile(), kTestPackageId, response_future.GetCallback());
+      profile(), package_id_, response_future.GetCallback());
   EXPECT_EQ(response_future.Get().error().type, QueryError::kBadRequest);
 }
 

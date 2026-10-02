@@ -22,16 +22,16 @@
 namespace {
 
 const char kTestIconId[] = "fake_id";
-const std::u16string kTestAppTitle = u"fake_title";
+constexpr char16_t kTestAppTitle[] = u"fake_title";
 
 // Test PlayApp Constants
 const char kTestPlayAppPackageName[] = "com.hbo.hbonow";
 const char kTestPlayAppIconUrl[] = "https://play-lh.googleusercontent.com/fake";
-const std::u16string kTestPlayAppCategory = u"Entertainment";
-const std::u16string kTestPlayAppDescription =
+constexpr char16_t kTestPlayAppCategory[] = u"Entertainment";
+constexpr char16_t kTestPlayAppDescription[] =
     u"Stream all of HBO with new hit shows, classic favorites, and Max "
     u"Originals!";
-const std::u16string kTestPlayAppContentRating = u"Teen";
+constexpr char16_t kTestPlayAppContentRating[] = u"Teen";
 
 }  // namespace
 
