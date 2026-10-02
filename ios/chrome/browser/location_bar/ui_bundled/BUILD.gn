@@ -259,6 +259,7 @@ source_set("unit_tests") {
     "location_bar_mediator_unittest.mm",
     "location_bar_model_delegate_ios_unittest.mm",
     "location_bar_steady_view_mediator_unittest.mm",
+    "location_bar_steady_view_unittest.mm",
   ]
   deps = [
     ":location_bar_model_delegate",

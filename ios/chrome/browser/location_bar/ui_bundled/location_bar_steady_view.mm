@@ -193,6 +193,11 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   // Array of active constraints for the content views inside
   // `locationContainerView`.
   NSArray<NSLayoutConstraint*>* _containerActiveConstraints;
+  // Cached state used to build `_containerActiveConstraints`.
+  BOOL _containerHasIncognito;
+  BOOL _containerHasLocationImage;
+  BOOL _containerHasCustomLeadingView;
+  CGFloat _containerCustomLeadingViewSpacing;
 }
 
 - (instancetype)initWithTextOnly:(BOOL)textOnly {
@@ -544,6 +549,11 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
   _customLeadingView.hidden = YES;
 
   [self.locationContainerView addSubview:_customLeadingViewContainer];
+  // `_customLeadingViewContainer` is a new instance, so the cached
+  // `_containerActiveConstraints` may still reference the previous container
+  // and must be dropped to force a rebuild in `updateContainerConstraints`.
+  [NSLayoutConstraint deactivateConstraints:_containerActiveConstraints];
+  _containerActiveConstraints = nil;
   [self updateContainerConstraints];
   [self updateAccessibility];
 }
@@ -839,10 +849,30 @@ const CGFloat kCustomLeadingViewAnimationDuration = 0.3;
 
 // Updates the current constraints.
 - (void)updateContainerConstraints {
-  [NSLayoutConstraint deactivateConstraints:_containerActiveConstraints];
-
   BOOL hasIncognito = [self shouldShowIncognitoBadge];
   BOOL hasLocationImage = self.locationIconImageView.image != nil;
+  BOOL hasCustomLeadingView =
+      _customLeadingViewContainer && !_customLeadingView.hidden;
+
+  // This method is invoked on every URL/placeholder text update, i.e. several
+  // times per navigation and per location bar instance. The constraints only
+  // depend on the inputs cached below, so when none of them changed, rebuilding
+  // identical constraints would only force a redundant Auto Layout
+  // invalidation. Still notify the delegate, as the text may have changed the
+  // intrinsic width.
+  if (_containerActiveConstraints && _containerHasIncognito == hasIncognito &&
+      _containerHasLocationImage == hasLocationImage &&
+      _containerHasCustomLeadingView == hasCustomLeadingView &&
+      _containerCustomLeadingViewSpacing == _customLeadingViewSpacing) {
+    [self.contentSizeDelegate locationBarContentSizeDidChange];
+    return;
+  }
+  _containerHasIncognito = hasIncognito;
+  _containerHasLocationImage = hasLocationImage;
+  _containerHasCustomLeadingView = hasCustomLeadingView;
+  _containerCustomLeadingViewSpacing = _customLeadingViewSpacing;
+
+  [NSLayoutConstraint deactivateConstraints:_containerActiveConstraints];
 
   if (hasIncognito) {
     [self.locationButton addSubview:_incognitoImageView];
