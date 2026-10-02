@@ -46,8 +46,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-// TODO(crbug.com/492927412): Namespace names should be snake_case.
-namespace blink::Character {
+namespace blink::unicode {
 
 namespace internal {
 
@@ -352,6 +351,78 @@ inline bool MayNeedEastAsianSpacing(UChar32 ch) {
          !IsInRange(ch, 0x1200, 0x3004);
 }
 
+}  // namespace blink::unicode
+
+// TODO(crbug.com/492927412): Stop using Character namespace. It's for backward
+// compatibility.
+namespace blink::Character {
+namespace internal {
+using unicode::internal::MaybeHanKerningCloseSlow;
+using unicode::internal::MaybeHanKerningOpenSlow;
+}  // namespace internal
+using unicode::CanReceiveTextEmphasis;
+using unicode::CanTextDecorationSkipInk;
+using unicode::EastAsianWidth;
+using unicode::FullSizeKanaVariant;
+using unicode::FullwidthVariant;
+using unicode::GetEastAsianSpacingType;
+using unicode::GetHanKerningCharType;
+using unicode::GetScriptBasedOnUnicodeBlock;
+using unicode::HasLikelyScript;
+using unicode::IsBidiControl;
+using unicode::IsBlockCjkSymbolsAndPunctuation;
+using unicode::IsBlockHalfwidthAndFullwidthForms;
+using unicode::IsCjkIdeographOrSymbol;
+using unicode::IsCjkIdeographOrSymbolBase;
+using unicode::IsCollapsibleSpace;
+using unicode::IsCommonOrInheritedScript;
+using unicode::IsCursiveScript;
+using unicode::IsDefaultIgnorable;
+using unicode::IsEastAsianWidthFullwidth;
+using unicode::IsEmoji;
+using unicode::IsEmojiComponent;
+using unicode::IsEmojiEmojiDefault;
+using unicode::IsEmojiIncludingReserved;
+using unicode::IsEmojiKeycapBase;
+using unicode::IsEmojiModifierBase;
+using unicode::IsEmojiReserved;
+using unicode::IsEmojiTagSequence;
+using unicode::IsEmojiTextDefault;
+using unicode::IsEmojiVariationSequence;
+using unicode::IsExtendedPictographic;
+using unicode::IsGcMark;
+using unicode::IsGraphemeExtended;
+using unicode::IsHangul;
+using unicode::IsIdeographic;
+using unicode::IsIdeographicVariationSequence;
+using unicode::IsInRange;
+using unicode::IsLineFeed;
+using unicode::IsModernGeorgianUppercase;
+using unicode::IsModifier;
+using unicode::IsNonCharacter;
+using unicode::IsNormalizedCanvasSpaceCharacter;
+using unicode::IsOtherSpaceSeparator;
+using unicode::IsPrivateUse;
+using unicode::IsRegionalIndicator;
+using unicode::IsStandardizedVariationSequence;
+using unicode::IsUnicodeEmojiVariationSelector;
+using unicode::IsUnicodeVariationSelector;
+using unicode::IsUprightInMixedVertical;
+using unicode::IsVariationSequence;
+using unicode::IsVerticalMathCharacter;
+using unicode::LowercaseModernGeorgianUppercase;
+using unicode::MaybeBidiRtl;
+using unicode::MaybeBidiRtlUtf16;
+using unicode::MaybeEmojiPresentation;
+using unicode::MaybeHanKerningClose;
+using unicode::MaybeHanKerningMiddle;
+using unicode::MaybeHanKerningOpen;
+using unicode::MaybeHanKerningOpenOrCloseFast;
+using unicode::MayNeedEastAsianSpacing;
+using unicode::TreatAsSpace;
+using unicode::TreatAsZeroWidthSpace;
+using unicode::TreatAsZeroWidthSpaceInComplexScript;
+using unicode::TreatAsZeroWidthSpaceInComplexScriptLegacy;
 }  // namespace blink::Character
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_

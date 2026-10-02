@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
-namespace blink::Character {
+namespace blink::unicode {
 
 // Codepoints pair from unicode standardized variation sequences spec, compare:
 // https://www.unicode.org/Public/UNIDATA/StandardizedVariants.txt
@@ -486,4 +486,4 @@ bool IsVariationSequence(UChar32 ch, UChar32 vs) {
          IsIdeographicVariationSequence(ch, vs);
 }
 
-}  // namespace blink::Character
+}  // namespace blink::unicode

@@ -6,7 +6,7 @@
 
 #include <unicode/uvernum.h>
 
-namespace blink::Character {
+namespace blink::unicode {
 
 // ICU 78 will support Unicode 17. If using an earlier release of ICU,
 // use our own Emoji data compiled from emoji-data.txt.
@@ -349,4 +349,4 @@ bool IsRegionalIndicator(UChar32 ch) {
   return (ch >= 0x1F1E6 && ch <= 0x1F1FF);
 }
 
-}  // namespace blink::Character
+}  // namespace blink::unicode

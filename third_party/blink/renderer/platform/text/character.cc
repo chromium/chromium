@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
-namespace blink::Character {
+namespace blink::unicode {
 
 namespace {
 
@@ -603,4 +603,4 @@ UChar32 FullSizeKanaVariant(UChar32 code_point) {
   return code_point;
 }
 
-}  // namespace blink::Character
+}  // namespace blink::unicode
