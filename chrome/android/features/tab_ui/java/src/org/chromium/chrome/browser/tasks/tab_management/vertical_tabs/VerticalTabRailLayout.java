@@ -29,7 +29,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
@@ -58,7 +57,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private @Nullable Callback<@RailCollapseState Integer> mExpandOrCollapseOnHoverListener;
     private @Nullable KeyEventListener mKeyEventListener;
     private VerticalTabListRecyclerView mRecyclerView;
-    private TabListRecyclerView mPinnedTabsRecyclerView;
+    private VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
     private View mSpacerView;
     private View mPinnedTabsSeparatorView;
     private LinearLayout mHeaderContainer;
@@ -192,7 +191,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     }
 
     /** Returns the pinned tabs recycler view. */
-    TabListRecyclerView getPinnedTabsRecyclerView() {
+    VerticalPinnedTabListRecyclerView getPinnedTabsRecyclerView() {
         return mPinnedTabsRecyclerView;
     }
 

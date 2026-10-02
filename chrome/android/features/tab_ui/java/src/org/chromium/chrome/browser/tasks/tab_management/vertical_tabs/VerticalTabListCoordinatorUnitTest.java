@@ -156,7 +156,6 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -416,7 +415,7 @@ public class VerticalTabListCoordinatorUnitTest {
         GridLayoutManager pinnedLayoutManager =
                 (GridLayoutManager) pinnedRecyclerView.getLayoutManager();
         assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT,
                 pinnedLayoutManager.getSpanCount());
 
         assertNotNull(mSelectorObserverCaptor.getValue());
@@ -1688,7 +1687,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         var histogramWatcher =
@@ -1716,7 +1715,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(
-                VerticalTabListCoordinator.COLLAPSED_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.COLLAPSED_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         histogramWatcher =
@@ -1745,7 +1744,7 @@ public class VerticalTabListCoordinatorUnitTest {
                         .getContainerModelForTesting()
                         .get(VerticalTabListProperties.COLLAPSE_STATE));
         assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
@@ -1962,7 +1961,7 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testDynamicSpanCountOnWidthChange() {
         createCoordinator();
         int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
-        assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
+        assertEquals(VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
 
         // Simulate measuring container with a width that fits exactly 2 columns.
         View containerView = mCoordinator.getView();
@@ -1981,7 +1980,7 @@ public class VerticalTabListCoordinatorUnitTest {
         // Verify collapse reduces span count to 1 even when dynamically measured.
         mCoordinator.setRailCollapseState(RailCollapseState.COLLAPSED);
         assertEquals(
-                VerticalTabListCoordinator.COLLAPSED_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.COLLAPSED_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
 
         // Verify expand restores dynamically calculated span count (2).
@@ -2004,7 +2003,7 @@ public class VerticalTabListCoordinatorUnitTest {
     public void testDynamicSpanCountIgnoredWhenHidden() {
         createCoordinator();
         int defaultSpanCount = mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount();
-        assertEquals(VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
+        assertEquals(VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT, defaultSpanCount);
 
         View containerView = mCoordinator.getView();
         containerView.setVisibility(View.GONE);
@@ -2022,7 +2021,7 @@ public class VerticalTabListCoordinatorUnitTest {
 
         // Should remain at default span count because the container is hidden.
         assertEquals(
-                VerticalTabListCoordinator.DEFAULT_GRID_SPAN_COUNT,
+                VerticalPinnedTabListRecyclerView.DEFAULT_GRID_SPAN_COUNT,
                 mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
     }
 
@@ -2147,107 +2146,6 @@ public class VerticalTabListCoordinatorUnitTest {
                     expectedSpans[i],
                     mCoordinator.getPinnedLayoutManagerForTesting().getSpanCount());
         }
-    }
-
-    @Test
-    public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows() {
-        createCoordinator();
-        RecyclerView pinnedRecyclerView =
-                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
-        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
-        assertNotNull(decoration);
-
-        Rect outRect = new Rect();
-        View child0 = new View(mActivity);
-        GridLayoutManager.LayoutParams lp0 =
-                new GridLayoutManager.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        child0.setLayoutParams(lp0);
-        pinnedRecyclerView.addView(child0);
-
-        decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
-        assertEquals(0, outRect.left);
-        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect.right);
-    }
-
-    @Test
-    public void testPinnedTabsItemDecoration_OffsetsAcrossColumnsAndRows_Rtl() {
-        LocalizationUtils.setRtlForTesting(true);
-        createCoordinator();
-        RecyclerView pinnedRecyclerView =
-                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
-        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
-        assertNotNull(decoration);
-
-        Rect outRect = new Rect();
-        View child0 = new View(mActivity);
-        GridLayoutManager.LayoutParams lp0 =
-                new GridLayoutManager.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        child0.setLayoutParams(lp0);
-        pinnedRecyclerView.addView(child0);
-
-        decoration.getItemOffsets(outRect, child0, pinnedRecyclerView, new RecyclerView.State());
-        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect.left);
-        assertEquals(0, outRect.right);
-    }
-
-    @Test
-    public void testPinnedTabsItemDecoration_OffsetsCorrectAcrossColumnsAndAfterMove() {
-        createCoordinator();
-        RecyclerView pinnedRecyclerView =
-                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
-        RecyclerView.ItemDecoration decoration = pinnedRecyclerView.getItemDecorationAt(0);
-        assertNotNull(decoration);
-
-        // Add 4 children representing 4 columns (spanCount = 4).
-        View child0 = new View(mActivity);
-        View child1 = new View(mActivity);
-        View child2 = new View(mActivity);
-        View child3 = new View(mActivity);
-
-        // Give child1 a stale LayoutParams with spanIndex = 0 (as if it was moved from position 0).
-        GridLayoutManager.LayoutParams lp1 =
-                new GridLayoutManager.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        ReflectionHelpers.setField(lp1, "mSpanIndex", 0);
-        child1.setLayoutParams(lp1);
-
-        pinnedRecyclerView.addView(child0);
-        pinnedRecyclerView.addView(child1);
-        pinnedRecyclerView.addView(child2);
-        pinnedRecyclerView.addView(child3);
-
-        Rect outRect0 = new Rect();
-        Rect outRect1 = new Rect();
-        Rect outRect2 = new Rect();
-        Rect outRect3 = new Rect();
-
-        decoration.getItemOffsets(outRect0, child0, pinnedRecyclerView, new RecyclerView.State());
-        decoration.getItemOffsets(outRect1, child1, pinnedRecyclerView, new RecyclerView.State());
-        decoration.getItemOffsets(outRect2, child2, pinnedRecyclerView, new RecyclerView.State());
-        decoration.getItemOffsets(outRect3, child3, pinnedRecyclerView, new RecyclerView.State());
-
-        // Column 0: 0px left, 3/4 gap right
-        assertEquals(0, outRect0.left);
-        assertEquals(mMinPinnedTabGap - mMinPinnedTabGap / 4, outRect0.right);
-
-        // Column 1 (despite stale spanIndex=0): 1/4 gap left, 2/4 gap right
-        assertEquals(mMinPinnedTabGap / 4, outRect1.left);
-        assertEquals(mMinPinnedTabGap - 2 * mMinPinnedTabGap / 4, outRect1.right);
-
-        // Inter-item gap between child 0 and child 1 equals mMinPinnedTabGap.
-        assertEquals(mMinPinnedTabGap, outRect0.right + outRect1.left);
-
-        // Column 2: 2/4 gap left, 1/4 gap right
-        assertEquals(2 * mMinPinnedTabGap / 4, outRect2.left);
-        assertEquals(mMinPinnedTabGap - 3 * mMinPinnedTabGap / 4, outRect2.right);
-        assertEquals(mMinPinnedTabGap, outRect1.right + outRect2.left);
-
-        // Column 3: 3/4 gap left, 0px right
-        assertEquals(3 * mMinPinnedTabGap / 4, outRect3.left);
-        assertEquals(0, outRect3.right);
-        assertEquals(mMinPinnedTabGap, outRect2.right + outRect3.left);
     }
 
     @Test
@@ -4749,63 +4647,6 @@ public class VerticalTabListCoordinatorUnitTest {
         // Transition end triggers layout to recycle extra items back to viewport bounds.
         mCoordinator.setInTransition(false);
         ReflectionHelpers.callInstanceMethod(verify(spyPinnedRecyclerView), "requestLayout");
-    }
-
-    @Test
-    public void testCalculatePinnedExtraLayoutSpace_NotTransitioning() {
-        createCoordinator();
-        int[] extraLayoutSpace = new int[2];
-        RecyclerView.State state = mock(RecyclerView.State.class);
-        when(state.getItemCount()).thenReturn(30);
-
-        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
-
-        assertEquals(0, extraLayoutSpace[0]);
-        assertEquals(0, extraLayoutSpace[1]);
-    }
-
-    @Test
-    public void testCalculatePinnedExtraLayoutSpace_InTransition() {
-        createCoordinator();
-        mCoordinator.setInTransition(true);
-        int[] extraLayoutSpace = new int[2];
-        RecyclerView.State state = mock(RecyclerView.State.class);
-
-        int itemHeight =
-                TabVerticalViewBinder.getPinnedItemHeight(mActivity)
-                        + mActivity
-                                .getResources()
-                                .getDimensionPixelSize(
-                                        R.dimen.vertical_tab_pinned_item_margin_bottom);
-        TabListRecyclerView pinnedRecyclerView =
-                mCoordinator.getView().findViewById(R.id.pinned_tabs_recycler_view);
-        int padding = pinnedRecyclerView.getPaddingTop() + pinnedRecyclerView.getPaddingBottom();
-
-        // 0 items: falls back to container/display height.
-        when(state.getItemCount()).thenReturn(0);
-        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
-        int baseHeight = extraLayoutSpace[0];
-        assertTrue(baseHeight > 0);
-        assertEquals(baseHeight, extraLayoutSpace[1]);
-
-        // Many items: scales with total content height.
-        extraLayoutSpace[0] = 0;
-        extraLayoutSpace[1] = 0;
-        when(state.getItemCount()).thenReturn(30);
-        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
-        int expectedHeight = 30 * itemHeight + padding;
-        assertEquals(expectedHeight, extraLayoutSpace[0]);
-        assertEquals(expectedHeight, extraLayoutSpace[1]);
-
-        // Excessive items: capped at baseHeight * MAX_SINGLE_ROW_SPAN_COUNT + padding.
-        extraLayoutSpace[0] = 0;
-        extraLayoutSpace[1] = 0;
-        when(state.getItemCount()).thenReturn(500);
-        mCoordinator.calculatePinnedExtraLayoutSpace(mActivity, state, extraLayoutSpace);
-        int expectedCap =
-                baseHeight * VerticalTabListCoordinator.MAX_SINGLE_ROW_SPAN_COUNT + padding;
-        assertEquals(expectedCap, extraLayoutSpace[0]);
-        assertEquals(expectedCap, extraLayoutSpace[1]);
     }
 
     /**

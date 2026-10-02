@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
@@ -110,7 +109,6 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalEx
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
@@ -120,8 +118,6 @@ import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.accessibility.KeyboardFocusUtil;
 import org.chromium.ui.base.ActivityResultTracker;
-import org.chromium.ui.base.LocalizationUtils;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragAndDropDelegateImpl;
@@ -145,11 +141,6 @@ import java.util.function.Supplier;
 /** Coordinator to manage and display the Vertical Tab List. */
 @NullMarked
 public class VerticalTabListCoordinator {
-    static final int DEFAULT_GRID_SPAN_COUNT = 4;
-    static final int MAX_SINGLE_ROW_SPAN_COUNT = 5;
-    static final int COLLAPSED_GRID_SPAN_COUNT = 1;
-    // Epsilon (5% of a column span) absorbs sub-pixel rounding errors at boundary thresholds.
-    private static final float SPAN_CALCULATION_EPSILON = 0.05f;
     private static @Nullable Supplier<TabSwitcherDragHandler>
             sTabSwitcherDragHandlerSupplierForTesting;
     private final VerticalTabRailLayout mContainerView;
@@ -159,9 +150,7 @@ public class VerticalTabListCoordinator {
     private final VerticalTabListRecyclerView mRecyclerView;
     private final TabListModel mPinnedTabsModelList;
     private final PinnedTabGridMediator mPinnedTabsMediator;
-    private final TabListRecyclerView mPinnedTabsRecyclerView;
-    private final SimpleRecyclerViewAdapter mPinnedTabsAdapter;
-    private final GridLayoutManager mPinnedLayoutManager;
+    private final VerticalPinnedTabListRecyclerView mPinnedTabsRecyclerView;
     private final ListObservable.ListObserver<Void> mPinnedTabsListObserver;
     private final TabModelSelector mTabModelSelector;
     private final Profile mProfile;
@@ -213,7 +202,6 @@ public class VerticalTabListCoordinator {
     private @Nullable View mDragEndRelayView;
 
     private boolean mIsActive;
-    private boolean mIsInTransition;
 
     private class VerticalTabListClickHandler implements TabListItemOnClickListenerProvider {
         private final TabActionListener mTabGroupClickedListener =
@@ -633,54 +621,12 @@ public class VerticalTabListCoordinator {
                 });
 
         // Setup Pinned Tabs UI & Mediator.
-        TabListRecyclerView pinnedTabsRecyclerView = mContainerView.getPinnedTabsRecyclerView();
+        VerticalPinnedTabListRecyclerView pinnedTabsRecyclerView =
+                mContainerView.getPinnedTabsRecyclerView();
         mPinnedTabsRecyclerView = pinnedTabsRecyclerView;
         TabListModel pinnedTabsModelList = new TabListModel();
         mPinnedTabsModelList = pinnedTabsModelList;
-        SimpleRecyclerViewAdapter pinnedTabsAdapter =
-                new SimpleRecyclerViewAdapter(pinnedTabsModelList) {
-                    @Override
-                    public int getItemViewType(int position) {
-                        ListItem item = pinnedTabsModelList.get(position);
-                        if (item.type == UiType.TAB) {
-                            return UiType.PINNED_TAB;
-                        }
-                        return super.getItemViewType(position);
-                    }
-                };
-
-        pinnedTabsAdapter.registerType(
-                UiType.PINNED_TAB,
-                parent -> {
-                    VerticalTabItemLayout view =
-                            (VerticalTabItemLayout)
-                                    LayoutInflater.from(activity)
-                                            .inflate(
-                                                    R.layout.vertical_tab_item,
-                                                    parent,
-                                                    /* attachToRoot= */ false);
-                    view.configureAsPinnedTab();
-                    return view;
-                },
-                TabVerticalViewBinder::bindPinnedTab);
-
-        pinnedTabsRecyclerView.setAdapter(pinnedTabsAdapter);
-        mPinnedTabsAdapter = pinnedTabsAdapter;
-        pinnedTabsRecyclerView.setupCustomItemAnimator(/* useClipAnimations= */ true);
-        // TODO(crbug.com/509226293): Move pinned tab RecyclerView and LayoutManager into a
-        // dedicated class (mirroring VerticalTabListRecyclerView) to encapsulate layout and extra
-        // space logic.
-        mPinnedLayoutManager =
-                new GridLayoutManager(activity, getSpanCount()) {
-                    @Override
-                    protected void calculateExtraLayoutSpace(
-                            RecyclerView.State state, int[] extraLayoutSpace) {
-                        super.calculateExtraLayoutSpace(state, extraLayoutSpace);
-                        calculatePinnedExtraLayoutSpace(activity, state, extraLayoutSpace);
-                    }
-                };
-        pinnedTabsRecyclerView.setLayoutManager(mPinnedLayoutManager);
-        pinnedTabsRecyclerView.addItemDecoration(createPinnedTabItemDecoration());
+        pinnedTabsRecyclerView.initialize(pinnedTabsModelList, getRailCollapseState());
 
         mPinnedDropIndicatorDecoration = new VerticalTabPinnedDropIndicatorDecoration(activity);
         pinnedTabsRecyclerView.addItemDecoration(mPinnedDropIndicatorDecoration);
@@ -1050,15 +996,7 @@ public class VerticalTabListCoordinator {
      * @param inTransition True if the rail is actively transitioning.
      */
     void setInTransition(boolean inTransition) {
-        if (mIsInTransition == inTransition) return;
-        mIsInTransition = inTransition;
-        // Transition start: SideUiCoordinator captures the transition start values before it
-        // changes the container width, so request a layout here. The synchronous measure/layout
-        // it runs before TransitionManager#beginDelayedTransition then attaches the offscreen
-        // pinned tabs, giving ChangeBounds start values for them.
-        // Transition end: request a layout to recycle extra items back to viewport bounds.
-        ViewUtils.requestLayout(
-                mPinnedTabsRecyclerView, "VerticalTabListCoordinator.setInTransition");
+        mPinnedTabsRecyclerView.setInTransition(inTransition);
     }
 
     /**
@@ -1093,39 +1031,6 @@ public class VerticalTabListCoordinator {
     @VisibleForTesting
     void toggleTabGroupExpansion(int tabId) {
         mMediator.toggleTabGroupExpansion(tabId);
-    }
-
-    /**
-     * Calculates and applies extra layout space for pinned tabs during transitions so that
-     * boundary/trailing pinned tabs remain attached for ChangeBounds transitions.
-     */
-    @VisibleForTesting
-    void calculatePinnedExtraLayoutSpace(
-            Activity activity, RecyclerView.State state, int[] extraLayoutSpace) {
-        if (!mIsInTransition) return;
-        int height =
-                Math.max(
-                        mContainerView.getHeight(),
-                        mContainerView.getResources().getDisplayMetrics().heightPixels);
-        int itemCount = state.getItemCount();
-        if (itemCount > 0) {
-            int itemHeight =
-                    TabVerticalViewBinder.getPinnedItemHeight(activity)
-                            + activity.getResources()
-                                    .getDimensionPixelSize(
-                                            R.dimen.vertical_tab_pinned_item_margin_bottom);
-            int padding =
-                    mPinnedTabsRecyclerView.getPaddingTop()
-                            + mPinnedTabsRecyclerView.getPaddingBottom();
-            int totalContentHeight = itemCount * itemHeight + padding;
-            // Cap to the maximum items that can physically fit in the expanded
-            // viewport across all columns (at most MAX_SINGLE_ROW_SPAN_COUNT = 5),
-            // avoiding layout overhead for items that remain offscreen.
-            int maxExpandedHeight = height * MAX_SINGLE_ROW_SPAN_COUNT + padding;
-            height = Math.clamp(totalContentHeight, height, maxExpandedHeight);
-        }
-        extraLayoutSpace[0] = Math.max(extraLayoutSpace[0], height);
-        extraLayoutSpace[1] = Math.max(extraLayoutSpace[1], height);
     }
 
     private void setActive(boolean isActive) {
@@ -1265,8 +1170,7 @@ public class VerticalTabListCoordinator {
         if (isEmpty) {
             if (mPinnedTabsRecyclerView.getVisibility() != View.GONE) {
                 mPinnedTabsRecyclerView.setVisibility(View.GONE);
-                mPinnedTabsRecyclerView.swapAdapter(
-                        mPinnedTabsAdapter, /* removeAndRecycleExistingViews= */ true);
+                mPinnedTabsRecyclerView.recycleItemViews();
             }
         } else {
             mPinnedTabsRecyclerView.setVisibility(View.VISIBLE);
@@ -2028,36 +1932,15 @@ public class VerticalTabListCoordinator {
         }
     }
 
-    /**
-     * Returns the grid column span count for the Left Rail based on measured width and pinned tab
-     * count.
-     */
-    private int getSpanCount() {
-        if (mContainerModel != null) {
-            @RailCollapseState
-            int collapseState = mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE);
-            if (VerticalTabRailCollapseController.shouldUseCollapsedPositioning(collapseState)) {
-                return COLLAPSED_GRID_SPAN_COUNT;
-            }
-        }
-
-        int containerWidth = mContainerView.getWidth();
-        if (containerWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
-
-        int paddingStart = mContainerView.getPaddingStart();
-        int paddingEnd = mContainerView.getPaddingEnd();
-        int availableWidth = containerWidth - paddingStart - paddingEnd;
-
-        Resources res = mContainerView.getContext().getResources();
-        boolean isTablet = VerticalTabUtils.isTablet(mContainerView.getContext());
-        int pinnedTabCount = mPinnedTabsModelList != null ? mPinnedTabsModelList.size() : 0;
-        return calculateBalancedSpanCount(availableWidth, pinnedTabCount, res, isTablet);
+    private @RailCollapseState int getRailCollapseState() {
+        // mContainerModel may not be initialized yet when called from early listeners.
+        return mContainerModel != null
+                ? mContainerModel.get(VerticalTabListProperties.COLLAPSE_STATE)
+                : RailCollapseState.EXPANDED;
     }
 
     private void updatePinnedLayoutSpanCount() {
-        if (mPinnedLayoutManager == null) return;
-        mPinnedLayoutManager.setSpanCount(getSpanCount());
-        mPinnedTabsRecyclerView.invalidateItemDecorations();
+        mPinnedTabsRecyclerView.updateSpanCount(getRailCollapseState());
     }
 
     private boolean openContextMenuForFocusedItem(RecyclerView recyclerView) {
@@ -2468,79 +2351,6 @@ public class VerticalTabListCoordinator {
         mContainerView.setDesktopWindowSpacerVisible(isInDesktopWindow);
     }
 
-    /**
-     * Calculates the grid column span count for pinned tabs based on available width and tab count.
-     */
-    @VisibleForTesting
-    static int calculateBalancedSpanCount(
-            int availableWidth, int pinnedTabCount, Resources res, boolean isTablet) {
-        int minItemWidth =
-                res.getDimensionPixelSize(
-                        isTablet
-                                ? R.dimen.vertical_tab_pinned_item_min_width_tablet
-                                : R.dimen.vertical_tab_pinned_item_min_width);
-        int minHorizontalGap = res.getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-        if (minItemWidth <= 0) return DEFAULT_GRID_SPAN_COUNT;
-
-        float spansFittingWidth =
-                (float) (availableWidth + minHorizontalGap) / (minItemWidth + minHorizontalGap)
-                        + SPAN_CALCULATION_EPSILON;
-        int maxFitSpans =
-                Math.clamp((int) Math.floor(spansFittingWidth), 1, MAX_SINGLE_ROW_SPAN_COUNT);
-
-        if (pinnedTabCount <= 0) {
-            return maxFitSpans;
-        }
-
-        // Uses integer ceiling division (A + B - 1) / B instead of A / B (which truncates and
-        // would yield 0 rows when pinnedTabCount < maxFitSpans) to calculate the full number of
-        // rows needed, balancing tabs evenly across rows.
-        int rows = (pinnedTabCount + maxFitSpans - 1) / maxFitSpans;
-        int columns = (pinnedTabCount + rows - 1) / rows;
-        return Math.clamp(columns, 1, maxFitSpans);
-    }
-
-    @VisibleForTesting
-    static RecyclerView.ItemDecoration createPinnedTabItemDecoration() {
-        return new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(
-                    Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                calculatePinnedTabItemOffsets(outRect, view, parent);
-            }
-        };
-    }
-
-    /**
-     * Distributes inter-item horizontal gaps evenly across grid columns without outer margins,
-     * ensuring identical visual item widths since RecyclerView does not support layout_weight.
-     */
-    private static void calculatePinnedTabItemOffsets(
-            Rect outRect, View view, RecyclerView parent) {
-        int position = parent.getChildAdapterPosition(view);
-        if (position == RecyclerView.NO_POSITION) {
-            position = parent.indexOfChild(view);
-        }
-        if (position == RecyclerView.NO_POSITION) return;
-        if (!(parent.getLayoutManager() instanceof GridLayoutManager gridLayoutManager)) return;
-        int spanCount = gridLayoutManager.getSpanCount();
-        if (spanCount <= 1) {
-            outRect.left = 0;
-            outRect.right = 0;
-            return;
-        }
-        int minHorizontalGap =
-                parent.getContext()
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tab_pinned_item_gap);
-        int column = position % spanCount;
-        int left = column * minHorizontalGap / spanCount;
-        int right = minHorizontalGap - (column + 1) * minHorizontalGap / spanCount;
-        boolean isRtl = LocalizationUtils.isLayoutRtl();
-        outRect.left = isRtl ? right : left;
-        outRect.right = isRtl ? left : right;
-    }
-
     // Only show the separator if 1. The rail uses collapsed positioning (collapsed or expanded for
     // hovering), 2. The rail contains pinned tabs, and 3. The rail contains regular tabs (a tab
     // group cannot exist without at least one regular tab).
@@ -2607,7 +2417,7 @@ public class VerticalTabListCoordinator {
     }
 
     GridLayoutManager getPinnedLayoutManagerForTesting() {
-        return mPinnedLayoutManager;
+        return (GridLayoutManager) assumeNonNull(mPinnedTabsRecyclerView.getLayoutManager());
     }
 
     TabListModel getPinnedTabsModelListForTesting() {

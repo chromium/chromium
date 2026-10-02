@@ -1739,7 +1739,7 @@ public class VerticalTabListRenderTest {
                                     - pinnedRecyclerView.getPaddingStart()
                                     - pinnedRecyclerView.getPaddingEnd();
                     int spanCount =
-                            VerticalTabListCoordinator.calculateBalancedSpanCount(
+                            VerticalPinnedTabListRecyclerView.calculateBalancedSpanCount(
                                     availableWidth,
                                     numTabs,
                                     mActivity.getResources(),
@@ -1748,7 +1748,7 @@ public class VerticalTabListRenderTest {
                     pinnedRecyclerView.setLayoutManager(
                             new GridLayoutManager(mActivity, spanCount));
                     pinnedRecyclerView.addItemDecoration(
-                            VerticalTabListCoordinator.createPinnedTabItemDecoration());
+                            VerticalPinnedTabListRecyclerView.createItemDecoration());
 
                     TabListModel pinnedTabsModel = new TabListModel();
                     pinnedRecyclerView.setAdapter(createPinnedTabListAdapter(pinnedTabsModel));
