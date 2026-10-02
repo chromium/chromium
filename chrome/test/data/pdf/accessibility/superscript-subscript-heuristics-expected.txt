@@ -1,0 +1,23 @@
+This is some text
+¶
+abc
+¶
+with a
+simulated superscript.
+¶
+This is some text
+¶
+abc
+¶
+with a
+simulated subscript.
+¶
+This is some text
+¶
+abc
+¶
+def
+¶
+with both
+superscript and subscript.
+¶

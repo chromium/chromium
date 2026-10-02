@@ -656,8 +656,12 @@ class PDFExtensionAccessibilityTextExtractionTest
                std::string_view expected_subtext) {
     // Load the expectation file.
     ui::AXInspectTestHelper test_helper("content");
+    const base::FilePath::StringType expectations_qualifier =
+        UseHeuristicEnhancements() ? FILE_PATH_LITERAL("heuristics")
+                                   : FILE_PATH_LITERAL("");
     std::optional<base::FilePath> expected_file_path =
-        test_helper.GetExpectationFilePath(test_file_path);
+        test_helper.GetExpectationFilePath(test_file_path,
+                                           expectations_qualifier);
     ASSERT_TRUE(expected_file_path) << "No expectation file present.";
 
     std::optional<std::vector<std::string>> expected_lines =
@@ -710,10 +714,17 @@ class PDFExtensionAccessibilityTextExtractionTest
     int previous_node_id = 0;
     int previous_node_next_id = 0;
     std::string line;
+    auto push_line = [&](std::string_view text) {
+      // The heuristics replace trailing line breaks with spaces.
+      if (UseHeuristicEnhancements()) {
+        text = base::TrimWhitespaceASCII(text, base::TRIM_TRAILING);
+      }
+      lines.emplace_back(text);
+    };
     for (ui::AXNode* node : text_nodes) {
       // StaticText begins a new paragraph.
       if (node->GetRole() == ax::mojom::Role::kStaticText && !line.empty()) {
-        lines.push_back(line);
+        push_line(line);
         lines.push_back("\u00b6");  // pilcrow/paragraph mark, Alt+0182
         line.clear();
       }
@@ -741,7 +752,7 @@ class PDFExtensionAccessibilityTextExtractionTest
         EXPECT_EQ(prev_id, 0)
             << "Our back pointer points to something unexpected.";
         if (!line.empty()) {
-          lines.push_back(line);
+          push_line(line);
         }
         line = std::string(trimmed_name);
       }
@@ -751,7 +762,7 @@ class PDFExtensionAccessibilityTextExtractionTest
           node->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId);
     }
     if (!line.empty()) {
-      lines.push_back(line);
+      push_line(line);
     }
 
     // Extra newline to match current expectations. TODO: get rid of this
@@ -850,6 +861,59 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTextExtractionTest,
                        OverlappingAnnots) {
   RunTextExtractionTest(FILE_PATH_LITERAL("overlapping-annots.pdf"),
                         /*expected_subtext=*/"Page 1");
+}
+
+class PDFExtensionAccessibilityHeuristicsTextExtractionTest
+    : public PDFExtensionAccessibilityTextExtractionTest {
+ public:
+  PDFExtensionAccessibilityHeuristicsTextExtractionTest() = default;
+  ~PDFExtensionAccessibilityHeuristicsTextExtractionTest() override = default;
+
+ protected:
+  bool UseHeuristicEnhancements() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       NextOnLine) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("next-on-line.pdf"),
+                        /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       DropCap) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("drop-cap.pdf"),
+                        /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       SuperscriptSubscript) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("superscript-subscript.pdf"),
+                        /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       FontChange) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("font-change.pdf"),
+                        /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       WebLinks) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("weblinks.pdf"),
+                        /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       ParagraphsAndHeadingUntagged) {
+  RunTextExtractionTest(
+      FILE_PATH_LITERAL("paragraphs-and-heading-untagged.pdf"),
+      /*expected_subtext=*/"Page 1");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityHeuristicsTextExtractionTest,
+                       LinksImagesAndText) {
+  RunTextExtractionTest(FILE_PATH_LITERAL("text-image-link.pdf"),
+                        /*expected_subtext=*/"Second Page");
 }
 
 class PDFExtensionAccessibilityTreeDumpTest
@@ -1445,6 +1509,8 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityHeuristicsTestWithOopifOverride);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityTextExtractionTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionAccessibilityHeuristicsTextExtractionTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionAccessibilityNavigationTest);
 
