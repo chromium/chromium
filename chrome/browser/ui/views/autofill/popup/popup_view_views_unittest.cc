@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -115,7 +116,7 @@ using ::testing::Return;
 using CellIndex = PopupViewViews::CellIndex;
 using CellType = PopupRowView::CellType;
 
-const std::vector<SuggestionType> kClickableSuggestionTypes{
+constexpr auto kClickableSuggestionTypes = std::to_array<SuggestionType>({
     SuggestionType::kAutocompleteEntry,
     SuggestionType::kPasswordEntry,
     SuggestionType::kUndo,
@@ -126,14 +127,14 @@ const std::vector<SuggestionType> kClickableSuggestionTypes{
     SuggestionType::kScanCreditCard,
     SuggestionType::kAllSavedPasswordsEntry,
     SuggestionType::kVirtualCreditCardEntry,
-};
+});
 
-const std::vector<SuggestionType> kUnclickableSuggestionTypes{
+constexpr auto kUnclickableSuggestionTypes = std::to_array<SuggestionType>({
     SuggestionType::kInsecureContextPaymentDisabledMessage,
     SuggestionType::kTitle,
     SuggestionType::kSeparator,
     SuggestionType::kLoadingThrobber,
-};
+});
 
 bool IsClickable(SuggestionType id) {
   DCHECK(std::ranges::contains(kClickableSuggestionTypes, id) ^

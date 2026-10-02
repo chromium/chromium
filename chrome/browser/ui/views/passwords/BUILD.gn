@@ -219,6 +219,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/passwords",
     "//chrome/browser/ui/passwords:impl",
     "//chrome/browser/ui/passwords:test_support",
+    "//chrome/browser/ui/views/autofill/popup:test_support",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/passwords/password_change:password_change_toast",
     "//chrome/test:test_support",

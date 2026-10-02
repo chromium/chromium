@@ -540,44 +540,49 @@ struct PosInSetTestdata {
   int set_index;
 };
 
-const PosInSetTestdata kPosInSetTestcases[] = {
-    PosInSetTestdata{
-        .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-                  SuggestionType::kSeparator, SuggestionType::kManageAddress},
-        .line_number = 1,
-        .set_size = 3,
-        .set_index = 2,
-    },
-    PosInSetTestdata{
-        .types = {SuggestionType::kPasswordEntry,
-                  SuggestionType::kAccountStoragePasswordEntry,
-                  SuggestionType::kSeparator,
-                  SuggestionType::kAllSavedPasswordsEntry},
-        .line_number = 0,
-        .set_size = 3,
-        .set_index = 1,
-    },
-    PosInSetTestdata{
-        .types = {SuggestionType::kAddressEntry, SuggestionType::kAddressEntry,
-                  SuggestionType::kSeparator, SuggestionType::kManageAddress},
-        .line_number = 3,
-        .set_size = 3,
-        .set_index = 3,
-    },
-    PosInSetTestdata{
-        .types = {SuggestionType::kAutocompleteEntry,
-                  SuggestionType::kAutocompleteEntry,
-                  SuggestionType::kAutocompleteEntry},
-        .line_number = 1,
-        .set_size = 3,
-        .set_index = 2,
-    },
-    PosInSetTestdata{
-        .types = {SuggestionType::kComposeResumeNudge},
-        .line_number = 0,
-        .set_size = 1,
-        .set_index = 1,
-    }};
+std::vector<PosInSetTestdata> GetPosInSetTestcases() {
+  return {
+      PosInSetTestdata{
+          .types = {SuggestionType::kAddressEntry,
+                    SuggestionType::kAddressEntry, SuggestionType::kSeparator,
+                    SuggestionType::kManageAddress},
+          .line_number = 1,
+          .set_size = 3,
+          .set_index = 2,
+      },
+      PosInSetTestdata{
+          .types = {SuggestionType::kPasswordEntry,
+                    SuggestionType::kAccountStoragePasswordEntry,
+                    SuggestionType::kSeparator,
+                    SuggestionType::kAllSavedPasswordsEntry},
+          .line_number = 0,
+          .set_size = 3,
+          .set_index = 1,
+      },
+      PosInSetTestdata{
+          .types = {SuggestionType::kAddressEntry,
+                    SuggestionType::kAddressEntry, SuggestionType::kSeparator,
+                    SuggestionType::kManageAddress},
+          .line_number = 3,
+          .set_size = 3,
+          .set_index = 3,
+      },
+      PosInSetTestdata{
+          .types = {SuggestionType::kAutocompleteEntry,
+                    SuggestionType::kAutocompleteEntry,
+                    SuggestionType::kAutocompleteEntry},
+          .line_number = 1,
+          .set_size = 3,
+          .set_index = 2,
+      },
+      PosInSetTestdata{
+          .types = {SuggestionType::kComposeResumeNudge},
+          .line_number = 0,
+          .set_size = 1,
+          .set_index = 1,
+      },
+  };
+}
 
 class PopupRowPosInSetViewTest
     : public PopupRowViewTest,
@@ -607,7 +612,7 @@ TEST_P(PopupRowPosInSetViewTest, All) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupRowPosInSetViewTest,
-                         ::testing::ValuesIn(kPosInSetTestcases));
+                         ::testing::ValuesIn(GetPosInSetTestcases()));
 
 class PopupRowViewAcceptGuardEnabledTest : public PopupRowViewTest {
  public:

@@ -480,13 +480,61 @@ source_set("popup_footer_with_link_view") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  public = [
+    "mock_accessibility_selection_delegate.h",
+    "mock_selection_delegate.h",
+    "popup_pixel_test.h",
+  ]
+  sources = [
+    "mock_accessibility_selection_delegate.cc",
+    "mock_selection_delegate.cc",
+  ]
+  public_deps = [
+    ":popup",
+    "//testing/gmock",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
 source_set("browser_tests") {
   testonly = true
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = []
-  deps = []
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  sources = [
+    "popup_base_view_browsertest.cc",
+    "popup_row_factory_utils_browsertest.cc",
+    "popup_view_views_browsertest.cc",
+  ]
+  deps = [
+    ":password_favicon_loader",
+    ":popup",
+    ":popup_bnpl_footnote_view",
+    ":popup_row_factory_utils",
+    ":popup_view_views",
+    ":test_support",
+    "//chrome/browser/ui:browser_window_header",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/compose/core/browser:features",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
   if (enable_extensions) {
     sources += [ "custom_cursor_suppressor_browsertest.cc" ]
@@ -498,18 +546,67 @@ source_set("browser_tests") {
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
       "//content/public/browser",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//extensions:test_support",
       "//net:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
       "//url",
     ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "lazy_loading_image_view_unittest.cc",
+    "password_favicon_loader_unittest.cc",
+    "popup_bnpl_footnote_view_unittest.cc",
+    "popup_cell_utils_unittest.cc",
+    "popup_loading_view_unittest.cc",
+    "popup_notice_view_test_api.h",
+    "popup_notice_view_unittest.cc",
+    "popup_row_content_view_unittest.cc",
+    "popup_row_factory_utils_unittest.cc",
+    "popup_row_view_unittest.cc",
+    "popup_row_with_button_view_unittest.cc",
+    "popup_search_bar_view_unittest.cc",
+    "popup_separator_view_unittest.cc",
+    "popup_title_view_unittest.cc",
+    "popup_view_utils_unittest.cc",
+    "popup_view_views_unittest.cc",
+    "popup_warning_view_unittest.cc",
+  ]
+  deps = [
+    ":lazy_loading_image_view",
+    ":password_favicon_loader",
+    ":popup",
+    ":popup_bnpl_footnote_view",
+    ":popup_cell_utils",
+    ":popup_centered_text_view",
+    ":popup_footer_with_link_view",
+    ":popup_interactive_row_view",
+    ":popup_loading_view",
+    ":popup_notice_view",
+    ":popup_row_content_view",
+    ":popup_row_factory_utils",
+    ":popup_row_with_button_view",
+    ":popup_search_bar_view",
+    ":popup_separator_view",
+    ":popup_title_view",
+    ":popup_view_views",
+    ":popup_warning_view",
+    ":test_support",
+    "//chrome/browser/ui/views/autofill/payments:bnpl_issuer_linked_pill",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chrome/test/base:testing_browser_process",
+    "//components/image_fetcher/core:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+  ]
 }
 
 source_set("popup_badge_constants") {
