@@ -52,10 +52,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
   ~BlobURLStoreImpl() override;
 
-  void Register(
-      mojo::PendingRemote<blink::mojom::Blob> blob,
-      const GURL& url,
-      RegisterCallback callback) override;
+  void Register(mojo::PendingRemote<blink::mojom::Blob> blob,
+                bool security_origin_serializes_as_null,
+                RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
@@ -68,9 +67,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
 
  private:
   // Checks if the passed in url is a valid blob url for this blob url store.
-  // Returns false and reports a bad mojo message if not. Note that currently
-  // this function is only suitable to be called from `Register()` and
-  // `Revoke()`.
+  // Returns false and reports a bad mojo message if not.
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
   bool ShouldPartitionBlobUrlAccess(

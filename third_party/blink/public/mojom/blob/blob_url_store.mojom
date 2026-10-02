@@ -15,11 +15,14 @@ import "url/mojom/url.mojom";
 interface BlobURLStore {
   // Registers a public Blob URL. When the connection to the BlobURLStore closes
   // all URLs registered through it will be revoked.
-  // TODO(https://crbug.com/1376126): This should probably create and return a
-  // new blob: URL rather than letting the caller in the renderer provide one.
+  // `security_origin_serializes_as_null` indicates that the renderer's
+  // SecurityOrigin serializes as "null", which differs from url::Origin for
+  // some local origins because url::Origin does not retain renderer
+  // preferences. (See `SecurityOrigin::ToString()`.)
+  // TODO(crbug.com/568014518): remove `security_origin_serializes_as_null`.
   [Sync] Register(
       pending_remote<blink.mojom.Blob> blob,
-      url.mojom.Url url) => ();
+      bool security_origin_serializes_as_null) => (url.mojom.Url url);
 
   // Revokes a public Blob URL.
   Revoke(url.mojom.Url url);

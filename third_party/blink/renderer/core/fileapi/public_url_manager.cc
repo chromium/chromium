@@ -169,12 +169,10 @@ String PublicURLManager::RegisterUrl(
   }
   CHECK(attachment);
 
-  const KURL url = GenerateUrl();
-  const String& url_string = url.GetString();
-
   MediaSourceRegistry* registry = &attachment->Registry();
-  registry->RegisterUrl(url, std::move(attachment));
-  url_to_registry_.insert(url_string, registry);
+  const KURL url = registry->RegisterUrl(
+      GetExecutionContext()->GetSecurityOrigin(), std::move(attachment));
+  url_to_registry_.insert(url.GetString(), registry);
 
   return CompleteRegistration(url);
 }
@@ -185,26 +183,22 @@ String PublicURLManager::RegisterUrl(Blob* blob) {
   }
   CHECK(blob);
 
-  const KURL url = GenerateUrl();
-  const String& url_string = url.GetString();
-
   mojo::PendingRemote<mojom::blink::Blob> blob_remote;
   mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
       blob_remote.InitWithNewPipeAndPassReceiver();
 
-  GetBlobURLStore().Register(std::move(blob_remote), url);
+  KURL url;
+  if (!GetBlobURLStore().Register(
+          std::move(blob_remote),
+          GetExecutionContext()->GetSecurityOrigin()->SerializesAsNull(),
+          &url)) {
+    return String();
+  }
 
-  mojo_urls_.insert(url_string);
+  mojo_urls_.insert(url.GetString());
   blob->CloneMojoBlob(std::move(blob_receiver));
 
   return CompleteRegistration(url);
-}
-
-KURL PublicURLManager::GenerateUrl() const {
-  KURL url =
-      BlobURL::CreatePublicURL(GetExecutionContext()->GetSecurityOrigin());
-  DCHECK(!url.IsEmpty());
-  return url;
 }
 
 String PublicURLManager::CompleteRegistration(const KURL& url) {

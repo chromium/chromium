@@ -130,7 +130,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -139,7 +138,6 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -4476,33 +4474,6 @@ size_t GetLockedCompositorFrameCount() {
 void PurgeUnlockedCompositorFrames() {
   viz::FrameEvictionManager::GetInstance()->PurgeAllUnlockedFrames();
 }
-
-// static
-void BlobURLStoreInterceptor::Intercept(GURL target_url,
-                                        storage::BlobUrlRegistry* registry,
-                                        mojo::ReceiverId receiver_id) {
-  auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
-  auto* raw_interceptor = interceptor.get();
-  auto impl = registry->receivers_for_testing().SwapImplForTesting(
-      receiver_id, std::move(interceptor));
-  raw_interceptor->url_store_ = std::move(impl);
-}
-
-blink::mojom::BlobURLStore* BlobURLStoreInterceptor::GetForwardingInterface() {
-  return url_store_.get();
-}
-
-void BlobURLStoreInterceptor::Register(
-    mojo::PendingRemote<blink::mojom::Blob> blob,
-    const GURL& url,
-    RegisterCallback callback) {
-  GetForwardingInterface()->Register(std::move(blob), target_url_,
-                                     std::move(callback));
-}
-
-BlobURLStoreInterceptor::BlobURLStoreInterceptor(GURL target_url)
-    : target_url_(target_url) {}
-BlobURLStoreInterceptor::~BlobURLStoreInterceptor() = default;
 
 namespace {
 

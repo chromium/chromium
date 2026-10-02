@@ -136,6 +136,7 @@ source_set("common") {
     # outside WebKit, add them in public/common instead.
     "associated_interfaces/associated_interface_provider.cc",
     "associated_interfaces/associated_interface_registry.cc",
+    "blob/blob_url.cc",
     "blob/blob_utils.cc",
     "bluetooth/web_bluetooth_device_id.cc",
     "cache_storage/cache_storage_utils.cc",

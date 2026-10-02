@@ -122,6 +122,7 @@ source_set("headers") {
   sources = [
     "associated_interfaces/associated_interface_provider.h",
     "associated_interfaces/associated_interface_registry.h",
+    "blob/blob_url.h",
     "blob/blob_utils.h",
     "bluetooth/web_bluetooth_device_id.h",
     "bluetooth/web_bluetooth_device_id_mojom_traits.h",

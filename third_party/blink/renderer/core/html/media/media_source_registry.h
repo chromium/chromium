@@ -14,6 +14,7 @@ namespace blink {
 
 class KURL;
 class MediaSourceAttachment;
+class SecurityOrigin;
 
 // Core interface for registering, unregistering, and looking up
 // MediaSourceAttachments. The production implementation lives in
@@ -24,9 +25,9 @@ class CORE_EXPORT MediaSourceRegistry {
  public:
   virtual ~MediaSourceRegistry() = default;
 
-  // Registers `attachment` under the given URL and retains its reference until
-  // the URL is unregistered.
-  virtual void RegisterUrl(const KURL& url,
+  // Generates a URL using `security_origin`, registers `attachment` under it,
+  // and retains the attachment's reference until the URL is unregistered.
+  virtual KURL RegisterUrl(const SecurityOrigin* security_origin,
                            scoped_refptr<MediaSourceAttachment> attachment) = 0;
   virtual void UnregisterUrl(const KURL& url) = 0;
 

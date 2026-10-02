@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -208,9 +209,7 @@ class BlobURLTest : public testing::Test {
                    const net::HttpRequestHeaders& extra_headers) {
     auto origin = url::Origin::Create(GURL("https://example.com"));
     const auto storage_key = blink::StorageKey::CreateFirstParty(origin);
-    auto url = GURL("blob:" + origin.Serialize() + "/id1");
     network::ResourceRequest request;
-    request.url = url;
     request.method = method;
     request.headers = extra_headers;
 
@@ -222,10 +221,12 @@ class BlobURLTest : public testing::Test {
         std::make_unique<storage::BlobDataHandle>(*GetHandleFromBuilder()),
         blob_remote.InitWithNewPipeAndPassReceiver());
 
-    base::RunLoop register_loop;
-    url_store.Register(std::move(blob_remote), url,
-                       register_loop.QuitClosure());
-    register_loop.Run();
+    base::test::TestFuture<const GURL&> registered_url;
+    url_store.Register(std::move(blob_remote),
+                       /*security_origin_serializes_as_null=*/false,
+                       registered_url.GetCallback());
+    const GURL url = registered_url.Get();
+    request.url = url;
 
     mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
     url_store.ResolveAsURLLoaderFactory(

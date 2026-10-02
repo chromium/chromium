@@ -27,6 +27,7 @@
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/dns/mock_host_resolver.h"

@@ -52,7 +52,6 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_options.h"
@@ -67,8 +66,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
@@ -140,10 +137,6 @@ class FrameWidget;
 }  // namespace mojom
 
 }  // namespace blink
-
-namespace storage {
-class BlobUrlRegistry;
-}
 
 namespace content {
 
@@ -2349,35 +2342,6 @@ size_t GetLockedCompositorFrameCount();
 
 // Purges all unlocked frames in the FrameEvictionManager.
 void PurgeUnlockedCompositorFrames();
-
-// Helper class to interpose on Blob URL registrations, replacing the URL
-// contained in incoming registration requests with the specified URL.
-class BlobURLStoreInterceptor
-    : public blink::mojom::BlobURLStoreInterceptorForTesting {
- public:
-  static void InterceptDeprecated(
-      GURL target_url,
-      mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore>
-          receiver);
-
-  static void Intercept(GURL target_url,
-                        storage::BlobUrlRegistry* registry,
-                        mojo::ReceiverId receiver_id);
-
-  ~BlobURLStoreInterceptor() override;
-
-  blink::mojom::BlobURLStore* GetForwardingInterface() override;
-
-  void Register(mojo::PendingRemote<blink::mojom::Blob> blob,
-                const GURL& url,
-                RegisterCallback callback) override;
-
- private:
-  explicit BlobURLStoreInterceptor(GURL target_url);
-
-  std::unique_ptr<blink::mojom::BlobURLStore> url_store_;
-  GURL target_url_;
-};
 
 // Load the given |url| with |network_context| and return the |net::Error| code.
 //

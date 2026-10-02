@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "media/base/media_switches.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"

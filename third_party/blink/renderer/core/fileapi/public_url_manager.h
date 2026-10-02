@@ -97,7 +97,6 @@ class CORE_EXPORT PublicURLManager final
   mojom::blink::BlobURLStore& GetBlobURLStore();
 
  private:
-  KURL GenerateUrl() const;
   String CompleteRegistration(const KURL&);
 
   typedef String URLString;

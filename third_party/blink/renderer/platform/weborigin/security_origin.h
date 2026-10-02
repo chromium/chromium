@@ -298,7 +298,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // whereas this function serializes them to "null" or // "file://" depending
   // on the `allow_file_access_from_file_urls` flag in WebPreferences. This
   // difference should be cleaned up, along with the workaround for it in
-  // RenderFrameProxyHost::SerializePostMessageSourceOrigin().
+  // MessageEvent::originForBindings().
   String ToString() const;
   AtomicString ToAtomicString() const;
 

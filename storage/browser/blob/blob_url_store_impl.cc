@@ -19,6 +19,7 @@
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
 #include "storage/browser/blob/features.h"
+#include "third_party/blink/public/common/blob/blob_url.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/url_util.h"
 
@@ -115,14 +116,13 @@ BlobURLStoreImpl::~BlobURLStoreImpl() {
   }
 }
 
-void BlobURLStoreImpl::Register(
-    mojo::PendingRemote<blink::mojom::Blob> blob,
-    const GURL& url,
-    RegisterCallback callback) {
-  // TODO(crbug.com/40061399): Generate blob URLs here, rather than
-  // validating the URLs the renderer process generated.
+void BlobURLStoreImpl::Register(mojo::PendingRemote<blink::mojom::Blob> blob,
+                                bool security_origin_serializes_as_null,
+                                RegisterCallback callback) {
+  const GURL url = blink::CreateBlobUrl(renderer_origin_,
+                                        security_origin_serializes_as_null);
   if (!BlobUrlIsValid(url, "Register")) {
-    std::move(callback).Run();
+    std::move(callback).Run(GURL());
     return;
   }
 
@@ -130,7 +130,7 @@ void BlobURLStoreImpl::Register(
     registry_->AddUrlMapping(url, std::move(blob), storage_key_,
                              renderer_origin_, render_process_host_id_);
   urls_.insert(url);
-  std::move(callback).Run();
+  std::move(callback).Run(url);
 }
 
 void BlobURLStoreImpl::Revoke(const GURL& url) {
@@ -239,8 +239,9 @@ void BlobURLStoreImpl::ResolveAsBlobURLToken(
 
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
-  // TODO(crbug.com/40810120): Remove crash keys.
   url::Origin storage_key_origin = storage_key_.origin();
+
+  // TODO(crbug.com/417149687): Remove crash keys.
   static crash_reporter::CrashKeyString<256> origin_key("origin");
   static crash_reporter::CrashKeyString<256> url_key("url");
   static crash_reporter::CrashKeyString<256> latest_storage_key(

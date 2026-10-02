@@ -19,10 +19,9 @@ namespace blink {
 // Mocked BlobURLStore implementation for testing.
 class FakeBlobURLStore : public mojom::blink::BlobURLStore {
  public:
-  void Register(
-      mojo::PendingRemote<mojom::blink::Blob>,
-      const KURL&,
-      RegisterCallback) override;
+  void Register(mojo::PendingRemote<mojom::blink::Blob>,
+                bool security_origin_serializes_as_null,
+                RegisterCallback) override;
   void Revoke(const KURL&) override;
   void ResolveAsURLLoaderFactory(
       const KURL&,

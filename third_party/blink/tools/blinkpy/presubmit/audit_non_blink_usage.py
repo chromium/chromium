@@ -3122,6 +3122,16 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/blob/blob_url.cc',
+            'third_party/blink/public/common/blob/blob_url.h',
+        ],
+        'allowed': [
+            'GURL',
+            'url::Origin',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/common/loader/code_cache_util.cc',
             'third_party/blink/public/common/loader/code_cache_util.h',
         ],

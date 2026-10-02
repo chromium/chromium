@@ -131,12 +131,6 @@ class HTMLVideoElementMockMediaPlayer : public EmptyWebMediaPlayer {
 
 class SaveVideoFrameBlobURLStore : public FakeBlobURLStore {
  public:
-  void Register(mojo::PendingRemote<mojom::blink::Blob> blob,
-                const KURL& url,
-                RegisterCallback callback) override {
-    FakeBlobURLStore::Register(std::move(blob), url, std::move(callback));
-  }
-
   void ResolveAsBlobURLToken(
       const KURL& url,
       mojo::PendingReceiver<mojom::blink::BlobURLToken> receiver,
