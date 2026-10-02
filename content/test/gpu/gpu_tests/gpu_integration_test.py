@@ -752,18 +752,24 @@ class GpuIntegrationTest(
         'document.getElementsByTagName("info-view")[0].getSelectionText '
         '!= undefined'
       )
-      try:
-        # Navigating to chrome://gpu triggers asynchronous Dawn info collection
-        # on the GPU main thread. Wait for it to finish so that Dawn info is
-        # included in the artifact and does not block the GPU main thread while
-        # the first test runs.
-        cls.tab.action_runner.WaitForJavaScriptCondition(
-          'document.getElementsByTagName("info-view")[0]'
-          '.getSelectionText(true).includes("Dawn Info")',
-          timeout=15,
-        )
-      except py_utils.TimeoutException:
-        logging.warning('Timed out waiting for Dawn Info on chrome://gpu')
+      if cba.DISABLE_GPU not in cls._last_launched_browser_info.browser_args:
+        try:
+          # Navigating to chrome://gpu triggers asynchronous Dawn info
+          # collection on the GPU main thread. Wait for it to finish so that
+          # Dawn info is included in the artifact and does not block the GPU
+          # main thread while the first test runs. Poll EvaluateJavaScript via
+          # py_utils.WaitFor instead of WaitForJavaScriptCondition so that a
+          # timeout does not trigger Telemetry's heavy _CollectDebugData()
+          # screenshot/minidump collection.
+          py_utils.WaitFor(
+            lambda: cls.tab.action_runner.EvaluateJavaScript(
+              'document.getElementsByTagName("info-view")[0]'
+              '.getSelectionText(true).includes("Dawn Info")'
+            ),
+            timeout=15,
+          )
+        except py_utils.TimeoutException:
+          logging.warning('Timed out waiting for Dawn Info on chrome://gpu')
       about_gpu_content = cls.tab.action_runner.EvaluateJavaScript(
         'document.getElementsByTagName("info-view")[0].getSelectionText(true)'
       )
