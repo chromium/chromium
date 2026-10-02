@@ -10701,6 +10701,68 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest,
       lens::LensOverlayNonBlockingPrivacyNoticeUserAction::kDismissed, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerNonBlockingPrivacyNoticeBrowserTest,
+                       ContextualTasksComposebox_HidesPrivacyNotice) {
+  WaitForPaint();
+
+  base::HistogramTester histogram_tester;
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_EQ(controller->state(), State::kOff);
+
+  auto* prefs = browser()->GetProfile()->GetPrefs();
+  EXPECT_FALSE(
+      prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled));
+
+  // Open the overlay from the Contextual Tasks composebox Lens button.
+  OpenLensOverlay(LensOverlayInvocationSource::kContextualTasksComposebox);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  EXPECT_TRUE(controller->ShouldHideNonBlockingPrivacyNotice());
+
+  content::WebContents* overlay_web_contents = GetOverlayWebContents();
+  ASSERT_NE(overlay_web_contents, nullptr);
+  EXPECT_TRUE(content::WaitForLoadStop(overlay_web_contents));
+
+  // Verify the privacy notice is disabled in the WebUI and impression count is
+  // not incremented.
+  EXPECT_EQ(false, content::EvalJs(overlay_web_contents,
+                                   "document.querySelector('lens-overlay-app')."
+                                   "isPrivacyNoticeVisible"));
+  EXPECT_EQ(false, content::EvalJs(overlay_web_contents,
+                                   "document.querySelector('lens-overlay-app')."
+                                   "hasPermissionsForSession"));
+  EXPECT_EQ(true,
+            content::EvalJs(overlay_web_contents,
+                            "document.querySelector('lens-overlay-app')."
+                            "shadowRoot.querySelector('#privacyNotice') === "
+                            "null"));
+  EXPECT_EQ(0,
+            prefs->GetInteger(
+                lens::prefs::kLensOverlayNonBlockingPrivacyNoticeShownCount));
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.NonBlockingPrivacyNotice.ToBeShown", 0);
+
+  // Interacting with the overlay should still grant session permissions without
+  // recording privacy notice acceptance metrics.
+  controller->IssueLensRegionRequestForTesting(kTestRegion->Clone(),
+                                               /*is_click=*/false);
+  auto* fake_query_controller =
+      static_cast<lens::TestLensOverlayQueryController*>(
+          GetLensOverlayQueryController());
+  EXPECT_TRUE(fake_query_controller->HasPermissionForSession());
+  EXPECT_FALSE(
+      prefs->GetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled));
+  EXPECT_FALSE(prefs->GetBoolean(lens::prefs::kLensSharingPageContentEnabled));
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", 0);
+}
+
 class LensOverlayControllerPrivacyNoticeFeatureDisabledBrowserTest
     : public LensOverlayControllerBrowserTest {
  public:

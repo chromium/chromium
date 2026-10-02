@@ -1389,6 +1389,8 @@ bool LensOverlayController::CoBrowsePanelWithLensOverlayEnabled() const {
 bool LensOverlayController::ShouldHideNonBlockingPrivacyNotice() const {
   return invocation_source_ ==
              lens::LensOverlayInvocationSource::kOmniboxPopupButton ||
+         invocation_source_ ==
+             lens::LensOverlayInvocationSource::kContextualTasksComposebox ||
          CoBrowsePanelWithLensOverlayEnabled();
 }
 
