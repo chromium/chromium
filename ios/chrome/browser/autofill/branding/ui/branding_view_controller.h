@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BRANDING_BRANDING_VIEW_CONTROLLER_H_
-#define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BRANDING_BRANDING_VIEW_CONTROLLER_H_
+#ifndef IOS_CHROME_BROWSER_AUTOFILL_BRANDING_UI_BRANDING_VIEW_CONTROLLER_H_
+#define IOS_CHROME_BROWSER_AUTOFILL_BRANDING_UI_BRANDING_VIEW_CONTROLLER_H_
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_consumer.h"
+#import "ios/chrome/browser/autofill/branding/ui/branding_consumer.h"
 
 // Protocol to handle events and interactions in a BrandingViewController.
 @protocol BrandingViewControllerDelegate;
@@ -26,4 +26,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BRANDING_BRANDING_VIEW_CONTROLLER_H_
+#endif  // IOS_CHROME_BROWSER_AUTOFILL_BRANDING_UI_BRANDING_VIEW_CONTROLLER_H_

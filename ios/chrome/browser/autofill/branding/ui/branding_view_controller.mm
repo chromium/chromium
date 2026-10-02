@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
+#import "ios/chrome/browser/autofill/branding/ui/branding_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/branding/ui/branding_view_controller_delegate.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 

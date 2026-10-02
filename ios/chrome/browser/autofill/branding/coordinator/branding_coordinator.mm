@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
+#import "ios/chrome/browser/autofill/branding/coordinator/branding_coordinator.h"
 
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
+#import "ios/chrome/browser/autofill/branding/coordinator/branding_mediator.h"
+#import "ios/chrome/browser/autofill/branding/ui/branding_view_controller.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 @implementation BrandingCoordinator {

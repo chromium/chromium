@@ -49,9 +49,9 @@ _bookmarks_eg2tests_deps = [
 
 _integration_eg2tests_deps = [
   "//ios/chrome/browser/autofill/atmemory/test:eg2_tests",
+  "//ios/chrome/browser/autofill/branding/test:eg2_tests",
   "//ios/chrome/browser/autofill/manual_fill/test:eg2_tests",
   "//ios/chrome/browser/autofill/ui_bundled:eg2_tests",
-  "//ios/chrome/browser/autofill/ui_bundled/branding:eg2_tests",
   "//ios/chrome/browser/content_suggestions/tab_resumption/test:eg2_tests",
   "//ios/chrome/browser/content_suggestions/test:eg2_tests",
   "//ios/chrome/browser/context_menu/ui_bundled:eg2_tests",
