@@ -373,19 +373,17 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText2D) {
                             /*is_horizontal=*/true, u"1",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): this text_info incorrectly has u"" for
-  // /ActualText leading to /ActualText<FEFF> in the PDF.
   EXPECT_THAT(
       ink_lines[0].text_info[1],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{2},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(11.4f, 20.0f, 0.5f, 2.0f),
-                            /*is_horizontal=*/true, u"",
+                            /*is_horizontal=*/true, u"2",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): this text_info and the previous one should be
-  // joined together into a single /ActualText span with the text u"2"
+  // Glyphs 2,3 map to the text "2" but glyph 3 has a y offset so it needs to be
+  // joined with the glyph 2 in the /ActualText output.
   EXPECT_THAT(
       ink_lines[0].text_info[2],
       InkTextInfoWithTextEq(FontId(0),
@@ -393,8 +391,8 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText2D) {
                             /*glyph_positions=*/
                             std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(11.9f, 20.5f, 1.6f, 2.0f),
-                            /*is_horizontal=*/true, u"2",
-                            /*join_prev_actualtext=*/false));
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
 
   EXPECT_THAT(
       ink_lines[0].text_info[3],
@@ -441,29 +439,34 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest,
   std::vector<InkTextLine> ink_lines =
       InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
   ASSERT_THAT(ink_lines, SizeIs(1));
-  ASSERT_THAT(ink_lines[0].text_info, SizeIs(2));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
 
-  // TODO(crbug.com/525093248): Glyph 1 should be separated into its own
-  // InkTextInfo with text "1", and glyph 2 should have text "2".
   EXPECT_THAT(
       ink_lines[0].text_info[0],
       InkTextInfoWithTextEq(FontId(0),
-                            /*glyphs=*/std::vector<uint32_t>{1, 2},
-                            /*glyph_positions=*/std::vector<float>{0.0f, 1.4f},
-                            /*location=*/gfx::RectF(10.0f, 20.0f, 1.9f, 2.0f),
+                            /*glyphs=*/std::vector<uint32_t>{1},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(10.0f, 20.0f, 1.4f, 2.0f),
                             /*is_horizontal=*/true, u"1",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): Glyph 3 should have join_prev_actualtext = true
-  // and be joined with glyph 2 under /ActualText "2".
   EXPECT_THAT(
       ink_lines[0].text_info[1],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{2},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(11.4f, 20.0f, 0.5f, 2.0f),
+                            /*is_horizontal=*/true, u"2",
+                            /*join_prev_actualtext=*/false));
+
+  EXPECT_THAT(
+      ink_lines[0].text_info[2],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{3},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(11.9f, 20.5f, 1.1f, 2.0f),
-                            /*is_horizontal=*/true, u"2",
-                            /*join_prev_actualtext=*/false));
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
 }
 
 // In this test, glyphs 1 and 2 belong to the same cluster (character "1"),
@@ -483,28 +486,33 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest,
   std::vector<InkTextLine> ink_lines =
       InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
   ASSERT_THAT(ink_lines, SizeIs(1));
-  ASSERT_THAT(ink_lines[0].text_info, SizeIs(2));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
 
-  // TODO(crbug.com/525093248): Slice 0 should have text "1" (or "" if joined
-  // with glyph 2), not "12".
   EXPECT_THAT(
       ink_lines[0].text_info[0],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{1},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(10.0f, 20.5f, 1.4f, 2.0f),
-                            /*is_horizontal=*/true, u"",
+                            /*is_horizontal=*/true, u"1",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): Glyph 3 should be in its own InkTextInfo with
-  // text "2" and join_prev_actualtext = false.
   EXPECT_THAT(
       ink_lines[0].text_info[1],
       InkTextInfoWithTextEq(FontId(0),
-                            /*glyphs=*/std::vector<uint32_t>{2, 3},
-                            /*glyph_positions=*/std::vector<float>{0.0f, 0.6f},
-                            /*location=*/gfx::RectF(11.4f, 20.0f, 1.6f, 2.0f),
-                            /*is_horizontal=*/true, u"12",
+                            /*glyphs=*/std::vector<uint32_t>{2},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(11.4f, 20.0f, 0.6f, 2.0f),
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
+
+  EXPECT_THAT(
+      ink_lines[0].text_info[2],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{3},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(12.0f, 20.0f, 1.0f, 2.0f),
+                            /*is_horizontal=*/true, u"2",
                             /*join_prev_actualtext=*/false));
 }
 
@@ -517,50 +525,50 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest,
   text_runs.push_back(MakeTextRunWithText(
       gfx::RectF(100.0f, 200.0f, 40.0f, 20.0f),
       /*typeface_run_total_advance=*/{{0.0f, 10.0f, 20.0f, 30.0f}},
-      {{gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(0.0f, 5.0f),
-        gfx::Vector2dF(0.0f, 5.0f), gfx::Vector2dF(0.0f, 0.0f)}},
+      {{gfx::Vector2dF(0.0f, 0.0f), gfx::Vector2dF(4.0f, 5.0f),
+        gfx::Vector2dF(0.0f, 5.0f), gfx::Vector2dF(4.0f, 0.0f)}},
       u"12", {0, 0, 1, 1}));
 
   std::vector<InkTextLine> ink_lines =
       InkTextLine::BlinkTextInfoToPDFTextLines(text_runs, 10.0f);
   ASSERT_THAT(ink_lines, SizeIs(1));
-  ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
+  ASSERT_THAT(ink_lines[0].text_info, SizeIs(4));
 
-  // TODO(crbug.com/525093248): Slice 0 should have text "1" and be joined with
-  // slice 1 (glyph 2) under /ActualText "1". Currently it has text u"".
   EXPECT_THAT(
       ink_lines[0].text_info[0],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{1},
                             /*glyph_positions=*/std::vector<float>{0.0f},
-                            /*location=*/gfx::RectF(10.0f, 20.0f, 1.0f, 2.0f),
-                            /*is_horizontal=*/true, u"",
-                            /*join_prev_actualtext=*/false));
-
-  // TODO(crbug.com/525093248): Glyphs 2 and 3 should not be merged across
-  // clusters. Glyph 2 should be joined with glyph 1 under /ActualText "1",
-  // and glyph 3 should be joined with glyph 4 under /ActualText "2".
-  // Currently glyph 3 is absorbed into slice 1 under text "1".
-  EXPECT_THAT(
-      ink_lines[0].text_info[1],
-      InkTextInfoWithTextEq(FontId(0),
-                            /*glyphs=*/std::vector<uint32_t>{2, 3},
-                            /*glyph_positions=*/std::vector<float>{0.0f, 1.0f},
-                            /*location=*/gfx::RectF(11.0f, 20.5f, 2.0f, 2.0f),
+                            /*location=*/gfx::RectF(10.0f, 20.0f, 1.4f, 2.0f),
                             /*is_horizontal=*/true, u"1",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): Glyph 4 should be joined with glyph 3 under
-  // /ActualText "2". Currently glyph 3 was swallowed into slice 1, so slice 2
-  // only contains glyph 4.
+  EXPECT_THAT(
+      ink_lines[0].text_info[1],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{2},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(11.4f, 20.5f, 0.6f, 2.0f),
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
+
   EXPECT_THAT(
       ink_lines[0].text_info[2],
       InkTextInfoWithTextEq(FontId(0),
-                            /*glyphs=*/std::vector<uint32_t>{4},
+                            /*glyphs=*/std::vector<uint32_t>{3},
                             /*glyph_positions=*/std::vector<float>{0.0f},
-                            /*location=*/gfx::RectF(13.0f, 20.0f, 1.0f, 2.0f),
+                            /*location=*/gfx::RectF(12.0f, 20.5f, 1.4f, 2.0f),
                             /*is_horizontal=*/true, u"2",
                             /*join_prev_actualtext=*/false));
+
+  EXPECT_THAT(
+      ink_lines[0].text_info[3],
+      InkTextInfoWithTextEq(FontId(0),
+                            /*glyphs=*/std::vector<uint32_t>{4},
+                            /*glyph_positions=*/std::vector<float>{0.0f},
+                            /*location=*/gfx::RectF(13.4f, 20.0f, 0.6f, 2.0f),
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
 }
 
 // In this test, a single cluster has multiple marks at distinct vertical
@@ -580,19 +588,17 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText2DThreeSlices) {
   ASSERT_THAT(ink_lines, SizeIs(1));
   ASSERT_THAT(ink_lines[0].text_info, SizeIs(3));
 
-  // TODO(crbug.com/525093248): Slice 0 should have text "1" and be joined with
-  // slices 1 and 2 under a single /ActualText "1". Currently it has text u"".
+  // Glyphs 1, 2, 3 belong to cluster "1" and are joined across all 3 slices
+  // under /ActualText "1".
   EXPECT_THAT(
       ink_lines[0].text_info[0],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{1},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(10.0f, 20.0f, 1.0f, 2.0f),
-                            /*is_horizontal=*/true, u"",
+                            /*is_horizontal=*/true, u"1",
                             /*join_prev_actualtext=*/false));
 
-  // TODO(crbug.com/525093248): Slice 1 should have join_prev_actualtext = true
-  // and be joined with slice 0 under /ActualText "1".
   EXPECT_THAT(
       ink_lines[0].text_info[1],
       InkTextInfoWithTextEq(FontId(0),
@@ -600,18 +606,16 @@ TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SplitText2DThreeSlices) {
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(11.0f, 20.5f, 1.0f, 2.0f),
                             /*is_horizontal=*/true, u"",
-                            /*join_prev_actualtext=*/false));
+                            /*join_prev_actualtext=*/true));
 
-  // TODO(crbug.com/525093248): Slice 2 should have join_prev_actualtext = true
-  // and be joined with slice 0 under /ActualText "1".
   EXPECT_THAT(
       ink_lines[0].text_info[2],
       InkTextInfoWithTextEq(FontId(0),
                             /*glyphs=*/std::vector<uint32_t>{3},
                             /*glyph_positions=*/std::vector<float>{0.0f},
                             /*location=*/gfx::RectF(12.0f, 19.5f, 1.0f, 2.0f),
-                            /*is_horizontal=*/true, u"1",
-                            /*join_prev_actualtext=*/false));
+                            /*is_horizontal=*/true, u"",
+                            /*join_prev_actualtext=*/true));
 }
 
 TEST(PdfInkTextBlinkTextInfoToPDFTextLinesTest, SyntheticBoldItalic) {

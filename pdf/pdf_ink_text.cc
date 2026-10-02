@@ -22,7 +22,29 @@ struct ExtraGlyphInfo {
 
 // Makes a substring of `input` containing the characters in [start, end) with
 // the `location` rectangle cut so that the returned `location` covers only the
-// glyphs in the range.
+// glyphs in the range. The size of `glyph_info` must match the size of
+// `input`.glyphs.
+//
+// In the normal case, this function requires that `start` and `end` are
+// Harfbuzz glyph cluster boundaries, so that the resulting `text` maintains
+// alignment with the corresponding glyphs.
+//
+// Harfbuzz glyph clusters are runs of glyphs with the same character_index.
+// Ex: The character_index sequence 1,1,1,4 means 3 glyphs together make up the
+// substring [1,4) which are Unicode codepoint indices. So a glyph cluster
+// boundary is when the index changes, or the end of the string is reached.
+//
+// This function also supports a special sequence of substrings that are splits
+// within a glyph cluster. In this case if `start` and `end` are within the same
+// glyph cluster, the resulting `InkTextInfo` gets u"" for the text and
+// `join_prev_actualtext` set to true. Then to terminate the sequence there
+// needs to be a final `start` that has the same character_index as the rest of
+// the sequence, and an `end` that is a glyph cluster boundary. This terminating
+// `InkTextInfo` then gets `join_prev_actualtext` set to false and text set to
+// the full string of the glyph cluster representing the entire sequence of
+// substrings. Finally ProcessJoinPrevActualText() fixes up this output so that
+// the text is on the first `InkTextInfo` and `join_prev_actualtext` is inverted
+// for the sequence.
 //
 // TODO(crbug.com/510015130): check `is_horizontal`: if false the rectangle
 // would need to be split on the y-axis instead of the x-axis.
@@ -36,6 +58,7 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
   CHECK_LE(end, input.glyphs.size());
   CHECK_LT(start, end);
   CHECK_EQ(input.glyphs.size(), input.glyph_positions.size());
+  CHECK_EQ(input.glyphs.size(), glyph_info.size());
 
   // TODO(crbug.com/507508097): Correctly handle RTL text. The most immediate
   // problem is that in RTL text the glyphs have been reversed in order by Blink
@@ -70,11 +93,43 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
   size_t end_char = end == glyph_info.size() ? input.text.size()
                                              : glyph_info[end].character_index;
   size_t num_chars = end_char - start_char;
+  // This condition is true when the new InkTextInfo is an internal split within
+  // a Harfbuzz glyph cluster, and the new InkTextInfo is not the end of the
+  // string.
+  //
+  // This ends up leaving all but the last InkTextInfo of the run with u"" for
+  // the string and true for `join_prev_actualtext`. Then the last InkTextInfo
+  // is left with the full glyph cluster string and false for
+  // `join_prev_actualtext`.
+  //
+  // The empty() check is for test cases where the text is not filled in.
+  const bool join_prev_actualtext = !input.text.empty() && num_chars == 0;
   return InkTextInfo(input.font_id, std::move(glyphs),
                      std::move(glyph_positions), location, input.is_horizontal,
                      input.is_synthetic_bold, input.is_synthetic_italic,
                      !is_rtl ? input.text.substr(start_char, num_chars) : u"",
-                     /*join_prev_actualtext=*/false);
+                     join_prev_actualtext);
+}
+
+// Check if the two glyphs belong to the same Harfbuzz glyph cluster.
+bool IsSameGlyphCluster(const ExtraGlyphInfo& lhs, const ExtraGlyphInfo& rhs) {
+  return lhs.character_index == rhs.character_index;
+}
+
+// Check if the Harfbuzz glyph cluster starting at the beginning of the
+// `glyph_info` span contains glyphs with different y-axis position offsets.
+bool GlyphClusterHas2DOffset(base::span<const ExtraGlyphInfo> glyph_info) {
+  CHECK(!glyph_info.empty());
+  const ExtraGlyphInfo& start_glyph = glyph_info.front();
+  for (const ExtraGlyphInfo& g : glyph_info.subspan<1>()) {
+    if (!IsSameGlyphCluster(g, start_glyph)) {
+      break;  // End of cluster
+    }
+    if (g.offset != start_glyph.offset) {
+      return true;
+    }
+  }
+  return false;
 }
 
 // Because PDF text objects only support 1D glyph positioning, it is necessary
@@ -97,12 +152,6 @@ InkTextInfo MakeSubstrTextInfo(const InkTextInfo& input,
 // `glyph_info.offsets` would be interpreted as x-axis offsets instead of
 // y-axis. The documentation above needs to be updated too because the axes will
 // flip.
-// TODO(crbug.com/507508097): This function can sometimes split strings smaller
-// than Harfbuzz glyph clusters and this leaves InkTextInfo objects with an
-// empty string which inserts /ActualText <FEFF> spans in the PDF. Ideally the
-// correct behavior should be to group multiple InkTextInfo objects into a
-// single Span mark so that the smallest ActualText string is a single complete
-// Harfbuzz glyph cluster.
 std::vector<InkTextInfo> Split2DOffsets(
     const InkTextInfo& input,
     base::span<const ExtraGlyphInfo> glyph_info) {
@@ -111,15 +160,41 @@ std::vector<InkTextInfo> Split2DOffsets(
   CHECK_EQ(glyph_info.size(), input.glyph_positions.size());
 
   std::vector<InkTextInfo> results;
+  bool current_cluster_has_offset = GlyphClusterHas2DOffset(glyph_info);
   size_t run_start = 0;
   for (size_t i = 1; i <= glyph_info.size(); ++i) {
-    bool is_boundary = i == glyph_info.size() ||
-                       glyph_info[i - 1].offset != glyph_info[i].offset;
+    const ExtraGlyphInfo& curr_glyph = glyph_info[i - 1];
+    bool is_boundary = false;
+    if (i == glyph_info.size()) {
+      // The end of the string is always a glyph cluster boundary.
+      is_boundary = true;
+    } else {
+      const ExtraGlyphInfo& next_glyph = glyph_info[i];
+      if (curr_glyph.offset != next_glyph.offset) {
+        // This may not be a glyph cluster boundary, however the condition below
+        // ensures that if `i` is not a glyph cluster boundary, `run_start` and
+        // `i` have the same character_index.
+        is_boundary = true;
+      }
+      if (!IsSameGlyphCluster(curr_glyph, next_glyph)) {
+        bool next_cluster_has_offset =
+            GlyphClusterHas2DOffset(glyph_info.subspan(i));
+        if (current_cluster_has_offset || next_cluster_has_offset) {
+          // In this case `i` is always a cluster boundary but `run_start` may
+          // not be if it was the product of a run of 2D offsets splitting a
+          // glyph cluster.
+          is_boundary = true;
+        }
+        // Save the result to avoid calling GlyphClusterHas2DOffset() twice.
+        current_cluster_has_offset = next_cluster_has_offset;
+      }
+    }
+
     if (!is_boundary) {
       continue;
     }
-    results.push_back(MakeSubstrTextInfo(input, glyph_info[i - 1].offset,
-                                         glyph_info, run_start, i));
+    results.push_back(
+        MakeSubstrTextInfo(input, curr_glyph.offset, glyph_info, run_start, i));
     run_start = i;
   }
   return results;
@@ -148,6 +223,37 @@ void MaybeCorrectNonZeroFirstOffset(InkTextInfo& input) {
   // possible if there was a Infinity or NaN to get a different answer but now
   // it's relatively safe to assume the first value is 0 and skip it in
   // FPDFText_SetPositions() calls.
+}
+
+// Reverse the order of InkTextInfo `join_prev_actualtext` runs because the way
+// Harfbuzz glyph cluster info comes in, it makes the greedy algorithm produce
+// output reversed from what is needed to produce the PDF stream.
+//
+// Example:
+//   Input: {u"", true}, {u"", true}, {u"", true}, {u"abcd", false}
+//  Output: {u"abcd", false}, {u"", true}, {u"", true}, {u"", true}
+void ProcessJoinPrevActualText(std::vector<InkTextLine>& lines) {
+  for (InkTextLine& line : lines) {
+    bool found_run = false;
+    size_t run_start = 0;
+    std::vector<InkTextInfo>& results = line.text_info;
+    for (size_t i = 0; i < results.size(); ++i) {
+      if (found_run) {
+        if (!results[i].join_prev_actualtext) {
+          found_run = false;
+          results[run_start].text = std::move(results[i].text);
+          results[i].text.clear();
+          results[run_start].join_prev_actualtext = false;
+          results[i].join_prev_actualtext = true;
+        }
+      } else {
+        if (results[i].join_prev_actualtext) {
+          run_start = i;
+          found_run = true;
+        }
+      }
+    }
+  }
 }
 
 }  // namespace
@@ -292,6 +398,10 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
     for (const pdf::mojom::InkTypefaceRunPtr& typeface_run : typeface_runs) {
       const size_t run_end = run_start + typeface_run->glyphs.size();
       CHECK_EQ(text_run_info.is_horizontal, typeface_run->is_horizontal);
+      // Note: `run_start` and `run_end` are always Harfbuzz glyph cluster
+      // boundaries because this substring is caused only by changes in typeface
+      // which cannot happen mid-glyph-cluster because glyph clusters are
+      // defined by the typeface itself.
       InkTextInfo typeface_run_info =
           MakeSubstrTextInfo(text_run_info, /*y_offset=*/0,
                              extra_glyph_info_span, run_start, run_end);
@@ -336,6 +446,7 @@ std::vector<InkTextLine> InkTextLine::BlinkTextInfoToPDFTextLines(
           InkTextLine(text_run_info.location, std::move(line_text_infos)));
     }
   }
+  ProcessJoinPrevActualText(results);
   return results;
 }
 
