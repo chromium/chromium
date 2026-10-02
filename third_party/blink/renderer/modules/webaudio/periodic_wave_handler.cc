@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+#include <numbers>
 
 #include "base/bit_cast.h"
 #include "base/containers/span.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/modules/webaudio/oscillator_handler.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
-#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
 #include <xmmintrin.h>
@@ -367,7 +367,7 @@ bool PeriodicWaveHandler::GenerateBasicWaveform(int shape) {
   imag[0] = 0;
 
   for (unsigned n = 1; n < half_size; ++n) {
-    float pi_factor = 2 / (n * kPiFloat);
+    float pi_factor = 2 / (n * std::numbers::pi_v<float>);
 
     // All waveforms are odd functions with a positive slope at time 0. Hence
     // the coefficients for cos() are always 0.

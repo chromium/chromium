@@ -220,11 +220,10 @@ TEST(MathExtrasTest, infinityMath) {
   double pos_inf = std::numeric_limits<double>::infinity();
   double neg_inf = -std::numeric_limits<double>::infinity();
   double nan = std::numeric_limits<double>::quiet_NaN();
-
-  EXPECT_EQ(M_PI_4, atan2(pos_inf, pos_inf));
-  EXPECT_EQ(3.0 * M_PI_4, atan2(pos_inf, neg_inf));
-  EXPECT_EQ(-M_PI_4, atan2(neg_inf, pos_inf));
-  EXPECT_EQ(-3.0 * M_PI_4, atan2(neg_inf, neg_inf));
+  EXPECT_EQ(kPiOverFourDouble, atan2(pos_inf, pos_inf));
+  EXPECT_EQ(3.0 * kPiOverFourDouble, atan2(pos_inf, neg_inf));
+  EXPECT_EQ(-kPiOverFourDouble, atan2(neg_inf, pos_inf));
+  EXPECT_EQ(-3.0 * kPiOverFourDouble, atan2(neg_inf, neg_inf));
 
   EXPECT_EQ(0.0, fmod(0.0, pos_inf));
   EXPECT_EQ(7.0, fmod(7.0, pos_inf));

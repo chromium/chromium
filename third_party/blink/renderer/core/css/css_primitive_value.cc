@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 
 #include <cmath>
+#include <numbers>
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_length_resolver.h"
@@ -534,7 +535,7 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
       factor = kCssPixelsPerPica;
       break;
     case UnitType::kRadians:
-      factor = 180 / kPiDouble;
+      factor = 180 / std::numbers::pi;
       break;
     case UnitType::kGradians:
       factor = 0.9;

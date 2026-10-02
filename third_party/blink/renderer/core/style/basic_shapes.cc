@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <numbers>
 
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -84,7 +85,7 @@ float GetRoundedPolygonRadius(const RoundedPolygonEdge& incoming,
   const double interior_angle = std::acos(cos_interior);
 
   if (interior_angle <= std::numeric_limits<double>::epsilon() ||
-      std::abs(interior_angle - kPiDouble) <=
+      std::abs(interior_angle - std::numbers::pi) <=
           std::numeric_limits<double>::epsilon()) {
     return 0.0f;
   }

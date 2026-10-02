@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <array>
+#include <numbers>
 
 #include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
@@ -32,6 +33,7 @@
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/box_f.h"
 
 namespace blink {
@@ -332,8 +334,10 @@ static void FindCandidatesInPlane(double px,
   *num_candidates = 4;
   candidates[0] = phi;  // The element at 0deg (maximum x)
 
-  for (int i = 1; i < *num_candidates; ++i)
-    candidates[i] = candidates[i - 1] + M_PI_2;  // every 90 deg
+  // Add every 90 degrees.
+  for (int i = 1; i < *num_candidates; ++i) {
+    candidates[i] = candidates[i - 1] + kPiOverTwoDouble;
+  }
   if (nz < 0.f) {
     for (int i = 0; i < *num_candidates; ++i)
       candidates[i] *= -1;
@@ -420,14 +424,14 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
       // maximum/minimum x, y, z values
       // x'(t) = r*cos(t)*v2.x - r*sin(t)*v1.x = 0
       // tan(t) = v2.x/v1.x
-      // t = atan2(v2.x, v1.x) + n*M_PI;
+      // t = atan2(v2.x, v1.x) + n*pi;
 
       candidates[0] = atan2(v2.x(), v1.x());
-      candidates[1] = candidates[0] + M_PI;
+      candidates[1] = candidates[0] + std::numbers::pi;
       candidates[2] = atan2(v2.y(), v1.y());
-      candidates[3] = candidates[2] + M_PI;
+      candidates[3] = candidates[2] + std::numbers::pi;
       candidates[4] = atan2(v2.z(), v1.z());
-      candidates[5] = candidates[4] + M_PI;
+      candidates[5] = candidates[4] + std::numbers::pi;
       num_candidates = 6;
     } break;
   }
@@ -440,9 +444,9 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
     double radians = candidates[i];
 
     while (radians < min_radians)
-      radians += 2.0 * M_PI;
+      radians += 2.0 * std::numbers::pi;
     while (radians > max_radians)
-      radians -= 2.0 * M_PI;
+      radians -= 2.0 * std::numbers::pi;
     if (radians < min_radians)
       continue;
 

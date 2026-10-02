@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <limits>
+#include <numbers>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -124,8 +125,8 @@ TEST(StringTest, NumberToStringEcmaScriptBoundaries) {
 
 TEST(StringTest, NumberToStringEcmaScriptRegularNumbers) {
   // Pi.
-  TestNumberToStringEcmaScript(kPiDouble, "3.141592653589793");
-  TestNumberToStringEcmaScript(kPiFloat, "3.1415927410125732");
+  TestNumberToStringEcmaScript(std::numbers::pi, "3.141592653589793");
+  TestNumberToStringEcmaScript(std::numbers::pi_v<float>, "3.1415927410125732");
   TestNumberToStringEcmaScript(kPiOverTwoDouble, "1.5707963267948966");
   TestNumberToStringEcmaScript(kPiOverTwoFloat, "1.5707963705062866");
   TestNumberToStringEcmaScript(kPiOverFourDouble, "0.7853981633974483");

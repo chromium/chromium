@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
 
 #include <cmath>
+#include <numbers>
 
 #include "base/numerics/angle_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -28,7 +29,7 @@ double PointerEventUtil::AzimuthFromTilt(double tilt_x_degrees,
 
   if (tilt_y_degrees == 0) {
     if (tilt_x_degrees < 0) {
-      return kPiDouble;
+      return std::numbers::pi;
     }
     return 0.0;
   }
@@ -112,10 +113,10 @@ int32_t PointerEventUtil::TiltYFromSpherical(double azimuth_radians,
         base::RadToDeg(atan(sin(azimuth_radians) / tan(altitude_radians))) +
         0.5);
   }
-  if (azimuth_radians == 0 || azimuth_radians == kPiDouble ||
+  if (azimuth_radians == 0 || azimuth_radians == std::numbers::pi ||
       azimuth_radians == kTwoPiDouble) {
     return 0;
-  } else if (azimuth_radians < kPiDouble) {
+  } else if (azimuth_radians < std::numbers::pi) {
     // 1st and 2nd quadrants
     return 90;
   } else {

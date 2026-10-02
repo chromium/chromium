@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define _USE_MATH_DEFINES  // For VC++ to get M_PI. This has to be first.
-
 #include "third_party/blink/renderer/modules/xr/xr_render_state.h"
 
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 #include <ranges>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
@@ -23,7 +22,7 @@ namespace {
 // errors, so set them slightly inside those numbers.
 constexpr double kMinFieldOfView = 0.01;
 constexpr double kMaxFieldOfView = 3.13;
-constexpr double kDefaultFieldOfView = M_PI * 0.5;
+constexpr double kDefaultFieldOfView = std::numbers::pi * 0.5;
 }  // namespace
 
 XRRenderState::XRRenderState(bool immersive) : immersive_(immersive) {

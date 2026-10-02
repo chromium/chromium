@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <numbers>
 #include <numeric>
 #include <tuple>
 
@@ -4913,7 +4914,7 @@ class CSSMathExpressionNodeParser {
     if (token.Id() == CSSValueID::kPi) {
       context_.Count(WebFeature::kCSSCalcConstants);
       return CSSMathExpressionNumericLiteral::Create(
-          M_PI, CSSPrimitiveValue::UnitType::kNumber);
+          std::numbers::pi, CSSPrimitiveValue::UnitType::kNumber);
     }
     if (token.Id() == CSSValueID::kE) {
       context_.Count(WebFeature::kCSSCalcConstants);
