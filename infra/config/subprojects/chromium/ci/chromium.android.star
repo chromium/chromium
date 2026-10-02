@@ -2608,6 +2608,7 @@ ci.builder(
                     "--disable-field-trial-config",
                     "--skia-gold-consider-unsupported",
                 ],
+                enable_rts_filtering = True,
             ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
