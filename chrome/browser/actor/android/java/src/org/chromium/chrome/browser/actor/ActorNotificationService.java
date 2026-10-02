@@ -8,10 +8,12 @@ import android.app.Notification;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -45,6 +47,7 @@ public class ActorNotificationService {
     private final Map<Integer, ActorTask> mTaskCache = new HashMap<>();
     private final Map<Integer, NotificationWrapper> mNotificationCache = new HashMap<>();
     private final Map<Integer, Integer> mTaskStates = new HashMap<>();
+    private final Map<Integer, Long> mLastWorklogUpdateTimes = new HashMap<>();
     // Insertion-ordered so that the oldest pending demotion is promoted first.
     private final Map<Integer, Runnable> mDemoteRunnables = new LinkedHashMap<>();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
@@ -129,6 +132,9 @@ public class ActorNotificationService {
     public void updateNotificationForTask(
             int taskId, @ActorTaskState int newState, boolean isSilent, boolean isWarning) {
         cancelDemoteRunnable(taskId);
+        if (!ActorUtils.isRunningState(newState)) {
+            mLastWorklogUpdateTimes.remove(taskId);
+        }
         NotificationWrapper old = mNotificationCache.get(taskId);
         NotificationWrapper current =
                 getOrBuildNotificationWrapper(taskId, newState, isSilent, isWarning);
@@ -220,6 +226,14 @@ public class ActorNotificationService {
                         task, state, /* isSilent= */ true, /* isWarning= */ false);
         mNotificationCache.put(taskId, current);
         mNotificationManager.notify(current);
+
+        if (ActorUtils.isRunningState(state) && !TextUtils.isEmpty(task.getCurrentActionName())) {
+            long now = TimeUtils.elapsedRealtimeMillis();
+            Long lastTime = mLastWorklogUpdateTimes.put(taskId, now);
+            if (lastTime != null) {
+                ActorMetrics.recordTimeBetweenWorklogUpdates(now - lastTime);
+            }
+        }
     }
 
     /**
@@ -353,6 +367,7 @@ public class ActorNotificationService {
         mDemoteRunnables.clear();
         mNotificationCache.clear();
         mTaskStates.clear();
+        mLastWorklogUpdateTimes.clear();
         mTaskCache.clear();
     }
 
@@ -360,6 +375,7 @@ public class ActorNotificationService {
         cancelDemoteRunnable(taskId);
         mNotificationCache.remove(taskId);
         mTaskStates.remove(taskId);
+        mLastWorklogUpdateTimes.remove(taskId);
         mTaskCache.remove(taskId);
     }
 

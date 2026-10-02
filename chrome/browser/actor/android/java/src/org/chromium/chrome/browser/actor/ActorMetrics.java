@@ -31,6 +31,8 @@ import java.util.WeakHashMap;
 /** Helper class for recording Actor-related UMA metrics. */
 @NullMarked
 public class ActorMetrics implements ActorKeyedService.Observer {
+    public static final String ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES =
+            "Actor.Notification.TimeBetweenWorklogUpdates";
     private static final int INVALID_TASK_ID = -1;
     private static final int INVALID_TASK_STATE = -1;
     private static final Set<Intent> sRecordedIntents =
@@ -179,6 +181,15 @@ public class ActorMetrics implements ActorKeyedService.Observer {
                     "Actor.Task.OmniboxClickCount." + reasonName, clickCount);
         }
         mOmniboxClickCounts.remove(taskId);
+    }
+
+    /**
+     * Records the elapsed time in milliseconds between consecutive worklog updates on an active
+     * Actor task notification.
+     */
+    public static void recordTimeBetweenWorklogUpdates(long durationMs) {
+        RecordHistogram.recordMediumTimesHistogram(
+                ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES, durationMs);
     }
 
     /** Records the PiP status (Enter/Exit). */

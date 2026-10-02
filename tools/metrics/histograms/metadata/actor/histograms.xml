@@ -511,6 +511,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Notification.TimeBetweenWorklogUpdates" units="ms"
+    expires_after="2027-10-01">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when an active Actor task notification receives consecutive step
+    progress (worklog) updates on Android. Measures the elapsed time in
+    milliseconds between consecutive worklog updates for the same task.
+  </summary>
+</histogram>
+
 <histogram name="Actor.ObservationDelay.DidNavigate" enum="Boolean"
     expires_after="2027-02-28">
   <owner>dtapuska@google.com</owner>

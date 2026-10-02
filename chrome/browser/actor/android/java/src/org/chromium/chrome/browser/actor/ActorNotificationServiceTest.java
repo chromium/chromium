@@ -33,10 +33,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -50,6 +54,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowSystemClock.class})
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
 public class ActorNotificationServiceTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -1250,5 +1255,205 @@ public class ActorNotificationServiceTest {
                 taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
         verify(mServiceController, org.mockito.Mockito.times(4))
                 .createTrustedBringTabToFrontIntent(mTask);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testTimeBetweenWorklogUpdates_SingleTask() {
+        int taskId = 100;
+        String histogram = ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        // First worklog update: establishes baseline, no period recorded.
+        when(mTask.getCurrentActionName()).thenReturn("Step 1");
+        var watcher1 = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher1.assertExpected();
+
+        // Second worklog update after 1500ms.
+        ShadowSystemClock.advanceBy(1500, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("Step 2");
+        var watcher2 = HistogramWatcher.newSingleRecordWatcher(histogram, 1500);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher2.assertExpected();
+
+        // Third worklog update after 2500ms.
+        ShadowSystemClock.advanceBy(2500, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("Step 3");
+        var watcher3 = HistogramWatcher.newSingleRecordWatcher(histogram, 2500);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher3.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testTimeBetweenWorklogUpdates_MultipleTasks_Independent() {
+        int taskId1 = 1;
+        int taskId2 = 2;
+        String histogram = ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES;
+
+        ActorTask task1 = mock(ActorTask.class);
+        when(task1.getId()).thenReturn(taskId1);
+        when(task1.getTitle()).thenReturn("Task 1");
+        when(task1.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId1)).thenReturn(task1);
+
+        ActorTask task2 = mock(ActorTask.class);
+        when(task2.getId()).thenReturn(taskId2);
+        when(task2.getTitle()).thenReturn("Task 2");
+        when(task2.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId2)).thenReturn(task2);
+
+        mNotificationService.updateNotificationForTask(
+                taskId1, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        mNotificationService.updateNotificationForTask(
+                taskId2, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        // Task 1 initial update at t=0.
+        when(task1.getCurrentActionName()).thenReturn("Task 1 Step 1");
+        mNotificationService.updateNotificationForStepProgress(taskId1);
+
+        // Advance 500ms -> t=500.
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        // Task 2 initial update at t=500.
+        when(task2.getCurrentActionName()).thenReturn("Task 2 Step 1");
+        mNotificationService.updateNotificationForStepProgress(taskId2);
+
+        // Advance 1000ms -> t=1500.
+        ShadowSystemClock.advanceBy(1000, TimeUnit.MILLISECONDS);
+        // Task 1 second update: interval = 1500 - 0 = 1500ms.
+        when(task1.getCurrentActionName()).thenReturn("Task 1 Step 2");
+        var watcher1 = HistogramWatcher.newSingleRecordWatcher(histogram, 1500);
+        mNotificationService.updateNotificationForStepProgress(taskId1);
+        watcher1.assertExpected();
+
+        // Advance 1200ms -> t=2700.
+        ShadowSystemClock.advanceBy(1200, TimeUnit.MILLISECONDS);
+        // Task 2 second update: interval = 2700 - 500 = 2200ms.
+        when(task2.getCurrentActionName()).thenReturn("Task 2 Step 2");
+        var watcher2 = HistogramWatcher.newSingleRecordWatcher(histogram, 2200);
+        mNotificationService.updateNotificationForStepProgress(taskId2);
+        watcher2.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testTimeBetweenWorklogUpdates_TaskCompletion_ResetsTracking() {
+        int taskId = 42;
+        String histogram = ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        when(mTask.getCurrentActionName()).thenReturn("Step 1");
+        mNotificationService.updateNotificationForStepProgress(taskId);
+
+        ShadowSystemClock.advanceBy(1000, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("Step 2");
+        var watcher1 = HistogramWatcher.newSingleRecordWatcher(histogram, 1000);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher1.assertExpected();
+
+        // Task completes: resets tracking for this task ID.
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+
+        // Advance clock and simulate task restarting or a new task with the same ID.
+        ShadowSystemClock.advanceBy(5000, TimeUnit.MILLISECONDS);
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        // First update on the new task should establish a new baseline (no records emitted).
+        when(mTask.getCurrentActionName()).thenReturn("New Task Step 1");
+        var watcher2 = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher2.assertExpected();
+
+        // Subsequent update should record interval relative to the new task baseline.
+        ShadowSystemClock.advanceBy(800, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("New Task Step 2");
+        var watcher3 = HistogramWatcher.newSingleRecordWatcher(histogram, 800);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher3.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testTimeBetweenWorklogUpdates_Pause_ResetsTracking() {
+        int taskId = 55;
+        String histogram = ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+        when(mTask.getCurrentActionName()).thenReturn("Step 1");
+        mNotificationService.updateNotificationForStepProgress(taskId);
+
+        ShadowSystemClock.advanceBy(1200, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("Step 2");
+        var watcher1 = HistogramWatcher.newSingleRecordWatcher(histogram, 1200);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher1.assertExpected();
+
+        // User pauses the task.
+        when(mTask.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        mNotificationService.updateNotificationForTask(
+                taskId,
+                ActorTaskState.PAUSED_BY_USER,
+                /* isSilent= */ false,
+                /* isWarning= */ false);
+        ShadowSystemClock.advanceBy(10000, TimeUnit.MILLISECONDS);
+
+        // Task resumes acting.
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        // First worklog after resuming should establish a new baseline (no record).
+        when(mTask.getCurrentActionName()).thenReturn("Step 3");
+        var watcher2 = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher2.assertExpected();
+
+        // Subsequent update records interval from resume baseline.
+        ShadowSystemClock.advanceBy(900, TimeUnit.MILLISECONDS);
+        when(mTask.getCurrentActionName()).thenReturn("Step 4");
+        var watcher3 = HistogramWatcher.newSingleRecordWatcher(histogram, 900);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher3.assertExpected();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ACTOR_STEP_PROGRESS_NOTIFICATION)
+    public void testTimeBetweenWorklogUpdates_FeatureDisabled_DoesNotRecord() {
+        int taskId = 66;
+        String histogram = ActorMetrics.ACTOR_NOTIFICATION_TIME_BETWEEN_WORKLOG_UPDATES;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.ACTING);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.ACTING, /* isSilent= */ false, /* isWarning= */ false);
+
+        var watcher = HistogramWatcher.newBuilder().expectNoRecords(histogram).build();
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        ShadowSystemClock.advanceBy(1500, TimeUnit.MILLISECONDS);
+        mNotificationService.updateNotificationForStepProgress(taskId);
+        watcher.assertExpected();
     }
 }
