@@ -64,12 +64,12 @@ static bool UpdateYUVAInfoSubsamplingAndWidthBytes(
     ImageDecoder* decoder,
     SkYUVAInfo::Subsampling* subsampling,
     base::span<size_t, SkYUVAInfo::kMaxPlanes> component_width_bytes) {
-  SkYUVAInfo::Subsampling tempSubsampling =
+  SkYUVAInfo::Subsampling temp_subsampling =
       SubsamplingToSkiaSubsampling(decoder->GetYUVSubsampling());
-  if (tempSubsampling == SkYUVAInfo::Subsampling::kUnknown) {
+  if (temp_subsampling == SkYUVAInfo::Subsampling::kUnknown) {
     return false;
   }
-  *subsampling = tempSubsampling;
+  *subsampling = temp_subsampling;
   component_width_bytes[0] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kY);
   component_width_bytes[1] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kU);
   component_width_bytes[2] = decoder->DecodedYUVWidthBytes(cc::YUVIndex::kV);
@@ -290,26 +290,26 @@ bool ImageFrameGenerator::GetYUVAInfo(
   }
   SkYUVAInfo yuva_info(full_size_, SkYUVAInfo::PlaneConfig::kY_U_V, subsampling,
                        decoder->GetYUVColorSpace());
-  SkYUVAPixmapInfo::DataType dataType;
+  SkYUVAPixmapInfo::DataType data_type;
   if (decoder->GetYUVBitDepth() > 8) {
     if (supported_data_types.supported(SkYUVAInfo::PlaneConfig::kY_U_V,
                                        SkYUVAPixmapInfo::DataType::kUnorm16)) {
-      dataType = SkYUVAPixmapInfo::DataType::kUnorm16;
+      data_type = SkYUVAPixmapInfo::DataType::kUnorm16;
     } else if (supported_data_types.supported(
                    SkYUVAInfo::PlaneConfig::kY_U_V,
                    SkYUVAPixmapInfo::DataType::kFloat16)) {
-      dataType = SkYUVAPixmapInfo::DataType::kFloat16;
+      data_type = SkYUVAPixmapInfo::DataType::kFloat16;
     } else {
       return false;
     }
   } else if (supported_data_types.supported(
                  SkYUVAInfo::PlaneConfig::kY_U_V,
                  SkYUVAPixmapInfo::DataType::kUnorm8)) {
-    dataType = SkYUVAPixmapInfo::DataType::kUnorm8;
+    data_type = SkYUVAPixmapInfo::DataType::kUnorm8;
   } else {
     return false;
   }
-  *info = SkYUVAPixmapInfo(yuva_info, dataType, width_bytes.data());
+  *info = SkYUVAPixmapInfo(yuva_info, data_type, width_bytes.data());
   DCHECK(info->isSupported(supported_data_types));
 
   return true;

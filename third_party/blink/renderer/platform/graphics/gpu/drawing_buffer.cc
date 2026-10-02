@@ -537,7 +537,7 @@ bool DrawingBuffer::PrepareTransferableResource(
 
 DrawingBuffer::CheckForDestructionResult
 DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
-    DiscardBehavior discardBehavior) {
+    DiscardBehavior discard_behavior) {
   DCHECK(state_restorer_);
   if (destruction_in_progress_) {
     // It can be hit in the following sequence.
@@ -571,7 +571,7 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
   TRACE_EVENT0("blink,rail", "DrawingBuffer::prepareMailbox");
 
   // Resolve the multisampled buffer into the texture attached to fbo_.
-  ResolveIfNeeded(discardBehavior);
+  ResolveIfNeeded(discard_behavior);
 
   return kContentsResolvedIfNeeded;
 }
@@ -1781,11 +1781,11 @@ void DrawingBuffer::ResolveMultisampleFramebufferInternal() {
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
 }
 
-void DrawingBuffer::ResolveIfNeeded(DiscardBehavior discardBehavior) {
+void DrawingBuffer::ResolveIfNeeded(DiscardBehavior discard_behavior) {
   DCHECK(state_restorer_);
   if (anti_aliasing_mode_ != kAntialiasingModeNone) {
     if (preserve_drawing_buffer_ == kDiscard &&
-        discard_framebuffer_supported_ && discardBehavior == kDiscardAllowed &&
+        discard_framebuffer_supported_ && discard_behavior == kDiscardAllowed &&
         !transient_framebuffers_discarded_) {
       // Discard the depth and stencil buffers as early as possible, before
       // making any potentially-unneeded calls to BindFramebuffer (even no-ops),

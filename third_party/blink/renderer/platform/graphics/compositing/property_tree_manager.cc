@@ -972,15 +972,15 @@ std::optional<gfx::RRectF> PropertyTreeManager::ShaderBasedRRect(
     return std::nullopt;
   }
 
-  auto WidthAndHeightAreTheSame = [](const gfx::SizeF& size) {
+  auto width_and_height_are_the_same = [](const gfx::SizeF& size) {
     return size.width() == size.height();
   };
 
   const FloatRoundedRect::Radii& radii = clip.PaintClipRect().GetRadii();
-  if (!WidthAndHeightAreTheSame(radii.TopLeft()) ||
-      !WidthAndHeightAreTheSame(radii.TopRight()) ||
-      !WidthAndHeightAreTheSame(radii.BottomRight()) ||
-      !WidthAndHeightAreTheSame(radii.BottomLeft())) {
+  if (!width_and_height_are_the_same(radii.TopLeft()) ||
+      !width_and_height_are_the_same(radii.TopRight()) ||
+      !width_and_height_are_the_same(radii.BottomRight()) ||
+      !width_and_height_are_the_same(radii.BottomLeft())) {
     return std::nullopt;
   }
 

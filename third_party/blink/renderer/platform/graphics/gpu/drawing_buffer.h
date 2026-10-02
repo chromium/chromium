@@ -496,7 +496,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   };
 
   // Resolves m_multisampleFBO into m_fbo, if multisampling.
-  void ResolveIfNeeded(DiscardBehavior discardBehavior);
+  void ResolveIfNeeded(DiscardBehavior discard_behavior);
 
   enum CheckForDestructionResult {
     kDestroyedOrLost,
@@ -511,7 +511,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // If all of the above checks pass, resolves the multisampled
   // renderbuffer if needed.
   CheckForDestructionResult CheckForDestructionAndChangeAndResolveIfNeeded(
-      DiscardBehavior discardBehavior);
+      DiscardBehavior discard_behavior);
 
   // Exports a SharedImage holding the backbuffer's contents for external
   // usage:

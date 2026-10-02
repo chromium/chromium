@@ -919,14 +919,14 @@ void Unpack<WebGLImageConversion::kDataFormatBGRA8, uint8_t, uint8_t>(
   for (unsigned i = 0; i < pixels_per_row; ++i) {
     uint32_t bgra = source32[i];
 #if defined(ARCH_CPU_BIG_ENDIAN)
-    uint32_t brMask = 0xff00ff00;
-    uint32_t gaMask = 0x00ff00ff;
+    constexpr uint32_t kBrMask = 0xff00ff00;
+    constexpr uint32_t kGaMask = 0x00ff00ff;
 #else
-    uint32_t br_mask = 0x00ff00ff;
-    uint32_t ga_mask = 0xff00ff00;
+    constexpr uint32_t kBrMask = 0x00ff00ff;
+    constexpr uint32_t kGaMask = 0xff00ff00;
 #endif
     uint32_t rgba =
-        (((bgra >> 16) | (bgra << 16)) & br_mask) | (bgra & ga_mask);
+        (((bgra >> 16) | (bgra << 16)) & kBrMask) | (bgra & kGaMask);
     destination32[i] = rgba;
   }
 }

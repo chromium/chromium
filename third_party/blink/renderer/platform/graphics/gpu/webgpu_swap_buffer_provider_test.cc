@@ -221,9 +221,9 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(adapter_, nullptr);
 
-    wgpu::DeviceDescriptor deviceDesc = {};
+    wgpu::DeviceDescriptor device_desc = {};
     adapter_.RequestDevice(
-        &deviceDesc, wgpu::CallbackMode::AllowSpontaneous,
+        &device_desc, wgpu::CallbackMode::AllowSpontaneous,
         [&](wgpu::RequestDeviceStatus, wgpu::Device device, wgpu::StringView) {
           device_ = std::move(device);
         });

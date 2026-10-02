@@ -136,9 +136,9 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         color_mix_test.color_left, color_mix_test.color_right,
         color_mix_test.percentage_right, color_mix_test.alpha_multiplier);
     EXPECT_EQ(result.GetColorSpace(), color_mix_test.mix_space);
-    SkColor4f resultSkColor = result.toSkColor4f();
-    SkColor4f expectedSkColor = color_mix_test.color_expected.toSkColor4f();
-    EXPECT_NEAR(resultSkColor.fR, expectedSkColor.fR, 0.001f)
+    SkColor4f result_sk_color = result.toSkColor4f();
+    SkColor4f expected_sk_color = color_mix_test.color_expected.toSkColor4f();
+    EXPECT_NEAR(result_sk_color.fR, expected_sk_color.fR, 0.001f)
         << "Mixing " << color_mix_test.color_left.toSkColor4f().fR << " "
         << color_mix_test.color_left.toSkColor4f().fG << " "
         << color_mix_test.color_left.toSkColor4f().fB << " "
@@ -147,12 +147,12 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         << color_mix_test.color_right.toSkColor4f().fG << " "
         << color_mix_test.color_right.toSkColor4f().fB << " "
         << color_mix_test.color_right.toSkColor4f().fA << " produced "
-        << resultSkColor.fR << " " << resultSkColor.fG << " "
-        << resultSkColor.fB << " " << resultSkColor.fA
-        << " and it was expecting " << expectedSkColor.fR << " "
-        << expectedSkColor.fG << " " << expectedSkColor.fB << " "
-        << expectedSkColor.fA;
-    EXPECT_NEAR(resultSkColor.fG, expectedSkColor.fG, 0.001f)
+        << result_sk_color.fR << " " << result_sk_color.fG << " "
+        << result_sk_color.fB << " " << result_sk_color.fA
+        << " and it was expecting " << expected_sk_color.fR << " "
+        << expected_sk_color.fG << " " << expected_sk_color.fB << " "
+        << expected_sk_color.fA;
+    EXPECT_NEAR(result_sk_color.fG, expected_sk_color.fG, 0.001f)
         << "Mixing " << color_mix_test.color_left.toSkColor4f().fR << " "
         << color_mix_test.color_left.toSkColor4f().fG << " "
         << color_mix_test.color_left.toSkColor4f().fB << " "
@@ -161,12 +161,12 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         << color_mix_test.color_right.toSkColor4f().fG << " "
         << color_mix_test.color_right.toSkColor4f().fB << " "
         << color_mix_test.color_right.toSkColor4f().fA << " produced "
-        << resultSkColor.fR << " " << resultSkColor.fG << " "
-        << resultSkColor.fB << " " << resultSkColor.fA
-        << " and it was expecting " << expectedSkColor.fR << " "
-        << expectedSkColor.fG << " " << expectedSkColor.fB << " "
-        << expectedSkColor.fA;
-    EXPECT_NEAR(resultSkColor.fB, expectedSkColor.fB, 0.001f)
+        << result_sk_color.fR << " " << result_sk_color.fG << " "
+        << result_sk_color.fB << " " << result_sk_color.fA
+        << " and it was expecting " << expected_sk_color.fR << " "
+        << expected_sk_color.fG << " " << expected_sk_color.fB << " "
+        << expected_sk_color.fA;
+    EXPECT_NEAR(result_sk_color.fB, expected_sk_color.fB, 0.001f)
         << "Mixing " << color_mix_test.color_left.toSkColor4f().fR << " "
         << color_mix_test.color_left.toSkColor4f().fG << " "
         << color_mix_test.color_left.toSkColor4f().fB << " "
@@ -175,12 +175,12 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         << color_mix_test.color_right.toSkColor4f().fG << " "
         << color_mix_test.color_right.toSkColor4f().fB << " "
         << color_mix_test.color_right.toSkColor4f().fA << " produced "
-        << resultSkColor.fR << " " << resultSkColor.fG << " "
-        << resultSkColor.fB << " " << resultSkColor.fA
-        << " and it was expecting " << expectedSkColor.fR << " "
-        << expectedSkColor.fG << " " << expectedSkColor.fB << " "
-        << expectedSkColor.fA;
-    EXPECT_NEAR(resultSkColor.fA, expectedSkColor.fA, 0.001f)
+        << result_sk_color.fR << " " << result_sk_color.fG << " "
+        << result_sk_color.fB << " " << result_sk_color.fA
+        << " and it was expecting " << expected_sk_color.fR << " "
+        << expected_sk_color.fG << " " << expected_sk_color.fB << " "
+        << expected_sk_color.fA;
+    EXPECT_NEAR(result_sk_color.fA, expected_sk_color.fA, 0.001f)
         << "Mixing " << color_mix_test.color_left.toSkColor4f().fR << " "
         << color_mix_test.color_left.toSkColor4f().fG << " "
         << color_mix_test.color_left.toSkColor4f().fB << " "
@@ -189,11 +189,11 @@ TEST(BlinkColor, ColorMixSameColorSpace) {
         << color_mix_test.color_right.toSkColor4f().fG << " "
         << color_mix_test.color_right.toSkColor4f().fB << " "
         << color_mix_test.color_right.toSkColor4f().fA << " produced "
-        << resultSkColor.fR << " " << resultSkColor.fG << " "
-        << resultSkColor.fB << " " << resultSkColor.fA
-        << " and it was expecting " << expectedSkColor.fR << " "
-        << expectedSkColor.fG << " " << expectedSkColor.fB << " "
-        << expectedSkColor.fA;
+        << result_sk_color.fR << " " << result_sk_color.fG << " "
+        << result_sk_color.fB << " " << result_sk_color.fA
+        << " and it was expecting " << expected_sk_color.fR << " "
+        << expected_sk_color.fG << " " << expected_sk_color.fB << " "
+        << expected_sk_color.fA;
   }
 }
 
@@ -411,7 +411,7 @@ TEST(BlinkColor, HueInterpolation) {
     float expected;
   };
 
-  auto HueMethodToString = [](Color::HueInterpolationMethod method) {
+  auto hue_method_to_string = [](Color::HueInterpolationMethod method) {
     switch (method) {
       case Color::HueInterpolationMethod::kShorter:
         return "shorter";
@@ -457,7 +457,7 @@ TEST(BlinkColor, HueInterpolation) {
 
     EXPECT_NEAR(result, hue_test.expected, 0.01f)
         << hue_test.value1 << ' ' << hue_test.value2 << ' '
-        << hue_test.percentage << ' ' << HueMethodToString(hue_test.method)
+        << hue_test.percentage << ' ' << hue_method_to_string(hue_test.method)
         << " produced " << result << " but was expecting " << hue_test.expected;
   }
 }

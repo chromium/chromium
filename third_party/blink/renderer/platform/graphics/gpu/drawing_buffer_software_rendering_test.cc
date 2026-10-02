@@ -91,7 +91,7 @@ TEST_F(DrawingBufferSoftwareCompositingTest, FramebufferBinding) {
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;
   gfx::Size initial_size(kInitialWidth, kInitialHeight);
-  GLint drawBinding = 0, readBinding = 0;
+  GLint draw_binding = 0, read_binding = 0;
 
   GLuint draw_framebuffer_binding = 0xbeef3;
   GLuint read_framebuffer_binding = 0xbeef4;
@@ -101,10 +101,10 @@ TEST_F(DrawingBufferSoftwareCompositingTest, FramebufferBinding) {
   drawing_buffer_->Resize(initial_size);
   drawing_buffer_->MarkContentsChanged();
   drawing_buffer_->PrepareTransferableResource(&resource, &release_callback);
-  gl_->GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &drawBinding);
-  gl_->GetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &readBinding);
-  EXPECT_EQ(static_cast<GLint>(draw_framebuffer_binding), drawBinding);
-  EXPECT_EQ(static_cast<GLint>(read_framebuffer_binding), readBinding);
+  gl_->GetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &draw_binding);
+  gl_->GetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &read_binding);
+  EXPECT_EQ(static_cast<GLint>(draw_framebuffer_binding), draw_binding);
+  EXPECT_EQ(static_cast<GLint>(read_framebuffer_binding), read_binding);
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
 
   drawing_buffer_->BeginDestruction();

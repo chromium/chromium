@@ -51,26 +51,26 @@ inline SkM44 ChromaticAdaptation(const SkM44& matrix,
 class DarkModeSRGBColorSpace {
  public:
   DarkModeSRGBColorSpace() {
-    bool success = transform_.invert(&inverseTransform_);
+    bool success = transform_.invert(&inverse_transform_);
     DCHECK(success);
   }
 
   SkV3 ToLinear(const SkV3& v) const {
-    auto EOTF = [](float u) {
+    auto eotf = [](float u) {
       return u < 0.04045f
                  ? Clamp(u / 12.92f, 0.0f, 1.0f)
                  : Clamp(std::pow((u + 0.055f) / 1.055f, 2.4f), 0.0f, 1.0f);
     };
-    return {EOTF(v.x), EOTF(v.y), EOTF(v.z)};
+    return {eotf(v.x), eotf(v.y), eotf(v.z)};
   }
 
   SkV3 FromLinear(const SkV3& v) const {
-    auto OETF = [](float u) {
+    auto oetf = [](float u) {
       return (u < 0.0031308f ? Clamp(12.92f * u, 0.0f, 1.0f)
                              : Clamp(1.055f * std::pow(u, 1.0f / 2.4f) - 0.055f,
                                      0.0f, 1.0f));
     };
-    return {OETF(v.x), OETF(v.y), OETF(v.z)};
+    return {oetf(v.x), oetf(v.y), oetf(v.z)};
   }
 
   // See https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation.
@@ -79,7 +79,7 @@ class DarkModeSRGBColorSpace {
   // See
   // https://en.wikipedia.org/wiki/SRGB#The_forward_transformation_(CIE_XYZ_to_sRGB).
   SkV3 FromXYZ(const SkV3& xyz) const {
-    return FromLinear(inverseTransform_ * xyz);
+    return FromLinear(inverse_transform_ * xyz);
   }
 
  private:
@@ -100,27 +100,27 @@ class DarkModeSRGBColorSpace {
                           0.0f,
                           1.0f);
 
-  SkM44 xyzTransform = SkM44(0.41238642f,
-                             0.3575915f,
-                             0.18045056f,
-                             0.0f,
-                             0.21263677f,
-                             0.715183f,
-                             0.07218022f,
-                             0.0f,
-                             0.019330615f,
-                             0.11919712f,
-                             0.95037293f,
-                             0.0f,
-                             0.0f,
-                             0.0f,
-                             0.0f,
-                             1.0f);
+  SkM44 xyz_transform_ = SkM44(0.41238642f,
+                               0.3575915f,
+                               0.18045056f,
+                               0.0f,
+                               0.21263677f,
+                               0.715183f,
+                               0.07218022f,
+                               0.0f,
+                               0.019330615f,
+                               0.11919712f,
+                               0.95037293f,
+                               0.0f,
+                               0.0f,
+                               0.0f,
+                               0.0f,
+                               1.0f);
 
   SkM44 transform_ =
       ChromaticAdaptation(kBradford, kIlluminantD65, kIlluminantD50) *
-      xyzTransform;
-  SkM44 inverseTransform_;
+      xyz_transform_;
+  SkM44 inverse_transform_;
 };
 
 class DarkModeLABColorSpace {
@@ -136,11 +136,11 @@ class DarkModeLABColorSpace {
     float fy = f(v.y / kIlluminantD50.y);
     float fz = f(v.z / kIlluminantD50.z);
 
-    float L = 116.0f * fy - 16.0f;
+    float l = 116.0f * fy - 16.0f;
     float a = 500.0f * (fx - fy);
     float b = 200.0f * (fy - fz);
 
-    return {Clamp(L, 0.0f, 100.0f), Clamp(a, -128.0f, 128.0f),
+    return {Clamp(l, 0.0f, 100.0f), Clamp(a, -128.0f, 128.0f),
             Clamp(b, -128.0f, 128.0f)};
   }
 

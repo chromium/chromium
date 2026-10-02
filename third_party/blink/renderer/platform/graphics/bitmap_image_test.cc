@@ -469,10 +469,10 @@ TEST_F(BitmapImageTest, pngHasColorProfile) {
 
 TEST_F(BitmapImageTest, pngHasInvalidColorProfile) {
   LoadImage("png-zero-gamma-color-profile.png");
-  auto actualBitmap = GenerateBitmap(0u);
-  auto expectedBitmap =
+  auto actual_bitmap = GenerateBitmap(0u);
+  auto expected_bitmap =
       GenerateBitmapForImage("png-zero-gamma-color-profile-ref.png");
-  VerifyBitmap(actualBitmap, expectedBitmap);
+  VerifyBitmap(actual_bitmap, expected_bitmap);
 }
 
 TEST_F(BitmapImageTest, webpHasColorProfile) {

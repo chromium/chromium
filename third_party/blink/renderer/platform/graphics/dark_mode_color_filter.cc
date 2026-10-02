@@ -50,9 +50,9 @@ class LABColorFilter : public DarkModeColorFilter {
       return adjusted_color;
 
     SkColor4f best_color = adjusted_color;
-    constexpr int MaxLightness = 100;
+    constexpr int kMaxLightness = 100;
     int min_lightness = GetLabSkV3Data(adjusted_color).x;
-    for (int low = min_lightness, high = MaxLightness + 1; low < high;) {
+    for (int low = min_lightness, high = kMaxLightness + 1; low < high;) {
       const int lightness = (low + high) / 2;
       const SkColor4f color = AdjustColorByLightness(adjusted_color, lightness);
       const float contrast = color_utils::GetContrastRatio(color, background);

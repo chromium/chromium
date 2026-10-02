@@ -76,20 +76,21 @@ ImageDataBuffer::ImageDataBuffer(scoped_refptr<StaticBitmapImage> image) {
     // encoder unpremul logic.
     const SkImageInfo info =
         SkImageInfo::Make(paint_image_info.dimensions(), target_color_info);
-    const size_t rowBytes = info.minRowBytes();
-    size_t size = info.computeByteSize(rowBytes);
+    const size_t row_bytes = info.minRowBytes();
+    size_t size = info.computeByteSize(row_bytes);
     if (SkImageInfo::ByteSizeOverflowed(size))
       return;
 
     sk_sp<SkData> data = SkData::MakeUninitialized(size);
     pixmap_ = {info, data->writable_data(), info.minRowBytes()};
-    if (!paint_image.readPixels(info, pixmap_.writable_addr(), rowBytes, 0,
+    if (!paint_image.readPixels(info, pixmap_.writable_addr(), row_bytes, 0,
                                 0)) {
       pixmap_.reset();
       return;
     }
     MSAN_CHECK_MEM_IS_INITIALIZED(pixmap_.addr(), pixmap_.computeByteSize());
-    retained_image_ = SkImages::RasterFromData(info, std::move(data), rowBytes);
+    retained_image_ =
+        SkImages::RasterFromData(info, std::move(data), row_bytes);
   } else {
     retained_image_ = paint_image.GetSwSkImage();
     if (!retained_image_->peekPixels(&pixmap_))

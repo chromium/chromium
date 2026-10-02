@@ -115,8 +115,8 @@ Vector<uint8_t> PictureSnapshot::Replay(unsigned from_step,
   Vector<uint8_t> encoded_image;
 
   SkPixmap src;
-  bool peekResult = bitmap.peekPixels(&src);
-  DCHECK(peekResult);
+  bool peek_result = bitmap.peekPixels(&src);
+  DCHECK(peek_result);
 
   if (!ImageEncoder::Encode(&encoded_image, src,
                             SkPngRustEncoder::CompressionLevel::kLow)) {

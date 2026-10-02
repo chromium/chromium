@@ -20,8 +20,8 @@ namespace {
 typedef HashMap<int, OffscreenCanvasPlaceholder*> PlaceholderIdMap;
 
 PlaceholderIdMap& placeholderRegistry() {
-  DEFINE_STATIC_LOCAL(PlaceholderIdMap, s_placeholderRegistry, ());
-  return s_placeholderRegistry;
+  DEFINE_STATIC_LOCAL(PlaceholderIdMap, s_placeholder_registry, ());
+  return s_placeholder_registry;
 }
 
 void UpdatePlaceholderClient(
