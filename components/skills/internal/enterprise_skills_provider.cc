@@ -116,10 +116,12 @@ EnterpriseSkillsProvider::EnterpriseSkillsProvider(
                             base::Unretained(this)));
 
     // Initial fetch if policy is already set.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&EnterpriseSkillsProvider::OnPolicyPrefChanged,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (!pref_service_->GetList(prefs::kEnterprisePublishedSkills).empty()) {
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&EnterpriseSkillsProvider::OnPolicyPrefChanged,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
 }
 EnterpriseSkillsProvider::~EnterpriseSkillsProvider() = default;
@@ -144,6 +146,7 @@ void EnterpriseSkillsProvider::OnPolicyPrefChanged() {
 }
 
 void EnterpriseSkillsProvider::FetchSkillsFromUrls() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
   barrier_closure_.Cancel();
   url_loaders_.clear();
   pending_skills_.clear();

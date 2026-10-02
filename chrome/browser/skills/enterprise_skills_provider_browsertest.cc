@@ -8,7 +8,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
-#include "base/threading/platform_thread.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -20,6 +20,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
+#include "components/skills/features.h"
 #include "components/skills/public/skills_prefs.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -85,7 +86,13 @@ std::unique_ptr<net::ClientCertStore> CreateCertStore(bool provide_cert) {
 class EnterpriseSkillsProviderBrowserTest : public InProcessBrowserTest {
  public:
   EnterpriseSkillsProviderBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    // Disable the background EnterpriseSkillsProvider created by
+    // SkillsServiceFactory so it does not compete with the provider instance
+    // under test on the same Profile PrefService and URLLoaderFactory.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kEnterprisePublishedSkillsPolicyEnabled);
+  }
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -157,6 +164,7 @@ class EnterpriseSkillsProviderBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_;
 };
 
@@ -236,16 +244,16 @@ IN_PROC_BROWSER_TEST_F(EnterpriseSkillsProviderBrowserTest,
   test_server.RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
           -> std::unique_ptr<net::test_server::HttpResponse> {
-        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        if (request.relative_url.find("/hang") != std::string::npos) {
+          return std::make_unique<net::test_server::HungResponse>();
+        }
+        auto response =
+            request.relative_url.find("/slow") != std::string::npos
+                ? std::make_unique<net::test_server::DelayedHttpResponse>(
+                      base::Milliseconds(500))
+                : std::make_unique<net::test_server::BasicHttpResponse>();
         if (request.relative_url.find("/fail") != std::string::npos) {
           response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
-        } else if (request.relative_url.find("/slow") != std::string::npos) {
-          base::PlatformThread::Sleep(base::Milliseconds(500));
-          response->set_code(net::HTTP_OK);
-          response->set_content(kValidYamlFrontmatter);
-          response->set_content_type("text/yaml");
-        } else if (request.relative_url.find("/hang") != std::string::npos) {
-          return std::make_unique<net::test_server::HungResponse>();
         } else {
           response->set_code(net::HTTP_OK);
           response->set_content(kValidYamlFrontmatter);
