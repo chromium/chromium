@@ -403,7 +403,7 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE" desc="The subtitle explaining what the choosen mode (here mobile, the other possible state is desktop) will do in the browser">
         This means Chrome will request the mobile site every time.
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE" desc="VoiceOver text that informs the user that the deletion of Chrome's browsing data is in progress.">
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_IN_PROGRESS_NOTICE" is_accessibility_with_no_ui="true" desc="VoiceOver text that informs the user that the deletion of Chrome's browsing data is in progress.">
         Deleting Chrome data…
       </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_TITLE" desc="The title of the disconnect dialog [Length: 30em].">

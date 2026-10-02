@@ -251,7 +251,7 @@
       <message name="IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE" desc="The snackbar message title to confirm the signed-in account after a successful account switch. [iOS only]">
         Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
       </message>
-      <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
         Action in progress…
       </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON" desc="Label for the button to open the passphrase dialog from the accounts table. [iOS only]">
@@ -299,28 +299,28 @@
       <message name="IDS_IOS_ACCOUNT_UNIFIED_CONSENT_TITLE" desc="Title on the sync consent dialog to explain why sync can be useful for the user. [iOS only]">
         Turn on sync?
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_AI_TIER" desc="The accessibility label for the cell containing the user’s email and AI tier. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_AI_TIER" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing the user’s email and AI tier. [iOS only]">
         <ph name="EMAIL">$1<ex>jessica@gmail.com</ex></ph>. <ph name="AI_TIER">$2<ex>Google AI Foo membership</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS" desc="The accessibility label for the cell containing the user’s email and managed status. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing the user’s email and managed status. [iOS only]">
         <ph name="EMAIL">$1<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$2<ex>Your account is managed</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER" desc="The accessibility label for the cell containing the user’s email, managed status and AI tier. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing the user’s email, managed status and AI tier. [iOS only]">
        <ph name="EMAIL">$1<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$2<ex>Your account is managed</ex></ph>. <ph name="AI_TIER">$3<ex>Google AI Foo membership</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER" desc="Part of the accessibility label letting the user know which membership tier they have. Used in strings such as IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MEMBERSHIPS_AI_TIER" is_accessibility_with_no_ui="true" desc="Part of the accessibility label letting the user know which membership tier they have. Used in strings such as IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_MANAGED_STATUS_AI_TIER. [iOS only]">
         <ph name="AI_TIER_NAME">$1<ex>Tier name</ex></ph> membership
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME" desc="The accessibility label for the cell containing user’s name and email. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing user’s name and email. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_AI_TIER" desc="The accessibility label for the cell containing user’s name, email and AI tier. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_AI_TIER" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing user’s name, email and AI tier. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>. <ph name="AI_TIER">$3<ex>Google AI Foo membership</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS" desc="The accessibility label for the cell containing user’s name, email and managed status. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing user’s name, email and managed status. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$3<ex>Your account is managed</ex></ph>.
       </message>
-      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER" desc="The accessibility label for the cell containing user’s name, email, managed status and AI tier. [iOS only]">
+      <message name="IDS_IOS_ACCOUNT_VIEW_ACCESSIBILITY_LABEL_NAME_MANAGED_STATUS_AI_TIER" is_accessibility_with_no_ui="true" desc="The accessibility label for the cell containing user’s name, email, managed status and AI tier. [iOS only]">
         <ph name="USER_NAME">$1<ex>Jessica</ex></ph>, <ph name="EMAIL">$2<ex>jessica@gmail.com</ex></ph>. <ph name="MANAGED_STATUS">$3<ex>Your account is managed</ex></ph>. <ph name="AI_TIER">$4<ex>Google AI Foo membership</ex></ph>.
       </message>
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_CLICKING" desc="Worklog chip label indicating the actor is clicking an element on the page. [iOS only]">
@@ -1296,7 +1296,7 @@
           =1 {Bookmark saved}
           other {{count} bookmarks saved}}
       </message>
-      <message name="IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL" desc="Accessibility label of the cloud.slash icon in the bookmark views on Folder. For voice over only, not in UI. [iOS only]">
+      <message name="IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL" is_accessibility_with_no_ui="true" desc="Accessibility label of the cloud.slash icon in the bookmark views on Folder. For voice over only, not in UI. [iOS only]">
         <ph name="FOLDER_NAME">$1<ex>new folder</ex></ph>. Only on this device.
       </message>
       <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_BUTTON" desc="Alert confirm button in the bookmarks page confirming the user wants to save alls their local bookmarks to their account. [iOS Only]">
@@ -1339,13 +1339,13 @@
       <message name="IDS_IOS_BOOKMARK_CHOOSE_GROUP_BUTTON" desc="Button to assign a folder to an uncategorized bookmark. [iOS only]">
         Choose folder
       </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE" desc="Text on the bookmarks context bar for delete action">
+      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_DELETE" is_accessibility_with_no_ui="true" desc="Text on the bookmarks context bar for delete action">
        Delete
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_MORE" desc="Text on the bookmarks context bar to show more context menu">
         More…
       </message>
-      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER" desc="Text on the bookmarks context bar to create new folder">
+      <message name="IDS_IOS_BOOKMARK_CONTEXT_BAR_NEW_FOLDER" is_accessibility_with_no_ui="true" desc="Text on the bookmarks context bar to create new folder">
         New folder
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT" desc="Text on the bookmarks context menu to edit selected bookmark">
@@ -4063,7 +4063,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_ICON_INFO" desc="Accessibility label for the info icon [iOS only].">
         Info
       </message>
-      <message name="IDS_IOS_ICON_OPTION_MENU" desc="Accessibility label for the three-dot menu item. The accessibility string should announce that there are ‘more actions’ available, and should not reference the visual look of the button. [iOS only]">
+      <message name="IDS_IOS_ICON_OPTION_MENU" is_accessibility_with_no_ui="true" desc="Accessibility label for the three-dot menu item. The accessibility string should announce that there are ‘more actions’ available, and should not reference the visual look of the button. [iOS only]">
         More actions
       </message>
       <message name="IDS_IOS_ICON_SEARCH" desc="Accessibility label for the search icon [iOS only].">
@@ -4078,24 +4078,24 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button navigates to 'Sync and Google services' page in settings [iOS only].">
         Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. Opens settings.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>, Google membership. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_EMAIL">$1<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button navigates to 'Sync and Google services' page in settings [iOS only].">
         Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Opens settings.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_GOOGLE_MEMBERSHIP_OPEN_ACCOUNT_MENU" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>, Google membership. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
+      <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_DEVICE_MANAGEMENT_REQUIRED_FIX_NOW_BUTTON" desc="Button label on an infobar prompting the user to take action to fix an account issue. [iOS only]">
         Fix now
@@ -5631,13 +5631,13 @@ You can restart anytime.
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
         Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
         Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_MANAGED_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS and the account is managed. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
         Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>, managed by your organization.
       </message>
-      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
         Sign in as <ph name="NAME">$1<ex>John Doe</ex></ph> <ph name="EMAIL">$2<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_WITH_NAME_MANAGED_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS and the account is managed. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
@@ -8309,7 +8309,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS" desc="Button that the user can press to login without asking the password and continue using Chrome with this acccount. [Length: 9em]">
         Continue as <ph name="NAME">$1<ex>John Doe</ex></ph>
       </message>
-      <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE" desc="Accessibility label of the 'Continue as' button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver.">
+      <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE" is_accessibility_with_no_ui="true" desc="Accessibility label of the 'Continue as' button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver.">
         Sign-in in progress.
       </message>
       <message name="IDS_IOS_SIGNIN_PROMO_GEMINI" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears when the user attempts to access Gemini features in the browser while signed out.">
@@ -8375,7 +8375,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGN_IN_AGAIN" desc="Title displayed when there is an authentication failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
         Sign in again
       </message>
-      <message name="IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL" desc="The content description for a toolbar button displaying the signed-in button. Tapping on this button opens the sign-in sheet [iOS only].">
+      <message name="IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL" is_accessibility_with_no_ui="true" desc="The content description for a toolbar button displaying the signed-in button. Tapping on this button opens the sign-in sheet [iOS only].">
         Sign in options.
       </message>
       <message name="IDS_IOS_SIGN_IN_DISMISS" desc="Title displayed when there is an unknown failure in sign-in and the user needs to attempt to sign in again. [Length: 20em] [iOS only]">
@@ -9058,7 +9058,7 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID" desc="The accessibility hint for the toolbar tab grid button, to open the long press menu [iOS only].">
         Double tap and hold to open more options
       </message>
-      <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
+      <message name="IDS_IOS_TOOLBAR_CLOSE_MENU" is_accessibility_with_no_ui="true" desc="The accessibility label for the toolbar close settings menu button [iOS only].">
         Close menu
       </message>
       <message name="IDS_IOS_TOOLBAR_MENU_BOTTOM_OMNIBOX" desc="The iOS menu item for moving the address bar to the bottom of the screen [iOS only].">
