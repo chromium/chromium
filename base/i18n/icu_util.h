@@ -20,6 +20,11 @@ namespace base::i18n {
 // function should be called before ICU is used.
 BASE_I18N_EXPORT bool InitializeICU();
 
+// Pre-reads the memory-mapped ICU data file from disk into memory on the
+// ThreadPool so that subsequent ICU lookups do not incur hard page faults.
+// Must be called after InitializeICU() and after the ThreadPool is initialized.
+BASE_I18N_EXPORT void PreReadIcuData();
+
 #if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
 
 // Returns the PlatformFile and Region that was initialized by InitializeICU().

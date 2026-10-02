@@ -19,6 +19,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icu_util.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -440,6 +441,10 @@ uint32_t GenerateBrowserSalt() {
 
   return salt;
 }
+
+// Controls whether the memory-mapped ICU data file is pre-read on the
+// ThreadPool during startup.
+BASE_FEATURE(kPreReadIcuData, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -1544,6 +1549,10 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
     TRACE_EVENT0("startup",
                  "BrowserMainLoop::PostCreateThreads:InitCpuPerformance");
     content::cpu_performance::Initialize();
+  }
+
+  if (base::FeatureList::IsEnabled(kPreReadIcuData)) {
+    base::i18n::PreReadIcuData();
   }
 }
 

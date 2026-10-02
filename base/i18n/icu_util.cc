@@ -18,19 +18,25 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
 #include "third_party/icu/source/common/unicode/uclean.h"
@@ -445,6 +451,31 @@ bool InitializeICU() {
 #endif  // (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_STATIC)
 
   return DoCommonInitialization();
+}
+
+void PreReadIcuData() {
+#if (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE) && BUILDFLAG(IS_WIN)
+  if (!g_icudtl_mapped_file || !g_icudtl_mapped_file->IsValid()) {
+    return;
+  }
+  span<const uint8_t> bytes = g_icudtl_mapped_file->bytes();
+  if (bytes.empty()) {
+    return;
+  }
+  ThreadPool::PostTask(
+      FROM_HERE, {MayBlock()},
+      BindOnce(
+          [](span<const uint8_t> bytes) {
+            ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                    BlockingType::MAY_BLOCK);
+            ::_WIN32_MEMORY_RANGE_ENTRY address_range = {
+                const_cast<uint8_t*>(bytes.data()), bytes.size()};
+            ::PrefetchVirtualMemory(::GetCurrentProcess(),
+                                    /*NumberOfEntries=*/1, &address_range,
+                                    /*Flags=*/0);
+          },
+          bytes));
+#endif  // (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE) && BUILDFLAG(IS_WIN)
 }
 
 void AllowMultipleInitializeCallsForTesting() {
