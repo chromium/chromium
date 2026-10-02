@@ -17560,6 +17560,24 @@
             ]
         }
     ],
+    "SmartSuggestions": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicSelectionPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartTabSharing_Desktop": [
         {
             "platforms": [
@@ -18283,24 +18301,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "TextSafetyScanLanguageDetection"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TextSelectionInlineCue": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicSelectionPrompt"
                     ]
                 }
             ]
