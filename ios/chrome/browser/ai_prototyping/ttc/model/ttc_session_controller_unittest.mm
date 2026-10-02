@@ -308,7 +308,7 @@ TEST_F(TTCSessionControllerTest, TestCustomConversationInjection) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
 
@@ -322,7 +322,7 @@ TEST_F(TTCSessionControllerTest, TestStartSessionDrivesConversation) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
 
@@ -339,7 +339,7 @@ TEST_F(TTCSessionControllerTest, TestStopSessionDrivesConversationStop) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
 
@@ -360,7 +360,7 @@ TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
   FakeTTCSessionControllerObserver* observer =
@@ -384,7 +384,7 @@ TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
   FakeTTCSessionControllerObserver* observer =
@@ -409,7 +409,7 @@ TEST_F(TTCSessionControllerTest, TestDisconnectCleansUpConversation) {
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
   TTCConversation* conversation =
-      [[TTCConversation alloc] initWithAudioController:fake_audio];
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
   TTCSessionController* controller =
       [[TTCSessionController alloc] initWithConversation:conversation];
 
@@ -420,4 +420,32 @@ TEST_F(TTCSessionControllerTest, TestDisconnectCleansUpConversation) {
   EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
   EXPECT_EQ(conversation.delegate, nil);
   EXPECT_EQ(fake_audio.delegate, nil);
+}
+
+// Tests that conversationDidInitialize transitions the lifecycle to kLive and
+// notifies observers.
+TEST_F(TTCSessionControllerTest,
+       TestConversationDidInitializeTransitionsToLive) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio backend:nil];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+  FakeTTCSessionControllerObserver* observer =
+      [[FakeTTCSessionControllerObserver alloc] init];
+  [controller addObserver:observer];
+
+  [controller startSession];
+  EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kInitializing);
+  EXPECT_EQ(observer.lifecycleChangeCount, 0);
+
+  [(id<TTCConversationDelegate>)controller
+      conversationDidInitialize:conversation];
+
+  EXPECT_EQ(controller.lifecycle, TTCSessionLifecycle::kLive);
+  EXPECT_EQ(observer.lifecycleChangeCount, 1);
+  EXPECT_EQ(observer.lastLifecycle, TTCSessionLifecycle::kLive);
+
+  [controller disconnect];
 }

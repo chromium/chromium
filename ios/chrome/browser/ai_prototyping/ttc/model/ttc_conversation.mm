@@ -8,11 +8,13 @@
 #import "base/sequence_checker.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 
 NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
-@interface TTCConversation () <TTCAudioControllerDelegate>
+@interface TTCConversation () <TTCAudioControllerDelegate, TTCBackendDelegate>
 
 @property(nonatomic, assign, readwrite) TTCConversationState state;
 
@@ -26,13 +28,15 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   uint64_t _sessionGeneration;
 }
 
-- (instancetype)initWithAudioController:
-    (id<TTCAudioController>)audioController {
+- (instancetype)initWithAudioController:(id<TTCAudioController>)audioController
+                                backend:(id<TTCBackend>)backend {
   CHECK(audioController);
   self = [super init];
   if (self) {
     _audioController = audioController;
     _audioController.delegate = self;
+    _backend = backend;
+    _backend.delegate = self;
     _state = TTCConversationState::kStopped;
     _sessionGeneration = 0;
   }
@@ -40,7 +44,8 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 }
 
 - (instancetype)init {
-  return [self initWithAudioController:[[TTCAudioEngine alloc] init]];
+  return [self initWithAudioController:[[TTCAudioEngine alloc] init]
+                               backend:nil];
 }
 
 #pragma mark - Public
@@ -53,6 +58,8 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 
   _lastError = nil;
   const uint64_t currentGeneration = ++_sessionGeneration;
+
+  [_backend connect];
 
   __weak __typeof(self) weakSelf = self;
   [_audioController startCaptureWithCompletion:^(BOOL success, NSError* error) {
@@ -68,6 +75,8 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   // Invalidate any pending in-flight start completions.
   _sessionGeneration++;
 
+  [_backend disconnect];
+
   if (_state == TTCConversationState::kStopped) {
     return;
   }
@@ -81,6 +90,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self stop];
   _audioController.delegate = nil;
+  _backend.delegate = nil;
   self.delegate = nil;
 }
 
@@ -113,10 +123,11 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
     return;
   }
 
-  id<TTCConversationDelegate> strongDelegate = self.delegate;
-  if ([strongDelegate
+  [_backend sendAudioChunk:pcmData];
+
+  if ([self.delegate
           respondsToSelector:@selector(conversation:didCaptureAudioChunk:)]) {
-    [strongDelegate conversation:self didCaptureAudioChunk:pcmData];
+    [self.delegate conversation:self didCaptureAudioChunk:pcmData];
   }
 }
 
@@ -127,10 +138,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
     return;
   }
 
-  id<TTCConversationDelegate> strongDelegate = self.delegate;
-  if ([strongDelegate
+  if ([self.delegate
           respondsToSelector:@selector(conversation:didUpdateAudioEnergy:)]) {
-    [strongDelegate conversation:self didUpdateAudioEnergy:energy];
+    [self.delegate conversation:self didUpdateAudioEnergy:energy];
   }
 }
 
@@ -153,6 +163,55 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (_state != TTCConversationState::kStopped) {
     [self stop];
+  }
+}
+
+#pragma mark - TTCBackendDelegate
+
+- (void)backendDidInitialize:(id<TTCBackend>)backend {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if ([self.delegate
+          respondsToSelector:@selector(conversationDidInitialize:)]) {
+    [self.delegate conversationDidInitialize:self];
+  }
+}
+
+- (void)backendDidClose:(id<TTCBackend>)backend {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_state != TTCConversationState::kStopped) {
+    [self stop];
+  }
+}
+
+- (void)backend:(id<TTCBackend>)backend
+    didFailWithError:(TTCErrorCode)errorCode {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  NSError* error = [NSError errorWithDomain:kTTCErrorDomain
+                                       code:static_cast<NSInteger>(errorCode)
+                                   userInfo:nil];
+  [self handleError:error];
+}
+
+- (void)backend:(id<TTCBackend>)backend
+    didReceiveAudioOutput:(NSData*)audioData
+           sequenceNumber:(int64_t)sequenceNumber {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  [self playResponseAudio:audioData];
+}
+
+- (void)backend:(id<TTCBackend>)backend
+    didChangeGenerationStateStarted:(BOOL)started
+                          completed:(BOOL)completed
+                        interrupted:(BOOL)interrupted {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (interrupted) {
+    [_audioController clearPlaybackQueue];
+    [_audioController stopPlayback];
+    if (_state == TTCConversationState::kTalking) {
+      [self updateState:TTCConversationState::kListening];
+    }
+  } else if (completed) {
+    [self finishTurn];
   }
 }
 
@@ -191,10 +250,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   }
 
   _state = newState;
-  id<TTCConversationDelegate> strongDelegate = self.delegate;
-  if ([strongDelegate
+  if ([self.delegate
           respondsToSelector:@selector(conversation:didChangeState:)]) {
-    [strongDelegate conversation:self didChangeState:_state];
+    [self.delegate conversation:self didChangeState:_state];
   }
 }
 
@@ -203,10 +261,9 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
   _lastError = error;
   [self stop];
 
-  id<TTCConversationDelegate> strongDelegate = self.delegate;
-  if ([strongDelegate
+  if ([self.delegate
           respondsToSelector:@selector(conversation:didEncounterError:)]) {
-    [strongDelegate conversation:self didEncounterError:error];
+    [self.delegate conversation:self didEncounterError:error];
   }
 }
 

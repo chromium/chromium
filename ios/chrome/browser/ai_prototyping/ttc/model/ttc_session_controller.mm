@@ -80,6 +80,10 @@
 
 #pragma mark - TTCConversationDelegate
 
+- (void)conversationDidInitialize:(TTCConversation*)conversation {
+  [self onSessionInitialized];
+}
+
 - (void)conversation:(TTCConversation*)conversation
     didUpdateAudioEnergy:(float)energy {
   [self userAudioLevelDidUpdate:energy];

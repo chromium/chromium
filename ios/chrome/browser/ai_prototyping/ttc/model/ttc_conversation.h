@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_state.h"
 
 @protocol TTCAudioController;
+@protocol TTCBackend;
 @protocol TTCConversationDelegate;
 
 // Error domain for `TTCConversation` errors.
@@ -33,14 +34,18 @@ enum class TTCConversationErrorCode {
 // Underlying audio controller.
 @property(nonatomic, readonly) id<TTCAudioController> audioController;
 
+// Underlying model execution backend.
+@property(nonatomic, readonly) id<TTCBackend> backend;
+
 // Last error encountered by the conversation, or nil.
 @property(nonatomic, readonly) NSError* lastError;
 
-// Designated initializer injecting a custom audio controller.
+// Designated initializer injecting a custom audio controller and backend.
 - (instancetype)initWithAudioController:(id<TTCAudioController>)audioController
+                                backend:(id<TTCBackend>)backend
     NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer using a default `TTCAudioEngine`.
+// Convenience initializer using a default `TTCAudioEngine` and default backend.
 - (instancetype)init;
 
 #pragma mark - Session Controls
