@@ -1,0 +1,12 @@
+diff --git a/third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.cc b/third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.cc
+index cd5fa631672e1..5230deecc1279 100644
+--- a/third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.cc
++++ b/third_party/mediapipe/src/mediapipe/tasks/cc/metadata/utils/zip_readonly_mem_file.cc
+@@ -17,6 +17,7 @@ limitations under the License.
+ 
+ #include <algorithm>
+ #include <cstdio>
++#include <cstring>
+ 
+ #include "absl/strings/string_view.h"
+ #include "contrib/minizip/ioapi.h"

@@ -17,6 +17,7 @@ limitations under the License.
 
 #include <algorithm>
 #include <cstdio>
+#include <cstring>
 
 #include "absl/strings/string_view.h"
 #include "contrib/minizip/ioapi.h"
