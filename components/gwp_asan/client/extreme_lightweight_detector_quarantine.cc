@@ -6,6 +6,7 @@
 #include "partition_alloc/internal/partition_page_internal.h"  // nogncheck
 #include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/internal_allocator.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/slot_start.h"
 
 namespace gwp_asan::internal {

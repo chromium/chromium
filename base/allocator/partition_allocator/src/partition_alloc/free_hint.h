@@ -6,8 +6,9 @@
 #define PARTITION_ALLOC_FREE_HINT_H_
 
 #include <cstddef>
+#include <cstdint>
 
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 namespace partition_alloc {
 

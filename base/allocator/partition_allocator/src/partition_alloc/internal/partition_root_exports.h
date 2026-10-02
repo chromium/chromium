@@ -6,6 +6,7 @@
 #define PARTITION_ALLOC_INTERNAL_PARTITION_ROOT_EXPORTS_H_
 
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 #if DEFINE_PARTITION_ROOT_EXPORT_TEMPLATE
 #define EXPORT_TEMPLATE \

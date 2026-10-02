@@ -4,7 +4,7 @@
 
 #include "gin/v8_platform_thread_isolated_allocator.h"
 
-#include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_root.h"
 
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)

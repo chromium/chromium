@@ -28,6 +28,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"

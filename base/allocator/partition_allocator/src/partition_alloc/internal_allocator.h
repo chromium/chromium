@@ -10,6 +10,7 @@
 
 #include "partition_alloc/internal_allocator_forward.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_root.h"
 
 // Internal Allocator can be used to get heap allocations required to

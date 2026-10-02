@@ -9,6 +9,7 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/flags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 
 namespace partition_alloc {
@@ -170,7 +171,63 @@ constexpr size_t kPoolMaxSize = 16 * kGiB;
 #else  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 constexpr size_t kPoolMaxSize = 4 * kGiB;
 #endif
+
+// Bit flag constants used as `flag` argument of PartitionRoot::Alloc<flags>,
+// AlignedAlloc, etc.
+enum class AllocFlags {
+  kNone = 0,
+  kReturnNull = 1 << 0,
+  kZeroFill = 1 << 1,
+  // Don't allow allocation override hooks. Override hooks are expected to
+  // check for the presence of this flag and return false if it is active.
+  kNoOverrideHooks = 1 << 2,
+  // Never let a memory tool like ASan (if active) perform the allocation.
+  kNoMemoryToolOverride = 1 << 3,
+  // Don't allow any hooks (override or observers).
+  kNoHooks = 1 << 4,  // Internal.
+  // If the allocation requires a "slow path" (such as allocating/committing a
+  // new slot span), return nullptr instead. Note this makes all large
+  // allocations return nullptr, such as direct-mapped ones, and even for
+  // smaller ones, a nullptr value is common.
+  kFastPathOrReturnNull = 1 << 5,  // Internal.
+  // An allocation override hook should tag the allocated memory for MTE.
+  kMemoryShouldBeTaggedForMte = 1 << 6,  // Internal.
+  // An explicitly aligned allocation.
+  kAlignedAlloc = 1 << 7,  // Internal.
+  // Allow allocations up to 16GiB. This is intended for ArrayBuffers, and
+  // should not be used for other allocations.
+  kAllowGigaAllocations = 1 << 8,
+  kMaxValue = kAllowGigaAllocations,
+};
+PA_DEFINE_OPERATORS_FOR_FLAGS(AllocFlags);
+
+// Bit flag constants used as `flag` argument of PartitionRoot::Free<flags>.
+enum class FreeFlags {
+  kNone = 0,
+  // See AllocFlags::kNoMemoryToolOverride.
+  kNoMemoryToolOverride = 1 << 0,
+  // Don't allow any hooks (override or observers).
+  kNoHooks = 1 << 1,  // Internal.
+  // Quarantine for a while to ensure no UaF from on-stack pointers.
+  kSchedulerLoopQuarantine = 1 << 2,
+  // Quarantine for a while to ensure no UaF from on-stack pointers.
+  kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks = 1 << 3,
+  // `kWith[A-Za-z]+Hint` shows whether `FreeHint`'s member is available or not.
+  kWithSizeHint = 1 << 4,       // `FreeHint::size` is available.
+  kWithAlignmentHint = 1 << 5,  // `FreeHint::alignment` is available.
+  kWithTypeIdHint = 1 << 6,     // `FreeHint::type_id` is available.
+  // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
+  // to use an aligned free function.
+  kAlignedFreeForMemoryTool = 1 << 7,  // Internal.
+  kIntendedLeak = 1 << 8,              // Internal.
+  kMaxValue = kIntendedLeak,
+};
+PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
+
 }  // namespace internal
+
+using internal::AllocFlags;
+using internal::FreeFlags;
 
 // Intentionally set to less than 2GiB to make sure that a 2GiB allocation
 // fails. This is a security choice in Chrome, to help making size_t vs int bugs

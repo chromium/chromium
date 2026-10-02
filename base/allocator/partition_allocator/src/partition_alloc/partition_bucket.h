@@ -15,6 +15,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_page_constants.h"
 
 namespace partition_alloc::internal {

@@ -13,6 +13,7 @@
 #endif
 
 #include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 namespace base::internal {
 

@@ -13,6 +13,7 @@
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 #include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-forward.h"
 

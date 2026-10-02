@@ -13,6 +13,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/slot_start.h"

@@ -15,6 +15,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/slot_start.h"
 #include "partition_alloc/use_death_tests.h"

@@ -25,6 +25,7 @@
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/partition_alloc_features.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

@@ -22,6 +22,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/extended_api.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

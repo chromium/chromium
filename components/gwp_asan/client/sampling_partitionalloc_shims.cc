@@ -15,6 +15,7 @@
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "partition_alloc/flags.h"
 #include "partition_alloc/partition_alloc_hooks.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 namespace gwp_asan {
 namespace internal {

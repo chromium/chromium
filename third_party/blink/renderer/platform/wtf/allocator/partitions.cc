@@ -47,6 +47,7 @@
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 #include "partition_alloc/partition_root.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
