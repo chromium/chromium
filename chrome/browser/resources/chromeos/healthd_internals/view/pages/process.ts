@@ -5,6 +5,7 @@
 import '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import '//resources/ash/common/cr_elements/md_select.css.js';
 
+import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -266,13 +267,15 @@ export class HealthdInternalsProcessElement extends PolymerElement implements
   declare private lastUpdateTime: string;
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
-  private updateHelper: UiUpdateHelper;
+  private updateHelper: UiUpdateHelper|null = null;
 
   updateVisibility(isVisible: boolean) {
+    assert(this.updateHelper);
     this.updateHelper.updateVisibility(isVisible);
   }
 
   updateUiUpdateInterval(intervalSeconds: number) {
+    assert(this.updateHelper);
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 

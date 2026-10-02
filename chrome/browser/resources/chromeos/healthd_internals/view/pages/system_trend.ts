@@ -106,7 +106,7 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
   private controller: SystemTrendController = new SystemTrendController(this);
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
-  private updateHelper: UiUpdateHelper;
+  private updateHelper: UiUpdateHelper|null = null;
 
   // Whether the chart summary table is displayed.
   declare private isSummaryTableDisplayed: boolean;
@@ -130,10 +130,12 @@ export class HealthdInternalsSystemTrendElement extends PolymerElement
 
   updateVisibility(isVisible: boolean) {
     this.$.lineChart.updateVisibility(isVisible);
+    assert(this.updateHelper);
     this.updateHelper.updateVisibility(isVisible);
   }
 
   updateUiUpdateInterval(intervalSeconds: number) {
+    assert(this.updateHelper);
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 

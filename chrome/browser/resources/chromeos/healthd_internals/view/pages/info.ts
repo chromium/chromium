@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {CpuUsage} from '../../model/cpu_usage_helper.js';
@@ -76,7 +77,7 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
   private zramData?: SystemZramInfo = undefined;
 
   // Helper for updating UI regularly. Init in `connectedCallback`.
-  private updateHelper: UiUpdateHelper;
+  private updateHelper: UiUpdateHelper|null = null;
 
   // Displayed info.
   declare private infoNumOfCpu: string;
@@ -122,10 +123,12 @@ export class HealthdInternalsInfoElement extends PolymerElement implements
   }
 
   updateVisibility(isVisible: boolean) {
+    assert(this.updateHelper);
     this.updateHelper.updateVisibility(isVisible);
   }
 
   updateUiUpdateInterval(intervalSeconds: number) {
+    assert(this.updateHelper);
     this.updateHelper.updateUiUpdateInterval(intervalSeconds);
   }
 

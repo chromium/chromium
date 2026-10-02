@@ -57,7 +57,7 @@ export class LineChartController {
   private endTime: number = this.startTime;
 
   // The current displayed category.
-  private displayedCategory: CategoryTypeEnum;
+  private displayedCategory: CategoryTypeEnum|null = null;
 
   // The lists of data series from different sources.
   private displayedDataSeriesLists: DataSeriesList[] = [];
