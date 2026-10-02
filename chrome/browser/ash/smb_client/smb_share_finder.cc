@@ -111,7 +111,9 @@ bool SmbShareFinder::TryResolveUrl(const SmbUrl& url,
 }
 
 void SmbShareFinder::OnHostsFound(bool success, const HostMap& hosts) {
-  CHECK_EQ(0u, host_counter_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568479197): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(0u, host_counter_);
 
   RunDiscoveryCallbacks();
 
