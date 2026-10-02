@@ -95,6 +95,12 @@ inline constexpr char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+inline constexpr char kAppBarAssistantCustomizationName[] =
+    "AppBar Assistant Customization";
+inline constexpr char kAppBarAssistantCustomizationDescription[] =
+    "When enabled, long pressing the AppBar assistant button shows a menu to "
+    "choose which entry point the button shows.";
+
 inline constexpr char kAppSwitcherAISummarizationName[] =
     "App Switcher AI summarization";
 inline constexpr char kAppSwitcherAISummarizationDescription[] =

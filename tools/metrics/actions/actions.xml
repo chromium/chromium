@@ -24830,6 +24830,36 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarAssistantCustomizationAccountSelected">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    The user selected the 'Account' entry of the menu shown when long pressing
+    the Assistant button in the AppBar. Recorded even if the entry was already
+    selected.
+  </description>
+</action>
+
+<action name="MobileToolbarAssistantCustomizationAskGeminiSelected">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    The user selected the 'Ask Gemini' entry of the menu shown when long
+    pressing the Assistant button in the AppBar. Recorded even if the entry was
+    already selected.
+  </description>
+</action>
+
+<action name="MobileToolbarAssistantCustomizationLensSelected">
+  <owner>gambard@chromium.org</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    The user selected the 'Lens' entry of the menu shown when long pressing the
+    Assistant button in the AppBar. Recorded even if the entry was already
+    selected.
+  </description>
+</action>
+
 <action name="MobileToolbarAssistantFullscreen">
   <owner>gambard@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>

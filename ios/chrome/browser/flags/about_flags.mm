@@ -2909,6 +2909,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          enterprise_net::kEnterpriseProxyErrorHandling,
          kEnterpriseProxyErrorHandlingVariations,
          "EnterpriseProxyErrorHandling")},
+    {"app-bar-assistant-customization",
+     flag_descriptions::kAppBarAssistantCustomizationName,
+     flag_descriptions::kAppBarAssistantCustomizationDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAppBarAssistantCustomization)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

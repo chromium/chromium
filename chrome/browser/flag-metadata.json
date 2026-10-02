@@ -722,6 +722,11 @@
     "expiry_milestone": 172
   },
   {
+    "name": "app-bar-assistant-customization",
+    "owners": [ "gambard@chromium.org", "bling-meridian@google.com" ],
+    "expiry_milestone": 161
+  },
+  {
     "name": "app-menu-glow-up",
     "owners": [
       "emshack@chromium.org",

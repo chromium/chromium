@@ -7,22 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+
 // The types of button for which a menu can be provided.
 typedef NS_ENUM(NSUInteger, AppBarButtonType) {
   AppBarButtonTypeAssistant,
   AppBarButtonTypeNewTab,
   AppBarButtonTypeTabGrid,
 };
-
-// LINT.IfChange(AppBarAssistantButtonState)
-enum class AppBarAssistantButtonState {
-  kLens,
-  kAsk,
-  kAIM,
-  kAccount,
-  kMaxValue = kAccount,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:IOSAppBarAssistantButtonState)
 
 // Consumer of the app bar.
 @protocol AppBarConsumer <NSObject>

@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_assistant_button_symbol.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_iph_background_view.h"
@@ -27,7 +28,6 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/buildflags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -908,29 +908,13 @@ UIColor* AssistantHighlightBackgroundColor() {
   NSString* title = [self shouldHideButtonLabels]
                         ? nil
                         : [self assistantButtonTitleForCurrentState];
-  UIImage* image;
-  switch (_assistantButtonState) {
-    case AppBarAssistantButtonState::kAsk:
-#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-      image = AppBarSymbol(SymbolGeminiBrandedLogo);
-#else
-      image = AppBarSymbol(SymbolGeminiNonBrandedLogo);
-#endif
-      break;
-    case AppBarAssistantButtonState::kAIM:
-      image = AppBarSymbol(SymbolMagnifyingglassSpark);
-      break;
-    case AppBarAssistantButtonState::kLens:
-      image = AppBarSymbol(SymbolCameraLens);
-      break;
-    case AppBarAssistantButtonState::kAccount:
-      image =
-          _assistantButtonAvatar
-              ? [CircularImageFromImage(_assistantButtonAvatar,
-                                        kButtonImageSize)
-                    imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-              : AppBarSymbol(SymbolPersonCropCircle);
-      break;
+  UIImage* image =
+      AppBarSymbol(AppBarAssistantButtonSymbol(_assistantButtonState));
+  // The avatar of the signed-in identity replaces the generic Account symbol.
+  if (_assistantButtonState == AppBarAssistantButtonState::kAccount &&
+      _assistantButtonAvatar) {
+    image = [CircularImageFromImage(_assistantButtonAvatar, kButtonImageSize)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
   }
 
   UIButtonConfiguration* configuration = _assistantButton.configuration;
@@ -1521,7 +1505,9 @@ UIColor* AssistantHighlightBackgroundColor() {
   UIView* view = interaction.view;
   UIMenu* menu = nil;
   if (view == _assistantButton) {
-    menu = _assistantButtonMenu;
+    // The menu isn't offered while the button is disabled, e.g. on the tab grid
+    // for entry points that can't be used there, whichever surface disables it.
+    menu = _assistantButton.enabled ? _assistantButtonMenu : nil;
   } else if (view == _openNewTabButton) {
     menu = _openNewTabButtonMenu;
   } else if (view == _tabGridButton) {

@@ -12,6 +12,14 @@ namespace prefs {
 inline constexpr char kAddressBarSettingsNewBadgeShownCount[] =
     "ios.address_bar_settings_new_badge_shown_count";
 
+// Integer storing the `AppBarAssistantButtonPreferredState` chosen by the user
+// in the AppBar assistant button menu. The assistant button only shows this
+// state when its entry point is available. `kDefault`, or any value outside of
+// the enum range, means that the user didn't make any choice. Per-profile and
+// not synced.
+inline constexpr char kAppBarAssistantButtonPreferredState[] =
+    "ios.app_bar.assistant_button_preferred_state";
+
 // The application locale.
 inline constexpr char kApplicationLocale[] = "intl.app_locale";
 

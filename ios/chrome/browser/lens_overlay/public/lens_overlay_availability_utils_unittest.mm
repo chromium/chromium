@@ -164,6 +164,52 @@ TEST_F(LensOverlayAvailabilityUtilsTest,
       template_url_service_, nullptr));
 }
 
+// Tests that the AppBar entrypoint is available but not enabled when web_state
+// is null.
+TEST_F(LensOverlayAvailabilityUtilsTest,
+       IsLensOverlayEntrypointAvailable_AppBar_AvailableWhenWebStateIsNull) {
+  EXPECT_TRUE(IsLensOverlayEntrypointAvailable(LensOverlayEntrypoint::kAppBar,
+                                               profile_->GetPrefs(),
+                                               template_url_service_, nullptr));
+  EXPECT_FALSE(IsLensOverlayEntrypointEnabled(LensOverlayEntrypoint::kAppBar,
+                                              profile_->GetPrefs(),
+                                              template_url_service_, nullptr));
+}
+
+// Tests that the AppBar entrypoint is available and enabled on a regular page.
+TEST_F(LensOverlayAvailabilityUtilsTest,
+       IsLensOverlayEntrypointEnabled_AppBar_EnabledOnRegularPage) {
+  EXPECT_TRUE(IsLensOverlayEntrypointAvailable(
+      LensOverlayEntrypoint::kAppBar, profile_->GetPrefs(),
+      template_url_service_, web_state_.get()));
+  EXPECT_TRUE(IsLensOverlayEntrypointEnabled(
+      LensOverlayEntrypoint::kAppBar, profile_->GetPrefs(),
+      template_url_service_, web_state_.get()));
+}
+
+// Tests that the AppBar entrypoint is unavailable when policy is disabled, even
+// without web_state.
+TEST_F(LensOverlayAvailabilityUtilsTest,
+       IsLensOverlayEntrypointAvailable_AppBar_UnavailableWhenPolicyDisabled) {
+  profile_->GetPrefs()->SetInteger(
+      lens::prefs::kLensOverlaySettings,
+      static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
+  EXPECT_FALSE(IsLensOverlayEntrypointAvailable(
+      LensOverlayEntrypoint::kAppBar, profile_->GetPrefs(),
+      template_url_service_, nullptr));
+}
+
+// Tests that non-AppBar entrypoints are not enabled when web_state is null.
+TEST_F(LensOverlayAvailabilityUtilsTest,
+       IsLensOverlayEntrypointEnabled_NotEnabledWhenWebStateIsNull) {
+  EXPECT_FALSE(IsLensOverlayEntrypointEnabled(
+      LensOverlayEntrypoint::kLocationBar, profile_->GetPrefs(),
+      template_url_service_, nullptr));
+  EXPECT_FALSE(IsLensOverlayEntrypointEnabled(
+      LensOverlayEntrypoint::kOverflowMenu, profile_->GetPrefs(),
+      template_url_service_, nullptr));
+}
+
 // Tests that OverflowMenu entrypoint is available on a regular page.
 TEST_F(LensOverlayAvailabilityUtilsTest,
        IsLensOverlayEntrypointAvailable_OverflowMenu_AvailableOnRegularPage) {

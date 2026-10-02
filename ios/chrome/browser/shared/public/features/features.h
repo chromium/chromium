@@ -976,4 +976,11 @@ BASE_DECLARE_FEATURE(kAimCobrowseWebSelectionSearch);
 // Returns true if the AimCobrowseWebSelectionSearch feature is enabled.
 bool IsAimCobrowseWebSelectionSearchEnabled();
 
+// Enables a long-press menu on the AppBar assistant button letting the user
+// choose which entry point the button shows.
+BASE_DECLARE_FEATURE(kAppBarAssistantCustomization);
+
+// Returns true if the AppBarAssistantCustomization feature is enabled.
+bool IsAppBarAssistantCustomizationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

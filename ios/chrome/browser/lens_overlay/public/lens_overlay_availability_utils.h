@@ -18,7 +18,7 @@ class WebState;
 // `web_state`.
 bool IsLensOverlayVisible(web::WebState* web_state);
 
-// Returns whether the Lens Overlay entrypoint is available for the given
+// Returns whether the Lens Overlay `entrypoint` can be offered for the given
 // context.
 bool IsLensOverlayEntrypointAvailable(
     LensOverlayEntrypoint entrypoint,
@@ -26,5 +26,13 @@ bool IsLensOverlayEntrypointAvailable(
     TemplateURLService* template_url_service,
     web::WebState* web_state,
     UITraitCollection* trait_collection = nil);
+
+// Returns whether the Lens Overlay `entrypoint` can be used for the given
+// context.
+bool IsLensOverlayEntrypointEnabled(LensOverlayEntrypoint entrypoint,
+                                    const PrefService* profile_prefs,
+                                    TemplateURLService* template_url_service,
+                                    web::WebState* web_state,
+                                    UITraitCollection* trait_collection = nil);
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_PUBLIC_LENS_OVERLAY_AVAILABILITY_UTILS_H_
