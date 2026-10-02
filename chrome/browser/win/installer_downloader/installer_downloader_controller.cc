@@ -171,7 +171,10 @@ void InstallerDownloaderController::RegisterInfoBar() {
           infobars::InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE)
           .SetMessageText(
               l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_DISCLAIMER))
-          .SetLinkText(l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_LINK))
+          .SetLinkText(
+              l10n_util::GetStringUTF16(IDS_INSTALLER_DOWNLOADER_LINK_TEXT))
+          .SetLinkAccessibleText(l10n_util::GetStringUTF16(
+              IDS_INSTALLER_DOWNLOADER_LINK_ACCESSIBLE_TEXT))
           .SetLinkNavigationUrl(GURL(kLearnMoreUrl))
           .SetIcon(features::IsRoundedIconsEnabled()
                        ? omnibox::kChromeProductIcon
