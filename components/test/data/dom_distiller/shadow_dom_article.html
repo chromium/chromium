@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- Fixture for DistillerPageWebContentsTest.HandlesShadowDOM.
+
+     The volume of text here is load-bearing: Readability's DEFAULT_CHAR_THRESHOLD
+     is 500 characters, and _grabArticle only keeps sibling wrapper elements whose
+     content score clears max(10, topCandidate * 0.2). -->
+<html>
+<head>
+  <title>Shadow DOM Test Page Title</title>
+</head>
+<body>
+  <custom-article>
+    <template shadowrootmode="open">
+      <article>
+        <div class="article-lead-slot">
+          <slot name="lead-image"></slot>
+        </div>
+
+        <p>The city botanical garden was established in the late nineteenth
+        century as a public sanctuary for plant conservation, scientific
+        research, and horticulture education. Over the decades, the grounds have
+        expanded to include several distinct greenhouse pavilions, outdoor
+        walking trails, and an extensive collection of temperate and tropical
+        flora from across the globe.</p>
+
+        <!-- Must survive: "continue-read-break" contains the substring
+             "ad-break" but is not an ad container. -->
+        <p class="continue-read-break">
+          Horticultural specialists and groundskeepers maintain thousands of
+          rare botanical specimens throughout the season, ensuring that climate
+          conditions, soil nutrients, and hydration levels remain optimal within
+          each specialized microclimate zone.
+        </p>
+
+        <!-- Must be pruned: a real ad break. -->
+        <div class="ad-break">Commercial sponsor banner and advertisement.</div>
+
+        <!-- Unassigned slot renders its fallback content. -->
+        <slot name="not-assigned-to-anything">
+          <p>Seasonal exhibitions and educational tours are offered throughout the
+          spring and summer months, providing visitors with detailed insights
+          into plant biology, regional ecology, and sustainable gardening
+          practices.</p>
+        </slot>
+
+        <!-- Content re-projected through a nested shadow root's default slot. -->
+        <inner-widget>
+          <template shadowrootmode="open">
+            <slot></slot>
+          </template>
+          <p>The newly renovated alpine pavilion houses a wide variety of
+          high-altitude plants, mosses, and hardy perennials adapted to rocky
+          terrain and cool temperature fluctuations.</p>
+          <p>Specialized misting systems and temperature-regulated ventilation
+          units simulate mountain environments, allowing delicate alpine
+          species to thrive alongside native woodland groundcovers.</p>
+          <p>Visitors can observe these specialized adaptations along the stone
+          pathway, which winds past cascading water features and natural stone
+          rockeries designed to replicate natural mountain habitats.</p>
+        </inner-widget>
+
+        <slot name="body-extra"></slot>
+
+        <p>The botanical garden remains open to the public daily throughout the
+        year, offering quiet spaces for study, photography, and nature walks
+        across its manicured arboretum pathways and serene woodland gardens.</p>
+      </article>
+    </template>
+
+    <div slot="lead-image">
+      <img src="http://www.google.com/shadow_lead.png" alt="Lead image">
+      <p>The central glass conservatory and palm house on an autumn afternoon.</p>
+    </div>
+
+    <!-- A <slot> outside any shadow tree assigned into the "body-extra" slot. -->
+    <slot slot="body-extra">
+      <p>The conservatory's research library contains extensive historical
+      records, detailed botanical illustrations, and cataloged herbarium
+      specimens dating back to the founding of the institution.</p>
+      <p>Researchers, educators, and visiting students regularly consult these
+      archives to study long-term shifts in regional plant distributions,
+      pollination patterns, and seasonal flowering schedules.</p>
+    </slot>
+
+    <div class="light-dom-leftover">
+      <p>Unslotted sidebar navigation links that should not appear in the
+      distilled article text.</p>
+    </div>
+  </custom-article>
+</body>
+</html>

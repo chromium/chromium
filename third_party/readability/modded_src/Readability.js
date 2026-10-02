@@ -137,11 +137,18 @@ Readability.prototype = {
   REGEXPS: {
     // NOTE: These two regular expressions are duplicated in
     // Readability-readerable.js. Please keep both copies in sync.
+    //
+    // The "ad-break" token is anchored to a token boundary. Unanchored, it
+    // also matches class names that merely end in "ad" followed by "-break",
+    // such as "continue-read-break", which strips real article paragraphs
+    // (crbug.com/554109645). The "_" alternative is needed because \b does not
+    // treat an underscore as a boundary; this mirrors the (\b|_) idiom already
+    // used by shareElements below.
     unlikelyCandidates: new RegExp(
       "-ad-|ai2html|banner|breadcrumbs|combx|comment|community|" +
         "cover-wrap|disqus|extra|footer|gdpr|header|legends|menu|related|" +
         "remark|replies|rss|shoutbox|sidebar|skyscraper|social|sponsor|" +
-        "shopping|shopper|retailer|supplemental|ad-break|agegate|" +
+        "shopping|shopper|retailer|supplemental|(?:\\b|_)ad-break|agegate|" +
         "pagination|pager|popup|yom-remote",
       "i"
     ),

@@ -38,3 +38,8 @@ update the modded_src/version and update the list of changes below.
   shopping carousels (crbug.com/441593356).
 - Allow <cite> elements to be counted as potential image captions
   (crbug.com/494366222).
+- Anchor the "ad-break" token in the unlikelyCandidates regex to a word
+  boundary. Unanchored, it also matches class names that merely end in "ad"
+  followed by "-break": MSN article paragraphs carry
+  class="continue-read-break", which _grabArticle deleted as an ad container
+  (crbug.com/554109645).

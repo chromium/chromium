@@ -88,6 +88,7 @@ namespace dom_distiller {
 
 const char* kSimpleArticlePath = "/simple_article.html";
 const char* kVideoArticlePath = "/video_article.html";
+const char* kShadowDomArticlePath = "/shadow_dom_article.html";
 
 class DistillerPageWebContentsTest : public ContentBrowserTest {
  public:
@@ -289,6 +290,65 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
     EXPECT_THAT(distiller_result_->distilled_content().html(),
                 Not(HasSubstr("Lorem ipsum")));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest, HandlesShadowDOM) {
+  DistillerPageWebContents distiller_page(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetContainerBounds().size(),
+      std::unique_ptr<SourcePageHandleWebContents>());
+  distiller_page_ = &distiller_page;
+
+  base::RunLoop run_loop;
+  DistillPage(run_loop.QuitClosure(), kShadowDomArticlePath);
+  run_loop.Run();
+
+  const std::string& html = distiller_result_->distilled_content().html();
+
+  EXPECT_EQ("Shadow DOM Test Page Title", distiller_result_->title());
+
+  // The article body lives in an open shadow root, which cloneNode() does not
+  // copy. Without flattening, the distiller sees an empty <custom-article> and
+  // produces nothing at all.
+  EXPECT_THAT(html,
+              HasSubstr("The city botanical garden was established in the late "
+                        "nineteenth"));
+
+  // Light DOM slotted into the shadow tree. Note this text alone does not
+  // prove much -- it survives a plain deep clone too -- but it would be lost
+  // by a flattening clone that descends into the shadow root without
+  // resolving <slot> assignments.
+  EXPECT_THAT(html, HasSubstr("The central glass conservatory and palm house"));
+
+  // A <slot> with nothing assigned renders its fallback content.
+  EXPECT_THAT(
+      html,
+      HasSubstr("Seasonal exhibitions and educational tours are offered"));
+
+  // Content re-projected through a nested shadow root's default slot.
+  EXPECT_THAT(
+      html,
+      HasSubstr("The newly renovated alpine pavilion houses a wide variety"));
+
+  // A <slot> outside any shadow tree is an ordinary element that renders its
+  // children; it has no assigned nodes.
+  EXPECT_THAT(
+      html, HasSubstr("The conservatory's research library contains extensive "
+                      "historical"));
+
+  // "continue-read-break" contains the substring "ad-break". Before the token
+  // was anchored, unlikelyCandidates matched it and _grabArticle deleted this
+  // whole paragraph.
+  EXPECT_THAT(
+      html, HasSubstr("Horticultural specialists and groundskeepers maintain"));
+
+  // The anchored token must still match a real ad break.
+  EXPECT_THAT(html,
+              Not(HasSubstr("Commercial sponsor banner and advertisement")));
+
+  // Light DOM that is not assigned to any slot is not rendered, so it must not
+  // appear in the distilled output.
+  EXPECT_THAT(html, Not(HasSubstr("Unslotted sidebar navigation links")));
 }
 
 #if BUILDFLAG(IS_WIN)
