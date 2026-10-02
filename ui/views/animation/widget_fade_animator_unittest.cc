@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -415,6 +416,67 @@ TEST_F(WidgetFadeAnimatorTest, FadeInShowTypeNone) {
 
   // Widget should not be shown.
   EXPECT_FALSE(widget_->IsVisible());
+}
+
+namespace {
+
+class DestroysAnimatorOnVisibilityChangeObserver : public WidgetObserver {
+ public:
+  explicit DestroysAnimatorOnVisibilityChangeObserver(
+      std::unique_ptr<WidgetFadeAnimator>* animator)
+      : animator_(animator) {}
+
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+    if (visible && *animator_) {
+      animator_->reset();
+    }
+  }
+
+ private:
+  raw_ptr<std::unique_ptr<WidgetFadeAnimator>> animator_;
+};
+
+class CancelsAnimatorOnVisibilityChangeObserver : public WidgetObserver {
+ public:
+  explicit CancelsAnimatorOnVisibilityChangeObserver(
+      WidgetFadeAnimator* animator)
+      : animator_(animator) {}
+
+  void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
+    if (visible && animator_) {
+      animator_->CancelFadeIn();
+    }
+  }
+
+ private:
+  raw_ptr<WidgetFadeAnimator> animator_;
+};
+
+}  // namespace
+
+TEST_F(WidgetFadeAnimatorTest, DestroyingAnimatorDuringFadeInDoesNotCrash) {
+  auto animator = std::make_unique<WidgetFadeAnimator>(widget_.get());
+  DestroysAnimatorOnVisibilityChangeObserver observer(&animator);
+  widget_->AddObserver(&observer);
+
+  // Showing the widget triggers OnWidgetVisibilityChanged synchronously,
+  // destroying `animator`. This should safely return without crashing or UAF.
+  animator->FadeIn();
+  EXPECT_EQ(nullptr, animator);
+
+  widget_->RemoveObserver(&observer);
+}
+
+TEST_F(WidgetFadeAnimatorTest, CancellingAnimatorDuringFadeInDoesNotCrash) {
+  CancelsAnimatorOnVisibilityChangeObserver observer(delegate_.get());
+  widget_->AddObserver(&observer);
+
+  // Cancelling the animation synchronously during widget show should not
+  // cause the animation to resume.
+  delegate_->FadeIn();
+  EXPECT_FALSE(delegate_->IsFadingIn());
+
+  widget_->RemoveObserver(&observer);
 }
 
 }  // namespace views

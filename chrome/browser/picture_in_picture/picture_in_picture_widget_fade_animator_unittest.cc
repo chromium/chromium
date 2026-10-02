@@ -4,12 +4,14 @@
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_widget_fade_animator.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/widget_fade_animator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 
@@ -260,4 +262,39 @@ TEST_F(
       widget(),
       PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowActive);
   EXPECT_EQ(1, fade_animator()->GetFadeInCallsCountForTesting());
+}
+
+namespace {
+
+class ResetAnimatorOnVisibilityChangeObserver : public views::WidgetObserver {
+ public:
+  explicit ResetAnimatorOnVisibilityChangeObserver(
+      PictureInPictureWidgetFadeAnimator* fade_animator)
+      : fade_animator_(fade_animator) {}
+
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override {
+    if (visible && fade_animator_) {
+      fade_animator_->CancelAndReset();
+    }
+  }
+
+ private:
+  raw_ptr<PictureInPictureWidgetFadeAnimator> fade_animator_;
+};
+
+}  // namespace
+
+TEST_F(PictureInPictureWidgetFadeAnimatorTest,
+       CancelAndResetDuringAnimateShowWindowDoesNotCrash) {
+  ResetAnimatorOnVisibilityChangeObserver observer(fade_animator());
+  widget()->AddObserver(&observer);
+
+  fade_animator()->AnimateShowWindow(
+      widget(),
+      PictureInPictureWidgetFadeAnimator::WidgetShowType::kShowInactive);
+
+  EXPECT_EQ(nullptr, fade_animator()->GetWidgetFadeAnimatorForTesting());
+  EXPECT_EQ(1, fade_animator()->GetFadeInCallsCountForTesting());
+
+  widget()->RemoveObserver(&observer);
 }

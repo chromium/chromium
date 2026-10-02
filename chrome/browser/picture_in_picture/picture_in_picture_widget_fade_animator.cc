@@ -30,8 +30,8 @@ void PictureInPictureWidgetFadeAnimator::AnimateShowWindow(
   fade_animator_->set_fade_in_duration(base::Milliseconds(kFadeInDurationMs));
   fade_animator_->set_show_type(show_type);
 
-  fade_animator_->FadeIn();
   ++fade_in_calls_count_;
+  fade_animator_->FadeIn();
 }
 
 void PictureInPictureWidgetFadeAnimator::CancelAndReset() {
