@@ -39,10 +39,12 @@ def _MergeRTxt(r_paths, include_globs, exclude_globs):
     return ''.join(sorted(all_lines))
 
 
-def _MergeProguardConfigs(proguard_configs):
+def _MergeProguardConfigs(proguard_configs, exclude_globs):
     """Merging the given proguard config files and returns them as a string."""
     ret = []
     for config in proguard_configs:
+        if exclude_globs and build_utils.MatchesGlob(config, exclude_globs):
+            continue
         ret.append('# FROM: {}'.format(config))
         with open(config, encoding='utf-8') as f:
             ret.append(f.read())
@@ -124,6 +126,10 @@ def main(args):
         '--resource-excluded-globs',
         help='GN-list of globs for paths to exclude in R.txt and resources zips.',
     )
+    parser.add_argument(
+        '--proguard-excluded-globs',
+        help='GN-list of globs for proguard config paths to exclude.',
+    )
 
     options = parser.parse_args(args)
 
@@ -152,6 +158,9 @@ def main(args):
     )
     options.resource_excluded_globs = action_helpers.parse_gn_list(
         options.resource_excluded_globs
+    )
+    options.proguard_excluded_globs = action_helpers.parse_gn_list(
+        options.proguard_excluded_globs
     )
 
     with tempfile.NamedTemporaryFile(delete=False) as staging_file:
@@ -188,7 +197,10 @@ def main(args):
                     zip_helpers.add_to_zip_hermetic(
                         z,
                         'proguard.txt',
-                        data=_MergeProguardConfigs(options.proguard_configs),
+                        data=_MergeProguardConfigs(
+                            options.proguard_configs,
+                            options.proguard_excluded_globs,
+                        ),
                     )
 
                 _AddResources(

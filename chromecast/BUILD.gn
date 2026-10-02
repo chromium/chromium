@@ -732,5 +732,7 @@ if (is_android) {
       "*/third_party/androidx/*",
       "*/third_party/java_src/*",
     ]
+
+    proguard_excluded_patterns = [ "*/chromium_apk.flags" ]
   }
 }

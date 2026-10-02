@@ -1724,6 +1724,7 @@ if (!is_robolectric && enable_java_templates) {
   #   jar_included_patterns: List of globs for paths to include (optional).
   #   resource_excluded_patterns: Resource path glob list to exclude (optional)
   #   resource_included_patterns: Resource path glob list to include (optional)
+  #   proguard_excluded_patterns: Proguard config glob list to exclude (optional)
   #
   # Example
   #   dist_aar("my_aar") {
@@ -1830,6 +1831,11 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.resource_excluded_patterns)) {
         args += [
           "--resource-excluded-globs=${invoker.resource_excluded_patterns}",
+        ]
+      }
+      if (defined(invoker.proguard_excluded_patterns)) {
+        args += [
+          "--proguard-excluded-globs=${invoker.proguard_excluded_patterns}",
         ]
       }
     }
