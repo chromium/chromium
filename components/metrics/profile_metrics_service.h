@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/metrics/private_metrics/puma_histogram_functions.h"
 
 namespace metrics {
 
@@ -76,19 +75,6 @@ class ProfileMetricsService : public KeyedService {
                                base::TimeDelta min,
                                base::TimeDelta max,
                                size_t buckets) const;
-
-  void PumaHistogramBoolean(
-      private_metrics::PumaType puma_type,
-      std::string_view name,
-      bool sample,
-      std::optional<uint64_t> profile_id = std::nullopt) const;
-
-  void PumaHistogramExactLinear(
-      private_metrics::PumaType puma_type,
-      std::string_view name,
-      int sample,
-      int exclusive_max,
-      std::optional<uint64_t> profile_id = std::nullopt) const;
 
  private:
   const ProfileMetricsContext profile_metrics_context_;
