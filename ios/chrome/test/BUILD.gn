@@ -298,6 +298,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/bubble/ui_bundled:unit_tests",
     "//ios/chrome/browser/cobrowse/coordinator:unit_tests",
     "//ios/chrome/browser/cobrowse/model:unit_tests",
+    "//ios/chrome/browser/cobrowse/ui:unit_tests",
     "//ios/chrome/browser/collaboration/model:unit_tests",
     "//ios/chrome/browser/collaboration/model/messaging:unit_tests",
     "//ios/chrome/browser/collaboration/model/messaging/infobar:unit_tests",

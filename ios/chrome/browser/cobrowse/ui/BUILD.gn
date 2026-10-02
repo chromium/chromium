@@ -40,6 +40,21 @@ source_set("constants") {
   ]
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_aim_zero_state_view_controller_unittest.mm" ]
+  deps = [
+    ":constants",
+    ":ui",
+    "//base",
+    "//components/strings",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true

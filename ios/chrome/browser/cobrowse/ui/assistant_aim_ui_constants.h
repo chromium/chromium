@@ -17,6 +17,9 @@ extern NSString* const kAssistantAIMContextMenuButtonAccessibilityIdentifier;
 // Assistant AIM history.
 extern NSString* const kAssistantAIMHistorySignedOutViewAccessibilityIdentifier;
 
+// Accessibility identifier for the Assistant AIM zero state greeting label.
+extern NSString* const kAssistantAIMZeroStateGreetingAccessibilityIdentifier;
+
 // Accessibility identifiers for the AIM SRP Loaded URL debugger view
 // components.
 extern NSString* const kAIMSRPDebuggerURLViewControllerAccessibilityIdentifier;
