@@ -396,6 +396,9 @@ chromium-metrics-reviews@google.com.
                retrieval is autofilled."/>
   <variant name="MandatoryReauth"
       summary="Snackbar shown after opting into mandatory reauth."/>
+  <variant name="ResurrectChurnedUsers"
+      summary="Snackbar shown after a churned user re-enables payment
+               autofill."/>
   <variant name="SaveCardSuccess"
       summary="Snackbar shown after card has been successfully saved."/>
   <variant name="SaveServerIbanSuccess"

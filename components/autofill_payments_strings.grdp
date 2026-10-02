@@ -1476,6 +1476,9 @@
   <message name="IDS_AUTOFILL_CHURNED_USERS_MESSAGE_DESCRIPTION" desc="Description for the payments churned users Android message banner. Prompts the user to turn on payment autofill.">
     Turn on autofill to make shopping easier
   </message>
+  <message name="IDS_AUTOFILL_CHURNED_USERS_SNACKBAR_ACTION_TEXT" desc="Action button text in the confirmation snackbar shown after a churned user accepts the prompt to re-enable payment autofill. Clicking opens the payment methods settings page.">
+    View settings
+  </message>
   <message name="IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_TITLE" desc="Title for the churned users confirmation bubble, which comes after the user has accepted the churned users bubble, letting the user know that autofill is turned on.">
     Autofill turned on
   </message>

@@ -9,10 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+#include "components/messages/android/message_enums.h"
 
 namespace autofill {
 
+class AutofillMessageController;
 class AutofillPaymentsChurnedUsersBottomSheetBridge;
 class ContentAutofillClient;
 
@@ -41,18 +44,27 @@ class PaymentsChurnedUsersUiDelegateAndroid
 
   void SetAutofillPaymentsChurnedUsersBottomSheetBridgeForTesting(
       std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge> bridge);
+  void SetAutofillMessageControllerForTesting(
+      std::unique_ptr<AutofillMessageController> controller);
 
  private:
   AutofillEnableResurrectingPaymentsUsersTreatmentArm GetTreatmentArm() const;
   AutofillPaymentsChurnedUsersBottomSheetBridge*
   GetOrCreatePaymentsChurnedUsersBottomSheetBridge();
+  AutofillMessageController& GetOrCreateAutofillMessageController();
+
+  void OnMessageAccepted();
+  void OnMessageDismissed(messages::DismissReason dismiss_reason);
 
   const raw_ref<ContentAutofillClient> client_;
-  // TODO(crbug.com/558874126): Wire callback to the bottom sheet bridge and
-  // message controller.
+  // TODO(crbug.com/558874126): Wire callback to the bottom sheet bridge.
+  bool is_showing_message_ = false;
   base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback_;
   std::unique_ptr<AutofillPaymentsChurnedUsersBottomSheetBridge>
       autofill_payments_churned_users_bottom_sheet_bridge_;
+  std::unique_ptr<AutofillMessageController> autofill_message_controller_;
+  base::WeakPtrFactory<PaymentsChurnedUsersUiDelegateAndroid> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace payments

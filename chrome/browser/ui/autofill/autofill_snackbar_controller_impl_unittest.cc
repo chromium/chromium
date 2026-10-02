@@ -434,6 +434,44 @@ TEST_F(AutofillSnackbarControllerImplTest,
   controller()->OnDismissed();
 }
 
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_ResurrectChurnedUsers) {
+  base::HistogramTester histogram_tester;
+  controller()->Show(AutofillSnackbarType::kResurrectChurnedUsers,
+                     base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.ResurrectChurnedUsers.Shown", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Snackbar.ResurrectChurnedUsers.ActionClicked", 0);
+  controller()->OnDismissed();
+
+  base::MockCallback<base::OnceClosure> on_action_clicked_callback;
+  controller()->Show(AutofillSnackbarType::kResurrectChurnedUsers,
+                     on_action_clicked_callback.Get());
+  EXPECT_CALL(on_action_clicked_callback, Run);
+  controller()->OnActionClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.ResurrectChurnedUsers.Shown", true, 2);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.ResurrectChurnedUsers.ActionClicked", true, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       ResurrectChurnedUsersMessageAndActionButtonText) {
+  controller()->Show(AutofillSnackbarType::kResurrectChurnedUsers,
+                     base::DoNothing());
+
+  EXPECT_EQ(controller()->GetSnackbarType(),
+            AutofillSnackbarType::kResurrectChurnedUsers);
+  EXPECT_EQ(controller()->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CHURNED_USERS_CONFIRMATION_BUBBLE_TITLE));
+  EXPECT_EQ(controller()->GetActionButtonText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_CHURNED_USERS_SNACKBAR_ACTION_TEXT));
+  controller()->OnDismissed();
+}
+
 TEST_F(AutofillSnackbarControllerImplTest,
        Dismiss_PublicApiClosesActiveSnackbar) {
   base::MockCallback<base::OnceClosure> on_dismiss_callback;

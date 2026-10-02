@@ -42,6 +42,11 @@ enum class AutofillSnackbarType {
 
   // Used when an Autofill AI suggestion was removed, offering an undo action.
   kAutofillAiSuppressionUndo = 10,
+
+  // Used when a churned payments user (a user who previously disabled Autofill
+  // payment methods) accepts the prompt on a credit card form to turn payment
+  // autofill back on.
+  kResurrectChurnedUsers = 11,
 };
 
 }  // namespace autofill

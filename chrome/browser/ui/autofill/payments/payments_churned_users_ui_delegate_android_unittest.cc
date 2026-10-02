@@ -9,17 +9,28 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/android/autofill/autofill_payments_churned_users_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/autofill/autofill_message_model.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
+#include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/messages/android/message_enums.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
 namespace {
+
+using ::base::test::RunOnceClosure;
+using ::testing::_;
 
 class MockAutofillPaymentsChurnedUsersBottomSheetBridge
     : public AutofillPaymentsChurnedUsersBottomSheetBridge {
@@ -36,6 +47,19 @@ class MockAutofillPaymentsChurnedUsersBottomSheetBridge
       (override));
 };
 
+class MockAutofillSnackbarControllerImpl
+    : public AutofillSnackbarControllerImpl {
+ public:
+  explicit MockAutofillSnackbarControllerImpl(
+      content::WebContents* web_contents)
+      : AutofillSnackbarControllerImpl(web_contents) {}
+
+  MOCK_METHOD(void,
+              Show,
+              (AutofillSnackbarType, base::OnceClosure),
+              (override));
+};
+
 class PaymentsChurnedUsersUiDelegateAndroidTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -45,11 +69,19 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     ChromeAutofillClient::CreateForWebContents(web_contents());
+    autofill_client()->SetAutofillSnackbarControllerImplForTesting(
+        std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents()));
     delegate_ = std::make_unique<PaymentsChurnedUsersUiDelegateAndroid>(
         autofill_client());
+    auto mock_message_controller =
+        std::make_unique<MockAutofillMessageController>();
+    mock_message_controller_ = mock_message_controller.get();
+    delegate_->SetAutofillMessageControllerForTesting(
+        std::move(mock_message_controller));
   }
 
   void TearDown() override {
+    mock_message_controller_ = nullptr;
     delegate_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -78,10 +110,25 @@ class PaymentsChurnedUsersUiDelegateAndroidTest
     return ChromeAutofillClient::FromWebContentsForTesting(web_contents());
   }
 
+  MockAutofillMessageController* mock_message_controller() {
+    return mock_message_controller_;
+  }
+
+  MockAutofillSnackbarControllerImpl* mock_snackbar_controller() {
+    return static_cast<MockAutofillSnackbarControllerImpl*>(
+        autofill_client()->GetAutofillSnackbarController());
+  }
+
   PaymentsChurnedUsersUiDelegateAndroid* delegate() { return delegate_.get(); }
+
+  void ResetDelegate() {
+    mock_message_controller_ = nullptr;
+    delegate_.reset();
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  raw_ptr<MockAutofillMessageController> mock_message_controller_ = nullptr;
   std::unique_ptr<PaymentsChurnedUsersUiDelegateAndroid> delegate_;
 };
 
@@ -136,19 +183,139 @@ TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
-       ShowPaymentsChurnedUsersUI_MessageArm) {
+       ShowPaymentsChurnedUsersUI_MessageArm_AcceptedShowsSnackbar) {
   InitFeatureWithTreatmentArm(
       AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage);
 
   auto mock_bridge =
       std::make_unique<MockAutofillPaymentsChurnedUsersBottomSheetBridge>();
   EXPECT_CALL(*mock_bridge, RequestShowContent).Times(0);
-
   delegate()->SetAutofillPaymentsChurnedUsersBottomSheetBridgeForTesting(
       std::move(mock_bridge));
 
+  std::unique_ptr<AutofillMessageModel> shown_message_model;
+  EXPECT_CALL(*mock_message_controller(), Show)
+      .WillOnce(MoveArg<0>(&shown_message_model));
+
+  base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+      closed_callback;
+
+  delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
+
+  ASSERT_TRUE(shown_message_model);
+  EXPECT_EQ(shown_message_model->GetType(),
+            AutofillMessageModel::Type::kResurrectChurnedUsers);
+
+  EXPECT_CALL(closed_callback, Run(PaymentsUiClosedReason::kAccepted));
+  EXPECT_CALL(*mock_snackbar_controller(),
+              Show(AutofillSnackbarType::kResurrectChurnedUsers, _))
+      .WillOnce(RunOnceClosure<1>());
+
+  shown_message_model->OnActionClicked();
+  shown_message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+}
+
+TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
+       ShowPaymentsChurnedUsersUI_MessageArm_GestureDismissed) {
+  InitFeatureWithTreatmentArm(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage);
+
+  std::unique_ptr<AutofillMessageModel> shown_message_model;
+  EXPECT_CALL(*mock_message_controller(), Show)
+      .WillOnce(MoveArg<0>(&shown_message_model));
+
+  base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+      closed_callback;
+
+  delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
+
+  ASSERT_TRUE(shown_message_model);
+  EXPECT_CALL(closed_callback, Run(PaymentsUiClosedReason::kCancelled));
+  EXPECT_CALL(*mock_snackbar_controller(), Show).Times(0);
+
+  shown_message_model->OnDismissed(messages::DismissReason::GESTURE);
+}
+
+TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
+       ShowPaymentsChurnedUsersUI_MessageArm_NotInteracted) {
+  InitFeatureWithTreatmentArm(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage);
+
+  std::unique_ptr<AutofillMessageModel> shown_message_model;
+  EXPECT_CALL(*mock_message_controller(), Show)
+      .Times(2)
+      .WillRepeatedly(MoveArg<0>(&shown_message_model));
+
+  for (messages::DismissReason dismiss_reason :
+       {messages::DismissReason::TIMER,
+        messages::DismissReason::SCOPE_DESTROYED}) {
+    base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+        closed_callback;
+    delegate()->ShowPaymentsChurnedUsersUI(closed_callback.Get());
+    ASSERT_TRUE(shown_message_model);
+    EXPECT_CALL(closed_callback, Run(PaymentsUiClosedReason::kNotInteracted));
+    EXPECT_CALL(*mock_snackbar_controller(), Show).Times(0);
+    shown_message_model->OnDismissed(dismiss_reason);
+  }
+}
+
+TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
+       ShowPaymentsChurnedUsersUI_MessageArm_IgnoresDuplicateWhileShowing) {
+  InitFeatureWithTreatmentArm(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage);
+
+  std::unique_ptr<AutofillMessageModel> shown_message_model;
+  EXPECT_CALL(*mock_message_controller(), Show)
+      .WillOnce(MoveArg<0>(&shown_message_model));
+
+  base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+      initial_closed_callback;
+  delegate()->ShowPaymentsChurnedUsersUI(initial_closed_callback.Get());
+  ASSERT_TRUE(shown_message_model);
+
+  // A second request while the first message is still showing must not trigger
+  // a duplicate `Show` call on the message controller or overwrite the initial
+  // `closed_callback_`.
+  base::MockCallback<base::OnceCallback<void(PaymentsUiClosedReason)>>
+      second_closed_callback;
+  EXPECT_CALL(second_closed_callback, Run).Times(0);
+  delegate()->ShowPaymentsChurnedUsersUI(second_closed_callback.Get());
+
+  EXPECT_CALL(initial_closed_callback, Run(PaymentsUiClosedReason::kAccepted));
+  EXPECT_CALL(*mock_snackbar_controller(),
+              Show(AutofillSnackbarType::kResurrectChurnedUsers, _));
+  shown_message_model->OnActionClicked();
+  shown_message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+}
+
+TEST_F(
+    PaymentsChurnedUsersUiDelegateAndroidTest,
+    ShowPaymentsChurnedUsersUI_MessageArm_SnackbarCallbackSafeAfterDestruction) {
+  InitFeatureWithTreatmentArm(
+      AutofillEnableResurrectingPaymentsUsersTreatmentArm::kMessage);
+
+  std::unique_ptr<AutofillMessageModel> shown_message_model;
+  EXPECT_CALL(*mock_message_controller(), Show)
+      .WillOnce(MoveArg<0>(&shown_message_model));
+
   delegate()->ShowPaymentsChurnedUsersUI(
       /*closed_callback=*/base::DoNothing());
+  ASSERT_TRUE(shown_message_model);
+
+  base::OnceClosure snackbar_action_callback;
+  EXPECT_CALL(*mock_snackbar_controller(),
+              Show(AutofillSnackbarType::kResurrectChurnedUsers, _))
+      .WillOnce(MoveArg<1>(&snackbar_action_callback));
+
+  shown_message_model->OnActionClicked();
+  shown_message_model->OnDismissed(messages::DismissReason::PRIMARY_ACTION);
+  ASSERT_TRUE(snackbar_action_callback);
+
+  // Destroy the delegate and `WebContents` before the snackbar action callback
+  // runs; the `WebContents` `WeakPtr` must safely no-op without crashing.
+  ResetDelegate();
+  DeleteContents();
+  std::move(snackbar_action_callback).Run();
 }
 
 TEST_F(PaymentsChurnedUsersUiDelegateAndroidTest,
