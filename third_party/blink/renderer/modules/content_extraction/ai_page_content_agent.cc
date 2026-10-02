@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -3178,8 +3180,39 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
 void AIPageContentAgent::ContentBuilder::AddFrameInteractionInfo(
     const LocalFrame& frame,
     mojom::blink::AIPageContentFrameInteractionInfo& frame_interaction_info) {
-  // Selection
-  if (!frame.SelectedText().empty()) {
+  // Selection. Editors using EditContext keep their text and selection in it
+  // rather than in the DOM, so if the focused element owns the active
+  // EditContext, use its selection. The offsets are into its text.
+  Element* focused_element = frame.GetDocument()->FocusedElement();
+  EditContext* edit_context =
+      focused_element ? focused_element->editContext() : nullptr;
+  if (edit_context != frame.GetInputMethodController().GetActiveEditContext()) {
+    edit_context = nullptr;
+  }
+  const String edit_context_text =
+      edit_context ? edit_context->text() : String();
+  const uint32_t edit_context_start =
+      edit_context ? std::min(edit_context->selectionStart(),
+                              edit_context->selectionEnd())
+                   : 0;
+  const uint32_t edit_context_end =
+      edit_context ? std::max(edit_context->selectionStart(),
+                              edit_context->selectionEnd())
+                   : 0;
+  if (edit_context_start < edit_context_end &&
+      edit_context_end <= edit_context_text.length()) {
+    frame_interaction_info.selection =
+        mojom::blink::AIPageContentSelection::New();
+    mojom::blink::AIPageContentSelection& selection =
+        *frame_interaction_info.selection;
+    selection.selected_text =
+        ReplaceUnpairedSurrogates(edit_context_text.substr(
+            edit_context_start, edit_context_end - edit_context_start));
+    selection.start_dom_node_id = AddInteractiveNode(*focused_element);
+    selection.end_dom_node_id = selection.start_dom_node_id;
+    selection.start_offset = edit_context_start;
+    selection.end_offset = edit_context_end;
+  } else if (!frame.SelectedText().empty()) {
     frame_interaction_info.selection =
         mojom::blink::AIPageContentSelection::New();
     mojom::blink::AIPageContentSelection& selection =

@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Per-document agent that lets the browser's dictation feature run code in the
+// renderer. Bound through the frame's interface registry.
+interface DictationAgent {
+  // Some pages using EditContext avoid populating it for performance reasons
+  // until an IME input is detected. This method performs the IME handshake to
+  // ensure such pages populate their EditContext so that a subsequent context
+  // fetch can access the EditContext data. Replies once done.
+  PopulateEditContext(int32 target_dom_node_id) => ();
+};

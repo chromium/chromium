@@ -68,6 +68,16 @@ void OnGotInnerText(base::TimeTicks start_time,
 void GetInnerText(content::RenderFrameHost& host,
                   std::optional<int> node_id,
                   InnerTextCallback callback) {
+  auto params = blink::mojom::InnerTextParams::New();
+  if (node_id) {
+    params->node_id = *node_id;
+  }
+  GetInnerTextWithParams(host, std::move(params), std::move(callback));
+}
+
+void GetInnerTextWithParams(content::RenderFrameHost& host,
+                            blink::mojom::InnerTextParamsPtr params,
+                            InnerTextCallback callback) {
   if (!host.IsRenderFrameLive()) {
     std::move(callback).Run(nullptr);
     return;
@@ -76,10 +86,6 @@ void GetInnerText(content::RenderFrameHost& host,
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
   host.GetRemoteInterfaces()->GetInterface(agent.BindNewPipeAndPassReceiver());
-  auto params = blink::mojom::InnerTextParams::New();
-  if (node_id) {
-    params->node_id = *node_id;
-  }
   auto* agent_ptr = agent.get();
   agent_ptr->GetInnerText(
       std::move(params),

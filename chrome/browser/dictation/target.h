@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/global_dom_node_id.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
 #include "ui/base/ime/ime_text_span.h"
 
 namespace content {
@@ -68,6 +70,10 @@ class Target {
   // Commits the text in the target.
   void CommitComposition(const std::u16string& text,
                          base::OnceClosure on_commit_complete);
+
+  // Returns the DictationAgent in the target's document, connecting to it if
+  // needed. Returns nullptr if the target's document is gone.
+  blink::mojom::DictationAgent* GetDictationAgent();
 
  protected:
   virtual void SetExternallySourcedComposition(
@@ -128,6 +134,9 @@ class Target {
 
   bool is_waiting_on_operation_completion_ = false;
   std::optional<QueuedOperation> queued_operation_;
+
+  // Connection to the DictationAgent in the target's document. Bound lazily.
+  mojo::Remote<blink::mojom::DictationAgent> dictation_agent_;
 
   base::WeakPtrFactory<Target> weak_factory_{this};
 };

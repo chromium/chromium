@@ -37,4 +37,7 @@ const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay{
 const base::FeatureParam<std::string> kDictationConnectorTag{
     &kDictation, "connector_tag", ""};
 
+const base::FeatureParam<std::string> kPopulateEditContextHosts{
+    &kDictation, "populate_edit_context_hosts", "docs.google.com"};
+
 }  // namespace dictation

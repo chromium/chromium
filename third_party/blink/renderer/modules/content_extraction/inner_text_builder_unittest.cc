@@ -162,6 +162,147 @@ TEST(InnerTextBuilderTest, DifferentOrigin) {
   EXPECT_EQ("XY", frame->segments[0]->get_text());
 }
 
+enum class EditorFocus { kFocused, kNotFocused };
+enum class IncludeEditContext { kYes, kNo };
+
+// Loads `body_html` and gives its `#editor` an EditContext holding "Hello
+// world", like pages that keep their text in an EditContext instead of the
+// DOM. Returns the inner text of the page, with a NodeLocation at the element
+// with id `target_id`, if set.
+mojom::blink::InnerTextFramePtr BuildInnerText(
+    const std::string& body_html,
+    EditorFocus focus = EditorFocus::kFocused,
+    IncludeEditContext include = IncludeEditContext::kYes,
+    const char* target_id = nullptr) {
+  std::string script = R"HTML(
+    <script>
+      const editor = document.getElementById('editor');
+      editor.editContext = new EditContext({text: 'Hello world'});
+    )HTML";
+  if (focus == EditorFocus::kFocused) {
+    script += "editor.focus();";
+  }
+  script += "</script>";
+
+  frame_test_helpers::WebViewHelper helper;
+  helper.Initialize();
+  frame_test_helpers::LoadHTMLString(
+      helper.LocalMainFrame(), body_html + script,
+      url_test_helpers::ToKURL("http://foobar.com"));
+  LocalFrame& frame = *helper.LocalMainFrame()->GetFrame();
+  mojom::blink::InnerTextParams params;
+  params.include_edit_context = include == IncludeEditContext::kYes;
+  if (target_id) {
+    params.node_id = frame.GetDocument()
+                         ->getElementById(AtomicString(target_id))
+                         ->GetDomNodeId();
+  }
+  return InnerTextBuilder::Build(frame, params);
+}
+
+String JoinTextSegments(const mojom::blink::InnerTextFrame& frame) {
+  StringBuilder builder;
+  for (const auto& segment : frame.segments) {
+    if (segment->is_text()) {
+      builder.Append(segment->get_text());
+    }
+  }
+  return builder.ToString();
+}
+
+TEST(InnerTextBuilderTest, IncludesActiveEditContextTextAtElementPosition) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText(
+      "<body><div>before</div><div id='editor'></div><div>after</div>");
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(1u, frame->segments.size());
+  EXPECT_EQ("before\nHello world\n\nafter", frame->segments[0]->get_text());
+}
+
+TEST(InnerTextBuilderTest, EditContextTextKeepsDocumentOrderWithIFrames) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText(
+      "<body>A<iframe></iframe><div id='editor'></div><iframe></iframe>B");
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(5u, frame->segments.size());
+  EXPECT_EQ("A", frame->segments[0]->get_text());
+  EXPECT_TRUE(frame->segments[1]->is_frame());
+  EXPECT_EQ("\nHello world\n", frame->segments[2]->get_text());
+  EXPECT_TRUE(frame->segments[3]->is_frame());
+  EXPECT_EQ("\nB", frame->segments[4]->get_text());
+}
+
+TEST(InnerTextBuilderTest, EditContextTextBeforeIncludedIFrameAfterSkippedOne) {
+  test::TaskEnvironment task_environment;
+  url_test_helpers::RegisterMockedURLLoadFromBase(
+      WebString("http://cross-origin.test/"), test::CoreTestDataPath(),
+      "subframe-a.html");
+  // The cross-origin iframe right after the editor is skipped.
+  auto frame = BuildInnerText(
+      "<body>A<div id='editor'></div>"
+      "<iframe src='http://cross-origin.test/subframe-a.html'></iframe>"
+      "<iframe></iframe>B");
+  url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(3u, frame->segments.size());
+  EXPECT_EQ("A\nHello world\n", frame->segments[0]->get_text());
+  EXPECT_TRUE(frame->segments[1]->is_frame());
+  EXPECT_EQ("\nB", frame->segments[2]->get_text());
+}
+
+TEST(InnerTextBuilderTest, NodeLocationBeforeEditContext) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText(
+      "<body><div id='target'>before</div><div id='editor'></div>"
+      "<div>after</div>",
+      EditorFocus::kFocused, IncludeEditContext::kYes, "target");
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(2u, frame->segments.size());
+  EXPECT_TRUE(frame->segments[0]->is_node_location());
+  EXPECT_EQ("before\nHello world\n\nafter", frame->segments[1]->get_text());
+}
+
+TEST(InnerTextBuilderTest, NodeLocationAtEditContextElement) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText(
+      "<body><div>before</div><div id='editor'></div><div>after</div>",
+      EditorFocus::kFocused, IncludeEditContext::kYes, "editor");
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(3u, frame->segments.size());
+  EXPECT_EQ("before", frame->segments[0]->get_text());
+  EXPECT_TRUE(frame->segments[1]->is_node_location());
+  EXPECT_EQ("\nHello world\n\nafter", frame->segments[2]->get_text());
+}
+
+TEST(InnerTextBuilderTest, NodeLocationAfterEditContext) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText(
+      "<body><div>before</div><div id='editor'></div>"
+      "<div id='target'>after</div>",
+      EditorFocus::kFocused, IncludeEditContext::kYes, "target");
+  ASSERT_TRUE(frame);
+  ASSERT_EQ(3u, frame->segments.size());
+  EXPECT_EQ("before\nHello world\n", frame->segments[0]->get_text());
+  EXPECT_TRUE(frame->segments[1]->is_node_location());
+  EXPECT_EQ("\nafter", frame->segments[2]->get_text());
+}
+
+TEST(InnerTextBuilderTest, ExcludesEditContextTextWhenNotActive) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText("<body><div>before</div><div id='editor'></div>",
+                              EditorFocus::kNotFocused);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ("before", JoinTextSegments(*frame));
+}
+
+TEST(InnerTextBuilderTest, ExcludesEditContextTextWhenNotRequested) {
+  test::TaskEnvironment task_environment;
+  auto frame = BuildInnerText("<body><div>before</div><div id='editor'></div>",
+                              EditorFocus::kFocused, IncludeEditContext::kNo);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ("before", JoinTextSegments(*frame));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 void ExpectChunkerResult(int max_words_per_aggregate_passage,

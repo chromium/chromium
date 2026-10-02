@@ -4107,6 +4107,88 @@ TEST_F(AIPageContentAgentTest, Selection) {
   EXPECT_EQ(selection.end_offset, 9);
 }
 
+TEST_F(AIPageContentAgentTest, SelectionFromEditContext) {
+  // Editors using EditContext may keep their selection out of the DOM. A
+  // backwards selection is returned in order.
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div id='editor'></div>"
+      "  <script>"
+      "    const editor = document.getElementById('editor');"
+      "    editor.editContext = new EditContext("
+      "        {text: 'Hello world', selectionStart: 11, selectionEnd: 6});"
+      "    editor.focus();"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  const auto& selection = *frame_interaction_info->selection;
+  EXPECT_EQ(selection.selected_text, "world");
+  const DOMNodeId editor_id = DOMNodeIds::IdForNode(
+      helper_.LocalMainFrame()->GetFrame()->GetDocument()->getElementById(
+          AtomicString("editor")));
+  EXPECT_EQ(selection.start_dom_node_id, editor_id);
+  EXPECT_EQ(selection.end_dom_node_id, editor_id);
+  EXPECT_EQ(selection.start_offset, 6);
+  EXPECT_EQ(selection.end_offset, 11);
+}
+
+TEST_F(AIPageContentAgentTest, EditContextSelectionPreferredOverDOMSelection) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='dom'>DOM text</p>"
+      "  <div id='editor'></div>"
+      "  <script>"
+      "    const editor = document.getElementById('editor');"
+      "    editor.editContext = new EditContext("
+      "        {text: 'Hello world', selectionStart: 6, selectionEnd: 11});"
+      "    editor.focus();"
+      "    const text = document.getElementById('dom').firstChild;"
+      "    getSelection().setBaseAndExtent(text, 0, text, 3);"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  EXPECT_EQ(frame_interaction_info->selection->selected_text, "world");
+}
+
+TEST_F(AIPageContentAgentTest, DOMSelectionUsedWhenEditContextSelectionEmpty) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <p id='dom'>DOM text</p>"
+      "  <div id='editor'></div>"
+      "  <script>"
+      "    const editor = document.getElementById('editor');"
+      "    editor.editContext = new EditContext("
+      "        {text: 'Hello world', selectionStart: 5, selectionEnd: 5});"
+      "    editor.focus();"
+      "    const text = document.getElementById('dom').firstChild;"
+      "    getSelection().setBaseAndExtent(text, 0, text, 3);"
+      "  </script>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& frame_interaction_info =
+      Content()->frame_data->frame_interaction_info;
+  ASSERT_TRUE(frame_interaction_info->selection);
+  EXPECT_EQ(frame_interaction_info->selection->selected_text, "DOM");
+}
+
 TEST_F(AIPageContentAgentTest, SelectionInIframe) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

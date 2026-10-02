@@ -28,9 +28,14 @@ class DictationContextFetcher {
   DictationContextFetcher& operator=(const DictationContextFetcher&) = delete;
 
   using GetContextCallback = base::OnceCallback<void(DictationContext)>;
-  void Fetch(const Target& target, GetContextCallback callback);
+  void Fetch(Target& target, GetContextCallback callback);
 
  private:
+  // Fetches APC and innerText and runs `callback` with them. Runs it with an
+  // empty context if `web_contents` is gone.
+  void FetchPageContext(base::WeakPtr<content::WebContents> web_contents,
+                        GetContextCallback callback);
+
   void OnPageContextFetched(
       base::WeakPtr<content::WebContents> web_contents,
       GetContextCallback callback,

@@ -5,10 +5,14 @@
 #include "chrome/browser/dictation/dictation_context_fetcher.h"
 
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_split.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/target.h"
 #include "chrome/browser/glic/host/guest_util.h"
@@ -20,7 +24,11 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/blink/public/mojom/dictation/dictation_agent.mojom.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace dictation {
 
@@ -102,12 +110,30 @@ optimization_guide::PageContextEligibilityStatus GetPageContextEligibility(
   return helper->IsPageContextEligible();
 }
 
+// Returns true if `origin` is https and its host (or a parent domain of it) is
+// listed in `kPopulateEditContextHosts`. Uses the origin, not the URL, because
+// some editors put their EditContext in an about:blank iframe, which inherits
+// its origin from the page.
+bool ShouldPopulateEditContext(const url::Origin& origin) {
+  if (origin.scheme() != url::kHttpsScheme) {
+    return false;
+  }
+  const std::string hosts = kPopulateEditContextHosts.Get();
+  for (std::string_view host : base::SplitStringPiece(
+           hosts, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    if (origin.DomainIs(host)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 DictationContextFetcher::DictationContextFetcher() = default;
 DictationContextFetcher::~DictationContextFetcher() = default;
 
-void DictationContextFetcher::Fetch(const Target& target,
+void DictationContextFetcher::Fetch(Target& target,
                                     GetContextCallback callback) {
   content::RenderFrameHost* rfh = target.GetRenderFrameHost();
   content::WebContents* web_contents =
@@ -140,8 +166,44 @@ void DictationContextFetcher::Fetch(const Target& target,
     return;
   }
 
+  // Some pages using EditContext only populate it once they see IME input. On
+  // listed sites, ask the agent to populate it first. Page context is fetched
+  // over other pipes, so only start it once the agent has replied.
+  // TODO(b/568411900): Only do this if the target has an EditContext,
+  // e.g. via a new bit in FocusedNodeDetails stored on Target.
+  const blink::DOMNodeIdType node_id =
+      target.global_dom_node_id().target_element_dom_id;
+  if (node_id.is_null() ||
+      !ShouldPopulateEditContext(rfh->GetLastCommittedOrigin())) {
+    FetchPageContext(web_contents->GetWeakPtr(), std::move(callback));
+    return;
+  }
+  blink::mojom::DictationAgent* agent = target.GetDictationAgent();
+  if (!agent) {
+    // The target's frame is gone.
+    std::move(callback).Run(DictationContext());
+    return;
+  }
+  agent->PopulateEditContext(
+      node_id.value(),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&DictationContextFetcher::FetchPageContext,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         web_contents->GetWeakPtr(), std::move(callback))));
+}
+
+void DictationContextFetcher::FetchPageContext(
+    base::WeakPtr<content::WebContents> web_contents,
+    GetContextCallback callback) {
+  if (!web_contents) {
+    std::move(callback).Run(DictationContext());
+    return;
+  }
+
   page_content_annotations::FetchPageContextOptions options;
   options.inner_text_bytes_limit = kInnerTextLimit.InBytes();
+  // Pages using EditContext may keep their text there instead of the DOM.
+  options.inner_text_include_edit_context = true;
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(
           /*on_critical_path=*/true);
@@ -151,7 +213,7 @@ void DictationContextFetcher::Fetch(const Target& target,
       *web_contents, options,
       /*progress_listener=*/nullptr,
       base::BindOnce(&DictationContextFetcher::OnPageContextFetched,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents->GetWeakPtr(),
+                     weak_ptr_factory_.GetWeakPtr(), web_contents,
                      std::move(callback)));
 }
 

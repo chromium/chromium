@@ -5,12 +5,27 @@
 #include "third_party/blink/renderer/modules/content_extraction/inner_text_builder.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
+#include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/modules/content_extraction/document_chunker.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
+
+namespace {
+
+// Returns the active EditContext of `document`'s frame, if any.
+EditContext* GetActiveEditContext(const Document& document) {
+  LocalFrame* frame = document.GetFrame();
+  return frame ? frame->GetInputMethodController().GetActiveEditContext()
+               : nullptr;
+}
+
+}  // namespace
 
 // static
 mojom::blink::InnerTextFramePtr InnerTextBuilder::Build(
@@ -36,6 +51,7 @@ InnerTextBuilder::InnerTextBuilder(
 void InnerTextBuilder::Build(HTMLElement& body,
                              mojom::blink::InnerTextFrame& frame) {
   String inner_text = body.innerText(this);
+  InsertEditContextText(inner_text);
   unsigned inner_text_offset = 0;
   for (auto& child_iframe : child_iframes_) {
     const HTMLIFrameElement* iframe_element = child_iframe->iframe;
@@ -66,6 +82,27 @@ void InnerTextBuilder::Build(HTMLElement& body,
   }
   AddNextNonFrameSegments(inner_text, inner_text.length(), inner_text_offset,
                           frame);
+}
+
+void InnerTextBuilder::InsertEditContextText(String& text) {
+  if (!edit_context_offset_ || edit_context_text_.empty()) {
+    return;
+  }
+  // On its own lines, so it doesn't run into the text around its element.
+  const String edit_context_text = StrCat({"\n", edit_context_text_, "\n"});
+  const unsigned offset = *edit_context_offset_;
+  text = StrCat({StringView(text, 0, offset), edit_context_text,
+                 StringView(text, offset)});
+
+  // Shift the offsets of what was visited after the EditContext's element.
+  const unsigned length = edit_context_text.length();
+  if (matching_node_after_edit_context_) {
+    *matching_node_location_ += length;
+  }
+  for (wtf_size_t i = edit_context_iframe_index_; i < child_iframes_.size();
+       ++i) {
+    child_iframes_[i]->offset += length;
+  }
 }
 
 void InnerTextBuilder::AddNextNonFrameSegments(
@@ -100,6 +137,18 @@ void InnerTextBuilder::WillVisit(const Node& element, unsigned offset) {
   }
   if (params_.node_id && Node::FromDomNodeId(*params_.node_id) == &element) {
     matching_node_location_ = offset;
+    matching_node_after_edit_context_ = edit_context_offset_.has_value();
+  }
+  if (params_.include_edit_context) {
+    const auto* as_element = DynamicTo<Element>(&element);
+    EditContext* edit_context =
+        as_element ? as_element->editContext() : nullptr;
+    if (edit_context &&
+        edit_context == GetActiveEditContext(element.GetDocument())) {
+      edit_context_text_ = edit_context->text();
+      edit_context_offset_ = offset;
+      edit_context_iframe_index_ = child_iframes_.size();
+    }
   }
 }
 

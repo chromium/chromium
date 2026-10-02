@@ -57,6 +57,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/blink/public/mojom/content_extraction/inner_text.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -393,9 +394,10 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
     // This could be more efficient if GetInnerText
     // supported a max length. Instead, we truncate after generating the full
     // text.
-    GetInnerText(
-        *frame,
-        /*node_id=*/std::nullopt,
+    auto params = blink::mojom::InnerTextParams::New();
+    params->include_edit_context = options.inner_text_include_edit_context;
+    content_extraction::GetInnerTextWithParams(
+        *frame, std::move(params),
         base::BindOnce(&PageContextFetcher::ReceivedInnerText, GetWeakPtr()));
   } else {
     inner_text_done_ = true;

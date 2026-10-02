@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_absolute_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_inspector_agent.h"
+#include "third_party/blink/renderer/modules/dictation/dictation_agent_impl.h"
 #include "third_party/blink/renderer/modules/document_metadata/document_metadata_server.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
@@ -255,6 +256,9 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
 
   frame.GetInterfaceRegistry()->AddInterface(
       BindRepeating(&InnerHtmlAgent::BindReceiver, WrapWeakPersistent(&frame)));
+
+  frame.GetInterfaceRegistry()->AddInterface(BindRepeating(
+      &DictationAgentImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
   if (base::FeatureList::IsEnabled(features::kFrameMetadataObserver)) {
     frame.GetInterfaceRegistry()->AddInterface(

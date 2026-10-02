@@ -59,6 +59,11 @@ void GetInnerText(content::RenderFrameHost& host,
                   std::optional<int> node_id,
                   InnerTextCallback callback);
 
+// Same as above, but passes `params` to the renderer as is.
+void GetInnerTextWithParams(content::RenderFrameHost& host,
+                            blink::mojom::InnerTextParamsPtr params,
+                            InnerTextCallback callback);
+
 // Exposed for testing.
 namespace internal {
 

@@ -40,6 +40,8 @@ source_set("dictation") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
   ]
   deps = [
     ":metrics",
@@ -98,11 +100,15 @@ source_set("impl") {
     "//components/tabs:public",
     "//content/public/browser",
     "//extensions/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/service_manager/public/cpp",
+    "//third_party/blink/public/common",
     "//third_party/icu",
     "//ui/base",
     "//ui/events/blink",
     "//ui/views",
     "//ui/views/controls/webview",
+    "//url",
   ]
 
   if (!is_android) {

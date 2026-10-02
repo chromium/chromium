@@ -150,6 +150,10 @@ struct FetchPageContextOptions {
   // of 0 indicates no inner text should be returned.
   uint32_t inner_text_bytes_limit = 0;
 
+  // If true, the inner text includes the text of each frame's active
+  // EditContext. See `blink::mojom::InnerTextParams::include_edit_context`.
+  bool inner_text_include_edit_context = false;
+
   // Options for taking a screenshot. If not set, no screenshot will be taken.
   std::optional<ScreenshotOptions> screenshot_options = std::nullopt;
 

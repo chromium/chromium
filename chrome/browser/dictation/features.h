@@ -52,6 +52,11 @@ extern const base::FeatureParam<base::TimeDelta> kAutoSessionEndDelay;
 // so Omaha can serve pre-release or canary extension cohorts.
 extern const base::FeatureParam<std::string> kDictationConnectorTag;
 
+// Comma-separated list of hosts (a host also matches its subdomains) whose
+// editors are asked to populate their EditContext when dictation starts, by
+// sending them one-time IME input. See DictationAgent.PopulateEditContext.
+extern const base::FeatureParam<std::string> kPopulateEditContextHosts;
+
 }  // namespace dictation
 
 #endif  // CHROME_BROWSER_DICTATION_FEATURES_H_

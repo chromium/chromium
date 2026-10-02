@@ -14,6 +14,7 @@
 #include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/base/ime/ime_text_span.h"
 
 namespace dictation {
@@ -76,6 +77,18 @@ content::RenderFrameHost* Target::GetRenderFrameHost() const {
 content::RenderWidgetHost* Target::GetRenderWidgetHost() const {
   content::RenderFrameHost* rfh = GetRenderFrameHost();
   return rfh ? rfh->GetRenderWidgetHost() : nullptr;
+}
+
+blink::mojom::DictationAgent* Target::GetDictationAgent() {
+  content::RenderFrameHost* rfh = GetRenderFrameHost();
+  if (!rfh) {
+    return nullptr;
+  }
+  if (!dictation_agent_.is_bound()) {
+    rfh->GetRemoteInterfaces()->GetInterface(
+        dictation_agent_.BindNewPipeAndPassReceiver());
+  }
+  return dictation_agent_.get();
 }
 
 void Target::SetComposition(const std::u16string& text, bool is_final) {

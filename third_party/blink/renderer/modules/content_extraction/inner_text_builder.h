@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -54,6 +55,11 @@ class MODULES_EXPORT InnerTextBuilder final : public TextVisitor {
   // Builds the results for a frame, and recurses through all child frames.
   void Build(HTMLElement& body, mojom::blink::InnerTextFrame& frame);
 
+  // Inserts the active EditContext's text into `text` at the position of its
+  // element, and shifts the offsets of the iframes and matching node visited
+  // after it.
+  void InsertEditContextText(String& text);
+
   // Adds text (or NodeLocation) to Segments `frame.segments`. `text_offset` is
   // the current offset into `text` and `next_child_offset` the offset into
   // `text` of the next child.
@@ -69,9 +75,21 @@ class MODULES_EXPORT InnerTextBuilder final : public TextVisitor {
 
   // Set if `params` contained a `InnerTextDomNodeId` and the node was found.
   std::optional<unsigned> matching_node_location_;
+  // Whether the matching node was visited after the active EditContext's
+  // element.
+  bool matching_node_after_edit_context_ = false;
 
   // Child iframes encountered.
   HeapVector<Member<ChildIFrame>>& child_iframes_;
+
+  // Set when `params_.include_edit_context` is set and the element of the
+  // frame's active EditContext is visited: its text, its offset in the inner
+  // text, and the number of iframes visited before it. Pages using EditContext
+  // may keep their text in it instead of the DOM, so its text is inserted at
+  // the position of its element.
+  String edit_context_text_;
+  std::optional<unsigned> edit_context_offset_;
+  wtf_size_t edit_context_iframe_index_ = 0;
 };
 
 // An alternative implementation wrapping DocumentChunker passage extraction.
