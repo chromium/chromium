@@ -46,6 +46,7 @@ class NavigationContext;
 namespace safe_browsing {
 
 class ClientSideDetectionHostIOSTest;
+class IntelligentScanDelegate;
 class VerdictCacheManager;
 
 // Reasons why visual classification returned early on iOS.
@@ -73,9 +74,12 @@ class ClientSideDetectionHostIOS
   // Constructs a host instance managing client-side detection for `web_state`.
   // `service`, `cache_manager`, `pref_service`, `identity_manager`, and
   // `history_service` supply required service dependencies.
+  // `intelligent_scan_delegate` is optional and may be null if intelligent
+  // scanning is unsupported or disabled.
   ClientSideDetectionHostIOS(web::WebState* web_state,
                              ClientSideDetectionService* service,
                              VerdictCacheManager* cache_manager,
+                             IntelligentScanDelegate* intelligent_scan_delegate,
                              PrefService* pref_service,
                              signin::IdentityManager* identity_manager,
                              history::HistoryService* history_service);
@@ -102,7 +106,8 @@ class ClientSideDetectionHostIOS
       bool is_invalid_ip,
       PhishingDetectorResult result) override;
   void MaybeRunUserReportCallback() override;
-  // TODO(crbug.com/502615476): Fully implement this method on iOS.
+  // Note: `GeminiAntiscamProtectionService` is a desktop/Android MQLS telemetry
+  // feature and is not supported on iOS.
   void MaybeStartGeminiAntiscamProtection(
       GURL url,
       ClientSideDetectionType request_type,

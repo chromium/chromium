@@ -176,6 +176,11 @@ void EnableEnterpriseUrlFilteringPrefs() {
   GURL _safeURL2;
   // Text that is found on the safe page.
   std::string _safeContent2;
+  // A URL that passes navigation-time URL checks and is flagged post-navigation
+  // by Client-Side Detection.
+  GURL _scamURL;
+  // Text that is found on the scam page.
+  std::string _scamContent;
   // The default value for SafeBrowsingEnabled pref.
   BOOL _safeBrowsingEnabledPrefDefault;
   // The default value for SafeBrowsingEnhanced pref.
@@ -261,6 +266,16 @@ void EnableEnterpriseUrlFilteringPrefs() {
     config.additional_args.push_back(
         std::string("--enable-features=") +
         safe_browsing::kClientSideDetectionEnabledIos.name);
+  } else if ([self
+                 isRunningTest:
+                     @selector(
+                         testClientSideDetectionIntelligentScanForceRequest)]) {
+    config.additional_args.push_back(base::StrCat(
+        {"--enable-features=",
+         safe_browsing::kClientSideDetectionEnabledIos.name, ":",
+         safe_browsing::kCsdEnforceIos.name, "/true,",
+         safe_browsing::kClientSideDetectionServerModelForScamDetectionIos
+             .name}));
   }
 
   config.additional_args.push_back(
@@ -299,6 +314,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
   _safeURL2 = self.testServer->GetURL("/echo_also_safe");
   _safeContent2 = "also_safe";
 
+  _scamURL = self.testServer->GetURL("/echo_scam_page");
+  _scamContent = "scam_page";
+
   // Artificial verdict caching for hash prefix real time causes URLs with the
   // same host to be seen as unsafe. Replacing the host string with localhost
   // allows for proper testing between safe browsing v5 and iframe queries.
@@ -306,6 +324,7 @@ void EnableEnterpriseUrlFilteringPrefs() {
   replacements.SetHostStr("localhost");
   _safeURL1 = _safeURL1.ReplaceComponents(replacements);
   _safeURL2 = _safeURL2.ReplaceComponents(replacements);
+  _scamURL = _scamURL.ReplaceComponents(replacements);
   _iframeWithPhishingURL =
       _iframeWithPhishingURL.ReplaceComponents(replacements);
 
@@ -1304,7 +1323,8 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // Inject the FORCE_REQUEST verdict into the cache for `_safeURL1`.
   [SafeBrowsingAppInterface
       cacheRealTimeVerdictForURL:base::SysUTF8ToNSString(_safeURL1.spec())
-                    forceRequest:YES];
+                    forceRequest:YES
+                 intelligentScan:NO];
 
   // Verify that it was correctly cached.
   NSInteger type = [SafeBrowsingAppInterface
@@ -1371,6 +1391,71 @@ void EnableEnterpriseUrlFilteringPrefs() {
           }),
       @"Timed out waiting for ClientSideDetectionEvent histogram with "
       @"kNetworkRequestSent.");
+}
+
+// Test that an intelligent scan force request verdict triggers client-side
+// detection workflow, sends a report containing intelligent scan info, and
+// displays the user-visible Safe Browsing Scam Warning interstitial blocking
+// page.
+- (void)testClientSideDetectionIntelligentScanForceRequest {
+  // Allow localhost testing.
+  [SafeBrowsingAppInterface setBypassLocalResourceCheckForTesting:YES];
+  [SafeBrowsingAppInterface setUpMockScamVerdictPhishingReportServer];
+
+  // Enable Enhanced Safe Browsing, which is required for force request caching.
+  [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
+
+  // Load a safe URL first so there is history to go back to when "Back to
+  // safety" is tapped on the interstitial.
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Inject the intelligent scan FORCE_REQUEST verdict into the cache for
+  // `_scamURL`.
+  [SafeBrowsingAppInterface
+      cacheRealTimeVerdictForURL:base::SysUTF8ToNSString(_scamURL.spec())
+                    forceRequest:YES
+                 intelligentScan:YES];
+
+  // Verify that it was correctly cached.
+  NSInteger type = [SafeBrowsingAppInterface
+      cachedRealTimeURLClientSideDetectionTypeForURL:base::SysUTF8ToNSString(
+                                                         _scamURL.spec())];
+  GREYAssertEqual(type,
+                  static_cast<NSInteger>(
+                      safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+                  @"Type in cache was not FORCE_REQUEST. Actual: %ld", type);
+
+  // Load the scam URL which will trigger CSD force request.
+  [ChromeEarlGrey loadURL:_scamURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_scamContent];
+
+  // Trigger visual classification completion with non-phishing scores. This
+  // simulates the classifier completing with a non-phishing result.
+  NSArray<NSNumber*>* nonPhishingScores = @[ @0.1, @0.2 ];
+  [SafeBrowsingAppInterface
+      triggerClassificationDoneWithURL:base::SysUTF8ToNSString(_scamURL.spec())
+                          visualScores:nonPhishingScores];
+
+  // Verify that a ClientPhishingRequest containing intelligent scan info was
+  // sent to the phishing report server.
+  ConditionBlock requestCondition = ^{
+    return [SafeBrowsingAppInterface
+        lastSentPhishingRequestHasIntelligentScanInfo];
+  };
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForPageLoadTimeout, requestCondition),
+             @"Intelligent scan phishing report was not sent.");
+
+  // Verify that the user-visible Safe Browsing Scam Warning interstitial
+  // blocking page is displayed in the WebState.
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
+
+  // Tap on the "Back to safety" button and verify that the previous page's
+  // contents are loaded.
+  [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
 }
 
 @end

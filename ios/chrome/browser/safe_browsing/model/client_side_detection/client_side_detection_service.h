@@ -69,6 +69,10 @@ class ClientSideDetectionService : public ClientSideDetectionServiceBase {
   // observers.
   void SetScorerForTesting(std::unique_ptr<Scorer> scorer);
 
+  // Sets the `SharedURLLoaderFactory` for testing.
+  void SetSharedURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
  private:
   friend class ClientSideDetectionServiceTest;
 
