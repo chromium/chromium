@@ -55,6 +55,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
         type: Boolean,
         reflect: true,
       },
+      darkMode: {
+        type: Boolean,
+        reflect: true,
+        attribute: 'dark-mode',
+      },
     };
   }
 
@@ -64,6 +69,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   accessor recentTabId: number|null = null;
   protected accessor sharingTabsText_: string = '';
   accessor useUnbounded: boolean = true;
+  accessor darkMode: boolean = false;
 
   private closeTimer_: number|null = null;
   private browserProxy_: TabPickerBrowserProxy =
@@ -71,6 +77,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.darkMode = this.isDarkModeEnabled_();
     this.updateSharingTabsText_();
     this.fetchTabSuggestions_();
   }
@@ -121,6 +128,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       return false;
     }
     return this.useUnbounded;
+  }
+
+  protected isDarkModeEnabled_(): boolean {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('cs') === '1';
   }
 
   protected get hasTabSuggestions_(): boolean {
@@ -248,6 +260,14 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       window.clearTimeout(this.closeTimer_);
       this.closeTimer_ = null;
     }
+  }
+
+  setDarkModeForTesting(darkMode: boolean) {
+    this.darkMode = darkMode;
+  }
+
+  getDarkModeForTesting(): boolean {
+    return this.darkMode;
   }
 }
 

@@ -15,6 +15,34 @@
   display: block;
   height: 100%;
   width: 100%;
+
+  --tab-picker-item-color: var(--color-composebox-file-chip-text, #1f1f1f);
+  --tab-picker-disabled-text-color:
+      var(--color-composebox-context-entrypoint-text-disabled,
+          rgba(31, 31, 31, 0.38));
+  --tab-picker-favicon-border-color: var(--tab-picker-menu-background-color,
+      var(--color-composebox-background,
+          #fff));
+  --tab-picker-hover-background-color:
+      var(--color-context-menu-hover-background,
+          var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+  --tab-picker-menu-background-color: var(--color-composebox-background,
+      var(--search-background-color,
+          var(--color-menu-background,
+              var(--cr-fallback-color-surface, #fff))));
+}
+
+:host([dark-mode]) {
+  --tab-picker-item-color: rgba(230, 232, 240, 1);
+  --tab-picker-disabled-text-color:
+      var(--color-composebox-context-entrypoint-text-disabled,
+          rgba(230, 232, 240, 0.38));
+  --tab-picker-favicon-border-color: rgba(44, 46, 54, 1);
+  --tab-picker-hover-background-color:
+      var(--color-context-menu-hover-background, rgba(53, 53, 53, 1));
+  --tab-picker-menu-background-color: var(--color-composebox-background,
+      var(--search-background-color,
+          var(--color-menu-background, rgba(44, 46, 54, 1))));
 }
 
 #shareTabsTrigger {
@@ -24,7 +52,7 @@
   background: transparent;
   border: none;
   box-sizing: border-box;
-  color: var(--cr-primary-text-color, #1f1f1f);
+  color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
   font-family: var(--cr-composebox-context-menu-font-family, inherit);
@@ -40,13 +68,11 @@
 }
 
 #shareTabsTrigger:hover {
-  background-color: var(--color-context-menu-hover-background,
-      var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+  background-color: var(--tab-picker-hover-background-color);
 }
 
 #shareTabsTrigger:focus {
-  background-color: var(--color-context-menu-hover-background,
-      var(--cr-hover-background-color, rgba(0, 0, 0, 0.04)));
+  background-color: var(--tab-picker-hover-background-color);
   outline: none;
 }
 
@@ -56,7 +82,7 @@
 }
 
 #shareTabsTrigger[disabled] {
-  color: var(--color-composebox-context-entrypoint-text-disabled);
+  color: var(--tab-picker-disabled-text-color);
   cursor: default;
 }
 
@@ -65,9 +91,7 @@
 }
 
 composebox-favicon-group {
-  --composebox-favicon-border-color: var(--cr-menu-background-color,
-      var(--color-composebox-background,
-          #fff));
+  --composebox-favicon-border-color: var(--tab-picker-favicon-border-color);
   margin-inline-end: 10px;
   margin-inline-start: auto;
 }
@@ -86,16 +110,11 @@ composebox-favicon-group {
 }
 
 #tabMenu {
-  --cr-menu-background-color: var(--color-composebox-background,
-      var(--search-background-color,
-          var(--color-menu-background,
-              var(--cr-fallback-color-surface, #fff))));
+  --cr-menu-background-color: var(--tab-picker-menu-background-color);
   --cr-menu-border-radius: 16px;
   --cr-menu-shadow: var(--cr-elevation-3);
-  --cr-primary-text-color: var(--color-composebox-file-chip-text, #1f1f1f);
-  --cr-hover-background-color:
-      var(--color-composebox-context-entrypoint-hover-background,
-          rgba(0, 0, 0, 0.04));
+  --cr-primary-text-color: var(--tab-picker-item-color);
+  --cr-hover-background-color: var(--tab-picker-hover-background-color);
 }
 
 #tabMenu::part(dialog) {
@@ -115,7 +134,7 @@ composebox-favicon-group {
   background: transparent;
   border: none;
   box-sizing: border-box;
-  color: var(--cr-primary-text-color);
+  color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
   font-family: var(--cr-composebox-context-menu-font-family, inherit);
@@ -132,8 +151,7 @@ composebox-favicon-group {
 
 #tabMenu .dropdown-item:hover,
 #tabMenu .dropdown-item:focus {
-  background-color: var(--color-context-menu-hover-background,
-      var(--cr-hover-background-color));
+  background-color: var(--tab-picker-hover-background-color);
   outline: none;
 }
 
@@ -168,8 +186,12 @@ composebox-favicon-group {
   width: 72px;
 }
 
+.recent-tabs-suffix:not([disabled]) {
+  color: var(--tab-picker-item-color);
+}
+
 .recent-tabs-suffix[disabled] {
-  color: var(--color-composebox-context-entrypoint-text-disabled);
+  color: var(--tab-picker-disabled-text-color);
 }
 
 .share-tabs-check {
