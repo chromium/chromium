@@ -73,6 +73,10 @@ public class AtMemoryBottomSheetSuggestionView extends LinearLayout {
         mDividerView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
+    public void setFlyoutContentDescription(String description) {
+        mArrowView.setContentDescription(description);
+    }
+
     public void setTrailingIcon(int resId) {
         if (resId != 0) {
             mTrailingView.setImageResource(resId);

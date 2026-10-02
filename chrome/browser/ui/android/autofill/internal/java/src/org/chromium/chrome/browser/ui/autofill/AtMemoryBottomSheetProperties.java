@@ -185,6 +185,9 @@ class AtMemoryBottomSheetProperties {
                 new ReadableBooleanPropertyKey();
         // Indicates whether the suggestion should show the loading indicator.
         static final ReadableBooleanPropertyKey IS_LOADING = new ReadableBooleanPropertyKey();
+        // Indicates the flyout content description.
+        static final ReadableObjectPropertyKey<String> FLYOUT_CONTENT_DESCRIPTION =
+                new ReadableObjectPropertyKey<>();
 
         static final PropertyKey[] ALL_KEYS = {
             ICON,
@@ -195,7 +198,8 @@ class AtMemoryBottomSheetProperties {
             ON_FLYOUT_CLICKED,
             IS_FLYOUT_VISIBLE,
             APPLY_DEACTIVATED_STYLE,
-            IS_LOADING
+            IS_LOADING,
+            FLYOUT_CONTENT_DESCRIPTION
         };
 
         private SuggestionItemProperties() {}

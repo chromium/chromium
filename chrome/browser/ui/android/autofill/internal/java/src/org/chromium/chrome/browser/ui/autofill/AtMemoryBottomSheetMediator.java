@@ -355,6 +355,9 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
                 .with(
                         SuggestionItemProperties.ON_FLYOUT_CLICKED,
                         () -> onFlyoutClicked(suggestion, position))
+                .with(
+                        SuggestionItemProperties.FLYOUT_CONTENT_DESCRIPTION,
+                        getFlyoutContentDescription(suggestion))
                 .build();
     }
 
@@ -393,5 +396,11 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
             default:
                 return 0;
         }
+    }
+
+    private String getFlyoutContentDescription(AutofillSuggestion suggestion) {
+        AtMemoryPayload payload = suggestion.getAtMemoryPayload();
+        String dataType = payload != null ? payload.getTypeName() : "";
+        return mContext.getString(R.string.at_memory_open_flyout, dataType, suggestion.getLabel());
     }
 }

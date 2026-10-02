@@ -537,6 +537,33 @@ public class AtMemoryBottomSheetViewTest {
         assertTrue(content.handleBackPress());
     }
 
+    @Test
+    public void testFlyoutContentDescriptionBinding() {
+        ModelList modelList = new ModelList();
+        PropertyModel suggestionModel =
+                new PropertyModel.Builder(SuggestionItemProperties.ALL_KEYS)
+                        .with(SuggestionItemProperties.TITLE, "KLM204")
+                        .with(SuggestionItemProperties.IS_FLYOUT_VISIBLE, true)
+                        .with(
+                                SuggestionItemProperties.FLYOUT_CONTENT_DESCRIPTION,
+                                "Show more for Flight KLM204")
+                        .build();
+
+        modelList.add(new ListItem(HomeProperties.ItemType.SUGGESTION, suggestionModel));
+        AtMemoryHomeView homeView = mView.getHomeView();
+        homeView.setUpSheetItems(modelList);
+
+        ShadowLooper.idleMainLooper();
+
+        RecyclerView recyclerView = homeView.findViewById(R.id.suggestions_view);
+        recyclerView.layout(0, 0, 100, 1000);
+        AtMemoryBottomSheetSuggestionView suggestionView =
+                (AtMemoryBottomSheetSuggestionView) recyclerView.getChildAt(0);
+
+        View arrowView = suggestionView.findViewById(R.id.arrow_view);
+        assertEquals("Show more for Flight KLM204", arrowView.getContentDescription());
+    }
+
     private List<ChipView> getChipViews(ViewGroup viewGroup) {
         List<ChipView> chips = new ArrayList<>();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {

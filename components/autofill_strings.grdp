@@ -957,7 +957,7 @@
       Find and fill
     </message>
     <message name="IDS_AT_MEMORY_OPEN_FLYOUT" desc="Content description for the button that opens the details page for a suggestion." formatter_data="android_java" translateable="false">
-      Show more
+      Show more for <ph name="DATA_TYPE">%1$s<ex>Flight</ex></ph> <ph name="PRIMARY_ATTRIBUTION">%2$s<ex>XYZ</ex></ph>
     </message>
     <message name="IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_TITLE" desc="Title text shown in zero state when there are no autofill suggestions in the bottom sheet." formatter_data="android_java" translateable="false">
       You’ll find your autofill suggestions here

@@ -84,6 +84,5 @@ found in the LICENSE file.
         android:layout_gravity="center_vertical"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/outline_chevron_right_24dp"
-        android:scaleType="centerInside"
-        android:contentDescription="@string/at_memory_open_flyout" />
+        android:scaleType="centerInside" />
 </org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetSuggestionView>

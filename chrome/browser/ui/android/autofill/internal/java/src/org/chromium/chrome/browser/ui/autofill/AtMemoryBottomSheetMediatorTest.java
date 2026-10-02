@@ -797,4 +797,33 @@ public class AtMemoryBottomSheetMediatorTest {
 
         assertEquals("city", mHomeModel.get(HomeProperties.SEARCH_BAR_INITIAL_VALUE));
     }
+
+    @Test
+    public void testFlyoutContentDescription() {
+        AutofillSuggestion childSuggestion =
+                new AutofillSuggestion.Builder()
+                        .setLabel("Hilton Check-in")
+                        .setSubLabel("May 16")
+                        .build();
+        AutofillSuggestion suggestion =
+                new AutofillSuggestion.Builder()
+                        .setIconId(R.drawable.flight)
+                        .setLabel("KLM204")
+                        .setPayload(new AtMemoryPayload("Flight"))
+                        .setSubLabel("Flight ⋅ 15 May ⋅ SEA - MUC")
+                        .setSuggestionType(SuggestionType.AT_MEMORY_SEARCH_RESULT)
+                        .setChildren(List.of(childSuggestion))
+                        .build();
+
+        mMediator.show(List.of(suggestion), /* searchBarInitialValue= */ null);
+
+        assertEquals(
+                "Show more for Flight KLM204",
+                mModelList
+                        .get(0)
+                        .model
+                        .get(
+                                AtMemoryBottomSheetProperties.SuggestionItemProperties
+                                        .FLYOUT_CONTENT_DESCRIPTION));
+    }
 }
