@@ -9,14 +9,20 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -44,6 +50,7 @@
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/language_detection/core/constants.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
@@ -55,6 +62,8 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
+#include "net/base/filename_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "pdf/pdf_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -203,6 +212,7 @@ class TestReadAnythingUntrustedPageHandler
                                          test_web_ui,
                                          /*use_screen_ai_service=*/false) {}
 #endif
+  using ReadAnythingUntrustedPageHandler::OnImageDataDownloaded;
 };
 
 class FakeTtsEngineDelegate : public content::TtsEngineDelegate {
@@ -272,6 +282,7 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
 
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
@@ -466,6 +477,18 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
 
   void AccessibilityEventReceived(const ui::AXUpdatesAndEvents& details) {
     handler_->AccessibilityEventReceived(details);
+  }
+
+  void OnImageDataDownloaded(const ui::AXTreeID& target_tree_id,
+                             ui::AXNodeID node_id,
+                             int id,
+                             int http_status_code,
+                             const GURL& image_url,
+                             const std::vector<SkBitmap>& bitmaps,
+                             const std::vector<gfx::Size>& sizes) {
+    static_cast<TestReadAnythingUntrustedPageHandler*>(handler_.get())
+        ->OnImageDataDownloaded(target_tree_id, node_id, id, http_status_code,
+                                image_url, bitmaps, sizes);
   }
 
   void OnActiveAXTreeIDChanged() { handler_->OnActiveAXTreeIDChanged(); }
@@ -1243,16 +1266,433 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        AccessibilityEventReceived) {
+  handler_ = CreateHandler();
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+
+  ui::AXUpdatesAndEvents details;
+  details.events = {};
+  details.updates = {};
+  details.ax_tree_id = main_frame->GetAXTreeID();
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  EXPECT_CALL(page_, AccessibilityEventReceived(details.ax_tree_id, _, _))
+      .Times(testing::AtLeast(1));
+  AccessibilityEventReceived(details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       AccessibilityEventReceived_UnknownTreeNotForwarded) {
+  handler_ = CreateHandler();
+
   ui::AXUpdatesAndEvents details;
   details.events = {};
   details.updates = {};
   details.ax_tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  handler_ = CreateHandler();
 
-  AccessibilityEventReceived(details);
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
 
   EXPECT_CALL(page_, AccessibilityEventReceived(details.ax_tree_id, _, _))
-      .Times(1);
+      .Times(0);
+  AccessibilityEventReceived(details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       AccessibilityEventReceived_OtherTabNotForwarded) {
+  handler_ = CreateHandler();
+
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  content::RenderFrameHost* second_tab_main_frame = browser()
+                                                        ->tab_strip_model()
+                                                        ->GetActiveWebContents()
+                                                        ->GetPrimaryMainFrame();
+
+  ui::AXUpdatesAndEvents details;
+  details.events = {};
+  details.updates = {};
+  details.ax_tree_id = second_tab_main_frame->GetAXTreeID();
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  EXPECT_CALL(page_, AccessibilityEventReceived(details.ax_tree_id, _, _))
+      .Times(0);
+  AccessibilityEventReceived(details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       AccessibilityEventReceived_CrossSiteIframeNotForwarded) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  embedded_test_server()->ServeFilesFromDirectory(
+      test_data_dir.AppendASCII("content/test/data/"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  handler_ = CreateHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectations below are checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  ui::AXUpdatesAndEvents main_details;
+  main_details.ax_tree_id = main_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(main_details.ax_tree_id, _, _))
+      .Times(testing::AtLeast(1));
+  AccessibilityEventReceived(main_details);
+  page_.receiver_.FlushForTesting();
+
+  ui::AXUpdatesAndEvents child_details;
+  child_details.ax_tree_id = child_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(child_details.ax_tree_id, _, _))
+      .Times(0);
+  AccessibilityEventReceived(child_details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    AccessibilityEventReceived_SameSiteCrossOriginIframeNotForwarded) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  embedded_test_server()->ServeFilesFromDirectory(
+      test_data_dir.AppendASCII("content/test/data/"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a.com(sub.a.com)");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  handler_ = CreateHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  ui::AXUpdatesAndEvents child_details;
+  child_details.ax_tree_id = child_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(child_details.ax_tree_id, _, _))
+      .Times(0);
+  AccessibilityEventReceived(child_details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       AccessibilityEventReceived_SameOriginIframeForwarded) {
+  base::HistogramTester histogram_tester;
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  embedded_test_server()->ServeFilesFromDirectory(
+      test_data_dir.AppendASCII("content/test/data/"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetUpHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+  ui::AXUpdatesAndEvents child_details;
+  child_details.ax_tree_id = child_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(child_details.ax_tree_id, _, _))
+      .Times(testing::AtLeast(1));
+  AccessibilityEventReceived(child_details);
+  page_.receiver_.FlushForTesting();
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+  handler_remote_->OnLinkClicked(child_frame->GetAXTreeID(),
+                                 /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kAllowed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       CrossSiteIframe_ActionsRejected) {
+  base::HistogramTester histogram_tester;
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  embedded_test_server()->ServeFilesFromDirectory(
+      test_data_dir.AppendASCII("content/test/data/"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetUpHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  GrantUserActivation(rfh);
+
+  const ui::AXTreeID child_tree_id = child_frame->GetAXTreeID();
+
+  handler_remote_->OnLinkClicked(child_tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForLinkClick.Result",
+      ReadAnythingRendererRequestResult::kNotObservedTree,
+      /*expected_bucket_count=*/1);
+
+  handler_remote_->OnSelectionChange(child_tree_id, /*anchor_node_id=*/1, 0,
+                                     /*focus_node_id=*/2, 5);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForSelection.Result",
+      ReadAnythingRendererRequestResult::kNotObservedTree,
+      /*expected_bucket_count=*/1);
+
+  handler_remote_->OnImageDataRequested(child_tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload.Result",
+      ReadAnythingRendererRequestResult::kNotObservedTree,
+      /*expected_bucket_count=*/1);
+
+  handler_remote_->ScrollToTargetNode(child_tree_id, /*target_node_id=*/1);
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode.Result",
+      ReadAnythingRendererRequestResult::kNotObservedTree,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    AccessibilityEventReceived_OpaqueMainFrameSubframeNotForwarded) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<iframe srcdoc='hello'></iframe>")));
+
+  handler_ = CreateHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  ui::AXUpdatesAndEvents child_details;
+  child_details.ax_tree_id = child_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(child_details.ax_tree_id, _, _))
+      .Times(0);
+  AccessibilityEventReceived(child_details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingUntrustedPageHandlerTest,
+    AccessibilityEventReceived_FileSchemeSubframeNotForwarded) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath b_html = temp_dir.GetPath().AppendASCII("b.html");
+  ASSERT_TRUE(base::WriteFile(b_html, "<html><body>Subframe</body></html>"));
+
+  base::FilePath a_html = temp_dir.GetPath().AppendASCII("a.html");
+  std::string a_content = base::StringPrintf(
+      "<html><body><iframe src=\"%s\"></iframe></body></html>",
+      net::FilePathToFileURL(b_html).spec().c_str());
+  ASSERT_TRUE(base::WriteFile(a_html, a_content));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(a_html)));
+
+  handler_ = CreateHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectation below is checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  ui::AXUpdatesAndEvents child_details;
+  child_details.ax_tree_id = child_frame->GetAXTreeID();
+  EXPECT_CALL(page_, AccessibilityEventReceived(child_details.ax_tree_id, _, _))
+      .Times(0);
+  AccessibilityEventReceived(child_details);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       AccessibilityEventReceived_PdfFramesForwarded) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+
+  handler_ = CreateHandler();
+
+  content::RenderFrameHost* pdf_plugin_frame =
+      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  ASSERT_TRUE(pdf_plugin_frame);
+
+  // The observed tab also sends its own accessibility events while the test
+  // runs; allow those so only the expectations below are checked.
+  EXPECT_CALL(page_, AccessibilityEventReceived).Times(testing::AnyNumber());
+
+  ui::AXUpdatesAndEvents plugin_details;
+  plugin_details.ax_tree_id = pdf_plugin_frame->GetAXTreeID();
+  EXPECT_CALL(page_,
+              AccessibilityEventReceived(plugin_details.ax_tree_id, _, _))
+      .Times(testing::AtLeast(1));
+  AccessibilityEventReceived(plugin_details);
+  page_.receiver_.FlushForTesting();
+
+  if (chrome_pdf::features::IsOopifPdfEnabled()) {
+    content::RenderFrameHost* pdf_extension_host =
+        pdf_frame_util::FindFullPagePdfExtensionHost(web_contents);
+    ASSERT_TRUE(pdf_extension_host);
+
+    ui::AXUpdatesAndEvents extension_details;
+    extension_details.ax_tree_id = pdf_extension_host->GetAXTreeID();
+    EXPECT_CALL(page_,
+                AccessibilityEventReceived(extension_details.ax_tree_id, _, _))
+        .Times(testing::AtLeast(1));
+    AccessibilityEventReceived(extension_details);
+    page_.receiver_.FlushForTesting();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       TreeRemoved_OnlyForwardsSentTrees) {
+  handler_ = CreateHandler();
+  auto* observer = static_cast<ui::AXActionHandlerObserver*>(handler_.get());
+
+  // Unknown/unsent tree ID is not forwarded.
+  ui::AXTreeID random_id = ui::AXTreeID::CreateNewAXTreeID();
+  EXPECT_CALL(page_, OnAXTreeDestroyed(random_id)).Times(0);
+  observer->TreeRemoved(random_id);
+  page_.receiver_.FlushForTesting();
+
+  // Main frame tree sent during construction is forwarded.
+  content::RenderFrameHost* main_frame = browser()
+                                             ->tab_strip_model()
+                                             ->GetActiveWebContents()
+                                             ->GetPrimaryMainFrame();
+  ui::AXTreeID main_tree_id = main_frame->GetAXTreeID();
+  EXPECT_CALL(page_, OnAXTreeDestroyed(main_tree_id)).Times(1);
+  observer->TreeRemoved(main_tree_id);
+  page_.receiver_.FlushForTesting();
+
+  // Removing the same tree ID again produces no call.
+  EXPECT_CALL(page_, OnAXTreeDestroyed(main_tree_id)).Times(0);
+  observer->TreeRemoved(main_tree_id);
+  page_.receiver_.FlushForTesting();
+
+  // Tree for an event that was dropped is not forwarded.
+  ui::AXTreeID dropped_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXUpdatesAndEvents dropped_details;
+  dropped_details.ax_tree_id = dropped_tree_id;
+  AccessibilityEventReceived(dropped_details);
+  page_.receiver_.FlushForTesting();
+
+  EXPECT_CALL(page_, OnAXTreeDestroyed(dropped_tree_id)).Times(0);
+  observer->TreeRemoved(dropped_tree_id);
+  page_.receiver_.FlushForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnImageDataDownloaded_FrameGone_NoCrash) {
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
+  embedded_test_server()->ServeFilesFromDirectory(
+      test_data_dir.AppendASCII("content/test/data/"));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  SetUpHandler();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_frame = content::ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(child_frame);
+
+  const ui::AXTreeID child_tree_id = child_frame->GetAXTreeID();
+
+  // Remove the iframe so the frame is no longer part of the page.
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "document.querySelector('iframe').remove();"));
+
+  // Completing the download after the frame is gone should safely return
+  // without crashing or forwarding to page_.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(10, 10);
+  std::vector<SkBitmap> bitmaps = {bitmap};
+  std::vector<gfx::Size> sizes = {gfx::Size(10, 10)};
+
+  EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
+  OnImageDataDownloaded(child_tree_id, /*node_id=*/1, /*id=*/0,
+                        /*http_status_code=*/200, GURL(), bitmaps, sizes);
+  page_.receiver_.FlushForTesting();
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
