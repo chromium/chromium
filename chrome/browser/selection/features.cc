@@ -9,4 +9,9 @@ namespace selection {
 BASE_FEATURE(kSmartSelectionServerSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSmartSelectionServerTimeout,
+                   &kSmartSelectionServerSuggestions,
+                   base::Seconds(20));
+
 }  // namespace selection

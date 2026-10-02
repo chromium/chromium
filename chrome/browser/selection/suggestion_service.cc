@@ -273,10 +273,9 @@ void SuggestionService::SendServerSuggestionsRequest(
   }
 
   // TODO(crbug.com/561489586): Consider adding logging.
-  // TODO(crbug.com/561489586): Add a configurable time-out.
   remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
-      request, /*options=*/{},
+      request, {.execution_timeout = kSmartSelectionServerTimeout.Get()},
       base::BindOnce(&SuggestionService::OnServerSuggestions,
                      weak_factory_.GetWeakPtr(), std::move(active_request)));
 }

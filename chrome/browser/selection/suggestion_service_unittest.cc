@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -37,6 +38,7 @@ using ::base::test::TestFuture;
 using ::base::test::TestFutureMode;
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
@@ -311,6 +313,7 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
               const optimization_guide::ModelExecutionOptions& options,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   callback) {
+            EXPECT_EQ(options.execution_timeout, base::Seconds(20));
             const auto& request =
                 static_cast<const optimization_guide::proto::
                                 SmartSelectionSuggestionsRequest&>(
@@ -368,17 +371,25 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
 
 // Tests that server errors still complete the suggestion request.
 TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
-  base::test::ScopedFeatureList feature_list{kSmartSelectionServerSuggestions};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerTimeout.name, "5s"}});
 
   CustomTestTool gemini_tool(
       u"Static Action",
       optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
   service().RegisterTool(&gemini_tool);
 
-  EXPECT_CALL(mock_model_executor(),
-              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
-                               kSmartSelectionSuggestions,
-                           _, _, _))
+  EXPECT_CALL(
+      mock_model_executor(),
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::
+              kSmartSelectionSuggestions,
+          _,
+          Field(&optimization_guide::ModelExecutionOptions::execution_timeout,
+                base::Seconds(5)),
+          _))
       .WillOnce(base::test::RunOnceCallback<3>(
           optimization_guide::OptimizationGuideModelExecutionResult(
               base::unexpected(
