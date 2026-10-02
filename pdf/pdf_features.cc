@@ -73,6 +73,10 @@ BASE_FEATURE(kPdfiumPerRequestFontMatchingWin,
 #if BUILDFLAG(ENABLE_PDF_INK2)
 BASE_FEATURE(kPdfInk2, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables signatures.
+const base::FeatureParam<bool> kPdfInk2Signatures{&kPdfInk2, "signatures",
+                                                  false};
+
 // Enables text annotations.
 const base::FeatureParam<bool> kPdfInk2TextAnnotations{
     &kPdfInk2, "text-annotations", false};
