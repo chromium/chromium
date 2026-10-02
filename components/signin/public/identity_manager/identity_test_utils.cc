@@ -225,7 +225,9 @@ AccountAvailabilityOptions AccountAvailabilityOptionsBuilder::Build(
 // -----------------------------------------------------------------------------
 
 void WaitForRefreshTokensLoaded(IdentityManager* identity_manager) {
-  base::RunLoop run_loop;
+  // See the comment in `SetCookieAccounts()` for why this run loop has to
+  // allow nestable tasks.
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   TestIdentityManagerObserver load_credentials_observer(identity_manager);
   load_credentials_observer.SetOnRefreshTokensLoadedCallback(
       run_loop.QuitClosure());
@@ -550,7 +552,13 @@ void SetCookieAccounts(
                                     /*verified=*/true});
   }
 
-  base::RunLoop run_loop;
+  // `kNestableTasksAllowed` is required because this helper is also called
+  // from within a nested run loop (e.g. from test code driven by a browser
+  // test's own run loop, or from a fake that runs while a production flow is
+  // on the stack). A `kDefault` run loop only processes application tasks
+  // when it is the outermost one, so the `/ListAccounts` response below would
+  // never be delivered and this would hang. See `RunLoop::Run()`.
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
   TestIdentityManagerObserver cookie_observer(identity_manager);
   cookie_observer.SetOnAccountsInCookieUpdatedCallback(run_loop.QuitClosure());
 

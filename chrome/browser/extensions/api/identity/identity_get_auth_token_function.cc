@@ -125,6 +125,14 @@ CoreAccountInfo GetSigninPrimaryAccount(Profile* profile) {
 }
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+// How long to wait for the Gaia cookies to be updated after sign-in before
+// giving up on showing the remote consent dialog.
+constexpr base::TimeDelta kCookieUpdatedWaiterTimeout = base::Seconds(10);
+
+// Mutable copy of `kCookieUpdatedWaiterTimeout` so that tests can shorten it;
+// see `ScopedCookieWaiterTimeoutForTesting`.
+base::TimeDelta g_cookie_updated_waiter_timeout = kCookieUpdatedWaiterTimeout;
+
 bool IsAccountInCookieJar(const signin::AccountsInCookieJarInfo& cookie_info,
                           const CoreAccountInfo& account_info) {
   if (!cookie_info.AreAccountsFresh()) {
@@ -160,9 +168,6 @@ class IdentityGetAuthTokenFunction::RefreshTokensLoadedWaiter
 class IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter
     : public signin::IdentityManager::Observer {
  public:
-  static constexpr base::TimeDelta kCookieUpdatedWaiterTimeout =
-      base::Seconds(10);
-
   AccountsInCookieUpdatedWaiter(signin::IdentityManager& identity_manager,
                                 const CoreAccountInfo& account_info,
                                 base::OnceCallback<void(bool)> callback);
@@ -437,11 +442,6 @@ void IdentityGetAuthTokenFunction::OnCookiesUpdatedForRemoteConsent(
     bool success) {
   accounts_in_cookie_updated_waiter_.reset();
 
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
-      identity_manager->GetAccountsInCookieJar();
   if (!success) {
     CompleteMintTokenFlow();
     SigninFailed();
@@ -679,7 +679,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT:
-        ShowRemoteConsentDialog();
+        StartRemoteConsentFlow();
         break;
       case IdentityTokenCacheValue::CACHE_STATUS_REMOTE_CONSENT_APPROVED:
         consent_result_ = cache_entry.consent_result();
@@ -1038,7 +1038,7 @@ void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
 }
 #endif
 
-void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog() {
+void IdentityGetAuthTokenFunction::StartRemoteConsentFlow() {
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // On Android, Gaia session cookies are reconciled asynchronously after
   // sign-in. Defer showing the remote consent dialog until cookies are
@@ -1048,6 +1048,10 @@ void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog() {
     return;
   }
 #endif
+  ShowRemoteConsentDialog();
+}
+
+void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog() {
   gaia_remote_consent_flow_ = std::make_unique<GaiaRemoteConsentFlow>(
       this, GetProfile(), token_key_, resolution_data_, user_gesture());
   gaia_remote_consent_flow_->Start();
@@ -1207,7 +1211,7 @@ IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::
   identity_manager_observation_.Observe(&identity_manager);
   // `base::Unretained(this)` is safe because `this` owns
   // `timer_`.
-  timer_.Start(FROM_HERE, kCookieUpdatedWaiterTimeout,
+  timer_.Start(FROM_HERE, g_cookie_updated_waiter_timeout,
                base::BindOnce(&AccountsInCookieUpdatedWaiter::OnTimeout,
                               base::Unretained(this)));
 }
@@ -1229,6 +1233,18 @@ void IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::
 void IdentityGetAuthTokenFunction::AccountsInCookieUpdatedWaiter::OnTimeout() {
   identity_manager_observation_.Reset();
   std::move(callback_).Run(/*success=*/false);
+}
+
+IdentityGetAuthTokenFunction::ScopedCookieWaiterTimeoutForTesting::
+    ScopedCookieWaiterTimeoutForTesting(base::TimeDelta timeout) {
+  // Nesting is not supported: the destructor restores the default.
+  CHECK_EQ(g_cookie_updated_waiter_timeout, kCookieUpdatedWaiterTimeout);
+  g_cookie_updated_waiter_timeout = timeout;
+}
+
+IdentityGetAuthTokenFunction::ScopedCookieWaiterTimeoutForTesting::
+    ~ScopedCookieWaiterTimeoutForTesting() {
+  g_cookie_updated_waiter_timeout = kCookieUpdatedWaiterTimeout;
 }
 #endif
 

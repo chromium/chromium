@@ -808,4 +808,8 @@ int IdentityTestEnvironment::
       ->GetNumCallsToPrepareForFetchingAccountCapabilities();
 }
 
+base::WeakPtr<IdentityTestEnvironment> IdentityTestEnvironment::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace signin

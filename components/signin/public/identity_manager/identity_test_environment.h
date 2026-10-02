@@ -13,6 +13,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -384,6 +385,8 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // Gets the number of calls to PrepareForFetchingAccountCapabilities() in the
   // account capabilities fetcher factory.
   int GetNumCallsToPrepareForFetchingAccountCapabilities();
+
+  base::WeakPtr<IdentityTestEnvironment> GetWeakPtr();
 
  private:
   friend class ::IdentityTestEnvironmentProfileAdaptor;
