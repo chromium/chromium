@@ -31,30 +31,32 @@ source_set("info_singleton") {
 }
 
 source_set("handler") {
-  sources = [
-    "safe_browsing_ui_handler.cc",
-    "safe_browsing_ui_handler.h",
-  ]
+  check_includes_strict = true
+  public = [ "safe_browsing_ui_handler.h" ]
+  sources = [ "safe_browsing_ui_handler.cc" ]
 
-  deps = [
+  public_deps = [
     ":event_observer",
-    ":event_observer_impl",
-    ":info_singleton",
     ":local_state_delegate",
     ":util",
     "//base",
-    "//components/os_crypt/browser",
-    "//components/password_manager/core/browser:hash_password_manager",
     "//components/safe_browsing/core/browser:download_check_result",
-    "//components/safe_browsing/core/browser:referrer_chain_provider",
-    "//components/safe_browsing/core/browser/db:sb_local_database_manager",
-    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto_extras",
-    "//components/user_prefs",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/mojom",
+  ]
+
+  deps = [
+    ":event_observer_impl",
+    ":info_singleton",
+    "//components/os_crypt/browser",
+    "//components/password_manager/core/browser:hash_password_manager",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser/db:sb_local_database_manager",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+    "//components/user_prefs",
   ]
 }
 
@@ -92,33 +94,35 @@ source_set("event_observer_impl") {
 }
 
 source_set("util") {
-  sources = [
-    "safe_browsing_ui_util.cc",
-    "safe_browsing_ui_util.h",
-  ]
+  check_includes_strict = true
+  public = [ "safe_browsing_ui_util.h" ]
+  sources = [ "safe_browsing_ui_util.cc" ]
 
-  deps = [
+  public_deps = [
     ":event_observer",
     "//base",
-    "//base:i18n",
-    "//components/enterprise/common/proto:connectors_proto",
-    "//components/enterprise/common/proto:connectors_proto_extras",
     "//components/enterprise/common/proto:upload_request_response",
-    "//components/enterprise/connectors/core:constants",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:download_check_result",
-    "//components/safe_browsing/core/browser:referring_app_info",
     "//components/safe_browsing/core/browser/db:v5_get_hash_protocol_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
-    "//components/safe_browsing/core/common/proto:csd_proto_extras",
     "//components/safe_browsing/core/common/proto:realtimeapi_proto",
-    "//components/safe_browsing/core/common/proto:realtimeapi_proto_extras",
     "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
-    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_extras",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//components/sync/protocol",
     "//net",
     "//url",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/common/proto:connectors_proto_extras",
+    "//components/enterprise/connectors/core:constants",
+    "//components/safe_browsing/core/browser:referring_app_info",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto_extras",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto_extras",
   ]
 
   if (!is_android) {
