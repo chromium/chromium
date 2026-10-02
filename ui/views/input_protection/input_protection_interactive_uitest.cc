@@ -18,10 +18,12 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/input_protection/input_protection_interactive_test.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/input_protection/occluded_widget_input_protector.h"
+#include "ui/views/input_protection/view_bounds_and_visibility_input_protection_policy.h"
 #include "ui/views/input_protection/window_activation_input_protection_policy.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -38,6 +40,7 @@ namespace views::test {
 
 namespace {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kContentsViewId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondaryButtonId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryAotButtonId);
@@ -70,6 +73,7 @@ class InputProtectionInteractiveUiTest : public InputProtectionInteractiveTest {
     widget_->SetBounds(kInitialWidgetBounds);
 
     auto contents = std::make_unique<View>();
+    contents->SetProperty(kElementIdentifierKey, kContentsViewId);
     auto primary_button = std::make_unique<LabelButton>(
         base::BindRepeating(
             &InputProtectionInteractiveUiTest::OnPrimaryButtonClicked,
@@ -517,7 +521,7 @@ TEST_F(InputProtectionInteractiveUiTest,
           base::BindRepeating(
               &InputProtectionInteractiveUiTest::OnBubbleButtonClicked,
               base::Unretained(this)),
-          {MakePolicy<WindowActivationInputProtectionPolicy>()}),
+          {MakePolicy<WindowActivationInputProtectionPolicy, Widget*>()}),
       // Activate the bubble surface while the parent window is visible.
       InAnyContext(ActivateSurface(kBubbleButtonId)),
       // While parent is visible, `WindowActivationInputProtectionPolicy` does
@@ -541,6 +545,78 @@ TEST_F(InputProtectionInteractiveUiTest,
       // After cooldown expires, click is allowed.
       InAnyContext(
           ClickExpectingAllowed(kBubbleButtonId, bubble_click_count())));
+}
+
+// Verifies that `ViewBoundsAndVisibilityInputProtectionPolicy` blocks
+// interactions on a protected view after its position or size changes while
+// allowing interactions on an unprotected sibling view, and allows interactions
+// on the protected view after the cooldown expires.
+TEST_F(InputProtectionInteractiveUiTest, ViewBoundsChangeEnforcesCooldown) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(
+          kPrimaryButtonId,
+          {MakePolicy<ViewBoundsAndVisibilityInputProtectionPolicy, View&>()}),
+      AdvancePastInputProtectionInterval(),
+      // Moving the protected button triggers a cooldown for that button, while
+      // the unprotected secondary button remains clickable.
+      MoveViewBy(kPrimaryButtonId, gfx::Vector2d(10, 0)),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      ClickExpectingAllowed(kSecondaryButtonId, secondary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()),
+      // Resizing the protected button also triggers a cooldown.
+      ResizeViewBy(kPrimaryButtonId, gfx::Vector2d(20, 10)),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
+}
+
+// Verifies that `ViewBoundsAndVisibilityInputProtectionPolicy` blocks
+// interactions on a protected child view when an ancestor view moves (shifting
+// the child within the widget), but ignores ancestor resizes that do not move
+// the child.
+TEST_F(InputProtectionInteractiveUiTest,
+       AncestorBoundsChangeEnforcesCooldownOnProtectedChild) {
+  RunTestSequence(
+      EnableInputEventActivationProtection(
+          kPrimaryButtonId,
+          {MakePolicy<ViewBoundsAndVisibilityInputProtectionPolicy, View&>()}),
+      AdvancePastInputProtectionInterval(),
+      // Resizing the parent container without moving `kPrimaryButtonId` does
+      // not trigger a cooldown.
+      ResizeViewBy(kContentsViewId, gfx::Vector2d(50, 50)),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()),
+      // Moving the parent container shifts `kPrimaryButtonId` within the
+      // widget and triggers a cooldown for `kPrimaryButtonId`, while
+      // `kSecondaryButtonId` remains allowed.
+      MoveViewBy(kContentsViewId, gfx::Vector2d(0, 10)),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      ClickExpectingAllowed(kSecondaryButtonId, secondary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
+}
+
+// Verifies that `ViewBoundsAndVisibilityInputProtectionPolicy` blocks
+// interactions when the protected view is attached to a visible widget or
+// transitions from hidden to visible, while allowing interactions on an
+// unprotected sibling view.
+TEST_F(InputProtectionInteractiveUiTest, ViewVisibilityChangeEnforcesCooldown) {
+  RunTestSequence(
+      // Enabling the policy on an already drawn view in a visible widget
+      // immediately starts the cooldown for the protected view only.
+      EnableInputEventActivationProtection(
+          kPrimaryButtonId,
+          {MakePolicy<ViewBoundsAndVisibilityInputProtectionPolicy, View&>()}),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      ClickExpectingAllowed(kSecondaryButtonId, secondary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()),
+      // Hiding and re-showing the protected view triggers a new cooldown.
+      TriggerViewVisibilityCooldown(kPrimaryButtonId),
+      ClickExpectingBlocked(kPrimaryButtonId, primary_click_count()),
+      ClickExpectingAllowed(kSecondaryButtonId, secondary_click_count()),
+      AdvancePastInputProtectionInterval(),
+      ClickExpectingAllowed(kPrimaryButtonId, primary_click_count()));
 }
 
 }  // namespace views::test

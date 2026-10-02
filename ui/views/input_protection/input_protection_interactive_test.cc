@@ -148,31 +148,77 @@ void DispatchTouchTap(View* view, const std::optional<gfx::Point>& tap_point) {
   view->GetWidget()->OnGestureEvent(&tap);
 }
 
+template <typename Factory>
+void EnableProtectionOnWidget(Widget* widget,
+                              const std::vector<Factory>& factories,
+                              View* view = nullptr) {
+  if (!widget) {
+    return;
+  }
+  if (factories.empty()) {
+    widget->EnableInputEventActivationProtection();
+    return;
+  }
+  auto run_factory = [&](const auto& factory) {
+    if constexpr (std::is_same_v<
+                      Factory, InputProtectionTestApi::PolicyFactory<View&>>) {
+      CHECK(view);
+      return factory.Run(*view);
+    } else if constexpr (std::is_same_v<
+                             Factory,
+                             InputProtectionTestApi::PolicyFactory<Widget*>>) {
+      return factory.Run(widget);
+    } else {
+      return factory.Run();
+    }
+  };
+  auto protector = std::make_unique<InputEventActivationProtector>(
+      run_factory(factories[0]));
+  for (size_t i = 1; i < factories.size(); ++i) {
+    protector->AddPolicy(run_factory(factories[i]));
+  }
+  widget->EnableInputEventActivationProtection(std::move(protector));
+}
+
 }  // namespace
 
 InputProtectionTestApi::InputProtectionTestApi() = default;
 InputProtectionTestApi::~InputProtectionTestApi() = default;
 
+template <typename Factory>
 ui::InteractionSequence::StepBuilder
 InputProtectionTestApi::EnableInputEventActivationProtection(
-    ui::ElementIdentifier element_id) {
+    ui::ElementIdentifier element_id,
+    std::vector<Factory> policy_factories) {
   if (element_id) {
-    auto step = WithView(element_id, [](View* view) {
-      if (view->GetWidget()) {
-        view->GetWidget()->EnableInputEventActivationProtection();
-      }
-    });
+    auto step = WithView(
+        element_id, [factories = std::move(policy_factories)](View* view) {
+          EnableProtectionOnWidget(view->GetWidget(), factories, view);
+        });
     step.SetDescription("EnableInputEventActivationProtection()");
     return step;
   }
-  auto step = Do([this]() {
-    if (context_widget()) {
-      context_widget()->EnableInputEventActivationProtection();
-    }
+  auto step = Do([this, factories = std::move(policy_factories)]() {
+    EnableProtectionOnWidget(context_widget(), factories);
   });
   step.SetDescription("EnableInputEventActivationProtection()");
   return step;
 }
+
+template ui::InteractionSequence::StepBuilder
+    InputProtectionTestApi::EnableInputEventActivationProtection<
+        InputProtectionTestApi::PolicyFactory<View&>>(
+        ui::ElementIdentifier,
+        std::vector<PolicyFactory<View&>>);
+template ui::InteractionSequence::StepBuilder
+    InputProtectionTestApi::EnableInputEventActivationProtection<
+        InputProtectionTestApi::PolicyFactory<Widget*>>(
+        ui::ElementIdentifier,
+        std::vector<PolicyFactory<Widget*>>);
+template ui::InteractionSequence::StepBuilder
+    InputProtectionTestApi::EnableInputEventActivationProtection<
+        InputProtectionTestApi::PolicyFactory<>>(ui::ElementIdentifier,
+                                                 std::vector<PolicyFactory<>>);
 
 InputProtectionTestApi::MultiStep InputProtectionTestApi::TriggerShowCooldown(
     ui::ElementIdentifier element_id) {
@@ -187,6 +233,39 @@ InputProtectionTestApi::MultiStep InputProtectionTestApi::TriggerShowCooldown(
                      WaitForShow(element_id), ActivateSurface(element_id));
   AddDescriptionPrefix(steps, "TriggerShowCooldown()");
   return steps;
+}
+
+ui::InteractionSequence::StepBuilder
+InputProtectionTestApi::TriggerViewVisibilityCooldown(
+    ui::ElementIdentifier element_id) {
+  auto step = WithView(element_id, [](View* view) {
+    view->SetVisible(false);
+    view->SetVisible(true);
+  });
+  step.SetMustRemainVisible(false);
+  step.SetDescription("TriggerViewVisibilityCooldown()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::MoveViewBy(
+    ui::ElementIdentifier element_id,
+    const gfx::Vector2d& offset) {
+  auto step = WithView(element_id, [offset](View* view) {
+    view->SetPosition(view->origin() + offset);
+  });
+  step.SetDescription("MoveViewBy()");
+  return step;
+}
+
+ui::InteractionSequence::StepBuilder InputProtectionTestApi::ResizeViewBy(
+    ui::ElementIdentifier element_id,
+    const gfx::Vector2d& size_delta) {
+  auto step = WithView(element_id, [size_delta](View* view) {
+    view->SetSize(gfx::Size(view->width() + size_delta.x(),
+                            view->height() + size_delta.y()));
+  });
+  step.SetDescription("ResizeViewBy()");
+  return step;
 }
 
 InputProtectionTestApi::MultiStep InputProtectionTestApi::MousePress(
@@ -484,7 +563,7 @@ ui::InteractionSequence::StepBuilder InputProtectionTestApi::ShowBubbleDialog(
     ui::ElementIdentifier anchor_element_id,
     ui::ElementIdentifier button_id,
     base::RepeatingClosure on_button_clicked,
-    std::vector<PolicyFactory> policy_factories) {
+    std::vector<PolicyFactory<Widget*>> policy_factories) {
   auto step = WithView(
       anchor_element_id,
       [this, button_id, on_button_clicked = std::move(on_button_clicked),
@@ -498,18 +577,7 @@ ui::InteractionSequence::StepBuilder InputProtectionTestApi::ShowBubbleDialog(
         bubble_delegate_->SetContentsView(std::move(button));
         bubble_widget_ =
             BubbleDialogDelegate::CreateBubble(bubble_delegate_.get());
-        std::unique_ptr<InputEventActivationProtector> protector;
-        if (!factories.empty()) {
-          protector = std::make_unique<InputEventActivationProtector>(
-              factories[0].Run(bubble_widget_.get()));
-          for (size_t i = 1; i < factories.size(); ++i) {
-            protector->AddPolicy(factories[i].Run(bubble_widget_.get()));
-          }
-          bubble_widget_->EnableInputEventActivationProtection(
-              std::move(protector));
-        } else {
-          bubble_widget_->EnableInputEventActivationProtection();
-        }
+        EnableProtectionOnWidget(bubble_widget_.get(), factories);
         bubble_widget_->Show();
         WidgetVisibleWaiter(bubble_widget_.get()).Wait();
       });

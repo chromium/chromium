@@ -23,6 +23,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/input_protection/input_protection_specification.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -45,36 +46,50 @@ class InputProtectionTestApi
   InputProtectionTestApi();
   ~InputProtectionTestApi() override;
 
+  template <typename... Target>
   using PolicyFactory =
-      base::RepeatingCallback<std::unique_ptr<InputProtectionPolicy>(Widget*)>;
+      base::RepeatingCallback<std::unique_ptr<InputProtectionPolicy>(
+          Target...)>;
 
-  // Factory helper that creates a `PolicyFactory` for any
-  // `InputProtectionPolicy` type, forwarding any constructor arguments and
-  // passing the target `Widget*` if accepted by the constructor.
-  template <typename Policy, typename... Args>
-  static PolicyFactory MakePolicy(Args&&... args) {
+  // Factory helper that creates a `PolicyFactory<Target...>` for `Policy`.
+  template <typename Policy, typename... Target>
+  static PolicyFactory<Target...> MakePolicy() {
     return base::BindRepeating(
-        [](std::decay_t<Args>... bound_args,
-           Widget* widget) -> std::unique_ptr<InputProtectionPolicy> {
-          if constexpr (std::is_constructible_v<Policy, Widget*,
-                                                std::decay_t<Args>...>) {
-            return std::make_unique<Policy>(widget, bound_args...);
-          } else {
-            return std::make_unique<Policy>(bound_args...);
-          }
-        },
-        std::forward<Args>(args)...);
+        [](Target... target) -> std::unique_ptr<InputProtectionPolicy> {
+          return std::make_unique<Policy>(target...);
+        });
   }
 
   // Enables input protection on the widget containing `element_id`. If
   // `element_id` is omitted, input protection is enabled on `context_widget()`.
+  // If `policy_factories` is provided, only those policies are enabled on the
+  // widget (policies that target a `View` require `element_id` to be
+  // specified).
+  template <typename Factory = PolicyFactory<View&>>
   [[nodiscard]] ui::InteractionSequence::StepBuilder
-  EnableInputEventActivationProtection(ui::ElementIdentifier element_id = {});
+  EnableInputEventActivationProtection(
+      ui::ElementIdentifier element_id = {},
+      std::vector<Factory> policy_factories = {});
 
   // Hides and shows the widget containing `element_id` to trigger the initial
   // show cooldown via visibility change. Also activates the widget so it is
   // ready to receive input.
   [[nodiscard]] MultiStep TriggerShowCooldown(ui::ElementIdentifier element_id);
+
+  // Hides and shows the view identified by `element_id` to trigger a view
+  // visibility cooldown.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder
+  TriggerViewVisibilityCooldown(ui::ElementIdentifier element_id);
+
+  // Offsets the position of the view identified by `element_id` by `offset`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder MoveViewBy(
+      ui::ElementIdentifier element_id,
+      const gfx::Vector2d& offset);
+
+  // Adjusts the size of the view identified by `element_id` by `size_delta`.
+  [[nodiscard]] ui::InteractionSequence::StepBuilder ResizeViewBy(
+      ui::ElementIdentifier element_id,
+      const gfx::Vector2d& size_delta);
 
   // Dispatches a simulated left mouse press to `element_id` at `click_point`
   // (or the center point if `click_point` is omitted).
@@ -197,7 +212,7 @@ class InputProtectionTestApi
       ui::ElementIdentifier anchor_element_id,
       ui::ElementIdentifier button_id,
       base::RepeatingClosure on_button_clicked,
-      std::vector<PolicyFactory> policy_factories = {});
+      std::vector<PolicyFactory<Widget*>> policy_factories = {});
 
   // Hides the widget window containing `element_id` and waits for it to hide.
   [[nodiscard]] MultiStep HideWindow(ui::ElementIdentifier element_id);
