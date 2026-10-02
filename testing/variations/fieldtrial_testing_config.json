@@ -5345,9 +5345,12 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "ContextualCueingV2EduClassifierThreshold": "0.6",
+                        "ContextualCueingV2ClickBackoffTime": "4h",
+                        "ContextualCueingV2EduClassifierThreshold": "0.75",
                         "ContextualCueingV2EnablePrivateInsightsLogging": "true",
+                        "ContextualCueingV2MinTimeBetweenNudges": "8h",
                         "ContextualCueingV2MultiSourceAnnotationTimeout": "300s",
+                        "ContextualCueingV2ShoppingClassifierThreshold": "0.9",
                         "MinDaysSinceLastInvocation": "2",
                         "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
                         "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
