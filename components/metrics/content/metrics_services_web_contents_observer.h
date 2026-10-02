@@ -19,6 +19,12 @@ class MetricsServicesWebContentsObserver
   using OnDidStopLoadingCb = base::RepeatingClosure;
   using OnRendererUnresponsiveCb = base::RepeatingClosure;
 
+  explicit MetricsServicesWebContentsObserver(
+      content::WebContents* web_contents,
+      OnDidStartLoadingCb did_start_loading_cb,
+      OnDidStopLoadingCb did_stop_loading_cb,
+      OnRendererUnresponsiveCb renderer_unresponsive_cb);
+
   MetricsServicesWebContentsObserver(
       const MetricsServicesWebContentsObserver&) = delete;
   MetricsServicesWebContentsObserver& operator=(
@@ -28,13 +34,6 @@ class MetricsServicesWebContentsObserver
 
  private:
   friend class content::WebContentsUserData<MetricsServicesWebContentsObserver>;
-
-  // Can only be instantiated by content::WebContentsUserData.
-  explicit MetricsServicesWebContentsObserver(
-      content::WebContents* web_contents,
-      OnDidStartLoadingCb did_start_loading_cb,
-      OnDidStopLoadingCb did_stop_loading_cb,
-      OnRendererUnresponsiveCb renderer_unresponsive_cb);
 
   // content::WebContentsObserver:
   void DidStartLoading() override;

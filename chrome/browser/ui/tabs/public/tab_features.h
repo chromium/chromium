@@ -290,11 +290,12 @@ namespace lens {
 class TabContextualizationController;
 }  // namespace lens
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 namespace metrics {
+class MetricsServicesWebContentsObserver;
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 class DesktopSessionDurationObserver;
-}  // namespace metrics
 #endif
+}  // namespace metrics
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -993,6 +994,9 @@ class TabFeatures {
 
   std::unique_ptr<ChromeFacilitatedPaymentsClient>
       chrome_facilitated_payments_client_;
+
+  std::unique_ptr<metrics::MetricsServicesWebContentsObserver>
+      metrics_services_web_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

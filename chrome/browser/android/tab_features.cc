@@ -15,6 +15,7 @@
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
@@ -106,6 +107,8 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/history/content/browser/web_contents_top_sites_observer.h"
 #include "components/history/core/browser/top_sites.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/payments/core/features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/search.h"
@@ -485,6 +488,15 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       web_contents, profile->IsOffTheRecord(),
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
+
+  if (auto* metrics_services_manager =
+          g_browser_process->GetMetricsServicesManager()) {
+    metrics_services_web_contents_observer_ =
+        std::make_unique<metrics::MetricsServicesWebContentsObserver>(
+            web_contents, metrics_services_manager->GetOnDidStartLoadingCb(),
+            metrics_services_manager->GetOnDidStopLoadingCb(),
+            metrics_services_manager->GetOnRendererUnresponsiveCb());
+  }
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

@@ -101,6 +101,10 @@ namespace lens {
 class TabContextualizationController;
 }  // namespace lens
 
+namespace metrics {
+class MetricsServicesWebContentsObserver;
+}  // namespace metrics
+
 namespace payments {
 class WebPaymentsObserver;
 }  // namespace payments
@@ -305,6 +309,8 @@ class TabFeatures {
   std::unique_ptr<ChromeFacilitatedPaymentsClient>
       chrome_facilitated_payments_client_;
   std::unique_ptr<commerce::CommerceTabHelper> commerce_tab_helper_;
+  std::unique_ptr<metrics::MetricsServicesWebContentsObserver>
+      metrics_services_web_contents_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

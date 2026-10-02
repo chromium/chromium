@@ -16,6 +16,7 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/in_stock_notification/in_stock_notification_manager.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -215,6 +216,8 @@
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
+#include "components/metrics/content/metrics_services_web_contents_observer.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/permissions/permission_indicators_tab_data.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -1116,6 +1119,16 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         GetUserDataFactory().CreateInstance<ChromeFacilitatedPaymentsClient>(
             tab, tab, tab.GetContents(), optimization_guide_decider);
   }
+
+  if (auto* metrics_services_manager =
+          g_browser_process->GetMetricsServicesManager()) {
+    metrics_services_web_contents_observer_ =
+        std::make_unique<metrics::MetricsServicesWebContentsObserver>(
+            tab.GetContents(),
+            metrics_services_manager->GetOnDidStartLoadingCb(),
+            metrics_services_manager->GetOnDidStopLoadingCb(),
+            metrics_services_manager->GetOnRendererUnresponsiveCb());
+  }
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1583,6 +1596,15 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       new_contents, profile->IsOffTheRecord(),
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
       ISOLATED_WORLD_ID_CHROME_INTERNAL);
+
+  if (auto* metrics_services_manager =
+          g_browser_process->GetMetricsServicesManager()) {
+    metrics_services_web_contents_observer_ =
+        std::make_unique<metrics::MetricsServicesWebContentsObserver>(
+            new_contents, metrics_services_manager->GetOnDidStartLoadingCb(),
+            metrics_services_manager->GetOnDidStopLoadingCb(),
+            metrics_services_manager->GetOnRendererUnresponsiveCb());
+  }
 }
 
 customize_chrome::SidePanelController*

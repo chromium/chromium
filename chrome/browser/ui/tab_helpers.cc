@@ -72,8 +72,6 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
-#include "components/metrics/content/metrics_services_web_contents_observer.h"
-#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
@@ -268,13 +266,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
       web_contents);
   if (MediaEngagementService::IsEnabled()) {
     MediaEngagementService::CreateWebContentsObserver(web_contents);
-  }
-  if (auto* metrics_services_manager =
-          g_browser_process->GetMetricsServicesManager()) {
-    metrics::MetricsServicesWebContentsObserver::CreateForWebContents(
-        web_contents, metrics_services_manager->GetOnDidStartLoadingCb(),
-        metrics_services_manager->GetOnDidStopLoadingCb(),
-        metrics_services_manager->GetOnRendererUnresponsiveCb());
   }
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   if (optimization_guide::features::IsOptimizationHintsEnabled()) {
