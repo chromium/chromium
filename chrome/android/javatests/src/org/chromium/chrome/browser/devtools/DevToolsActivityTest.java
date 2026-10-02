@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,6 +54,7 @@ public class DevToolsActivityTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491008
     public void testOpenDevTools() {
         TabModel tabModel = mTestRule.getActivity().getCurrentTabModel();
         Tab inspectedTab = tabModel.getCurrentTabSupplier().get();
