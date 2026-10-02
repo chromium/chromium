@@ -270,6 +270,18 @@ interface Page {
   // Notifies the WebUI when Third Party Auto Todos generation state changes.
   [RuntimeFeature=kAutoTodos]
   OnThirdPartyAutoTodosGenerationStateChanged(bool is_generating);
+
+  // Notifies the WebUI when an entry is saved to the memory bank. If an entry
+  // with the same ID is already displayed, it should be replaced by `entry`.
+  OnMemoryBankEntryAdded(MemoryBankEntry entry);
+
+  // Notifies the WebUI when the annotations of an existing entry in the memory
+  // bank are updated. `annotations` replaces the entry's previous annotations.
+  OnMemoryBankEntryUpdated(int64 id, MemoryBankEntryAnnotations annotations);
+
+  // Notifies the WebUI when entries are deleted from the memory bank. `ids` may
+  // contain IDs that did not match an existing entry, which should be ignored.
+  OnMemoryBankEntriesDeleted(array<int64> ids);
 };
 
 // Factory used by the WebUI page (caller) to create a PageHandler in the

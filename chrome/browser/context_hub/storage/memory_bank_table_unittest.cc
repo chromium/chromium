@@ -85,7 +85,7 @@ TEST_F(MemoryBankTableTest, MigrateToVersion2AddNoteAndCollectionColumns) {
   new_entry.tab_title = "Title 2";
   new_entry.note = "Note 2";
   new_entry.collection = "Collection 2";
-  EXPECT_TRUE(table.AddOrUpdateEntry(new_entry));
+  EXPECT_THAT(table.AddOrUpdateEntry(new_entry), testing::Optional(2));
 
   std::vector<MemoryBankEntry> all = table.GetAllEntries();
   EXPECT_EQ(2u, all.size());
@@ -104,7 +104,7 @@ TEST_F(MemoryBankTableTest, AddAndGetEntry) {
   entry.note = "Test Note";
   entry.collection = "Research";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(1));
   EXPECT_EQ(1u, table_.GetEntryCount());
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
@@ -140,7 +140,7 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   entry.tab_title = "Google";
   entry.selected_text = "Selected text";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(1));
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(1u, entries.size());
@@ -152,7 +152,8 @@ TEST_F(MemoryBankTableTest, UpdateExistingEntry) {
   updated_entry.note = "Updated Note";
   updated_entry.collection = "Updated Collection";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(updated_entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(updated_entry),
+              testing::Optional(updated_entry.id));
   EXPECT_EQ(1u, table_.GetEntryCount());
 
   auto fetched_entry = table_.GetEntry(updated_entry.id);
@@ -177,7 +178,7 @@ TEST_F(MemoryBankTableTest, UpdateEntryAnnotations) {
   entry.note = "Original Note";
   entry.collection = "General";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(1));
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(1u, entries.size());
@@ -218,8 +219,8 @@ TEST_F(MemoryBankTableTest, GetAllEntriesOrdering) {
   entry2.url = GURL("https://new.com");
   entry2.tab_title = "New";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(2u, entries.size());
@@ -241,8 +242,8 @@ TEST_F(MemoryBankTableTest, DeleteEntries) {
   entry2.url = GURL("https://site2.com");
   entry2.tab_title = "Site 2";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
   EXPECT_EQ(2u, table_.GetEntryCount());
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
@@ -266,7 +267,7 @@ TEST_F(MemoryBankTableTest, AddWithExplicitId) {
   entry.url = GURL("https://www.example.com");
   entry.tab_title = "Example Title";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(987654321));
 
   auto fetched = table_.GetEntry(987654321);
   ASSERT_TRUE(fetched.has_value());
@@ -287,8 +288,8 @@ TEST_F(MemoryBankTableTest, AddWithoutIdAutoIncrements) {
   entry2.url = GURL("https://example2.com");
   entry2.tab_title = "Title 2";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
 
   std::vector<MemoryBankEntry> entries = table_.GetAllEntries();
   ASSERT_EQ(2u, entries.size());
@@ -309,7 +310,7 @@ TEST_F(MemoryBankTableTest, NullOptionalFieldsStoredAsSqlNull) {
   entry.note = std::nullopt;
   entry.collection = std::nullopt;
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry), testing::Optional(12345));
 
   sql::Statement statement(db_.GetUniqueStatement(
       "SELECT selected_text, tags, note, collection FROM memory_bank_entries "
@@ -343,8 +344,8 @@ TEST_F(MemoryBankTableTest, GetEntriesByIds) {
   entry2.url = GURL("https://site2.com");
   entry2.tab_title = "Site 2";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
 
   std::vector<MemoryBankEntry> all = table_.GetAllEntries();
   ASSERT_EQ(2u, all.size());
@@ -372,8 +373,8 @@ TEST_F(MemoryBankTableTest, GetAllTags) {
   entry2.tab_title = "Site 2";
   entry2.tags = {"tagB", "tagC"};
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
 
   std::vector<std::string> tags = table_.GetAllTags();
   EXPECT_THAT(tags, testing::UnorderedElementsAre("tagA", "tagB", "tagC"));
@@ -403,9 +404,9 @@ TEST_F(MemoryBankTableTest, GetAllCollections) {
   entry3.tab_title = "Site 3";
   entry3.collection = "Research";
 
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry1));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry2));
-  EXPECT_TRUE(table_.AddOrUpdateEntry(entry3));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry2), testing::Optional(2));
+  EXPECT_THAT(table_.AddOrUpdateEntry(entry3), testing::Optional(3));
 
   std::vector<std::string> collections = table_.GetAllCollections();
   EXPECT_THAT(collections, testing::ElementsAre("Research", "Work"));

@@ -27,7 +27,7 @@ class ContextHubBackendImpl : public ContextHubBackend {
 
   // ContextHubBackend implementation.
   void AddOrUpdateMemoryBankEntry(MemoryBankEntry entry,
-                                  OperationCompleteCallback callback) override;
+                                  AddOrUpdateCallback callback) override;
   void UpdateMemoryBankEntryAnnotations(
       int64_t id,
       std::vector<std::string> tags,

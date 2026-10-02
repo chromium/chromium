@@ -194,12 +194,14 @@ export function getHtml(this: MemoryBanksElement) {
                                       this.onToggleAllCollectionsChange_}">
                                 All Collections
                               </cr-checkbox>
-                              ${this.availableCollections_.map(c => html`
+                              ${
+                                      this.availableCollections_.map(
+                                          c => html`
                                 <cr-checkbox
                                     data-collection="${c}"
                                     ?checked="${this.isCollectionSelected_(c)}"
                                     @change="${
-                                        this.onCollectionCheckboxChange_}">
+                                              this.onCollectionCheckboxChange_}">
                                   ${c || 'No collection'}
                                 </cr-checkbox>
                               `)}
@@ -319,8 +321,7 @@ export function getHtml(this: MemoryBanksElement) {
           .entry="${this.editingEntry_}"
           .availableCollections="${this.availableCollections_.filter(Boolean)}"
           .availableTags="${this.availableTags_.filter(Boolean)}"
-          @close="${this.onEditDialogClose_}"
-          @entry-annotations-updated="${this.onEntryAnnotationsUpdated_}">
+          @close="${this.onEditDialogClose_}">
       </memory-banks-edit-dialog>
     ` :
                            ''}

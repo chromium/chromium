@@ -95,6 +95,21 @@ class MockServiceObserver : public ContextHubService::Observer {
               OnThirdPartyAutoTodosGenerationStateChanged,
               (bool),
               (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntryAdded,
+              (const MemoryBankEntry&),
+              (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntryUpdated,
+              (int64_t,
+               const std::vector<std::string>&,
+               const std::optional<std::string>&,
+               const std::optional<std::string>&),
+              (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntriesDeleted,
+              (const std::vector<int64_t>&),
+              (override));
 };
 
 class MockPageContentExtractionService
@@ -1544,6 +1559,47 @@ TEST_F(ContextHubServiceTest,
   EXPECT_EQ(entries[0].url, example_url);
   EXPECT_FALSE(entries[0].selected_text.has_value());
 }
+
+TEST_F(ContextHubServiceTest, MemoryBankObserverNotified) {
+  MockServiceObserver observer;
+  base::ScopedObservation<ContextHubService, ContextHubService::Observer>
+      observation(&observer);
+  observation.Observe(&service_);
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntryAdded(AllOf(
+                  Field(&MemoryBankEntry::tab_title, "Title"),
+                  Field(&MemoryBankEntry::url, GURL("https://example.com")))));
+  base::test::TestFuture<bool> save_future;
+  service_.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Title", "Page text"),
+      save_future.GetCallback());
+  EXPECT_TRUE(save_future.Get());
+
+  base::test::TestFuture<std::vector<MemoryBankEntry>> get_entries_future;
+  service_.GetAllEntries(get_entries_future.GetCallback());
+  auto entries = get_entries_future.Get();
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntryUpdated(
+                  id, ElementsAre("tag1"),
+                  testing::Optional(std::string("Updated Note")),
+                  testing::Optional(std::string("Updated Collection"))));
+  base::test::TestFuture<bool> update_future;
+  service_.UpdateMemoryBankEntryAnnotations(id, {"tag1"}, "Updated Note",
+                                            "Updated Collection",
+                                            update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  EXPECT_CALL(observer, OnMemoryBankEntriesDeleted(ElementsAre(id)));
+  base::test::TestFuture<bool> delete_future;
+  service_.DeleteEntries({id}, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
+}
+
 TEST_F(ContextHubServiceTest, GroupTabs_NoTabs) {
   base::test::TestFuture<std::vector<TabGroupEntry>, std::vector<TabData>,
                          std::string>

@@ -63,9 +63,9 @@ class MemoryBankTable {
   // adding the note and collection columns. Returns true on success.
   bool MigrateToVersion2AddNoteAndCollectionColumns();
 
-  // Inserts or replaces a record in memory_bank_entries. Returns true on
-  // success.
-  bool AddOrUpdateEntry(const MemoryBankEntry& entry);
+  // Inserts or replaces a record in memory_bank_entries. Returns the entry's
+  // ID on success, or std::nullopt on failure.
+  std::optional<int64_t> AddOrUpdateEntry(const MemoryBankEntry& entry);
 
   // Updates the annotations (tags, note, collection) for an existing entry.
   // Returns true on success, or false if not found or on error.

@@ -38,7 +38,8 @@ class ContextHubDatabase {
   bool Init(const base::FilePath& db_path);
 
   // Operations on memory bank entries (delegates to MemoryBankTable):
-  bool AddOrUpdateMemoryBankEntry(const MemoryBankEntry& entry);
+  std::optional<int64_t> AddOrUpdateMemoryBankEntry(
+      const MemoryBankEntry& entry);
   bool UpdateMemoryBankEntryAnnotations(
       int64_t id,
       const std::vector<std::string>& tags,

@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_PAGE_HANDLER_H_
 
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -78,6 +83,14 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       base::span<const context_hub::AutoTodoEntry> entries) override;
   void OnFirstPartyAutoTodosGenerationStateChanged(bool is_generating) override;
   void OnThirdPartyAutoTodosGenerationStateChanged(bool is_generating) override;
+  void OnMemoryBankEntryAdded(
+      const context_hub::MemoryBankEntry& entry) override;
+  void OnMemoryBankEntryUpdated(
+      int64_t id,
+      const std::vector<std::string>& tags,
+      const std::optional<std::string>& note,
+      const std::optional<std::string>& collection) override;
+  void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) override;
 
   // browser::context_hub::mojom::PageHandler:
   void GenerateFirstPartyAutoTodos(

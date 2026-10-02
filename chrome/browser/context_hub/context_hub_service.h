@@ -88,6 +88,7 @@ class ContextHubBackend;
 
 class ContextHubService : public KeyedService,
                           public AutoTodosStore::Observer,
+                          public MemoryBank::Observer,
                           public signin::IdentityManager::Observer,
                           public base::PowerSuspendObserver
 #if !BUILDFLAG(IS_ANDROID)
@@ -104,6 +105,13 @@ class ContextHubService : public KeyedService,
         bool is_generating) {}
     virtual void OnThirdPartyAutoTodosGenerationStateChanged(
         bool is_generating) {}
+    virtual void OnMemoryBankEntryAdded(const MemoryBankEntry& entry) {}
+    virtual void OnMemoryBankEntryUpdated(
+        int64_t id,
+        const std::vector<std::string>& tags,
+        const std::optional<std::string>& note,
+        const std::optional<std::string>& collection) {}
+    virtual void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) {}
   };
 
   ContextHubService(
@@ -129,6 +137,15 @@ class ContextHubService : public KeyedService,
 
   // AutoTodosStore::Observer:
   void OnAutoTodosChanged(base::span<const AutoTodoEntry> entries) override;
+
+  // MemoryBank::Observer:
+  void OnMemoryBankEntryAdded(const MemoryBankEntry& entry) override;
+  void OnMemoryBankEntryUpdated(
+      int64_t id,
+      const std::vector<std::string>& tags,
+      const std::optional<std::string>& note,
+      const std::optional<std::string>& collection) override;
+  void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -529,6 +546,10 @@ class ContextHubService : public KeyedService,
   // Guaranteed to be non-null. If features::kMemoryBanks is disabled, this
   // will be a NoOpMemoryBank.
   std::unique_ptr<MemoryBank> memory_bank_;
+  // Declared after `memory_bank_` so the observation is reset before the
+  // memory bank is destroyed.
+  base::ScopedObservation<MemoryBank, MemoryBank::Observer>
+      memory_bank_observation_{this};
 
   std::unique_ptr<TabGroupStore> tab_group_store_;
 

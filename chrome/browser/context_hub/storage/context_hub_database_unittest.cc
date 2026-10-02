@@ -134,7 +134,8 @@ TEST_F(ContextHubDatabaseTest, MigrateVersion1ToVersion2PreservesData) {
   EXPECT_FALSE(entry->collection.has_value());
 
   // Verify adding and reading a new entry with the new fields works.
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(CreateTestData()));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(CreateTestData()),
+              testing::Optional(2));
   EXPECT_EQ(2u, db_->GetAllMemoryBankEntries().size());
 
   // Close ContextHubDatabase before opening a direct sql::Database connection
@@ -207,8 +208,8 @@ TEST_F(ContextHubDatabaseTest, GetMemoryBankEntriesByIds) {
   entry2.url = GURL("https://example2.com");
   entry2.tab_title = "Site 2";
 
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
 
   std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
   ASSERT_EQ(all_entries.size(), 2u);
@@ -227,7 +228,7 @@ TEST_F(ContextHubDatabaseTest, AddAndGetMemoryBankEntry) {
   MemoryBankEntry data = CreateTestData();
 
   // Successfully add the memory bank entry to the database.
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(data));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(data), testing::Optional(1));
 
   std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -258,7 +259,7 @@ TEST_F(ContextHubDatabaseTest, UpdateMemoryBankEntryAnnotations) {
   ASSERT_TRUE(db_->Init(GetDbPath()));
 
   MemoryBankEntry data = CreateTestData();
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(data));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(data), testing::Optional(1));
 
   std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
   ASSERT_EQ(all_entries.size(), 1u);
@@ -285,8 +286,8 @@ TEST_F(ContextHubDatabaseTest, GetAllMemoryBankEntries) {
   entry2.url = GURL("https://example2.com");
 
   // Add two memory bank entries to the database successfully.
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
 
   // Verify that both memory bank entries are retrieved from the database.
   std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
@@ -305,9 +306,9 @@ TEST_F(ContextHubDatabaseTest, DeleteMemoryBankEntries) {
   entry3.url = GURL("https://site3.com");
 
   // Add the memory bank entries to the database successfully.
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry3));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry3), testing::Optional(3));
 
   // Verify that the memory bank entries are present in the database.
   std::vector<MemoryBankEntry> all_entries = db_->GetAllMemoryBankEntries();
@@ -338,11 +339,11 @@ TEST_F(ContextHubDatabaseTest, MaxEntriesLimitRejectsNewEntries) {
 
   MemoryBankEntry entry1 = CreateTestData();
   entry1.url = GURL("https://example.com/1");
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
 
   MemoryBankEntry entry2 = CreateTestData();
   entry2.url = GURL("https://example.com/2");
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
 
   // Limit of 2 entries reached. Attempting to add a 3rd new entry should fail.
   MemoryBankEntry entry3 = CreateTestData();
@@ -361,12 +362,12 @@ TEST_F(ContextHubDatabaseTest, GetAllMemoryBankTags) {
   MemoryBankEntry entry1 = CreateTestData();
   entry1.url = GURL("https://example.com/1");
   entry1.tags = {"tag1", "tag2"};
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
 
   MemoryBankEntry entry2 = CreateTestData();
   entry2.url = GURL("https://example.com/2");
   entry2.tags = {"tag2", "tag3"};
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
 
   std::vector<std::string> tags = db_->GetAllMemoryBankTags();
   EXPECT_THAT(tags, testing::UnorderedElementsAre("tag1", "tag2", "tag3"));
@@ -380,17 +381,17 @@ TEST_F(ContextHubDatabaseTest, GetAllMemoryBankCollections) {
   MemoryBankEntry entry1 = CreateTestData();
   entry1.url = GURL("https://example.com/1");
   entry1.collection = "Research";
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry1));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry1), testing::Optional(1));
 
   MemoryBankEntry entry2 = CreateTestData();
   entry2.url = GURL("https://example.com/2");
   entry2.collection = "Recipes";
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry2));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry2), testing::Optional(2));
 
   MemoryBankEntry entry3 = CreateTestData();
   entry3.url = GURL("https://example.com/3");
   entry3.collection = "Research";
-  EXPECT_TRUE(db_->AddOrUpdateMemoryBankEntry(entry3));
+  EXPECT_THAT(db_->AddOrUpdateMemoryBankEntry(entry3), testing::Optional(3));
 
   std::vector<std::string> collections = db_->GetAllMemoryBankCollections();
   EXPECT_THAT(collections, testing::ElementsAre("Recipes", "Research"));

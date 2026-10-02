@@ -13,6 +13,10 @@ namespace context_hub {
 NoOpMemoryBank::NoOpMemoryBank() = default;
 NoOpMemoryBank::~NoOpMemoryBank() = default;
 
+void NoOpMemoryBank::AddObserver(Observer* observer) {}
+
+void NoOpMemoryBank::RemoveObserver(Observer* observer) {}
+
 void NoOpMemoryBank::SaveMemoryBankEntry(MemoryBankEntry entry,
                                          OperationCompleteCallback callback) {
   if (callback) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
 #define CHROME_BROWSER_CONTEXT_HUB_STORAGE_CONTEXT_HUB_BACKEND_H_
 
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -23,10 +25,11 @@ class ContextHubBackend {
 
   // MemoryBankTable operations:
   using OperationCompleteCallback = base::OnceCallback<void(bool)>;
-  // Adds or updates an entry in the MemoryBankTable.
-  virtual void AddOrUpdateMemoryBankEntry(
-      MemoryBankEntry entry,
-      OperationCompleteCallback callback) = 0;
+  using AddOrUpdateCallback = base::OnceCallback<void(std::optional<int64_t>)>;
+  // Adds or updates an entry in the MemoryBankTable and passes its ID on
+  // success, or std::nullopt on failure.
+  virtual void AddOrUpdateMemoryBankEntry(MemoryBankEntry entry,
+                                          AddOrUpdateCallback callback) = 0;
   // Updates annotations for an existing entry in the MemoryBankTable.
   virtual void UpdateMemoryBankEntryAnnotations(
       int64_t id,

@@ -137,6 +137,29 @@ void ContextHubPageHandler::OnThirdPartyAutoTodosGenerationStateChanged(
   page_->OnThirdPartyAutoTodosGenerationStateChanged(is_generating);
 }
 
+void ContextHubPageHandler::OnMemoryBankEntryAdded(
+    const context_hub::MemoryBankEntry& entry) {
+  page_->OnMemoryBankEntryAdded(entry);
+}
+
+void ContextHubPageHandler::OnMemoryBankEntryUpdated(
+    int64_t id,
+    const std::vector<std::string>& tags,
+    const std::optional<std::string>& note,
+    const std::optional<std::string>& collection) {
+  auto annotations =
+      browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
+  annotations->collection = collection;
+  annotations->note = note;
+  annotations->tags = tags;
+  page_->OnMemoryBankEntryUpdated(id, std::move(annotations));
+}
+
+void ContextHubPageHandler::OnMemoryBankEntriesDeleted(
+    const std::vector<int64_t>& ids) {
+  page_->OnMemoryBankEntriesDeleted(ids);
+}
+
 void ContextHubPageHandler::GenerateFirstPartyAutoTodos(
     GenerateFirstPartyAutoTodosCallback callback) {
   context_hub::ContextHubService* service =
@@ -303,30 +326,7 @@ void ContextHubPageHandler::GetAllMemoryBankEntries(
   service->GetAllEntries(base::BindOnce(
       [](GetAllMemoryBankEntriesCallback callback,
          std::vector<context_hub::MemoryBankEntry> entries) {
-        std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>
-            mojo_entries;
-        for (const auto& entry : entries) {
-          auto mojo_entry = browser::context_hub::mojom::MemoryBankEntry::New();
-          mojo_entry->id = entry.id;
-          switch (entry.type) {
-            case context_hub::MemoryBankType::kTab:
-              mojo_entry->type = browser::context_hub::mojom::EntryType::kTab;
-              break;
-            case context_hub::MemoryBankType::kTextSelection:
-              mojo_entry->type =
-                  browser::context_hub::mojom::EntryType::kTextSelection;
-              break;
-          }
-          mojo_entry->timestamp = entry.timestamp;
-          mojo_entry->url = entry.url;
-          mojo_entry->tab_title = entry.tab_title;
-          mojo_entry->selected_text = entry.selected_text;
-          mojo_entry->tags = entry.tags;
-          mojo_entry->note = entry.note;
-          mojo_entry->collection = entry.collection;
-          mojo_entries.push_back(std::move(mojo_entry));
-        }
-        std::move(callback).Run(std::move(mojo_entries));
+        std::move(callback).Run(entries);
       },
       std::move(callback)));
 }

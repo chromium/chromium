@@ -9,6 +9,7 @@
 
 #include "base/containers/lru_cache.h"
 #include "base/containers/span.h"
+#include "base/observer_list.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 
@@ -22,6 +23,8 @@ class InMemoryMemoryBank : public MemoryBank {
   ~InMemoryMemoryBank() override;
 
   // MemoryBank:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            OperationCompleteCallback callback) override;
   void UpdateEntryAnnotations(int64_t id,
@@ -38,6 +41,8 @@ class InMemoryMemoryBank : public MemoryBank {
   void GetAllCollections(GetStringsCallback callback) const override;
 
  private:
+  base::ObserverList<Observer> observers_;
+
   // LRU cache to store the entries in the memory bank.
   base::LRUCache<int64_t, MemoryBankEntry> entries_;
 };

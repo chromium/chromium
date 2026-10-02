@@ -168,6 +168,19 @@ class MockPage : public browser::context_hub::mojom::Page {
               OnThirdPartyAutoTodosGenerationStateChanged,
               (bool),
               (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntryAdded,
+              (const context_hub::MemoryBankEntry&),
+              (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntryUpdated,
+              (int64_t,
+               browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr),
+              (override));
+  MOCK_METHOD(void,
+              OnMemoryBankEntriesDeleted,
+              (const std::vector<int64_t>&),
+              (override));
 
  private:
   mojo::Receiver<browser::context_hub::mojom::Page> receiver_{this};
@@ -748,6 +761,42 @@ TEST(ContextHubMojomTraitsTest, AutoTodoItemSerialization_ThirdPartyData) {
             context_hub::ThirdPartyData::GroupType::kUnfinishedAction);
 }
 
+TEST(ContextHubMojomTraitsTest, EntryTypeSerialization) {
+  for (auto entry_type : {context_hub::MemoryBankType::kTab,
+                          context_hub::MemoryBankType::kTextSelection}) {
+    context_hub::MemoryBankType output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                browser::context_hub::mojom::EntryType>(entry_type, output));
+    EXPECT_EQ(output, entry_type);
+  }
+}
+
+TEST(ContextHubMojomTraitsTest, MemoryBankEntrySerialization) {
+  context_hub::MemoryBankEntry input(
+      context_hub::MemoryBankType::kTextSelection,
+      GURL("https://example.com/article"), "Article Title", "Selected snippet");
+  input.id = 42;
+  input.timestamp = base::Time::FromMillisecondsSinceUnixEpoch(1700000000000);
+  input.tags = {"research", "ai"};
+  input.note = "Important note";
+  input.collection = "Reading";
+
+  context_hub::MemoryBankEntry output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+              browser::context_hub::mojom::MemoryBankEntry>(input, output));
+
+  EXPECT_EQ(output.id, 42);
+  EXPECT_EQ(output.type, context_hub::MemoryBankType::kTextSelection);
+  EXPECT_EQ(output.timestamp,
+            base::Time::FromMillisecondsSinceUnixEpoch(1700000000000));
+  EXPECT_EQ(output.url, GURL("https://example.com/article"));
+  EXPECT_EQ(output.tab_title, "Article Title");
+  EXPECT_EQ(output.selected_text, "Selected snippet");
+  EXPECT_THAT(output.tags, testing::ElementsAre("research", "ai"));
+  EXPECT_EQ(output.note, "Important note");
+  EXPECT_EQ(output.collection, "Reading");
+}
+
 TEST_F(ContextHubPageHandlerTest, GetAutoTodos_Empty) {
   base::test::TestFuture<const std::vector<context_hub::AutoTodoEntry>&,
                          const std::vector<context_hub::AutoTodoEntry>&,
@@ -1300,13 +1349,10 @@ TEST_F(ContextHubPageHandlerTest, OnAutoTodosChanged_IncludesDismissedTodos) {
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Empty) {
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>>
-      future;
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> future;
   handler_->GetAllMemoryBankEntries(future.GetCallback());
 
-  std::vector<browser::context_hub::mojom::MemoryBankEntryPtr> result =
-      future.Take();
+  std::vector<MemoryBankEntry> result = future.Take();
   EXPECT_TRUE(result.empty());
 }
 
@@ -1330,37 +1376,33 @@ TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankEntries_Success) {
       save_selection_future.GetCallback());
   ASSERT_TRUE(save_selection_future.Wait());
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>>
-      future;
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> future;
   handler_->GetAllMemoryBankEntries(future.GetCallback());
 
-  std::vector<browser::context_hub::mojom::MemoryBankEntryPtr> result =
-      future.Take();
+  std::vector<MemoryBankEntry> result = future.Take();
 
   ASSERT_EQ(result.size(), 2u);
 
-  const browser::context_hub::mojom::MemoryBankEntryPtr* tab_entry = nullptr;
-  const browser::context_hub::mojom::MemoryBankEntryPtr* text_entry = nullptr;
+  const MemoryBankEntry* tab_entry = nullptr;
+  const MemoryBankEntry* text_entry = nullptr;
   for (const auto& entry : result) {
-    if (entry->type == browser::context_hub::mojom::EntryType::kTab) {
+    if (entry.type == MemoryBankType::kTab) {
       tab_entry = &entry;
-    } else if (entry->type ==
-               browser::context_hub::mojom::EntryType::kTextSelection) {
+    } else if (entry.type == MemoryBankType::kTextSelection) {
       text_entry = &entry;
     }
   }
 
   ASSERT_TRUE(tab_entry);
-  EXPECT_EQ((*tab_entry)->url, GURL("https://example.com/tab"));
-  EXPECT_EQ((*tab_entry)->tab_title, "Tab Title");
-  EXPECT_FALSE((*tab_entry)->timestamp.is_null());
+  EXPECT_EQ(tab_entry->url, GURL("https://example.com/tab"));
+  EXPECT_EQ(tab_entry->tab_title, "Tab Title");
+  EXPECT_FALSE(tab_entry->timestamp.is_null());
 
   ASSERT_TRUE(text_entry);
-  EXPECT_EQ((*text_entry)->url, GURL("https://example.com/select"));
-  EXPECT_EQ((*text_entry)->tab_title, "Selection Title");
-  EXPECT_EQ((*text_entry)->selected_text, "Selected Text Detail");
-  EXPECT_FALSE((*text_entry)->timestamp.is_null());
+  EXPECT_EQ(text_entry->url, GURL("https://example.com/select"));
+  EXPECT_EQ(text_entry->tab_title, "Selection Title");
+  EXPECT_EQ(text_entry->selected_text, "Selected Text Detail");
+  EXPECT_FALSE(text_entry->timestamp.is_null());
 }
 
 TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
@@ -1382,26 +1424,96 @@ TEST_F(ContextHubPageHandlerTest, DeleteMemoryBankEntries_Success) {
       save_tab_future2.GetCallback());
   ASSERT_TRUE(save_tab_future2.Wait());
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>>
-      get_all_future1;
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> get_all_future1;
   handler_->GetAllMemoryBankEntries(get_all_future1.GetCallback());
-  std::vector<browser::context_hub::mojom::MemoryBankEntryPtr> entries1 =
-      get_all_future1.Take();
+  std::vector<MemoryBankEntry> entries1 = get_all_future1.Take();
   ASSERT_EQ(entries1.size(), 2u);
 
-  std::vector<int64_t> entry_ids = {entries1[0]->id, entries1[1]->id};
+  std::vector<int64_t> entry_ids = {entries1[0].id, entries1[1].id};
   base::test::TestFuture<void> delete_future;
   handler_->DeleteMemoryBankEntries(entry_ids, delete_future.GetCallback());
   ASSERT_TRUE(delete_future.Wait());
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>>
-      get_all_future2;
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&> get_all_future2;
   handler_->GetAllMemoryBankEntries(get_all_future2.GetCallback());
-  std::vector<browser::context_hub::mojom::MemoryBankEntryPtr> entries2 =
-      get_all_future2.Take();
+  std::vector<MemoryBankEntry> entries2 = get_all_future2.Take();
   EXPECT_TRUE(entries2.empty());
+}
+
+TEST_F(ContextHubPageHandlerTest, MemoryBankEntryDeltaNotifications) {
+  ContextHubService* service =
+      ContextHubServiceFactory::GetForProfile(&profile_);
+  ASSERT_TRUE(service);
+
+  base::test::TestFuture<MemoryBankEntry> save_notify_future;
+  EXPECT_CALL(mock_page_, OnMemoryBankEntryAdded(_))
+      .WillOnce([&save_notify_future](const MemoryBankEntry& entry) {
+        save_notify_future.SetValue(entry);
+      });
+
+  MemoryBankEntry entry(MemoryBankType::kTab, GURL("https://example.com/tab"),
+                        "Tab Title", "Page text");
+  entry.tags = {"tag1"};
+  entry.note = "Note";
+  entry.collection = "Collection";
+
+  base::test::TestFuture<bool> save_future;
+  service->SaveMemoryBankEntry(std::move(entry), save_future.GetCallback());
+  EXPECT_TRUE(save_future.Get());
+
+  MemoryBankEntry saved_entry = save_notify_future.Take();
+  EXPECT_EQ(saved_entry.type, MemoryBankType::kTab);
+  EXPECT_EQ(saved_entry.url, GURL("https://example.com/tab"));
+  EXPECT_EQ(saved_entry.tab_title, "Tab Title");
+  EXPECT_EQ(saved_entry.selected_text, "Page text");
+  EXPECT_THAT(saved_entry.tags, testing::ElementsAre("tag1"));
+  EXPECT_EQ(saved_entry.note, "Note");
+  EXPECT_EQ(saved_entry.collection, "Collection");
+
+  int64_t id = saved_entry.id;
+
+  base::test::TestFuture<
+      int64_t, browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr>
+      update_notify_future;
+  EXPECT_CALL(mock_page_, OnMemoryBankEntryUpdated(_, _))
+      .WillOnce([&update_notify_future](
+                    int64_t updated_id,
+                    browser::context_hub::mojom::MemoryBankEntryAnnotationsPtr
+                        annotations) {
+        update_notify_future.SetValue(updated_id, std::move(annotations));
+      });
+
+  auto annotations =
+      browser::context_hub::mojom::MemoryBankEntryAnnotations::New();
+  annotations->tags = std::vector<std::string>{"tag2"};
+  annotations->note = "Updated Note";
+  annotations->collection = "Updated Collection";
+
+  base::test::TestFuture<bool> update_future;
+  handler_->UpdateMemoryBankEntryAnnotations(id, std::move(annotations),
+                                             update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  auto [updated_id, updated_annotations] = update_notify_future.Take();
+  EXPECT_EQ(updated_id, id);
+  ASSERT_TRUE(updated_annotations);
+  ASSERT_TRUE(updated_annotations->tags.has_value());
+  EXPECT_THAT(*updated_annotations->tags, testing::ElementsAre("tag2"));
+  EXPECT_EQ(updated_annotations->note, "Updated Note");
+  EXPECT_EQ(updated_annotations->collection, "Updated Collection");
+
+  base::test::TestFuture<std::vector<int64_t>> delete_notify_future;
+  EXPECT_CALL(mock_page_, OnMemoryBankEntriesDeleted(_))
+      .WillOnce([&delete_notify_future](const std::vector<int64_t>& ids) {
+        delete_notify_future.SetValue(ids);
+      });
+
+  base::test::TestFuture<void> delete_future;
+  handler_->DeleteMemoryBankEntries({id}, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Wait());
+
+  auto deleted_ids = delete_notify_future.Take();
+  EXPECT_THAT(deleted_ids, testing::ElementsAre(id));
 }
 
 TEST_F(ContextHubPageHandlerTest, GetAllMemoryBankTags_Empty) {
@@ -1912,13 +2024,12 @@ TEST_F(ContextHubPageHandlerTest, AskGeminiWithContext_WithSelectedEntries) {
       save_future.GetCallback());
   ASSERT_TRUE(save_future.Wait());
 
-  base::test::TestFuture<
-      std::vector<browser::context_hub::mojom::MemoryBankEntryPtr>>
+  base::test::TestFuture<const std::vector<MemoryBankEntry>&>
       all_entries_future;
   handler_->GetAllMemoryBankEntries(all_entries_future.GetCallback());
   auto entries = all_entries_future.Take();
   ASSERT_EQ(entries.size(), 1u);
-  int64_t entry_id = entries[0]->id;
+  int64_t entry_id = entries[0].id;
 
   EXPECT_CALL(
       *GetMockOptimizationGuideService(),

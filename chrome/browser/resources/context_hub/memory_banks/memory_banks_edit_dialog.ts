@@ -19,13 +19,6 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 import {getCss} from './memory_banks_edit_dialog.css.js';
 import {getHtml} from './memory_banks_edit_dialog.html.js';
 
-export interface EntryAnnotationsUpdatedDetail {
-  id: bigint;
-  collection: string|null;
-  note: string|null;
-  tags: string[];
-}
-
 export interface MemoryBanksEditDialogElement {
   $: {
     dialog: CrDialogElement,
@@ -125,12 +118,6 @@ export class MemoryBanksEditDialogElement extends CrLitElement {
                           });
 
     if (success) {
-      this.fire('entry-annotations-updated', {
-        id,
-        collection,
-        note,
-        tags,
-      } as EntryAnnotationsUpdatedDetail);
       this.$.dialog.close();
     }
   }

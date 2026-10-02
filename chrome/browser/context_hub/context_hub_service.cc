@@ -5,6 +5,8 @@
 #include "chrome/browser/context_hub/context_hub_service.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -253,6 +255,7 @@ ContextHubService::ContextHubService(
       tab_group_store_(std::move(tab_group_store)),
       auto_todos_store_(std::move(auto_todos_store)) {
   CHECK(memory_bank_);
+  memory_bank_observation_.Observe(memory_bank_.get());
   identity_manager_observation_.Observe(&identity_manager_.get());
   if (auto_todos_store_) {
     auto_todos_store_->AddObserver(this);
@@ -420,6 +423,24 @@ void ContextHubService::RemoveObserver(Observer* observer) {
 void ContextHubService::OnAutoTodosChanged(
     base::span<const AutoTodoEntry> entries) {
   observers_.Notify(&Observer::OnAutoTodosChanged, entries);
+}
+
+void ContextHubService::OnMemoryBankEntryAdded(const MemoryBankEntry& entry) {
+  observers_.Notify(&Observer::OnMemoryBankEntryAdded, entry);
+}
+
+void ContextHubService::OnMemoryBankEntryUpdated(
+    int64_t id,
+    const std::vector<std::string>& tags,
+    const std::optional<std::string>& note,
+    const std::optional<std::string>& collection) {
+  observers_.Notify(&Observer::OnMemoryBankEntryUpdated, id, tags, note,
+                    collection);
+}
+
+void ContextHubService::OnMemoryBankEntriesDeleted(
+    const std::vector<int64_t>& ids) {
+  observers_.Notify(&Observer::OnMemoryBankEntriesDeleted, ids);
 }
 
 void ContextHubService::GenerateFirstPartyAutoTodos(

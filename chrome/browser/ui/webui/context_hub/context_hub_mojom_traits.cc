@@ -200,6 +200,45 @@ bool StructTraits<
 }
 
 // static
+browser::context_hub::mojom::EntryType EnumTraits<
+    browser::context_hub::mojom::EntryType,
+    context_hub::MemoryBankType>::ToMojom(context_hub::MemoryBankType input) {
+  switch (input) {
+    case context_hub::MemoryBankType::kTab:
+      return browser::context_hub::mojom::EntryType::kTab;
+    case context_hub::MemoryBankType::kTextSelection:
+      return browser::context_hub::mojom::EntryType::kTextSelection;
+  }
+  NOTREACHED();
+}
+
+// static
+context_hub::MemoryBankType EnumTraits<browser::context_hub::mojom::EntryType,
+                                       context_hub::MemoryBankType>::
+    FromMojom(browser::context_hub::mojom::EntryType input) {
+  switch (input) {
+    case browser::context_hub::mojom::EntryType::kTab:
+      return context_hub::MemoryBankType::kTab;
+    case browser::context_hub::mojom::EntryType::kTextSelection:
+      return context_hub::MemoryBankType::kTextSelection;
+  }
+  NOTREACHED();
+}
+
+// static
+bool StructTraits<browser::context_hub::mojom::MemoryBankEntryDataView,
+                  context_hub::MemoryBankEntry>::
+    Read(browser::context_hub::mojom::MemoryBankEntryDataView data,
+         context_hub::MemoryBankEntry* out) {
+  out->id = data.id();
+  return data.ReadType(&out->type) && data.ReadTimestamp(&out->timestamp) &&
+         data.ReadUrl(&out->url) && data.ReadTabTitle(&out->tab_title) &&
+         data.ReadSelectedText(&out->selected_text) &&
+         data.ReadTags(&out->tags) && data.ReadNote(&out->note) &&
+         data.ReadCollection(&out->collection);
+}
+
+// static
 browser::context_hub::mojom::SourceReferenceDataView::Tag
 UnionTraits<browser::context_hub::mojom::SourceReferenceDataView,
             personal_context::proto::SourceReference>::

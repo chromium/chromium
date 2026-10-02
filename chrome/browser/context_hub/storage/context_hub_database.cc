@@ -96,17 +96,17 @@ bool ContextHubDatabase::Init(const base::FilePath& db_path) {
   return transaction.Commit();
 }
 
-bool ContextHubDatabase::AddOrUpdateMemoryBankEntry(
+std::optional<int64_t> ContextHubDatabase::AddOrUpdateMemoryBankEntry(
     const MemoryBankEntry& entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_ || !db_->is_open()) {
-    return false;
+    return std::nullopt;
   }
 
   size_t max_entries = features::kMaxMemoryBankEntries.Get();
   // If adding a new entry and the max entries limit is reached, reject.
   if (entry.id == 0 && memory_bank_table_.GetEntryCount() >= max_entries) {
-    return false;
+    return std::nullopt;
   }
 
   return memory_bank_table_.AddOrUpdateEntry(entry);

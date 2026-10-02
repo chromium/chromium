@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "components/sync_tab_context/container_id.h"
@@ -38,6 +39,8 @@ class TabContextSyncMemoryBank : public MemoryBank {
   ~TabContextSyncMemoryBank() override;
 
   // MemoryBank implementation:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            OperationCompleteCallback callback) override;
   void UpdateEntryAnnotations(int64_t id,
@@ -62,6 +65,7 @@ class TabContextSyncMemoryBank : public MemoryBank {
 
   std::optional<sync_tab_context::ContainerId> cached_container_id_;
   mutable base::LRUCache<int64_t, MemoryBankEntry> entries_;
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<TabContextSyncMemoryBank> weak_factory_{this};
 };

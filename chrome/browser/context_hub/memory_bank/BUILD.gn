@@ -41,6 +41,20 @@ source_set("impl") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_memory_bank_observer.cc",
+    "mock_memory_bank_observer.h",
+  ]
+
+  public_deps = [
+    ":memory_bank",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -52,6 +66,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":memory_bank",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/context_hub:prefs",

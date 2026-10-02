@@ -11,8 +11,10 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
+#include "chrome/browser/context_hub/memory_bank/mock_memory_bank_observer.h"
 #include "chrome/browser/context_hub/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_tab_context/tab_context_sync_service.h"
@@ -278,6 +280,50 @@ TEST_F(TabContextSyncMemoryBankTest, UpdateEntryAnnotations_Success) {
   EXPECT_THAT(entries[0].tags,
               testing::ElementsAre("new_tag1", "new_tag2"));
   EXPECT_EQ(entries[0].tab_title, "Title");
+}
+
+TEST_F(TabContextSyncMemoryBankTest, ObserverNotifiedOnMutations) {
+  const sync_tab_context::ContainerId kContainerId(
+      base::Uuid::GenerateRandomV4());
+  EXPECT_CALL(mock_sync_service_, CreateContainer())
+      .WillOnce(Return(kContainerId));
+  EXPECT_CALL(mock_sync_service_, UploadPageContext(kContainerId, _, _))
+      .WillOnce(Return(true));
+
+  MockMemoryBankObserver observer;
+  base::ScopedObservation<MemoryBank, MemoryBank::Observer> observation(
+      &observer);
+  observation.Observe(memory_bank_.get());
+
+  const int64_t entry_id = 12345;
+  MemoryBankEntry entry(MemoryBankType::kTab, GURL("https://example.com"),
+                        "Title", "Data");
+  entry.id = entry_id;
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntryAdded(testing::AllOf(
+                  testing::Field(&MemoryBankEntry::id, entry_id),
+                  testing::Field(&MemoryBankEntry::tab_title, "Title"))));
+  base::test::TestFuture<bool> save_future;
+  memory_bank_->SaveMemoryBankEntry(std::move(entry),
+                                    save_future.GetCallback());
+  ASSERT_TRUE(save_future.Get());
+
+  EXPECT_CALL(observer, OnMemoryBankEntryUpdated(
+                            entry_id, testing::ElementsAre("tag1"),
+                            testing::Optional(std::string("Note")),
+                            testing::Optional(std::string("Collection"))));
+  base::test::TestFuture<bool> update_future;
+  memory_bank_->UpdateEntryAnnotations(entry_id, {"tag1"}, "Note", "Collection",
+                                       update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntriesDeleted(testing::ElementsAre(entry_id)));
+  base::test::TestFuture<bool> delete_future;
+  memory_bank_->DeleteEntries(base::span_from_ref(entry_id),
+                              delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
 }
 
 }  // namespace

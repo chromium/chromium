@@ -33,6 +33,14 @@ TabContextSyncMemoryBank::TabContextSyncMemoryBank(
 
 TabContextSyncMemoryBank::~TabContextSyncMemoryBank() = default;
 
+void TabContextSyncMemoryBank::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabContextSyncMemoryBank::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 std::optional<sync_tab_context::ContainerId>
 TabContextSyncMemoryBank::GetOrCreateContainerId() {
   if (cached_container_id_.has_value()) {
@@ -91,7 +99,7 @@ void TabContextSyncMemoryBank::SaveMemoryBankEntry(
   const int64_t entry_id = entry.id;
   std::string payload = entry.selected_text.value_or(std::string());
 
-  entries_.Put(entry_id, std::move(entry));
+  auto it = entries_.Put(entry_id, std::move(entry));
 
   // Note: Only `selected_text` is currently uploaded to TabContextSyncService.
   // All other fields and annotations (URL, tab title, timestamp, tags, note,
@@ -100,6 +108,7 @@ void TabContextSyncMemoryBank::SaveMemoryBankEntry(
   bool upload_success = tab_context_sync_service_->UploadPageContext(
       *container_id, base::NumberToString(entry_id), std::move(payload));
 
+  observers_.Notify(&Observer::OnMemoryBankEntryAdded, it->second);
   if (callback) {
     std::move(callback).Run(upload_success);
   }
@@ -125,6 +134,8 @@ void TabContextSyncMemoryBank::UpdateEntryAnnotations(
   it->second.tags = std::move(tags);
   it->second.note = std::move(note);
   it->second.collection = std::move(collection);
+  observers_.Notify(&Observer::OnMemoryBankEntryUpdated, id, it->second.tags,
+                    it->second.note, it->second.collection);
   if (callback) {
     std::move(callback).Run(/*success=*/true);
   }
@@ -159,11 +170,16 @@ void TabContextSyncMemoryBank::GetEntriesByIds(
 void TabContextSyncMemoryBank::DeleteEntries(
     base::span<const int64_t> ids,
     OperationCompleteCallback callback) {
+  std::vector<int64_t> deleted_ids;
   for (int64_t id : ids) {
     auto it = entries_.Peek(id);
     if (it != entries_.end()) {
       entries_.Erase(it);
+      deleted_ids.push_back(id);
     }
+  }
+  if (!deleted_ids.empty()) {
+    observers_.Notify(&Observer::OnMemoryBankEntriesDeleted, deleted_ids);
   }
   if (callback) {
     std::move(callback).Run(/*success=*/true);

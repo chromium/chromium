@@ -23,6 +23,14 @@ constexpr size_t kMaxEntries = 50;
 InMemoryMemoryBank::InMemoryMemoryBank() : entries_(kMaxEntries) {}
 InMemoryMemoryBank::~InMemoryMemoryBank() = default;
 
+void InMemoryMemoryBank::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void InMemoryMemoryBank::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void InMemoryMemoryBank::SaveMemoryBankEntry(
     MemoryBankEntry entry,
     OperationCompleteCallback callback) {
@@ -34,7 +42,8 @@ void InMemoryMemoryBank::SaveMemoryBankEntry(
     entry.timestamp = base::Time::Now();
   }
   int64_t entry_id = entry.id;
-  entries_.Put(entry_id, std::move(entry));
+  auto it = entries_.Put(entry_id, std::move(entry));
+  observers_.Notify(&Observer::OnMemoryBankEntryAdded, it->second);
   if (callback) {
     std::move(callback).Run(/*success=*/true);
   }
@@ -56,6 +65,8 @@ void InMemoryMemoryBank::UpdateEntryAnnotations(
   it->second.tags = std::move(tags);
   it->second.note = std::move(note);
   it->second.collection = std::move(collection);
+  observers_.Notify(&Observer::OnMemoryBankEntryUpdated, id, it->second.tags,
+                    it->second.note, it->second.collection);
   if (callback) {
     std::move(callback).Run(/*success=*/true);
   }
@@ -87,11 +98,16 @@ void InMemoryMemoryBank::GetEntriesByIds(base::span<const int64_t> ids,
 
 void InMemoryMemoryBank::DeleteEntries(base::span<const int64_t> ids,
                                        OperationCompleteCallback callback) {
+  std::vector<int64_t> deleted_ids;
   for (int64_t id : ids) {
     auto it = entries_.Peek(id);
     if (it != entries_.end()) {
       entries_.Erase(it);
+      deleted_ids.push_back(id);
     }
+  }
+  if (!deleted_ids.empty()) {
+    observers_.Notify(&Observer::OnMemoryBankEntriesDeleted, deleted_ids);
   }
   if (callback) {
     std::move(callback).Run(/*success=*/true);

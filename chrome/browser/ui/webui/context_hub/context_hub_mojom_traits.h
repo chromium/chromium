@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CONTEXT_HUB_CONTEXT_HUB_MOJOM_TRAITS_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <variant>
@@ -13,6 +14,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/context_hub/auto_todos/auto_todo_entry.h"
+#include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-forward.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-shared.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
@@ -200,6 +202,56 @@ struct StructTraits<
   static bool Read(
       browser::context_hub::mojom::AutoTodosGenerationMetadataDataView data,
       context_hub::AutoTodosGenerationMetadata* out);
+};
+
+template <>
+struct EnumTraits<browser::context_hub::mojom::EntryType,
+                  context_hub::MemoryBankType> {
+  static browser::context_hub::mojom::EntryType ToMojom(
+      context_hub::MemoryBankType input);
+  static context_hub::MemoryBankType FromMojom(
+      browser::context_hub::mojom::EntryType input);
+};
+
+template <>
+struct StructTraits<browser::context_hub::mojom::MemoryBankEntryDataView,
+                    context_hub::MemoryBankEntry> {
+  static int64_t id(const context_hub::MemoryBankEntry& entry) {
+    return entry.id;
+  }
+  static context_hub::MemoryBankType type(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.type;
+  }
+  static base::Time timestamp(const context_hub::MemoryBankEntry& entry) {
+    return entry.timestamp;
+  }
+  static const GURL& url(const context_hub::MemoryBankEntry& entry) {
+    return entry.url;
+  }
+  static const std::string& tab_title(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.tab_title;
+  }
+  static const std::optional<std::string>& selected_text(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.selected_text;
+  }
+  static const std::vector<std::string>& tags(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.tags;
+  }
+  static const std::optional<std::string>& note(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.note;
+  }
+  static const std::optional<std::string>& collection(
+      const context_hub::MemoryBankEntry& entry) {
+    return entry.collection;
+  }
+
+  static bool Read(browser::context_hub::mojom::MemoryBankEntryDataView data,
+                   context_hub::MemoryBankEntry* out);
 };
 
 template <>

@@ -126,9 +126,10 @@ bool MemoryBankTable::MigrateToVersion2AddNoteAndCollectionColumns() {
                         "TEXT");
 }
 
-bool MemoryBankTable::AddOrUpdateEntry(const MemoryBankEntry& entry) {
+std::optional<int64_t> MemoryBankTable::AddOrUpdateEntry(
+    const MemoryBankEntry& entry) {
   if (!db_) {
-    return false;
+    return std::nullopt;
   }
 
   sql::Statement statement;
@@ -174,7 +175,10 @@ bool MemoryBankTable::AddOrUpdateEntry(const MemoryBankEntry& entry) {
     statement.BindNull(8);
   }
 
-  return statement.Run();
+  if (!statement.Run()) {
+    return std::nullopt;
+  }
+  return entry.id > 0 ? entry.id : db_->GetLastInsertRowId();
 }
 
 bool MemoryBankTable::UpdateEntryAnnotations(

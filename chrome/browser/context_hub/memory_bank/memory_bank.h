@@ -6,18 +6,40 @@
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_MEMORY_BANK_H_
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/observer_list_types.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 
 namespace context_hub {
 
 class MemoryBank {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when `entry` is saved. If an entry with the same ID already
+    // exists, it has been replaced by `entry`.
+    virtual void OnMemoryBankEntryAdded(const MemoryBankEntry& entry) {}
+    // Called when the annotations of the entry with `id` are updated. The
+    // given annotations replace the previous ones.
+    virtual void OnMemoryBankEntryUpdated(
+        int64_t id,
+        const std::vector<std::string>& tags,
+        const std::optional<std::string>& note,
+        const std::optional<std::string>& collection) {}
+    // Called when entries are deleted. `ids` may contain IDs that did not
+    // match an existing entry, which observers should ignore.
+    virtual void OnMemoryBankEntriesDeleted(const std::vector<int64_t>& ids) {}
+  };
+
   virtual ~MemoryBank() = default;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   using OperationCompleteCallback = base::OnceCallback<void(bool)>;
   // Saves or updates an entry in the memory bank.

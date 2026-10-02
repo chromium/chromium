@@ -23,6 +23,8 @@ class NoOpMemoryBank : public MemoryBank {
   ~NoOpMemoryBank() override;
 
   // MemoryBank:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            OperationCompleteCallback callback) override;
   void UpdateEntryAnnotations(int64_t id,

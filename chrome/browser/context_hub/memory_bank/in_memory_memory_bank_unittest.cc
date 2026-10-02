@@ -7,8 +7,10 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/context_hub/memory_bank/mock_memory_bank_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -200,6 +202,54 @@ TEST(InMemoryMemoryBankTest, GetAllCollections) {
       [&](const std::vector<std::string>& result) { collections = result; }));
 
   EXPECT_THAT(collections, testing::ElementsAre("Recipes", "Research"));
+}
+
+TEST(InMemoryMemoryBankTest, ObserverNotifiedOnMutations) {
+  InMemoryMemoryBank memory_bank;
+  MockMemoryBankObserver observer;
+  base::ScopedObservation<MemoryBank, MemoryBank::Observer> observation(
+      &observer);
+  observation.Observe(&memory_bank);
+
+  EXPECT_CALL(observer, OnMemoryBankEntryAdded(testing::Field(
+                            &MemoryBankEntry::tab_title, "Google")));
+  memory_bank.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://www.google.com"),
+                      "Google", "Page text"),
+      base::DoNothing());
+
+  std::vector<MemoryBankEntry> entries = GetAllEntriesSync(memory_bank);
+  ASSERT_EQ(1u, entries.size());
+  int64_t id = entries[0].id;
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntryUpdated(id, testing::ElementsAre("tag1"),
+                                       testing::Optional(std::string("Note")),
+                                       testing::Optional(std::string("Work"))));
+  memory_bank.UpdateEntryAnnotations(id, {"tag1"}, "Note", "Work",
+                                     base::DoNothing());
+
+  // Updating a non-existent entry should not notify observers.
+  EXPECT_CALL(observer, OnMemoryBankEntryUpdated(testing::_, testing::_,
+                                                 testing::_, testing::_))
+      .Times(0);
+  memory_bank.UpdateEntryAnnotations(999999, {"tag1"}, "Note", "Work",
+                                     base::DoNothing());
+
+  // Deleting a non-existent entry should not notify observers.
+  EXPECT_CALL(observer, OnMemoryBankEntriesDeleted(testing::_)).Times(0);
+  memory_bank.DeleteEntries({999999}, base::DoNothing());
+
+  // Deleting an existing entry should notify observers with the deleted IDs.
+  EXPECT_CALL(observer, OnMemoryBankEntriesDeleted(testing::ElementsAre(id)));
+  memory_bank.DeleteEntries({id, 999999}, base::DoNothing());
+
+  observation.Reset();
+  EXPECT_CALL(observer, OnMemoryBankEntryAdded(testing::_)).Times(0);
+  memory_bank.SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://www.google.com"),
+                      "Google", "Page text"),
+      base::DoNothing());
 }
 
 }  // namespace context_hub

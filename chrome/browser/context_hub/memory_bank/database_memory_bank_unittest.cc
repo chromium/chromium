@@ -7,8 +7,10 @@
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/context_hub/memory_bank/mock_memory_bank_observer.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,6 +175,48 @@ TEST_F(DatabaseMemoryBankTest, GetAllCollections) {
   base::test::TestFuture<const std::vector<std::string>&> coll_future;
   memory_bank_->GetAllCollections(coll_future.GetCallback());
   EXPECT_THAT(coll_future.Get(), testing::ElementsAre("Recipes", "Research"));
+}
+
+TEST_F(DatabaseMemoryBankTest, ObserverNotifiedOnMutations) {
+  MockMemoryBankObserver observer;
+  base::ScopedObservation<MemoryBank, MemoryBank::Observer> observation(
+      &observer);
+  observation.Observe(memory_bank_.get());
+
+  int64_t added_id = 0;
+  EXPECT_CALL(
+      observer,
+      OnMemoryBankEntryAdded(testing::AllOf(
+          testing::Field(&MemoryBankEntry::url, GURL("https://example.com")),
+          testing::Field(&MemoryBankEntry::tab_title, "Example"))))
+      .WillOnce([&added_id](const MemoryBankEntry& entry) {
+        EXPECT_GT(entry.id, 0);
+        added_id = entry.id;
+      });
+  base::test::TestFuture<bool> save_future;
+  memory_bank_->SaveMemoryBankEntry(
+      MemoryBankEntry(MemoryBankType::kTab, GURL("https://example.com"),
+                      "Example", "Page content"),
+      save_future.GetCallback());
+  ASSERT_TRUE(save_future.Get());
+  ASSERT_GT(added_id, 0);
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntryUpdated(
+                  added_id, testing::ElementsAre("tag1"),
+                  testing::Optional(std::string("Updated Note")),
+                  testing::Optional(std::string("Updated Collection"))));
+  base::test::TestFuture<bool> update_future;
+  memory_bank_->UpdateEntryAnnotations(added_id, {"tag1"}, "Updated Note",
+                                       "Updated Collection",
+                                       update_future.GetCallback());
+  EXPECT_TRUE(update_future.Get());
+
+  EXPECT_CALL(observer,
+              OnMemoryBankEntriesDeleted(testing::ElementsAre(added_id)));
+  base::test::TestFuture<bool> delete_future;
+  memory_bank_->DeleteEntries({added_id}, delete_future.GetCallback());
+  EXPECT_TRUE(delete_future.Get());
 }
 
 }  // namespace context_hub

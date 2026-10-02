@@ -53,7 +53,7 @@ void ContextHubBackendImpl::OnDatabaseInitialized(bool success) {
 
 void ContextHubBackendImpl::AddOrUpdateMemoryBankEntry(
     MemoryBankEntry entry,
-    OperationCompleteCallback callback) {
+    AddOrUpdateCallback callback) {
   switch (db_state_) {
     case DbState::kUninitialized:
     case DbState::kInitializing:
@@ -68,7 +68,7 @@ void ContextHubBackendImpl::AddOrUpdateMemoryBankEntry(
           .Then(std::move(callback));
       break;
     case DbState::kFailed:
-      std::move(callback).Run(false);
+      std::move(callback).Run(std::nullopt);
       break;
   }
 }

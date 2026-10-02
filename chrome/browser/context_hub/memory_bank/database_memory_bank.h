@@ -6,9 +6,14 @@
 #define CHROME_BROWSER_CONTEXT_HUB_MEMORY_BANK_DATABASE_MEMORY_BANK_H_
 
 #include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 
 namespace context_hub {
@@ -25,6 +30,8 @@ class DatabaseMemoryBank : public MemoryBank {
   ~DatabaseMemoryBank() override;
 
   // MemoryBank implementation:
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            OperationCompleteCallback callback) override;
   void UpdateEntryAnnotations(int64_t id,
@@ -41,7 +48,22 @@ class DatabaseMemoryBank : public MemoryBank {
   void GetAllCollections(GetStringsCallback callback) const override;
 
  private:
+  void OnEntrySaved(MemoryBankEntry entry,
+                    OperationCompleteCallback callback,
+                    std::optional<int64_t> id);
+  void OnEntryAnnotationsUpdated(int64_t id,
+                                 const std::vector<std::string>& tags,
+                                 const std::optional<std::string>& note,
+                                 const std::optional<std::string>& collection,
+                                 OperationCompleteCallback callback,
+                                 bool success);
+  void OnEntriesDeleted(const std::vector<int64_t>& ids,
+                        OperationCompleteCallback callback,
+                        bool success);
+
   const raw_ref<ContextHubBackend> context_hub_backend_;
+  base::ObserverList<Observer> observers_;
+  base::WeakPtrFactory<DatabaseMemoryBank> weak_factory_{this};
 };
 
 }  // namespace context_hub

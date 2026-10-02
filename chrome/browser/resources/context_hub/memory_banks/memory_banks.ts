@@ -18,11 +18,10 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory, EntryType} from '../context_hub.mojom-webui.js';
-import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
+import type {MemoryBankEntry, MemoryBankEntryAnnotations} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './memory_banks.css.js';
 import {getHtml} from './memory_banks.html.js';
-import type {EntryAnnotationsUpdatedDetail} from './memory_banks_edit_dialog.js';
 import {computeSuggestions, matchesMemoryBankEntry, parseSearchQuery} from './memory_banks_search.js';
 import type {SearchSuggestion} from './memory_banks_search.js';
 
@@ -108,9 +107,36 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor searchSuggestions_: SearchSuggestion[] = [];
   protected accessor highlightedSuggestionIndex_: number = -1;
   private activeMenuEntry_: MemoryBankEntry|null = null;
+  private listenerIds_: number[] = [];
 
   override connectedCallback() {
     super.connectedCallback();
+    const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
+    this.listenerIds_.push(
+        callbackRouter.onMemoryBankEntryAdded.addListener(
+            (entry: MemoryBankEntry) => {
+              this.entries = [
+                entry,
+                ...this.entries.filter(existing => existing.id !== entry.id),
+              ];
+            }),
+        callbackRouter.onMemoryBankEntryUpdated.addListener(
+            (id: bigint, annotations: MemoryBankEntryAnnotations) => {
+              this.entries = this.entries.map(
+                  existing => existing.id === id ? {
+                    ...existing,
+                    collection: annotations.collection,
+                    note: annotations.note,
+                    tags: annotations.tags ?? [],
+                  } :
+                                                   existing);
+            }),
+        callbackRouter.onMemoryBankEntriesDeleted.addListener(
+            (ids: bigint[]) => {
+              const deletedIds = new Set(ids);
+              this.entries =
+                  this.entries.filter(entry => !deletedIds.has(entry.id));
+            }));
     this.fetchEntries();
     document.addEventListener('pointerdown', this.onDocumentPointerDown_);
   }
@@ -118,6 +144,10 @@ export class MemoryBanksElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('pointerdown', this.onDocumentPointerDown_);
+    this.listenerIds_.forEach(
+        id => browserProxyFactory.getInstance().callbackRouter.removeListener(
+            id));
+    this.listenerIds_ = [];
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -417,14 +447,6 @@ export class MemoryBanksElement extends CrLitElement {
     this.editingEntry_ = null;
   }
 
-  protected onEntryAnnotationsUpdated_(
-      e: CustomEvent<EntryAnnotationsUpdatedDetail>) {
-    const {id, collection, note, tags} = e.detail;
-    this.entries = this.entries.map(
-        entry => entry.id === id ? {...entry, collection, note, tags} : entry);
-    this.editingEntry_ = null;
-  }
-
   convertMojoTimeToDate(mojoTime: {internalValue: bigint}): Date {
     // Mojo Time represents microseconds since the Windows epoch (January 1,
     // 1601). JavaScript Date expects milliseconds since the Unix epoch (January
@@ -615,7 +637,6 @@ export class MemoryBanksElement extends CrLitElement {
       updated.delete(id);
     }
     this.selectedIds = updated;
-    await this.fetchEntries();
   }
 
   protected onAskGeminiClick_() {

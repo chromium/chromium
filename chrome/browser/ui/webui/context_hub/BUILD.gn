@@ -51,6 +51,14 @@ mojom("mojo_bindings") {
           cpp = "::context_hub::AutoTodosGenerationMetadata"
         },
         {
+          mojom = "browser.context_hub.mojom.EntryType"
+          cpp = "::context_hub::MemoryBankType"
+        },
+        {
+          mojom = "browser.context_hub.mojom.MemoryBankEntry"
+          cpp = "::context_hub::MemoryBankEntry"
+        },
+        {
           mojom = "browser.context_hub.mojom.SmartSearchResult"
           cpp = "::personal_context::proto::SmartSearchItem"
         },
@@ -60,6 +68,7 @@ mojom("mojo_bindings") {
       traits_deps = [
         "//base",
         "//chrome/browser/context_hub/auto_todos",
+        "//chrome/browser/context_hub/memory_bank",
         "//components/personal_context/proto:personal_context_proto",
         "//mojo/public/mojom/base",
         "//third_party/abseil-cpp:absl",
