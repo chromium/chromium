@@ -1574,4 +1574,43 @@ TEST_F(H265DecoderTest, InvalidCropRectReturnsDecodeError) {
   EXPECT_EQ(AcceleratedVideoDecoder::kDecodeError, decoder_->Decode());
 }
 
+TEST_F(H265DecoderTest, NoConfigChangeAfterResetWithSameSps) {
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(gfx::Size(320, 184), decoder_->GetPicSize());
+  EXPECT_EQ(HEVCPROFILE_MAIN, decoder_->GetProfile());
+  EXPECT_EQ(8u, decoder_->GetBitDepth());
+
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+        .Times(1);
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+        .Times(1);
+    EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(0))).Times(1);
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0)));
+  }
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+
+  // Resetting the decoder (e.g. on seek) and decoding a stream with the same
+  // SPS should not trigger another kConfigChange.
+  decoder_->Reset();
+
+  SetInputFrameFiles({kSpsPps, kFrame0});
+  {
+    InSequence sequence;
+    EXPECT_CALL(*accelerator_, CreateH265Picture()).Times(1);
+    EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _, _))
+        .Times(1);
+    EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _, _, _, _, _))
+        .Times(1);
+    EXPECT_CALL(*accelerator_, SubmitDecode(HasPoc(0))).Times(1);
+    EXPECT_CALL(*accelerator_, OutputPicture(HasPoc(0)));
+  }
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 }  // namespace media
