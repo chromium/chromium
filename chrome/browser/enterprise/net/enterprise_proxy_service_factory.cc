@@ -34,6 +34,9 @@ EnterpriseProxyServiceFactory::EnterpriseProxyServiceFactory()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
+              // Built only when EnterpriseNetworkAuthService exists for the
+              // profile, which is gated for Isolated mode.
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(EnterpriseNetworkAuthServiceFactory::GetInstance());
@@ -50,6 +53,13 @@ EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
+  // EnterpriseProxyService requires EnterpriseNetworkAuthService, which is not
+  // created e.g. for Isolated mode profiles while Milestone 2 is disabled.
+  enterprise_net::EnterpriseNetworkAuthService* auth_service =
+      EnterpriseNetworkAuthServiceFactory::GetForProfile(profile);
+  if (!auth_service) {
+    return nullptr;
+  }
   auto url_loader_factory_callback = base::BindRepeating(
       [](Profile* profile) {
         return profile->GetDefaultStoragePartition()
@@ -57,9 +67,7 @@ EnterpriseProxyServiceFactory::BuildServiceInstanceForBrowserContext(
       },
       profile);
   return std::make_unique<enterprise_net::EnterpriseProxyService>(
-      profile->GetPrefs(),
-      EnterpriseNetworkAuthServiceFactory::GetForProfile(profile),
-      std::move(url_loader_factory_callback),
+      profile->GetPrefs(), auth_service, std::move(url_loader_factory_callback),
       enterprise::ProfileIdServiceFactory::GetForProfile(profile),
       net::NetLog::Get());
 }
