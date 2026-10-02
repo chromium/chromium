@@ -736,9 +736,6 @@ void SidePanelCoordinatorAndroid::StartClosingPanel(
   // `SidePanelEntryObserver::OnEntryHiddenWithReason()`, so
   // `SidePanelEntry::OnEntryHidden()` and
   // `SidePanelEntry::OnEntryHiddenWithReason()` can't reset the active entry.
-  //
-  // TODO(crbug.com/503113522): Consider having `SidePanelRegistry` _reset_
-  // the active entry so it's consistent with how the active entry is _set_.
   if (auto* contextual_registry = GetActiveContextualRegistry()) {
     contextual_registry->ResetActiveEntry();
   }
