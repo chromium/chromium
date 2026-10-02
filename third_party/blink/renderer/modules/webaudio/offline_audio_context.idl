@@ -31,8 +31,10 @@
     [CallWith=ExecutionContext, RaisesException, Measure] constructor(OfflineAudioContextOptions options);
     // Offline rendering
     attribute EventHandler oncomplete;
-    readonly attribute unsigned long length;
+    readonly attribute unsigned long? length;
     [CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
+    // TODO(crbug.com/530596178): When this feature ships, remove the overload above and change chunkSize type to "optional unsigned long? chunkSize = null"
+    [RuntimeEnabled=OfflineAudioContextIncrementalRendering, CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering(unsigned long? chunkSize);
     [RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<undefined> suspend(double suspendTime);
     [RaisesException, MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
 };

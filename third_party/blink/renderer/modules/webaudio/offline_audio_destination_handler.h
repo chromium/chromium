@@ -56,6 +56,8 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // flight. `render_target` must have `number_of_channels_` channels.
   void SetSharedRenderTarget(AudioBuffer* render_target);
 
+  void StopRenderThread();
+
   unsigned NumberOfChannels() const { return number_of_channels_; }
 
   bool RequiresTailProcessing() const final { return false; }

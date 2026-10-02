@@ -4,8 +4,9 @@
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 
+#include <limits>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_offline_audio_context_options.h"
@@ -17,6 +18,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -164,6 +166,161 @@ TEST_F(OfflineAudioContextTest, OfflineGCWhilePendingPromise) {
   // OfflineAudioContext calls DetachPendingResolvers.
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(weak_context.Get(), nullptr);
+}
+
+TEST_F(OfflineAudioContextTest, MultipleStartRenderingCalls) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(true);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setLength(300);
+  options->setSampleRate(44100.0f);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  ScriptPromiseTester first_tester(
+      scope.GetScriptState(),
+      context->startOfflineRendering(scope.GetScriptState(), 128,
+                                     ASSERT_NO_EXCEPTION));
+  ScriptPromiseTester second_tester(
+      scope.GetScriptState(),
+      context->startOfflineRendering(scope.GetScriptState(), 128,
+                                     ASSERT_NO_EXCEPTION));
+  ScriptPromiseTester third_tester(
+      scope.GetScriptState(),
+      context->startOfflineRendering(scope.GetScriptState(), 128,
+                                     ASSERT_NO_EXCEPTION));
+
+  first_tester.WaitUntilSettled();
+  second_tester.WaitUntilSettled();
+  third_tester.WaitUntilSettled();
+
+  ASSERT_TRUE(first_tester.IsFulfilled());
+  ASSERT_TRUE(second_tester.IsFulfilled());
+  ASSERT_TRUE(third_tester.IsFulfilled());
+
+  AudioBuffer* first_buffer = ToScriptWrappable<AudioBuffer>(
+      scope.GetIsolate(), first_tester.Value().V8Value().As<v8::Object>());
+  AudioBuffer* second_buffer = ToScriptWrappable<AudioBuffer>(
+      scope.GetIsolate(), second_tester.Value().V8Value().As<v8::Object>());
+  AudioBuffer* third_buffer = ToScriptWrappable<AudioBuffer>(
+      scope.GetIsolate(), third_tester.Value().V8Value().As<v8::Object>());
+
+  ASSERT_TRUE(first_buffer);
+  ASSERT_TRUE(second_buffer);
+  ASSERT_TRUE(third_buffer);
+  EXPECT_EQ(first_buffer->length(), 128u);
+  EXPECT_EQ(second_buffer->length(), 128u);
+  EXPECT_EQ(third_buffer->length(), 44u);
+}
+
+TEST_F(OfflineAudioContextTest, IndefiniteChunkSizeRoundingOverflow) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(true);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setSampleRate(44100.0f);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  DummyExceptionStateForTesting exception_state;
+  context->startOfflineRendering(scope.GetScriptState(),
+                                 std::numeric_limits<uint32_t>::max(),
+                                 exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kNotSupportedError);
+  EXPECT_EQ(exception_state.Message(),
+            "The requested chunk size is too large.");
+}
+
+TEST_F(OfflineAudioContextTest, MissingLengthWhenIncrementalRenderingDisabled) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(false);
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setSampleRate(44100.0);
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, exception_state);
+
+  EXPECT_EQ(context, nullptr);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<ESErrorType>(), ESErrorType::kTypeError);
+  EXPECT_EQ(exception_state.Message(),
+            "Failed to read the 'length' property from "
+            "'OfflineAudioContextOptions': Required member is undefined.");
+}
+
+TEST_F(OfflineAudioContextTest,
+       StartRenderingWhileRunningWhenIncrementalRenderingDisabled) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(false);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setLength(128);
+  options->setSampleRate(44100.0);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  ScriptPromiseTester render_tester(
+      scope.GetScriptState(), context->startOfflineRendering(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+
+  DummyExceptionStateForTesting exception_state;
+  context->startOfflineRendering(scope.GetScriptState(), exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+  EXPECT_EQ(exception_state.Message(),
+            "cannot startRendering when an OfflineAudioContext is running");
+
+  render_tester.WaitUntilSettled();
+  EXPECT_TRUE(render_tester.IsFulfilled());
+}
+
+TEST_F(OfflineAudioContextTest,
+       StartRenderingTwiceWhenIncrementalRenderingDisabled) {
+  ScopedOfflineAudioContextIncrementalRenderingForTest scoped_feature(false);
+  V8TestingScope scope;
+
+  OfflineAudioContextOptions* options = OfflineAudioContextOptions::Create();
+  options->setNumberOfChannels(1);
+  options->setLength(128);
+  options->setSampleRate(44100.0);
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(context);
+
+  ScriptPromiseTester suspend_tester(
+      scope.GetScriptState(),
+      context->suspendContext(scope.GetScriptState(), 0.0,
+                              ASSERT_NO_EXCEPTION));
+  ScriptPromiseTester render_tester(
+      scope.GetScriptState(), context->startOfflineRendering(
+                                  scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+  suspend_tester.WaitUntilSettled();
+  ASSERT_TRUE(suspend_tester.IsFulfilled());
+
+  DummyExceptionStateForTesting exception_state;
+  context->startOfflineRendering(scope.GetScriptState(), exception_state);
+  ASSERT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+  EXPECT_EQ(exception_state.Message(),
+            "cannot call startRendering more than once");
+
+  ScriptPromiseTester resume_tester(
+      scope.GetScriptState(),
+      context->resumeContext(scope.GetScriptState(), ASSERT_NO_EXCEPTION));
+  resume_tester.WaitUntilSettled();
+  EXPECT_TRUE(resume_tester.IsFulfilled());
+  render_tester.WaitUntilSettled();
+  EXPECT_TRUE(render_tester.IsFulfilled());
 }
 
 }  // namespace blink

@@ -25,8 +25,11 @@
 
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -57,7 +60,7 @@ namespace {
 OfflineAudioContext* CreateOfflineAudioContext(
     ExecutionContext* context,
     unsigned number_of_channels,
-    unsigned number_of_frames,
+    std::optional<unsigned> number_of_frames,
     float sample_rate,
     uint32_t render_quantum_frames,
     ExceptionState& exception_state) {
@@ -76,11 +79,11 @@ OfflineAudioContext* CreateOfflineAudioContext(
     return nullptr;
   }
 
-  if (!number_of_frames) {
+  if (number_of_frames.has_value() && !number_of_frames.value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         ExceptionMessages::IndexExceedsMinimumBound<unsigned>(
-            "number of frames", number_of_frames, 1));
+            "number of frames", number_of_frames.value(), 1));
     return nullptr;
   }
 
@@ -160,6 +163,15 @@ OfflineAudioContext* OfflineAudioContext::Create(
     ExecutionContext* context,
     const OfflineAudioContextOptions* options,
     ExceptionState& exception_state) {
+  if (!options->length().has_value() &&
+      !RuntimeEnabledFeatures::OfflineAudioContextIncrementalRenderingEnabled(
+          context)) {
+    exception_state.ThrowTypeError(
+        ExceptionMessages::FailedToGet("length", "OfflineAudioContextOptions",
+                                       "Required member is undefined."));
+    return nullptr;
+  }
+
   uint32_t render_quantum_frames = 128;
   if (RuntimeEnabledFeatures::WebAudioConfigurableRenderQuantumEnabled(
           context) &&
@@ -174,12 +186,13 @@ OfflineAudioContext* OfflineAudioContext::Create(
                                    render_quantum_frames, exception_state);
 }
 
-OfflineAudioContext::OfflineAudioContext(LocalDOMWindow* window,
-                                         unsigned number_of_channels,
-                                         uint32_t number_of_frames,
-                                         float sample_rate,
-                                         ExceptionState& exception_state,
-                                         uint32_t render_quantum_frames)
+OfflineAudioContext::OfflineAudioContext(
+    LocalDOMWindow* window,
+    unsigned number_of_channels,
+    std::optional<uint32_t> number_of_frames,
+    float sample_rate,
+    ExceptionState& exception_state,
+    uint32_t render_quantum_frames)
     : BaseAudioContext(window,
                        ContextType::kOfflineContext,
                        render_quantum_frames),
@@ -197,7 +210,8 @@ OfflineAudioContext::~OfflineAudioContext() {
 }
 
 void OfflineAudioContext::Trace(Visitor* visitor) const {
-  visitor->Trace(complete_resolver_);
+  visitor->Trace(start_rendering_resolvers_);
+  visitor->Trace(pending_render_targets_);
   visitor->Trace(scheduled_suspends_);
   BaseAudioContext::Trace(visitor);
 }
@@ -207,13 +221,50 @@ OfflineAudioDestinationNode* OfflineAudioContext::destinationNode() const {
       BaseAudioContext::destinationNode());
 }
 
+std::optional<uint32_t> OfflineAudioContext::CalculateEffectiveChunkSize(
+    std::optional<uint32_t> chunk_size) const {
+  const uint32_t render_quantum_frames =
+      GetDeferredTaskHandler().RenderQuantumFrames();
+
+  uint64_t buffer_size;
+  if (total_render_frames_.has_value()) {
+    CHECK_LT(committed_frames_, total_render_frames_.value());
+    uint32_t remaining = total_render_frames_.value() - committed_frames_;
+    if (!chunk_size.has_value()) {
+      // A finite render without a chunk size renders all remaining frames.
+      return remaining;
+    }
+    // A finite render with a chunk size renders `chunk_size` frames.
+    buffer_size = chunk_size.value();
+  } else {
+    // An indefinite render will render `chunk_size` frames if specified,
+    // otherwise defaults to one render quantum.
+    buffer_size = chunk_size.value_or(render_quantum_frames);
+  }
+
+  // Requested chunks are rounded up to a render quantum boundary.
+  uint64_t remainder = buffer_size % render_quantum_frames;
+  if (remainder != 0) {
+    buffer_size += render_quantum_frames - remainder;
+  }
+
+  if (total_render_frames_.has_value()) {
+    // The final finite chunk is trimmed to the exact remaining frame count.
+    buffer_size = std::min<uint64_t>(
+        buffer_size, total_render_frames_.value() - committed_frames_);
+  } else if (!base::IsValueInRangeForNumericType<uint32_t>(buffer_size)) {
+    return std::nullopt;
+  }
+
+  return base::checked_cast<uint32_t>(buffer_size);
+}
+
 ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // Calling close() on an OfflineAudioContext is not supported/allowed,
-  // but it might well have been stopped by its execution context.
+  // OfflineAudioContext might have been stopped by its execution context.
   // See: crbug.com/435867
   if (IsContextCleared() ||
       ContextState() == V8AudioContextState::Enum::kClosed) {
@@ -224,57 +275,121 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     return EmptyPromise();
   }
 
-  // If the context is not in the suspended state (i.e. running), reject the
-  // promise.
-  if (ContextState() != V8AudioContextState::Enum::kSuspended) {
+  if (!RuntimeEnabledFeatures::OfflineAudioContextIncrementalRenderingEnabled(
+          GetExecutionContext())) {
+    // If the context is not in the suspended state (i.e. running), reject the
+    // promise.
+    if (ContextState() != V8AudioContextState::Enum::kSuspended) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          StrCat({"cannot startRendering when an OfflineAudioContext is ",
+                  state().AsStringView()}));
+      return EmptyPromise();
+    }
+
+    // Can't call startRendering more than once. Return a rejected promise now.
+    if (is_rendering_started_) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "cannot call startRendering more than once");
+      return EmptyPromise();
+    }
+
+    DCHECK(!is_rendering_started_);
+  }
+
+  return startOfflineRendering(script_state, std::nullopt, exception_state);
+}
+
+ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
+    ScriptState* script_state,
+    std::optional<uint32_t> chunk_size,
+    ExceptionState& exception_state) {
+  DCHECK(IsMainThread());
+
+  // OfflineAudioContext might have been stopped by its execution context.
+  // See: crbug.com/435867
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        StrCat({"cannot startRendering when an OfflineAudioContext is ",
-                state().AsStringView()}));
+        "cannot call startRendering on an OfflineAudioContext in a stopped "
+        "state.");
     return EmptyPromise();
   }
 
-  // Can't call startRendering more than once.  Return a rejected promise now.
-  if (is_rendering_started_) {
+  if (total_render_frames_.has_value() &&
+      committed_frames_ >= total_render_frames_.value()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "cannot call startRendering more than once");
+        "cannot call startRendering on an OfflineAudioContext that has "
+        "already rendered all frames.");
     return EmptyPromise();
   }
 
-  DCHECK(!is_rendering_started_);
-
-  complete_resolver_ = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
-      script_state, exception_state.GetContext());
-  complete_resolver_->SuppressDetachCheck();
+  if (chunk_size.has_value() && chunk_size.value() == 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The requested chunk size cannot be zero.");
+    return EmptyPromise();
+  }
 
   // Allocate the AudioBuffer to hold the rendered result.
+  std::optional<uint32_t> effective_chunk_size =
+      CalculateEffectiveChunkSize(chunk_size);
+  if (!effective_chunk_size.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "The requested chunk size is too large.");
+    return EmptyPromise();
+  }
+
+  uint32_t buffer_size = effective_chunk_size.value();
   float sample_rate = DestinationHandler().SampleRate();
   unsigned number_of_channels = DestinationHandler().NumberOfChannels();
 
   AudioBuffer* render_target = AudioBuffer::CreateUninitialized(
-      number_of_channels, total_render_frames_, sample_rate);
+      number_of_channels, buffer_size, sample_rate);
 
   if (!render_target) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         StrCat({"startRendering failed to create AudioBuffer(",
                 String::Number(number_of_channels), ", ",
-                String::Number(total_render_frames_), ", ",
-                String::Number(sample_rate), ")"}));
+                String::Number(buffer_size), ", ", String::Number(sample_rate),
+                ")"}));
     return EmptyPromise();
   }
 
-  DestinationHandler().EnsureOfflineRenderThreadInitialized();
-  DestinationHandler().SetSharedRenderTarget(render_target);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<AudioBuffer>>(
+      script_state, exception_state.GetContext());
+  resolver->SuppressDetachCheck();
 
-  // Start rendering and return the promise.
-  is_rendering_started_ = true;
-  SetContextState(V8AudioContextState::Enum::kRunning);
+  if (total_render_frames_.has_value()) {
+    committed_frames_ += buffer_size;
+  }
+  start_rendering_resolvers_.push_back(resolver);
+  pending_render_targets_.push_back(render_target);
+
+  if (pending_render_targets_.size() == 1) {
+    DestinationHandler().EnsureOfflineRenderThreadInitialized();
+    is_rendering_started_ = true;
+    SetContextState(V8AudioContextState::Enum::kRunning);
+    StartNextRender();
+  }
+
+  return resolver->Promise();
+}
+
+void OfflineAudioContext::StartNextRender() {
+  DCHECK(IsMainThread());
+  DCHECK(!pending_render_targets_.empty());
+
+  AudioBuffer* render_target = pending_render_targets_.front().Get();
+
   destinationNode()
       ->SetDestinationBuffer(render_target);
+  DestinationHandler().SetSharedRenderTarget(render_target);
   DestinationHandler().StartRendering();
-  return complete_resolver_->Promise();
 }
 
 ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
@@ -299,21 +414,22 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
     return EmptyPromise();
   }
 
-  // The suspend time should be earlier than the total render frame. If the
-  // requested suspension time is equal to the total render frame, the promise
-  // will be rejected.
-  double total_render_duration = total_render_frames_ / sampleRate();
-  if (total_render_duration <= when) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        StrCat({"cannot schedule a suspend at ",
-                String::NumberToStringEcmaScript(when),
-                " seconds because it is greater than or equal to the "
-                "total render duration of ",
-                String::Number(total_render_frames_), " frames (",
-                String::NumberToStringEcmaScript(total_render_duration),
-                " seconds)"}));
-    return EmptyPromise();
+  // The suspend time should be earlier than the total render frame. Skip this
+  // check for an indefinite-length context.
+  if (total_render_frames_.has_value()) {
+    double total_render_duration = total_render_frames_.value() / sampleRate();
+    if (total_render_duration <= when) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          StrCat({"cannot schedule a suspend at ",
+                  String::NumberToStringEcmaScript(when),
+                  " seconds because it is greater than or equal to the "
+                  "total render duration of ",
+                  String::Number(total_render_frames_.value()), " frames (",
+                  String::NumberToStringEcmaScript(total_render_duration),
+                  " seconds)"}));
+      return EmptyPromise();
+    }
   }
 
   // Find the sample frame and round up to the nearest render quantum
@@ -324,10 +440,16 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
 
   // The specified suspend time is in the past; reject the promise.
   if (frame < CurrentSampleFrame()) {
-    size_t current_frame_clamped =
-        std::min(CurrentSampleFrame(), static_cast<size_t>(length()));
-    double current_time_clamped =
-        std::min(currentTime(), length() / static_cast<double>(sampleRate()));
+    size_t current_frame_clamped = CurrentSampleFrame();
+    double current_time_clamped = currentTime();
+    if (total_render_frames_.has_value()) {
+      current_frame_clamped =
+          std::min(current_frame_clamped,
+                   static_cast<size_t>(total_render_frames_.value()));
+      current_time_clamped =
+          std::min(current_time_clamped, total_render_frames_.value() /
+                                             static_cast<double>(sampleRate()));
+    }
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         StrCat({"suspend(", String::Number(when),
@@ -421,7 +543,41 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
   return ToResolvedUndefinedPromise(script_state);
 }
 
-void OfflineAudioContext::FireCompletionEvent() {
+void OfflineAudioContext::OnChunkRendered() {
+  DCHECK(IsMainThread());
+  CHECK(GetExecutionContext());
+  DCHECK(!start_rendering_resolvers_.empty());
+  DCHECK(!pending_render_targets_.empty());
+
+  Member<ScriptPromiseResolver<AudioBuffer>> resolver =
+      start_rendering_resolvers_.TakeFirst();
+  Member<AudioBuffer> rendered_buffer = pending_render_targets_.TakeFirst();
+
+  CHECK(rendered_buffer);
+  resolver->Resolve(rendered_buffer.Get());
+
+  if (IsRenderComplete()) {
+    CloseInternal();
+    FireCompletionEvent(rendered_buffer.Get());
+  } else if (!pending_render_targets_.empty()) {
+    StartNextRender();
+  }
+}
+
+bool OfflineAudioContext::IsRenderComplete() const {
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
+    return true;
+  }
+
+  if (!total_render_frames_.has_value()) {
+    return false;
+  }
+
+  return committed_frames_ >= total_render_frames_.value() &&
+         pending_render_targets_.empty();
+}
+
+void OfflineAudioContext::CloseInternal() {
   DCHECK(IsMainThread());
 
   // Context is finished, so remove any tail processing nodes; there's nowhere
@@ -431,31 +587,23 @@ void OfflineAudioContext::FireCompletionEvent() {
   // We set the state to closed here so that the oncomplete event handler sees
   // that the context has been closed.
   SetContextState(V8AudioContextState::Enum::kClosed);
+  DestinationHandler().StopRenderThread();
+  is_rendering_started_ = false;
+}
+
+void OfflineAudioContext::FireCompletionEvent(AudioBuffer* rendered_buffer) {
+  DCHECK(IsMainThread());
 
   // Avoid firing the event if the document has already gone away.
   if (GetExecutionContext()) {
-    AudioBuffer* rendered_buffer =
-        destinationNode()
-            ->DestinationBuffer();
     DCHECK(rendered_buffer);
     if (!rendered_buffer) {
       return;
     }
 
-    // Call the offline rendering completion event listener and resolve the
-    // promise too.
+    // Call the offline rendering completion event listener.
     DispatchEvent(*OfflineAudioCompletionEvent::Create(rendered_buffer));
-    complete_resolver_->Resolve(rendered_buffer);
-    complete_resolver_ = nullptr;
-  } else {
-    // The resolver should be rejected when the execution context is gone.
-    complete_resolver_->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError,
-        "the execution context does not exist"));
-    complete_resolver_ = nullptr;
   }
-
-  is_rendering_started_ = false;
 }
 
 bool OfflineAudioContext::HandlePreRenderTasks(
@@ -535,6 +683,14 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
 void OfflineAudioContext::RejectPendingResolvers() {
   DCHECK(IsMainThread());
 
+  for (auto& resolver : start_rendering_resolvers_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, "Audio context is going away"));
+  }
+
+  start_rendering_resolvers_.clear();
+  pending_render_targets_.clear();
+
   {
     base::AutoLock locker(suspend_frames_lock_);
     scheduled_suspend_frames_.clear();
@@ -571,10 +727,11 @@ void OfflineAudioContext::DetachPendingResolvers() {
   }
   scheduled_suspends_.clear();
 
-  if (complete_resolver_) {
-    complete_resolver_->SuppressDetachCheck();
-    complete_resolver_ = nullptr;
+  for (auto& resolver : start_rendering_resolvers_) {
+    resolver->SuppressDetachCheck();
   }
+  start_rendering_resolvers_.clear();
+  pending_render_targets_.clear();
 
   BaseAudioContext::DetachPendingResolvers();
 }
@@ -596,7 +753,7 @@ bool OfflineAudioContext::ShouldSuspend() {
 }
 
 bool OfflineAudioContext::HasPendingActivity() const {
-  return is_rendering_started_;
+  return !pending_render_targets_.empty();
 }
 
 }  // namespace blink

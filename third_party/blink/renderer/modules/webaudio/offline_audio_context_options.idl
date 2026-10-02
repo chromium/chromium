@@ -5,7 +5,7 @@
 // See https://webaudio.github.io/web-audio-api/#dictdef-offlineaudiocontextoptions
 dictionary OfflineAudioContextOptions {
     unsigned long numberOfChannels = 1;
-    required unsigned long length;
+    unsigned long? length = null;
     required float sampleRate;
     [RuntimeEnabled=WebAudioConfigurableRenderQuantum] (AudioContextRenderSizeCategory or unsigned long) renderSizeHint = "default";
 };

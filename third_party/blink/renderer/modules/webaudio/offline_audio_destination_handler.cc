@@ -100,6 +100,7 @@ void OfflineAudioDestinationHandler::StartRendering() {
   DCHECK(IsMainThread());
   DCHECK(shared_render_target_);
   DCHECK(render_thread_task_runner_);
+  CHECK(Context()->IsDestinationInitialized());
 
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
               "OfflineAudioDestinationHandler::StartRendering", "this",
@@ -145,6 +146,15 @@ void OfflineAudioDestinationHandler::EnsureOfflineRenderThreadInitialized() {
   PrepareTaskRunnerForRendering();
 }
 
+void OfflineAudioDestinationHandler::StopRenderThread() {
+  DCHECK(IsMainThread());
+
+  render_thread_.reset();
+  render_thread_task_runner_.reset();
+  shared_render_target_.reset();
+  is_rendering_started_ = false;
+}
+
 void OfflineAudioDestinationHandler::SetSharedRenderTarget(
     AudioBuffer* render_target) {
   DCHECK(IsMainThread());
@@ -165,9 +175,6 @@ void OfflineAudioDestinationHandler::StartOfflineRendering() {
 
   frames_to_process_ = shared_render_target_->length();
   frames_processed_ = 0;
-
-  bool is_audio_context_initialized = Context()->IsDestinationInitialized();
-  DCHECK(is_audio_context_initialized);
 
   DCHECK_EQ(render_bus_->NumberOfChannels(),
             shared_render_target_->numberOfChannels());
@@ -266,8 +273,6 @@ void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {
 void OfflineAudioDestinationHandler::NotifyComplete() {
   DCHECK(IsMainThread());
 
-  render_thread_.reset();
-  render_thread_task_runner_.reset();
   shared_render_target_.reset();
   is_rendering_started_ = false;
 
@@ -280,7 +285,7 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
   // The OfflineAudioContext might be gone.
   if (Context() && Context()->GetExecutionContext()) {
     auto* offline_context = static_cast<OfflineAudioContext*>(Context());
-    offline_context->FireCompletionEvent();
+    offline_context->OnChunkRendered();
   }
 }
 

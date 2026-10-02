@@ -26,12 +26,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_OFFLINE_AUDIO_CONTEXT_H_
 
+#include <optional>
+
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_destination_node.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -58,7 +61,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   OfflineAudioContext(LocalDOMWindow*,
                       unsigned number_of_channels,
-                      uint32_t number_of_frames,
+                      std::optional<uint32_t> number_of_frames,
                       float sample_rate,
                       ExceptionState&,
                       uint32_t render_quantum_frames);
@@ -69,10 +72,15 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   OfflineAudioDestinationNode* destinationNode() const override;
 
-  uint32_t length() const { return total_render_frames_; }
+  std::optional<uint32_t> length() const { return total_render_frames_; }
 
   ScriptPromise<AudioBuffer> startOfflineRendering(ScriptState*,
                                                    ExceptionState&);
+
+  ScriptPromise<AudioBuffer> startOfflineRendering(
+      ScriptState*,
+      std::optional<uint32_t> chunk_size,
+      ExceptionState&);
 
   ScriptPromise<IDLUndefined> suspendContext(ScriptState*,
                                              double,
@@ -87,8 +95,9 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(complete, kComplete)
 
-  // Fire completion event when the rendering is finished.
-  void FireCompletionEvent();
+  // Called by OfflineAudioDestinationHandler::NotifyComplete when rendering
+  // finishes.
+  void OnChunkRendered();
 
   bool HandlePreRenderTasks(uint32_t frames_to_process,
                             const AudioIOPosition* output_position,
@@ -116,11 +125,30 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
  private:
   void DetachPendingResolvers() override;
 
+  // Performs terminal context cleanup.
+  void CloseInternal();
+
+  // Fire completion event when the rendering is finished.
+  void FireCompletionEvent(AudioBuffer* rendered_buffer);
+
+  // Returns true if the finite render length has been committed and all
+  // queued render targets have completed.
+  bool IsRenderComplete() const;
+
   // Fetch directly the destination handler.
   OfflineAudioDestinationHandler& DestinationHandler();
 
   // Check if the rendering needs to be suspended.
   bool ShouldSuspend();
+
+  // Start rendering the next queued render target.
+  void StartNextRender();
+
+  // Calculate the effective buffer size for the next chunk to render based on
+  // `chunk_size`, `total_render_frames_`, and `committed_frames_`. Returns
+  // std::nullopt if the aligned chunk size cannot be represented by uint32_t.
+  std::optional<uint32_t> CalculateEffectiveChunkSize(
+      std::optional<uint32_t> chunk_size) const;
 
   // This map is to store the timing of scheduled suspends (frame) and the
   // associated promise resolver. This storage can only be modified by the
@@ -140,7 +168,13 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   HashSet<size_t, IntWithZeroKeyHashTraits<size_t>> scheduled_suspend_frames_
       GUARDED_BY(suspend_frames_lock_);
 
-  Member<ScriptPromiseResolver<AudioBuffer>> complete_resolver_;
+  HeapDeque<Member<ScriptPromiseResolver<AudioBuffer>>>
+      start_rendering_resolvers_;
+
+  // Queue of render targets corresponding to each queued startRendering call.
+  // Directly represents the specification's [[rendered buffers]] internal
+  // slot.
+  HeapDeque<Member<AudioBuffer>> pending_render_targets_;
 
   // This flag is necessary to indicate the rendering has actually started or
   // running. Note that initial state of context is 'Suspended', which is the
@@ -148,8 +182,14 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // purpose.
   bool is_rendering_started_ = false;
 
-  // Total render sample length.
-  uint32_t total_render_frames_;
+  // Total render sample length. A null value represents indefinite rendering.
+  std::optional<uint32_t> total_render_frames_;
+
+  // Tracks the total frames committed to queued startRendering calls. Used to
+  // clamp buffer sizes when multiple startRendering calls are made
+  // synchronously before rendering begins. Directly represents the
+  // specification's [[committed frames]] internal slot.
+  uint32_t committed_frames_ = 0;
 };
 
 }  // namespace blink
