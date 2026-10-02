@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -341,7 +342,8 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   tab_groups::MockTabGroupSyncService* service() { return mock_service_; }
   TabGroupsPageHandler* handler() { return handler_.get(); }
   std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups() {
-    return saved_tab_groups_;
+    return base::ToVector(saved_tab_groups_,
+                          &raw_ptr<const tab_groups::SavedTabGroup>::get);
   }
   syncer::FakeDeviceInfoTracker* fake_device_info_tracker() {
     return fake_device_info_sync_service_->GetDeviceInfoTracker();
@@ -357,7 +359,7 @@ class TabGroupsPageHandlerTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<TabGroupsPageHandler> handler_;
 
   std::vector<tab_groups::SavedTabGroup> owned_groups_;
-  std::vector<const tab_groups::SavedTabGroup*> saved_tab_groups_;
+  std::vector<raw_ptr<const tab_groups::SavedTabGroup>> saved_tab_groups_;
 
   raw_ptr<syncer::FakeDeviceInfoSyncService> fake_device_info_sync_service_;
 };
