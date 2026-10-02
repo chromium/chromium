@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/structured/metadata_processor_ash.h"
 
+#include "base/check.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -13,10 +14,8 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "metadata_processor_ash.h"
 #include "third_party/metrics_proto/structured_data.pb.h"
 
 namespace metrics::structured {
@@ -67,19 +66,17 @@ MetadataProcessorAsh::GetPrimaryUserSegment() {
   if (primary_user_segment_.has_value()) {
     return primary_user_segment_.value();
   } else {
-    const user_manager::User* primary_user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    DCHECK(primary_user);
-
-    // If the profile isn't ready, the user's segment will be unknown.
-    if (!primary_user->is_profile_created()) {
-      return StructuredEventProto::UNKNOWN_PRIMARY_USER_TYPE;
-    }
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    CHECK(primary_session);
 
     Profile* profile = Profile::FromBrowserContext(
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-            primary_user));
-    DCHECK(profile);
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            primary_session->account_id()));
+    // If the profile isn't ready, the user's segment will be unknown.
+    if (!profile) {
+      return StructuredEventProto::UNKNOWN_PRIMARY_USER_TYPE;
+    }
 
     switch (UserTypeByDeviceTypeMetricsProvider::GetUserSegment(profile)) {
       case UserSegment::kUnmanaged:

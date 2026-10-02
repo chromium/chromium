@@ -4,17 +4,19 @@
 
 #include "chrome/browser/metrics/class_management_enabled_metrics_provider.h"
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -96,12 +98,15 @@ void ClassManagementEnabledMetricsProvider::OnUserSessionStarted(
     return;
   }
 
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
   const user_manager::User* const primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
   CHECK(primary_user);
-  CHECK(primary_user->is_profile_created());
-  Profile* const profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* const profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   CHECK(profile);
 
   // Skip unmanaged and unaffiliated users.

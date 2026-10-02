@@ -4,13 +4,15 @@
 
 #include "chrome/browser/metrics/chromeos_family_link_user_metrics_provider.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -56,25 +58,28 @@ void ChromeOSFamilyLinkUserMetricsProvider::OnUserSessionStarted(
   if (!is_primary_user)
     return;
 
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(primary_user);
-  if (!primary_user->IsChild()) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const user_manager::User& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  if (!primary_user.IsChild()) {
     SetLogSegment(LogSegment::kOther);
     return;
   }
 
-  DCHECK(primary_user->is_profile_created());
   Profile* profile = Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
-  DCHECK(profile);
-  DCHECK(ash::IsUserBrowserContext(profile));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+  CHECK(ash::IsUserBrowserContext(profile));
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  DCHECK(identity_manager);
+  CHECK(identity_manager);
 
-  DCHECK(!access_token_fetcher_);
+  CHECK(!access_token_fetcher_);
   access_token_fetcher_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
       signin::OAuthConsumerId::kChromeosFamilyLinkUserMetricsProvider,
