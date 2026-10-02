@@ -35,6 +35,8 @@
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/sign.h"
 #include "net/base/features.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/mock_session_store.h"
@@ -49,10 +51,13 @@
 #include "net/url_request/device_bound_session_mode.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
+#include "net/url_request/url_request_interceptor.h"
+#include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using base::test::RunOnceCallback;
 using ::testing::_;
@@ -83,6 +88,8 @@ constexpr char kUrlString[] = "https://example.com";
 const GURL kTestUrl(kUrlString);
 constexpr char kRefreshUrlString[] = "https://example.com/refresh";
 const GURL kTestRefreshUrl(kRefreshUrlString);
+constexpr char kRegisterUrlString[] = "https://example.com/register";
+const GURL kTestRegisterUrl(kRegisterUrlString);
 constexpr char kSessionId[] = "SessionId";
 constexpr char kOrigin[] = "https://example.com";
 
@@ -177,6 +184,69 @@ class RefreshTracker {
  private:
   std::vector<RegistrationFetcher::RegistrationCompleteCallback>
       pending_refreshes_;
+};
+
+struct CapturedRequestContext {
+  SiteForCookies site_for_cookies;
+  IsolationInfo isolation_info;
+  std::optional<url::Origin> initiator;
+};
+
+void ExpectContext(const CapturedRequestContext& captured,
+                   const SiteForCookies& expected_site_for_cookies,
+                   const IsolationInfo& expected_isolation_info,
+                   const std::optional<url::Origin>& expected_initiator) {
+  EXPECT_TRUE(
+      captured.site_for_cookies.IsEquivalent(expected_site_for_cookies));
+  EXPECT_TRUE(
+      captured.isolation_info.IsEqualForTesting(expected_isolation_info));
+  EXPECT_EQ(captured.initiator, expected_initiator);
+}
+
+std::unique_ptr<URLRequest> CreateRequestWithContext(
+    URLRequestContext* context,
+    const GURL& url,
+    const url::Origin& origin,
+    URLRequest::Delegate* delegate) {
+  const SiteForCookies site_for_cookies = SiteForCookies::FromOrigin(origin);
+  const IsolationInfo isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, origin, origin, site_for_cookies);
+  std::unique_ptr<URLRequest> request =
+      context->CreateRequest(url, IDLE, delegate, kDummyAnnotation,
+                             net::handles::kInvalidNetworkHandle);
+  request->set_site_for_cookies(site_for_cookies);
+  request->set_isolation_info(isolation_info);
+  request->set_initiator(origin);
+  return request;
+}
+
+class RequestContextCapturingInterceptor : public URLRequestInterceptor {
+ public:
+  explicit RequestContextCapturingInterceptor(
+      base::RepeatingCallback<void(CapturedRequestContext)> on_intercept,
+      bool auto_advance = true)
+      : auto_advance_(auto_advance), on_intercept_(std::move(on_intercept)) {}
+
+  ~RequestContextCapturingInterceptor() override = default;
+
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    CapturedRequestContext context{
+        .site_for_cookies = request->site_for_cookies(),
+        .isolation_info = request->isolation_info(),
+        .initiator = request->initiator(),
+    };
+    if (on_intercept_) {
+      on_intercept_.Run(std::move(context));
+    }
+    return std::make_unique<URLRequestTestJob>(request, "HTTP/1.1 200 OK\n\n",
+                                               /*response_data=*/"",
+                                               auto_advance_);
+  }
+
+ private:
+  const bool auto_advance_ = true;
+  base::RepeatingCallback<void(CapturedRequestContext)> on_intercept_;
 };
 
 class SessionServiceImplTest : public ::testing::Test,
@@ -2753,6 +2823,10 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
         excluded_cookies);
   }
 
+  void TearDown() override {
+    net::URLRequestFilter::GetInstance()->ClearHandlers();
+  }
+
   URLRequestContext* context() { return context_.get(); }
 
   unexportable_keys::UnexportableKeyService* key_service() {
@@ -3120,6 +3194,81 @@ TEST_F(SessionServiceImplWithStoreTest,
       .Run(unexportable_keys::UnexportableSigningKeyId());
 
   EXPECT_TRUE(future2.IsReady());
+  EXPECT_EQ(future2.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplWithStoreTest,
+       WaiterPromotedIfTriggerCanceledDuringKeyRestorationUsesWaiterContext) {
+  // Start loading.
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateFromProto(
+                           CreateSessionProto(kSessionId, kRefreshUrlString)));
+  ASSERT_TRUE(session);
+
+  SessionStore::SessionsMap session_map;
+  session_map.insert(
+      {SessionKey{SchemefulSite(kTestUrl), session->id()}, std::move(session)});
+  FinishLoadingSessions(std::move(session_map));
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                           intercept_future.GetRepeatingCallback()));
+
+  // Create request1 (context A) that should be deferred due to missing cookie.
+  const url::Origin origin1 = url::Origin::Create(kTestUrl);
+  net::TestDelegate delegate1;
+  std::unique_ptr<URLRequest> request1 =
+      CreateRequestWithContext(context(), kTestUrl, origin1, &delegate1);
+  auto dbsc_request1 = std::make_unique<DbscRequest>(request1.get());
+
+  const auto deferral = SessionService::DeferralParams(Session::Id(kSessionId));
+
+  // Defer request1 to trigger asynchronous RestoreSessionBindingKey.
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback));
+  service().DeferRequestForRefresh(*dbsc_request1, deferral, base::DoNothing());
+  ASSERT_TRUE(restore_key_callback);
+
+  // Create request2 (context B) and defer it while RestoreSessionBindingKey is
+  // pending.
+  const url::Origin origin2 = url::Origin::Create(GURL("https://other.test"));
+  net::TestDelegate delegate2;
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequestWithContext(context(), kTestUrl, origin2, &delegate2);
+
+  ASSERT_FALSE(
+      request1->site_for_cookies().IsEquivalent(request2->site_for_cookies()));
+  ASSERT_FALSE(
+      request1->isolation_info().IsEqualForTesting(request2->isolation_info()));
+
+  DbscRequest dbsc_request2(request2.get());
+  base::test::TestFuture<RefreshResult> future2;
+  service().DeferRequestForRefresh(dbsc_request2, deferral,
+                                   future2.GetCallback());
+
+  // Cancel/destroy request1 before the key restoration completes.
+  dbsc_request1.reset();
+  request1.reset();
+
+  EXPECT_CALL(store(), SaveSession);
+
+  // Resolve the key restoration.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+
+  // The promoted request2's context (context B) should have been passed to the
+  // fetcher.
+  ExpectContext(intercept_future.Take(), request2->site_for_cookies(),
+                request2->isolation_info(), origin2);
+
   EXPECT_EQ(future2.Take(), RefreshResult::kRefreshed);
 }
 
@@ -5493,5 +5642,174 @@ TEST_F(
       service().GetSession({site, Session::Id(kSessionId)});
   ASSERT_TRUE(session);
   EXPECT_EQ(*session->id(), kSessionId);
+}
+
+TEST_F(SessionServiceImplTest,
+       DeferRequestPassesSiteForCookiesAndIsolationInfoToFetcher) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  const url::Origin expected_origin =
+      url::Origin::Create(GURL("https://other.test"));
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      CreateRequestWithContext(context(), kTestUrl, expected_origin, &delegate);
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                           intercept_future.GetRepeatingCallback()));
+
+  base::test::TestFuture<RefreshResult> refresh_future;
+  DbscRequest dbsc_request(request.get());
+  service().DeferRequestForRefresh(
+      dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+      refresh_future.GetCallback());
+
+  ExpectContext(intercept_future.Take(), request->site_for_cookies(),
+                request->isolation_info(), expected_origin);
+  EXPECT_EQ(refresh_future.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(SessionServiceImplTest,
+       ProactiveRefreshPassesSiteForCookiesAndIsolationInfoToFetcher) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  const url::Origin expected_origin =
+      url::Origin::Create(GURL("https://sub.example.com"));
+
+  // Create a same-site request with an explicit isolation context.
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      CreateRequestWithContext(context(), kTestUrl, expected_origin, &delegate);
+
+  // Attach the required cookie, but make it expire very soon.
+  CookieInclusionStatus status;
+  std::unique_ptr<CanonicalCookie> cookie = CanonicalCookie::Create(
+      kTestUrl, "test_cookie=v; Secure; Max-Age=1", base::Time::Now(),
+      /*server_time=*/std::nullopt, /*cookie_partition_key=*/std::nullopt,
+      CookieSourceType::kHTTP, &status);
+  ASSERT_TRUE(cookie);
+  request->set_maybe_sent_cookies({{*cookie, CookieAccessResult()}});
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                           intercept_future.GetRepeatingCallback()));
+
+  // The request shouldn't be deferred, but it should trigger a proactive
+  // refresh.
+  HttpRequestHeaders extra_headers;
+  DbscRequest dbsc_request(request.get());
+  std::optional<SessionService::DeferralParams> maybe_deferral =
+      service().ShouldDefer(dbsc_request, &extra_headers);
+  EXPECT_FALSE(maybe_deferral.has_value());
+
+  ExpectContext(intercept_future.Take(), request->site_for_cookies(),
+                request->isolation_info(), expected_origin);
+}
+
+TEST_F(SessionServiceImplTest,
+       PrewarmPassesSiteForCookiesAndIsolationInfoToFetcher) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                           intercept_future.GetRepeatingCallback()));
+
+  base::test::TestFuture<SessionPrewarmResult> prewarm_future;
+  service().PrewarmSessionsForUrl(kTestUrl, prewarm_future.GetCallback());
+
+  const url::Origin expected_origin = url::Origin::Create(kTestUrl);
+  ExpectContext(intercept_future.Take(),
+                SiteForCookies::FromOrigin(expected_origin),
+                IsolationInfo::CreateForInternalRequest(expected_origin),
+                expected_origin);
+  EXPECT_THAT(prewarm_future.Take().results,
+              ElementsAre(RefreshResult::kRefreshed));
+}
+
+TEST_F(SessionServiceImplTest,
+       RegisterBoundSessionPassesSiteForCookiesAndIsolationInfoToFetcher) {
+  const url::Origin expected_origin =
+      url::Origin::Create(GURL("https://other.test"));
+  const SiteForCookies expected_site_for_cookies =
+      SiteForCookies::FromOrigin(expected_origin);
+  const IsolationInfo expected_isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, expected_origin, expected_origin,
+      expected_site_for_cookies);
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRegisterUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                            intercept_future.GetRepeatingCallback()));
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestRegisterUrl, {crypto::sign::ECDSA_SHA256}, "challenge",
+      /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(
+      base::DoNothing(), std::move(fetch_param), expected_isolation_info,
+      expected_site_for_cookies, NetLogWithSource(), expected_origin);
+
+  ExpectContext(intercept_future.Take(), expected_site_for_cookies,
+                expected_isolation_info, expected_origin);
+}
+
+TEST_F(SessionServiceImplTest,
+       WaiterDoesNotTriggerFetchAndLaterRefreshUsesNewTriggerContext) {
+  AddSessionsForTesting({{kSessionId, kRefreshUrlString, kOrigin}});
+
+  base::test::TestFuture<CapturedRequestContext> intercept_future(
+      base::test::TestFutureMode::kQueue);
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<RequestContextCapturingInterceptor>(
+                           intercept_future.GetRepeatingCallback()));
+
+  const url::Origin origin1 = url::Origin::Create(kTestUrl);
+  net::TestDelegate delegate1;
+  std::unique_ptr<URLRequest> request1 =
+      CreateRequestWithContext(context(), kTestUrl, origin1, &delegate1);
+  DbscRequest dbsc_request1(request1.get());
+
+  const url::Origin origin2 = url::Origin::Create(GURL("https://other.test"));
+  net::TestDelegate delegate2;
+  std::unique_ptr<URLRequest> request2 =
+      CreateRequestWithContext(context(), kTestUrl, origin2, &delegate2);
+  DbscRequest dbsc_request2(request2.get());
+
+  ASSERT_FALSE(
+      request1->site_for_cookies().IsEquivalent(request2->site_for_cookies()));
+  ASSERT_FALSE(
+      request1->isolation_info().IsEqualForTesting(request2->isolation_info()));
+
+  const auto deferral = SessionService::DeferralParams(Session::Id(kSessionId));
+  base::test::TestFuture<RefreshResult> future1;
+  base::test::TestFuture<RefreshResult> future2;
+
+  // Defer request1 (triggers the first refresh) and request2 (joins as waiter).
+  service().DeferRequestForRefresh(dbsc_request1, deferral,
+                                   future1.GetCallback());
+  service().DeferRequestForRefresh(dbsc_request2, deferral,
+                                   future2.GetCallback());
+
+  ExpectContext(intercept_future.Take(), request1->site_for_cookies(),
+                request1->isolation_info(), origin1);
+  EXPECT_FALSE(intercept_future.IsReady());
+
+  // Both requests are unblocked when refresh completes.
+  EXPECT_EQ(future1.Take(), RefreshResult::kRefreshed);
+  EXPECT_EQ(future2.Take(), RefreshResult::kRefreshedAsWaiter);
+
+  // When the waiter (request2) subsequently triggers a refresh, its own
+  // isolation context and SiteForCookies must be used.
+  base::test::TestFuture<RefreshResult> future2_retry;
+  service().DeferRequestForRefresh(dbsc_request2, deferral,
+                                   future2_retry.GetCallback());
+
+  ExpectContext(intercept_future.Take(), request2->site_for_cookies(),
+                request2->isolation_info(), origin2);
+  EXPECT_FALSE(intercept_future.IsReady());
+
+  EXPECT_EQ(future2_retry.Take(), RefreshResult::kRefreshed);
 }
 }  // namespace net::device_bound_sessions
