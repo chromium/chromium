@@ -6754,6 +6754,23 @@
             ]
         }
     ],
+    "DisableDragDropForUnneededWidgets": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableDragDropForUnneededWidgets"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGlicActorUiMagicCursorAnimation": [
         {
             "platforms": [
