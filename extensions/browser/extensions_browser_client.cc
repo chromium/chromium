@@ -425,4 +425,9 @@ bool ExtensionsBrowserClient::
   return false;
 }
 
+bool ExtensionsBrowserClient::
+    IsLazyChromeOSResourceKeyedServiceInstantiationEnabled() const {
+  return false;
+}
+
 }  // namespace extensions

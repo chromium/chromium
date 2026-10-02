@@ -49,6 +49,10 @@ class LogSourceResource : public ApiResource {
   base::OnceClosure unregister_callback_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<LogSourceResource>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_FEEDBACK_PRIVATE_LOG_SOURCE_RESOURCE_H_

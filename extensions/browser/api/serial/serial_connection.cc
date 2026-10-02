@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/serial/serial_port_manager.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/serial.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -159,6 +160,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<SerialConnection> >*
 ApiResourceManager<SerialConnection>::GetFactoryInstance() {
   return g_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<SerialConnection>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 SerialConnection::SerialConnection(const std::string& owner_extension_id)

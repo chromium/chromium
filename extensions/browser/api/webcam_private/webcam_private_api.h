@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -112,6 +113,12 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
 template <>
 void BrowserContextKeyedAPIFactory<WebcamPrivateAPI>
     ::DeclareFactoryDependencies();
+
+#if BUILDFLAG(IS_CHROMEOS)
+template <>
+bool BrowserContextKeyedAPIFactory<
+    WebcamPrivateAPI>::ServiceIsCreatedWithBrowserContext() const;
+#endif
 
 class WebcamPrivateOpenSerialWebcamFunction : public ExtensionFunction {
  public:

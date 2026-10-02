@@ -52,6 +52,10 @@ class BluetoothLowEnergyConnection : public ApiResource {
   std::unique_ptr<device::BluetoothGattConnection> connection_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    BluetoothLowEnergyConnection>>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_BLUETOOTH_LOW_ENERGY_BLUETOOTH_LOW_ENERGY_CONNECTION_H_

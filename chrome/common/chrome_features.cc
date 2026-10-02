@@ -1368,8 +1368,9 @@ constexpr base::FeatureParam<int> kLinuxLowMemoryMonitorCriticalLevel{
 BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// When enabled, keyed services are instantiated lazily rather than eagerly at
-// startup.
+// When enabled, keyed services that do not register startup observers or
+// perform proactive background work at profile startup are instantiated lazily
+// on demand rather than eagerly at startup.
 BASE_FEATURE(kLazyKeyedServiceInstantiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, autofill and password manager keyed services are instantiated
@@ -1440,6 +1441,16 @@ BASE_FEATURE_PARAM(bool,
                    kLazyKeyedServiceInstantiationExtensionsSocketsAndUsb,
                    &kLazyKeyedServiceInstantiation,
                    true);
+
+#if BUILDFLAG(IS_CHROMEOS)
+// When enabled, ChromeOS extension API resource manager and dispatcher keyed
+// services (which do not register startup observers or perform proactive
+// background work at profile startup) are instantiated lazily on demand.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationExtensionsChromeOSResources,
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+#endif
 
 // Enables the use of system notification centers instead of using the Message
 // Center for displaying the toasts. The feature is hardcoded to enabled for

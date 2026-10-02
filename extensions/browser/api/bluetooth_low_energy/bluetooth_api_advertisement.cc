@@ -6,6 +6,7 @@
 
 #include "base/lazy_instance.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "net/base/io_buffer.h"
 
 namespace extensions {
@@ -20,6 +21,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<BluetoothApiAdvertisement>>*
 ApiResourceManager<BluetoothApiAdvertisement>::GetFactoryInstance() {
   return g_server_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    BluetoothApiAdvertisement>>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 BluetoothApiAdvertisement::BluetoothApiAdvertisement(

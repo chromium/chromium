@@ -54,6 +54,11 @@ class BluetoothLowEnergyNotifySession : public ApiResource {
   std::unique_ptr<device::BluetoothGattNotifySession> session_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    BluetoothLowEnergyNotifySession>>::ServiceIsCreatedWithBrowserContext()
+    const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_BLUETOOTH_LOW_ENERGY_BLUETOOTH_LOW_ENERGY_NOTIFY_SESSION_H_

@@ -111,6 +111,10 @@ class SerialPortManager : public BrowserContextKeyedAPI {
 
 }  // namespace api
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    api::SerialPortManager>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_SERIAL_SERIAL_PORT_MANAGER_H_

@@ -5,6 +5,7 @@
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_connection.h"
 
 #include "base/lazy_instance.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace extensions {
 
@@ -16,6 +17,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<BluetoothLowEnergyConnection>>*
 ApiResourceManager<BluetoothLowEnergyConnection>::GetFactoryInstance() {
   return g_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    BluetoothLowEnergyConnection>>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 BluetoothLowEnergyConnection::BluetoothLowEnergyConnection(

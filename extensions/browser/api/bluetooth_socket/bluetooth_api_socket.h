@@ -156,6 +156,10 @@ class BluetoothApiSocket : public ApiResource {
   bool connected_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<BluetoothApiSocket>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_BLUETOOTH_SOCKET_BLUETOOTH_API_SOCKET_H_

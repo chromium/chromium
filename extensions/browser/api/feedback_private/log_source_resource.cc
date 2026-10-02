@@ -5,6 +5,7 @@
 #include "extensions/browser/api/feedback_private/log_source_resource.h"
 
 #include "base/lazy_instance.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -19,6 +20,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<LogSourceResource>>*
 ApiResourceManager<LogSourceResource>::GetFactoryInstance() {
   return g_log_source_resource_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<LogSourceResource>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 LogSourceResource::LogSourceResource(

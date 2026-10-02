@@ -22,6 +22,17 @@
 
 namespace extensions {
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    api::SerialPortManager>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 namespace api {
 
 namespace {

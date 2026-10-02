@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "device/bluetooth/bluetooth_socket.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "net/base/io_buffer.h"
 
 namespace {
@@ -29,6 +30,17 @@ template <>
 BrowserContextKeyedAPIFactory<ApiResourceManager<BluetoothApiSocket> >*
 ApiResourceManager<BluetoothApiSocket>::GetFactoryInstance() {
   return g_server_factory.Pointer();
+}
+
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<BluetoothApiSocket>>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
 }
 
 BluetoothApiSocket::BluetoothApiSocket(const std::string& owner_extension_id)

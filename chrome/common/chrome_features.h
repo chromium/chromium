@@ -1001,6 +1001,12 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE_PARAM(
     bool,
     kLazyKeyedServiceInstantiationExtensionsSocketsAndUsb);
+#if BUILDFLAG(IS_CHROMEOS)
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kLazyKeyedServiceInstantiationExtensionsChromeOSResources);
+#endif
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kNativeNotifications);
 

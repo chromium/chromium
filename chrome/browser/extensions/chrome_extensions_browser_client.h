@@ -345,6 +345,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       ExtensionFunction& function) override;
   bool IsLazyKeyedServiceInstantiationEnabled() const override;
   bool IsLazySocketAndUsbKeyedServiceInstantiationEnabled() const override;
+  bool IsLazyChromeOSResourceKeyedServiceInstantiationEnabled() const override;
 
   void SetAPIClientForTest(std::unique_ptr<ExtensionsAPIClient> client);
 

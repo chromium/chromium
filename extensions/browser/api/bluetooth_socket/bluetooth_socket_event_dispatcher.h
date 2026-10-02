@@ -117,6 +117,11 @@ class BluetoothSocketEventDispatcher : public BrowserContextKeyedAPI {
 };
 
 }  // namespace api
+
+template <>
+bool BrowserContextKeyedAPIFactory<api::BluetoothSocketEventDispatcher>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_BLUETOOTH_SOCKET_BLUETOOTH_SOCKET_EVENT_DISPATCHER_H_

@@ -833,4 +833,15 @@ void BrowserContextKeyedAPIFactory<WebcamPrivateAPI>
   DependsOn(ProcessManagerFactory::GetInstance());
 }
 
+template <>
+bool BrowserContextKeyedAPIFactory<
+    WebcamPrivateAPI>::ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace extensions

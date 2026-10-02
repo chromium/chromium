@@ -53,6 +53,10 @@ class BluetoothApiAdvertisement : public ApiResource {
   scoped_refptr<device::BluetoothAdvertisement> advertisement_;
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<
+    BluetoothApiAdvertisement>>::ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_BLUETOOTH_LOW_ENERGY_BLUETOOTH_API_ADVERTISEMENT_H_

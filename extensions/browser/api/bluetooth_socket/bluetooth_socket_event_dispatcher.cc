@@ -15,6 +15,7 @@
 #include "device/bluetooth/bluetooth_socket.h"
 #include "extensions/browser/api/bluetooth_socket/bluetooth_api_socket.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/api/bluetooth_socket.h"
 #include "extensions/common/extension_id.h"
 #include "net/base/io_buffer.h"
@@ -61,6 +62,18 @@ bluetooth_socket::AcceptError MapAcceptErrorReason(
 }  // namespace
 
 namespace extensions {
+
+template <>
+bool BrowserContextKeyedAPIFactory<api::BluetoothSocketEventDispatcher>::
+    ServiceIsCreatedWithBrowserContext() const {
+  if (ExtensionsBrowserClient::Get() &&
+      ExtensionsBrowserClient::Get()
+          ->IsLazyChromeOSResourceKeyedServiceInstantiationEnabled()) {
+    return false;
+  }
+  return true;
+}
+
 namespace api {
 
 using content::BrowserThread;

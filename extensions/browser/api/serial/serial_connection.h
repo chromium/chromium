@@ -249,6 +249,10 @@ class SerialConnection : public ApiResource,
   base::WeakPtrFactory<SerialConnection> weak_factory_{this};
 };
 
+template <>
+bool BrowserContextKeyedAPIFactory<ApiResourceManager<SerialConnection>>::
+    ServiceIsCreatedWithBrowserContext() const;
+
 }  // namespace extensions
 
 namespace mojo {
