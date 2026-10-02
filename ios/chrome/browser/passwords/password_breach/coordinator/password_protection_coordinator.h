@@ -13,12 +13,8 @@ namespace safe_browsing {
 enum class WarningAction;
 }
 
-@protocol PasswordProtectionCoordinatorDelegate;
-
 // Presents and stops the Password Protection feature.
 @interface PasswordProtectionCoordinator : ChromeCoordinator
-
-@property id<PasswordProtectionCoordinatorDelegate> delegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser

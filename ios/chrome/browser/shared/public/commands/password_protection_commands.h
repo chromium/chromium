@@ -20,6 +20,9 @@ enum class WarningAction;
                            completion:(void (^)(safe_browsing::WarningAction))
                                           completion;
 
+// Dismisses the Password Protection warning if currently displayed.
+- (void)dismissPasswordProtectionWarning;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PASSWORD_PROTECTION_COMMANDS_H_

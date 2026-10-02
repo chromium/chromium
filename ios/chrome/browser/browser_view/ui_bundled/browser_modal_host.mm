@@ -78,7 +78,6 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/passkey_creation_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_breach_coordinator.h"
 #import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator.h"
-#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/passwords/password_suggestion/coordinator/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/add_contacts_coordinator.h"
 #import "ios/chrome/browser/phone_number/ui_bundled/country_code_picker_coordinator.h"
@@ -236,7 +235,6 @@ const char kContextPanelDismissedHistogram[] =
                                 PasskeyWelcomeScreenCoordinatorDelegate,
                                 PasswordBreachCommands,
                                 PasswordProtectionCommands,
-                                PasswordProtectionCoordinatorDelegate,
                                 PasswordSuggestionCommands,
                                 PictureInPictureCommands,
                                 PolicyChangeCommands,
@@ -423,7 +421,7 @@ const char kContextPanelDismissedHistogram[] =
   [self stopPasskeyWelcomeScreenCoordinator];
   [self dismissPasskeyIncognitoInterstitial];
   [self stopPasswordBreach];
-  [self stopPasswordProtectionCoordinator];
+  [self dismissPasswordProtectionWarning];
   [self closePasswordSuggestion];
   [self dismissPictureInPicture];
   [self hideMiniMap];
@@ -503,12 +501,6 @@ const char kContextPanelDismissedHistogram[] =
   _passwordBreachCoordinator = nil;
 }
 
-// Stops the password protection coordinator.
-- (void)stopPasswordProtectionCoordinator {
-  [_passwordProtectionCoordinator stop];
-  _passwordProtectionCoordinator.delegate = nil;
-  _passwordProtectionCoordinator = nil;
-}
 
 // Stops the reminder notifications coordinator.
 - (void)stopReminderNotificationsCoordinator {
@@ -1895,22 +1887,18 @@ const char kContextPanelDismissedHistogram[] =
 - (void)showPasswordProtectionWarning:(NSString*)warningText
                            completion:(void (^)(safe_browsing::WarningAction))
                                           completion {
-  [self stopPasswordProtectionCoordinator];
+  [self dismissPasswordProtectionWarning];
   _passwordProtectionCoordinator = [[PasswordProtectionCoordinator alloc]
       initWithBaseViewController:_baseViewController
                          browser:_browser
                      warningText:warningText];
-  _passwordProtectionCoordinator.delegate = self;
   [_passwordProtectionCoordinator startWithCompletion:completion];
 }
 
-#pragma mark - PasswordProtectionCoordinatorDelegate
-
-- (void)passwordProtectionCoordinatorWantsToBeStopped:
-    (PasswordProtectionCoordinator*)coordinator {
-  // TODO(crbug.com/543366924): Remove this.
-  CHECK_EQ(_passwordProtectionCoordinator, coordinator);
-  [self stopPasswordProtectionCoordinator];
+- (void)dismissPasswordProtectionWarning {
+  PasswordProtectionCoordinator* coordinator = _passwordProtectionCoordinator;
+  _passwordProtectionCoordinator = nil;
+  [coordinator stop];
 }
 
 #pragma mark - PasswordSuggestionCommands

@@ -7,10 +7,10 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/core/browser/password_protection/metrics_util.h"
-#import "ios/chrome/browser/passwords/password_breach/coordinator/password_protection_coordinator_delegate.h"
 #import "ios/chrome/browser/passwords/password_breach/ui/password_protection_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
@@ -94,7 +94,9 @@
 // Dismisses the sheet.
 - (void)dismiss {
   self.completion(safe_browsing::WarningAction::CLOSE);
-  [self.delegate passwordProtectionCoordinatorWantsToBeStopped:self];
+  id<PasswordProtectionCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PasswordProtectionCommands);
+  [handler dismissPasswordProtectionWarning];
 }
 
 @end
