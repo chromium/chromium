@@ -625,6 +625,9 @@ ci.thin_tester(
                 ],
                 remove_mixins = "mac_26_vm_optional",
             ),
+            "content_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             # TODO(crbug.com/436628295): test fails on VM
             "headless_shell_wpt_tests": targets.per_test_modification(
                 mixins = "mac_26_arm64",
