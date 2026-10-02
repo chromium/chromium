@@ -160,18 +160,6 @@ class CrossDeviceSigninQrWebView : public views::WebView,
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
-std::u16string GetBubbleTitle(CrossDeviceSigninPromoEntryPoint entry_point) {
-  switch (entry_point) {
-    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return l10n_util::GetStringUTF16(
-          IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE);
-    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-      return l10n_util::GetStringUTF16(
-          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE);
-  }
-}
-
 }  // namespace
 
 std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
@@ -241,7 +229,8 @@ std::unique_ptr<views::BubbleDialogDelegate> CreateCrossDeviceSigninQrBubble(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetInternalName("CrossDeviceSigninQrBubbleViews")
-          .SetTitle(GetBubbleTitle(entry_point))
+          .SetTitle(
+              l10n_util::GetStringUTF16(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE))
           .SetDialogDestroyingCallback(std::move(cleanup_closure))
           .OverrideShowCloseButton(true)
           .DisableCloseOnDeactivate()

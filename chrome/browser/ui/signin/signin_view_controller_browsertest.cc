@@ -1196,10 +1196,10 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 }
 
 // Verifies that showing the cross-device sign-in QR bubble from the
-// SendTabToSelf entry point displays the SendTabToSelf title and description.
+// SendTabToSelf entry point displays the expected title and description.
 IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
                        ShowCrossDeviceSigninQrBubble_SendTabToSelfEntryPoint) {
-  AccountInfo account_info = SetPrimaryAccount();
+  SetPrimaryAccount();
 
   views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
   base::test::TestFuture<views::Widget*> widget_future;
@@ -1219,7 +1219,7 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
   ASSERT_TRUE(delegate);
   EXPECT_EQ(
       delegate->GetWindowTitle(),
-      l10n_util::GetStringUTF16(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE));
+      l10n_util::GetStringUTF16(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE));
 
   views::WebView* web_view = views::AsViewClass<views::WebView>(
       views::ElementTrackerViews::GetInstance()->GetUniqueView(
@@ -1235,14 +1235,13 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
 
   EXPECT_EQ(
       content::EvalJs(web_contents, "document.title"),
-      l10n_util::GetStringUTF8(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE));
+      l10n_util::GetStringUTF8(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE));
   EXPECT_EQ(
       content::EvalJs(
           web_contents,
           "document.querySelector('cross-device-signin-qr-bubble-app')"
           ".shadowRoot.querySelector('#subtitle').textContent.trim()"),
-      l10n_util::GetStringFUTF8(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR,
-                                base::UTF8ToUTF16(account_info.GetEmail())));
+      l10n_util::GetStringUTF8(IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR));
 
   views::test::WidgetDestroyedWaiter waiter(bubble_widget);
   SigninViewController::From(browser())->CloseBubbleSignin();

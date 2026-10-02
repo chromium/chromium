@@ -14,7 +14,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,7 +34,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/url_util.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
 #include "ui/webui/webui_util.h"
 
@@ -147,41 +145,13 @@ CrossDeviceSigninPromoEntryPoint GetEntryPointFromUrl(const GURL& url) {
   return CrossDeviceSigninPromoEntryPoint::kProfileMenu;
 }
 
-int GetBubbleTitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
+int GetBubbleSubtitleResourceId(CrossDeviceSigninPromoEntryPoint entry_point) {
   switch (entry_point) {
     case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
     case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE;
+      return IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE;
     case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf:
-      return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_TITLE;
-  }
-}
-
-std::u16string GetBubbleDescription(
-    Profile* profile,
-    CrossDeviceSigninPromoEntryPoint entry_point) {
-  switch (entry_point) {
-    case CrossDeviceSigninPromoEntryPoint::kProfileMenu:
-    case CrossDeviceSigninPromoEntryPoint::kHistoryPage:
-      return l10n_util::GetStringUTF16(
-          IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_SUBTITLE);
-    case CrossDeviceSigninPromoEntryPoint::kSendTabToSelf: {
-      // TODO(crbug.com/561921380): The SendTabToSelf strings are temporary;
-      // strongly consider removing the email placeholder from the subtitle
-      // since the account name and email are already displayed below the QR
-      // code.
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile);
-      std::string email =
-          identity_manager
-              ? identity_manager
-                    ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                    .email
-              : std::string();
-      return l10n_util::GetStringFUTF16(
-          IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR,
-          base::UTF8ToUTF16(email));
-    }
+      return IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_BODY_QR;
   }
 }
 
@@ -203,8 +173,9 @@ CrossDeviceSigninQrBubbleUI::CrossDeviceSigninQrBubbleUI(content::WebUI* web_ui)
       GetEntryPointFromUrl(web_ui->GetWebContents()->GetVisibleURL());
 
   source->UseStringsJs();
-  source->AddLocalizedString("title", GetBubbleTitleResourceId(entry_point));
-  source->AddString("subtitle", GetBubbleDescription(profile, entry_point));
+  source->AddLocalizedString("title", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE);
+  source->AddLocalizedString("subtitle",
+                             GetBubbleSubtitleResourceId(entry_point));
   source->AddLocalizedString(
       "qrCodeAltText", IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_QR_CODE_ALT_TEXT);
   source->EnableReplaceI18nInJS();
