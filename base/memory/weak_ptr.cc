@@ -52,6 +52,10 @@ void WeakReference::Flag::BindToCurrentSequence() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
+
+void WeakReference::Flag::CheckCalledOnValidSequence() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 #endif
 
 WeakReference::Flag::~Flag() = default;

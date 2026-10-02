@@ -99,7 +99,7 @@ class BASE_EXPORT CheckedObserverAdapter {
   bool IsEqual(const CheckedObserver* rhs) const {
     // Note that inside an iteration, ObserverList::HasObserver() may call this
     // and |weak_ptr_| may be null due to a deferred removal, which is fine.
-    return weak_ptr_.get() == rhs;
+    return weak_ptr_ == rhs;
   }
 
   template <class ObserverType>

@@ -4,7 +4,10 @@
 
 #include "base/memory/weak_ptr.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
+#include <new>
 #include <string>
 
 #include "base/debug/leak_annotations.h"
@@ -84,6 +87,13 @@ struct DerivedTargetWithNestedBase : public Target {
 struct VirtualDestructor {
   virtual ~VirtualDestructor() = default;
 };
+
+// A struct with a virtual base, so that converting a VirtualDerived* to a
+// VirtualBase* has to read the object.
+struct VirtualBase {
+  virtual ~VirtualBase() = default;
+};
+struct VirtualDerived : public virtual VirtualBase {};
 
 // A class inheriting from Target where Target is not the first base, and where
 // the first base has a virtual method table. This creates a structure where the
@@ -173,6 +183,18 @@ class BackgroundThread : public Thread {
     return result;
   }
 
+  // Compares the WeakPtr in `arrow` against `target` on this thread.
+  bool Compare(const Arrow* arrow, const Target* target) {
+    WaitableEvent completion(WaitableEvent::ResetPolicy::MANUAL,
+                             WaitableEvent::InitialState::NOT_SIGNALED);
+    bool result = false;
+    task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(&BackgroundThread::DoCompare, arrow, target,
+                                  &result, &completion));
+    completion.Wait();
+    return result;
+  }
+
   void BindToCurrentSequence(TargetWithFactory* target_with_factory) {
     WaitableEvent completion(WaitableEvent::ResetPolicy::MANUAL,
                              WaitableEvent::InitialState::NOT_SIGNALED);
@@ -203,6 +225,14 @@ class BackgroundThread : public Thread {
                       Target** result,
                       WaitableEvent* completion) {
     *result = arrow->target.get();
+    completion->Signal();
+  }
+
+  static void DoCompare(const Arrow* arrow,
+                        const Target* target,
+                        bool* result,
+                        WaitableEvent* completion) {
+    *result = arrow->target == target;
     completion->Signal();
   }
 
@@ -830,6 +860,103 @@ TEST(WeakPtrDeathTest, WeakPtrCopyDoesNotChangeThreadBinding) {
   background.DeleteArrow(arrow_copy);
 }
 
+TEST(WeakPtrTest, EqualityWithRawPointer) {
+  int data = 0;
+  int other_data = 1;
+  WeakPtrFactory<int> factory(&data);
+  WeakPtr<int> weak_ptr = factory.GetWeakPtr();
+
+  EXPECT_EQ(weak_ptr, &data);
+  EXPECT_EQ(&data, weak_ptr);
+  EXPECT_NE(weak_ptr, &other_data);
+  EXPECT_NE(&other_data, weak_ptr);
+
+  EXPECT_NE(weak_ptr, nullptr);
+  EXPECT_NE(nullptr, weak_ptr);
+
+  int* null_ptr = nullptr;
+  EXPECT_NE(weak_ptr, null_ptr);
+  EXPECT_NE(null_ptr, weak_ptr);
+
+  // Invalidation causes equality to become false, even with the original
+  // pointer.
+  factory.InvalidateWeakPtrs();
+  EXPECT_NE(weak_ptr, &data);
+  EXPECT_NE(&data, weak_ptr);
+  EXPECT_EQ(weak_ptr, nullptr);
+  EXPECT_EQ(nullptr, weak_ptr);
+  EXPECT_EQ(weak_ptr, null_ptr);
+  EXPECT_EQ(null_ptr, weak_ptr);
+
+  // Default constructed WeakPtr compares equal to null pointers.
+  WeakPtr<int> empty;
+  EXPECT_EQ(empty, nullptr);
+  EXPECT_EQ(nullptr, empty);
+  EXPECT_EQ(empty, null_ptr);
+  EXPECT_EQ(null_ptr, empty);
+  EXPECT_NE(empty, &data);
+
+  // raw_ptr comparison
+  WeakPtrFactory<int> factory2(&data);
+  raw_ptr<int> raw = &data;
+  WeakPtr<int> weak_ptr2 = factory2.GetWeakPtr();
+  EXPECT_EQ(weak_ptr2, raw);
+  EXPECT_EQ(raw, weak_ptr2);
+
+  raw_ptr<int> other_raw = &other_data;
+  EXPECT_NE(weak_ptr2, other_raw);
+  EXPECT_NE(other_raw, weak_ptr2);
+
+  raw_ptr<int> null_raw = nullptr;
+  EXPECT_NE(weak_ptr2, null_raw);
+  EXPECT_EQ(empty, null_raw);
+
+  // Invalidation makes the raw_ptr comparison false as well, and the
+  // invalidated WeakPtr compares equal to a null raw_ptr, like get() does.
+  factory2.InvalidateWeakPtrs();
+  EXPECT_NE(weak_ptr2, raw);
+  EXPECT_NE(raw, weak_ptr2);
+  EXPECT_EQ(weak_ptr2, null_raw);
+  EXPECT_EQ(null_raw, weak_ptr2);
+
+  // Inheritance
+  Derived derived_obj;
+  WeakPtrFactory<Derived> derived_factory(&derived_obj);
+  WeakPtr<Derived> derived_weak = derived_factory.GetWeakPtr();
+  Base* base_ptr = &derived_obj;
+  EXPECT_EQ(derived_weak, base_ptr);
+  EXPECT_EQ(base_ptr, derived_weak);
+  Base other_base;
+  EXPECT_NE(derived_weak, &other_base);
+}
+
+// Comparing with a pointer to a virtual base must not convert the stored
+// pointer once the object is gone: that conversion reads the object.
+TEST(WeakPtrTest, EqualityWithPointerToVirtualBaseAfterDeletion) {
+  alignas(VirtualDerived) std::array<unsigned char, sizeof(VirtualDerived)>
+      storage;
+  auto* derived = new (storage.data()) VirtualDerived();
+  WeakPtr<VirtualDerived> weak_ptr;
+  {
+    WeakPtrFactory<VirtualDerived> factory(derived);
+    weak_ptr = factory.GetWeakPtr();
+    const VirtualBase* base_ptr = derived;
+    EXPECT_EQ(weak_ptr, base_ptr);
+    EXPECT_EQ(base_ptr, weak_ptr);
+  }
+  derived->~VirtualDerived();
+  // The memory is reused: nothing in it points to a vtable any more.
+  std::ranges::fill(storage, 0);
+
+  VirtualDerived other;
+  const VirtualBase* other_base = &other;
+  EXPECT_NE(weak_ptr, other_base);
+  EXPECT_NE(other_base, weak_ptr);
+  const VirtualBase* null_base = nullptr;
+  EXPECT_EQ(weak_ptr, null_base);
+  EXPECT_EQ(null_base, weak_ptr);
+}
+
 TEST(WeakPtrDeathTest, NonOwnerThreadDereferencesWeakPtrAfterReference) {
   // The default style "fast" does not support multi-threaded tests
   // (introduces deadlock on Linux).
@@ -848,6 +975,26 @@ TEST(WeakPtrDeathTest, NonOwnerThreadDereferencesWeakPtrAfterReference) {
   BackgroundThread background;
   background.Start();
   ASSERT_DCHECK_DEATH(background.DeRef(&arrow));
+}
+
+TEST(WeakPtrDeathTest, NonOwnerThreadComparesWeakPtrAfterReference) {
+  // The default style "fast" does not support multi-threaded tests
+  // (introduces deadlock on Linux).
+  GTEST_FLAG_SET(death_test_style, "threadsafe");
+
+  // Main thread creates a Target object and binds a WeakPtr to it there.
+  Target target;
+  Arrow arrow;
+  arrow.target = target.AsWeakPtr();
+  arrow.target.get();
+
+  // Comparing against a raw pointer checks the sequence like get() does, even
+  // for a pointer that differs from the stored one, where the flag itself is
+  // not read.
+  Target other;
+  BackgroundThread background;
+  background.Start();
+  ASSERT_DCHECK_DEATH(background.Compare(&arrow, &other));
 }
 
 TEST(WeakPtrDeathTest, NonOwnerThreadDeletesWeakPtrAfterReference) {
