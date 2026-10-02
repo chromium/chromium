@@ -676,10 +676,18 @@ public class VerticalTabListCoordinatorUnitTest {
     }
 
     @Test
-    public void testNewTabButtonRightClick_DoesNotLaunchEmptySpaceContextMenu() {
+    public void testNewTabButtonRightClick_LaunchesEmptySpaceContextMenu() {
         createCoordinator();
         View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
-        assertContextClickDoesNotLaunchEmptySpaceContextMenu(newTabButton);
+        assertEmptySpaceContextMenuRightClick(newTabButton);
+    }
+
+    @Test
+    public void testNewTabButtonLongPress_LaunchesEmptySpaceContextMenu() {
+        createCoordinator();
+        mActivity.setContentView(mCoordinator.getView());
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertStandardViewLongPressLaunchesMenu(newTabButton);
     }
 
     @Test
@@ -2805,6 +2813,25 @@ public class VerticalTabListCoordinatorUnitTest {
 
         ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
         verify(mTabGroupContextMenuCoordinator).showMenu(rectCaptor.capture(), eq(tabGroupId));
+        assertNotNull(rectCaptor.getValue());
+    }
+
+    @Test
+    public void testOpenKeyboardFocusedContextMenu_WithFocusedNewTabButton() {
+        createCoordinator();
+        measureAndLayoutContainer();
+
+        View newTabButton = mCoordinator.getView().findViewById(R.id.new_tab_button);
+        assertNotNull(newTabButton);
+        newTabButton.setFocusableInTouchMode(true);
+        assertTrue(newTabButton.requestFocus());
+
+        mCoordinator.setTabStripContextMenuCoordinatorForTesting(mTabStripContextMenuCoordinator);
+        assertTrue(mCoordinator.openKeyboardFocusedContextMenu());
+
+        ArgumentCaptor<RectProvider> rectCaptor = ArgumentCaptor.forClass(RectProvider.class);
+        verify(mTabStripContextMenuCoordinator)
+                .showMenu(rectCaptor.capture(), eq(false), eq(mActivity));
         assertNotNull(rectCaptor.getValue());
     }
 

@@ -867,13 +867,21 @@ public class VerticalTabListCoordinator {
 
         mVerticalTabsActiveSupplier.addSyncObserverAndCallIfNonNull(mActiveObserver);
 
-        // Context menus should not appear upon right-clicking the new tab button or the collapse
-        // button.
         View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
         if (newTabButton != null) {
-            newTabButton.setOnContextClickListener(v -> true);
+            newTabButton.setOnTouchListener(createLocalCoordinateTrackingTouchListener());
+            newTabButton.setOnContextClickListener(
+                    createEmptySpaceContextClickListener(activity, newTabButton));
+            newTabButton.setOnLongClickListener(
+                    v -> {
+                        showEmptySpaceContextMenu(
+                                calculateTouchAnchor(v, mLastTouchPoint.x, mLastTouchPoint.y),
+                                activity);
+                        return true;
+                    });
         }
 
+        // Context menus should not appear upon right-clicking the collapse button.
         View collapseButton = mContainerView.findViewById(R.id.collapse_button);
         if (collapseButton != null) {
             collapseButton.setOnContextClickListener(v -> true);
@@ -1054,7 +1062,8 @@ public class VerticalTabListCoordinator {
     }
 
     /**
-     * Opens the context menu for the currently keyboard-focused tab item or group header, if any.
+     * Opens the context menu for the currently keyboard-focused tab item, group header, or new tab
+     * button, if any.
      *
      * @return Whether the context menu was successfully opened.
      */
@@ -1064,6 +1073,14 @@ public class VerticalTabListCoordinator {
         }
         if (mPinnedTabsRecyclerView.hasFocus()) {
             return openContextMenuForFocusedItem(mPinnedTabsRecyclerView);
+        }
+        View newTabButton = mContainerView.findViewById(R.id.new_tab_button);
+        if (newTabButton != null && newTabButton.isFocused()) {
+            Activity activity = mWindowAndroid.getActivity().get();
+            if (activity == null) return false;
+            showEmptySpaceContextMenu(getItemViewAnchorRectProvider(newTabButton), activity);
+            newTabButton.performHapticFeedback(HapticFeedbackConstants.CONTEXT_CLICK);
+            return true;
         }
         return false;
     }

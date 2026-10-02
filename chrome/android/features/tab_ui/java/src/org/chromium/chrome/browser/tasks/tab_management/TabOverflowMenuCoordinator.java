@@ -236,7 +236,14 @@ public abstract class TabOverflowMenuCoordinator<T>
         // LINT.ThenChange(//components/browser_ui/widget/android/java/res/values/dimens.xml|//components/browser_ui/widget/android/java/res/values-night/dimens.xml)
     }
 
-    private static void offsetPopupRect(Context context, boolean isIncognito, Rect rect) {
+    /**
+     * Offsets the popup anchor {@link Rect} to account for the menu background shadow padding.
+     *
+     * @param context The {@link Context} used to load resources and background drawable.
+     * @param isIncognito Whether the menu is shown in incognito mode.
+     * @param rect The anchor {@link Rect} to offset in-place.
+     */
+    public static void offsetPopupRect(Context context, boolean isIncognito, Rect rect) {
         if (isIncognito) return;
         Resources resources = context.getResources();
         rect.offset(0, -resources.getDimensionPixelSize(R.dimen.popup_menu_shadow_length));

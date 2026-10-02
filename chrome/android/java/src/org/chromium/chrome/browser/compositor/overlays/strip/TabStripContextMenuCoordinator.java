@@ -140,6 +140,8 @@ public class TabStripContextMenuCoordinator {
         if (contentView == null) return;
 
         Drawable background = TabOverflowMenuCoordinator.getMenuBackground(mContext, isIncognito);
+        TabOverflowMenuCoordinator.offsetPopupRect(
+                mContext, isIncognito, anchorViewRectProvider.getRect());
         View decorView = activity.getWindow().getDecorView();
 
         TouchTrackingListView touchTrackingListView =
