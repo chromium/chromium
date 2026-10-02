@@ -6743,6 +6743,68 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MainFrameFragmentNavigation) {
   EXPECT_EQ(GetRequestCount(prerendering_url), 1);
 }
 
+// Regression test for https://crbug.com/553918186. Activating a prerendered
+// page while it has an ongoing Navigation API navigation that was intercepted
+// with a still-pending handler must not drop that navigation, and the
+// navigation should successfully finish once the handler settles. This models
+// an omnibox-triggered prerender, activated by the user typing the URL.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       ActivationWithOngoingInterceptedNavigation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start an embedder-triggered prerender, as the omnibox does.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      AddEmbedderTriggeredPrerender(prerendering_url);
+  ASSERT_TRUE(prerender_handle);
+  RenderFrameHost* prerender_frame_host =
+      GetPrerenderedMainFrameHost(GetHostForUrl(prerendering_url));
+  ASSERT_TRUE(prerender_frame_host);
+
+  // In the prerendered page, start a same-document navigation that is
+  // intercepted with a handler whose promise stays pending until
+  // `window.resolveHandler()` is called.
+  ASSERT_TRUE(ExecJs(prerender_frame_host, R"(
+    window.navigateFinished = new Promise((resolve, reject) => {
+      navigation.addEventListener('navigatesuccess', () => resolve('success'),
+                                  {once: true});
+      navigation.addEventListener('navigateerror', e => reject(e.message),
+                                  {once: true});
+    });
+    navigation.addEventListener('navigate', e => {
+      e.intercept({
+        handler: () => new Promise(resolve => window.resolveHandler = resolve)
+      });
+    }, {once: true});
+    navigation.navigate('#dashboard', {history: 'replace'})
+        .committed.then(() => true);
+  )"));
+  ASSERT_EQ(true, EvalJs(prerender_frame_host,
+                         "typeof window.resolveHandler === 'function'"));
+
+  // Activate the prerendered page with a browser-initiated navigation typed in
+  // the address bar, while the intercepted navigation is still ongoing. Wait
+  // for the activation rather than for load stop, as the ongoing intercepted
+  // navigation may keep the page loading.
+  test::PrerenderHostObserver host_observer(*web_contents(), prerendering_url);
+  prerender_helper()->NavigatePrimaryPageAsync(
+      prerendering_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  host_observer.WaitForActivation();
+  ASSERT_TRUE(host_observer.was_activated());
+  EXPECT_EQ("#dashboard", EvalJs(web_contents(), "location.hash"));
+
+  // Settle the handler. The navigation should finish successfully without
+  // crashing the renderer.
+  EXPECT_EQ("success",
+            EvalJs(web_contents(),
+                   "window.resolveHandler(); window.navigateFinished"));
+}
+
 // Makes sure that activation on navigation for a pop-up window doesn't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
                        Activation_PopUpWindow) {

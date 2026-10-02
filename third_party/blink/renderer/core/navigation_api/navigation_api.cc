@@ -345,8 +345,17 @@ void NavigationApi::SetEntriesForRestore(
   // Avoid a dangling navigate event when restoring.
   // This prevents the successful cross-document navigation that exited this
   // page from remaining as an ongoing event that would be "aborted".
-  ongoing_navigate_event_ = nullptr;
-  ongoing_api_method_tracker_ = nullptr;
+  // An ongoing event that was intercepted or has already reacted (e.g. an
+  // intercepted same-document navigation that was in flight when a prerendered
+  // page got activated) is not dangling: it will finish via
+  // NavigateEvent::ReactDone(), which expects it to still be ongoing, so it
+  // must be preserved along with its API method tracker.
+  if (!ongoing_navigate_event_ ||
+      (!ongoing_navigate_event_->HasNavigationActions() &&
+       !ongoing_navigate_event_->HasReacted())) {
+    ongoing_navigate_event_ = nullptr;
+    ongoing_api_method_tracker_ = nullptr;
+  }
 
   HeapVector<Member<NavigationHistoryEntry>> new_entries;
   new_entries.reserve(

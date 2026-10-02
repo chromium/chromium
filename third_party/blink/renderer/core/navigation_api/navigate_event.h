@@ -93,6 +93,9 @@ class NavigateEvent final : public Event,
       ExceptionState&);
 
   void React(ScriptState* script_state);
+  // Whether React() has been called, i.e. whether ReactDone() is pending or
+  // has already run.
+  bool HasReacted() const { return has_reacted_; }
 
   void ResumeDeferredCommit();
 
@@ -164,6 +167,7 @@ class NavigateEvent final : public Event,
       deferred_commit_handler_list_;
 
   bool did_change_focus_during_intercept_ = false;
+  bool has_reacted_ = false;
 
   // Used to delay the start of the loading UI when the navigation is
   // intercepted, in order to minimize jittering if any handlers are short.
