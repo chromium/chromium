@@ -210,4 +210,7 @@ BASE_FEATURE(kSyncCopyPreferencesToTransportModeOnServerForcedDisable,
 
 BASE_FEATURE(kSyncNigoriAuthenticateIV, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSyncMigrateFromImplicitPassphrase,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace syncer

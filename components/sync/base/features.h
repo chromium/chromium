@@ -239,6 +239,11 @@ BASE_DECLARE_FEATURE(kSyncCopyPreferencesToTransportModeOnServerForcedDisable);
 // Authenticate the Initialization Vector (IV) in Nigori encryption.
 BASE_DECLARE_FEATURE(kSyncNigoriAuthenticateIV);
 
+// If enabled, migrates users with deprecated IMPLICIT_PASSPHRASE to
+// KEYSTORE_PASSPHRASE (if encrypt_everything is false) or
+// CUSTOM_PASSPHRASE (if encrypt_everything is true).
+BASE_DECLARE_FEATURE(kSyncMigrateFromImplicitPassphrase);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

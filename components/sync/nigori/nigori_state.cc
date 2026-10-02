@@ -366,4 +366,15 @@ bool NigoriState::NeedsGenerateCrossUserSharingKeyPair() const {
   return !IsValidKeyPairState(*this);
 }
 
+bool NigoriState::NeedsImplicitPassphraseMigration() const {
+  if (passphrase_type != sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE ||
+      pending_keys.has_value() || !cryptographer->CanEncrypt()) {
+    return false;
+  }
+  if (!encrypt_everything && keystore_keys_cryptographer->IsEmpty()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kSyncMigrateFromImplicitPassphrase);
+}
+
 }  // namespace syncer
