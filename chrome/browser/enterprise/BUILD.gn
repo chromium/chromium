@@ -336,6 +336,7 @@ source_set("enterprise") {
     public += [
       "connectors/analysis/content_analysis_delegate.h",
       "connectors/analysis/content_analysis_dialog_controller.h",
+      "connectors/analysis/content_analysis_dialog_controller_base.h",
       "connectors/analysis/content_analysis_dialog_delegate.h",
       "connectors/analysis/content_analysis_downloads_delegate.h",
       "connectors/analysis/content_analysis_views.h",

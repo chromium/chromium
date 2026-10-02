@@ -37,7 +37,7 @@ namespace enterprise_connectors {
 
 class BinaryUploadService;
 class ClipboardRequestHandler;
-class ContentAnalysisDialogController;
+class ContentAnalysisDialogControllerBase;
 class FilesRequestHandlerBase;
 class PagePrintRequestHandler;
 
@@ -435,7 +435,7 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase,
   CompletionCallback callback_;
 
   // Pointer to UI when enabled.
-  raw_ptr<ContentAnalysisDialogController> dialog_ = nullptr;
+  raw_ptr<ContentAnalysisDialogControllerBase> dialog_ = nullptr;
 
   // Access point to use to record UMA metrics.
   DeepScanAccessPoint access_point_;
