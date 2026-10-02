@@ -87,7 +87,7 @@ void LoadtimesGetter(v8::Local<v8::Name> name,
     frame->UsageCountChromeLoadTimes(blink::WebString::FromUtf8(
         *v8::String::Utf8Value(info.GetIsolate(), name)));
   }
-  info.GetReturnValue().Set(info.Data());
+  info.GetReturnValue().Set(info.DataV2().As<v8::Value>());
 }
 
 void CSIGetter(v8::Local<v8::Name> name,
@@ -97,7 +97,7 @@ void CSIGetter(v8::Local<v8::Name> name,
     frame->UsageCountChromeCSI(blink::WebString::FromUtf8(
         *v8::String::Utf8Value(info.GetIsolate(), name)));
   }
-  info.GetReturnValue().Set(info.Data());
+  info.GetReturnValue().Set(info.DataV2().As<v8::Value>());
 }
 
 }  // namespace
@@ -107,7 +107,8 @@ void LoadTimesBindings::LoadTimesCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   LoadTimesBindings* bindings = nullptr;
-  if (gin::ConvertFromV8(isolate, info.Data(), &bindings) && bindings) {
+  if (gin::ConvertFromV8(isolate, info.DataV2().As<v8::Value>(), &bindings) &&
+      bindings) {
     info.GetReturnValue().Set(bindings->GetLoadTimes(isolate));
   }
 }
@@ -117,7 +118,8 @@ void LoadTimesBindings::CSICallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   LoadTimesBindings* bindings = nullptr;
-  if (gin::ConvertFromV8(isolate, info.Data(), &bindings) && bindings) {
+  if (gin::ConvertFromV8(isolate, info.DataV2().As<v8::Value>(), &bindings) &&
+      bindings) {
     info.GetReturnValue().Set(bindings->GetCSI(isolate));
   }
 }

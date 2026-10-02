@@ -57,7 +57,7 @@ void AppHooksDelegate::IsInstalledGetterCallback(
     return;
 
   auto* hooks_delegate = static_cast<AppHooksDelegate*>(
-      info.Data().As<v8::External>()->Value(gin::kAppHooksDelegateTag));
+      info.DataV2().As<v8::External>()->Value(gin::kAppHooksDelegateTag));
   // Since this is more-or-less an API, log it as an API call.
   APIActivityLogger::LogAPICall(hooks_delegate->ipc_sender_, context,
                                 "app.getIsInstalled",
