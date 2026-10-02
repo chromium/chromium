@@ -5823,15 +5823,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.ShowSelectionMenuSourceType" enum="MenuSourceType"
-    expires_after="2026-08-23">
-  <owner>mvanouwerkerk@chromium.org</owner>
-  <owner>wbjacksonjr@chromium.org</owner>
-  <summary>
-    Records the menu source type when a selection menu is shown. Android only.
-  </summary>
-</histogram>
-
 <histogram name="Android.SideUi.ResizeHandle.TouchState"
     enum="AndroidSideUiResizeHandleTouchState" expires_after="2026-12-16">
   <owner>spdonghao@google.com</owner>

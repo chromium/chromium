@@ -581,9 +581,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         ensureView();
         mShowMenuStartTimeMs = SystemClock.elapsedRealtime();
         mMenuModelBridge = menuModelBridge;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.ShowSelectionMenuSourceType", sourceType, MenuSourceType.MAX_VALUE + 1);
-
         int offsetBottom = bottom;
         offsetBottom += handleHeight;
         mXDip = xDip;
