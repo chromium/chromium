@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registry.h"
@@ -38,6 +39,14 @@
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/webui/buildflags.h"
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/search/instant_service.h"
+#include "chrome/browser/search/instant_service_factory.h"
+#include "components/search/ntp_features.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 using GotDataCallback = content::URLDataSource::GotDataCallback;
 using WebContentsGetter = content::WebContents::Getter;
@@ -227,6 +236,33 @@ TEST_F(FaviconSourceTestWithLegacyFormat, ShouldNotQueryIfInvalidScaleFactor) {
       GURL(base::StrCat({kDummyPrefix, "size/16@-2x/https://www.google.com"})),
       test_web_contents_getter(), base::DoNothing());
 }
+
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+// chrome-search://favicon is used by third-party NTPs, and must only be
+// served to navigations and Instant renderers.
+TEST_F(FaviconSourceTestWithLegacyFormat,
+       ShouldServiceChromeSearchRequestsOnlyForInstantProcesses) {
+  // On desktop Android, InstantService is only enabled when the flag is true.
+  base::test::ScopedFeatureList scoped_feature_list(
+      ntp_features::kNtpEnableInstantApiAndroid);
+  InstantService* instant_service =
+      InstantServiceFactory::GetForProfile(&profile());
+  ASSERT_TRUE(instant_service);
+  content::MockRenderProcessHost instant_host(&profile());
+  content::MockRenderProcessHost non_instant_host(&profile());
+  instant_service->AddInstantProcess(&instant_host);
+
+  const GURL url("chrome-search://favicon/size/16@1x/https://www.google.com");
+
+  // Navigation requests have no renderer process ID.
+  EXPECT_TRUE(source().ShouldServiceRequest(url, &profile(),
+                                            /*render_process_id=*/-1));
+  EXPECT_TRUE(source().ShouldServiceRequest(url, &profile(),
+                                            instant_host.GetDeprecatedID()));
+  EXPECT_FALSE(source().ShouldServiceRequest(
+      url, &profile(), non_instant_host.GetDeprecatedID()));
+}
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 class FaviconSourceTestWithFavicon2Format
     : public FaviconSourceTestBase,

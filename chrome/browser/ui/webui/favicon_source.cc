@@ -34,10 +34,14 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
+#include "ui/webui/buildflags.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/search/instant_service.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/util/webui_util_desktop.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -233,12 +237,12 @@ bool FaviconSource::ShouldServiceRequest(
     const GURL& url,
     content::BrowserContext* browser_context,
     int render_process_id) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   if (url.SchemeIs(chrome::kChromeSearchScheme)) {
     return InstantService::ShouldServiceRequest(url, browser_context,
                                                 render_process_id);
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   return URLDataSource::ShouldServiceRequest(url, browser_context,
                                              render_process_id);
 }

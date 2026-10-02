@@ -354,6 +354,7 @@ if (enable_extensions_core || enable_webui_ntp ||
       "//ui/gfx/codec",
       "//ui/native_theme",
       "//ui/resources",
+      "//ui/webui:buildflags",
       "//url",
     ]
 
@@ -370,9 +371,7 @@ if (enable_extensions_core || enable_webui_ntp ||
   }
 }
 
-# favicon_source_unittest.cc hard-depends on //extensions, which is unavailable
-# on non-desktop Android; it ran only under !is_android in chrome/test.
-if (!is_android) {
+if (!is_android || enable_webui_ntp) {
   source_set("favicon_source_unit_tests") {
     testonly = true
     sources = [ "favicon_source_unittest.cc" ]
@@ -381,11 +380,13 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/favicon",
+      "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/common",
       "//chrome/test:test_support",
       "//components/favicon/core/test:test_support",
       "//components/favicon_base",
+      "//components/search",
       "//components/search_engines",
       "//content/public/browser",
       "//content/test:test_support",
@@ -396,6 +397,7 @@ if (!is_android) {
       "//ui/native_theme",
       "//ui/native_theme:test_support",
       "//ui/resources",
+      "//ui/webui:buildflags",
     ]
   }
 }
