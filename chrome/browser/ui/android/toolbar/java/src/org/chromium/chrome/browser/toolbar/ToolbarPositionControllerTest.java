@@ -1217,8 +1217,8 @@ public class ToolbarPositionControllerTest {
 
         mController.maybeForceBottomToolbarLayoutUpdateAndCapture(/* isNtpShowing= */ false);
 
-        // The capture is deliberately not forced; the Android view is on screen on this path.
-        verify(mControlContainer).doSynchronousLayout(false);
+        // The bitmap still holds the padding, so it has to be recaptured along with the layout.
+        verify(mControlContainer).doSynchronousLayout(true);
     }
 
     @Test
