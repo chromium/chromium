@@ -459,6 +459,7 @@ crbug.com/542707343 [ fuchsia ] conformance/textures/misc/texture-srgb-upload.ht
 ####################
 
 crbug.com/567281778 [ win angle-swiftshader arch-x86_64 passthrough ] conformance/extensions/oes-texture-float-linear.html [ RetryOnFailure ]
+crbug.com/564887537 [ win10 intel-0x9bc5 ] WebglExtension_ANGLE_instanced_arrays [ RetryOnFailure ]
 
 ## Win / AMD RX 5500 XT failures ##
 
@@ -513,6 +514,7 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] conformance/extensions/webgl-
 crbug.com/537387984 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/glsl/misc/shader-with-for-loop.html [ Slow ]
 crbug.com/544806579 [ mac angle-swiftshader arch-arm64 asan ] conformance/rendering/gl-drawelements.html [ RetryOnFailure ]
 crbug.com/527353878 [ mac apple-angle-metal-renderer:-apple-m2 asan ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
+crbug.com/564887537 [ mac apple-angle-metal-renderer:-apple-m2 asan ] WebglExtension_ANGLE_instanced_arrays [ RetryOnFailure ]
 
 ####################
 # Linux failures   #
