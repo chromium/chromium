@@ -223,6 +223,10 @@ bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object) {
     return true;
   }
 
+  if (layout_object.IsInCanvasSubtree()) {
+    return true;
+  }
+
   // Clip Path animations require paint properties to work. Text objects, or
   // objects without a box model are not given paint properties.
   if (layout_object.IsText() ||
