@@ -28,6 +28,8 @@
   <suppress id="FullscreenDialogs" files="Test(Utils?)?\.java"/>
   <!-- jni_generator tests fail some checks. -->
   <suppress checks=".*" files="base/android/jni_generator/.*"/>
+  <!-- Generated file checked into the repo. -->
+  <suppress checks=".*" files="IWebApkApi\.java"/>
   <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for
        consistency with the native code. -->
   <suppress checks="AbbreviationAsWord" files=".*Accessibility.*" />

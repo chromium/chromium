@@ -7,9 +7,12 @@
 
 import argparse
 import collections
+import concurrent.futures
+import math
 import os
 import subprocess
 import sys
+import threading
 import xml.dom.minidom
 
 
@@ -40,6 +43,13 @@ class Violation(
 
     def is_error(self):
         return self.severity == 'error'
+
+    def sort_key(self):
+        return (
+            self.file,
+            self.line if isinstance(self.line, int) else 0,
+            self.column or 0,
+        )
 
 
 class _CheckstyleError(Exception):
@@ -115,13 +125,47 @@ def _parse_violations(local_path, returncode, stdout, stderr):
     return results
 
 
-def run_checkstyle(local_path, style_file, java_files):
+def _shard_files(java_files, cpu_count=None):
+    # Checkstyle is single-threaded. Shard large runs across available CPUs,
+    # keeping at least 100 files per shard (so normal CLs spawn only 1 process)
+    # and at most 400 files per shard (to bound command-line length).
+    cpu_count = cpu_count or os.cpu_count() or 1
+    shard_size = max(100, min(400, math.ceil(len(java_files) / cpu_count)))
+    return [
+        java_files[i : i + shard_size]
+        for i in range(0, len(java_files), shard_size)
+    ]
+
+
+def _run_checkstyle_shard(local_path, style_file, java_files):
     cmd = _checkstyle_command(style_file, java_files)
-    result = subprocess.run(cmd, capture_output=True, check=False, text=True)
+    result = subprocess.run(
+        cmd, capture_output=True, check=False, text=True, cwd=CHROMIUM_SRC
+    )
+    return _parse_violations(
+        local_path, result.returncode, result.stdout, result.stderr
+    )
+
+
+def run_checkstyle(local_path, style_file, java_files):
+    if not java_files:
+        return []
+    shards = _shard_files(java_files)
     try:
-        return _parse_violations(
-            local_path, result.returncode, result.stdout, result.stderr
-        )
+        if len(shards) == 1:
+            return _run_checkstyle_shard(local_path, style_file, shards[0])
+        violations = []
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = [
+                executor.submit(
+                    _run_checkstyle_shard, local_path, style_file, shard
+                )
+                for shard in shards
+            ]
+            for future in futures:
+                violations.extend(future.result())
+        violations.sort(key=Violation.sort_key)
+        return violations
     except _CheckstyleError as e:
         sys.stderr.write(f'{e}\n')
         sys.exit(-1)
@@ -144,50 +188,104 @@ def run_presubmit(input_api, output_api, files_to_skip=None):
         return []
 
     local_path = input_api.PresubmitLocalPath()
+    shards = _shard_files(java_files, input_api.cpu_count)
+
+    lock = threading.Lock()
+    all_violations = []
+    error_messages = []
+    num_completed = 0
 
     def parse_output(returncode, stdout, stderr):
+        nonlocal num_completed
         try:
             violations = _parse_violations(
                 local_path, returncode, stdout, stderr
             )
+            error_msg = None
         except _CheckstyleError as e:
-            return [output_api.PresubmitError(str(e))]
+            violations = []
+            error_msg = str(e)
 
-        warnings = ['  ' + str(v) for v in violations if v.is_warning()]
-        errors = ['  ' + str(v) for v in violations if v.is_error()]
+        with lock:
+            num_completed += 1
+            is_last = num_completed == len(shards)
+            all_violations.extend(violations)
+            if error_msg is not None:
+                error_messages.append(error_msg)
 
-        ret = []
-        if warnings:
-            ret.append(output_api.PresubmitPromptWarning('\n'.join(warnings)))
-        if errors:
-            msg = '\n'.join(errors)
-            if 'Unused import:' in msg or 'Duplicate import' in msg:
-                msg += """
+            if not is_last:
+                return []
+
+            if error_messages:
+                return [output_api.PresubmitError('\n'.join(error_messages))]
+
+            all_violations.sort(key=Violation.sort_key)
+            warnings = ['  ' + str(v) for v in all_violations if v.is_warning()]
+            errors = ['  ' + str(v) for v in all_violations if v.is_error()]
+
+            ret = []
+            if warnings:
+                ret.append(
+                    output_api.PresubmitPromptWarning('\n'.join(warnings))
+                )
+            if errors:
+                msg = '\n'.join(errors)
+                if 'Unused import:' in msg or 'Duplicate import' in msg:
+                    msg += """
 
 To remove unused imports: """ + input_api.os_path.relpath(
-                    _REMOVE_UNUSED_IMPORTS_PATH, local_path
-                )
-            ret.append(output_api.PresubmitError(msg))
-        return ret
+                        _REMOVE_UNUSED_IMPORTS_PATH, local_path
+                    )
+                ret.append(output_api.PresubmitError(msg))
+            return ret
 
     return input_api.RunTests(
         [
             input_api.Command(
                 name='checkstyle',
-                cmd=_checkstyle_command(_STYLE_FILE, java_files),
+                cmd=_checkstyle_command(_STYLE_FILE, shard),
                 kwargs={},
                 output_parser=parse_output,
             )
+            for shard in shards
         ]
     )
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('java_files', nargs='+')
+    parser.add_argument(
+        '--all',
+        action='store_true',
+        help='Run checkstyle on all non-third_party Java files in the repo.',
+    )
+    parser.add_argument('java_files', nargs='*')
     args = parser.parse_args()
 
-    violations = run_checkstyle(CHROMIUM_SRC, _STYLE_FILE, args.java_files)
+    if args.all:
+        if args.java_files:
+            parser.error('Cannot specify both --all and java_files.')
+        result = subprocess.run(
+            ['git', '-c', 'core.quotePath=false', 'ls-files', '--', '*.java'],
+            capture_output=True,
+            check=True,
+            text=True,
+            cwd=CHROMIUM_SRC,
+        )
+        java_files = [
+            p
+            for f in result.stdout.splitlines()
+            if 'third_party' not in f.split('/')
+            and os.path.exists(p := os.path.join(CHROMIUM_SRC, f))
+        ]
+    elif args.java_files:
+        java_files = [os.path.abspath(f) for f in args.java_files]
+    else:
+        parser.error('Must specify either --all or at least one java_file.')
+
+    violations = run_checkstyle(CHROMIUM_SRC, _STYLE_FILE, java_files)
+    if args.all:
+        violations = [v for v in violations if v.is_error()]
     for v in violations:
         print(f'{v} ({v.severity})')
 
