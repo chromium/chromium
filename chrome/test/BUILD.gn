@@ -5652,10 +5652,8 @@ test("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc" ]
     deps += [
       "//chrome/browser/ui/signin:unit_tests",
-      "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
       "//chrome/browser/ui/views/profiles/feature_showcase:unit_tests",
       "//chrome/browser/ui/webui/cr_components/signin:unit_tests",
       "//chrome/browser/ui/webui/feature_showcase",
@@ -7275,7 +7273,6 @@ test("unit_tests") {
       "../browser/ui/views/web_apps/progress_delay_unittest.cc",
       "../browser/ui/views/web_apps/view_visible_in_active_widget_notifier_unittest.cc",
     ]
-    sources += [ "../browser/ui/views/profiles/avatar_badge_view_unittest.cc" ]
 
     deps += [
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
@@ -7292,7 +7289,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
-      "//chrome/browser/ui/views/profiles:avatar_badge_view",
+      "//chrome/browser/ui/views/profiles:unit_tests",
       "//chrome/browser/ui/views/relaunch_notification:unit_tests",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_controller",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_installer_view_impl",
@@ -7310,13 +7307,6 @@ test("unit_tests") {
       deps += [
         "//chrome/browser/ui/webui/unexportable_keys_internals:unit_tests",
         "//services/audio/public/cpp:test_support",
-      ]
-    }
-    if (!is_chromeos) {
-      sources += [ "../browser/ui/views/profiles/profile_customization_bubble_sync_controller_unittest.cc" ]
-      deps += [
-        "//chrome/browser/ui/views/frame:opaque_browser_frame_view_layout",
-        "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",
       ]
     }
     if (use_aura) {
@@ -8797,28 +8787,10 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_win || is_mac || is_linux) {
-      sources += [
-        "../browser/ui/views/profiles/profile_picker_interactive_uitest.cc",
-        "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.cc",
-        "../browser/ui/views/profiles/profile_picker_interactive_uitest_base.h",
-      ]
-    }
-
-    if (is_win || is_mac || is_linux) {
-      sources += [
-        "../browser/ui/views/profiles/device_signals_disclaimer_interactive_uitest.cc",
-        "../browser/ui/views/profiles/first_run_interactive_uitest.cc",
-        "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
-      ]
-
       deps += [
         "//chrome/browser/enterprise/idle:interactive_ui_tests",
         "//chrome/browser/ui/startup:test_support_ui",
-        "//chrome/browser/ui/views/profiles:dice_web_signin_interception_bubble_view",
-        "//chrome/browser/ui/views/profiles:first_run_flow_controller",
-        "//chrome/browser/ui/views/profiles:profile_menu_view",
-        "//chrome/browser/ui/views/profiles:profile_picker_toolbar",
-        "//chrome/browser/ui/views/profiles:profile_picker_view",
+        "//chrome/browser/ui/views/profiles:interactive_ui_tests",
         "//chrome/browser/ui/views/profiles/feature_showcase:metrics",
         "//chrome/browser/ui/webui/feature_showcase",
         "//chrome/browser/ui/webui/intro",
