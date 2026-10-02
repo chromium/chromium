@@ -3511,7 +3511,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelDispatchOnConnectStatus{DispatchTarget}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2026-07-12">
+    enum="OpenChannelMessagePipelineResult" expires_after="2027-04-01">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3531,6 +3531,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Note: This histogram was expired during February 2026 so some data might be
     missing.
+
+    Note: this histogram was expired from 2026-07-12 to 2026-10-01; data may be
+    missing.
   </summary>
   <token key="DispatchTarget">
     <variant name=".ForFrame" summary="frame"/>
@@ -3541,7 +3544,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelStatus{WorkerStatus}{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2026-09-13">
+    enum="OpenChannelMessagePipelineResult" expires_after="2027-04-01">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3558,6 +3561,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Note: a new enum value was added in February 2026, which could affect query
     results across that date.
+
+    Note: this histogram was expired from 2026-09-13 to 2026-10-01; data may be
+    missing.
   </summary>
   <token key="WorkerStatus">
     <variant name=""
@@ -3576,7 +3582,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerDispatchStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2026-07-12">
+    enum="OpenChannelMessagePipelineResult" expires_after="2027-04-01">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3595,13 +3601,16 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Note: This histogram was expired From July to February 2026 so some data
     might be missing.
+
+    Note: this histogram was expired from 2026-07-12 to 2026-10-01; data may be
+    missing.
   </summary>
   <token key="ChannelType" variants="ChannelType"/>
 </histogram>
 
 <histogram
     name="Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus{ChannelType}"
-    enum="OpenChannelMessagePipelineResult" expires_after="2026-07-12">
+    enum="OpenChannelMessagePipelineResult" expires_after="2027-04-01">
   <owner>andreaorru@chromium.org</owner>
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
@@ -3619,6 +3628,9 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Note: This histogram was expired From July to February 2026 so some data
     might be missing.
+
+    Note: this histogram was expired from 2026-07-12 to 2026-10-01; data may be
+    missing.
   </summary>
   <token key="ChannelType" variants="ChannelType"/>
 </histogram>
