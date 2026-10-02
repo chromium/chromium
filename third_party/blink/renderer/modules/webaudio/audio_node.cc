@@ -77,12 +77,12 @@ void AudioNode::Dispose() {
 
   // Add the handler to the orphan list.  This keeps the handler alive until it
   // can be deleted at a safe point (in pre/post handler task).  If the graph is
-  // being processed, the handler must be added.  If the context is suspended,
-  // the handler still needs to be added in case the context is resumed.
+  // being processed, the handler must be added.  If the context is not closed,
+  // the handler still needs to be added in case rendering is paused or the
+  // context is later resumed.
   DCHECK(context());
   if (context()->IsPullingAudioGraph() ||
-      context()->ContextState() == V8AudioContextState::Enum::kSuspended ||
-      context()->ContextState() == V8AudioContextState::Enum::kInterrupted) {
+      context()->ContextState() != V8AudioContextState::Enum::kClosed) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
