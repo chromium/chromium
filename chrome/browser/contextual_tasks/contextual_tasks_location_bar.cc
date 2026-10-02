@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/contextual_tasks/contextual_tasks_permission_dashboard.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

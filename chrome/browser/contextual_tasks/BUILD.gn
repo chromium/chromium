@@ -266,7 +266,6 @@ source_set("ui") {
       "contextual_tasks_location_bar.h",
       "contextual_tasks_panel_host_desktop.h",
       "contextual_tasks_permission_chip.h",
-      "contextual_tasks_permission_dashboard.h",
       "contextual_tasks_web_view.h",
       "location_bar_stub.h",
     ]
@@ -468,7 +467,6 @@ source_set("ui_impl") {
       "contextual_tasks_location_bar.cc",
       "contextual_tasks_panel_host_desktop.cc",
       "contextual_tasks_permission_chip.cc",
-      "contextual_tasks_permission_dashboard.cc",
       "contextual_tasks_web_view.cc",
       "location_bar_stub.cc",
     ]
