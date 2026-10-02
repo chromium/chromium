@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "chrome/browser/memory_details.h"
+#include "chrome/browser/memory_details.h"  // nogncheck crbug.com/490408287
 
 namespace memory {
 

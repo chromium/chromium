@@ -11,6 +11,10 @@ source_set("memory") {
     "enterprise_memory_limit_pref_observer.h",
   ]
 
+  if (!is_android) {
+    public += [ "oom_memory_details.h" ]
+  }
+
   public_deps = [
     "//base",
     "//chrome/browser:main_extra_parts",
@@ -18,11 +22,6 @@ source_set("memory") {
     "//components/performance_manager",
     "//components/prefs",
   ]
-
-  if (!is_android) {
-    public += [ "oom_memory_details.h" ]
-    public_deps += [ "//chrome/browser:memory_details" ]
-  }
 
   if (is_chromeos) {
     public += [
