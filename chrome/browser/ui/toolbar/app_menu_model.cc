@@ -801,9 +801,8 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
   ~SaveAndShareSubMenuModel() override = default;
 
  private:
-  // Builds Send Tab to Self target device submenu when enhanced desktop UI is
-  // enabled.
-  void BuildSendTabToSelfSubmenu(BrowserWindowInterface* browser);
+  // Builds the Send Tab to Self submenu or simple menu item.
+  void BuildSendTabToSelfItem(BrowserWindowInterface* browser);
 
   // Fallback helper to add simple Send Tab to Self menu item.
   void BuildSendTabToSelfSimpleItem();
@@ -811,7 +810,7 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 };
 
-void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
+void SaveAndShareSubMenuModel::BuildSendTabToSelfItem(
     BrowserWindowInterface* browser) {
   send_tab_to_self_submenu_ =
       send_tab_to_self::SendTabToSelfSubMenuModel::MaybeCreateForTab(
@@ -887,7 +886,7 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           features::IsRoundedIconsEnabled() ? vector_icons::kLinkIcon
                                             : kLinkChromeRefreshOldIcon);
 
-      BuildSendTabToSelfSubmenu(browser);
+      BuildSendTabToSelfItem(browser);
 
       AddItemWithStringIdAndVectorIcon(
           this, IDC_QRCODE_GENERATOR, IDS_APP_MENU_CREATE_QR_CODE,

@@ -203,8 +203,8 @@ void TabMenuModel::BuildForWebApp(int index) {
   }
 }
 
-void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
-                                             const std::vector<int>& indices) {
+void TabMenuModel::BuildSendTabToSelfItem(int index,
+                                          const std::vector<int>& indices) {
   std::vector<content::WebContents*> web_contents_list;
   web_contents_list.reserve(indices.size());
   for (int i : indices) {
@@ -579,7 +579,7 @@ void TabMenuModel::Build(int index) {
   }
 
   if (display_send_to_self) {
-    BuildSendTabToSelfSubmenu(index, indices);
+    BuildSendTabToSelfItem(index, indices);
   }
 
   if (controller) {

@@ -78,7 +78,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
  private:
   void Build(int index);
   void BuildForWebApp(int index);
-  void BuildSendTabToSelfSubmenu(int index, const std::vector<int>& indices);
+  void BuildSendTabToSelfItem(int index, const std::vector<int>& indices);
   void AppendGlicItems(int index,
                        int num_tabs,
                        const std::vector<int>& indices);
