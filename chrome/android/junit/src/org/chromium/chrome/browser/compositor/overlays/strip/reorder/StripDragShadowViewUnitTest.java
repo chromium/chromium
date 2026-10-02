@@ -72,6 +72,8 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
 public class StripDragShadowViewUnitTest {
+    private static final int TAB_ID = 10;
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -94,8 +96,6 @@ public class StripDragShadowViewUnitTest {
     @Mock private Bitmap mMockThumbnailBitmap;
     @Mock private Bitmap mMockOriginalFaviconBitmap;
     @Mock private Bitmap mMockHistoryFaviconBitmap;
-
-    private static final int TAB_ID = 10;
 
     private Activity mActivity;
     private StripDragShadowView mStripDragShadowView;
@@ -377,12 +377,6 @@ public class StripDragShadowViewUnitTest {
                 "Unexpected card color.",
                 expectedGroupColor,
                 mCardView.getBackgroundTintList().getDefaultColor());
-
-        // Verify thumbnail color
-        verify(mMockMultiThumbnailCardProvider)
-                .setMiniThumbnailPlaceholderColor(
-                        TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
-                                mActivity, incognito, expectedGroupColor));
 
         // Verify text color
         @ColorInt

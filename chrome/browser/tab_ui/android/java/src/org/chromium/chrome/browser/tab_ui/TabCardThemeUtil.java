@@ -159,23 +159,6 @@ public class TabCardThemeUtil {
     }
 
     /**
-     * Returns the color used for an empty thumbnail placeholder illustration.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
-     * @return The {@link ColorInt} for the empty thumbnail placeholder illustration.
-     */
-    public static @ColorInt int getEmptyThumbnailColor(
-            Context context,
-            boolean isIncognito,
-            boolean isSelected,
-            @Nullable @TabGroupColorId Integer colorId) {
-        return getCardViewBackgroundColor(context, isIncognito, isSelected, colorId);
-    }
-
-    /**
      * Returns the color to use for the tab grid card hover view background.
      *
      * @param context {@link Context} used to retrieve color.
@@ -198,34 +181,6 @@ public class TabCardThemeUtil {
         return new ColorStateList(
                 new int[][] {new int[] {android.R.attr.state_hovered}, new int[] {}},
                 new int[] {hoverColor, backgroundColor});
-    }
-
-    /**
-     * Returns the text color for the number used on the tab group cards based on the incognito
-     * mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param isSelected Whether the tab is currently selected.
-     * @param colorId Color chosen by user for the TabGroup, null if not a tab group.
-     * @return The text color for the number used on the tab group cards.
-     */
-    public static @ColorInt int getTabGroupNumberTextColor(
-            Context context,
-            boolean isIncognito,
-            boolean isSelected,
-            @Nullable @TabGroupColorId Integer colorId) {
-        if (isSelected) {
-            return isIncognito
-                    ? context.getColor(R.color.incognito_tab_tile_number_selected_color)
-                    : MaterialColors.getColor(context, R.attr.colorOnPrimary, TAG);
-        }
-        if (colorId != null) {
-            return TabGroupColorPickerUtils.getTabGroupCardTextColor(context, colorId, isIncognito);
-        }
-        return isIncognito
-                ? context.getColor(R.color.incognito_tab_tile_number_color)
-                : SemanticColorUtils.getDefaultTextColor(context);
     }
 
     /**
@@ -274,19 +229,6 @@ public class TabCardThemeUtil {
     }
 
     /**
-     * Returns the mini-thumbnail frame color based on the incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The mini-thumbnail frame color.
-     */
-    public static @ColorInt int getMiniThumbnailFrameColor(Context context, boolean isIncognito) {
-        return isIncognito
-                ? context.getColor(R.color.tab_grid_card_divider_tint_color_incognito)
-                : SemanticColorUtils.getTabGridCardDividerTintColor(context);
-    }
-
-    /**
      * Returns the favicon background color based on the incognito mode.
      *
      * @param context {@link Context} used to retrieve color.
@@ -297,16 +239,6 @@ public class TabCardThemeUtil {
         return isIncognito
                 ? context.getColor(R.color.favicon_background_color_incognito)
                 : SemanticColorUtils.getColorSurfaceBright(context);
-    }
-
-    /**
-     * Returns the space represented by dimension for spaces between mini thumbnails in a group tab.
-     *
-     * @param context {@link Context} to retrieve dimension.
-     * @return The padding between mini thumbnails in float number.
-     */
-    public static float getTabMiniThumbnailPaddingDimension(Context context) {
-        return context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
     }
 
     /**

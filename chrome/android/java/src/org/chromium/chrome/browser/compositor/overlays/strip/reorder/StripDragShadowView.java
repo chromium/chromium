@@ -280,7 +280,7 @@ public class StripDragShadowView extends FrameLayout {
         TabModel tabModel = mTabModelSelector.getModel(isIncognito);
         if (tabModel == null) return;
 
-        // Background color
+        // Background color.
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null : "The tab group ID should be non-null";
         @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
@@ -290,11 +290,8 @@ public class StripDragShadowView extends FrameLayout {
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         context, colorId, isIncognito);
         mCardView.setBackgroundTintList(ColorStateList.valueOf(groupColor));
-        mMultiThumbnailCardProvider.setMiniThumbnailPlaceholderColor(
-                TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
-                        context, isIncognito, groupColor));
 
-        // Group title text
+        // Group title text.
         String defaultGroupTitle =
                 TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId);
         mTitleView.setText(
@@ -303,7 +300,7 @@ public class StripDragShadowView extends FrameLayout {
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
                         context, colorId, isIncognito));
 
-        // Clear the tab favicon if needed
+        // Clear the tab favicon if needed.
         mFaviconView.setImageBitmap(null);
         // Set the thumbnail to visible.
         mThumbnailView.setVisibility(View.VISIBLE);

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.content.Context;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
@@ -137,25 +136,6 @@ public class TabUiThemeUtil {
     /** Returns the color for the tab strip tab underline gradient end. */
     public static @ColorInt int getTabUnderlineGradientEnd(Context context) {
         return context.getColor(R.color.material_primary_70);
-    }
-
-    /**
-     * Returns the mini thumbnail placeholder color for the given group color.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @param groupColor The group color that will be composited with the mini thumbnail placeholder
-     *     overlay color.
-     */
-    public static @ColorInt int getMiniThumbnailPlaceholderColorForGroup(
-            Context context, boolean isIncognito, @ColorInt int groupColor) {
-        @ColorRes
-        int foregroundRes =
-                isIncognito
-                        ? R.color.mini_thumbnail_placeholder_overlay_color_baseline
-                        : R.color.mini_thumbnail_placeholder_overlay_color;
-        @ColorInt int foregroundColor = context.getColor(foregroundRes);
-        return androidx.core.graphics.ColorUtils.compositeColors(foregroundColor, groupColor);
     }
 
     /**

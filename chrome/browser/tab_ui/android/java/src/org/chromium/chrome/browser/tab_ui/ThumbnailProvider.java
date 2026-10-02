@@ -24,8 +24,8 @@ import java.util.Objects;
 public interface ThumbnailProvider {
     /**
      * The metadata details for the multi thumbnail view representing tabs and group cards. This
-     * object sources data from both real {@link Tab}s/tab groups and {@link SavedTabGroup}s. If
-     * both {@link #tabId} is {@link Tab#INVALID_TAB_ID} and {@link #tabGroupId} is null, a {@link
+     * object sources data from both real {@link Tab}s/tab groups and {@code SavedTabGroup}s. If
+     * both {@link #tabId} is {@link Tab#INVALID_TAB_ID} and {@link #tabGroupId} is null, a {@code
      * SavedTabGroup} is being referenced via {@link #urlList}.
      */
     class MultiThumbnailMetadata {
@@ -52,7 +52,7 @@ public interface ThumbnailProvider {
         }
 
         /**
-         * Creates a {@link MultiThumbnailMetadata} object for a SavedTabGroup.
+         * Creates a {@link MultiThumbnailMetadata} object for a {@code SavedTabGroup}.
          *
          * @param urlList The list of URLs of the tabs in the saved tab group.
          * @param isIncognito Whether the saved tab group is in incognito mode.
@@ -67,7 +67,7 @@ public interface ThumbnailProvider {
                     urlList,
                     isIncognito,
                     tabGroupColor,
-                    Collections.emptyList());
+                    /* actingTabIds= */ Collections.emptyList());
         }
 
         /**
@@ -80,10 +80,10 @@ public interface ThumbnailProvider {
             return new MultiThumbnailMetadata(
                     tabId,
                     /* tabGroupId= */ null,
-                    Collections.emptyList(),
+                    /* urlList= */ Collections.emptyList(),
                     /* isIncognito= */ false,
                     /* tabGroupColor= */ null,
-                    Collections.emptyList());
+                    /* actingTabIds= */ Collections.emptyList());
         }
 
         /**
@@ -104,7 +104,7 @@ public interface ThumbnailProvider {
             return new MultiThumbnailMetadata(
                     Tab.INVALID_TAB_ID,
                     tabGroupId,
-                    Collections.emptyList(),
+                    /* urlList= */ Collections.emptyList(),
                     isIncognito,
                     tabGroupColor,
                     actingTabIds);

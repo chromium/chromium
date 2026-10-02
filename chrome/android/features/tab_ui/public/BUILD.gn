@@ -10,8 +10,6 @@ android_resources("ui_java_resources") {
   sources = [
     "android/java/res/color/bg_tabstrip_tab_folio_startup_tint.xml",
     "android/java/res/color/menu_edit_text_bg_tint_list_baseline.xml",
-    "android/java/res/color/mini_thumbnail_placeholder_overlay_color.xml",
-    "android/java/res/color/mini_thumbnail_placeholder_overlay_color_baseline.xml",
     "android/java/res/drawable-hdpi/bg_tabstrip_tab_detached.9.png",
     "android/java/res/drawable-hdpi/bg_tabstrip_tab_folio.9.png",
     "android/java/res/drawable-hdpi/glic_button_keyfocus.9.png",

@@ -130,11 +130,6 @@ public class SemanticColorUtils {
         return getDividerColor(context);
     }
 
-    /** Returns the semantic color value that corresponds to tab_grid_card_divider_tint_color. */
-    public static @ColorInt int getTabGridCardDividerTintColor(Context context) {
-        return getDividerColor(context);
-    }
-
     /** Returns the semantic color value that corresponds to default_control_color_active. */
     public static @ColorInt int getDefaultControlColorActive(Context context) {
         return getColorPrimary(context);
