@@ -109,13 +109,20 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // focus to when it's reactivated.
   void BlurForWindowDeactivation();
 
+  // Returns the browser window's widget. In macOS immersive fullscreen this is
+  // not the location bar's widget, which is then a non-activatable overlay.
+  views::Widget* GetBrowserWidget();
+
+  // Returns the browser window's focus manager, or null if there is none.
+  views::FocusManager* GetBrowserFocusManager();
+
   // Flag set when an ESC key event is intercepted before widget deactivation.
   bool is_handling_escape_key_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       popup_widget_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
-      parent_widget_observation_{this};
+      browser_widget_observation_{this};
   base::ScopedObservation<AppMenuControl, AppMenuButtonObserver>
       app_menu_control_observation_{this};
 

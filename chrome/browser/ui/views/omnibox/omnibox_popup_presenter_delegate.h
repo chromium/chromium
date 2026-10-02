@@ -16,6 +16,11 @@ class OmniboxPopupFileSelector;
 class OmniboxPopupPresenterDelegate {
  public:
   virtual ~OmniboxPopupPresenterDelegate() = default;
+
+  // Returns the widget that hosts the location bar. Usually this is the
+  // browser window's widget, but in macOS immersive fullscreen it's a
+  // non-activatable overlay. Use its top-level widget for browser window
+  // activation, focus, and events.
   virtual views::Widget* GetLocationBarWidget() = 0;
   virtual OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const = 0;
   virtual OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const = 0;

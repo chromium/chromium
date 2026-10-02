@@ -180,11 +180,11 @@ void OmniboxPopupFullPresenter::Show() {
     handler->SetAimButtonVisible(omnibox_view->AimButtonVisible());
   }
 
-  views::Widget* parent_widget = delegate().GetLocationBarWidget();
-  if (parent_widget && !parent_widget_observation_.IsObserving()) {
-    parent_widget_observation_.Observe(parent_widget);
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (browser_widget && !browser_widget_observation_.IsObserving()) {
+    browser_widget_observation_.Observe(browser_widget);
   }
-  if (parent_widget && !browser_paint_as_active_subscription_) {
+  if (browser_widget && !browser_paint_as_active_subscription_) {
     // Catches the user leaving the browser window while neither the browser
     // nor the popup widget is active (e.g. while a bubble is active). Posted
     // because the popup releasing its paint-as-active lock on the browser and
@@ -194,7 +194,7 @@ void OmniboxPopupFullPresenter::Show() {
     // This only triggers the check. `IsBrowserWindowActive()` decides, and
     // outside Mac it asks the platform instead of paint-as-active.
     browser_paint_as_active_subscription_ =
-        parent_widget->RegisterPaintAsActiveChangedCallback(
+        browser_widget->RegisterPaintAsActiveChangedCallback(
             base::BindPostTaskToCurrentDefault(base::BindRepeating(
                 &OmniboxPopupFullPresenter::BlurIfBrowserWindowInactive,
                 weak_factory_.GetWeakPtr())));
@@ -204,14 +204,15 @@ void OmniboxPopupFullPresenter::Show() {
     popup_widget_observation_.Observe(GetWidget());
   }
 
-  if (parent_widget && !event_monitor_) {
+  if (browser_widget && !event_monitor_) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
-        this, parent_widget->GetNativeWindow(), {ui::EventType::kMousePressed});
+        this, browser_widget->GetNativeWindow(),
+        {ui::EventType::kMousePressed});
   }
 
-  if (parent_widget) {
+  if (browser_widget) {
     if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-            parent_widget->GetNativeWindow())) {
+            browser_widget->GetNativeWindow())) {
       if (browser_view->toolbar_button_provider() &&
           browser_view->toolbar_button_provider()->GetAppMenuControl() &&
           !app_menu_control_observation_.IsObserving()) {
@@ -224,20 +225,18 @@ void OmniboxPopupFullPresenter::Show() {
 
 void OmniboxPopupFullPresenter::Hide() {
   pending_focus_task_.Cancel();
-  parent_widget_observation_.Reset();
+  browser_widget_observation_.Reset();
   browser_paint_as_active_subscription_ = {};
   app_menu_control_observation_.Reset();
   event_monitor_.reset();
   forward_events_timer_.Stop();
   StopForwardingEvents();
   popup_widget_observation_.Reset();
-  if (auto* widget = delegate().GetLocationBarWidget()) {
-    if (auto* focus_manager = widget->GetFocusManager()) {
-      views::View* restore_view = delegate().GetLocationBarFocusRestoreView();
-      views::View* stored_view = focus_manager->GetStoredFocusView();
-      if (stored_view == restore_view) {
-        focus_manager->SetStoredFocusView(nullptr);
-      }
+  if (auto* focus_manager = GetBrowserFocusManager()) {
+    views::View* restore_view = delegate().GetLocationBarFocusRestoreView();
+    views::View* stored_view = focus_manager->GetStoredFocusView();
+    if (stored_view == restore_view) {
+      focus_manager->SetStoredFocusView(nullptr);
     }
   }
   OmniboxPopupPresenterBase::Hide();
@@ -260,7 +259,7 @@ void OmniboxPopupFullPresenter::RequestFocus() {
   // Don't take focus in a browser window the user has left. Activating the
   // popup would pull the window back in front of the one the user switched to.
   if (!GetWidget() || !ShouldReceiveFocus() ||
-      !IsBrowserWindowActive(delegate().GetLocationBarWidget())) {
+      (!IsBrowserWindowActive(GetBrowserWidget()))) {
     return;
   }
 
@@ -294,8 +293,7 @@ void OmniboxPopupFullPresenter::RequestFocus() {
         }
         // The browser window may have been deactivated while this task was
         // queued (e.g. another window opened).
-        if (!IsBrowserWindowActive(
-                presenter->delegate().GetLocationBarWidget())) {
+        if (!IsBrowserWindowActive(presenter->GetBrowserWidget())) {
           return;
         }
         if (auto* focus_manager = presenter->GetWidget()->GetFocusManager()) {
@@ -455,7 +453,7 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
   }
 
   // If the widget that changed is the browser window.
-  if (widget == delegate().GetLocationBarWidget()) {
+  if (widget == GetBrowserWidget()) {
     if (!active) {
       // When the browser window deactivates (e.g. due to focusing the WebUI
       // popup or opening a bubble), we must cache the Omnibox view
@@ -474,13 +472,10 @@ void OmniboxPopupFullPresenter::OnWidgetActivationChanged(views::Widget* widget,
               [](base::WeakPtr<OmniboxPopupFullPresenter> presenter) {
                 if (presenter && presenter->IsShown() &&
                     presenter->controller()->edit_model()->has_focus()) {
-                  if (auto* widget =
-                          presenter->delegate().GetLocationBarWidget()) {
-                    if (auto* focus_manager = widget->GetFocusManager()) {
-                      focus_manager->SetStoredFocusView(
-                          presenter->delegate()
-                              .GetLocationBarFocusRestoreView());
-                    }
+                  if (auto* focus_manager =
+                          presenter->GetBrowserFocusManager()) {
+                    focus_manager->SetStoredFocusView(
+                        presenter->delegate().GetLocationBarFocusRestoreView());
                   }
                 }
               },
@@ -571,9 +566,7 @@ void OmniboxPopupFullPresenter::BlurForWindowDeactivation() {
   // so that nothing run during it (closing the popup, `Hide()`) clears it, and
   // after activation has settled, so that the `FocusManager`'s own
   // `StoreFocusedView()` doesn't overwrite it.
-  views::Widget* browser_widget = delegate().GetLocationBarWidget();
-  views::FocusManager* focus_manager =
-      browser_widget ? browser_widget->GetFocusManager() : nullptr;
+  views::FocusManager* focus_manager = GetBrowserFocusManager();
   if (!focus_manager) {
     return;
   }
@@ -590,7 +583,7 @@ void OmniboxPopupFullPresenter::BlurForWindowDeactivation() {
   // the reactivating click is dispatched, so restoring the location bar here
   // would flash the popup open when the user clicks the page.
   if (auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-          browser_widget->GetNativeWindow())) {
+          GetBrowserWidget()->GetNativeWindow())) {
     focus_manager->SetStoredFocusView(browser_view->GetActiveContentsWebView());
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -602,17 +595,15 @@ void OmniboxPopupFullPresenter::AppMenuClosed() {
   // window. Don't refocus here, since `FocusManager::SetFocusedView()`
   // activates an inactive widget on non-Mac platforms and would steal
   // activation back.
-  if (!IsBrowserWindowActive(delegate().GetLocationBarWidget())) {
+  if (!IsBrowserWindowActive(GetBrowserWidget())) {
     BlurForWindowDeactivation();
     return;
   }
   if (IsShown() && controller()->popup_state_manager()->popup_state() ==
                        OmniboxPopupState::kFull) {
-    if (auto* widget = delegate().GetLocationBarWidget()) {
-      if (auto* focus_manager = widget->GetFocusManager()) {
-        if (auto* restore_view = delegate().GetLocationBarFocusRestoreView()) {
-          focus_manager->SetFocusedView(restore_view);
-        }
+    if (auto* focus_manager = GetBrowserFocusManager()) {
+      if (auto* restore_view = delegate().GetLocationBarFocusRestoreView()) {
+        focus_manager->SetFocusedView(restore_view);
       }
     }
     RequestFocus();
@@ -657,9 +648,7 @@ void OmniboxPopupFullPresenter::DeactivatePopupAndKillFocus(
     popup_view->OnBlur();
   }
 
-  views::Widget* parent_widget = delegate().GetLocationBarWidget();
-  if (auto* focus_manager =
-          parent_widget ? parent_widget->GetFocusManager() : nullptr) {
+  if (auto* focus_manager = GetBrowserFocusManager()) {
     views::View* restore_view = delegate().GetLocationBarFocusRestoreView();
     views::View* stored_view = focus_manager->GetStoredFocusView();
     if (stored_view == restore_view) {
@@ -736,18 +725,19 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
-  views::Widget* parent_widget = delegate().GetLocationBarWidget();
-  if (!parent_widget) {
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (!browser_widget) {
     return;
   }
 
   // If neither this window nor its popup is currently active, ignore the click.
-  if (!parent_widget->IsActive() && !(GetWidget() && GetWidget()->IsActive())) {
+  if (!browser_widget->IsActive() &&
+      !(GetWidget() && GetWidget()->IsActive())) {
     return;
   }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForNativeWindow(
-      parent_widget->GetNativeWindow());
+      browser_widget->GetNativeWindow());
   if (!browser_view) {
     return;
   }
@@ -758,7 +748,7 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
   if (browser_view->top_container()) {
     gfx::Rect top_container_bounds =
         browser_view->top_container()->GetBoundsInScreen();
-    gfx::Rect window_bounds = parent_widget->GetWindowBoundsInScreen();
+    gfx::Rect window_bounds = browser_widget->GetWindowBoundsInScreen();
     contains_top_container = cursor_point.x() >= window_bounds.x() &&
                              cursor_point.x() < window_bounds.right() &&
                              cursor_point.y() >= window_bounds.y() &&
@@ -795,4 +785,14 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
 OmniboxFullPopupWebUIContent* OmniboxPopupFullPresenter::GetWebUIContent() {
   return static_cast<OmniboxFullPopupWebUIContent*>(
       OmniboxPopupPresenterBase::GetWebUIContent());
+}
+
+views::Widget* OmniboxPopupFullPresenter::GetBrowserWidget() {
+  views::Widget* widget = delegate().GetLocationBarWidget();
+  return widget ? widget->GetTopLevelWidget() : nullptr;
+}
+
+views::FocusManager* OmniboxPopupFullPresenter::GetBrowserFocusManager() {
+  views::Widget* browser_widget = GetBrowserWidget();
+  return browser_widget ? browser_widget->GetFocusManager() : nullptr;
 }
