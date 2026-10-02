@@ -8,6 +8,7 @@
 #include <complex>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -35,9 +36,9 @@ class MockVoiceIsolationComponent : public VoiceIsolationComponent {
 }  // namespace
 
 TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
-  // Check Overlap-Add.
-  constexpr unsigned int kFftSize = 480;
-  WindowedFft windowed_fft(kFftSize);
+  constexpr size_t kFftSize = 480;
+  constexpr size_t kNumHopsPerBlock = 2;
+  WindowedFft windowed_fft(/*fft_size=*/kFftSize);
 
   const std::vector<float>& window = windowed_fft.fft_window_;
   const std::vector<float>& inv_window = windowed_fft.inv_fft_window_;
@@ -45,15 +46,55 @@ TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
   ASSERT_EQ(window.size(), kFftSize);
   ASSERT_EQ(window.size(), inv_window.size());
 
-  // The OLA property states that for a hop size of N/2:
-  // window[i] * inv_window[i] + window[i + N/2] * inv_window[i + N/2] = 1.0
-  // for i in [0, N/2 - 1].
-  const int half_size = kFftSize / 2;
-  for (int i = 0; i < half_size; ++i) {
+  const size_t half_size = kFftSize / kNumHopsPerBlock;
+
+  // Verify periodic Hann window boundary values: w[0] == 0 and w[N/2] == 1,
+  // while w[N-1] == w[1] > 0 (unlike a symmetric Hann window where w[N-1] ==
+  // 0).
+  EXPECT_EQ(window[0], 0.0f);
+  EXPECT_EQ(window[half_size], 1.0f);
+  EXPECT_GT(window[kFftSize - 1], 0.0f);
+  for (size_t i = 1; i < half_size; ++i) {
+    EXPECT_EQ(window[i], window[kFftSize - i]) << "Asymmetry at index " << i;
+  }
+
+  // Verify both the periodic Hann Constant Overlap-Add (COLA) property
+  // (w[i] + w[i + N/2] = 1.0) and the Weighted Overlap-Add (WOLA) property
+  // (w[i] * inv_w[i] + w[i + N/2] * inv_w[i + N/2] = 1.0) for a hop size of
+  // N/2.
+  for (size_t i = 0; i < half_size; ++i) {
     SCOPED_TRACE(::testing::Message() << "index=" << i);
-    float val1 = window[i] * inv_window[i];
-    float val2 = window[i + half_size] * inv_window[i + half_size];
+    EXPECT_FLOAT_EQ(window[i] + window[i + half_size], 1.0f);
+    const float val1 = window[i] * inv_window[i];
+    const float val2 = window[i + half_size] * inv_window[i + half_size];
     EXPECT_FLOAT_EQ(val1 + val2, 1.0f);
+  }
+}
+
+TEST(VoiceIsolationWindowedFftTest,
+     IdentityTransformReconstructsSignalWithAlgorithmicDelay) {
+  constexpr size_t kFftSize = 480;
+  constexpr size_t kHopSize = kFftSize / 2;
+  WindowedFft windowed_fft(kFftSize);
+
+  std::vector<float> input_signal(kFftSize * 4, 0.0f);
+  for (size_t i = 0; i < input_signal.size(); ++i) {
+    input_signal[i] = 0.5f * std::sin(i * 0.03f) + 0.25f * std::cos(i * 0.11f);
+  }
+  std::vector<float> output_signal(kFftSize * 4, 0.0f);
+  std::vector<float> dft_buffer(kFftSize * 2, 0.0f);
+
+  for (size_t i = 0; i + kFftSize <= input_signal.size(); i += kFftSize) {
+    windowed_fft.ForwardTransform(base::span(input_signal).subspan(i, kFftSize),
+                                  dft_buffer);
+    windowed_fft.InverseTransform(
+        dft_buffer, base::span(output_signal).subspan(i, kFftSize));
+  }
+
+  // Check if output matches input (accounting for algorithmic latency).
+  for (size_t i = kHopSize; i < output_signal.size(); ++i) {
+    EXPECT_NEAR(output_signal[i], input_signal[i - kHopSize], 1e-5f)
+        << "Mismatch at index " << i;
   }
 }
 
@@ -149,7 +190,7 @@ TEST(StftVoiceIsolationTest, ProcessAudioLoopback) {
   // Compare input and output accounting for delay. Delay is half a frame_size.
   int delay = frame_size / 2;
   for (size_t i = delay; i < full_output.size() - delay; ++i) {
-    EXPECT_NEAR(full_output[i], full_input[i - delay], 1e-4f) << "Frame " << i;
+    EXPECT_NEAR(full_output[i], full_input[i - delay], 1e-6f) << "Frame " << i;
   }
 }
 

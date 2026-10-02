@@ -62,14 +62,25 @@ std::vector<float> ComputeHannWindow(int window_size) {
   CHECK_GE(window_size, 2);
   CHECK_EQ(window_size % 2, 0);
   std::vector<float> window(window_size);
-  int N = window_size - 1;
+  const int N = window_size;
 
-  // Uses Hann window as defined in https://en.wikipedia.org/wiki/Hann_function:
-  // w[n] = sin^2(pi * n / N), 0<= n <= N
-  // where window_size = N+1.
-  for (int n = 0; n < window_size; ++n) {
-    auto s = sin(std::numbers::pi * n / N);
-    window[n] = s * s;
+  // Uses the periodic Hann window as defined in
+  // https://en.wikipedia.org/wiki/Hann_function:
+  // w[n] = sin^2(pi * n / N), 0 <= n < N
+  // where N = window_size.
+  //
+  // The periodic window is symmetric around N/2 (w[N - n] = w[n]), with
+  // w[0] = 0 and w[N/2] = 1. Only the first half is evaluated and then
+  // mirrored, which guarantees exact symmetry regardless of floating-point
+  // rounding in std::sin().
+  const int half_window_size = window_size / 2;
+  window[0] = 0.0f;
+  window[half_window_size] = 1.0f;
+  for (int n = 1; n < half_window_size; ++n) {
+    const double s = std::sin(std::numbers::pi * n / N);
+    const float value = static_cast<float>(s * s);
+    window[n] = value;
+    window[window_size - n] = value;
   }
   return window;
 }
