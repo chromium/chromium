@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
 
+import android.view.View;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -32,6 +34,12 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /** Java Integration tests for Glic Android native bottom sheet and JNI boundary. */
 @DoNotBatch(reason = "Runs full C++ environment.")
@@ -81,6 +89,40 @@ public class GlicAndroidMojoIntegrationTest {
         }
     }
 
+    /** Must be called on the UI thread. */
+    private GlicKeyedService getService() {
+        return GlicKeyedServiceFactory.getForProfile(mTab.getProfile());
+    }
+
+    private void waitForWebClientConnected() {
+        CriteriaHelper.pollUiThread(
+                () -> mTestEnv.isWebClientConnected() && mTestEnv.getGuestWebContents() != null,
+                MOJO_BINDING_TIMEOUT_MS,
+                MOJO_BINDING_POLLING_INTERVAL_MS);
+    }
+
+    private void toggleGlic(boolean open) {
+        TabbedRootUiCoordinator coordinator =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                (TabbedRootUiCoordinator)
+                                        mActivityTestRule
+                                                .getActivity()
+                                                .getRootUiCoordinatorForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> coordinator.toggleGlic(open, GlicInvocationSource.UNSUPPORTED));
+        CriteriaHelper.pollUiThread(
+                () -> coordinator.getTabBottomSheetManagerForTesting().isSheetShowing() == open,
+                MOJO_BINDING_TIMEOUT_MS,
+                MOJO_BINDING_POLLING_INTERVAL_MS);
+    }
+
+    /** Must be called on the UI thread. */
+    private ModalDialogManager getModalDialogManager() {
+        WindowAndroid windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
+        return windowAndroid == null ? null : windowAndroid.getModalDialogManager();
+    }
+
     private String getLastPrompt() throws Exception {
         WebContents guestWebContents =
                 ThreadUtils.runOnUiThreadBlocking(() -> mTestEnv.getGuestWebContents());
@@ -102,17 +144,13 @@ public class GlicAndroidMojoIntegrationTest {
     @LargeTest
     public void testMojoBindingAndInvoke() throws Throwable {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    GlicKeyedService service =
-                            GlicKeyedServiceFactory.getForProfile(mTab.getProfile());
-                    service.invokeWithAutoSubmit(mTab, "Hello from Java integration test!", 27);
-                });
+                () ->
+                        getService()
+                                .invokeWithAutoSubmit(
+                                        mTab, "Hello from Java integration test!", 27));
 
         // Wait until WebClient mojo connection has completed
-        CriteriaHelper.pollUiThread(
-                () -> mTestEnv.isWebClientConnected() && mTestEnv.getGuestWebContents() != null,
-                MOJO_BINDING_TIMEOUT_MS,
-                MOJO_BINDING_POLLING_INTERVAL_MS);
+        waitForWebClientConnected();
 
         // Assert that the Mojo WebClient received the auto-submit prompt
         assertEquals("Hello from Java integration test!", getLastPrompt());
@@ -123,42 +161,16 @@ public class GlicAndroidMojoIntegrationTest {
     public void testLatestChatInstanceRecovery() throws Throwable {
         // 1. Open Glic, type/invoke a prompt
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    GlicKeyedService service =
-                            GlicKeyedServiceFactory.getForProfile(mTab.getProfile());
-                    service.invokeWithAutoSubmit(mTab, "State preservation test", 27);
-                });
-        CriteriaHelper.pollUiThread(
-                () -> mTestEnv.isWebClientConnected() && mTestEnv.getGuestWebContents() != null,
-                MOJO_BINDING_TIMEOUT_MS,
-                MOJO_BINDING_POLLING_INTERVAL_MS);
+                () -> getService().invokeWithAutoSubmit(mTab, "State preservation test", 27));
+        waitForWebClientConnected();
         assertEquals("State preservation test", getLastPrompt());
 
         // 2. Close bottom sheet (releasing the view container)
-        TabbedRootUiCoordinator coordinator =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                (TabbedRootUiCoordinator)
-                                        mActivityTestRule
-                                                .getActivity()
-                                                .getRootUiCoordinatorForTesting());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.toggleGlic(false, GlicInvocationSource.UNSUPPORTED));
-        CriteriaHelper.pollUiThread(
-                () -> !coordinator.getTabBottomSheetManagerForTesting().isSheetShowing(),
-                MOJO_BINDING_TIMEOUT_MS,
-                MOJO_BINDING_POLLING_INTERVAL_MS);
+        toggleGlic(false);
 
         // 3. Re-open Glic
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> coordinator.toggleGlic(true, GlicInvocationSource.UNSUPPORTED));
-        CriteriaHelper.pollUiThread(
-                () ->
-                        coordinator.getTabBottomSheetManagerForTesting().isSheetShowing()
-                                && mTestEnv.isWebClientConnected()
-                                && mTestEnv.getGuestWebContents() != null,
-                MOJO_BINDING_TIMEOUT_MS,
-                MOJO_BINDING_POLLING_INTERVAL_MS);
+        toggleGlic(true);
+        waitForWebClientConnected();
 
         // 4. Assert that the guest instance state has been preserved (the prompt still exists)
         assertEquals("State preservation test", getLastPrompt());
@@ -168,32 +180,21 @@ public class GlicAndroidMojoIntegrationTest {
     @LargeTest
     public void testShowExperimentalOptInDialogAndDismissViaCloseButton() throws Throwable {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    GlicKeyedService service =
-                            GlicKeyedServiceFactory.getForProfile(mTab.getProfile());
-                    service.showExperimentalOptInDialogForTesting(mTab);
-                });
+                () -> getService().showExperimentalOptInDialogForTesting(mTab));
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
-                    if (windowAndroid == null) return false;
-                    var modalDialogManager = windowAndroid.getModalDialogManager();
+                    ModalDialogManager modalDialogManager = getModalDialogManager();
                     return modalDialogManager != null && modalDialogManager.isShowing();
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
-                    var modalDialogManager = windowAndroid.getModalDialogManager();
-                    org.chromium.ui.modelutil.PropertyModel model =
-                            modalDialogManager.getCurrentDialogForTest();
+                    PropertyModel model = getModalDialogManager().getCurrentDialogForTest();
                     Assert.assertNotNull(model);
-                    android.view.View customView =
-                            model.get(
-                                    org.chromium.ui.modaldialog.ModalDialogProperties.CUSTOM_VIEW);
+                    View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
                     Assert.assertNotNull(customView);
-                    android.view.View closeButton =
+                    View closeButton =
                             customView.findViewById(R.id.glic_experimental_opt_in_close_button);
                     Assert.assertNotNull(closeButton);
                     closeButton.performClick();
@@ -201,10 +202,42 @@ public class GlicAndroidMojoIntegrationTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    var windowAndroid = mActivityTestRule.getActivity().getWindowAndroid();
-                    if (windowAndroid == null) return true;
-                    var modalDialogManager = windowAndroid.getModalDialogManager();
+                    ModalDialogManager modalDialogManager = getModalDialogManager();
                     return modalDialogManager == null || !modalDialogManager.isShowing();
+                });
+    }
+
+    @Test
+    @LargeTest
+    public void testShareAndUnshareTabsAndRecentlyActiveInstances() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        getService()
+                                .invokeWithConversation(
+                                        mTab, "test-conv-1", GlicInvocationSource.UNSUPPORTED));
+        waitForWebClientConnected();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    GlicKeyedService service = getService();
+                    List<ConversationInfo> recent = service.getRecentlyActiveInstances(10);
+                    assertEquals(1, recent.size());
+                    String instanceId = recent.get(0).instanceId;
+                    Assert.assertFalse(instanceId.isEmpty());
+
+                    List<Tab> tabs = List.of(mTab);
+                    service.unshareTabs(tabs);
+                    Assert.assertFalse(service.isTabPinnedToAnyInstance(tabs));
+
+                    service.shareTabs(
+                            tabs,
+                            instanceId,
+                            /* newConversation= */ false,
+                            GlicInvocationSource.UNSUPPORTED);
+                    Assert.assertTrue(service.isTabPinnedToAnyInstance(tabs));
+
+                    service.unshareTabs(tabs);
+                    Assert.assertFalse(service.isTabPinnedToAnyInstance(tabs));
                 });
     }
 }
