@@ -7,6 +7,7 @@ import '//resources/cr_components/composebox/current_tab_chip.js';
 import './omnibox_popup_contextual_entrypoint_button.js';
 
 import type {ComposeboxLensSearchElement} from '//resources/cr_components/composebox/composebox_lens_search.js';
+import type {CurrentTabChipElement} from '//resources/cr_components/composebox/current_tab_chip.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -15,7 +16,6 @@ import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/s
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {InputType} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
 import type {BrowserProxy} from './omnibox_popup.mojom-webui.js';
@@ -100,6 +100,11 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
 
   get showContextEntrypoint(): boolean {
     return this.showContextEntrypoint_ && !this.shouldHideEntrypointButton_();
+  }
+
+  get showContextualChip(): boolean {
+    return this.showContextEntrypoint_ &&
+        (this.isCurrentTabChipShown_ || this.isLensChipShown_);
   }
 
   get showLensSearchIcon(): boolean {
@@ -205,6 +210,18 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     return null;
   }
 
+  getContextualChipElement():
+      (CurrentTabChipElement|ComposeboxLensSearchElement)|null {
+    if (this.showContextualChip) {
+      // Search for class instead of ID since the contextual chip is either a
+      // CurrentTabChipElement or ComposeboxLensSearchElement.
+      return this.shadowRoot
+          .querySelector<CurrentTabChipElement|ComposeboxLensSearchElement>(
+              '.contextual-chip');
+    }
+    return null;
+  }
+
   getLensSearchIconElement(): ComposeboxLensSearchElement|null {
     if (this.showLensSearchIcon) {
       return this.shadowRoot.querySelector<ComposeboxLensSearchElement>(
@@ -234,6 +251,17 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
     return false;
   }
 
+  onContextualChipClick() {
+    if (!this.showContextualChip) {
+      return;
+    }
+    if (this.isCurrentTabChipShown_) {
+      this.onAddTabContext_();
+    } else if (this.isLensChipShown_) {
+      this.onLensSearchClick_();
+    }
+  }
+
   protected onLensSearchClick_() {
     this.searchboxBrowserProxy_.handler.openLensSearch();
   }
@@ -246,14 +274,13 @@ export class OmniboxPopupContextualEntrypointElement extends CrLitElement {
         tabs.find(tab => tab.showInCurrentTabChip) || null;
   }
 
-  protected async onAddTabContext_(e: CustomEvent<{
-    id: number,
-    title: string,
-    url: Url,
-  }>) {
+  protected async onAddTabContext_() {
+    if (!this.currentTabForChip_) {
+      return;
+    }
     try {
       await this.searchboxBrowserProxy_.handler.addTabContext(
-          e.detail.id, /*delayUpload=*/ false,
+          this.currentTabForChip_.tabId, /*delayUpload=*/ false,
           TabAttachmentSource.kCurrentTabChip);
     } catch {
       // TODO (b/563357265) - Surface addTabContext failures for the current-tab

@@ -351,13 +351,9 @@ void WebuiOmniboxHandler::AddTabContext(
     }
   }
 
-  // Adding tab context is arguably a hybrid of `kClickOrGesture` (clicking a
-  // chip) and `kContextMenu` (doing so adds context similar to the
-  // `kContextMenu` items). Adding context should always open the AI popup,
-  // which `kContextMenu` guarantees but `kClickOrGesture` does not. Since this
-  // feature is not likely to launch, it's probably not worth the effort to
-  // investigate if this should be changed to `kContextMenu`.
-  edit_model()->OpenAiMode(OmniboxEditModel::AimActivation::kClickOrGesture);
+  // Adding context should always open the AI popup, which `kContextMenu`
+  // guarantees.
+  edit_model()->OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu);
   std::move(callback).Run(base::ok(context_token));
 }
 void WebuiOmniboxHandler::StepSelection(

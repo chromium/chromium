@@ -38,10 +38,15 @@ export class CurrentTabChipElement extends CurrentTabChipBase {
       // Public properties
       // =========================================================================
       currentTab: {type: Object},
+      hasVirtualFocus: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor currentTab: TabInfo|undefined = undefined;
+  accessor hasVirtualFocus: boolean = false;
 
   private composeboxSource_: string =
       loadTimeData.getString('composeboxSource');

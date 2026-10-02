@@ -556,6 +556,11 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
       state: SelectionLineState.kFocusedButtonLensSearch,
       actionIndex: 0,
     }));
+    assertFalse(selectionIsNativelySupported({
+      line: -1,
+      state: SelectionLineState.kFocusedButtonContextualChip,
+      actionIndex: 0,
+    }));
   });
 
   test('instant keyword match selection', () => {
