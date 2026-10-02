@@ -11,7 +11,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/compiler_specific.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -79,8 +78,6 @@ L10nUtilTest::L10nUtilTest() {
   input_manager_.SetComponentExtensionIMEManager(
       std::make_unique<ComponentExtensionIMEManager>(
           std::move(mock_component_extension_ime_manager_delegate)));
-
-  base::RunLoop().RunUntilIdle();
 }
 
 void L10nUtilTest::SetInputMethods1() {
