@@ -49,21 +49,6 @@ TEST_F(Canvas2DBitmapProviderTest, Create) {
   EXPECT_TRUE(GetSkImageInfo(snapshot.get()) == kInfo);
 }
 
-TEST_F(Canvas2DBitmapProviderTest, HdrMetadata) {
-  const gfx::Size kSize(10, 10);
-  gfx::HDRMetadata hdr_metadata;
-  hdr_metadata.extended_range = gfx::HdrMetadataExtendedRange(4.0f, 4.0f);
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB, hdr_metadata,
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
-  ASSERT_TRUE(provider);
-  scoped_refptr<StaticBitmapImage> snapshot = provider->Snapshot();
-  EXPECT_TRUE(snapshot);
-  EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);
-}
-
 TEST_F(Canvas2DBitmapProviderTest, DimensionsExceedMaxTextureSize) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    gfx::HDRMetadata(),

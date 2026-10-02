@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -56,6 +58,7 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTileMode.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -78,10 +81,13 @@ class TestRenderingContext2D final
     : public GarbageCollected<TestRenderingContext2D>,
       public BaseRenderingContext2D {
  public:
-  explicit TestRenderingContext2D(V8TestingScope& scope)
+  explicit TestRenderingContext2D(
+      V8TestingScope& scope,
+      const CanvasContextCreationAttributesCore& attrs =
+          CanvasContextCreationAttributesCore())
       : BaseRenderingContext2D(
             MakeGarbageCollected<HTMLCanvasElement>(scope.GetDocument()),
-            CanvasContextCreationAttributesCore(),
+            attrs,
             scheduler::GetSingleThreadTaskRunnerForTesting()),
         execution_context_(scope.GetExecutionContext()) {
     ConfigureRecorder(gfx::Size(Width(), Height()), /*is_graphite=*/false);
@@ -109,7 +115,9 @@ class TestRenderingContext2D final
     return GetPaintCanvas();
   }
   using BaseRenderingContext2D::ConfigureRecorder;
+  using BaseRenderingContext2D::CreateBitmapProvider;
   using BaseRenderingContext2D::FlushIfRecordingLimitExceeded;
+  using BaseRenderingContext2D::Snapshot;
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) override {}
 
@@ -333,6 +341,25 @@ TEST(BaseRenderingContext2DTest, FlushIfRecordingLimitExceeded) {
   context->set_clear_frame(false);
   context->FlushIfRecordingLimitExceeded();
   EXPECT_EQ(context->Recorder()->TotalOpCount(), initial_op_count);
+}
+
+TEST(BaseRenderingContext2DTest, HdrMetadata) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const gfx::Size kSize(10, 10);
+  gfx::HDRMetadata hdr_metadata;
+  hdr_metadata.extended_range = gfx::HdrMetadataExtendedRange(4.0f, 4.0f);
+
+  CanvasContextCreationAttributesCore attrs;
+  attrs.hdr_metadata = hdr_metadata;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope, attrs);
+  context->HostAsHTMLCanvasElement()->SetSize(kSize);
+  context->CreateBitmapProvider();
+
+  ASSERT_TRUE(context->HasResourceProvider());
+  scoped_refptr<StaticBitmapImage> snapshot = context->Snapshot();
+  ASSERT_TRUE(snapshot);
+  EXPECT_EQ(snapshot->GetHdrMetadata(), hdr_metadata);
 }
 
 }  // namespace
