@@ -398,10 +398,13 @@ const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
 
 const Big5EncodeTable& EnsureBig5EncodeTable() {
   // Allocate this at runtime because building it at compile time would make the
-  // binary much larger and this is often not used.
-  static const Big5EncodeTable array = [] {
-    Big5EncodeTable table;
-    table.fill(0);
+  // binary much larger and this is often not used. Allocate it on the heap: a
+  // static of this size would be in .bss, which costs private memory in every
+  // process on Windows.
+  static const Big5EncodeTable* const array = [] {
+    auto* table = new Big5EncodeTable();
+    LEAK_SANITIZER_IGNORE_OBJECT(table);
+    table->fill(0);
     UErrorCode error = U_ZERO_ERROR;
     IcuConverterWrapper icu_converter;
     // Try "big5-html" first as it's the spec-compliant one in Chromium's ICU.
@@ -455,18 +458,23 @@ const Big5EncodeTable& EnsureBig5EncodeTable() {
             DCHECK_EQ(output_len, 2);
             code_point = U16_GET_SUPPLEMENTARY(icu_output[0], icu_output[1]);
           }
-          table[pointer] = code_point;
+          (*table)[pointer] = code_point;
         }
       }
     }
     return table;
   }();
-  return array;
+  return *array;
 }
 
 const Big5EncodeIndex& EnsureBig5EncodeIndexForEncode() {
-  static const Big5EncodeIndex table = [] {
-    Big5EncodeIndex index_table;
+  // Allocate this at runtime because building it at compile time would make the
+  // binary much larger and this is often not used. Allocate it on the heap: a
+  // static of this size would be in .bss, which costs private memory in every
+  // process on Windows.
+  static const Big5EncodeIndex* const table = [] {
+    auto* index_table = new Big5EncodeIndex();
+    LEAK_SANITIZER_IGNORE_OBJECT(index_table);
     auto& index = EnsureBig5EncodeTable();
     UErrorCode error = U_ZERO_ERROR;
     IcuConverterWrapper icu_converter;
@@ -534,7 +542,7 @@ const Big5EncodeIndex& EnsureBig5EncodeIndexForEncode() {
           // Only add the entry if this pointer is the one we are currently
           // processing in the outer loop. This avoids duplicates.
           if (pointer == i) {
-            index_table[count++] = {code_point, pointer};
+            (*index_table)[count++] = {code_point, pointer};
           }
         }
       }
@@ -542,13 +550,13 @@ const Big5EncodeIndex& EnsureBig5EncodeIndexForEncode() {
 
     // Fill the rest with sentinels.
     for (size_t i = count; i < kBig5IndexSize; ++i) {
-      index_table[i] = {0xFFFFFFFF, 0xFFFF};
+      (*index_table)[i] = {0xFFFFFFFF, 0xFFFF};
     }
 
-    std::ranges::stable_sort(index_table, CompareFirst{});
+    std::ranges::stable_sort(*index_table, CompareFirst{});
     return index_table;
   }();
-  return table;
+  return *table;
 }
 
 }  // namespace blink
