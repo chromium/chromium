@@ -88,8 +88,8 @@ export class HighlightTracker {
   // highlighted. Public for testing.
   highlighted: boolean = false;
   // The value of performance.now() when `highlighted` last went from true to
-  // false. Public for testing.
-  lastUnhighlightedTime: number = 0;
+  // false, or -Infinity if that has not happened. Public for testing.
+  lastUnhighlightedTime: number = -Infinity;
 
   private skipNextClick_: boolean = false;
 

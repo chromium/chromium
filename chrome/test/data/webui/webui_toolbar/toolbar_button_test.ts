@@ -142,11 +142,6 @@ suite('ToolbarButtonTest', function() {
     });
 
     test('NotSkippedWhenBubbleClosed', function() {
-      // TODO(crbug.com/568351167): Fails on Mac.
-      if (isMac) {
-        this.skip();
-      }
-
       assertFalse(clickSkipped(new HighlightTracker(), leftMouseDown));
 
       // Bubble closed more than 100ms ago.
