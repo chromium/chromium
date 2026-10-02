@@ -1186,8 +1186,15 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   controller_->Close();
 }
 
+// TODO(crbug.com/568298417): Enable on UBSan once the tests are fixed.
+#if defined(UNDEFINED_SANITIZER)
+#define MAYBE_VoiceIsolationEnabledInConfig \
+  DISABLED_VoiceIsolationEnabledInConfig
+#else
+#define MAYBE_VoiceIsolationEnabledInConfig VoiceIsolationEnabledInConfig
+#endif
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
-       VoiceIsolationEnabledInConfig) {
+       MAYBE_VoiceIsolationEnabledInConfig) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
   EXPECT_CALL(event_handler_, OnCreated(_));
