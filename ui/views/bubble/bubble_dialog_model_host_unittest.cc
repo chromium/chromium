@@ -11,6 +11,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
@@ -18,6 +20,8 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/link.h"
@@ -880,6 +884,73 @@ TEST_F(BubbleDialogModelHostTest, ExtraLinkIgnoresEarlyPointerEvents) {
       ui::EventTimeForNow() + 2 * GetDoubleClickInterval(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_EQ(1, click_count);
+
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogModelHostTest, ParagraphWithHeaderHasAccessibleMetadata) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kParagraphId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPlainParagraphId);
+
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+  const auto context =
+      views::ElementTrackerViews::GetContextForWidget(anchor_widget.get());
+
+  Widget* const bubble_widget = ShowBubbleWithModel(
+      ui::DialogModel::Builder()
+          .SetTitle(u"Dialog Title")
+          .AddParagraph(ui::DialogModelLabel(u"Paragraph body text"),
+                        u"Section Header", kParagraphId)
+          .AddParagraph(ui::DialogModelLabel(u"Plain paragraph body text"),
+                        /*header=*/std::u16string(), kPlainParagraphId)
+          .Build(),
+      anchor_widget.get());
+  BubbleDialogModelHost* const host = GetHost(bubble_widget);
+
+  // Verify dialog title is heading level 1.
+  Label* title_label =
+      views::AsViewClass<Label>(host->GetBubbleFrameView()->title());
+  ASSERT_NE(title_label, nullptr);
+  ui::AXNodeData title_node_data;
+  title_label->GetViewAccessibility().GetAccessibleNodeData(&title_node_data);
+  EXPECT_EQ(title_node_data.role, ax::mojom::Role::kHeading);
+  EXPECT_TRUE(title_node_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ(title_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kHierarchicalLevel),
+            1);
+
+  // Verify paragraph with header has a header_label with heading level 2.
+  auto* paragraph_container =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(kParagraphId,
+                                                               context);
+  ASSERT_NE(paragraph_container, nullptr);
+  ASSERT_GE(paragraph_container->children().size(), 2u);
+  auto* header_label = AsViewClass<Label>(paragraph_container->children()[0]);
+  ASSERT_NE(header_label, nullptr);
+
+  ui::AXNodeData header_node_data;
+  header_label->GetViewAccessibility().GetAccessibleNodeData(&header_node_data);
+  EXPECT_EQ(header_node_data.role, ax::mojom::Role::kHeading);
+  EXPECT_TRUE(header_node_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kHierarchicalLevel));
+  EXPECT_EQ(header_node_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kHierarchicalLevel),
+            2);
+
+  // Verify plain paragraph without header has no heading role or level.
+  auto* plain_paragraph_view =
+      views::ElementTrackerViews::GetInstance()->GetUniqueView(
+          kPlainParagraphId, context);
+  ASSERT_NE(plain_paragraph_view, nullptr);
+  ui::AXNodeData plain_node_data;
+  plain_paragraph_view->GetViewAccessibility().GetAccessibleNodeData(
+      &plain_node_data);
+  EXPECT_NE(plain_node_data.role, ax::mojom::Role::kHeading);
+  EXPECT_FALSE(plain_node_data.HasIntAttribute(
+      ax::mojom::IntAttribute::kHierarchicalLevel));
 
   bubble_widget->CloseNow();
 }

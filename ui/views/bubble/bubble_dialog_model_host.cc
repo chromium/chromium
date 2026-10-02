@@ -738,6 +738,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     auto* header_label = view->AddChildView(std::make_unique<Label>(
         header, style::CONTEXT_DIALOG_BODY_TEXT, style::STYLE_PRIMARY));
     header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    header_label->GetViewAccessibility().SetRole(ax::mojom::Role::kHeading);
+    header_label->GetViewAccessibility().SetHierarchicalLevel(2);
 
     view->AddChildView(CreateViewForLabel(dialog_label));
     return view;
