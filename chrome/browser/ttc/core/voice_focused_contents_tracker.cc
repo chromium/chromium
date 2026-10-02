@@ -4,13 +4,23 @@
 
 #include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 
+#include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+
 namespace ttc {
 
 // VoiceFocusedContentsTracker::Create() is defined by each platform's
 // implementation: voice_focused_contents_tracker_desktop.cc and
 // voice_focused_contents_tracker_android.cc.
 
-VoiceFocusedContentsTracker::VoiceFocusedContentsTracker() = default;
+VoiceFocusedContentsTracker::VoiceFocusedContentsTracker() {
+  // Notify async to avoid clients depending on this happening
+  // synchronously.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VoiceFocusedContentsTracker::NotifyActiveTabChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
 
 VoiceFocusedContentsTracker::~VoiceFocusedContentsTracker() = default;
 
@@ -23,9 +33,13 @@ void VoiceFocusedContentsTracker::RemoveObserver(Observer* observer) {
 }
 
 void VoiceFocusedContentsTracker::NotifyActiveTabChanged() {
-  content::WebContents* web_contents = GetActiveWebContents();
+  if (observers_.empty()) {
+    return;
+  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  content::WebContents* const web_contents = GetActiveWebContents();
   for (Observer& observer : observers_) {
-    observer.OnActiveTabChanged(web_contents);
+    observer.OnVoiceFocusedContentsChanged(web_contents);
   }
 }
 

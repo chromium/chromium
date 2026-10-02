@@ -33,7 +33,8 @@ class SessionController {
   virtual void OnError(ErrorCode error) = 0;
 
   // Fetches the context of the page this session is operating on, invoking
-  // `callback` with the result.
+  // `callback` with the result. Any fetch already in flight is cancelled and
+  // its callback will not be run.
   virtual void GetPageContext(FetchCompleteCallback callback) = 0;
 
   // The profile this session belongs to.

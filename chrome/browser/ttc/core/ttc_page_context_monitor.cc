@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/web_contents.h"
 
@@ -21,18 +20,15 @@ TtcPageContextMonitor::TtcPageContextMonitor(
     : content::WebContentsObserver(&web_contents),
       page_changed_callback_(std::move(page_changed_callback)) {
   CHECK(page_changed_callback_);
-
-  // TODO(bokan): We should consider whether now is a good time (e.g. are we
-  // currently loading) and potentially defer this. Notify async to avoid
-  // clients depending on this happening synchronously.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TtcPageContextMonitor::NotifyPageChanged,
-                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 TtcPageContextMonitor::~TtcPageContextMonitor() = default;
 
 void TtcPageContextMonitor::StartNewFetch(FetchCompleteCallback callback) {
+  // Cancel any callback bound to a previous in-flight fetch before
+  // destroying `fetcher_`, because `~PageContextFetcher()` synchronously
+  // invokes its callback if the fetch has not yet completed.
+  fetch_callback_.Cancel();
   fetcher_.reset();
 
   content::WebContents* contents = web_contents();
@@ -55,10 +51,10 @@ void TtcPageContextMonitor::StartNewFetch(FetchCompleteCallback callback) {
           /*on_critical_path=*/true);
   options.annotated_page_content_options->max_meta_elements = 32;
 
-  fetcher_->FetchStart(
-      *contents, options,
-      base::BindOnce(&TtcPageContextMonitor::OnFetchComplete,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  fetch_callback_.Reset(base::BindOnce(&TtcPageContextMonitor::OnFetchComplete,
+                                       base::Unretained(this),
+                                       std::move(callback)));
+  fetcher_->FetchStart(*contents, options, fetch_callback_.callback());
 }
 
 void TtcPageContextMonitor::PrimaryPageChanged(content::Page& page) {
@@ -76,6 +72,10 @@ void TtcPageContextMonitor::NotifyPageChanged() {
 void TtcPageContextMonitor::OnFetchComplete(
     FetchCompleteCallback callback,
     page_content_annotations::FetchPageContextResultCallbackArg result) {
+  // Destroy `fetcher_` now that the fetch has completed so it stops observing
+  // `web_contents()`.
+  fetcher_.reset();
+
   if (!result.has_value()) {
     std::move(callback).Run(base::unexpected(result.error().error_code));
     return;

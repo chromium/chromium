@@ -41,7 +41,8 @@ class RecordingObserver : public VoiceFocusedContentsTracker::Observer {
     observation_.Observe(&tracker);
   }
 
-  void OnActiveTabChanged(content::WebContents* web_contents) override {
+  void OnVoiceFocusedContentsChanged(
+      content::WebContents* web_contents) override {
     changes_.push_back(web_contents);
   }
 
@@ -147,7 +148,8 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
   content::WebContents* second_window_tab1 = ActiveContents(second_browser);
   ASSERT_NE(first_window_tab, second_window_tab1);
   EXPECT_EQ(tracker->GetActiveWebContents(), second_window_tab1);
-  EXPECT_THAT(observer.TakeChanges(), ElementsAre(second_window_tab1));
+  EXPECT_THAT(observer.TakeChanges(),
+              ElementsAre(first_window_tab, second_window_tab1));
 
   AddForegroundTab(second_browser);
   content::WebContents* second_window_tab2 = ActiveContents(second_browser);
@@ -172,11 +174,13 @@ IN_PROC_BROWSER_TEST_F(VoiceFocusedContentsTrackerBrowserTest,
 #endif
   std::unique_ptr<VoiceFocusedContentsTracker> tracker = CreateTracker();
   RecordingObserver observer(*tracker);
+  content::WebContents* first_window_tab = ActiveContents(browser());
 
   BrowserWindowInterface* second_browser = CreateAndActivateSecondBrowser();
   content::WebContents* second_window_tab = ActiveContents(second_browser);
   EXPECT_EQ(tracker->GetActiveWebContents(), second_window_tab);
-  EXPECT_THAT(observer.TakeChanges(), ElementsAre(second_window_tab));
+  EXPECT_THAT(observer.TakeChanges(),
+              ElementsAre(first_window_tab, second_window_tab));
 
   AddForegroundTab(browser());
   content::WebContents* first_window_new_tab = ActiveContents(browser());

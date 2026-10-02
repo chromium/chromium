@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notimplemented.h"
@@ -19,16 +20,12 @@
 #include "chrome/browser/ttc/core/session_view.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
+#include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ttc/core/session_view_impl.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #endif
 
@@ -51,21 +48,18 @@ std::unique_ptr<SessionView> MakeSessionView(
 SessionControllerImpl::SessionControllerImpl(TtcKeyedService& service)
     : service_(service),
       session_view_(MakeSessionView(*this)),
+      voice_focused_contents_tracker_(
+          VoiceFocusedContentsTracker::Create(CHECK_DEREF(service.profile()))),
       tool_controller_(*this) {
   GetJournal().Log("TtcSessionStart", {});
+
+  voice_focused_contents_tracker_observation_.Observe(
+      voice_focused_contents_tracker_.get());
 
   // Created here rather than in the initializer list because MakeConversation()
   // calls back into GetProfile() on this object.
   conversation_ =
       service.MakeConversation(base::PassKey<SessionControllerImpl>(), *this);
-
-  if (content::WebContents* contents = GetObservedWebContents()) {
-    // TODO(b/555800359): Reset page_context_monitor_ on active tab changes.
-    page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
-        *contents,
-        base::BindRepeating(&SessionControllerImpl::OnPageContextChanged,
-                            base::Unretained(this)));
-  }
 
   if (conversation_) {
     conversation_->Start();
@@ -114,6 +108,8 @@ void SessionControllerImpl::GetPageContext(FetchCompleteCallback callback) {
     return;
   }
 
+  // TODO(b/555804152) - Migrate to automatic extractions from
+  // PageContentExtractionService.
   page_context_monitor_->StartNewFetch(std::move(callback));
 }
 
@@ -177,22 +173,19 @@ void SessionControllerImpl::EndSessionAsync() {
       base::BindOnce(&TtcKeyedService::EndSession, service_->GetWeakPtr()));
 }
 
-content::WebContents* SessionControllerImpl::GetObservedWebContents() {
-#if BUILDFLAG(IS_ANDROID)
-  Profile* profile = service_->profile();
-  for (TabModel* model : TabModelList::models()) {
-    if (model->GetProfile() == profile && model->IsActiveModel()) {
-      tabs::TabInterface* active_tab = model->GetActiveTab();
-      return active_tab ? active_tab->GetContents() : nullptr;
-    }
+void SessionControllerImpl::OnVoiceFocusedContentsChanged(
+    content::WebContents* web_contents) {
+  if (!page_context_monitor_ && !web_contents) {
+    return;
   }
-  return nullptr;
-#else
-  BrowserWindowInterface* window = GetBrowserWindowInterface();
-  tabs::TabInterface* active_tab =
-      window ? window->GetActiveTabInterface() : nullptr;
-  return active_tab ? active_tab->GetContents() : nullptr;
-#endif
+  page_context_monitor_.reset();
+  if (web_contents) {
+    page_context_monitor_ = std::make_unique<TtcPageContextMonitor>(
+        *web_contents,
+        base::BindRepeating(&SessionControllerImpl::OnPageContextChanged,
+                            base::Unretained(this)));
+  }
+  OnPageContextChanged();
 }
 
 void SessionControllerImpl::OnPageContextChanged() {

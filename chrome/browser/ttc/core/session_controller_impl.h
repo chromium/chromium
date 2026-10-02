@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_TTC_CORE_SESSION_CONTROLLER_IMPL_H_
 
-#include <string>
+#include <memory>
 
 #include "base/check_deref.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ttc/app/public/conversation.h"
 #include "chrome/browser/ttc/core/session_controller.h"
 #include "chrome/browser/ttc/core/session_view_delegate.h"
 #include "chrome/browser/ttc/core/tool_controller.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
-
-class BrowserWindowInterface;
+#include "chrome/browser/ttc/core/voice_focused_contents_tracker.h"
 
 namespace content {
 class WebContents;
@@ -27,7 +28,8 @@ class SessionView;
 class TtcKeyedService;
 
 class SessionControllerImpl : public SessionController,
-                              public SessionViewDelegate {
+                              public SessionViewDelegate,
+                              public VoiceFocusedContentsTracker::Observer {
  public:
   explicit SessionControllerImpl(TtcKeyedService& service);
   ~SessionControllerImpl() override;
@@ -53,16 +55,16 @@ class SessionControllerImpl : public SessionController,
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   void EndSessionAsync() override;
 
+  // VoiceFocusedContentsTracker::Observer implementation:
+  void OnVoiceFocusedContentsChanged(
+      content::WebContents* web_contents) override;
+
   // TODO(bokan): Android doesn't yet have a session_view so calling
   // this will crash there.
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
 
  private:
-  // Returns the WebContents that the session is currently focused on and
-  // observing.
-  content::WebContents* GetObservedWebContents();
-
   // Invoked by `page_context_monitor_` when the monitored page changes.
   void OnPageContextChanged();
 
@@ -74,10 +76,18 @@ class SessionControllerImpl : public SessionController,
   std::unique_ptr<Conversation> conversation_;
   std::unique_ptr<SessionView> session_view_;
 
+  // Never null.
+  std::unique_ptr<VoiceFocusedContentsTracker> voice_focused_contents_tracker_;
+  base::ScopedObservation<VoiceFocusedContentsTracker,
+                          VoiceFocusedContentsTracker::Observer>
+      voice_focused_contents_tracker_observation_{this};
+
   std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
   ToolController tool_controller_;
 
   SessionLifecycle session_lifecycle_ = SessionLifecycle::kInitializing;
+
+  base::WeakPtrFactory<SessionControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ttc

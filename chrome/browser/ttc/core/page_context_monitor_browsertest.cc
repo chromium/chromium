@@ -6,8 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -15,6 +17,9 @@
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "chrome/browser/ttc/core/ttc_page_context_monitor.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
@@ -26,6 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -160,6 +166,145 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, PrimaryPageNavigated) {
   ASSERT_FALSE(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 }
 
+// Switching the window to a different tab must notify the conversation that
+// the page context it has is stale and switch observation to the newly active
+// tab's WebContents.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, ActiveTabChanged) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/title2.html")));
+
+  // Open a second, fully loaded tab and leave it active, so that activating
+  // the original tab below is the only thing that can signal a page change.
+  ASSERT_TRUE(AddTabAtIndex(1, embedded_test_server()->GetURL("/simple.html"),
+                            ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
+
+  StartSession();
+
+  auto tab_changed = ExpectPageChange();
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  EXPECT_TRUE(tab_changed.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Fetching page context must now return the newly active tab's content.
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+  base::test::TestFuture<PageContextResult> future;
+  session_controller->GetPageContext(future.GetCallback());
+  PageContextResult result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(result->ai_page_content.has_value());
+  EXPECT_EQ(result->ai_page_content->proto.main_frame_data().title(),
+            "Title Of Awesomeness");
+
+  // Navigating the newly active tab must also trigger a page change
+  // notification from WebContentsObserver.
+  auto navigated = ExpectPageChange();
+  NavigateButBlockLoad();
+  EXPECT_TRUE(navigated.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Switching tabs while a fetch is in flight must destroy the previous tab's
+  // TtcPageContextMonitor and cancel the in-flight fetch without invoking its
+  // callback.
+  bool cancelled_fetch_called = false;
+  session_controller->GetPageContext(base::BindLambdaForTesting(
+      [&](PageContextResult) { cancelled_fetch_called = true; }));
+
+  auto switched_back = ExpectPageChange();
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(switched_back.Wait());
+  EXPECT_FALSE(cancelled_fetch_called);
+}
+
+// Activating a different browser window of the same profile must switch
+// monitoring to the newly active window's active tab, and closing all browser
+// windows of the profile must invalidate the page context.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
+                       SwitchingBrowserWindowsAndClosingAllWindows) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/simple.html")));
+
+  StartSession();
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // Creating a new browser window activates it, which must switch monitoring to
+  // the new window's active tab.
+  EXPECT_CALL(*conversation(), OnPageContextChanged())
+      .Times(testing::AtLeast(1));
+  BrowserWindowInterface* second_browser = CreateBrowser(profile());
+  // CreateBrowser() does not wait for the new window to be activated. This
+  // returns immediately if the window is already last-active, and otherwise
+  // waits for it to become so. Do not pass
+  // wait_for_set_last_active_observed=true here: that disables the
+  // already-active fast path and blocks on a *subsequent* activation that
+  // never arrives.
+  ui_test_utils::WaitForBrowserSetLastActive(second_browser);
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  // Navigating the active tab in the second window must notify the conversation
+  // and update the fetched page context.
+  EXPECT_CALL(*conversation(), OnPageContextChanged())
+      .Times(testing::AtLeast(1));
+  ASSERT_TRUE(content::NavigateToURL(
+      second_browser->GetTabStripModel()->GetActiveWebContents(),
+      embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  {
+    base::test::TestFuture<PageContextResult> future;
+    session_controller->GetPageContext(future.GetCallback());
+    PageContextResult result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result->ai_page_content.has_value());
+    EXPECT_EQ(result->ai_page_content->proto.main_frame_data().title(),
+              "Title Of Awesomeness");
+  }
+
+  // Re-activating the original window must switch monitoring back to its active
+  // tab.
+  auto reactivated = ExpectPageChange();
+  browser()->GetWindow()->Activate();
+  ui_test_utils::WaitForBrowserSetLastActive(browser());
+  EXPECT_TRUE(reactivated.Wait());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conversation()));
+
+  {
+    base::test::TestFuture<PageContextResult> future;
+    session_controller->GetPageContext(future.GetCallback());
+    PageContextResult result = future.Take();
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result->ai_page_content.has_value());
+    EXPECT_EQ(result->ai_page_content->proto.main_frame_data().title(), "OK");
+  }
+
+  // Keep an incognito browser open so closing all regular profile windows does
+  // not tear down the browser process.
+  Profile* test_profile = profile();
+  CreateIncognitoBrowser(test_profile);
+
+  CloseBrowserSynchronously(second_browser);
+  MockConversation* conv = conversation();
+  EXPECT_CALL(*conv, OnPageContextChanged()).Times(testing::AtLeast(1));
+  CloseBrowserSynchronously(browser());
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(conv));
+
+  {
+    base::test::TestFuture<PageContextResult> future;
+    session_controller->GetPageContext(future.GetCallback());
+    PageContextResult result = future.Take();
+    ASSERT_FALSE(result.has_value());
+    EXPECT_EQ(
+        result.error(),
+        page_content_annotations::FetchPageContextError::kWebContentsWentAway);
+  }
+
+  // Restore a browser for the test profile so fixture teardown has a valid
+  // profile and browser.
+  SetBrowser(CreateBrowser(test_profile));
+}
+
 // Ensure the context monitor signals when a load event is fired.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, LoadStopped) {
   StartSession();
@@ -185,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, GetPageContext) {
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL("/simple.html")));
 
-  ttc_service().StartSession();
+  StartSession();
   SessionController* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 
@@ -210,6 +355,39 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, GetPageContext) {
             "Non empty simple page");
 }
 
+// Starting a new fetch must cancel any fetch already in flight without
+// invoking the cancelled fetch's callback, and starting a new fetch
+// synchronously from within a fetch completion callback must not UAF.
+IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
+                       CancelInFlightFetchAndReentrancy) {
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL("/simple.html")));
+
+  StartSession();
+  SessionController* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  bool first_callback_called = false;
+  session_controller->GetPageContext(base::BindLambdaForTesting(
+      [&](PageContextResult) { first_callback_called = true; }));
+
+  base::test::TestFuture<PageContextResult> reentrant_future;
+  session_controller->GetPageContext(
+      base::BindLambdaForTesting([&](PageContextResult second_result) {
+        EXPECT_TRUE(second_result.has_value());
+        // Synchronously start another fetch while `OnFetchComplete` is still
+        // on the call stack.
+        session_controller->GetPageContext(reentrant_future.GetCallback());
+      }));
+
+  PageContextResult third_result = reentrant_future.Take();
+  EXPECT_FALSE(first_callback_called);
+  ASSERT_TRUE(third_result.has_value());
+  ASSERT_TRUE(third_result->ai_page_content.has_value());
+  EXPECT_EQ(third_result->ai_page_content->proto.main_frame_data().title(),
+            "OK");
+}
+
 // Fetching the page context must include the content of a cross-site iframe,
 // as iframes are processed on the server side.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
@@ -226,7 +404,7 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   ASSERT_FALSE(subframe->GetLastCommittedOrigin().IsSameOriginWith(
       main_frame->GetLastCommittedOrigin()));
 
-  ttc_service().StartSession();
+  StartSession();
   SessionController* session_controller = ttc_service().session_controller();
   ASSERT_TRUE(session_controller);
 

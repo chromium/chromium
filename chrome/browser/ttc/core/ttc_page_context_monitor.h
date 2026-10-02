@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ttc/core/page_context.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
@@ -54,8 +54,9 @@ class TtcPageContextMonitor : public content::WebContentsObserver {
   const PageChangedCallback page_changed_callback_;
 
   std::unique_ptr<page_content_annotations::PageContextFetcher> fetcher_;
-
-  base::WeakPtrFactory<TtcPageContextMonitor> weak_ptr_factory_{this};
+  base::CancelableOnceCallback<void(
+      page_content_annotations::FetchPageContextResultCallbackArg)>
+      fetch_callback_;
 };
 
 }  // namespace ttc

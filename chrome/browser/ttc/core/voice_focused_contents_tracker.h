@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
@@ -35,10 +36,12 @@ class VoiceFocusedContentsTracker {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Invoked whenever the tracked active tab changes. `web_contents` is the
-    // new active tab's contents, or null if there is no active tab (e.g. all
-    // browser windows of the profile closed).
-    virtual void OnActiveTabChanged(content::WebContents* web_contents) {}
+    // Invoked asynchronously after construction with the initial active tab's
+    // contents, and whenever the tracked active tab subsequently changes.
+    // `web_contents` is the active tab's contents, or null if there is no
+    // active tab (e.g. all browser windows of the profile closed).
+    virtual void OnVoiceFocusedContentsChanged(
+        content::WebContents* web_contents) {}
   };
 
   // Returns the implementation for the current platform. `profile` must
@@ -65,6 +68,8 @@ class VoiceFocusedContentsTracker {
 
  private:
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<VoiceFocusedContentsTracker> weak_ptr_factory_{this};
 };
 
 }  // namespace ttc
