@@ -127,6 +127,7 @@ public class NtpCustomizationUtilsUnitTest {
     private static final String NULL_FILE_NAME = "null_file.png";
     private static final String FILE_ID_HASH_SUFFIX = "_-1";
     private static final String STREAM_ERROR_MESSAGE = "Stream error";
+    private static final String COLLECTION_ID = "id";
     // Material falls back to this when no candidate color survives quantization, e.g. for a fully
     // transparent or otherwise chroma-less bitmap. See the vendored
     // third_party/material_color_utilities/src/java/score/Score.java (Score#score fallback).
@@ -889,7 +890,7 @@ public class NtpCustomizationUtilsUnitTest {
         CustomBackgroundInfo infoNoRefresh =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
-                        /* collectionId= */ "id",
+                        /* collectionId= */ COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(infoNoRefresh);
@@ -905,7 +906,7 @@ public class NtpCustomizationUtilsUnitTest {
         CustomBackgroundInfo infoWithRefresh =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
-                        /* collectionId= */ "id",
+                        /* collectionId= */ COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(infoWithRefresh);
@@ -1327,13 +1328,13 @@ public class NtpCustomizationUtilsUnitTest {
         assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
 
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
 
         CustomBackgroundInfo restoredInfo =
                 NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference();
         assertEquals(JUnitTestGURLs.URL_1, restoredInfo.backgroundUrl);
-        assertEquals("id", restoredInfo.collectionId);
+        assertEquals(COLLECTION_ID, restoredInfo.collectionId);
         assertFalse(restoredInfo.isUploadedImage);
         assertTrue(restoredInfo.isDailyRefreshEnabled);
     }
@@ -1341,7 +1342,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     public void testRemoveCustomBackgroundInfoFromSharedPreference() {
         CustomBackgroundInfo info =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
         NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(info);
         NtpCustomizationUtils.removeCustomBackgroundInfoFromSharedPreference();
         assertNull(NtpCustomizationUtils.getCustomBackgroundInfoFromSharedPreference());
@@ -1402,13 +1403,14 @@ public class NtpCustomizationUtilsUnitTest {
         // Test case for daily refresh for THEME_COLLECTION isn't enabled.
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         CustomBackgroundInfo customBackgroundInfo =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, false);
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, false);
         NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
                 timestamp, NtpBackgroundType.THEME_COLLECTION, customBackgroundInfo);
         assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
 
         // Test case for daily refresh for THEME_COLLECTION is enabled.
-        customBackgroundInfo = new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+        customBackgroundInfo =
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
         NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(
                 timestamp, NtpBackgroundType.THEME_COLLECTION, customBackgroundInfo);
         assertEquals(timestamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
@@ -1417,7 +1419,7 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     public void testSaveBackgroundInfo_withCustomBackgroundInfo() {
         CustomBackgroundInfo customBackgroundInfo =
-                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, "id", false, true);
+                new CustomBackgroundInfo(JUnitTestGURLs.URL_1, COLLECTION_ID, false, true);
         NtpBackgroundDataThemeCollection themeCollectionData =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID, customBackgroundInfo, /* previewBitmap= */ null);
@@ -1455,7 +1457,7 @@ public class NtpCustomizationUtilsUnitTest {
         NtpBackgroundDataThemeCollection themeCollectionData =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
-                        /* customBackgroundInfo= */ null,
+                        createCustomBackgroundInfo(),
                         /* backgroundImageInfo= */ null,
                         bitmap,
                         /* primaryColor= */ null,
@@ -1534,7 +1536,7 @@ public class NtpCustomizationUtilsUnitTest {
         NtpBackgroundDataThemeCollection themeCollectionData =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
-                        /* customBackgroundInfo= */ null,
+                        createCustomBackgroundInfo(),
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
                         /* primaryColor= */ null,
@@ -2253,5 +2255,13 @@ public class NtpCustomizationUtilsUnitTest {
                 mContext, containerWithoutParams, /* applyShadow= */ true);
         assertEquals(0, containerWithoutParams.getPaddingLeft());
         assertEquals(0, containerWithoutParams.getPaddingRight());
+    }
+
+    private static CustomBackgroundInfo createCustomBackgroundInfo() {
+        return new CustomBackgroundInfo(
+                JUnitTestGURLs.URL_1,
+                COLLECTION_ID,
+                /* isUploadedImage= */ false,
+                /* isDailyRefreshEnabled= */ false);
     }
 }

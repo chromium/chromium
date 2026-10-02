@@ -29,7 +29,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -203,15 +202,20 @@ public class CrossDeviceThemeTrackerUnitTest {
 
     @Test
     public void testCreateThemeCollectionData() {
-        testCreateThemeCollectionDataImpl("Attribution 1,Attribution 2");
+        testCreateThemeCollectionDataImpl(
+                "Attribution 1", "Attribution 2", "Attribution 1, Attribution 2");
     }
 
     @Test
-    public void testCreateThemeCollectionData_nullAttribution() {
-        testCreateThemeCollectionDataImpl(null);
+    public void testCreateThemeCollectionData_emptyAttribution() {
+        testCreateThemeCollectionDataImpl(
+                /* attributionLine1= */ "",
+                /* attributionLine2= */ "",
+                /* expectedContentDescription= */ "");
     }
 
-    private void testCreateThemeCollectionDataImpl(@Nullable String attribution) {
+    private void testCreateThemeCollectionDataImpl(
+            String attributionLine1, String attributionLine2, String expectedContentDescription) {
         String testUrl = "https://www.example.com/image.png";
         String collectionId = "test_collection";
         NtpBackgroundDataThemeCollection data =
@@ -221,7 +225,8 @@ public class CrossDeviceThemeTrackerUnitTest {
                         testUrl,
                         collectionId,
                         /* isDailyRefresh= */ false,
-                        attribution,
+                        attributionLine1,
+                        attributionLine2,
                         /* hasChromeColor= */ false,
                         /* chromeColorId= */ 0,
                         /* hasUserColor= */ false,
@@ -233,7 +238,8 @@ public class CrossDeviceThemeTrackerUnitTest {
         assertEquals(collectionId, bgInfo.collectionId);
         assertFalse(bgInfo.isUploadedImage);
         assertFalse(bgInfo.isDailyRefreshEnabled);
-        assertEquals(attribution, bgInfo.attribution);
-        assertEquals(attribution, data.getContentDescription());
+        assertEquals(attributionLine1, bgInfo.attributionLine1);
+        assertEquals(attributionLine2, bgInfo.attributionLine2);
+        assertEquals(expectedContentDescription, data.getContentDescription());
     }
 }

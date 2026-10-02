@@ -36,7 +36,8 @@ public class NtpSyncedThemeBridgeUnitTest {
     public static final long NATIVE_NTP_SYNCED_THEME_BRIDGE = 1L;
     public static final GURL BACKGROUND_URL = JUnitTestGURLs.URL_1;
     public static final String COLLECTION_ID = "test_collection";
-    public static final String ATTRIBUTION = "Attribution 1, Attribution 2";
+    public static final String ATTRIBUTION_LINE_1 = "Attribution 1";
+    public static final String ATTRIBUTION_LINE_2 = "Attribution 2";
     public static final @NtpThemeColorId int THEME_COLOR_ID = NtpThemeColorId.NTP_COLORS_GREEN;
     public static final int PRIMARY_COLOR = 0xFF123456;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -137,7 +138,8 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
                 BACKGROUND_URL,
                 COLLECTION_ID,
-                ATTRIBUTION,
+                ATTRIBUTION_LINE_1,
+                ATTRIBUTION_LINE_2,
                 PRIMARY_COLOR,
                 /* isDailyRefresh= */ true);
         verify(mNatives)
@@ -145,7 +147,8 @@ public class NtpSyncedThemeBridgeUnitTest {
                         NATIVE_NTP_SYNCED_THEME_BRIDGE,
                         BACKGROUND_URL,
                         COLLECTION_ID,
-                        ATTRIBUTION,
+                        ATTRIBUTION_LINE_1,
+                        ATTRIBUTION_LINE_2,
                         PRIMARY_COLOR,
                         /* isDailyRefresh= */ true);
 
@@ -153,7 +156,8 @@ public class NtpSyncedThemeBridgeUnitTest {
         mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
                 BACKGROUND_URL,
                 COLLECTION_ID,
-                ATTRIBUTION,
+                ATTRIBUTION_LINE_1,
+                ATTRIBUTION_LINE_2,
                 /* primaryColor= */ null,
                 /* isDailyRefresh= */ true);
         verify(mNatives)
@@ -161,28 +165,30 @@ public class NtpSyncedThemeBridgeUnitTest {
                         NATIVE_NTP_SYNCED_THEME_BRIDGE,
                         BACKGROUND_URL,
                         COLLECTION_ID,
-                        ATTRIBUTION,
+                        ATTRIBUTION_LINE_1,
+                        ATTRIBUTION_LINE_2,
                         0,
                         /* isDailyRefresh= */ true);
     }
 
     @Test
     public void testCreateCustomBackgroundInfo() {
-        String attribution = "Attribution 1,Attribution 2";
         SyncedBackgroundInfo syncedBackgroundInfo =
                 NtpSyncedThemeBridge.createCustomBackgroundInfo(
                         BACKGROUND_URL,
                         COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
-                        attribution,
+                        ATTRIBUTION_LINE_1,
+                        ATTRIBUTION_LINE_2,
                         /* mainColor= */ 0);
         CustomBackgroundInfo info = syncedBackgroundInfo.info;
         assertEquals(BACKGROUND_URL, info.backgroundUrl);
         assertEquals(COLLECTION_ID, info.collectionId);
         assertFalse(info.isUploadedImage);
         assertFalse(info.isDailyRefreshEnabled);
-        assertEquals(attribution, info.attribution);
+        assertEquals(ATTRIBUTION_LINE_1, info.attributionLine1);
+        assertEquals(ATTRIBUTION_LINE_2, info.attributionLine2);
         assertNull(syncedBackgroundInfo.primaryColor);
 
         SyncedBackgroundInfo infoWithNonZeroColor =
@@ -191,7 +197,8 @@ public class NtpSyncedThemeBridgeUnitTest {
                         COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
-                        attribution,
+                        ATTRIBUTION_LINE_1,
+                        ATTRIBUTION_LINE_2,
                         PRIMARY_COLOR);
         assertEquals(Integer.valueOf(PRIMARY_COLOR), infoWithNonZeroColor.primaryColor);
     }

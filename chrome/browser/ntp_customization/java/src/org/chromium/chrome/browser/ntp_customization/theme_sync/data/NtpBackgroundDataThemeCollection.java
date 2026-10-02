@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /** Data class for NTP theme collection background image. */
@@ -31,7 +33,8 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
     @VisibleForTesting static final String COLLECTION_ID_KEY = "collectionId";
     @VisibleForTesting static final String IS_UPLOADED_IMAGE_KEY = "isUploadedImage";
     @VisibleForTesting static final String IS_DAILY_REFRESH_ENABLED_KEY = "isDailyRefreshEnabled";
-    @VisibleForTesting static final String ATTRIBUTION_KEY = "attribution";
+    @VisibleForTesting static final String ATTRIBUTION_LINE_1_KEY = "attributionLine1";
+    @VisibleForTesting static final String ATTRIBUTION_LINE_2_KEY = "attributionLine2";
 
     private final CustomBackgroundInfo mCustomBackgroundInfo;
 
@@ -56,9 +59,11 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
             @Nullable String fileIdHash) {
         super(platformType, backgroundImageInfo, bitmap, primaryColor, fileIdHash);
         mCustomBackgroundInfo = customBackgroundInfo;
-        if (customBackgroundInfo != null && customBackgroundInfo.attribution != null) {
-            setContentDescription(customBackgroundInfo.attribution);
-        }
+        // Set even when empty, which clears a stale description from a recycled view.
+        setContentDescription(
+                joinAttributionLines(
+                        customBackgroundInfo.attributionLine1,
+                        customBackgroundInfo.attributionLine2));
     }
 
     /**
@@ -174,13 +179,17 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         String urlSpec = json.optString(BACKGROUND_URL_KEY, null);
         GURL backgroundUrl =
                 (urlSpec == null || urlSpec.isEmpty()) ? GURL.emptyGURL() : new GURL(urlSpec);
-        String attribution = json.has(ATTRIBUTION_KEY) ? json.getString(ATTRIBUTION_KEY) : null;
+        String attributionLine1 =
+                json.has(ATTRIBUTION_LINE_1_KEY) ? json.getString(ATTRIBUTION_LINE_1_KEY) : null;
+        String attributionLine2 =
+                json.has(ATTRIBUTION_LINE_2_KEY) ? json.getString(ATTRIBUTION_LINE_2_KEY) : null;
         return new CustomBackgroundInfo(
                 backgroundUrl,
                 json.getString(COLLECTION_ID_KEY),
                 json.getBoolean(IS_UPLOADED_IMAGE_KEY),
                 json.getBoolean(IS_DAILY_REFRESH_ENABLED_KEY),
-                attribution);
+                attributionLine1,
+                attributionLine2);
     }
 
     private JSONObject customBackgroundInfoToJson() throws JSONException {
@@ -193,9 +202,25 @@ public class NtpBackgroundDataThemeCollection extends NtpBackgroundDataImageBase
         json.put(COLLECTION_ID_KEY, mCustomBackgroundInfo.collectionId);
         json.put(IS_UPLOADED_IMAGE_KEY, mCustomBackgroundInfo.isUploadedImage);
         json.put(IS_DAILY_REFRESH_ENABLED_KEY, mCustomBackgroundInfo.isDailyRefreshEnabled);
-        if (mCustomBackgroundInfo.attribution != null) {
-            json.put(ATTRIBUTION_KEY, mCustomBackgroundInfo.attribution);
+        if (mCustomBackgroundInfo.attributionLine1 != null) {
+            json.put(ATTRIBUTION_LINE_1_KEY, mCustomBackgroundInfo.attributionLine1);
+        }
+        if (mCustomBackgroundInfo.attributionLine2 != null) {
+            json.put(ATTRIBUTION_LINE_2_KEY, mCustomBackgroundInfo.attributionLine2);
         }
         return json;
+    }
+
+    /** Joins the non-empty attribution lines with a comma and a space. */
+    private static String joinAttributionLines(
+            @Nullable String attributionLine1, @Nullable String attributionLine2) {
+        List<String> lines = new ArrayList<>();
+        if (attributionLine1 != null && !attributionLine1.isEmpty()) {
+            lines.add(attributionLine1);
+        }
+        if (attributionLine2 != null && !attributionLine2.isEmpty()) {
+            lines.add(attributionLine2);
+        }
+        return String.join(", ", lines);
     }
 }

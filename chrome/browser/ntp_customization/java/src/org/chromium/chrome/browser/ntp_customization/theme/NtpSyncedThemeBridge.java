@@ -117,14 +117,16 @@ public class NtpSyncedThemeBridge {
      *
      * @param backgroundUrl The URL of the background image.
      * @param collectionId The ID of the theme collection.
-     * @param attribution The attribution of the background image.
+     * @param attributionLine1 The first attribution line of the background image.
+     * @param attributionLine2 The second attribution line of the background image.
      * @param primaryColor The primary color extracted from the theme collection image.
      * @param isDailyRefresh Whether daily refresh is enabled for this theme.
      */
     public void updateCustomBackgroundPrefsWithColor(
             GURL backgroundUrl,
             String collectionId,
-            @Nullable String attribution,
+            @Nullable String attributionLine1,
+            @Nullable String attributionLine2,
             @Nullable @ColorInt Integer primaryColor,
             boolean isDailyRefresh) {
         if (mNativeNtpSyncedThemeBridge == 0) return;
@@ -135,7 +137,8 @@ public class NtpSyncedThemeBridge {
                         mNativeNtpSyncedThemeBridge,
                         backgroundUrl,
                         collectionId,
-                        attribution,
+                        attributionLine1,
+                        attributionLine2,
                         color,
                         isDailyRefresh);
     }
@@ -194,7 +197,8 @@ public class NtpSyncedThemeBridge {
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
-     * @param attribution The attribution string of the background image.
+     * @param attributionLine1 The first attribution line of the background image.
+     * @param attributionLine2 The second attribution line of the background image.
      * @param mainColor The main color stored with the background in prefs (for a sync update,
      *     copied from {@code NtpCustomBackground.main_color}). It becomes the primary (seed) color
      *     of the theme. It is 0 only in the edge case where no color is set, e.g. the sending
@@ -207,7 +211,8 @@ public class NtpSyncedThemeBridge {
             @JniType("std::string") String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @JniType("std::string") String attribution,
+            @JniType("std::string") String attributionLine1,
+            @JniType("std::string") String attributionLine2,
             @ColorInt int mainColor) {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
@@ -215,7 +220,8 @@ public class NtpSyncedThemeBridge {
                         collectionId,
                         isUploadedImage,
                         isDailyRefreshEnabled,
-                        attribution);
+                        attributionLine1,
+                        attributionLine2);
         return new SyncedBackgroundInfo(info, mainColor != 0 ? mainColor : null);
     }
 
@@ -241,7 +247,8 @@ public class NtpSyncedThemeBridge {
                 long nativeNtpSyncedThemeBridge,
                 @JniType("GURL") GURL backgroundUrl,
                 @JniType("std::string") String collectionId,
-                @JniType("std::string") @Nullable String attribution,
+                @JniType("std::string") @Nullable String attributionLine1,
+                @JniType("std::string") @Nullable String attributionLine2,
                 int primaryColor,
                 boolean isDailyRefresh);
     }

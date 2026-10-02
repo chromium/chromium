@@ -82,11 +82,13 @@ class NtpAndroidCustomBackgroundService
   //
   // Does nothing if `image_url` is invalid: neither the preference nor sync is
   // touched.
-  void UpdateThemeCollectionPrefsWithColor(const GURL& image_url,
-                                           const std::string& collection_id,
-                                           const std::string& attribution,
-                                           SkColor color,
-                                           bool is_daily_refresh);
+  void UpdateThemeCollectionPrefsWithColor(
+      const GURL& image_url,
+      const std::string& collection_id,
+      const std::string& attribution_line_1,
+      const std::string& attribution_line_2,
+      SkColor color,
+      bool is_daily_refresh);
 
   // Callback invoked when incoming theme changes are received from Chrome Sync.
   void OnThemeChangedFromSync(const sync_pb::ThemeAndroidSpecifics& specifics);

@@ -218,7 +218,8 @@ public class NtpThemeCollectionBridge {
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
-     * @param attribution The attribution string of the background image.
+     * @param attributionLine1 The first attribution line of the background image.
+     * @param attributionLine2 The second attribution line of the background image.
      */
     @CalledByNative
     @VisibleForTesting
@@ -227,9 +228,15 @@ public class NtpThemeCollectionBridge {
             @JniType("std::string") String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @JniType("std::string") String attribution) {
+            @JniType("std::string") String attributionLine1,
+            @JniType("std::string") String attributionLine2) {
         return new CustomBackgroundInfo(
-                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
+                backgroundUrl,
+                collectionId,
+                isUploadedImage,
+                isDailyRefreshEnabled,
+                attributionLine1,
+                attributionLine2);
     }
 
     @NativeMethods

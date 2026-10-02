@@ -219,15 +219,17 @@ public class NtpThemeCollectionBridgeUnitTest {
 
     @Test
     public void testCreateCustomBackgroundInfo() {
-        testCreateCustomBackgroundInfoImpl("Attribution 1,Attribution 2");
+        testCreateCustomBackgroundInfoImpl("Attribution 1", "Attribution 2");
     }
 
     @Test
     public void testCreateCustomBackgroundInfo_nullAttribution() {
-        testCreateCustomBackgroundInfoImpl(null);
+        testCreateCustomBackgroundInfoImpl(
+                /* attributionLine1= */ null, /* attributionLine2= */ null);
     }
 
-    private void testCreateCustomBackgroundInfoImpl(@Nullable String attribution) {
+    private void testCreateCustomBackgroundInfoImpl(
+            @Nullable String attributionLine1, @Nullable String attributionLine2) {
         String collectionId = "collection_id";
         CustomBackgroundInfo info =
                 NtpThemeCollectionBridge.createCustomBackgroundInfo(
@@ -235,11 +237,13 @@ public class NtpThemeCollectionBridgeUnitTest {
                         collectionId,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true,
-                        attribution);
+                        attributionLine1,
+                        attributionLine2);
         assertEquals(JUnitTestGURLs.URL_1, info.backgroundUrl);
         assertEquals(collectionId, info.collectionId);
         assertFalse(info.isUploadedImage);
         assertTrue(info.isDailyRefreshEnabled);
-        assertEquals(attribution, info.attribution);
+        assertEquals(attributionLine1, info.attributionLine1);
+        assertEquals(attributionLine2, info.attributionLine2);
     }
 }

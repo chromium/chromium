@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service.h"
 #include "chrome/browser/ntp_customization/ntp_android_custom_background_service_factory.h"
-#include "chrome/browser/ntp_customization/ntp_customization_utils.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -75,7 +74,8 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
   return Java_NtpSyncedThemeBridge_createCustomBackgroundInfo(
       env, background->custom_background_url, background->collection_id,
       background->is_uploaded_image, background->daily_refresh_enabled,
-      ntp_customization::GetCustomBackgroundAttribution(*background),
+      background->custom_background_attribution_line_1,
+      background->custom_background_attribution_line_2,
       static_cast<int32_t>(
           background->custom_background_main_color.value_or(0)));
 }
@@ -111,7 +111,8 @@ void NtpSyncedThemeBridge::SelectLocalBackgroundImage(JNIEnv* env) {
 void NtpSyncedThemeBridge::UpdateCustomBackgroundPrefsWithColor(
     const GURL& url,
     const std::string& collection_id,
-    const std::string& attribution,
+    const std::string& attribution_line_1,
+    const std::string& attribution_line_2,
     int32_t primary_color,
     bool is_daily_refresh) {
   if (!ntp_custom_background_service_) {
@@ -119,8 +120,8 @@ void NtpSyncedThemeBridge::UpdateCustomBackgroundPrefsWithColor(
   }
 
   ntp_custom_background_service_->UpdateThemeCollectionPrefsWithColor(
-      url, collection_id, attribution, static_cast<SkColor>(primary_color),
-      is_daily_refresh);
+      url, collection_id, attribution_line_1, attribution_line_2,
+      static_cast<SkColor>(primary_color), is_daily_refresh);
 }
 
 void NtpSyncedThemeBridge::OnChromeColorSynced(int color_id) {

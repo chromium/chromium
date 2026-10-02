@@ -211,7 +211,8 @@ public class NtpSyncedThemeManager
             mNtpSyncedThemeBridge.updateCustomBackgroundPrefsWithColor(
                     info.backgroundUrl,
                     info.collectionId,
-                    info.attribution,
+                    info.attributionLine1,
+                    info.attributionLine2,
                     collectionData.getPrimaryColor(),
                     info.isDailyRefreshEnabled);
             return;

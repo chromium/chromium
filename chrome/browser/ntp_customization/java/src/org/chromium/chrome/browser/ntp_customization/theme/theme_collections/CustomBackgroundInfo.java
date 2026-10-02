@@ -20,15 +20,19 @@ public class CustomBackgroundInfo {
     public final boolean isDailyRefreshEnabled;
 
     /**
-     * The human readable attribution of the background image.
+     * The two human readable attribution lines of the background image, as read from and written to
+     * the synced background.
      *
-     * <p>This is a display string that the backdrop server localizes to the UI language of the
-     * device that requested it, so two devices running in different languages describe the same
-     * image differently, and sync hands the string over verbatim. It is therefore deliberately not
-     * part of {@link #equals}: comparing it would make the very same image look like two different
-     * ones and duplicate it in the theme history.
+     * <p>These are display strings that the backdrop server localizes to the UI language of the
+     * device that requested them, so two devices running in different languages describe the same
+     * image differently, and sync hands the strings over verbatim. They are therefore deliberately
+     * not part of {@link #equals}: comparing them would make the very same image look like two
+     * different ones and duplicate it in the theme history.
      */
-    public final @Nullable String attribution;
+    public final @Nullable String attributionLine1;
+
+    /** See {@link #attributionLine1}. */
+    public final @Nullable String attributionLine2;
 
     /**
      * TODO(https://crbug.com/488439751): Cleans up this method.
@@ -50,7 +54,8 @@ public class CustomBackgroundInfo {
                 collectionId,
                 isUploadedImage,
                 isDailyRefreshEnabled,
-                /* attribution= */ null);
+                /* attributionLine1= */ null,
+                /* attributionLine2= */ null);
     }
 
     /**
@@ -59,19 +64,22 @@ public class CustomBackgroundInfo {
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
-     * @param attribution The attribution of the background image.
+     * @param attributionLine1 The first attribution line of the background image.
+     * @param attributionLine2 The second attribution line of the background image.
      */
     public CustomBackgroundInfo(
             GURL backgroundUrl,
             String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            @Nullable String attribution) {
+            @Nullable String attributionLine1,
+            @Nullable String attributionLine2) {
         this.backgroundUrl = backgroundUrl;
         this.collectionId = collectionId;
         this.isUploadedImage = isUploadedImage;
         this.isDailyRefreshEnabled = isDailyRefreshEnabled;
-        this.attribution = attribution;
+        this.attributionLine1 = attributionLine1;
+        this.attributionLine2 = attributionLine2;
     }
 
     /**
@@ -82,7 +90,8 @@ public class CustomBackgroundInfo {
      * @param isUploadedImage True if the image was uploaded by the user from their local device.
      * @param isDailyRefreshEnabled True if the "Refresh daily" option is enabled for the
      *     collection.
-     * @param attributions A list of attributions of the background image.
+     * @param attributions A list of attributions of the background image. Only the first two lines
+     *     are used, as Chrome theme storage and sync only support two attribution lines.
      */
     public static CustomBackgroundInfo createCustomBackgroundInfo(
             GURL backgroundUrl,
@@ -95,12 +104,13 @@ public class CustomBackgroundInfo {
                 collectionId,
                 isUploadedImage,
                 isDailyRefreshEnabled,
-                attributions != null ? String.join(", ", attributions) : null);
+                attributions != null && attributions.size() > 0 ? attributions.get(0) : null,
+                attributions != null && attributions.size() > 1 ? attributions.get(1) : null);
     }
 
     /**
-     * Compares the fields that identify the image itself. The attribution is deliberately left out,
-     * see {@link #attribution}.
+     * Compares the fields that identify the image itself. The attribution lines are deliberately
+     * left out, see {@link #attributionLine1}.
      */
     @Override
     public boolean equals(@Nullable Object obj) {
