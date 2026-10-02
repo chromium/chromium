@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 
 #include "base/check.h"
-#include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -114,7 +113,7 @@ void IdlenessDetector::OnDidLoadResource() {
   if (request_count > 2)
     return;
 
-  base::TimeTicks timestamp = clock_->NowTicks();
+  base::TimeTicks timestamp = base::TimeTicks::Now();
   // Arriving at =2 updates the quiet_2 base timestamp.
   // Arriving at <2 sets the quiet_2 base timestamp only if
   // it was not already set.
@@ -179,11 +178,8 @@ void IdlenessDetector::DidProcessTask(
     network_0_quiet_ += end_time - start_time;
 }
 
-IdlenessDetector::IdlenessDetector(LocalFrame* local_frame,
-                                   const base::TickClock* clock)
+IdlenessDetector::IdlenessDetector(LocalFrame* local_frame)
     : local_frame_(local_frame),
-      task_observer_added_(false),
-      clock_(clock),
       network_quiet_timer_(
           local_frame->GetTaskRunner(TaskType::kInternalLoading),
           this,

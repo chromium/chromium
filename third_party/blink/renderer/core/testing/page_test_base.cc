@@ -9,8 +9,6 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
-#include "base/time/default_clock.h"
-#include "base/time/default_tick_clock.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
@@ -133,7 +131,7 @@ void PageTestBase::SetUp() {
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      gfx::Size(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
+      gfx::Size(800, 600), nullptr, nullptr, std::move(setter));
 
   // Mock out clipboard calls so that tests don't mess
   // with each other's copies/pastes when running in parallel.
@@ -158,8 +156,8 @@ void PageTestBase::SetUp(gfx::Size size) {
     if (enable_compositing_)
       settings.SetAcceleratedCompositingEnabled(true);
   });
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      size, nullptr, nullptr, std::move(setter), GetTickClock());
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(size, nullptr, nullptr,
+                                                         std::move(setter));
 
   // Use no-quirks (ake "strict") mode by default.
   GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
@@ -187,9 +185,8 @@ void PageTestBase::SetupPageWithClients(
       settings.SetAcceleratedCompositingEnabled(true);
   });
 
-  dummy_page_holder_ =
-      std::make_unique<DummyPageHolder>(size, chrome_client, local_frame_client,
-                                        std::move(setter), GetTickClock());
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(
+      size, chrome_client, local_frame_client, std::move(setter));
 
   // Use no-quirks (ake "strict") mode by default.
   GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
@@ -378,10 +375,6 @@ std::string PageTestBase::ToSimpleLayoutTree(
 
 void PageTestBase::SetPreferCompositingToLCDText(bool enable) {
   GetPage().GetSettings().SetPreferCompositingToLCDTextForTesting(enable);
-}
-
-const base::TickClock* PageTestBase::GetTickClock() {
-  return base::DefaultTickClock::GetInstance();
 }
 
 void PageTestBase::FastForwardBy(base::TimeDelta delta) {

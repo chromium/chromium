@@ -73,11 +73,10 @@ std::unique_ptr<DummyPageHolder> DummyPageHolder::CreateAndCommitNavigation(
     const gfx::Size& initial_view_size,
     ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
-    base::OnceCallback<void(Settings&)> setting_overrider,
-    const base::TickClock* clock) {
+    base::OnceCallback<void(Settings&)> setting_overrider) {
   std::unique_ptr<DummyPageHolder> holder = std::make_unique<DummyPageHolder>(
       initial_view_size, chrome_client, local_frame_client,
-      std::move(setting_overrider), clock);
+      std::move(setting_overrider));
   if (url.IsValid()) {
     holder->GetFrame().Loader().CommitNavigation(
         WebNavigationParams::CreateWithEmptyHTMLForTesting(url),
@@ -91,8 +90,7 @@ DummyPageHolder::DummyPageHolder(
     const gfx::Size& initial_view_size,
     ChromeClient* chrome_client,
     LocalFrameClient* local_frame_client,
-    base::OnceCallback<void(Settings&)> setting_overrider,
-    const base::TickClock* clock)
+    base::OnceCallback<void(Settings&)> setting_overrider)
     : enable_mock_scrollbars_(true),
       agent_group_scheduler_(Thread::MainThread()
                                  ->Scheduler()
@@ -127,7 +125,7 @@ DummyPageHolder::DummyPageHolder(
       FrameInsertType::kInsertInConstructor, LocalFrameToken(),
       /* WindowAgentFactory* */ nullptr,
       /* InterfaceRegistry* */ nullptr,
-      /* BrowserInterfaceBroker */ mojo::NullRemote(), clock);
+      /* BrowserInterfaceBroker */ mojo::NullRemote());
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));
   frame_->View()->GetPage()->GetVisualViewport().SetSize(initial_view_size);

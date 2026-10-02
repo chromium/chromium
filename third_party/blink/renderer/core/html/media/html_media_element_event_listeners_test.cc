@@ -384,8 +384,6 @@ class MockEventListener final : public NativeEventListener {
   MOCK_METHOD2(Invoke, void(ExecutionContext* executionContext, Event*));
 };
 
-static const base::TickClock* s_platform_clock_;
-
 class HTMLMediaElementWithMockSchedulerTest
     : public HTMLMediaElementEventListenersTest {
  protected:
@@ -399,8 +397,6 @@ class HTMLMediaElementWithMockSchedulerTest
   void SetUp() override {
     EnablePlatform();
 
-    s_platform_clock_ = GetTickClock();
-
     // DocumentParserTiming has DCHECKS to make sure time > 0.0.
     AdvanceClock(base::Seconds(1));
     // Tests rely on start time being a multiple of 250ms.
@@ -410,8 +406,6 @@ class HTMLMediaElementWithMockSchedulerTest
 
     HTMLMediaElementEventListenersTest::SetUp();
   }
-
-  static base::TimeTicks Now() { return s_platform_clock_->NowTicks(); }
 
  private:
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;

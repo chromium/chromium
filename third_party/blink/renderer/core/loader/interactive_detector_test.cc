@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -55,8 +54,7 @@ class InteractiveDetectorTest : public testing::Test,
 
     auto test_task_runner = task_environment_.GetMainThreadTaskRunner();
     auto* tick_clock = task_environment_.GetMockTickClock();
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-        gfx::Size(), nullptr, nullptr, base::NullCallback(), tick_clock);
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>();
 
     Document* document = &dummy_page_holder_->GetDocument();
     detector_ = MakeGarbageCollected<InteractiveDetector>(

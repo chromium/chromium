@@ -18,10 +18,6 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
-namespace base {
-class TickClock;
-}
-
 namespace blink {
 
 class AnimationClock;
@@ -127,13 +123,6 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   void LoadAhem();
   void LoadNoto();
   void EnablePlatform();
-
-  // Used by subclasses to provide a different tick clock. At the moment is only
-  // used to initialize DummyPageHolder. Note that subclasses calling
-  // EnablePlatform() do not need to redefine this because the platform's mock
-  // tick clock will be automatically used (see the default implementation in
-  // the source file).
-  virtual const base::TickClock* GetTickClock();
 
   TestingPlatformSupport* platform() {
     DCHECK(platform_);

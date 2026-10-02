@@ -35,7 +35,6 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -207,18 +206,16 @@ class CORE_EXPORT LocalFrame final
 
   // For a description of |inheriting_agent_factory| go see the comment on the
   // Frame constructor.
-  LocalFrame(
-      LocalFrameClient*,
-      Page&,
-      FrameOwner*,
-      Frame* parent,
-      Frame* previous_sibling,
-      FrameInsertType insert_type,
-      const LocalFrameToken& frame_token,
-      WindowAgentFactory* inheriting_agent_factory,
-      InterfaceRegistry*,
-      mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>,
-      const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+  LocalFrame(LocalFrameClient*,
+             Page&,
+             FrameOwner*,
+             Frame* parent,
+             Frame* previous_sibling,
+             FrameInsertType insert_type,
+             const LocalFrameToken& frame_token,
+             WindowAgentFactory* inheriting_agent_factory,
+             InterfaceRegistry*,
+             mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker>);
 
   // Initialize the LocalFrame, creating and initializing its LocalDOMWindow. It
   // starts from the initial empty document.

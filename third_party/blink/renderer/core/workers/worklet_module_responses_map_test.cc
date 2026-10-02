@@ -127,10 +127,6 @@ class WorkletModuleResponsesMapTest : public PageTestBase {
                           ModuleImportPhase::kEvaluation);
   }
 
-  const base::TickClock* GetTickClock() override {
-    return PageTestBase::GetTickClock();
-  }
-
  protected:
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
 

@@ -156,10 +156,6 @@ class ModuleScriptLoaderTest : public PageTestBase {
         ->RunUntilIdle();
   }
 
-  const base::TickClock* GetTickClock() override {
-    return PageTestBase::GetTickClock();
-  }
-
  protected:
   const KURL url_;
   const scoped_refptr<const SecurityOrigin> security_origin_;

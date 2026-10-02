@@ -2032,8 +2032,7 @@ LocalFrame::LocalFrame(
     const LocalFrameToken& frame_token,
     WindowAgentFactory* inheriting_agent_factory,
     InterfaceRegistry* interface_registry,
-    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker,
-    const base::TickClock* clock)
+    mojo::PendingRemote<mojom::blink::BrowserInterfaceBroker> interface_broker)
     : Frame(client,
             page,
             owner,
@@ -2123,7 +2122,7 @@ LocalFrame::LocalFrame(
     performance_monitor_ = LocalFrameRoot().performance_monitor_;
     script_observer_ = LocalFrameRoot().script_observer_;
   }
-  idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this, clock);
+  idleness_detector_ = MakeGarbageCollected<IdlenessDetector>(this);
   inspector_task_runner_->InitIsolate(isolate);
 
   if (IsOutermostMainFrame()) {

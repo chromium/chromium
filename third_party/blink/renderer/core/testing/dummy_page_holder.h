@@ -33,7 +33,6 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
@@ -76,16 +75,13 @@ class DummyPageHolder {
       ChromeClient* = nullptr,
       LocalFrameClient* = nullptr,
       base::OnceCallback<void(Settings&)> setting_overrider =
-          base::NullCallback(),
-      const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+          base::NullCallback());
 
-  DummyPageHolder(
-      const gfx::Size& initial_view_size = gfx::Size(),
-      ChromeClient* = nullptr,
-      LocalFrameClient* = nullptr,
-      base::OnceCallback<void(Settings&)> setting_overrider =
-          base::NullCallback(),
-      const base::TickClock* clock = base::DefaultTickClock::GetInstance());
+  explicit DummyPageHolder(const gfx::Size& initial_view_size = gfx::Size(),
+                           ChromeClient* = nullptr,
+                           LocalFrameClient* = nullptr,
+                           base::OnceCallback<void(Settings&)>
+                               setting_overrider = base::NullCallback());
   DummyPageHolder(const DummyPageHolder&) = delete;
   DummyPageHolder& operator=(const DummyPageHolder&) = delete;
   ~DummyPageHolder();
