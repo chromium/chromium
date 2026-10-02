@@ -2401,7 +2401,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.GameInputCreateResult" enum="Hresult"
-    expires_after="2026-11-18">
+    expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
@@ -2412,7 +2412,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.GamepadAddedResult"
-    enum="GameInputGamepadAddedResult" expires_after="2026-11-18">
+    enum="GameInputGamepadAddedResult" expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
@@ -2422,27 +2422,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.GetCurrentReadingError" enum="Boolean"
-    expires_after="2026-11-18">
+    expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
-    Recorded each time GetCurrentReading fails for a connected gamepad in the
-    Windows GameInput data fetcher.
+    Recorded at most once per Windows GameInput data fetcher instance when
+    GetCurrentReading fails for a connected gamepad. Records true when an error
+    occurs.
   </summary>
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.GuideButtonPressed" enum="Boolean"
-    expires_after="2026-11-18">
+    expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
-    Recorded each time the guide button is pressed on a gamepad connected via
-    the Windows GameInput data fetcher.
+    Recorded at most once per Windows GameInput data fetcher instance when the
+    guide button is pressed on a gamepad connected via the fetcher.
   </summary>
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.HasTriggerRumbleSupport" enum="Boolean"
-    expires_after="2026-11-18">
+    expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
@@ -2452,13 +2453,59 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gamepad.Win.GameInput.InitializationResult"
-    enum="GameInputInitializationResult" expires_after="2026-11-18">
+    enum="GameInputInitializationResult" expires_after="2027-03-29">
   <owner>mattreynolds@chromium.org</owner>
   <owner>gabrielbrito@microsoft.com</owner>
   <summary>
     The outcome of GameInput API initialization in the Windows GameInput data
     fetcher. Recorded once when the data fetcher is added to the gamepad
     provider.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Win.Wgi.GamepadAddedResult"
+    enum="WgiGamepadAddedResult" expires_after="2027-03-29">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    The outcome of a gamepad added event in the Windows.Gaming.Input (WGI) data
+    fetcher. Recorded once per gamepad connection attempt, except when the data
+    fetcher has not finished initializing, when the added gamepad is already
+    handled by a different data fetcher, or when no gamepad slot is available to
+    hold it, in which cases nothing is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Win.Wgi.GetCurrentReadingError" enum="Boolean"
+    expires_after="2027-03-29">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    Recorded at most once per Windows.Gaming.Input (WGI) data fetcher instance
+    when GetCurrentReading fails for a connected gamepad. Records true when an
+    error occurs.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Win.Wgi.InitializationResult"
+    enum="WgiInitializationResult" expires_after="2027-03-29">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    The outcome of Windows.Gaming.Input (WGI) API initialization in the WGI data
+    fetcher. Recorded once when the data fetcher is added to the gamepad
+    provider.
+  </summary>
+</histogram>
+
+<histogram name="Gamepad.Win.Wgi.MetaButtonPressed" enum="Boolean"
+    expires_after="2027-03-29">
+  <owner>mattreynolds@chromium.org</owner>
+  <owner>gabrielbrito@microsoft.com</owner>
+  <summary>
+    Recorded at most once per Windows.Gaming.Input (WGI) data fetcher instance
+    when the meta (guide) button is pressed on a gamepad connected via the
+    fetcher.
   </summary>
 </histogram>
 

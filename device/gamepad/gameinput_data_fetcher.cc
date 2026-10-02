@@ -357,7 +357,13 @@ void GameInputDataFetcher::OnGuideButtonChangedSequenced(
       state->data.buttons[BUTTON_INDEX_META].used = true;
       state->data.buttons[BUTTON_INDEX_META].pressed = true;
       state->data.buttons[BUTTON_INDEX_META].value = 1.f;
-      RecordGameInputGuideButtonPress();
+      // Only record once per `GameInputDataFetcher` instance, since we only
+      // care whether the guide button was ever successfully pressed, not how
+      // many times.
+      if (!has_recorded_guide_button_press_) {
+        RecordGameInputGuideButtonPress();
+        has_recorded_guide_button_press_ = true;
+      }
     } else {
       state->data.buttons[BUTTON_INDEX_META].used = true;
       state->data.buttons[BUTTON_INDEX_META].pressed = false;
@@ -386,7 +392,10 @@ void GameInputDataFetcher::GetGamepadData(bool devices_changed_hint) {
     if (FAILED(gameinput_->GetCurrentReading(GameInputKindGamepad,
                                              gamepad_device->GetGamepad().Get(),
                                              &reading))) {
-      RecordGameInputGetCurrentReadingError();
+      if (!has_recorded_current_reading_error_) {
+        RecordGameInputGetCurrentReadingError();
+        has_recorded_current_reading_error_ = true;
+      }
       continue;
     }
 

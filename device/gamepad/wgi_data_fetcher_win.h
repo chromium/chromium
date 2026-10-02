@@ -113,6 +113,14 @@ class DEVICE_GAMEPAD_EXPORT WgiDataFetcherWin final
   InitializationState initialization_state_ =
       InitializationState::kUninitialized;
 
+  // Guards against recording `Gamepad.Win.Wgi.GetCurrentReadingError` more
+  // than once per `WgiDataFetcherWin` instance.
+  bool has_recorded_current_reading_error_ = false;
+
+  // Guards against recording `Gamepad.Win.Wgi.MetaButtonPressed` more than
+  // once per `WgiDataFetcherWin` instance.
+  bool has_recorded_meta_button_press_ = false;
+
   DeviceMap devices_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepadStatics>

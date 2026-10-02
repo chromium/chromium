@@ -108,6 +108,14 @@ class DEVICE_GAMEPAD_EXPORT GameInputDataFetcher final
   InitializationState initialization_state_ =
       InitializationState::kUninitialized;
 
+  // Guards against recording `Gamepad.Win.GameInput.GetCurrentReadingError`
+  // more than once per `GameInputDataFetcher` instance.
+  bool has_recorded_current_reading_error_ = false;
+
+  // Guards against recording `Gamepad.Win.GameInput.GuideButtonPressed` more
+  // than once per `GameInputDataFetcher` instance.
+  bool has_recorded_guide_button_press_ = false;
+
   DeviceMap devices_;
 
   using DeviceEnumeratedCallback = base::RepeatingCallback<void(

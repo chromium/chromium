@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/win/scoped_hstring.h"
@@ -32,6 +33,7 @@
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/gamepad_test_helpers.h"
+#include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
@@ -517,6 +519,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
 
 TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
@@ -560,6 +563,9 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   CheckGamepadAdded(fetcher().GetPadState(gamepad_iter->first),
                     GamepadHapticActuatorType::kDualRumble);
 
+  histogram_tester.ExpectUniqueSample("Gamepad.Win.Wgi.GamepadAddedResult",
+                                      WgiGamepadAddedResult::kSuccess, 3);
+
   // Simulate the gamepad removing behavior, and make the gamepad-removing
   // callback return on a different thread, demonstrated the multi-threaded
   // apartments setting of the GamepadStatics COM API. Corresponding threading
@@ -575,6 +581,7 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
 }
 
 TEST_F(WgiDataFetcherWinTest, AddGamepadAddedEventHandlerErrorHandling) {
+  base::HistogramTester histogram_tester;
   // Let fake gamepad statics add_GamepadAdded return failure code to
   // test error handling.
   SetUpTestEnv(WgiTestErrorCode::kGamepadAddGamepadAddedFailed);
@@ -584,9 +591,14 @@ TEST_F(WgiDataFetcherWinTest, AddGamepadAddedEventHandlerErrorHandling) {
             WgiDataFetcherWin::InitializationState::kAddGamepadAddedFailed);
   auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
   EXPECT_EQ(gamepad_statics->GetGamepadAddedEventHandlerCount(), 0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "Gamepad.Win.Wgi.InitializationResult",
+      WgiInitializationResult::kAddGamepadAddedFailed, 1);
 }
 
 TEST_F(WgiDataFetcherWinTest, AddGamepadRemovedEventHandlerErrorHandling) {
+  base::HistogramTester histogram_tester;
   // Let fake gamepad statics add_GamepadRemoved return failure code to
   // test error handling.
   SetUpTestEnv(WgiTestErrorCode::kGamepadAddGamepadRemovedFailed);
@@ -596,6 +608,10 @@ TEST_F(WgiDataFetcherWinTest, AddGamepadRemovedEventHandlerErrorHandling) {
             WgiDataFetcherWin::InitializationState::kAddGamepadRemovedFailed);
   auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
   EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 0u);
+
+  histogram_tester.ExpectUniqueSample(
+      "Gamepad.Win.Wgi.InitializationResult",
+      WgiInitializationResult::kAddGamepadRemovedFailed, 1);
 }
 
 TEST_F(WgiDataFetcherWinTest, RemoveGamepadAddedEventHandlerErrorHandling) {
@@ -631,6 +647,7 @@ TEST_F(WgiDataFetcherWinTest, RemoveGamepadRemovedEventHandlerErrorHandling) {
 }
 
 TEST_F(WgiDataFetcherWinTest, DestructionSuccessful) {
+  base::HistogramTester histogram_tester;
   SetUpTestEnv();
 
   // Check WGI initialization status.
@@ -640,12 +657,16 @@ TEST_F(WgiDataFetcherWinTest, DestructionSuccessful) {
   EXPECT_EQ(gamepad_statics->GetGamepadAddedEventHandlerCount(), 1u);
   EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 1u);
 
+  histogram_tester.ExpectUniqueSample("Gamepad.Win.Wgi.InitializationResult",
+                                      WgiInitializationResult::kSuccess, 1);
+
   // Lets remove the WgiDataFetcherWin instance from the GamepadProvider to
   // trigger its destructor.
   RemoveWgiDataFetcherFromProvider();
 }
 
 TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
+  base::HistogramTester histogram_tester;
   // Let fake RoGetActivationFactory return failure code to
   // test error handling.
   SetUpTestEnv(WgiTestErrorCode::kErrorWgiGamepadActivateFailed);
@@ -654,6 +675,10 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
   EXPECT_EQ(
       fetcher().GetInitializationState(),
       WgiDataFetcherWin::InitializationState::kRoGetActivationFactoryFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Gamepad.Win.Wgi.InitializationResult",
+      WgiInitializationResult::kRoGetActivationFactoryFailed, 1);
 }
 
 // This test case checks that the gamepad data obtained by WgiDataFetcherWin is
@@ -668,6 +693,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
 TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
   SetUpTestEnv();
   SetUpMockGamepadDataFetcherAndAddMockGamepadAtIndex0();
+  base::HistogramTester histogram_tester;
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
@@ -719,6 +745,13 @@ TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
   // Verify that the meta button input goes to the gamepad at index 0;
   CheckMetaButtonState(/*is_meta_pressed=*/true, output.items[1].buttons);
   CheckMetaButtonState(/*is_meta_pressed=*/false, output.items[2].buttons);
+
+  // The meta button press should only be recorded once, on the transition to
+  // pressed for the lowest-index WGI gamepad, not on every poll.
+  histogram_tester.ExpectUniqueSample("Gamepad.Win.Wgi.MetaButtonPressed", true,
+                                      1);
+  histogram_tester.ExpectTotalCount("Gamepad.Win.Wgi.GetCurrentReadingError",
+                                    0);
 }
 
 TEST_F(WgiDataFetcherWinTest, PlayDualRumbleEffect) {
@@ -774,6 +807,7 @@ TEST_F(WgiDataFetcherWinTest, PlayDualRumbleEffect) {
 // the shared buffer will not be modified.
 TEST_F(WgiDataFetcherWinTest, WgiGamepadGetCurrentReadingError) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
@@ -817,6 +851,14 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetCurrentReadingError) {
   // 0-index gamepad should still display the meta button input, which might
   // have been triggered by other gamepad.
   CheckMetaButtonState(/*is_meta_pressed=*/true, output.items[0].buttons);
+
+  // GetCurrentReading fails on every polling tick once the error condition is
+  // simulated, but should only be recorded once per `WgiDataFetcherWin`
+  // instance.
+  histogram_tester.ExpectUniqueSample("Gamepad.Win.Wgi.GetCurrentReadingError",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Gamepad.Win.Wgi.MetaButtonPressed", true,
+                                      1);
 }
 
 // If Gamepad::GetButtonLabel fails, the stored gamepad state buttons_length
@@ -872,6 +914,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetButtonLabelError) {
 // it was not supposed to - e.g., Dualshock and Nintendo controllers.
 TEST_F(WgiDataFetcherWinTest, ShouldNotEnumerateControllers) {
   SetUpTestEnv();
+  base::HistogramTester histogram_tester;
   constexpr GamepadId kShouldNotEnumerateControllers[] = {
       GamepadId::kNintendoProduct2006, GamepadId::kNintendoProduct2007,
       GamepadId::kNintendoProduct2009, GamepadId::kNintendoProduct200e,
@@ -896,6 +939,10 @@ TEST_F(WgiDataFetcherWinTest, ShouldNotEnumerateControllers) {
   const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
       fetcher().GetGamepadsForTesting();
   EXPECT_EQ(gamepads.size(), 0u);
+
+  // Filtered-out devices should not record a gamepad-added outcome, since
+  // ShouldEnumerateGamepad() returns early before that point.
+  histogram_tester.ExpectTotalCount("Gamepad.Win.Wgi.GamepadAddedResult", 0);
 }
 
 // Test class created to assert that gamepads gamepads with trigger-rumble are

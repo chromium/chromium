@@ -87,6 +87,31 @@ enum class GameInputGamepadAddedResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:GameInputGamepadAddedResult)
 
+// Outcome of Windows.Gaming.Input (WGI) API initialization in the WGI data
+// fetcher. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(WgiInitializationResult)
+enum class WgiInitializationResult {
+  kSuccess = 0,
+  kRoGetActivationFactoryFailed = 1,
+  kAddGamepadAddedFailed = 2,
+  kAddGamepadRemovedFailed = 3,
+  kMaxValue = kAddGamepadRemovedFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:WgiInitializationResult)
+
+// Outcome of a gamepad added event in the WGI data fetcher.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WgiGamepadAddedResult)
+enum class WgiGamepadAddedResult {
+  kSuccess = 0,
+  kNoSlotAvailable = 1,
+  kGetGamepadDetailsFailed = 2,
+  kMaxValue = kGetGamepadDetailsFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:WgiGamepadAddedResult)
+
 #endif  // BUILDFLAG(IS_WIN)
 
 // Compare the |gamepad_id| of a connected USB or Bluetooth device against a

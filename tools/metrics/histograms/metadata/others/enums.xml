@@ -356,6 +356,35 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/webshare/safe_browsing_request.h:WebShareSafeBrowsingCheckResult) -->
 
+<!-- LINT.IfChange(WgiGamepadAddedResult) -->
+
+<enum name="WgiGamepadAddedResult">
+  <summary>
+    The outcome of a gamepad added event in the Windows.Gaming.Input (WGI) data
+    fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="No slot available"/>
+  <int value="2" label="GetGamepadDetails failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:WgiGamepadAddedResult) -->
+
+<!-- LINT.IfChange(WgiInitializationResult) -->
+
+<enum name="WgiInitializationResult">
+  <summary>
+    The outcome of Windows.Gaming.Input (WGI) API initialization in the WGI data
+    fetcher.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="RoGetActivationFactory failed"/>
+  <int value="2" label="Registering GamepadAdded handler failed"/>
+  <int value="3" label="Registering GamepadRemoved handler failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//device/gamepad/gamepad_uma.h:WgiInitializationResult) -->
+
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:
   cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))

@@ -17,6 +17,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
@@ -29,6 +31,7 @@
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
+#include "device/gamepad/gamepad_uma.h"
 #include "device/gamepad/nintendo_controller.h"
 #include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/wgi_gamepad_device.h"
@@ -132,6 +135,25 @@ bool ShouldEnumerateGamepad(GamepadId gamepad_id) {
   return true;
 }
 
+void RecordWgiInitializationResult(WgiInitializationResult result) {
+  base::UmaHistogramEnumeration("Gamepad.Win.Wgi.InitializationResult", result);
+}
+
+void RecordWgiGamepadAddedResult(WgiGamepadAddedResult result) {
+  base::UmaHistogramEnumeration("Gamepad.Win.Wgi.GamepadAddedResult", result);
+}
+
+void RecordWgiGetCurrentReadingError() {
+  // GetCurrentReading() is polled at high frequency for every connected
+  // gamepad, so use the macro version (which caches the Histogram lookup)
+  // rather than base::UmaHistogramBoolean().
+  UMA_HISTOGRAM_BOOLEAN("Gamepad.Win.Wgi.GetCurrentReadingError", true);
+}
+
+void RecordWgiMetaButtonPress() {
+  base::UmaHistogramBoolean("Gamepad.Win.Wgi.MetaButtonPressed", true);
+}
+
 // Checks if the provided gamepad has paddles and returns the available
 // quantity. If the Windows version is less then WIN10_RS1 (WIN10.0.14393.0),
 // this function returns 0, since IGamepad2 interface will not be available.
@@ -201,6 +223,8 @@ void WgiDataFetcherWin::OnAddedToProvider() {
       IID_PPV_ARGS(&gamepad_statics_));
   if (FAILED(hr)) {
     initialization_state_ = InitializationState::kRoGetActivationFactoryFailed;
+    RecordWgiInitializationResult(
+        WgiInitializationResult::kRoGetActivationFactoryFailed);
     return;
   }
 
@@ -216,6 +240,8 @@ void WgiDataFetcherWin::OnAddedToProvider() {
                           weak_factory_.GetWeakPtr()));
   if (!added_event_token_) {
     initialization_state_ = InitializationState::kAddGamepadAddedFailed;
+    RecordWgiInitializationResult(
+        WgiInitializationResult::kAddGamepadAddedFailed);
     UnregisterEventHandlers();
     return;
   }
@@ -227,11 +253,14 @@ void WgiDataFetcherWin::OnAddedToProvider() {
                           weak_factory_.GetWeakPtr()));
   if (!removed_event_token_) {
     initialization_state_ = InitializationState::kAddGamepadRemovedFailed;
+    RecordWgiInitializationResult(
+        WgiInitializationResult::kAddGamepadRemovedFailed);
     UnregisterEventHandlers();
     return;
   }
   xinput_data_fetcher_->InitializeForWgiDataFetcher();
   initialization_state_ = InitializationState::kInitialized;
+  RecordWgiInitializationResult(WgiInitializationResult::kSuccess);
 }
 
 void WgiDataFetcherWin::OnGamepadAdded(
@@ -255,6 +284,8 @@ void WgiDataFetcherWin::OnGamepadAdded(
   // If `gamepad_details_optional` has std::nullopt, it means that an error has
   // happened when calling the Windows API's.
   if (!gamepad_details_optional.has_value()) {
+    RecordWgiGamepadAddedResult(
+        WgiGamepadAddedResult::kGetGamepadDetailsFailed);
     return;
   }
 
@@ -269,8 +300,10 @@ void WgiDataFetcherWin::OnGamepadAdded(
   int source_id = next_source_id_++;
   PadState* state =
       GetPadState(source_id, /*new_pad_recognized=*/true, product_identifier);
-  if (!state)
+  if (!state) {
     return;
+  }
+
   state->is_initialized = true;
   Gamepad& pad = state->data;
   pad.SetID(BuildGamepadIdString(gamepad_id, display_name, gamepad));
@@ -286,6 +319,8 @@ void WgiDataFetcherWin::OnGamepadAdded(
   pad.mapping = GamepadMapping::kStandard;
   devices_[source_id] = std::make_unique<WgiGamepadDevice>(
       gamepad, std::move(product_identifier));
+
+  RecordWgiGamepadAddedResult(WgiGamepadAddedResult::kSuccess);
 }
 
 void WgiDataFetcherWin::OnGamepadRemoved(
@@ -334,8 +369,13 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
     ABI::Windows::Gaming::Input::GamepadReading reading;
     Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad =
         map_entry.second->GetGamepad();
-    if (FAILED(gamepad->GetCurrentReading(&reading)))
+    if (FAILED(gamepad->GetCurrentReading(&reading))) {
+      if (!has_recorded_current_reading_error_) {
+        RecordWgiGetCurrentReadingError();
+        has_recorded_current_reading_error_ = true;
+      }
       continue;
+    }
 
     Gamepad& pad = state->data;
     pad.timestamp = CurrentTimeInMicroseconds();
@@ -418,6 +458,17 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   // getting the WGI reading.
   if (lowest_index_wgi_pad_state) {
     bool is_meta_pressed = xinput_data_fetcher_->IsAnyMetaButtonPressed();
+    // Only record on the edge, i.e. transitioning from not-pressed to
+    // pressed, which requires checking the previous `pressed` value before
+    // it is overwritten below. Also only record once per
+    // `WgiDataFetcherWin` instance, since we only care whether the meta
+    // button was ever successfully pressed, not how many times.
+    if (is_meta_pressed &&
+        !lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].pressed &&
+        !has_recorded_meta_button_press_) {
+      RecordWgiMetaButtonPress();
+      has_recorded_meta_button_press_ = true;
+    }
     lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].used = true;
     lowest_index_wgi_pad_state->data.buttons[BUTTON_INDEX_META].pressed =
         is_meta_pressed;
