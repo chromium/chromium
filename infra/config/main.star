@@ -404,7 +404,7 @@ luci.realm(
         ),
         # Allow everyone to view Turbo CI workflows
         luci.binding(
-            roles = "role/turboci.nodeReaderExternal",
+            roles = "role/turboci.externalReader",
             groups = "all",
         ),
         # Other roles are inherited from @root which grants them to group:all.
@@ -418,6 +418,11 @@ luci.realm(
         luci.binding(
             roles = "role/resultdb.invocationCreator",
             groups = "project-chromium-ci-task-accounts",
+        ),
+        # Allow everyone to view Turbo CI workflows
+        luci.binding(
+            roles = "role/turboci.externalReader",
+            groups = "all",
         ),
     ],
 )
@@ -442,7 +447,7 @@ luci.realm(
         ),
         # Allow everyone to view Turbo CI workflows
         luci.binding(
-            roles = "role/turboci.nodeReaderExternal",
+            roles = "role/turboci.externalReader",
             groups = "all",
         ),
     ],

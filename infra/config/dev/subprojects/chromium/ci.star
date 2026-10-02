@@ -30,7 +30,7 @@ luci.bucket(
     bindings = [
         # Allow everyone to view Turbo CI workflows
         luci.binding(
-            roles = "role/turboci.nodeReaderExternal",
+            roles = "role/turboci.externalReader",
             groups = "all",
         ),
     ],
