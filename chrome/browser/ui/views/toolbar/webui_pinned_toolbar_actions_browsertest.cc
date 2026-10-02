@@ -306,6 +306,12 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, EphemeralActions) {
                                    "btn.hasAttribute('is-menu-open');")
                   .ExtractBool());
 
+  // Verify it's popped out and prevented from overflowing.
+  EXPECT_TRUE(EvalJsOnPinnedAction(
+                  mojom_action,
+                  "return actionEl.poppedOut && actionEl.preventOverflow;")
+                  .ExtractBool());
+
   // Hide ephemerally.
   webui_toolbar_view->GetPinnedToolbarActions()->ShowActionEphemerallyInToolbar(
       action_id, false);
@@ -362,6 +368,26 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
     return EvalJsOnPinnedAction(mojom_action,
                                 "return !!btn && "
                                 "btn.hasAttribute('is-menu-open');")
+        .ExtractBool();
+  }));
+
+  // Verify the action is prevented from overflowing, even though it's pinned
+  // rather than popped out.
+  EXPECT_TRUE(EvalJsOnPinnedAction(mojom_action,
+                                   "return !actionEl.poppedOut && "
+                                   "actionEl.state.highlighted && "
+                                   "actionEl.preventOverflow;")
+                  .ExtractBool());
+
+  // Deactivate action.
+  webui_toolbar_view->GetPinnedToolbarActions()->UpdateActionState(action_id,
+                                                                   false);
+
+  // Verify it may overflow again.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedAction(mojom_action,
+                                "return !actionEl.state.highlighted && "
+                                "!actionEl.preventOverflow;")
         .ExtractBool();
   }));
 }

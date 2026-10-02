@@ -40,6 +40,9 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -2518,6 +2521,25 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
   }
   ~WebUIToolbarFullyEnabledInteractiveUiTest() override = default;
 
+  // Disables animations in the WebUI toolbar of browser(). Returns true on
+  // success.
+  //
+  // Animations can make overflow tests flaky, since element bounds change while
+  // animating, making clicking on the overflow button tricky.
+  //
+  // TODO(crbug.com/556290452): Make overflow work correctly with animations,
+  // and add tests for overflow with animations enabled.
+  [[nodiscard]] bool DisableAnimations() {
+    return content::EvalJs(GetWebUIWebContents(), R"(
+      (async () => {
+        const {AnimationTracker} =
+            await import('chrome://webui-toolbar.top-chrome/app.js');
+        AnimationTracker.showAnimations = false;
+        return true;
+      })()
+    )") == true;
+  }
+
   // Waits until the overflow button location is available, clicks it, and spins
   // until the menu is created.
   [[nodiscard]] OverflowMenu* OpenOverflowMenu(
@@ -2588,6 +2610,42 @@ class WebUIToolbarFullyEnabledInteractiveUiTest
     // Wait for overflow menu to fully close.
     return base::test::RunUntil([&]() -> bool {
       return !overflow_button->overflow_menu_for_testing();
+    });
+  }
+
+  // Waits until the pinned toolbar actions, from left to right, match
+  // `expected`: a comma-separated list of "<action>:<visible|hidden>" entries,
+  // where <action> is either the integer value of a mojom PinnedToolbarAction,
+  // or "divider".
+  [[nodiscard]] bool WaitForPinnedActionsState(const std::string& expected) {
+    static constexpr char kGetPinnedActionsScript[] = R"(
+      (() => {
+        const app = document.querySelector('toolbar-app');
+        const pinnedActions =
+            app?.shadowRoot?.querySelector('#pinnedToolbarActions');
+        if (!pinnedActions) {
+          return '';
+        }
+        const actions = pinnedActions.getActions();
+        return actions.map(el => {
+          const name = el.isDivider ? 'divider' : String(el.state?.action);
+          const hidden = el.classList.contains('overflow-display-none');
+          return name + (hidden ? ':hidden' : ':visible');
+        }).join(',');
+      })()
+    )";
+    return base::test::RunUntil([&]() -> bool {
+      return content::EvalJs(GetWebUIWebContents(), kGetPinnedActionsScript)
+                 .ExtractString() == expected;
+    });
+  }
+
+  // Opens the side panel with the given ID, and waits for it to be shown.
+  [[nodiscard]] bool ShowSidePanel(SidePanelEntryId id) {
+    auto* const side_panel_ui = SidePanelUI::From(browser());
+    side_panel_ui->Show(id);
+    return base::test::RunUntil([&]() {
+      return side_panel_ui->IsSidePanelEntryShowing(SidePanelEntryKey(id));
     });
   }
 
@@ -3265,6 +3323,155 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
 
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             GURL(chrome::kChromeUIDownloadsURL));
+}
+
+// Test that a popped-out action with an open side panel is never overflowed,
+// while a pinned action and the divider after it are.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuPoppedOutSidePanelAction) {
+  constexpr int kDownloads = static_cast<int>(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads);
+  constexpr int kReadingList = static_cast<int>(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadingList);
+
+  // Disable animations to avoid flakiness. This test pins the download action,
+  // and later opens the reading list side panel, showing the reading list
+  // action. Initially populating the container doesn't trigger animations, but
+  // adding an element later does, so the reading list button will likely be
+  // animated into the toolbar, changing element bounds while the test is
+  // checking overflow state and trying to click the overflow button.
+  ASSERT_TRUE(DisableAnimations());
+
+  // Pin the download action so it appears in the toolbar.
+  PinnedToolbarActionsModel::Get(browser()->GetProfile())
+      ->UpdatePinnedState(kActionShowDownloads, true);
+
+  // Open the reading list side panel, which pops out the reading list action.
+  // The reading list action is pinnable, so could appear on the overflow menu
+  // if it were overflowed.
+  ASSERT_TRUE(ShowSidePanel(SidePanelEntryId::kReadingList));
+
+  // Wait for the pinned download action, the divider, and the popped-out
+  // reading list action to all be displayed.
+  ASSERT_TRUE(WaitForPinnedActionsState(base::StringPrintf(
+      "%d:visible,divider:visible,%d:visible", kDownloads, kReadingList)));
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // The download action and the divider should be hidden. The reading list
+  // action has an open side panel, so should remain visible.
+  ASSERT_TRUE(WaitForPinnedActionsState(base::StringPrintf(
+      "%d:hidden,divider:hidden,%d:visible", kDownloads, kReadingList)));
+
+  // Wait for overflow button to be displayed. This may not be the case
+  // immediately, since the wait above may complete before the
+  // TrackedElementManager has been informed of the new state of the toolbar.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarOverflowButtonElementId));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check menu.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_SHOW_DOWNLOADS}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  // Close the menu. Not strictly needed, but seems a good idea.
+  overflow_menu->root_menu_item()->Cancel();
+}
+
+// Test that a pinned action with an open side panel is never overflowed, and
+// that the divider to its right is displayed as well, even when other pinned
+// actions are overflowed. Once the side panel is closed, the action should
+// overflow as well.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       OverflowMenuPinnedSidePanelAction) {
+  constexpr int kDownloads = static_cast<int>(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowDownloads);
+  constexpr int kReadingList = static_cast<int>(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowReadingList);
+
+  // Pin the download and reading list actions so they appear in the toolbar,
+  // in that order.
+  PinnedToolbarActionsModel* pinned_actions_model =
+      PinnedToolbarActionsModel::Get(browser()->GetProfile());
+  pinned_actions_model->UpdatePinnedState(kActionShowDownloads, true);
+  pinned_actions_model->UpdatePinnedState(kActionSidePanelShowReadingList,
+                                          true);
+
+  // Open the reading list side panel.
+  ASSERT_TRUE(ShowSidePanel(SidePanelEntryId::kReadingList));
+
+  // Wait for both pinned actions and the divider to be displayed. The reading
+  // list action is pinned, so should not also be popped out.
+  ASSERT_TRUE(WaitForPinnedActionsState(base::StringPrintf(
+      "%d:visible,%d:visible,divider:visible", kDownloads, kReadingList)));
+
+  // Set the spacer width to the full width of the window, forcing all
+  // overflowable elements into the overflow menu.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+
+  // The download action should be hidden. The reading list action has an open
+  // side panel, so should remain visible, as should the divider to its right.
+  ASSERT_TRUE(WaitForPinnedActionsState(base::StringPrintf(
+      "%d:hidden,%d:visible,divider:visible", kDownloads, kReadingList)));
+
+  // Wait for overflow button to be displayed. This may not be the case
+  // immediately, since the wait above may complete before the
+  // TrackedElementManager has been informed of the new state of the toolbar.
+  ASSERT_TRUE(WaitForTrackedElementVisible(kToolbarOverflowButtonElementId));
+
+  OverflowMenu* overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // Check menu.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_SHOW_DOWNLOADS}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  // Close the menu, and wait for it to be fully closed.
+  overflow_menu->root_menu_item()->Cancel();
+  WebUIOverflowButton* overflow_button =
+      &GetWebUIToolbar()->overflow_button_for_testing();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() -> bool { return !overflow_button->overflow_menu_for_testing(); }));
+
+  // Close the side panel. Both pinned actions and the divider should now be
+  // hidden.
+  SidePanelUI::From(browser())->Close();
+  ASSERT_TRUE(WaitForPinnedActionsState(base::StringPrintf(
+      "%d:hidden,%d:hidden,divider:hidden", kDownloads, kReadingList)));
+
+  overflow_menu = OpenOverflowMenu();
+  ASSERT_TRUE(overflow_menu);
+
+  // The overflow menu should now contain the reading list action as well.
+  ASSERT_NO_FATAL_FAILURE(CheckOverflowMenu(
+      *overflow_menu,
+      {// The forward button should be disabled, since the back button has
+       // never been pressed.
+       {.label_id = IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, .enabled = false},
+       kSeparator,
+       {.label_id = IDS_SHOW_DOWNLOADS},
+       {.label_id = IDS_READ_LATER_TITLE}},
+      /*expect_avatar_button_if_not_chromeos=*/true));
+
+  // Close the menu. Not strictly needed, but seems a good idea.
+  overflow_menu->root_menu_item()->Cancel();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

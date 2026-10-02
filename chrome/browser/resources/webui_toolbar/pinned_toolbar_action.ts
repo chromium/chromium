@@ -81,9 +81,11 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('poppedOut')) {
-      // Popped-out actions may not be hidden due to overflow.
-      this.preventOverflow = this.poppedOut;
+    if (changedProperties.has('state') ||
+        changedProperties.has('trackedHighlighted')) {
+      // Highlighted actions, which for pinned toolbar actions, generally means
+      // ones with an open side panel, may not be hidden due to overflow.
+      this.preventOverflow = this.state.highlighted || this.trackedHighlighted;
     }
   }
 
