@@ -739,7 +739,12 @@ public abstract class ContentUriUtils {
      */
     public static boolean isUriFromThisApp(Uri uri, Context context) {
         String authority = uri.getAuthority();
-        if (TextUtils.isEmpty(authority)) return false;
+        // OpaqueUri returns a null authority even when its string form includes one, so the URI
+        // needs to be reparsed to be sure that the authority does not exist.
+        if (TextUtils.isEmpty(authority)) {
+            authority = Uri.parse(uri.toString()).getAuthority();
+            if (TextUtils.isEmpty(authority)) return false;
+        }
 
         // Preserve existing behavior for user-qualified authorities: discard the user prefix and
         // resolve the bare authority for the context's user. This does not identify the provider in

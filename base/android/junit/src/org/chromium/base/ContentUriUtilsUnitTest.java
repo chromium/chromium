@@ -176,4 +176,29 @@ public class ContentUriUtilsUnitTest {
                 ContentUriUtils.isUriFromThisApp(
                         Uri.parse("content://10@work@shared.uid/path"), mMockContext));
     }
+
+    @Test
+    public void testIsUriFromThisApp_OpaqueUriWithAuthorityInStringForm() {
+        mockProvider("shared.uid", "org.chromium.other_package", Process.myUid());
+
+        // An OpaqueUri reports a null authority even though its string form encodes one. The check
+        // must recover the authority from the string form; otherwise a caller could smuggle one of
+        // this app's own content URIs past it.
+        Uri opaque =
+                new Uri.Builder().scheme("content").encodedOpaquePart("//shared.uid/path").build();
+        assertNull(opaque.getAuthority());
+        assertEquals("content://shared.uid/path", opaque.toString());
+
+        assertTrue(ContentUriUtils.isUriFromThisApp(opaque, mMockContext));
+    }
+
+    @Test
+    public void testIsUriFromThisApp_OpaqueUriWithoutAuthorityReturnsFalse() {
+        // An OpaqueUri whose string form has no authority (e.g. "content:foo") must return false
+        // without recursing.
+        Uri opaque = new Uri.Builder().scheme("content").encodedOpaquePart("foo").build();
+        assertNull(opaque.getAuthority());
+
+        assertFalse(ContentUriUtils.isUriFromThisApp(opaque, mMockContext));
+    }
 }
