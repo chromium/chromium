@@ -6,15 +6,20 @@
 
 #include <cstddef>
 #include <map>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_controller.h"
@@ -49,12 +54,24 @@ constexpr base::MemoryConsumerTraits kTestTraits1(
 class MemoryConsumerRegistryTest : public Test,
                                    public MemoryConsumerGroupController {
  protected:
+  using OnConsumerGroupAddedCallback =
+      base::RepeatingCallback<void(uint32_t consumer_id,
+                                   MemoryConsumerGroupHost* host)>;
+
   MemoryConsumerRegistryTest()
       : registry_(PROCESS_TYPE_BROWSER, ChildProcessId(), *this) {}
 
   MemoryConsumerRegistry& registry() { return registry_.Get(); }
 
   std::vector<ConsumerEntry>& entries() { return entries_; }
+
+  // Invoked from OnConsumerGroupAdded(), after the entry is recorded. Lets a
+  // test mimic a policy that synchronously pushes an initial limit.
+  void set_on_consumer_group_added(OnConsumerGroupAddedCallback callback) {
+    on_consumer_group_added_ = std::move(callback);
+  }
+
+  size_t removed_group_count() const { return removed_group_count_; }
 
   // MemoryConsumerGroupController:
   void AddMemoryConsumerGroupHost(ProcessType process_type,
@@ -78,6 +95,9 @@ class MemoryConsumerRegistryTest : public Test,
     entries_.push_back({consumer_id, std::string(consumer_name), traits,
                         host_info.process_type, child_process_id,
                         host_info.host});
+    if (on_consumer_group_added_) {
+      on_consumer_group_added_.Run(consumer_id, host_info.host);
+    }
   }
 
   void OnConsumerGroupRemoved(uint32_t consumer_id,
@@ -86,6 +106,7 @@ class MemoryConsumerRegistryTest : public Test,
       return entry.consumer_id == consumer_id &&
              entry.child_process_id == child_process_id;
     });
+    ++removed_group_count_;
   }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -103,6 +124,30 @@ class MemoryConsumerRegistryTest : public Test,
   std::map<ChildProcessId, HostInfo> hosts_;
   base::ScopedMemoryConsumerRegistry<MemoryConsumerRegistry> registry_;
   std::vector<ConsumerEntry> entries_;
+  OnConsumerGroupAddedCallback on_consumer_group_added_;
+  size_t removed_group_count_ = 0;
+};
+
+// A consumer that runs a caller-provided closure (at most once) when asked to
+// release memory. Used to exercise re-entrant registry calls from callbacks.
+class ClosureOnReleaseMemoryConsumer : public base::MemoryConsumer {
+ public:
+  explicit ClosureOnReleaseMemoryConsumer(
+      base::OnceClosure on_release_memory = base::OnceClosure())
+      : on_release_memory_(std::move(on_release_memory)) {}
+
+  ~ClosureOnReleaseMemoryConsumer() override = default;
+
+  // base::MemoryConsumer:
+  void OnReleaseMemory() override {
+    if (on_release_memory_) {
+      std::move(on_release_memory_).Run();
+    }
+  }
+  void OnUpdateMemoryLimit() override {}
+
+ private:
+  base::OnceClosure on_release_memory_;
 };
 
 TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
@@ -121,7 +166,8 @@ TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
 
   // Release memory propagation
   EXPECT_CALL(consumer, OnReleaseMemory());
-  entries().front().host->UpdateConsumers({{kConsumerId, std::nullopt, true}});
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, std::nullopt, /*release_memory=*/true}});
   Mock::VerifyAndClearExpectations(&consumer);
 
   registry().RemoveMemoryConsumer(kConsumerName, &consumer);
@@ -139,7 +185,8 @@ TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
 
   constexpr base::MemoryLimit kNewLimit = base::MemoryLimit::FromPercent(50);
   EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
-  entries().front().host->UpdateConsumers({{kConsumerId, kNewLimit, false}});
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, kNewLimit, /*release_memory=*/false}});
   EXPECT_EQ(consumer1.memory_limit(), kNewLimit);
 
   // New consumer should inherit limit without calling OnUpdateMemoryLimit
@@ -185,7 +232,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemoval) {
 
   // Trigger release memory, which will call OnReleaseMemory and cause the
   // consumer to remove itself.
-  entries().front().host->UpdateConsumers({{kConsumerId, std::nullopt, true}});
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, std::nullopt, /*release_memory=*/true}});
 
   // Verify it was called and successfully removed itself without crashing!
   EXPECT_TRUE(consumer.released());
@@ -229,11 +277,12 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdate) {
 
   // Trigger update with both limit and release.
   // The limit update should trigger OnUpdateMemoryLimit, which removes the
-  // consumer. Since it was the last consumer, the group is destroyed. Then it
-  // should NOT crash when attempting to call ReleaseMemory on the destroyed
-  // group.
+  // consumer. Since it was the last consumer, the group becomes empty but must
+  // stay alive until the batch completes: the subsequent ReleaseMemory() is a
+  // no-op, and the group is destroyed afterwards.
   entries().front().host->UpdateConsumers(
-      {{kConsumerId, base::MemoryLimit::FromPercent(50), true}});
+      {{kConsumerId, base::MemoryLimit::FromPercent(50),
+        /*release_memory=*/true}});
 
   // Verify it was called and successfully removed itself without crashing!
   EXPECT_TRUE(consumer.limit_updated());
@@ -253,7 +302,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdateOnly) {
 
   // Trigger update with limit ONLY.
   entries().front().host->UpdateConsumers(
-      {{kConsumerId, base::MemoryLimit::FromPercent(50), false}});
+      {{kConsumerId, base::MemoryLimit::FromPercent(50),
+        /*release_memory=*/false}});
 
   // Verify it was called and successfully removed itself without crashing!
   EXPECT_TRUE(consumer.limit_updated());
@@ -294,6 +344,146 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringClearOverrideLimit) {
 
   EXPECT_TRUE(consumer.limit_updated());
   ASSERT_EQ(registry().size(), 0u);
+}
+
+// A policy may synchronously push an initial limit to a group as soon as it
+// is created. The consumer must receive the limit without being notified
+// (it is still being registered), and the group must survive.
+TEST_F(MemoryConsumerRegistryTest, InitialLimitPushedDuringRegistration) {
+  constexpr base::MemoryLimit kInitialLimit =
+      base::MemoryLimit::FromPercent(50);
+  set_on_consumer_group_added(base::BindLambdaForTesting(
+      [&](uint32_t consumer_id, MemoryConsumerGroupHost* host) {
+        host->UpdateConsumers(
+            {{consumer_id, kInitialLimit, /*release_memory=*/false}});
+      }));
+
+  base::MockMemoryConsumer consumer;
+  const std::string kConsumerName = "consumer";
+
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+  EXPECT_EQ(consumer.memory_limit(), kInitialLimit);
+  ASSERT_EQ(registry().size(), 1u);
+  ASSERT_EQ(entries().size(), 1u);
+
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
+  ASSERT_EQ(registry().size(), 0u);
+}
+
+// Releasing memory for group A causes a consumer with a new ID (B) to be
+// registered, and the policy synchronously pushes an initial limit to B. This
+// re-enters UpdateConsumers() for B while A's batch is in flight, which must
+// be allowed.
+TEST_F(MemoryConsumerRegistryTest, ReentrantUpdateOfNewGroupDuringRelease) {
+  constexpr base::MemoryLimit kInitialLimit =
+      base::MemoryLimit::FromPercent(50);
+  set_on_consumer_group_added(base::BindLambdaForTesting(
+      [&](uint32_t consumer_id, MemoryConsumerGroupHost* host) {
+        host->UpdateConsumers(
+            {{consumer_id, kInitialLimit, /*release_memory=*/false}});
+      }));
+
+  const std::string kConsumerNameA = "consumer_a";
+  const std::string kConsumerNameB = "consumer_b";
+  const uint32_t kConsumerIdA = base::PersistentHash(kConsumerNameA);
+
+  base::MockMemoryConsumer consumer_b;
+  ClosureOnReleaseMemoryConsumer consumer_a(base::BindLambdaForTesting([&] {
+    registry().AddMemoryConsumer(kConsumerNameB, kTestTraits1, &consumer_b);
+  }));
+
+  registry().AddMemoryConsumer(kConsumerNameA, kTestTraits1, &consumer_a);
+  ASSERT_EQ(registry().size(), 1u);
+
+  EXPECT_CALL(consumer_b, OnUpdateMemoryLimit()).Times(0);
+  entries().front().host->UpdateConsumers(
+      {{kConsumerIdA, std::nullopt, /*release_memory=*/true}});
+
+  EXPECT_EQ(registry().size(), 2u);
+  EXPECT_EQ(entries().size(), 2u);
+  EXPECT_EQ(consumer_b.memory_limit(), kInitialLimit);
+
+  registry().RemoveMemoryConsumer(kConsumerNameB, &consumer_b);
+  registry().RemoveMemoryConsumer(kConsumerNameA, &consumer_a);
+  ASSERT_EQ(registry().size(), 0u);
+}
+
+// The last consumer of a group unregisters during an update, and another
+// consumer registers under the same ID before the batch completes. The group
+// must be kept, and the controller must not observe a removal.
+TEST_F(MemoryConsumerRegistryTest, ReAddDuringUpdateKeepsGroupAlive) {
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+  constexpr base::MemoryLimit kNewLimit = base::MemoryLimit::FromPercent(50);
+
+  base::MockMemoryConsumer consumer2;
+  ClosureOnReleaseMemoryConsumer consumer1(base::BindLambdaForTesting([&] {
+    registry().RemoveMemoryConsumer(kConsumerName, &consumer1);
+    registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer2);
+  }));
+
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer1);
+  ASSERT_EQ(registry().size(), 1u);
+
+  // The re-added consumer is not notified by the in-flight batch.
+  EXPECT_CALL(consumer2, OnReleaseMemory()).Times(0);
+  EXPECT_CALL(consumer2, OnUpdateMemoryLimit()).Times(0);
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, kNewLimit, /*release_memory=*/true}});
+
+  EXPECT_EQ(registry().size(), 1u);
+  EXPECT_EQ(entries().size(), 1u);
+  EXPECT_EQ(removed_group_count(), 0u);
+  // The re-added consumer inherits the group's limit.
+  EXPECT_EQ(consumer2.memory_limit(), kNewLimit);
+
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer2);
+  EXPECT_EQ(registry().size(), 0u);
+  EXPECT_EQ(removed_group_count(), 1u);
+}
+
+// Re-entering UpdateConsumers() for a group that is currently being updated is
+// a programming error.
+TEST_F(MemoryConsumerRegistryTest, ReentrantUpdateOfSameGroupChecks) {
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  ClosureOnReleaseMemoryConsumer consumer(base::BindLambdaForTesting([&] {
+    entries().front().host->UpdateConsumers(
+        {{kConsumerId, std::nullopt, /*release_memory=*/true}});
+  }));
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
+
+  EXPECT_CHECK_DEATH(entries().front().host->UpdateConsumers(
+      {{kConsumerId, std::nullopt, /*release_memory=*/true}}));
+
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
+}
+
+// Same as above, but the re-entrant update targets a group that is later in
+// the same batch and has not been reached yet. It is still part of the
+// in-flight batch and must be rejected.
+TEST_F(MemoryConsumerRegistryTest, ReentrantUpdateOfGroupLaterInBatchChecks) {
+  const std::string kConsumerNameA = "consumer_a";
+  const std::string kConsumerNameB = "consumer_b";
+  const uint32_t kConsumerIdA = base::PersistentHash(kConsumerNameA);
+  const uint32_t kConsumerIdB = base::PersistentHash(kConsumerNameB);
+
+  ClosureOnReleaseMemoryConsumer consumer_a(base::BindLambdaForTesting([&] {
+    entries().front().host->UpdateConsumers(
+        {{kConsumerIdB, std::nullopt, /*release_memory=*/true}});
+  }));
+  ClosureOnReleaseMemoryConsumer consumer_b;
+  registry().AddMemoryConsumer(kConsumerNameA, kTestTraits1, &consumer_a);
+  registry().AddMemoryConsumer(kConsumerNameB, kTestTraits1, &consumer_b);
+
+  EXPECT_CHECK_DEATH(entries().front().host->UpdateConsumers(
+      {{kConsumerIdA, std::nullopt, /*release_memory=*/true},
+       {kConsumerIdB, std::nullopt, /*release_memory=*/true}}));
+
+  registry().RemoveMemoryConsumer(kConsumerNameB, &consumer_b);
+  registry().RemoveMemoryConsumer(kConsumerNameA, &consumer_a);
 }
 
 }  // namespace content
