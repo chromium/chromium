@@ -786,6 +786,44 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   }));
 }
 
+// Test that closing a background tab with a contextual entry does not close
+// the same extension's contextual side panel showing on the active tab.
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
+                       ClosingBackgroundTabKeepsActiveTabContextualPanelOpen) {
+  scoped_refptr<const extensions::Extension> extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/side_panel/setoptions"));
+  ASSERT_TRUE(extension);
+
+  SidePanelEntry::Key extension_key = GetKey(extension->id());
+  OpenNewForegroundTab();
+  const int background_index = browser()->GetTabStripModel()->active_index();
+  {
+    ExtensionSidePanelRegistryWaiter waiter(GetCurrentTabRegistry(),
+                                            extension->id());
+    RunSetOptions(*extension, GetCurrentTabId(), "panel_1.html",
+                  /*enabled=*/true);
+    waiter.WaitForRegistration();
+  }
+
+  OpenNewForegroundTab();
+  {
+    ExtensionSidePanelRegistryWaiter waiter(GetCurrentTabRegistry(),
+                                            extension->id());
+    RunSetOptions(*extension, GetCurrentTabId(), "panel_1.html",
+                  /*enabled=*/true);
+    waiter.WaitForRegistration();
+  }
+  ShowContextualEntryAndWait(extension_key);
+  ASSERT_TRUE(GetSidePanelUI()->IsSidePanelEntryShowing(extension_key,
+                                                        /*for_tab=*/true));
+
+  browser()->GetTabStripModel()->CloseWebContentsAt(
+      background_index, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  EXPECT_TRUE(GetSidePanelUI()->IsSidePanelEntryShowing(extension_key,
+                                                        /*for_tab=*/true));
+}
+
 // Test that dragging a tab whose contextual side panel is actively showing to
 // another window moves the action item without the source window resolving a
 // removed action item.
