@@ -27,7 +27,8 @@ namespace browser_actuator {
 // excluded: it is the proto default and never names a real destination.
 // LINT.IfChange(RoutablePayloadTypes)
 inline constexpr auto kRoutablePayloadTypes = std::to_array<PayloadType>(
-    {PayloadType::kControl, PayloadType::kExperimentalTriggering});
+    {PayloadType::kControl, PayloadType::kExperimentalTriggering,
+     PayloadType::kActuation});
 
 // Returns the wire enum used to tag a downstream payload of `payload_type`.
 inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
@@ -37,6 +38,8 @@ inline ActuatorDownstreamPayloadType ToDownstreamProtoPayloadType(
       return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
     case PayloadType::kExperimentalTriggering:
       return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
+    case PayloadType::kActuation:
+      return ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION;
     case PayloadType::kUnspecified:
       NOTREACHED();
   }
@@ -56,6 +59,8 @@ inline std::string_view ExpectedTypeUrl(PayloadType payload_type) {
     case PayloadType::kExperimentalTriggering:
       return "type.googleapis.com/"
              "components_sharing_message.GlicExperimentalTriggering";
+    case PayloadType::kActuation:
+      return "type.googleapis.com/actor.proto.ActuationDownstreamMessage";
     case PayloadType::kUnspecified:
       NOTREACHED();
   }

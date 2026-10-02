@@ -83,6 +83,9 @@ void BrowserActuatorMessageHandler::OnMessage(
                   // messages.
                   break;
                 }
+                case browser_actuator::PayloadType::kActuation:
+                  // Handled by a separate transport handler.
+                  break;
                 case browser_actuator::PayloadType::kUnspecified:
                   break;
               }

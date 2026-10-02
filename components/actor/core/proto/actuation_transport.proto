@@ -1,0 +1,57 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package actor.proto;
+
+import "components/optimization_guide/proto/features/actions_data.proto";
+
+// Request to stop an active actor task.
+message StopTask {
+  // The ID of the task to stop.
+  int32 task_id = 1;
+}
+
+// Response to a request to stop an actor task.
+message StopTaskResult {
+  enum StopTaskStatus {
+    STOP_TASK_STATUS_UNSPECIFIED = 0;
+    STOP_TASK_STATUS_SUCCESS = 1;
+    STOP_TASK_STATUS_FAILURE = 2;
+  }
+
+  // The ID of the task that was stopped.
+  int32 task_id = 1;
+
+  // The status of the stop task request.
+  StopTaskStatus status = 2;
+}
+
+// Downstream message sent from the server to the actuation transport handler.
+message ActuationDownstreamMessage {
+  // Optional correlation ID echoed in the corresponding
+  // ActuationUpstreamMessage.
+  string request_id = 1;
+
+  oneof payload {
+    optimization_guide.proto.BrowserStartTask start_task = 2;
+    StopTask stop_task = 3;
+    optimization_guide.proto.Actions actions = 4;
+  }
+}
+
+// Upstream message sent from the actuation transport handler to the server.
+message ActuationUpstreamMessage {
+  // Optional correlation ID matching the triggering ActuationDownstreamMessage.
+  string request_id = 1;
+
+  oneof payload {
+    optimization_guide.proto.BrowserStartTaskResult start_task_result = 2;
+    StopTaskResult stop_task_result = 3;
+    optimization_guide.proto.ActionsResult actions_result = 4;
+  }
+}

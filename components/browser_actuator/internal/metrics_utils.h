@@ -25,6 +25,8 @@ inline std::string_view PayloadTypeToMetricSuffix(PayloadType payload_type) {
       return "Control";
     case PayloadType::kExperimentalTriggering:
       return "GlicExperimentalTriggering";
+    case PayloadType::kActuation:
+      return "Actuation";
     case PayloadType::kUnspecified:
       NOTREACHED();
   }

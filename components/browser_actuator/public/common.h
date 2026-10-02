@@ -16,6 +16,7 @@ enum class PayloadType {
   kUnspecified = 0,
   kControl = 1,
   kExperimentalTriggering = 2,
+  kActuation = 3,
 };
 // LINT.ThenChange(
 //     ../internal/metrics_utils.h:PayloadTypeToMetricSuffix,
@@ -29,6 +30,7 @@ enum class FactoryId {
   kControl = 1,
   kExperimentalTriggering = 2,
   kSessionStreamRecorder = 3,
+  kActuation = 4,
 };
 
 enum class SendUpstreamMessageError {

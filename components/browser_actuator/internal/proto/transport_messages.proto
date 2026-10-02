@@ -48,6 +48,8 @@ enum ActuatorUpstreamPayloadType {
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND = 1;
   // Legacy experimental triggering message.
   ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING = 2;
+  // Actuation transport message.
+  ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION = 3;
 }
 
 // Wrapper that pairs a payload with its routing type.

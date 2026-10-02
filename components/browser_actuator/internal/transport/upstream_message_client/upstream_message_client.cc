@@ -33,6 +33,8 @@ ActuatorUpstreamPayloadType ToProtoPayloadType(PayloadType payload_type) {
       return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_CONTROL_COMMAND;
     case PayloadType::kExperimentalTriggering:
       return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING;
+    case PayloadType::kActuation:
+      return ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION;
   }
   NOTREACHED();
 }

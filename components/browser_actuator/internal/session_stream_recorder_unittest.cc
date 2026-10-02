@@ -330,7 +330,8 @@ TEST(SessionStreamRecorderFactoryTest, FactoryIdAndPayloadTypes) {
   EXPECT_EQ(factory.GetFactoryId(), FactoryId::kSessionStreamRecorder);
   EXPECT_THAT(factory.GetSupportedPayloadTypes(),
               ::testing::UnorderedElementsAre(
-                  PayloadType::kControl, PayloadType::kExperimentalTriggering));
+                  PayloadType::kControl, PayloadType::kExperimentalTriggering,
+                  PayloadType::kActuation));
 }
 
 TEST(SessionStreamRecorderFactoryTest, CreatesRecorderOnNewSession) {
@@ -824,7 +825,9 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   p2->set_payload_type(
       ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   auto* p3 = downstream.add_typed_payloads();
-  p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  p3->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_ACTUATION);
+  auto* p4 = downstream.add_typed_payloads();
+  p4->set_payload_type(ACTUATOR_DOWNSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordDownstreamMessage(std::move(downstream));
 
   ActuatorUpstreamMessage upstream;
@@ -834,7 +837,9 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   auto* up2 = upstream.add_typed_payloads();
   up2->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING);
   auto* up3 = upstream.add_typed_payloads();
-  up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
+  up3->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION);
+  auto* up4 = upstream.add_typed_payloads();
+  up4->set_payload_type(ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED);
   recorder->RecordUpstreamMessage(std::move(upstream));
 
   std::vector<SessionSnapshot> sessions =
@@ -845,12 +850,12 @@ TEST(SessionStreamRecorderFactoryTest, GetAllSessionsReportsPayloadTypes) {
   EXPECT_TRUE(sessions[0].events[0].is_downstream);
   EXPECT_THAT(sessions[0].events[0].payload_types,
               ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
-                                     "Unspecified"));
+                                     "Actuation", "Unspecified"));
 
   EXPECT_FALSE(sessions[0].events[1].is_downstream);
   EXPECT_THAT(sessions[0].events[1].payload_types,
               ::testing::ElementsAre("Control", "GlicExperimentalTriggering",
-                                     "Unspecified"));
+                                     "Actuation", "Unspecified"));
 }
 
 TEST(SessionStreamRecorderFactoryTest, GetAllSessionsIncludesUpstreamEvents) {

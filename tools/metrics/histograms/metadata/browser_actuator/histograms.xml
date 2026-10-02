@@ -25,6 +25,9 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(BrowserActuatorPayloadType) -->
 
 <variants name="BrowserActuatorPayloadType">
+  <variant name="Actuation" summary="Actuation transport messages">
+    <owner>src/components/actor/OWNERS</owner>
+  </variant>
   <variant name="Control" summary="Control/acknowledgement command messages">
     <owner>src/components/browser_actuator/OWNERS</owner>
   </variant>
@@ -35,10 +38,7 @@ chromium-metrics-reviews@google.com.
   </variant>
 </variants>
 
-<!-- LINT.ThenChange(
-  //components/browser_actuator/public/common.h:PayloadType,
-  //components/browser_actuator/internal/metrics_utils.h:PayloadTypeToMetricSuffix
-) -->
+<!-- LINT.ThenChange(//components/browser_actuator/public/common.h:PayloadType, //components/browser_actuator/internal/metrics_utils.h:PayloadTypeToMetricSuffix) -->
 
 <histogram name="Browser.Actuator.Downstream.PayloadDropped"
     enum="BrowserActuatorPayloadDropReason" expires_after="2027-09-01">

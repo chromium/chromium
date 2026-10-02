@@ -69,6 +69,8 @@ constexpr std::optional<PayloadType> FromUpstreamProtoPayloadType(
       return PayloadType::kControl;
     case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_EXPERIMENTAL_TRIGGERING:
       return PayloadType::kExperimentalTriggering;
+    case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_ACTUATION:
+      return PayloadType::kActuation;
     case ACTUATOR_UPSTREAM_PAYLOAD_TYPE_UNSPECIFIED:
     default:
       return std::nullopt;
@@ -316,7 +318,8 @@ FactoryId SessionStreamRecorderFactory::GetFactoryId() const {
 std::vector<PayloadType>
 SessionStreamRecorderFactory::GetSupportedPayloadTypes() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return {PayloadType::kControl, PayloadType::kExperimentalTriggering};
+  return {PayloadType::kControl, PayloadType::kExperimentalTriggering,
+          PayloadType::kActuation};
 }
 // LINT.ThenChange(//components/browser_actuator/public/common.h:PayloadType)
 
