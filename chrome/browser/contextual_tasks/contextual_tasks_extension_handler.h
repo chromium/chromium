@@ -328,6 +328,9 @@ class ContextualTasksExtensionHandler
   std::map<int32_t, base::UnguessableToken> selected_tabs_;
 
 #if !BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/568013317): Remove. Delayed tabs should be owned by the
+  // session handle and uploaded at submit via QueryContextualizer, like
+  // ContextualTasksComposeboxHandler.
   std::optional<std::pair<base::UnguessableToken,
                           std::unique_ptr<lens::ContextualInputData>>>
       tab_context_snapshot_;
