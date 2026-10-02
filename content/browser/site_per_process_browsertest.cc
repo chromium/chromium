@@ -1754,6 +1754,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
   // TODO(mustaq): Why does the |back_load_observer.Wait()| below time out
   // without the user activation?
   EXPECT_TRUE(ExecJs(root, "// No-op script"));
+  RenderFrameDeletedObserver error_page_deleted_observer(
+      child->current_frame_host());
   NavigateIframeToURL(shell()->web_contents(), "child-0", url_b);
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url_b, observer.last_navigation_url());
@@ -1765,7 +1767,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ProcessTransferAfterError) {
             child->current_origin().Serialize() + '/');
 
   // Ensure that we have created a new process for the subframe.
-  if (base::FeatureList::IsEnabled(features::kIsolateSubframeErrorPages)) {
+  if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(
+          /*in_main_frame=*/false)) {
+    // With subframe error page isolation, the error page was in its own
+    // SiteInstanceGroup, so its RenderFrameHost was replaced and is now pending
+    // deletion. Its SiteInstanceGroup's proxies are only deleted once that
+    // RenderFrameHost is deleted, which happens asynchronously after its unload
+    // ACK. Wait for this to happen to avoid flakily observing leftover proxies.
+    // See https://crbug.com/566001008.
+    error_page_deleted_observer.WaitUntilDeleted();
     EXPECT_EQ(
         " Site A ------------ proxies for C\n"
         "   +--Site C ------- proxies for A\n"
