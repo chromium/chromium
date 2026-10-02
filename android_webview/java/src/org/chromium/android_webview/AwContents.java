@@ -3596,7 +3596,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
-     * @see WebContents.evaluateJavaScript(String, JavaScriptCallback)
+     * @see WebContents#evaluateJavaScript(String, JavaScriptCallback)
      */
     public void evaluateJavaScript(String script, final Callback<String> callback) {
         if (TRACE) Log.i(TAG, "%s evaluateJavascript=%s", this, script);
