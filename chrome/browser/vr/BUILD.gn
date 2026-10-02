@@ -65,6 +65,69 @@ source_set("unit_tests") {
   ]
 }
 
+# This should only contain files that are useful if enable_vr = false. For
+# tests/infrastructure that require enable_vr = true, see
+# :xr_browser_tests_vr_required.
+source_set("xr_browser_tests_common") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  # Infrastructure
+  sources = [
+    "test/conditional_skipping.cc",
+    "test/conditional_skipping.h",
+    "test/multi_class_browser_test.h",
+    "test/webxr_browser_test.cc",
+    "test/webxr_browser_test.h",
+    "test/webxr_vr_browser_test.cc",
+    "test/webxr_vr_browser_test.h",
+    "test/xr_browser_test.cc",
+    "test/xr_browser_test.h",
+  ]
+
+  # Tests
+  sources += [
+    "webxr_vr_runtimeless_browser_test.cc",
+    "webxr_vr_spatial_tracking_test.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/test/base:browser_tests_runner",
+    "//chrome/test/base:chrome_test_utils",
+    "//sandbox/policy",
+  ]
+
+  public_deps = [ "//chrome/test:test_support" ]
+
+  if (is_android) {
+    public_deps += [
+      "//chrome/browser/android:tabs_public",
+      "//chrome/test:test_support_ui_android",
+    ]
+  } else {
+    public_deps += [ "//chrome/test:test_support_ui" ]
+  }
+
+  data = [
+    "//chrome/test/data/xr/e2e_test_files/",
+    "//third_party/blink/web_tests/resources/testharness.js",
+  ]
+
+  if (enable_vr) {
+    deps += [ "//device/vr" ]
+  }
+
+  if (enable_vr && is_win) {
+    deps += [ "//device/vr:directx_helpers" ]
+  }
+
+  if (!is_mac && !is_android) {
+    data_deps = [ "//chrome:packed_resources" ]
+  }
+}
+
 if (enable_vr) {
   component("vr_ui") {
     sources = [
@@ -441,7 +504,7 @@ if (enable_vr) {
   if (!is_android) {
     # This should only contain that files that are useful if enable_vr = true.
     # For tests/infrastructure that can be used with enable_vr = false, see
-    # //chrome/test:xr_browser_tests_common.
+    # :xr_browser_tests_common.
     source_set("xr_browser_tests_vr_required") {
       testonly = true
       defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
@@ -456,8 +519,8 @@ if (enable_vr) {
 
       deps = [
         ":vr_common",
+        ":xr_browser_tests_common",
         "//chrome/common:constants",
-        "//chrome/test:xr_browser_tests_common",
         "//device/vr",
         "//device/vr:vr_test_utils",
         "//device/vr/buildflags",
@@ -542,10 +605,10 @@ if (enable_vr) {
 
       deps = [
         ":vr_common",
+        ":xr_browser_tests_common",
         "//chrome/browser/content_settings:content_settings_factory",
         "//chrome/common:constants",
         "//chrome/test:xr_android_emulator_tests_runner",
-        "//chrome/test:xr_browser_tests_common",
         "//components/content_settings/browser",
         "//components/content_settings/core/browser",
         "//components/webxr",
