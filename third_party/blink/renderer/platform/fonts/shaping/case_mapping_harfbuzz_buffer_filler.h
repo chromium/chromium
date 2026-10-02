@@ -24,15 +24,15 @@ class CaseMappingHarfBuzzBufferFiller {
                                   const AtomicString& locale,
                                   hb_buffer_t* harfbuzz_buffer,
                                   const String& text,
-                                  unsigned start_index,
-                                  unsigned num_characters);
+                                  wtf_size_t start_index,
+                                  wtf_size_t num_characters);
 
  private:
   void FillSlowCase(CaseMapIntend,
                     const AtomicString& locale,
                     base::span<const UChar> buffer,
-                    unsigned start_index,
-                    unsigned num_characters);
+                    wtf_size_t start_index,
+                    wtf_size_t num_characters);
   hb_buffer_t* harfbuzz_buffer_;
 };
 

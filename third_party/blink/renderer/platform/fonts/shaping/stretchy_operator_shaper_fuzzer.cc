@@ -47,7 +47,7 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
     StretchyOperatorShaper horizontal_shaper(
         character, OpenTypeMathStretchData::StretchAxis::Horizontal,
         TextDirection::kLtr);
-    for (unsigned i = 0; i < kSizeCount; i++) {
+    for (wtf_size_t i = 0; i < kSizeCount; ++i) {
       StretchyOperatorShaper::Metrics metrics;
       float target_size = (i + 1) * (kFontSize / 2);
       vertical_shaper.Shape(math, target_size, &metrics);
@@ -59,4 +59,3 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
 }
 
 }  // namespace blink
-

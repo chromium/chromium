@@ -67,7 +67,7 @@ class PLATFORM_EXPORT HanKerning {
   bool MayApply() const { return may_apply_; }
   static bool MayApply(StringView text);
 
-  const Vector<unsigned, 32>& UnsafeToBreakBefore() const {
+  const Vector<wtf_size_t, 32>& UnsafeToBreakBefore() const {
     return unsafe_to_break_before_;
   }
   void ClearUnsafeToBreakBefore() { unsafe_to_break_before_.Shrink(0); }
@@ -145,7 +145,7 @@ class PLATFORM_EXPORT HanKerning {
   wtf_size_t last_end_ = 0;
   const FontData* last_font_data_ = nullptr;
   Vector<CharType> char_types_;
-  Vector<unsigned, 32> unsafe_to_break_before_;
+  Vector<wtf_size_t, 32> unsafe_to_break_before_;
   Vector<wtf_size_t> changed_indexes_;
 };
 

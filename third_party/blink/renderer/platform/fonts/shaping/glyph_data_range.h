@@ -23,7 +23,7 @@ class PLATFORM_EXPORT GlyphDataRange {
   GlyphDataRange() = default;
   explicit GlyphDataRange(const ShapeResultRun&);
 
-  unsigned size() const { return size_; }
+  wtf_size_t size() const { return size_; }
   bool IsEmpty() const { return !size_; }
   const ShapeResultRun* GetRun() const { return run_.Get(); }
 
@@ -44,8 +44,8 @@ class PLATFORM_EXPORT GlyphDataRange {
   void Trace(Visitor*) const;
 
   GlyphDataRange FindGlyphDataRange(bool is_rtl,
-                                    unsigned start_character_index,
-                                    unsigned end_character_index) const;
+                                    wtf_size_t start_character_index,
+                                    wtf_size_t end_character_index) const;
 
   class Reader {
     STACK_ALLOCATED();
@@ -87,11 +87,11 @@ class PLATFORM_EXPORT GlyphDataRange {
      private:
       friend class Reader;
 
-      Iterator(const Reader* reader, unsigned index)
+      Iterator(const Reader* reader, wtf_size_t index)
           : reader_(reader), index_(index) {}
 
       const Reader* reader_ = nullptr;
-      unsigned index_ = 0;
+      wtf_size_t index_ = 0;
     };
 
     explicit Reader(const GlyphDataRange& range);
@@ -100,12 +100,12 @@ class PLATFORM_EXPORT GlyphDataRange {
     Iterator begin() const { return Iterator(this, 0); }
     Iterator end() const { return Iterator(this, size()); }
 
-    unsigned size() const {
-      return static_cast<unsigned>(
+    wtf_size_t size() const {
+      return static_cast<wtf_size_t>(
           compact_glyphs_.empty() ? glyphs_.size() : compact_glyphs_.size());
     }
 
-    HarfBuzzRunGlyphData operator[](unsigned index) const {
+    HarfBuzzRunGlyphData operator[](wtf_size_t index) const {
       if (!compact_glyphs_.empty()) [[unlikely]] {
         const base::span<const uint16_t> compact_glyphs = compact_glyphs_;
         return HarfBuzzRunGlyphData(compact_glyphs[index],

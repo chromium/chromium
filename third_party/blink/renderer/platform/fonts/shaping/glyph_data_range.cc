@@ -71,8 +71,8 @@ GlyphDataRange GlyphDataRange::FindCompactGlyphDataRange(
 
 GlyphDataRange GlyphDataRange::FindGlyphDataRange(
     bool is_rtl,
-    unsigned start_character_index,
-    unsigned end_character_index) const {
+    wtf_size_t start_character_index,
+    wtf_size_t end_character_index) const {
   if (!run_) [[unlikely]] {
     return GlyphDataRange();
   }
@@ -87,7 +87,7 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
   }
 
   const auto comparer = [](const HarfBuzzRunGlyphData& glyph_data,
-                           unsigned index) {
+                           wtf_size_t index) {
     return glyph_data.character_index < index;
   };
   const auto [range_begin, range_end] = NonCompactGlyphPointers();

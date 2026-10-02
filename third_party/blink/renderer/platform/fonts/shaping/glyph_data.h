@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -27,16 +28,16 @@ struct HarfBuzzRunGlyphData {
 
   // The max number of characters in a |RunInfo| is limited by
   // |character_index|.
-  static constexpr unsigned kCharacterIndexBits = 15;
-  static constexpr unsigned kMaxCharacters = 1 << kCharacterIndexBits;
-  static constexpr unsigned kMaxCharacterIndex = kMaxCharacters - 1;
+  static constexpr wtf_size_t kCharacterIndexBits = 15;
+  static constexpr wtf_size_t kMaxCharacters = 1 << kCharacterIndexBits;
+  static constexpr wtf_size_t kMaxCharacterIndex = kMaxCharacters - 1;
   // The max number of glyphs in a |RunInfo|. This make the number
   // of glyphs predictable and minimizes the buffer reallocations.
-  static constexpr unsigned kMaxGlyphs = kMaxCharacters;
+  static constexpr wtf_size_t kMaxGlyphs = kMaxCharacters;
 
   HarfBuzzRunGlyphData() = default;
-  HarfBuzzRunGlyphData(unsigned glyph,
-                       unsigned character_index,
+  HarfBuzzRunGlyphData(uint32_t glyph,
+                       wtf_size_t character_index,
                        SafeToBreak safe_to_break_before,
                        TextRunLayoutUnit advance)
       : glyph(glyph),
@@ -66,12 +67,12 @@ struct HarfBuzzRunGlyphData {
   friend bool operator==(const HarfBuzzRunGlyphData&,
                          const HarfBuzzRunGlyphData&) = default;
 
-  unsigned glyph : 16;
+  uint32_t glyph : 16;
   // The index of the character this glyph is for. To use as an index of
   // |String|, it is the index of UTF16 code unit, and it is always at the
   // HarfBuzz cluster boundary.
-  unsigned character_index : kCharacterIndexBits;
-  unsigned unsafe_to_break_before : 1;
+  uint32_t character_index : kCharacterIndexBits;
+  uint32_t unsafe_to_break_before : 1;
 
   TextRunLayoutUnit advance;
 };

@@ -29,7 +29,7 @@ RunSegmenter::RunSegmenter(base::span<const UChar> buffer,
 template <class Iterator, typename SegmentationCategory>
 void RunSegmenter::ConsumeIteratorPastLastSplit(
     Iterator& iterator,
-    unsigned* iterator_position,
+    wtf_size_t* iterator_position,
     SegmentationCategory* segmentation_category) {
   if (*iterator_position <= last_split_ && *iterator_position < buffer_size_) {
     while (iterator.Consume(iterator_position, segmentation_category)) {
@@ -55,9 +55,9 @@ bool RunSegmenter::Consume(RunSegmenterRange* next_range) {
     ConsumeIteratorPastLastSplit(*orientation_iterator_,
                                  &orientation_iterator_position_,
                                  &candidate_range_.render_orientation);
-    unsigned positions[] = {script_run_iterator_position_,
-                            symbols_iterator_position_,
-                            orientation_iterator_position_};
+    wtf_size_t positions[] = {script_run_iterator_position_,
+                              symbols_iterator_position_,
+                              orientation_iterator_position_};
     last_split_ = *std::ranges::min_element(positions);
   } else {
     last_split_ =

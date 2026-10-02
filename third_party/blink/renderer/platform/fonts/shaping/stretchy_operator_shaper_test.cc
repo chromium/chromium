@@ -65,15 +65,15 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   // Shaper tries glyphs vertical_arrow/horizontal_arrow, h0/v0, h1/v1, h2/v2,
   // h3/v3 of respective sizes 1000, 1000, 2000, 3000 and 4000. It returns the
   // smallest glyph larger than the target size.
-  const unsigned size_count = 4;
-  const unsigned subdivision = 8;
-  for (unsigned i = 0; i < size_count; i++) {
-    for (unsigned j = 1; j <= subdivision; j++) {
+  const wtf_size_t kSizeCount = 4;
+  const wtf_size_t kSubdivision = 8;
+  for (wtf_size_t i = 0; i < kSizeCount; ++i) {
+    for (wtf_size_t j = 1; j <= kSubdivision; ++j) {
       // Due to floating-point errors, the actual metrics of the size variants
       // might actually be slightly smaller than expected. Reduce the
       // target_size by kSizeError to ensure that the shaper picks the desired
       // size variant.
-      float target_size = i * 1000 + (j * 1000 / subdivision) - kSizeError;
+      float target_size = i * 1000 + (j * 1000 / kSubdivision) - kSizeError;
 
       // Metrics of horizontal size variants.
       {
@@ -146,8 +146,8 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   // Additionally, X - Z = 250k - 1000 = 250 >> kSizeError for k = 5 so this
   // case also verifies that the minimal number of repetitions is actually used.
   //
-  for (unsigned repetition_count = 1; repetition_count <= 5;
-       repetition_count++) {
+  for (wtf_size_t repetition_count = 1; repetition_count <= 5;
+       ++repetition_count) {
     // It is not necessary to decrease the target_size by kSizeError here. The
     // shaper can just increase overlap by kSizeError / repetition_count to
     // reduce the actual size of the assembly.
@@ -183,7 +183,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
       EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), h[2]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), 3000 - overlap,
                   kSizeError);
-      for (unsigned i = 0; i < repetition_count - 1; i++) {
+      for (wtf_size_t i = 0; i < repetition_count - 1; ++i) {
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i + 1), h[1]);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i + 1),
                     2000 - overlap, kSizeError);
@@ -201,7 +201,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
                 repetition_count + 1);
-      for (unsigned i = 0; i < repetition_count; i++) {
+      for (wtf_size_t i = 0; i < repetition_count; ++i) {
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i), v[1]);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i), 2000 - overlap,
                     kSizeError);
@@ -268,9 +268,9 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
   Vector<UChar32> v, h;
   retrieveGlyphForStretchyOperators(math, v, h);
 
-  unsigned repetition_count = 5;
+  constexpr wtf_size_t kRepetitionCount = 5;
   float overlap = 750;
-  float target_size = 3000 + repetition_count * (2000 - overlap);
+  float target_size = 3000 + kRepetitionCount * (2000 - overlap);
 
   // Metrics of horizontal assembly.
   {
@@ -297,17 +297,17 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
-              repetition_count + 1);
+              kRepetitionCount + 1);
     EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), h[2]);
     EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), 3000 - overlap,
                 kSizeError);
-    for (unsigned i = 0; i < repetition_count - 1; i++) {
+    for (wtf_size_t i = 0; i < kRepetitionCount - 1; ++i) {
       EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i + 1), h[1]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i + 1), 2000 - overlap,
                   kSizeError);
     }
-    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), h[1]);
-    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count), 2000,
+    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, kRepetitionCount), h[1]);
+    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, kRepetitionCount), 2000,
                 kSizeError);
   }
 
@@ -318,14 +318,14 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariantsCenteredOnBaseline) {
 
     EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
     EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
-              repetition_count + 1);
-    for (unsigned i = 0; i < repetition_count; i++) {
+              kRepetitionCount + 1);
+    for (wtf_size_t i = 0; i < kRepetitionCount; ++i) {
       EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i), v[1]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i), 2000 - overlap,
                   kSizeError);
     }
-    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), v[2]);
-    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count), 3000,
+    EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, kRepetitionCount), v[2]);
+    EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, kRepetitionCount), 3000,
                 kSizeError);
   }
 }
@@ -400,11 +400,11 @@ TEST_F(StretchyOperatorShaperTest, RTLGlyphMirroring) {
       kRadical, OpenTypeMathStretchData::StretchAxis::Vertical,
       TextDirection::kRtl);
 
-  const unsigned size_count = 4;
+  const wtf_size_t kSizeCount = 4;
   const float ltr_width = 4000;
   const float rtl_width = 1000;
 
-  for (unsigned i = 1; i < size_count + 1; i++) {
+  for (wtf_size_t i = 1; i < kSizeCount + 1; ++i) {
     const float target_size = i * 1000 - kSizeError;
 
     // Metrics of LTR glyph.

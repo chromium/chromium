@@ -75,7 +75,7 @@ HanKerning::CharType CharTypeFromBounds(float half_em,
 HanKerning::CharType CharTypeFromBounds(
     base::span<HarfBuzzShaper::GlyphData> glyphs,
     base::span<SkRect> bounds,
-    unsigned index,
+    wtf_size_t index,
     bool is_horizontal) {
   const HarfBuzzShaper::GlyphData& glyph = glyphs[index];
   if (!glyph.glyph) [[unlikely]] {
@@ -95,7 +95,7 @@ HanKerning::CharType CharTypeFromBounds(
   float advance0;
   float half_advance0;
   HanKerning::CharType type0 = HanKerning::CharType::kOther;
-  unsigned i = 0;
+  wtf_size_t i = 0;
   for (;; ++i) {
     if (i >= glyphs.size()) [[unlikely]] {
       return HanKerning::CharType::kOther;
@@ -443,10 +443,10 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
       // in Japanese, but fullwidth in Chinese.
       uchar::kLeftDoubleQuotationMark, uchar::kLeftSingleQuotationMark,
       uchar::kRightDoubleQuotationMark, uchar::kRightSingleQuotationMark};
-  constexpr unsigned kDotSize = 4;
-  constexpr unsigned kColonIndex = 4;
-  constexpr unsigned kSemicolonIndex = 5;
-  constexpr unsigned kQuoteStartIndex = 6;
+  constexpr wtf_size_t kDotSize = 4;
+  constexpr wtf_size_t kColonIndex = 4;
+  constexpr wtf_size_t kSemicolonIndex = 5;
+  constexpr wtf_size_t kQuoteStartIndex = 6;
   static_assert(kDotSize <= std::size(kChars));
   static_assert(kColonIndex < std::size(kChars));
   static_assert(kSemicolonIndex < std::size(kChars));
@@ -470,7 +470,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   }
 
   Vector<Glyph, 256> glyphs;
-  unsigned cluster = 0;
+  wtf_size_t cluster = 0;
   for (const HarfBuzzShaper::GlyphData& glyph_data : glyph_data_list) {
     if (glyph_data.cluster != cluster) [[unlikely]] {
       has_alternate_spacing = false;

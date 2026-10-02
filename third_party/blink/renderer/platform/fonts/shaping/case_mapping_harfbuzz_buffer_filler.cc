@@ -26,8 +26,8 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     const AtomicString& locale,
     hb_buffer_t* harfbuzz_buffer,
     const String& text,
-    unsigned start_index,
-    unsigned num_characters)
+    wtf_size_t start_index,
+    wtf_size_t num_characters)
     : harfbuzz_buffer_(harfbuzz_buffer) {
   if (case_map_intend == CaseMapIntend::kKeepSameCase) {
     if (text.Is8Bit()) {
@@ -71,16 +71,16 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     CaseMapIntend case_map_intend,
     const AtomicString& locale,
     base::span<const UChar> buffer,
-    unsigned start_index,
-    unsigned num_characters) {
+    wtf_size_t start_index,
+    wtf_size_t num_characters) {
   // Record pre-context.
   hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()),
                       base::checked_cast<int>(buffer.size()), start_index, 0);
 
   CaseMap case_map(locale);
-  for (unsigned char_index = start_index;
+  for (wtf_size_t char_index = start_index;
        char_index < start_index + num_characters;) {
-    unsigned new_char_index = char_index;
+    wtf_size_t new_char_index = char_index;
     UNSAFE_TODO(U16_FWD_1(buffer.data(), new_char_index, buffer.size()));
     String char_by_char(
         buffer.subspan(char_index, new_char_index - char_index));
@@ -90,7 +90,7 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     else
       case_mapped_char = case_map.ToLower(char_by_char);
 
-    for (unsigned j = 0; j < case_mapped_char.length();) {
+    for (wtf_size_t j = 0; j < case_mapped_char.length();) {
       UChar32 codepoint = CodePointAtAndNext(case_mapped_char.Span16(), j);
       // Add all characters of the case mapping result at the same cluster
       // position.

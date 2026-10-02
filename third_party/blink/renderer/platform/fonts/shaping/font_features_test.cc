@@ -71,7 +71,7 @@ TEST_P(FontFeaturesByOrientationTest,
        EastAsianContextualSpacingHonorsFontFeatureSettings) {
   constexpr hb_tag_t chws = HB_TAG('c', 'h', 'w', 's');
   constexpr hb_tag_t vchw = HB_TAG('v', 'c', 'h', 'w');
-  for (unsigned value = 0; value <= 1; ++value) {
+  for (uint32_t value = 0; value <= 1; ++value) {
     scoped_refptr<FontFeatureSettings> settings = FontFeatureSettings::Create();
     settings->Append({IsHorizontal() ? chws : vchw, static_cast<int>(value)});
     FontDescription font_description;

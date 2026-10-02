@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/fonts/symbols_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -30,8 +31,8 @@ class PLATFORM_EXPORT RunSegmenter {
  public:
   // Indices into the UTF-16 buffer that is passed in
   struct PLATFORM_EXPORT RunSegmenterRange {
-    unsigned start = 0;
-    unsigned end = 0;
+    wtf_size_t start = 0;
+    wtf_size_t end = 0;
     UScriptCode script = USCRIPT_INVALID_CODE;
     OrientationIterator::RenderOrientation render_orientation =
         OrientationIterator::kOrientationKeep;
@@ -49,18 +50,18 @@ class PLATFORM_EXPORT RunSegmenter {
   template <class Iterator, typename SegmentationCategory>
   void ConsumeIteratorPastLastSplit(
       Iterator& iterator,
-      unsigned* iterator_position,
+      wtf_size_t* iterator_position,
       SegmentationCategory* segmentation_category);
 
-  unsigned buffer_size_;
+  wtf_size_t buffer_size_;
   RunSegmenterRange candidate_range_;
   ScriptRunIterator script_run_iterator_;
   std::optional<OrientationIterator> orientation_iterator_;
   SymbolsIterator symbols_iterator_;
-  unsigned last_split_ = 0;
-  unsigned script_run_iterator_position_ = 0;
-  unsigned orientation_iterator_position_ = 0;
-  unsigned symbols_iterator_position_ = 0;
+  wtf_size_t last_split_ = 0;
+  wtf_size_t script_run_iterator_position_ = 0;
+  wtf_size_t orientation_iterator_position_ = 0;
+  wtf_size_t symbols_iterator_position_ = 0;
   bool at_end_;
 };
 

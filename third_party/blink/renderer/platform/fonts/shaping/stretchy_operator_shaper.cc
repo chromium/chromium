@@ -54,7 +54,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       hb_ot_math_get_min_connector_overlap(hb_font, hb_stretch_axis));
   float max_connector_overlap = std::numeric_limits<float>::max();
   float non_extender_advance_sum = 0, extender_advance_sum = 0;
-  unsigned non_extender_count = 0, extender_count = 0;
+  wtf_size_t non_extender_count = 0, extender_count = 0;
 
   for (auto& part : parts) {
     // Calculate the count and advance sums of extender and non-extender glyphs.
@@ -90,19 +90,21 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   // size of size at least target size (r_min in MathML Core). Use a saturated
   // cast; if the value does not fit in unsigned, the kMaxGlyphs limit below
   // will take effect anyway.
-  unsigned repetition_count = base::saturated_cast<unsigned>(std::max<float>(
-      std::ceil((target_size - non_extender_advance_sum +
-                 min_connector_overlap * (non_extender_count - 1)) /
-                extender_non_overlapping_advance_sum),
-      0));
+  wtf_size_t repetition_count =
+      base::saturated_cast<wtf_size_t>(std::max<float>(
+          std::ceil((target_size - non_extender_advance_sum +
+                     min_connector_overlap * (non_extender_count - 1)) /
+                    extender_non_overlapping_advance_sum),
+          0));
 
   // Calculate the number of glyphs, limiting repetition_count to ensure the
   // assembly does not have more than HarfBuzzRunGlyphData::kMaxGlyphs.
   DCHECK_LE(non_extender_count, HarfBuzzRunGlyphData::kMaxGlyphs);
-  repetition_count = std::min<unsigned>(
+  repetition_count = std::min<wtf_size_t>(
       repetition_count,
       (HarfBuzzRunGlyphData::kMaxGlyphs - non_extender_count) / extender_count);
-  unsigned glyph_count = non_extender_count + repetition_count * extender_count;
+  wtf_size_t glyph_count =
+      non_extender_count + repetition_count * extender_count;
   DCHECK_LE(glyph_count, HarfBuzzRunGlyphData::kMaxGlyphs);
 
   // Calculate the maximum overlap (called o_max in MathML Core) and the number

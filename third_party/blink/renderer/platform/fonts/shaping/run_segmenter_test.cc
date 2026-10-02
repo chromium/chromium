@@ -21,15 +21,15 @@ struct SegmenterTestRun {
 };
 
 struct SegmenterExpectedRun {
-  unsigned start;
-  unsigned limit;
+  wtf_size_t start;
+  wtf_size_t limit;
   UScriptCode script;
   OrientationIterator::RenderOrientation render_orientation;
   FontFallbackPriority font_fallback_priority;
 
   SegmenterExpectedRun(
-      unsigned the_start,
-      unsigned the_limit,
+      wtf_size_t the_start,
+      wtf_size_t the_limit,
       UScriptCode the_script,
       OrientationIterator::RenderOrientation the_render_orientation,
       FontFallbackPriority the_font_fallback_priority)
@@ -48,7 +48,7 @@ class RunSegmenterTest : public testing::Test {
     text.Ensure16Bit();
     Vector<SegmenterExpectedRun> expect;
     for (auto& run : runs) {
-      unsigned length_before = text.length();
+      wtf_size_t length_before = text.length();
       text.Append(String::FromUtf8(run.text));
       expect.push_back(SegmenterExpectedRun(length_before, text.length(),
                                             run.script, run.render_orientation,
