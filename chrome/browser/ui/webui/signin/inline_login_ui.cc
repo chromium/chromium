@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -289,6 +290,7 @@ InlineLoginUI::InlineLoginUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   if (profile->IsChild()) {
     web_ui->AddMessageHandler(std::make_unique<ash::EduCoexistenceLoginHandler>(
         g_browser_process->GetFeatures()->application_locale_storage(),
+        IdentityManagerFactory::GetForProfile(profile),
         base::BindRepeating(&WebDialogUI::CloseDialog,
                             weak_factory_.GetWeakPtr(),
                             base::ListValue() /* args */)));

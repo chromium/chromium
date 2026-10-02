@@ -265,6 +265,8 @@ class InlineLoginHandlerTest
       // This is required for Child users, otherwise an account cannot be added.
       edu_handler_ = std::make_unique<EduCoexistenceLoginHandler>(
           g_browser_process->GetFeatures()->application_locale_storage(),
+          identity_test_env_profile_adaptor_->identity_test_env()
+              ->identity_manager(),
           base::DoNothing());
       edu_handler_->set_web_ui_for_test(web_ui());
       edu_handler_->RegisterMessages();

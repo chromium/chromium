@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/profiles",
-  "+chrome/browser/signin",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/ui/webui/signin/ash",
@@ -26,5 +25,6 @@ specific_include_rules = {
   "edu_coexistence_login_handler_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/signin",
   ],
 }

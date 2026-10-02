@@ -29,10 +29,6 @@ class EduCoexistenceLoginHandler : public content::WebUIMessageHandler,
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // `application_locale_storage` must not be null and must outlive `this`.
-  EduCoexistenceLoginHandler(
-      const ApplicationLocaleStorage* application_locale_storage,
-      const base::RepeatingClosure& close_dialog_closure);
   // `application_locale_storage` and `identity_manager` must not be null and
   // must outlive `this`.
   EduCoexistenceLoginHandler(

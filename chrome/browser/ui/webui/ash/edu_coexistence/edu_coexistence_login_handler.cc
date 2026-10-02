@@ -26,8 +26,6 @@
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/common/channel_info.h"
@@ -65,12 +63,6 @@ constexpr char kOnErrorWebUIListener[] = "show-error-screen";
 
 constexpr char kFetchAccessTokenResultHistogram[] =
     "AccountManager.EduCoexistence.FetchAccessTokenResult";
-
-signin::IdentityManager* GetIdentityManager() {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  return IdentityManagerFactory::GetForProfile(profile);
-}
 
 std::string GetEduCoexistenceURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -143,13 +135,6 @@ void EduCoexistenceLoginHandler::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kEduCoexistenceId,
                                std::string() /* default_value */);
 }
-
-EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
-    const ApplicationLocaleStorage* application_locale_storage,
-    const base::RepeatingClosure& close_dialog_closure)
-    : EduCoexistenceLoginHandler(application_locale_storage,
-                                 GetIdentityManager(),
-                                 close_dialog_closure) {}
 
 EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
     const ApplicationLocaleStorage* application_locale_storage,
