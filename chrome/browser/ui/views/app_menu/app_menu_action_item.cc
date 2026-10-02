@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
@@ -18,6 +19,7 @@
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
+DEFINE_UI_CLASS_PROPERTY_TYPE(AppMenuDragAndDropDelegate*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(const base::Feature*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 DEFINE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
@@ -44,6 +46,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(const base::Feature*,
                              nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppMenuIsAlertedInternal, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kAppMenuActionParamInternal, -1)
+DEFINE_UI_CLASS_PROPERTY_KEY(AppMenuDragAndDropDelegate*,
+                             kAppMenuDragAndDropDelegateInternal,
+                             nullptr)
 
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kAppMenuTextOverrideInternal)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ui::ImageModel, kAppMenuIconOverrideInternal)
@@ -97,6 +102,10 @@ const ui::ClassProperty<bool>* const AppMenuActionItem::kIsAlertedKey =
 
 const ui::ClassProperty<int>* const AppMenuActionItem::kActionParamKey =
     kAppMenuActionParamInternal;
+
+const ui::ClassProperty<AppMenuDragAndDropDelegate*>* const
+    AppMenuActionItem::kDragAndDropDelegateKey =
+        kAppMenuDragAndDropDelegateInternal;
 
 std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
     actions::ActionId action_id,

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -20,6 +21,7 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class ActionAppMenuManager;
+class AppMenuDragAndDropDelegate;
 class AppMenuSearchBarView;
 class BrowserWindowInterface;
 
@@ -55,12 +57,34 @@ class ActionAppMenu : public views::MenuDelegate {
   const gfx::FontList* GetLabelFontList(int id) const override;
   std::optional<SkColor> GetLabelColor(int id) const override;
   int GetMaxWidthForMenu(views::MenuItemView* menu) override;
+  bool GetDropFormats(views::MenuItemView* menu,
+                      int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool AreDropTypesRequired(views::MenuItemView* menu) override;
+  bool CanDrop(views::MenuItemView* menu,
+               const ui::OSExchangeData& data) override;
+  ui::mojom::DragOperation GetDropOperation(views::MenuItemView* item,
+                                            const ui::DropTargetEvent& event,
+                                            DropPosition* position) override;
+  views::View::DropCallback GetDropCallback(
+      views::MenuItemView* menu,
+      DropPosition position,
+      const ui::DropTargetEvent& event) override;
+  bool CanDrag(views::MenuItemView* menu) override;
+  void WriteDragData(views::MenuItemView* sender,
+                     ui::OSExchangeData* data) override;
+  int GetDragOperations(views::MenuItemView* sender) override;
+  bool ShouldCloseOnDragDropCompleted() override;
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
   void SetTimerForTesting(base::ElapsedTimer timer);
 
  private:
+  actions::BaseAction* GetActionForMenuItem(views::MenuItemView* menu) const;
+  AppMenuDragAndDropDelegate* GetDragAndDropDelegate(
+      actions::BaseAction* action) const;
+
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   // Recursively populates the menu item with the `base_action_item`'s

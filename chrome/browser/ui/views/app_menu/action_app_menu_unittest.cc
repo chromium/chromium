@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
@@ -84,7 +85,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ax_strings.h"
@@ -2793,6 +2799,140 @@ TEST_F(ActionAppMenuTest, SendTabToSelfMetrics) {
   histogram_tester.ExpectTotalCount(
       "Sharing.SendTabToSelf.TargetDeviceCount.ShareMenu", 0);
   menu_manager.OnMenuClosed();
+}
+
+class MockAppMenuDragAndDropDelegate : public AppMenuDragAndDropDelegate {
+ public:
+  MOCK_METHOD(bool,
+              GetDropFormats,
+              (actions::BaseAction*, int*, std::set<ui::ClipboardFormatType>*),
+              (override));
+  MOCK_METHOD(bool, AreDropTypesRequired, (actions::BaseAction*), (override));
+  MOCK_METHOD(bool,
+              CanDrop,
+              (actions::BaseAction*, const ui::OSExchangeData&),
+              (override));
+  MOCK_METHOD(ui::mojom::DragOperation,
+              GetDropOperation,
+              (actions::BaseAction*,
+               const ui::DropTargetEvent&,
+               views::MenuDelegate::DropPosition*),
+              (override));
+  MOCK_METHOD(views::View::DropCallback,
+              GetDropCallback,
+              (actions::BaseAction*,
+               views::MenuDelegate::DropPosition,
+               const ui::DropTargetEvent&),
+              (override));
+  MOCK_METHOD(bool, CanDrag, (actions::BaseAction*), (override));
+  MOCK_METHOD(void,
+              WriteDragData,
+              (actions::BaseAction*, ui::OSExchangeData*),
+              (override));
+  MOCK_METHOD(int, GetDragOperations, (actions::BaseAction*), (override));
+};
+
+TEST_F(ActionAppMenuTest, DragAndDropDelegateForwarding) {
+  testing::StrictMock<MockAppMenuDragAndDropDelegate> mock_delegate;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot,
+      BrowserActions::From(&mock_window_interface_)->root_action_item());
+  ASSERT_TRUE(app_menu_root);
+
+  auto submenu_action = actions::ActionItem::Builder()
+                            .SetText(u"Test DnD Submenu")
+                            .SetProperty(AppMenuActionItem::kIsSubmenuKey, true)
+                            .SetPopulateChildrenCallback(base::DoNothing())
+                            .Build();
+  submenu_action->SetProperty(
+      AppMenuActionItem::kDragAndDropDelegateKey,
+      static_cast<AppMenuDragAndDropDelegate*>(&mock_delegate));
+
+  auto* item_a_action = submenu_action->AddChild(
+      actions::ActionItem::Builder().SetText(u"Item A").Build());
+  app_menu_root->AddChild(std::move(submenu_action));
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* submenu_item = nullptr;
+  for (views::MenuItemView* item : root->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Test DnD Submenu") {
+      submenu_item = item;
+      break;
+    }
+  }
+  ASSERT_TRUE(submenu_item);
+  ASSERT_TRUE(submenu_item->HasSubmenu());
+  menu.WillShowMenu(submenu_item);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
+  views::MenuItemView* item_a_view =
+      submenu_item->GetSubmenu()->GetMenuItemAt(0);
+  EXPECT_EQ(item_a_view->title(), u"Item A");
+
+  // Verify drag-and-drop calls on child MenuItemView route to mock_delegate
+  // with item_a_action.
+  int formats = 0;
+  std::set<ui::ClipboardFormatType> format_types;
+  EXPECT_CALL(mock_delegate,
+              GetDropFormats(item_a_action, &formats, &format_types))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(menu.GetDropFormats(item_a_view, &formats, &format_types));
+
+  EXPECT_CALL(mock_delegate, AreDropTypesRequired(item_a_action))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(menu.AreDropTypesRequired(item_a_view));
+
+  ui::OSExchangeData data;
+  EXPECT_CALL(mock_delegate, CanDrop(item_a_action, testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(menu.CanDrop(item_a_view, data));
+
+  ui::DropTargetEvent drop_event(data, gfx::PointF(), gfx::PointF(),
+                                 ui::DragDropTypes::DRAG_MOVE);
+  views::MenuDelegate::DropPosition position =
+      views::MenuDelegate::DropPosition::kBefore;
+  EXPECT_CALL(mock_delegate,
+              GetDropOperation(item_a_action, testing::_, &position))
+      .WillOnce(testing::Return(ui::mojom::DragOperation::kMove));
+  EXPECT_EQ(menu.GetDropOperation(item_a_view, drop_event, &position),
+            ui::mojom::DragOperation::kMove);
+
+  bool drop_callback_ran = false;
+  EXPECT_CALL(mock_delegate,
+              GetDropCallback(item_a_action, position, testing::_))
+      .WillOnce(testing::Return(base::BindLambdaForTesting(
+          [&](const ui::DropTargetEvent&, ui::mojom::DragOperation& output_op,
+              std::unique_ptr<ui::LayerTreeOwner>) {
+            drop_callback_ran = true;
+            output_op = ui::mojom::DragOperation::kMove;
+          })));
+  views::View::DropCallback cb =
+      menu.GetDropCallback(item_a_view, position, drop_event);
+  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
+  std::move(cb).Run(drop_event, output_op, nullptr);
+  EXPECT_TRUE(drop_callback_ran);
+  EXPECT_EQ(output_op, ui::mojom::DragOperation::kMove);
+
+  EXPECT_CALL(mock_delegate, CanDrag(item_a_action))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(menu.CanDrag(item_a_view));
+
+  EXPECT_CALL(mock_delegate, WriteDragData(item_a_action, &data));
+  menu.WriteDragData(item_a_view, &data);
+
+  EXPECT_CALL(mock_delegate, GetDragOperations(item_a_action))
+      .WillOnce(testing::Return(ui::DragDropTypes::DRAG_MOVE));
+  EXPECT_EQ(menu.GetDragOperations(item_a_view), ui::DragDropTypes::DRAG_MOVE);
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
 }
 
 }  // namespace

@@ -16,6 +16,7 @@ source_set("app_menu") {
     "app_menu_block_button.h",
     "app_menu_block_view.h",
     "app_menu_chip_view.h",
+    "app_menu_drag_and_drop_delegate.h",
     "app_menu_footer_button.h",
     "app_menu_footer_view.h",
     "app_menu_minor_text_view.h",

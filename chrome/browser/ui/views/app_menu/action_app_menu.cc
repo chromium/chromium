@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "ui/actions/actions.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -325,9 +327,104 @@ int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
       DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
 }
 
+bool ActionAppMenu::GetDropFormats(
+    views::MenuItemView* menu,
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  actions::BaseAction* action = GetActionForMenuItem(menu);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->GetDropFormats(action, formats, format_types);
+  }
+  return false;
+}
+
+bool ActionAppMenu::AreDropTypesRequired(views::MenuItemView* menu) {
+  actions::BaseAction* action = GetActionForMenuItem(menu);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->AreDropTypesRequired(action);
+  }
+  return false;
+}
+
+bool ActionAppMenu::CanDrop(views::MenuItemView* menu,
+                            const ui::OSExchangeData& data) {
+  actions::BaseAction* action = GetActionForMenuItem(menu);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->CanDrop(action, data);
+  }
+  return false;
+}
+
+ui::mojom::DragOperation ActionAppMenu::GetDropOperation(
+    views::MenuItemView* item,
+    const ui::DropTargetEvent& event,
+    DropPosition* position) {
+  actions::BaseAction* action = GetActionForMenuItem(item);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->GetDropOperation(action, event, position);
+  }
+  return ui::mojom::DragOperation::kNone;
+}
+
+views::View::DropCallback ActionAppMenu::GetDropCallback(
+    views::MenuItemView* menu,
+    DropPosition position,
+    const ui::DropTargetEvent& event) {
+  actions::BaseAction* action = GetActionForMenuItem(menu);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->GetDropCallback(action, position, event);
+  }
+  return base::DoNothing();
+}
+
+bool ActionAppMenu::CanDrag(views::MenuItemView* menu) {
+  actions::BaseAction* action = GetActionForMenuItem(menu);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->CanDrag(action);
+  }
+  return false;
+}
+
+void ActionAppMenu::WriteDragData(views::MenuItemView* sender,
+                                  ui::OSExchangeData* data) {
+  actions::BaseAction* action = GetActionForMenuItem(sender);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    delegate->WriteDragData(action, data);
+  }
+}
+
+int ActionAppMenu::GetDragOperations(views::MenuItemView* sender) {
+  actions::BaseAction* action = GetActionForMenuItem(sender);
+  if (AppMenuDragAndDropDelegate* delegate = GetDragAndDropDelegate(action)) {
+    return delegate->GetDragOperations(action);
+  }
+  return MenuDelegate::GetDragOperations(sender);
+}
+
+bool ActionAppMenu::ShouldCloseOnDragDropCompleted() {
+  return false;
+}
+
 void ActionAppMenu::SetTimerForTesting(base::ElapsedTimer timer) {
   menu_manager_->SetTimerForTesting(timer);       // IN-TEST
   metrics_.SetTimerForTesting(std::move(timer));  // IN-TEST
+}
+
+actions::BaseAction* ActionAppMenu::GetActionForMenuItem(
+    views::MenuItemView* menu) const {
+  CHECK(menu);
+  auto it = command_to_action_map_.find(menu->GetCommand());
+  return it != command_to_action_map_.end() ? it->second : nullptr;
+}
+
+AppMenuDragAndDropDelegate* ActionAppMenu::GetDragAndDropDelegate(
+    actions::BaseAction* action) const {
+  for (actions::BaseAction* curr = action; curr; curr = curr->GetParent()) {
+    if (curr->HasPopulateChildActionsCallback()) {
+      return curr->GetProperty(AppMenuActionItem::kDragAndDropDelegateKey);
+    }
+  }
+  return nullptr;
 }
 
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,

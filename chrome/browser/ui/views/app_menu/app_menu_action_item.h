@@ -19,6 +19,8 @@
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
 
+class AppMenuDragAndDropDelegate;
+
 // Defines action item display types, class properties, and factory functions
 // used across the app menu.
 class AppMenuActionItem {
@@ -80,6 +82,8 @@ class AppMenuActionItem {
       kNewBadgeFeatureKey;
   static const ui::ClassProperty<bool>* const kIsAlertedKey;
   static const ui::ClassProperty<int>* const kActionParamKey;
+  static const ui::ClassProperty<AppMenuDragAndDropDelegate*>* const
+      kDragAndDropDelegateKey;
 
   AppMenuActionItem() = delete;
   AppMenuActionItem(const AppMenuActionItem&) = delete;
@@ -105,6 +109,7 @@ class AppMenuActionItem {
 
 DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::DisplayType)
 DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuActionItem::ItemHeight)
+DECLARE_UI_CLASS_PROPERTY_TYPE(AppMenuDragAndDropDelegate*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(const base::Feature*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::ImageModel*)
 DECLARE_UI_CLASS_PROPERTY_TYPE(ui::MenuSeparatorType)
