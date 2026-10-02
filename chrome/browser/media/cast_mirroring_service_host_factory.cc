@@ -19,8 +19,7 @@ CastMirroringServiceHostFactory::GetInstance() {
   return *instance;
 }
 
-std::unique_ptr<MirroringServiceHost>
-CastMirroringServiceHostFactory::GetForTab(
+MirroringServiceHost::UniquePtr CastMirroringServiceHostFactory::GetForTab(
     content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* target_contents =
@@ -28,21 +27,27 @@ CastMirroringServiceHostFactory::GetForTab(
   if (target_contents) {
     const content::DesktopMediaID media_id =
         CastMirroringServiceHost::BuildMediaIdForWebContents(target_contents);
-    return std::make_unique<CastMirroringServiceHost>(media_id);
+    return MirroringServiceHost::UniquePtr(
+        new CastMirroringServiceHost(media_id),
+        base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
   }
-  return nullptr;
+  return MirroringServiceHost::UniquePtr(nullptr,
+                                         base::OnTaskRunnerDeleter(nullptr));
 }
 
-std::unique_ptr<MirroringServiceHost>
-CastMirroringServiceHostFactory::GetForDesktop(
+MirroringServiceHost::UniquePtr CastMirroringServiceHostFactory::GetForDesktop(
     const std::optional<std::string>& media_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return media_id ? std::make_unique<CastMirroringServiceHost>(
-                        content::DesktopMediaID::Parse(*media_id))
-                  : nullptr;
+  if (!media_id) {
+    return MirroringServiceHost::UniquePtr(nullptr,
+                                           base::OnTaskRunnerDeleter(nullptr));
+  }
+  return MirroringServiceHost::UniquePtr(
+      new CastMirroringServiceHost(content::DesktopMediaID::Parse(*media_id)),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
 }
 
-std::unique_ptr<MirroringServiceHost>
+MirroringServiceHost::UniquePtr
 CastMirroringServiceHostFactory::GetForOffscreenTab(
     const GURL& presentation_url,
     const std::string& presentation_id,
@@ -55,9 +60,12 @@ CastMirroringServiceHostFactory::GetForOffscreenTab(
         std::make_unique<CastMirroringServiceHost>(content::DesktopMediaID());
     host->OpenOffscreenTab(web_contents->GetBrowserContext(), presentation_url,
                            presentation_id);
-    return host;
+    return MirroringServiceHost::UniquePtr(
+        host.release(),
+        base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
   }
-  return nullptr;
+  return MirroringServiceHost::UniquePtr(nullptr,
+                                         base::OnTaskRunnerDeleter(nullptr));
 }
 
 CastMirroringServiceHostFactory::CastMirroringServiceHostFactory() = default;

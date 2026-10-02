@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_MEDIA_MIRRORING_SERVICE_HOST_H_
 #define CHROME_BROWSER_MEDIA_MIRRORING_SERVICE_HOST_H_
 
+#include <memory>
+
+#include "base/task/sequenced_task_runner.h"
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
@@ -15,6 +18,9 @@ namespace mirroring {
 // the Mirroring Service. Must be called on UI thread.
 class MirroringServiceHost {
  public:
+  using UniquePtr =
+      std::unique_ptr<MirroringServiceHost, base::OnTaskRunnerDeleter>;
+
   virtual ~MirroringServiceHost();
 
   MirroringServiceHost(const MirroringServiceHost&) = delete;
@@ -66,13 +72,13 @@ class MirroringServiceHostFactory {
   MirroringServiceHostFactory& operator=(const MirroringServiceHostFactory&) =
       delete;
 
-  virtual std::unique_ptr<MirroringServiceHost> GetForTab(
+  virtual MirroringServiceHost::UniquePtr GetForTab(
       content::FrameTreeNodeId frame_tree_node_id) = 0;
 
-  virtual std::unique_ptr<MirroringServiceHost> GetForDesktop(
+  virtual MirroringServiceHost::UniquePtr GetForDesktop(
       const std::optional<std::string>& media_id) = 0;
 
-  virtual std::unique_ptr<MirroringServiceHost> GetForOffscreenTab(
+  virtual MirroringServiceHost::UniquePtr GetForOffscreenTab(
       const GURL& presentation_url,
       const std::string& presentation_id,
       content::FrameTreeNodeId frame_tree_node_id) = 0;

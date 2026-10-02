@@ -22,18 +22,18 @@ class CastMirroringServiceHostFactory : public MirroringServiceHostFactory {
 
   // Returns CastMirroringServiceHost instance if there exist a WebContents
   // connected to `frame_tree_node_id`, otherwise returns nullptr.
-  std::unique_ptr<MirroringServiceHost> GetForTab(
+  MirroringServiceHost::UniquePtr GetForTab(
       content::FrameTreeNodeId frame_tree_node_id) override;
 
   // Returns CastMirroringServiceHost instance if `media_id` has a value,
   // otherwise returns nullptr.
-  std::unique_ptr<MirroringServiceHost> GetForDesktop(
+  MirroringServiceHost::UniquePtr GetForDesktop(
       const std::optional<std::string>& media_id) override;
 
   // Returns CastMirroringServiceHost instance if there exist a WebContents
   // connected to `frame_tree_node_id` and `presentation_url` is a valid URL,
   // otherwise returns nullptr.
-  std::unique_ptr<MirroringServiceHost> GetForOffscreenTab(
+  MirroringServiceHost::UniquePtr GetForOffscreenTab(
       const GURL& presentation_url,
       const std::string& presentation_id,
       content::FrameTreeNodeId frame_tree_node_id) override;

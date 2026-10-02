@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -464,7 +465,7 @@ void MirroringActivity::CreateMirroringServiceHost(
           ? host_factory_for_test
           : &mirroring::CastMirroringServiceHostFactory::GetInstance());
 
-  base::OnceCallback<std::unique_ptr<mirroring::MirroringServiceHost>()>
+  base::OnceCallback<mirroring::MirroringServiceHost::UniquePtr()>
       host_creation_task;
 
   // Get a reference to the mirroring service host.
@@ -489,6 +490,11 @@ void MirroringActivity::CreateMirroringServiceHost(
       break;
   }
 
+  // The reply below is bound to a WeakPtr and runs on the IO sequence. If
+  // `this` is destroyed before it runs, the reply is dropped and its bound
+  // arguments (the newly created host) are destroyed on the IO sequence.
+  // MirroringServiceHost::UniquePtr attaches a UI-bound deleter on creation,
+  // guaranteeing that a dropped reply posts destruction back to the UI thread.
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE, std::move(host_creation_task),
       base::BindOnce(&MirroringActivity::OnHostCreated,
@@ -496,12 +502,15 @@ void MirroringActivity::CreateMirroringServiceHost(
 }
 
 void MirroringActivity::OnHostCreated(
-    std::unique_ptr<mirroring::MirroringServiceHost> host) {
+    mirroring::MirroringServiceHost::UniquePtr host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   if (!host) {
     return;
   }
-  host_.emplace(content::GetUIThreadTaskRunner({}), std::move(host));
+  // From here on, `host_` guarantees the host is destroyed on the UI thread, so
+  // the UI-bound deleter is no longer needed.
+  host_.emplace(content::GetUIThreadTaskRunner({}),
+                base::WrapUnique(host.release()));
   if (pending_start_params_) {
     host_.AsyncCall(&mirroring::MirroringServiceHost::Start)
         .WithArgs(std::move(pending_start_params_->session_params),
@@ -514,7 +523,7 @@ void MirroringActivity::OnHostCreated(
 }
 
 void MirroringActivity::SetMirroringServiceHostForTest(
-    std::unique_ptr<mirroring::MirroringServiceHost> host) {
+    mirroring::MirroringServiceHost::UniquePtr host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   OnHostCreated(std::move(host));
 }
