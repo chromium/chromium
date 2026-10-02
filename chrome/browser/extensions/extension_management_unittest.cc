@@ -1925,6 +1925,14 @@ TEST_F(ExtensionManagementServiceTest, IsForcedOrRecommendedInstallConfigured) {
   EXPECT_FALSE(extension_management_->IsForcedOrRecommendedInstallConfigured(
       *allowed_extension));
 
+  // Verify IsPolicyInstalled additionally checks manifest location (returning
+  // false for user-installed kInternal extensions even when policy-configured).
+  EXPECT_TRUE(extension_management_->IsPolicyInstalled(*forced_extension));
+  EXPECT_TRUE(extension_management_->IsPolicyInstalled(*recommended_extension));
+  EXPECT_FALSE(extension_management_->IsPolicyInstalled(*allowed_extension));
+  EXPECT_FALSE(extension_management_->IsPolicyInstalled(*CreateExtension(
+      ManifestLocation::kInternal, "0.1", forced_id, update_url)));
+
   // 2. Test best-effort lookup by extension ID.
   EXPECT_TRUE(
       extension_management_->IsForcedOrRecommendedInstallConfigured(forced_id));

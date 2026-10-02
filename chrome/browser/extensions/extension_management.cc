@@ -266,6 +266,18 @@ bool ExtensionManagement::IsForcedOrRecommendedInstallConfigured(
          mode == ManagedInstallationMode::kRecommended;
 }
 
+bool ExtensionManagement::IsPolicyInstalled(const Extension& extension) {
+  if (Manifest::IsPolicyLocation(extension.location())) {
+    return true;
+  }
+  // Verify policy settings for recommended extensions because the
+  // `kExternalPrefDownload` location is shared with non-policy installs
+  // and default apps.
+  return extension.location() ==
+             mojom::ManifestLocation::kExternalPrefDownload &&
+         IsForcedOrRecommendedInstallConfigured(extension);
+}
+
 base::DictValue ExtensionManagement::GetForceInstallList() const {
   return GetInstallListByMode(ManagedInstallationMode::kForced);
 }
@@ -560,16 +572,7 @@ bool ExtensionManagement::ShouldBlockPolicyInstalledDseNtpOverrideExtension(
   }
 
   // Block policy install attempts while allowing user-driven installs.
-  bool is_forced_policy = Manifest::IsPolicyLocation(extension.location());
-
-  // We must verify policy settings for recommended policy because the
-  // `kExternalPrefDownload` location is shared with non-policy installs
-  // and default apps.
-  bool is_recommended_policy =
-      extension.location() == mojom::ManifestLocation::kExternalPrefDownload &&
-      IsForcedOrRecommendedInstallConfigured(extension);
-
-  return is_forced_policy || is_recommended_policy;
+  return IsPolicyInstalled(extension);
 }
 
 bool ExtensionManagement::IsExtensionBlockedByLowTrust(

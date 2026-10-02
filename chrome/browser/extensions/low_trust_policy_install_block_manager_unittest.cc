@@ -10,6 +10,7 @@
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -32,6 +33,10 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
 
 namespace extensions {
 
@@ -193,6 +198,7 @@ TEST_F(LowTrustPolicyInstallBlockManagerTest,
 // malformed records (expired TTLs, missing fields, invalid enum values, and
 // non-dictionary structures) while retaining valid entries.
 TEST_F(LowTrustPolicyInstallBlockManagerTest, CleanupStaleRecords) {
+  base::HistogramTester histograms;
   base::Time now = base::Time::Now();
   PopulateTestEntries(now);
 
@@ -201,6 +207,11 @@ TEST_F(LowTrustPolicyInstallBlockManagerTest, CleanupStaleRecords) {
   EXPECT_EQ(manager()->CleanupStaleRecords(), 0u);
 
   EXPECT_TRUE(manager()->IsBlocked(kFreshId));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  histograms.ExpectUniqueSample(
+      "Extensions.LowTrustPolicyBlock.Action",
+      LowTrustPolicyBlockAction::kCacheClearedOnTtlExpiration, 5);
+#endif
 }
 
 class LowTrustPolicyInstallBlockManagerServiceTest
@@ -310,6 +321,7 @@ class LowTrustPolicyInstallBlockManagerServiceTest
 // cache while retaining extensions that remain configured in policy.
 TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
        LowTrustPolicyRemovalCleanup) {
+  base::HistogramTester histograms;
   SeedBlockedCacheEntries();
 
   // Configure force-install policy for kRetainedId only (simulating removal of
@@ -320,6 +332,11 @@ TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
 
   EXPECT_TRUE(block_manager()->IsBlocked(kRetainedId));
   EXPECT_FALSE(block_manager()->IsBlocked(kRemovedId));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  histograms.ExpectUniqueSample(
+      "Extensions.LowTrustPolicyBlock.Action",
+      LowTrustPolicyBlockAction::kCacheClearedOnPolicyRemoval, 1);
+#endif
 }
 
 // Verifies that when the browser starts up with persisted entries in the
@@ -387,6 +404,7 @@ TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
        LowTrustTransitionUninstall) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kBlockPolicyDseNtpOverridesInLowTrust);
+  base::HistogramTester histograms;
 
   // 1. In a managed environment, policy installations of settings-override
   // extensions are trusted and permitted to install and run normally.
@@ -414,6 +432,9 @@ TEST_F(LowTrustPolicyInstallBlockManagerServiceTest,
   // be cached in the low-trust blocked manager to prevent subsequent installs.
   EXPECT_FALSE(registry()->GetInstalledExtension(extension->id()));
   EXPECT_TRUE(block_manager()->IsBlocked(extension->id()));
+  histograms.ExpectUniqueSample(
+      "Extensions.LowTrustPolicyBlock.Action",
+      LowTrustPolicyBlockAction::kUninstalledOnTrustLoss, 1);
 }
 
 // Tests that when a policy-installed extension overriding the New Tab Page is

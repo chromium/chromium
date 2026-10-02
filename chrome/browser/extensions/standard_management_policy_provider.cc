@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/low_trust_policy_install_block_manager.h"
@@ -22,6 +23,10 @@
 #include "extensions/common/manifest.h"
 #include "extensions/strings/grit/extensions_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -194,6 +199,10 @@ void StandardManagementPolicyProvider::UserMayInstall(
         << extension->id()
         << ": Extension is not allowed to override DSE/NTP settings in "
            "low-trust environments.";
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+        LowTrustPolicyBlockAction::kBlockedOnInstall);
+#endif
     error = l10n_util::GetStringFUTF16(
         IDS_EXTENSION_CANT_POLICY_INSTALL_IN_LOW_TRUST,
         base::UTF8ToUTF16(extension->name()),

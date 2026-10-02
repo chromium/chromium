@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/time/time.h"
@@ -75,6 +76,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
 #endif
 
 namespace extensions {
@@ -500,7 +505,13 @@ TEST_F(ExternalProviderImplTest, LowTrustBlockedScannerBypass) {
                   ->IsBlocked(kGoodApp.app_id));
 
   // Run the scan again.
-  raw_provider->VisitRegisteredExtension();
+  {
+    base::HistogramTester histograms;
+    raw_provider->VisitRegisteredExtension();
+    histograms.ExpectUniqueSample("Extensions.LowTrustPolicyBlock.Action",
+                                  LowTrustPolicyBlockAction::kSkippedDownload,
+                                  1);
+  }
 
   // Second time: Since the extension is in the blocked cache and the
   // environment is low-trust, it is skipped and not added to the pending
@@ -617,7 +628,13 @@ TEST_F(ExternalProviderImplTest, LowTrustPolicyTakeoverPrevention) {
   external_provider_manager()->AddProviderForTesting(std::move(provider));
 
   // Run the provider update loop. This will synchronously trigger the scan.
-  raw_provider->VisitRegisteredExtension();
+  {
+    base::HistogramTester histograms;
+    raw_provider->VisitRegisteredExtension();
+    histograms.ExpectUniqueSample(
+        "Extensions.LowTrustPolicyBlock.Action",
+        LowTrustPolicyBlockAction::kBlockedPolicyTakeoverOfUserInstall, 1);
+  }
 
   // Verify that in a low-trust environment, policy installation does not
   // override the existing user-installed extension location.

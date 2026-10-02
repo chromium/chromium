@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -30,6 +31,10 @@
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
 
 namespace extensions {
 
@@ -199,6 +204,10 @@ void LowTrustPolicyInstallBlockManager::CleanupRemovedPolicyRecords() {
     // re-entrantly invoke this method, so verify the entry was still present
     // before logging its removal.
     if (update->Remove(id)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+          LowTrustPolicyBlockAction::kCacheClearedOnPolicyRemoval);
+#endif
       LOG_POLICY(INFO, POLICY_PROCESSING)
           << "[BlockLowTrustExtension] Cleared blocked cache entry for "
              "extension "
@@ -237,6 +246,10 @@ void LowTrustPolicyInstallBlockManager::UninstallBlockedExtensions() {
       LOG_POLICY(WARNING, POLICY_PROCESSING)
           << "[BlockLowTrustExtension] Uninstalled policy extension "
           << extension->id() << ": Device lost management trust status.";
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+          LowTrustPolicyBlockAction::kUninstalledOnTrustLoss);
+#endif
     } else {
       LOG_POLICY(ERROR, POLICY_PROCESSING)
           << "[BlockLowTrustExtension] Failed to uninstall policy extension "
@@ -315,7 +328,12 @@ size_t LowTrustPolicyInstallBlockManager::CleanupStaleRecords() {
   ScopedDictPrefUpdate update(&pref_service_.get(),
                               kBlockedLowTrustPolicyExtensions);
   for (const auto& stale_id : stale_ids) {
-    update->Remove(stale_id);
+    if (update->Remove(stale_id)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+          LowTrustPolicyBlockAction::kCacheClearedOnTtlExpiration);
+#endif
+    }
   }
 
   return stale_ids.size();

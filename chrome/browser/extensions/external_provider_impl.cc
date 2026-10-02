@@ -62,6 +62,10 @@
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
@@ -280,6 +284,10 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
 
     if (is_download_policy_provider &&
         extension_management->IsExtensionBlockedByLowTrust(extension_id)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+      PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+          LowTrustPolicyBlockAction::kSkippedDownload);
+#endif
       LOG_POLICY(INFO, POLICY_PROCESSING)
           << "[BlockLowTrustExtension] Skipped update download for policy "
              "extension "

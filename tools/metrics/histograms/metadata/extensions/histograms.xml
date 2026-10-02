@@ -3430,6 +3430,37 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.LowTrustPolicyBlock.Action"
+    enum="LowTrustPolicyBlockAction" expires_after="2027-07-01">
+  <owner>anunoy@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records enforcement and cache-management actions taken when handling
+    policy-configured DSE and NTP override extensions, emitted per extension,
+    per profile. Logged each time a policy installation is blocked, an update
+    download is skipped for a cached blocked extension, a policy takeover of an
+    existing user install is blocked, a policy extension is uninstalled due to
+    device trust loss (or initial enforcement on a low-trust device), or a
+    blocked cache entry is cleared after policy removal or 7-day TTL expiration.
+
+    Note on bucket frequencies: SkippedDownload is emitted on each policy
+    provider load (at startup and on policy preference updates) while an entry
+    is cached. BlockedOnInstall and BlockedPolicyTakeoverOfUserInstall can recur
+    after the 7-day cache TTL expires (CacheClearedOnTtlExpiration) if the
+    policy remains configured. Cache-cleared actions are emitted whenever a
+    cached entry is evicted regardless of current device trust state.
+    CacheClearedOnTtlExpiration also covers any malformed entries purged during
+    startup cleanup.
+
+    Use alongside
+    Extensions.SettingsOverrideV2.{OverrideType}.{TrustLevel}.{InstallMode},
+    which is logged once at profile startup and provides the overall population
+    baseline of policy-configured DSE and NTP extensions by state.
+
+    Note: This is only recorded on Windows and Mac.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Management.SetEnabled.HasUserGesture"
     enum="Boolean" expires_after="2026-03-20">
   <owner>solomonkinard@chromium.org</owner>
@@ -4665,9 +4696,18 @@ This is emitted for two scenarios when a worker may be unregistered:
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Reports the status (Enabled or Disabled) of policy-installed extensions that
-    perform a {OverrideType} override on {TrustLevel} devices where the
-    extension is {InstallMode}.
+    Reports the status (Enabled, Disabled, Blocked, UserInstalledEnabled, or
+    UserInstalledDisabled) of policy-configured extensions that perform a
+    {OverrideType} override on {TrustLevel} devices where the extension is
+    {InstallMode}.
+
+    Enabled and Disabled are recorded for policy-installed extensions. Blocked
+    is recorded when a policy-configured extension is not installed and is
+    present in the low-trust block cache (within its 7-day TTL).
+    UserInstalledEnabled and UserInstalledDisabled are recorded when a
+    user-installed copy of the extension is present after its policy takeover
+    was blocked. Blocked and UserInstalled* are only recorded under LowTrust
+    when low-trust blocking is active.
 
     This supersedes Extensions.{OverrideType}.{TrustLevel}.{InstallMode}, using
     policy-loading-specific management authority trustworthiness to determine
@@ -5296,13 +5336,17 @@ This is emitted for two scenarios when a worker may be unregistered:
   <owner>anunoy@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    WARNING: This histogram is pending deprecation and will be removed once
-    dashboards migrate to
-    Extensions.SettingsOverrideV2.{OverrideType}.{TrustLevel}.{InstallMode}.
+    WARNING: This histogram is pending deprecation and will be replaced by
+    Extensions.SettingsOverrideV2.{OverrideType}.{TrustLevel}.{InstallMode} once
+    the impact of the revised management authority trustworthiness retrieval
+    method is well understood. Unlike this histogram, the V2 histogram and
+    low-trust blocking exclude Azure AD Workplace-Joined devices from HighTrust
+    (so such devices record Blocked/UserInstalled* statuses under HighTrust
+    here).
 
-    Reports the status (Enabled or Disabled) of policy-installed extensions that
-    perform a {OverrideType} on {TrustLevel} devices where the extension is
-    {InstallMode}.
+    Reports the status (Enabled, Disabled, Blocked, UserInstalledEnabled, or
+    UserInstalledDisabled) of policy-installed extensions that perform a
+    {OverrideType} on {TrustLevel} devices where the extension is {InstallMode}.
 
     Logged once at startup during ExtensionService initialization.
 

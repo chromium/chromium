@@ -3563,6 +3563,19 @@ Called by update_extension_permission.py.-->
   <int value="6" label="Load failed - Ruleset file size limit exceeded"/>
 </enum>
 
+<!-- LINT.IfChange(LowTrustPolicyBlockAction) -->
+
+<enum name="LowTrustPolicyBlockAction">
+  <int value="0" label="BlockedOnInstall"/>
+  <int value="1" label="SkippedDownload"/>
+  <int value="2" label="BlockedPolicyTakeoverOfUserInstall"/>
+  <int value="3" label="UninstalledOnTrustLoss"/>
+  <int value="4" label="CacheClearedOnPolicyRemoval"/>
+  <int value="5" label="CacheClearedOnTtlExpiration"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h:LowTrustPolicyBlockAction) -->
+
 <enum name="ManifestInvalidAppStatusError">
   <int value="0" label="Unknown"/>
   <int value="1" label="Error unknown application"/>
@@ -3658,6 +3671,18 @@ Called by update_extension_permission.py.-->
       label="Channel not opened (opener port using different message
              serialization format)"/>
 </enum>
+
+<!-- LINT.IfChange(PolicyExtensionStatus) -->
+
+<enum name="PolicyExtensionStatus">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="Blocked"/>
+  <int value="3" label="UserInstalledEnabled"/>
+  <int value="4" label="UserInstalledDisabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h:PolicyExtensionStatus) -->
 
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>

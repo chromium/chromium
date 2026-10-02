@@ -8,9 +8,11 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
@@ -36,6 +38,10 @@
 #include "extensions/strings/grit/extensions_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -348,6 +354,8 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustSettingsOverrideBlock) {
         return test_future.Take();
       };
 
+  base::HistogramTester histograms;
+
   // 1. Simulate an unmanaged (low trust) environment.
   {
     policy::ScopedManagementServiceOverrideForTesting platform_management(
@@ -429,6 +437,10 @@ TEST_F(StandardManagementPolicyProviderTest, LowTrustSettingsOverrideBlock) {
       EXPECT_TRUE(decision.error.empty());
     }
   }
+
+  histograms.ExpectUniqueSample("Extensions.LowTrustPolicyBlock.Action",
+                                LowTrustPolicyBlockAction::kBlockedOnInstall,
+                                2);
 }
 
 // Tests that when an extension was previously blocked from policy install in

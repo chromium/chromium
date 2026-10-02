@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/crx_file/id_util.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/crx_installer.h"
 #include "extensions/browser/extension_prefs.h"
@@ -47,6 +48,10 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/verifier_formats.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "chrome/browser/extensions/policy_dse_ntp_override_metrics_reporter.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
@@ -565,6 +570,14 @@ bool ExternalProviderManager::CheckForAndMaybeBlockPolicyTakeover(
       BlockedExtensionInfo{.override_type = override_type,
                            .update_url = info.update_url.spec(),
                            .timestamp = base::Time::Now()});
+  LOG_POLICY(WARNING, POLICY_PROCESSING)
+      << "[BlockLowTrustExtension] Blocked policy takeover of user-installed "
+         "extension "
+      << info.extension_id
+      << ": Extension is not allowed to override DSE/NTP settings in "
+         "low-trust environments.";
+  PolicyDseNtpOverrideMetricsReporter::LogBlockAction(
+      LowTrustPolicyBlockAction::kBlockedPolicyTakeoverOfUserInstall);
 
   return true;
 }

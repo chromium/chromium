@@ -229,6 +229,12 @@ class ExtensionManagement : public KeyedService,
   bool IsForcedOrRecommendedInstallConfigured(const ExtensionId& extension_id,
                                               const std::string& update_url);
 
+  // Returns true if `extension` was installed via enterprise policy.
+  // This covers both policy-forced installations (kExternalPolicy,
+  // kExternalPolicyDownload) and policy-recommended installations
+  // (kExternalPrefDownload configured as recommended in policy).
+  bool IsPolicyInstalled(const Extension& extension);
+
   // Returns the list of blocked API permissions for `extension`.
   APIPermissionSet GetBlockedAPIPermissions(const Extension* extension);
 
