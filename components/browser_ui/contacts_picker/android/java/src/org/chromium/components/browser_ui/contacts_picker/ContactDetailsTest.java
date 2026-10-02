@@ -4,6 +4,12 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -11,46 +17,40 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 
-import androidx.test.InstrumentationRegistry;
-import androidx.test.filters.SmallTest;
+import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.Arrays;
 import java.util.List;
 
 /** Tests for the ContactDetails class. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ContactDetailsTest {
-    Context mContext;
+    private Context mContext;
 
     @Before
-    public void setUp() throws Exception {
-        mContext = InstrumentationRegistry.getTargetContext();
+    public void setUp() {
+        mContext = ApplicationProvider.getApplicationContext();
     }
 
     private void compareAbbreviatedContactDetails(
             ContactDetails.AbbreviatedContactDetails expected,
             ContactDetails.AbbreviatedContactDetails actual) {
-        Assert.assertEquals(expected.primaryEmail, actual.primaryEmail);
-        Assert.assertEquals(expected.overflowEmailCount, actual.overflowEmailCount);
-        Assert.assertEquals(expected.primaryTelephoneNumber, actual.primaryTelephoneNumber);
-        Assert.assertEquals(
-                expected.overflowTelephoneNumberCount, actual.overflowTelephoneNumberCount);
-        Assert.assertEquals(expected.primaryAddress, actual.primaryAddress);
-        Assert.assertEquals(expected.overflowAddressCount, actual.overflowAddressCount);
+        assertEquals(expected.primaryEmail, actual.primaryEmail);
+        assertEquals(expected.overflowEmailCount, actual.overflowEmailCount);
+        assertEquals(expected.primaryTelephoneNumber, actual.primaryTelephoneNumber);
+        assertEquals(expected.overflowTelephoneNumberCount, actual.overflowTelephoneNumberCount);
+        assertEquals(expected.primaryAddress, actual.primaryAddress);
+        assertEquals(expected.overflowAddressCount, actual.overflowAddressCount);
     }
 
     @Test
-    @SmallTest
     public void testBasics() {
         PaymentAddress address1 = new PaymentAddress();
         address1.city = "city";
@@ -83,27 +83,27 @@ public class ContactDetailsTest {
                         Arrays.asList("555 123-4567", "555 765-4321"),
                         Arrays.asList(address1, address2));
 
-        Assert.assertEquals("id", contact.getId());
-        Assert.assertEquals("Display Name", contact.getDisplayName());
-        Assert.assertEquals("DN", contact.getDisplayNameAbbreviation());
+        assertEquals("id", contact.getId());
+        assertEquals("Display Name", contact.getDisplayName());
+        assertEquals("DN", contact.getDisplayNameAbbreviation());
 
         List<String> emails = contact.getEmails();
-        Assert.assertEquals(2, emails.size());
-        Assert.assertEquals("email@example.com", emails.get(0));
-        Assert.assertEquals("email2@example.com", emails.get(1));
+        assertEquals(2, emails.size());
+        assertEquals("email@example.com", emails.get(0));
+        assertEquals("email2@example.com", emails.get(1));
 
         List<String> telephones = contact.getPhoneNumbers();
-        Assert.assertEquals(2, telephones.size());
-        Assert.assertEquals("555 123-4567", telephones.get(0));
-        Assert.assertEquals("555 765-4321", telephones.get(1));
+        assertEquals(2, telephones.size());
+        assertEquals("555 123-4567", telephones.get(0));
+        assertEquals("555 765-4321", telephones.get(1));
 
         List<PaymentAddress> addresses = contact.getAddresses();
-        Assert.assertEquals(2, addresses.size());
-        Assert.assertEquals("formattedAddress1", addresses.get(0).addressLine[0]);
-        Assert.assertEquals("formattedAddress2", addresses.get(1).addressLine[0]);
+        assertEquals(2, addresses.size());
+        assertEquals("formattedAddress1", addresses.get(0).addressLine[0]);
+        assertEquals("formattedAddress2", addresses.get(1).addressLine[0]);
 
-        Assert.assertEquals(false, contact.isSelf());
-        Assert.assertEquals(null, contact.getSelfIcon());
+        assertFalse(contact.isSelf());
+        assertNull(contact.getSelfIcon());
 
         contact.setIsSelf(true);
 
@@ -113,28 +113,28 @@ public class ContactDetailsTest {
         BitmapDrawable drawable = new BitmapDrawable(bitmap);
         contact.setSelfIcon(drawable);
 
-        Assert.assertEquals(true, contact.isSelf());
-        Assert.assertTrue(null != contact.getSelfIcon());
+        assertTrue(contact.isSelf());
+        assertNotNull(contact.getSelfIcon());
 
-        Assert.assertEquals(
+        assertEquals(
                 "",
                 contact.getContactDetailsAsString(
                         /* includeAddresses= */ false,
                         /* includeEmails= */ false,
                         /* includeTels= */ false));
-        Assert.assertEquals(
+        assertEquals(
                 "email@example.com\nemail2@example.com",
                 contact.getContactDetailsAsString(
                         /* includeAddresses= */ false,
                         /* includeEmails= */ true,
                         /* includeTels= */ false));
-        Assert.assertEquals(
+        assertEquals(
                 "555 123-4567\n555 765-4321",
                 contact.getContactDetailsAsString(
                         /* includeAddresses= */ false,
                         /* includeEmails= */ false,
                         /* includeTels= */ true));
-        Assert.assertEquals(
+        assertEquals(
                 "formattedAddress1\nformattedAddress2",
                 contact.getContactDetailsAsString(
                         /* includeAddresses= */ true,
@@ -210,7 +210,6 @@ public class ContactDetailsTest {
     }
 
     @Test
-    @SmallTest
     public void testEnsureSingleLine() {
         PaymentAddress address = new PaymentAddress();
         address.city = "city";
@@ -235,7 +234,7 @@ public class ContactDetailsTest {
                         /* includeEmails= */ false,
                         /* includeTels= */ false,
                         resources);
-        Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
+        assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // Even number of multiple consecutive new-lines.
         address.addressLine = new String[] {"Street\n\n\n\nCity\n\n\n\nCountry"};
@@ -246,7 +245,7 @@ public class ContactDetailsTest {
                         /* includeEmails= */ false,
                         /* includeTels= */ false,
                         resources);
-        Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
+        assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // New lines included, but none consecutive.
         address.addressLine = new String[] {"Street\nCity\nCountry"};
@@ -257,7 +256,7 @@ public class ContactDetailsTest {
                         /* includeEmails= */ false,
                         /* includeTels= */ false,
                         resources);
-        Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
+        assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // No new-lines.
         address.addressLine = new String[] {"Street City Country"};
@@ -268,6 +267,6 @@ public class ContactDetailsTest {
                         /* includeEmails= */ false,
                         /* includeTels= */ false,
                         resources);
-        Assert.assertEquals("Street City Country", abbreviated.primaryAddress);
+        assertEquals("Street City Country", abbreviated.primaryAddress);
     }
 }

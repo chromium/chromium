@@ -12,8 +12,6 @@ import static org.mockito.Mockito.when;
 import android.Manifest;
 import android.app.Activity;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,8 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.ContactsPermissionProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -31,11 +28,10 @@ import org.chromium.ui.base.WindowAndroid;
 import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AndroidContactsPermissionProviderImpl}. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AndroidContactsPermissionProviderTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
@@ -57,7 +53,6 @@ public class AndroidContactsPermissionProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testPermissionSkippedWhenSystemPickerEnabled() {
         mProvider.run(mWebContents, mCallback);
 
@@ -68,7 +63,6 @@ public class AndroidContactsPermissionProviderTest {
     }
 
     @Test
-    @SmallTest
     public void testPermissionRequestedWhenSystemPickerDisabled() {
         ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(false);
         // Assume permission not granted initially.
