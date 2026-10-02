@@ -17,10 +17,14 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 
 /** Base class for menu bottom sheets. */
 @NullMarked
 abstract class MenuSheetContent implements BottomSheetContent {
+    private static final BottomSheetType BOTTOM_SHEET_TYPE =
+            new BottomSheetType.Builder().setUserInitiated(true).build();
+
     private static final String TAG = "ReadAloudMenu";
     protected final BottomSheetController mBottomSheetController;
     protected final BottomSheetContent mParent;
@@ -69,6 +73,11 @@ abstract class MenuSheetContent implements BottomSheetContent {
 
     @Override
     public void destroy() {}
+
+    @Override
+    public BottomSheetType getSheetType() {
+        return BOTTOM_SHEET_TYPE;
+    }
 
     @Override
     @ContentPriority
