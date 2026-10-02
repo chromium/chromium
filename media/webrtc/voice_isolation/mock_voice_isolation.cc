@@ -9,4 +9,7 @@ namespace media {
 MockVoiceIsolation::MockVoiceIsolation() = default;
 MockVoiceIsolation::~MockVoiceIsolation() = default;
 
+MockVoiceIsolationComponent::MockVoiceIsolationComponent() = default;
+MockVoiceIsolationComponent::~MockVoiceIsolationComponent() = default;
+
 }  // namespace media

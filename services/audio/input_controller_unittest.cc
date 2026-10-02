@@ -70,6 +70,15 @@ const media::ChannelLayoutConfig kChannelLayoutConfig =
     media::ChannelLayoutConfig::Stereo();
 const int kSamplesPerPacket = kSampleRate / 100;
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+// Stream parameters for the voice isolation tests: VoiceIsolation CHECKs a
+// 48 kHz sample rate, and AudioProcessor requires 10 ms buffers. The other
+// tests keep `kSampleRate`.
+constexpr int kVoiceIsolationSampleRateHz = 48000;
+constexpr int kVoiceIsolationFramesPerBuffer =
+    kVoiceIsolationSampleRateHz / 100;
+#endif
+
 // InputController will poll once every second, so wait at most a bit
 // more than that for the callbacks.
 constexpr base::TimeDelta kOnMutePollInterval = base::Milliseconds(1000);
@@ -1184,6 +1193,8 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 #endif
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
        MAYBE_VoiceIsolationEnabledInConfig) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
   EXPECT_CALL(event_handler_, OnCreated(_));
@@ -1206,6 +1217,8 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
        VoiceIsolationCreationFailsIfModelNotAvailable) {
+  params_.Reset(params_.format(), params_.channel_layout_config(),
+                kVoiceIsolationSampleRateHz, kVoiceIsolationFramesPerBuffer);
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
   ml_model_manager_.set_return_null_model(true);

@@ -20,9 +20,11 @@ class AudioParameters;
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
  public:
   // Creates a VoiceIsolation object. For that it needs a pointer to the
-  // `model` and correct audio params (PCM linear format). `model` needs to
-  // remain valid for the lifetime of the VoiceIsolation object. Returns
-  // nullptr on failure.
+  // `model` and valid 48 kHz `audio_params` (`sample_rate() == 48000`, PCM
+  // linear format). `model` needs to remain valid for the lifetime of the
+  // VoiceIsolation object. Returns nullptr if no component can be created from
+  // `model`. Otherwise, invalid or non-48 kHz `audio_params` cause a CHECK
+  // failure.
   static std::unique_ptr<VoiceIsolation> Create(
       const tflite::FlatBufferModel* model,
       const media::AudioParameters& audio_params);
@@ -34,7 +36,10 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
                         VoiceIsolationCreationResult>
   CreateComponent(const tflite::FlatBufferModel* model);
 
-  // Creates a VoiceIsolation object wrapping an existing `component`.
+  // Creates a VoiceIsolation object wrapping an existing `component`. Requires
+  // valid 48 kHz `audio_params`. `component` must process mono 20 ms frames at
+  // 48 kHz, like the components returned by CreateComponent(). Both values are
+  // CHECKed.
   static std::unique_ptr<VoiceIsolation> Create(
       std::unique_ptr<VoiceIsolationComponent> component,
       const media::AudioParameters& audio_params);

@@ -9,6 +9,7 @@
 #include <numeric>
 
 #include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
@@ -23,9 +24,24 @@
 namespace media {
 namespace {
 
-// Frame size and rate of the component inside VoiceIsolation: 20 ms at 16 kHz.
-constexpr size_t kComponentFrameSize = 320;
+// Frame size and rate of the component inside VoiceIsolation: 20 ms at 48 kHz.
+constexpr size_t kComponentFrameSize = 960;
 constexpr size_t kComponentFramesPerSecond = 50;
+
+// 48 kHz stereo params with a fixed buffer size. Only the component layout or
+// `sample_rate` varies between tests.
+std::unique_ptr<VoiceIsolation> CreateWithPassthroughComponent(
+    size_t component_frame_size,
+    size_t component_frames_per_second,
+    int sample_rate = 48000) {
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), sample_rate,
+                         sample_rate / 100);
+  return VoiceIsolation::Create(
+      std::make_unique<PassthroughVoiceIsolation>(component_frame_size,
+                                                  component_frames_per_second),
+      params);
+}
 
 }  // namespace
 
@@ -327,6 +343,29 @@ TEST(VoiceIsolationTest, CreateComponentFailsOnInvalidModel) {
                          ChannelLayoutConfig::Stereo(), kSampleRate,
                          kFrameSize);
   EXPECT_EQ(VoiceIsolation::Create(bogus.model.get(), params), nullptr);
+}
+
+TEST(VoiceIsolationDeathTest, ComponentWithDifferentFrameSizeIsRejected) {
+  EXPECT_CHECK_DEATH(CreateWithPassthroughComponent(2 * kComponentFrameSize,
+                                                    kComponentFramesPerSecond));
+}
+
+TEST(VoiceIsolationDeathTest, ComponentWithDifferentFrameRateIsRejected) {
+  EXPECT_CHECK_DEATH(CreateWithPassthroughComponent(
+      kComponentFrameSize, kComponentFramesPerSecond / 2));
+}
+
+TEST(VoiceIsolationDeathTest, Non48kHzStreamIsRejected) {
+  EXPECT_CHECK_DEATH(CreateWithPassthroughComponent(
+      kComponentFrameSize, kComponentFramesPerSecond, /*sample_rate=*/44100));
+}
+
+// Positive control: the same helper with valid inputs doesn't crash, so each
+// death above comes from the mismatch under test.
+TEST(VoiceIsolationTest, MatchingComponentAnd48kHzStreamIsAccepted) {
+  EXPECT_NE(CreateWithPassthroughComponent(kComponentFrameSize,
+                                           kComponentFramesPerSecond),
+            nullptr);
 }
 
 }  // namespace media

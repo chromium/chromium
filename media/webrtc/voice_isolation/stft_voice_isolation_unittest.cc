@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "media/webrtc/voice_isolation/mock_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,22 +19,6 @@ namespace media {
 
 using testing::_;
 using testing::Return;
-
-namespace {
-
-class MockVoiceIsolationComponent : public VoiceIsolationComponent {
- public:
-  MOCK_METHOD(void,
-              ProcessAudio,
-              (base::span<const float> input, base::span<float> output),
-              (override));
-  MOCK_METHOD(size_t, FrameSize, (), (const, override));
-  MOCK_METHOD(size_t, FramesPerSecond, (), (const, override));
-  MOCK_METHOD(void, ClearBuffers, (), (override));
-  MOCK_METHOD(base::TimeDelta, AlgorithmicDelay, (), (const, override));
-};
-
-}  // namespace
 
 TEST(VoiceIsolationWindowedFftTest, WindowOlaProperty) {
   constexpr size_t kFftSize = 480;

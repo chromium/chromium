@@ -9,6 +9,8 @@ source_set("voice_isolation") {
   visibility = [ "//media/webrtc/*" ]
 
   sources = [
+    "band_split_voice_isolation.cc",
+    "band_split_voice_isolation.h",
     "passthrough_voice_isolation.cc",
     "passthrough_voice_isolation.h",
     "stft_voice_isolation.cc",
@@ -79,6 +81,7 @@ source_set("unit_tests") {
     "//third_party/tflite",
   ]
   sources = [
+    "band_split_voice_isolation_unittest.cc",
     "passthrough_voice_isolation_unittest.cc",
     "stft_voice_isolation_unittest.cc",
     "tflite_voice_isolation_unittest.cc",

@@ -14,6 +14,7 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/converting_audio_fifo.h"
+#include "media/webrtc/voice_isolation/band_split_voice_isolation.h"
 #include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
 #include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/tflite_voice_isolation.h"
@@ -23,26 +24,31 @@
 namespace media {
 
 namespace {
-constexpr size_t kVoiceIsolationFrameSize = 320;
-constexpr size_t kVoiceIsolationFramesPerSecond = 50;
+// StftVoiceIsolation consumes one waveform frame per two DFTs.
+constexpr size_t kVoiceIsolationFrameSize =
+    BandSplitVoiceIsolation::kFrameSize / BandSplitVoiceIsolation::kNumDfts;
+constexpr size_t kVoiceIsolationFramesPerSecond =
+    BandSplitVoiceIsolation::kFramesPerSecond;
+constexpr int kVoiceIsolationSampleRate = 48000;
+static_assert(kVoiceIsolationFrameSize * kVoiceIsolationFramesPerSecond ==
+              kVoiceIsolationSampleRate);
 
 base::expected<std::unique_ptr<VoiceIsolationComponent>,
                VoiceIsolationCreationResult>
 CreateVoiceIsolation(const tflite::FlatBufferModel* model) {
-  // Internally the model expects two sets of complex coefficients of two DFT of
-  // 160 samples.
-  constexpr size_t kModelFrameSize = 2 * kVoiceIsolationFrameSize;
   CHECK(model);
 
+  // Create the TfLite inference component (expects two 16kHz DFTs of 160
+  // complex bins each).
   ASSIGN_OR_RETURN(std::unique_ptr<VoiceIsolationComponent> tflite,
                    TfLiteVoiceIsolation::MaybeCreate(model));
-  CHECK_EQ(tflite->FrameSize(), kModelFrameSize);
-  CHECK_EQ(tflite->FramesPerSecond(), kVoiceIsolationFramesPerSecond);
 
-  auto stft = std::make_unique<StftVoiceIsolation>(std::move(tflite));
-  CHECK_EQ(stft->FrameSize(), kModelFrameSize / 2);
-  CHECK_EQ(stft->FramesPerSecond(), kVoiceIsolationFramesPerSecond);
-  return stft;
+  // Wrap TfLite with BandSplitVoiceIsolation, which CHECKs the model layout,
+  // to split 48kHz DFTs down to 16kHz and zero-pad high bands on
+  // reconstruction. StftVoiceIsolation performs the 48kHz STFT and iSTFT. The
+  // VoiceIsolationImpl constructor CHECKs the layout of the returned component.
+  return std::make_unique<StftVoiceIsolation>(
+      std::make_unique<BandSplitVoiceIsolation>(std::move(tflite)));
 }
 
 class VoiceIsolationImpl : public VoiceIsolation {
@@ -68,13 +74,21 @@ VoiceIsolationImpl::VoiceIsolationImpl(
     std::unique_ptr<VoiceIsolationComponent> internal_voice_isolation,
     const media::AudioParameters& audio_params)
     : voice_isolation_component_(std::move(internal_voice_isolation)) {
-  CHECK(audio_params.IsValid());
   CHECK(voice_isolation_component_);
+  CHECK(audio_params.IsValid());
+  CHECK_EQ(audio_params.sample_rate(), kVoiceIsolationSampleRate);
+
+  // The FIFOs below feed the component mono frames of
+  // `kVoiceIsolationFrameSize` samples, `kVoiceIsolationFramesPerSecond` times
+  // per second. Create() accepts any component, so CHECK that it expects this
+  // exact frame layout.
+  CHECK_EQ(voice_isolation_component_->FrameSize(), kVoiceIsolationFrameSize);
+  CHECK_EQ(voice_isolation_component_->FramesPerSecond(),
+           kVoiceIsolationFramesPerSecond);
 
   media::AudioParameters mono_internal(
       media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      media::ChannelLayoutConfig::Mono(),
-      kVoiceIsolationFrameSize * kVoiceIsolationFramesPerSecond,
+      media::ChannelLayoutConfig::Mono(), kVoiceIsolationSampleRate,
       kVoiceIsolationFrameSize);
 
   forward_fifo_ =

@@ -86,6 +86,12 @@ int main(int argc, char** argv) {
     return 1;
   }
   int input_sample_rate = input_handler->GetSampleRate();
+  constexpr int kRequiredSampleRate = 48000;
+  if (input_sample_rate != kRequiredSampleRate) {
+    std::cerr << "Input file sample rate must be " << kRequiredSampleRate
+              << " Hz, got " << input_sample_rate << " Hz." << std::endl;
+    return 1;
+  }
 
   // Prepare model and voice isolation.
   auto model =
