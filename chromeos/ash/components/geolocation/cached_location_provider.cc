@@ -368,11 +368,11 @@ void CachedLocationProvider::ReportFieldTrialMetrics(
         GetHistogramName(strategy->strategy(), similarity_degree, prediction);
 
     // Use CustomHistogram for exact boundary control.
-    static const base::NoDestructor<std::vector<int>> kCustomRanges(
-        {1, 10, 100, 1000, 10000, 100000, 1000000});
+    static constexpr int kCustomRanges[] = {1,     10,     100,    1000,
+                                            10000, 100000, 1000000};
 
     base::HistogramBase* histogram = base::CustomHistogram::FactoryGet(
-        histogram_name, *kCustomRanges,
+        histogram_name, kCustomRanges,
         base::HistogramBase::kUmaTargetedHistogramFlag);
 
     histogram->Add(static_cast<int>(distance_meters));
