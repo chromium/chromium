@@ -392,7 +392,6 @@ void MaybeRecordSupervisedUserStateMetrics(
       CapabilityToSupervisionState(
           intercepted_account_info.GetAccountCapabilities()));
 }
-
 }  // namespace
 
 DiceWebSigninInterceptor::DiceWebSigninInterceptor(
@@ -931,9 +930,27 @@ bool DiceWebSigninInterceptor::ShouldShowChromeSigninBubble(
   return IsUsernameAllowedForInterceptionByPattern(email);
 }
 
-void DiceWebSigninInterceptor::ShowSigninInterceptionBubble(
+void DiceWebSigninInterceptor::MaybeShowSigninInterceptionBubble(
     const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
     base::OnceCallback<void(SigninInterceptionResult)> callback) {
+  if (bubble_parameters.interception_type ==
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin) {
+    // This method may be invoked from an asynchronous flow after the
+    // interception type was decided.
+    // Check that nothing changed in the meantime that makes the Chrome Signin
+    // bubble obsolete (e.g. the user was signed in).
+    bool is_interception_eligible = ShouldShowChromeSigninBubble(
+        bubble_parameters.intercepted_account.GetGaiaId(),
+        bubble_parameters.intercepted_account.GetEmail());
+    base::UmaHistogramBoolean(
+        "Signin.Intercept.ChromeSignin.BubbleIneligibleBeforeShow",
+        !is_interception_eligible);
+    if (!is_interception_eligible) {
+      Reset();
+      return;
+    }
+  }
+
   state_->was_interception_ui_displayed_ = true;
   state_->interception_type_ = bubble_parameters.interception_type;
   switch (bubble_parameters.interception_type) {
@@ -1277,7 +1294,7 @@ void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     }
   }
 
-  ShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
+  MaybeShowSigninInterceptionBubble(bubble_parameters, std::move(callback));
 }
 
 void DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived(
@@ -1308,7 +1325,7 @@ void DiceWebSigninInterceptor::OnAccountPreviewPreferenceReceived(
                           elapsed_time);
 
   bubble_parameters.account_preview_preference = std::move(preference);
-  ShowSigninInterceptionBubble(
+  MaybeShowSigninInterceptionBubble(
       bubble_parameters, std::move(state_->interception_bubble_callback_));
 }
 

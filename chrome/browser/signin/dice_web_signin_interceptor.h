@@ -286,7 +286,9 @@ class DiceWebSigninInterceptor : public KeyedService,
                                     std::string_view email) const;
 
   // Helper function to call `delegate_->ShowSigninInterceptionBubble()`.
-  void ShowSigninInterceptionBubble(
+  // Does not show the bubble and resets the interception if it is
+  // no longer eligible.
+  void MaybeShowSigninInterceptionBubble(
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback);
 

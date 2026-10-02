@@ -2609,6 +2609,19 @@ prefs when the profile is loaded.  -->
   </token>
 </histogram>
 
+<histogram name="Signin.Intercept.ChromeSignin.BubbleIneligibleBeforeShow"
+    enum="Boolean" expires_after="2027-06-01">
+  <owner>anthie@google.com</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records whether the Chrome Signin interception bubble was no longer eligible
+    at the time it was about to be shown. If true, the bubble is not shown and
+    the interception is aborted. This can happen if the eligibility changed
+    while waiting for an asynchronous operation after the interception type was
+    decided (e.g. the user got signed in to Chrome in the meantime).
+  </summary>
+</histogram>
+
 <histogram name="Signin.Intercept.ChromeSignin.DismissesBefore{Action}"
     units="attempts" expires_after="2026-11-09">
   <owner>rsult@google.com</owner>
