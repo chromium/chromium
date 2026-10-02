@@ -473,6 +473,8 @@ source_set("eg_test_support+eg2") {
     "lookalike_url_app_interface_stub.mm",
     "progress_indicator_app_interface.h",
     "progress_indicator_app_interface_stub.mm",
+    "suppress_input_views_app_interface.h",
+    "suppress_input_views_app_interface_stub.mm",
   ]
 
   deps = [
@@ -490,6 +492,8 @@ source_set("eg_app_support+eg2") {
     "lookalike_url_app_interface.mm",
     "progress_indicator_app_interface.h",
     "progress_indicator_app_interface.mm",
+    "suppress_input_views_app_interface.h",
+    "suppress_input_views_app_interface.mm",
   ]
 
   deps = [
@@ -526,6 +530,7 @@ source_set("eg2_tests") {
     "restore_egtest.mm",
     "ssl_egtest.mm",
     "stop_loading_egtest.mm",
+    "suppress_input_views_egtest.mm",
     "tab_order_egtest.mm",
     "visible_url_egtest.mm",
     "web_drag_drop_egtest.mm",

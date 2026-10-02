@@ -25,6 +25,10 @@
 // Delegate for controlling clipboard user interactions.
 @property(nonatomic, weak) id<CRWDataControlsDelegate> dataControlsDelegate;
 
+// Whether input views (the software keyboard and input accessory views) should
+// be suppressed. Defaults to `NO`.
+@property(nonatomic, assign) BOOL shouldSuppressInputViews;
+
 @end
 
 #endif  // IOS_WEB_WEB_STATE_CRW_WEB_VIEW_H_

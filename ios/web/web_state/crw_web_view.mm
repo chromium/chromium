@@ -18,7 +18,44 @@ using data_controls::ClipboardSource;
 using data_controls::RecordClipboardOutcomeMetrics;
 using data_controls::RecordClipboardSourceMetrics;
 
-@implementation CRWWebView
+namespace {
+
+// Returns the first responder in `view` or its subview hierarchy, or `nil` if
+// no view in the subtree is the first responder.
+UIView* GetFirstResponderSubview(UIView* view) {
+  if ([view isFirstResponder]) {
+    return view;
+  }
+
+  for (UIView* subview in [view subviews]) {
+    UIView* firstResponder = GetFirstResponderSubview(subview);
+    if (firstResponder) {
+      return firstResponder;
+    }
+  }
+
+  return nil;
+}
+
+}  // namespace
+
+@implementation CRWWebView {
+  // Zero-sized view that replaces the system software keyboard and any custom
+  // `inputViewProvider` input view when `shouldSuppressInputViews` is `YES`.
+  UIView* _emptyInputView;
+}
+
+#pragma mark - Public Properties
+
+- (void)setShouldSuppressInputViews:(BOOL)shouldSuppressInputViews {
+  if (_shouldSuppressInputViews == shouldSuppressInputViews) {
+    return;
+  }
+  _shouldSuppressInputViews = shouldSuppressInputViews;
+  // Call `reloadInputViews` on the active first responder in the hierarchy, as
+  // UIKit ignores it on non-first-responders.
+  [GetFirstResponderSubview(self) reloadInputViews];
+}
 
 #pragma mark - UIResponder
 
@@ -38,6 +75,14 @@ using data_controls::RecordClipboardSourceMetrics;
 }
 
 - (UIView*)inputView {
+  if (_shouldSuppressInputViews) {
+    // When `UIResponder.inputView` is `nil`, the system software keyboard is
+    // displayed. Return a zero-sized `UIView` instead to suppress the keyboard.
+    if (!_emptyInputView) {
+      _emptyInputView = [[UIView alloc] initWithFrame:CGRectZero];
+    }
+    return _emptyInputView;
+  }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputView)]) {
@@ -50,6 +95,9 @@ using data_controls::RecordClipboardSourceMetrics;
 }
 
 - (UIInputViewController*)inputViewController {
+  if (_shouldSuppressInputViews) {
+    return nil;
+  }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputViewController)]) {
@@ -63,6 +111,11 @@ using data_controls::RecordClipboardSourceMetrics;
 }
 
 - (UIView*)inputAccessoryView {
+  if (_shouldSuppressInputViews) {
+    // Returning `nil` hides the form accessory toolbar when a web input element
+    // is focused.
+    return nil;
+  }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView respondsToSelector:@selector(inputAccessoryView)]) {
@@ -75,6 +128,9 @@ using data_controls::RecordClipboardSourceMetrics;
 }
 
 - (UIInputViewController*)inputAccessoryViewController {
+  if (_shouldSuppressInputViews) {
+    return nil;
+  }
   id<CRWResponderInputView> responderInputView =
       self.inputViewProvider.responderInputView;
   if ([responderInputView

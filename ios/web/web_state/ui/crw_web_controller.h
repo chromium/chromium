@@ -89,6 +89,10 @@ class WebStateImpl;
 // elements.
 @property(nonatomic) UIEdgeInsets obscuredContentInsets API_AVAILABLE(ios(26));
 
+// Whether input views (the software keyboard and input accessory views) should
+// be suppressed. Defaults to `NO`. Must not be set to `YES` on tablets.
+@property(nonatomic, assign) BOOL shouldSuppressInputViews;
+
 // Whether the WebController should attempt to keep the render process alive.
 @property(nonatomic, assign, getter=shouldKeepRenderProcessAlive)
     BOOL keepsRenderProcessAlive;

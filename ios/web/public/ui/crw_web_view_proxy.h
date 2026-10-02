@@ -81,6 +81,11 @@
 // YES if the keyboard is currently visible for use in the web view.
 @property(nonatomic, readonly, getter=isKeyboardVisible) BOOL keyboardVisible;
 
+// Whether input views (the software keyboard and input accessory views) should
+// be suppressed. Defaults to `NO`. Must not be set to `YES` on tablets.
+// TODO(crbug.com/556733164): Add support for tablets.
+@property(nonatomic, assign) BOOL shouldSuppressInputViews;
+
 // Register the given insets for the given caller.
 - (void)registerInsets:(UIEdgeInsets)insets forCaller:(id)caller;
 

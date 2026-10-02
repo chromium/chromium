@@ -145,4 +145,25 @@ TEST_F(CRWWebViewProxyImplTest, ObscuredContentInsets) {
   }
 }
 
+// Tests that `shouldSuppressInputViews` is delegated to `CRWWebController`.
+TEST_F(CRWWebViewProxyImplTest, ShouldSuppressInputViews) {
+  CRWWebController* mockWebController =
+      OCMStrictClassMock([CRWWebController class]);
+  CRWWebViewProxyImpl* proxy =
+      [[CRWWebViewProxyImpl alloc] initWithWebController:mockWebController];
+
+  OCMExpect([mockWebController shouldSuppressInputViews]).andReturn(YES);
+  EXPECT_TRUE(proxy.shouldSuppressInputViews);
+
+  OCMExpect([mockWebController setShouldSuppressInputViews:YES]);
+  proxy.shouldSuppressInputViews = YES;
+
+  OCMExpect([mockWebController shouldSuppressInputViews]).andReturn(NO);
+  EXPECT_FALSE(proxy.shouldSuppressInputViews);
+
+  OCMExpect([mockWebController setShouldSuppressInputViews:NO]);
+  proxy.shouldSuppressInputViews = NO;
+  EXPECT_OCMOCK_VERIFY((id)mockWebController);
+}
+
 }  // namespace

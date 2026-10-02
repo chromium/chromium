@@ -21,11 +21,13 @@
   // to give components access in a limited and controlled manner.
   CRWWebViewScrollViewProxy* _contentViewScrollViewProxy;
   BOOL _ignoreObscuredInsets;
+  BOOL _shouldSuppressInputViews;
 }
 @synthesize contentView = _contentView;
 @synthesize allowsLinkPreview = _allowsLinkPreview;
 @synthesize ignoreObscuredInsets = _ignoreObscuredInsets;
 @synthesize obscuredContentInsets = _obscuredContentInsets;
+@synthesize shouldSuppressInputViews = _shouldSuppressInputViews;
 @dynamic keyboardVisible;
 
 - (instancetype)init {

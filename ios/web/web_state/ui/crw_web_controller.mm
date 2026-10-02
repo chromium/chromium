@@ -20,6 +20,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/not_fatal_until.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/trace_event/trace_event.h"
@@ -77,6 +78,7 @@
 #import "ios/web/web_state/web_view_pass_key.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/window_open_disposition.h"
 #import "url/gurl.h"
 #import "url/origin.h"
@@ -467,6 +469,21 @@ JavaScriptCompletionBlock WrapCompletionBlock(
   }
 }
 
+- (void)setShouldSuppressInputViews:(BOOL)shouldSuppressInputViews {
+  if (shouldSuppressInputViews) {
+    // TODO(crbug.com/556733164): Add support for tablets.
+    const BOOL isTablet =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+    CHECK(!isTablet);
+  }
+  // Store it to an instance variable as well as
+  // `self.webView.shouldSuppressInputViews` because `self.webView` may be
+  // `nil`. When `self.webView` is `nil`, it will be set later in
+  // `-setWebView:`.
+  _shouldSuppressInputViews = shouldSuppressInputViews;
+  self.webView.shouldSuppressInputViews = shouldSuppressInputViews;
+}
+
 #pragma mark - Private properties accessors
 
 - (void)setWebView:(CRWWebView*)webView {
@@ -522,6 +539,7 @@ JavaScriptCompletionBlock WrapCompletionBlock(
         _webView.obscuredContentInsets = *_obscuredContentInsets;
       }
     }
+    _webView.shouldSuppressInputViews = _shouldSuppressInputViews;
   }
   self.webViewNavigationObserver.webView = _webView;
 

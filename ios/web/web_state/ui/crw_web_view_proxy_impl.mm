@@ -211,6 +211,14 @@ UIView* GetFirstResponderSubview(UIView* view) {
   return firstResponder.inputAccessoryView != nil;
 }
 
+- (BOOL)shouldSuppressInputViews {
+  return _webController.shouldSuppressInputViews;
+}
+
+- (void)setShouldSuppressInputViews:(BOOL)shouldSuppressInputViews {
+  _webController.shouldSuppressInputViews = shouldSuppressInputViews;
+}
+
 - (BOOL)becomeFirstResponder {
   return [_contentView becomeFirstResponder];
 }
