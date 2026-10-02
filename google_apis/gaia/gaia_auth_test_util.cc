@@ -4,10 +4,41 @@
 
 #include "google_apis/gaia/gaia_auth_test_util.h"
 
+#include <memory>
+
 #include "base/base64.h"
+#include "build/build_config.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
+#include "google_apis/gaia/android/jni_headers/DeviceManagementErrorDetails_jni.h"
+#include "google_apis/gaia/android_device_management_error_details.h"
+#else
+namespace {
+
+class FakeDeviceManagementErrorDetails
+    : public gaia::DeviceManagementErrorDetails {
+ public:
+  FakeDeviceManagementErrorDetails() = default;
+  ~FakeDeviceManagementErrorDetails() override = default;
+
+  std::unique_ptr<gaia::DeviceManagementErrorDetails> Clone() const override {
+    return std::make_unique<FakeDeviceManagementErrorDetails>();
+  }
+
+  bool Equals(const gaia::DeviceManagementErrorDetails& other) const override {
+    return true;
+  }
+
+  bool IsUserActionable() const override { return false; }
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace gaia {
 
@@ -50,6 +81,18 @@ std::string CreateListAccountsResponseInBinaryFormat(
   response.SerializeToString(&serialized_response);
 
   return base::Base64Encode(serialized_response);
+}
+
+std::unique_ptr<DeviceManagementErrorDetails>
+CreateFakeDeviceManagementErrorDetails() {
+#if BUILDFLAG(IS_ANDROID)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return std::make_unique<AndroidDeviceManagementErrorDetails>(
+      base::android::ScopedJavaGlobalRef<jobject>(
+          Java_DeviceManagementErrorDetails_Constructor(env, nullptr)));
+#else
+  return std::make_unique<FakeDeviceManagementErrorDetails>();
+#endif
 }
 
 }  // namespace gaia

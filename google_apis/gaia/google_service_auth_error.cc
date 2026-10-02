@@ -17,6 +17,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "google_apis/gaia/android/jni_headers/GoogleServiceAuthError_jni.h"
+#include "google_apis/gaia/android_device_management_error_details.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -362,6 +363,14 @@ GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
       return GSAE::CreateRequestCanceled();
     case GSAE::ACCOUNT_NOT_FOUND:
       return GSAE::CreateAccountNotFound();
+    case GSAE::DEVICE_MANAGEMENT_ERROR: {
+      base::android::ScopedJavaLocalRef<jobject> j_details =
+          Java_GoogleServiceAuthError_getDeviceManagementErrorDetails(
+              env, j_auth_error);
+      return GSAE::FromDeviceManagementError(
+          std::make_unique<gaia::AndroidDeviceManagementErrorDetails>(
+              base::android::ScopedJavaGlobalRef<jobject>(j_details)));
+    }
     default:
       NOTREACHED();
   }
@@ -369,6 +378,13 @@ GoogleServiceAuthError GoogleServiceAuthError::FromJavaObject(
 
 jni_zero::ScopedJavaLocalRef<jobject> GoogleServiceAuthError::ToJavaObject(
     JNIEnv* env) const {
+  if (state() == DEVICE_MANAGEMENT_ERROR) {
+    const auto& details =
+        static_cast<const gaia::AndroidDeviceManagementErrorDetails&>(
+            GetDeviceManagementErrorDetails());
+    return Java_GoogleServiceAuthError_fromDeviceManagementError(
+        env, details.GetJavaObject());
+  }
   return Java_GoogleServiceAuthError_Constructor(env, state());
 }
 

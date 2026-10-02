@@ -203,6 +203,10 @@ component("google_apis") {
   }
 
   if (is_android) {
+    sources += [
+      "gaia/android_device_management_error_details.cc",
+      "gaia/android_device_management_error_details.h",
+    ]
     deps += [ "gaia/android:jni_headers" ]
   }
 
@@ -220,8 +224,6 @@ proto_library("proto") {
 static_library("test_support") {
   testonly = true
   sources = [
-    "gaia/fake_device_management_error_details.cc",
-    "gaia/fake_device_management_error_details.h",
     "gaia/fake_gaia.cc",
     "gaia/fake_gaia.h",
     "gaia/fake_oauth2_access_token_manager.cc",
@@ -247,6 +249,10 @@ static_library("test_support") {
     "//services/network:test_support",
     "//services/network/public/cpp",
   ]
+
+  if (is_android) {
+    deps = [ "gaia/android:jni_headers" ]
+  }
 }
 
 source_set("run_all_unittests") {
@@ -304,7 +310,10 @@ test("google_apis_unittests") {
   }
 
   if (is_android) {
-    deps += [ "//net/android:net_java" ]
+    deps += [
+      "//google_apis/gaia/android:java",
+      "//net/android:net_java",
+    ]
   }
 
   if (is_fuchsia) {

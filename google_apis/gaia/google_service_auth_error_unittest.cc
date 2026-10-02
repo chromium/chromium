@@ -7,9 +7,13 @@
 #include <memory>
 #include <string>
 
-#include "google_apis/gaia/fake_device_management_error_details.h"
+#include "google_apis/gaia/gaia_auth_test_util.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif
 
 namespace {
 
@@ -69,11 +73,22 @@ TEST(GoogleServiceAuthErrorTest, FromUnexpectedServiceResponse) {
 TEST(GoogleServiceAuthErrorTest, FromDeviceManagementError) {
   GoogleServiceAuthError error =
       GoogleServiceAuthError::FromDeviceManagementError(
-          std::make_unique<gaia::FakeDeviceManagementErrorDetails>());
+          gaia::CreateFakeDeviceManagementErrorDetails());
   EXPECT_EQ(GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR, error.state());
   EXPECT_FALSE(error.IsTransientError());
   EXPECT_TRUE(error.IsPersistentError());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(GoogleServiceAuthErrorTest, DeviceManagementErrorJavaConversion) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromDeviceManagementError(
+          gaia::CreateFakeDeviceManagementErrorDetails());
+  EXPECT_EQ(error, GoogleServiceAuthError::FromJavaObject(
+                       env, error.ToJavaObject(env)));
+}
+#endif
 
 TEST(GoogleServiceAuthErrorTest, FromInvalidGaiaCredentialsReason) {
   GoogleServiceAuthError error =
