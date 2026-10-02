@@ -4088,6 +4088,11 @@ AX_TEST_F(
 <div aria-label="fourth"><button>fifth</button><button>sixth</button></div>
 `;
       const root = await this.runWithLoadedTree(site);
+      // ChromeVox focuses each button as it navigates. Don't announce the
+      // resulting (async) focus events; they can arrive after the next command
+      // and move the range back, racing with the expectations below.
+      BaseAutomationHandler.announceActions = false;
+
       // Fake out the divs to be windows.
       const window1 = root.children[0];
       const window2 = root.children[1];
