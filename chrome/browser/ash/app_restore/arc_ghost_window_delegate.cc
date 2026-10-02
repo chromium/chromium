@@ -59,7 +59,9 @@ void ArcGhostWindowDelegate::OnStateChanged(
   display::Display display;
   const display::Screen* screen = display::Screen::Get();
   auto display_existed = screen->GetDisplayWithDisplayId(display_id_, &display);
-  CHECK(display_existed, base::NotFatalUntil::M160);
+  // TODO(crbug.com/568455879):CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(display_existed);
 
   switch (new_state) {
     case chromeos::WindowStateType::kNormal:
