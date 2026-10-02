@@ -2142,7 +2142,6 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/crash/MinidumpUploadServiceTest.java",
     "src/org/chromium/chrome/browser/crypto/CipherFactoryTest.java",
     "src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
-    "src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandlerTest.java",
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
     "src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
     "src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
