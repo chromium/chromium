@@ -3,12 +3,16 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -28,14 +32,50 @@
 #include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/test/test_data_pipe_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace enterprise_connectors {
 namespace {
+
+// Chunked data pipe getter that provides `data` and records whether it was
+// read.
+class FakeChunkedDataPipeGetter : public network::mojom::ChunkedDataPipeGetter {
+ public:
+  explicit FakeChunkedDataPipeGetter(std::string data)
+      : data_(std::move(data)) {}
+  ~FakeChunkedDataPipeGetter() override = default;
+
+  mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  bool was_read() const { return was_read_; }
+
+  // network::mojom::ChunkedDataPipeGetter:
+  void GetSize(GetSizeCallback callback) override {
+    std::move(callback).Run(net::OK, data_.size());
+  }
+  void StartReading(mojo::ScopedDataPipeProducerHandle pipe) override {
+    was_read_ = true;
+    // `data_` is small enough to be written to the pipe all at once.
+    EXPECT_EQ(pipe->WriteAllData(base::as_byte_span(data_)), MOJO_RESULT_OK);
+  }
+
+ private:
+  std::string data_;
+  bool was_read_ = false;
+  mojo::Receiver<network::mojom::ChunkedDataPipeGetter> receiver_{this};
+};
 
 class ContentAnalysisBrowserTest : public MixinBasedPlatformBrowserTest,
                                    public test::ContentAnalysisBrowserTestBase {
@@ -285,6 +325,45 @@ IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest, NetworkRequestAllowed) {
       browser()->GetProfile())
       ->MaybeUploadForDeepScanning(std::move(request));
   run_loop.Run();
+}
+
+// Chunked bodies have no size advertised up front, so they can't be checked
+// against the upload size limit. Only their metadata should be sent, even if
+// the server asks for the content.
+IN_PROC_BROWSER_TEST_F(ContentAnalysisBrowserTest,
+                       NetworkRequestChunkedDataNotUploaded) {
+  FakeChunkedDataPipeGetter chunked_data_pipe_getter(text());
+  auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
+  request_body->SetToChunkedDataPipe(
+      chunked_data_pipe_getter.BindNewPipeAndPassRemote(),
+      network::ResourceRequestBody::ReadOnlyOnce(false));
+  // Chunked bodies are only sent over HTTP/2 or HTTP/3 by default. Allow
+  // HTTP/1.1 so the embedded test server would receive the content if it was
+  // uploaded.
+  request_body->SetAllowHTTP1ForStreamingUpload(true);
+
+  GURL url = browser()
+                 ->GetTabStripModel()
+                 ->GetActiveWebContents()
+                 ->GetLastCommittedURL();
+  ContentAnalysisRequest expected_request =
+      CreateNetworkAnalysisRequest(url, ExpectedDeviceToken());
+
+  AddExpectedMetadataOnlyScanningRequest(expected_request);
+
+  base::test::TestFuture<ScanRequestUploadResult, ContentAnalysisResponse>
+      future;
+  auto request = CreateNetworkUploadRequest(
+      expected_request, std::move(request_body), future.GetCallback());
+
+  safe_browsing::CloudBinaryUploadServiceFactory::GetForProfile(
+      browser()->GetProfile())
+      ->MaybeUploadForDeepScanning(std::move(request));
+
+  // No verdict is received since the content isn't uploaded.
+  EXPECT_EQ(future.Get<ScanRequestUploadResult>(),
+            ScanRequestUploadResult::kUploadFailure);
+  EXPECT_FALSE(chunked_data_pipe_getter.was_read());
 }
 
 }  // namespace enterprise_connectors

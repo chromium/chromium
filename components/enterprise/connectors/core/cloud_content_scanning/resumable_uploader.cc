@@ -180,6 +180,7 @@ ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    ScanRequestUploadResult get_data_result,
     scoped_refptr<network::ResourceRequestBody> request_body,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -197,7 +198,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                              ui_task_runner),
       verdict_received_callback_(std::move(verdict_received_callback)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
-      get_data_result_(ScanRequestUploadResult::kSuccess),
+      get_data_result_(get_data_result),
       force_sync_upload_(force_sync_upload) {
   AssertCalledOnUIThread();
 }
@@ -310,6 +311,7 @@ ResumableUploadRequest::CreateNetworkRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
     const std::string& metadata,
+    ScanRequestUploadResult get_data_result,
     scoped_refptr<network::ResourceRequestBody> request_body,
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -319,13 +321,13 @@ ResumableUploadRequest::CreateNetworkRequest(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   if (factory_) {
     return factory_->CreateNetworkRequest(
-        url_loader_factory, base_url, metadata, std::move(request_body),
-        histogram_suffix, traffic_annotation,
+        url_loader_factory, base_url, metadata, get_data_result,
+        std::move(request_body), histogram_suffix, traffic_annotation,
         std::move(verdict_received_callback)
             .Then(std::move(content_uploaded_callback)));
   }
   return std::make_unique<ResumableUploadRequest>(
-      std::move(url_loader_factory), base_url, metadata,
+      std::move(url_loader_factory), base_url, metadata, get_data_result,
       std::move(request_body), histogram_suffix, traffic_annotation,
       std::move(verdict_received_callback),
       std::move(content_uploaded_callback), force_sync_upload,

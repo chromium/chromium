@@ -108,6 +108,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
   MockResumableUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<network::ResourceRequestBody> request_body,
+      ScanRequestUploadResult get_data_result,
       ResumableUploadRequest::VerdictReceivedCallback verdict_received_callback,
       ResumableUploadRequest::ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload)
@@ -115,6 +116,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
             url_loader_factory,
             GURL("https://google.com"),
             "metadata",
+            get_data_result,
             std::move(request_body),
             "DummySuffix",
             TRAFFIC_ANNOTATION_FOR_TESTS,
@@ -487,7 +489,8 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
   auto request = std::make_unique<MockResumableUploadRequest>(
-      nullptr, request_body, base::DoNothing(), base::DoNothing(), false);
+      nullptr, request_body, ScanRequestUploadResult::kSuccess,
+      base::DoNothing(), base::DoNothing(), false);
   request->set_access_token("test-token");
   request->SetMetadataRequestHeaders(&resource_request);
 
@@ -549,7 +552,8 @@ TEST_F(ResumableUploadRequestTest, NetworkRequestStreamsDataPipe) {
   auto request = std::make_unique<MockResumableUploadRequest>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
-      request_body, std::move(verdict_callback), std::move(content_callback),
+      request_body, ScanRequestUploadResult::kSuccess,
+      std::move(verdict_callback), std::move(content_callback),
       /*force_sync_upload=*/false);
 
   test_url_loader_factory_.SetInterceptor(
@@ -640,7 +644,8 @@ TEST_F(ResumableUploadRequestTest, NetworkRequestStreamsLargeDataPipe) {
   auto request = std::make_unique<MockResumableUploadRequest>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
-      request_body, std::move(verdict_callback), std::move(content_callback),
+      request_body, ScanRequestUploadResult::kSuccess,
+      std::move(verdict_callback), std::move(content_callback),
       /*force_sync_upload=*/false);
 
   test_url_loader_factory_.SetInterceptor(
@@ -726,7 +731,8 @@ TEST_F(ResumableUploadRequestTest, NetworkRequestStreamsEmptyDataPipe) {
   auto request = std::make_unique<MockResumableUploadRequest>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
-      request_body, std::move(verdict_callback), std::move(content_callback),
+      request_body, ScanRequestUploadResult::kSuccess,
+      std::move(verdict_callback), std::move(content_callback),
       /*force_sync_upload=*/false);
 
   test_url_loader_factory_.SetInterceptor(
@@ -932,7 +938,7 @@ class ResumableUploadSendContentRequestTest
         return std::make_unique<MockResumableUploadRequest>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_),
-            CreateNetworkRequestBody(GetContent()),
+            CreateNetworkRequestBody(GetContent()), get_data_result,
             std::move(verdict_received_callback),
             std::move(content_uploaded_callback), force_sync_upload);
     }
@@ -1064,8 +1070,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
 }
 
 TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
-  if (GetRequestType() == UploadRequestType::kString ||
-      GetRequestType() == UploadRequestType::kNetworkRequest) {
+  if (GetRequestType() == UploadRequestType::kString) {
     GTEST_SKIP();
   }
   base::HistogramTester histogram_tester;

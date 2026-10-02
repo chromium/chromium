@@ -841,9 +841,9 @@ CloudBinaryUploadServiceBase::CreateUploadRequest(
                   std::move(callback), ui_task_runner_);
   } else if (data.request_body) {
     upload_request = ResumableUploadRequest::CreateNetworkRequest(
-        url_loader_factory_, url, metadata, std::move(data.request_body),
-        histogram_suffix, std::move(traffic_annotation),
-        std::move(verdict_received_callback),
+        url_loader_factory_, url, metadata, result,
+        std::move(data.request_body), histogram_suffix,
+        std::move(traffic_annotation), std::move(verdict_received_callback),
         std::move(content_uploaded_callback), force_sync_upload,
         ui_task_runner_);
   } else {

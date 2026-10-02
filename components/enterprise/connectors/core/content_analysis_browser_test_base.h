@@ -38,6 +38,13 @@ class ContentAnalysisBrowserTestBase {
                                   const std::string& body,
                                   const std::vector<std::string>& headers = {});
 
+  // Adds a Resumable request to `expected_requests_` that is expected to only
+  // send its metadata. The embedded test server still asks for the content in
+  // its response, so the test fails if the content is sent anyway.
+  void AddExpectedMetadataOnlyScanningRequest(
+      ContentAnalysisRequest request,
+      const std::vector<std::string>& headers = {});
+
  protected:
   // Returns the value to be set in the ConnectorAnalysisRequest::device_token
   // field.
@@ -86,6 +93,9 @@ class ContentAnalysisBrowserTestBase {
     ContentAnalysisRequest request;
     std::string body;
     std::vector<std::string> headers;
+    // Whether only the Resumable metadata request is expected, without a
+    // follow-up content request.
+    bool metadata_only = false;
   };
   std::vector<ExpectedRequest> expected_requests_;
 

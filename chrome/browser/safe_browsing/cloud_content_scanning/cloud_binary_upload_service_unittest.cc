@@ -189,6 +189,7 @@ class FakeConnectorUploadRequestFactory : public ConnectorUploadRequestFactory {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
+      enterprise_connectors::ScanRequestUploadResult get_data_result,
       scoped_refptr<network::ResourceRequestBody> request_body,
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,

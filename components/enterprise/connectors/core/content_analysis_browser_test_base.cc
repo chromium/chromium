@@ -223,9 +223,12 @@ ContentAnalysisBrowserTestBase::HandleResumableMetadataRequest(
       << "\n"
       << ToValue(content_analysis_request);
 
-  // Don't remove `expected` from `expected_requests_` here since we're still
-  // expecting the second request with the data to come before the end of the
-  // test.
+  // Unless only metadata is expected, don't remove `expected` from
+  // `expected_requests_` here since we're still expecting the second request
+  // with the data to come before the end of the test.
+  if (expected != expected_requests_.end() && expected->metadata_only) {
+    expected_requests_.erase(expected);
+  }
 
   return SendContentMetadataResponse();
 }
@@ -237,10 +240,17 @@ ContentAnalysisBrowserTestBase::HandleResumableContentRequest(
 
   auto expected = std::find_if(
       expected_requests_.begin(), expected_requests_.end(),
-      [&request](const auto& entry) { return request.content == entry.body; });
+      [&request](const auto& entry) {
+        return !entry.metadata_only && request.content == entry.body;
+      });
 
   EXPECT_NE(expected, expected_requests_.end())
       << "Unexpected Resumable Content request: " << request.content;
+  if (expected == expected_requests_.end()) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_BAD_REQUEST);
+    return response;
+  }
 
   ContentAnalysisRequest content_analysis_request = expected->request;
   expected_requests_.erase(expected);
@@ -362,6 +372,13 @@ void ContentAnalysisBrowserTestBase::AddExpectedScanningRequest(
   AddAuthRequestIfNeeded(auth_request);
 
   expected_requests_.emplace_back(std::move(request), body, headers);
+}
+
+void ContentAnalysisBrowserTestBase::AddExpectedMetadataOnlyScanningRequest(
+    ContentAnalysisRequest request,
+    const std::vector<std::string>& headers) {
+  AddExpectedScanningRequest(std::move(request), /*body=*/"", headers);
+  expected_requests_.back().metadata_only = true;
 }
 
 bool ContentAnalysisBrowserTestBase::MatchesRequest(
