@@ -71,11 +71,16 @@ class CORE_EXPORT DisplayAdElementMonitor final
 
     // The ad's height when measured.
     int ad_height;
+
+    // How far `position: sticky` shifted the ad vertically when measured,
+    // counting only boxes that stick to the main frame's viewport.
+    int viewport_sticky_offset_y;
   };
 
   // Evaluates whether the ad is sticky based on its movement relative to the
-  // viewport. Called on every lifecycle update, but remains inexpensive as it
-  // only performs simple arithmetic on cached geometry.
+  // viewport. Called on every lifecycle update, but remains inexpensive:
+  // besides simple arithmetic, it only re-walks part of the containing block
+  // chain that `AbsoluteBoundingBoxRectF()` already traverses.
   //
   // Returns the result of the unthrottled hit-test if one was performed as a
   // final sanity check; otherwise, returns `OverlayVisibility::kSkipped`.
