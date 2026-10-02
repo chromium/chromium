@@ -12,8 +12,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.res.Resources;
 import android.view.View;
 
 import org.junit.Before;
@@ -25,6 +23,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -47,21 +46,18 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit test for {@link ReadAloudIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ReadAloudIphControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Activity mActivity;
-    @Mock View mToolbarMenuButton;
     @Mock AppMenuHandler mAppMenuHandler;
     @Mock UserEducationHelper mUserEducationHelper;
-    @Mock Context mContext;
-    @Mock Resources mResources;
     @Captor ArgumentCaptor<IphCommand> mIphCommandCaptor;
     @Mock ReadAloudController mReadAloudController;
     @Mock private Profile mProfile;
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
 
+    private Activity mActivity;
+    private View mToolbarMenuButton;
     private final SettableMonotonicObservableSupplier<Tab> mMockTabProvider =
             ObservableSuppliers.createMonotonic();
     private NonNullObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
@@ -71,12 +67,12 @@ public class ReadAloudIphControllerUnitTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mToolbarMenuButton = new View(mActivity);
+
         mTab = new MockTab(1, mProfile);
         mTab.setGurlOverrideForTesting(sTestGURL);
         mMockTabProvider.set(mTab);
-
-        doReturn(mResources).when(mContext).getResources();
-        doReturn(mContext).when(mToolbarMenuButton).getContext();
 
         doReturn(false).when(mProfile).isOffTheRecord();
 

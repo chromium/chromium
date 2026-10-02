@@ -27,6 +27,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -37,7 +38,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MiniPlayerMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MiniPlayerMediatorUnitTest {
     private static final int HEIGHT_PX = 187;
 
@@ -45,11 +45,11 @@ public class MiniPlayerMediatorUnitTest {
 
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MiniPlayerCoordinator mCoordinator;
-    @Mock private View mView;
 
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer> mBrowserControlsObserverCaptor;

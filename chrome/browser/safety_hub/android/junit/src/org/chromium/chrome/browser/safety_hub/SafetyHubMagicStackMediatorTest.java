@@ -49,7 +49,6 @@ import java.util.function.Supplier;
 
 /** Tests for the Safety Hub Magic Stack mediator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SafetyHubMagicStackMediatorTest {
     private static final String DESCRIPTION = "description";
 
@@ -62,7 +61,6 @@ public class SafetyHubMagicStackMediatorTest {
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private PrefChangeRegistrar mPrefChangeRegistrar;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    @Mock private View mView;
 
     private Context mContext;
     private Profile mProfile;
@@ -71,10 +69,12 @@ public class SafetyHubMagicStackMediatorTest {
     private PropertyModel mModel;
     private SafetyHubMagicStackMediator mMediator;
     private ModalDialogManager mModalDialogManager;
+    private View mView;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.application;
+        mView = new View(mContext);
         mProfile = mSafetyHubTestRule.getProfile();
         mPrefService = mSafetyHubTestRule.getPrefService();
         mPasswordCheckIntentForAccountCheckup =

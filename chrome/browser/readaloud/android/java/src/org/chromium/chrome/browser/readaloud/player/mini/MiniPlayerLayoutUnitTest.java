@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -17,8 +16,9 @@ import static org.mockito.Mockito.verify;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -29,7 +29,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -46,7 +45,6 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 /** Unit tests for {@link PlayerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowSystemClock.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MiniPlayerLayoutUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final Activity mActivity;
@@ -324,13 +322,13 @@ public class MiniPlayerLayoutUnitTest {
 
     @Test
     public void testOnLayoutGetsHeight() {
-        // Fake the backdrop height so onLayout() doesn't return early.
-        View spyBackdrop = replaceWithSpy(R.id.backdrop);
-        mLayout.onFinishInflate();
-        doReturn(187).when(spyBackdrop).getHeight();
-        assertEquals(187, mLayout.findViewById(R.id.backdrop).getHeight());
+        View backdrop = mLayout.findViewById(R.id.backdrop);
+        backdrop.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(187, View.MeasureSpec.EXACTLY));
 
         mLayout.onLayout(true, 0, 0, 0, 0);
+        assertEquals(187, backdrop.getHeight());
 
         verify(mMediator).onHeightKnown(eq(187));
     }
@@ -338,23 +336,11 @@ public class MiniPlayerLayoutUnitTest {
     @Test
     @Config(qualifiers = "night")
     public void testDarkModeBackgroundColor() {
-        View spyBackdrop = replaceWithSpy(R.id.backdrop);
+        View backdrop = mLayout.findViewById(R.id.backdrop);
+        backdrop.setBackgroundColor(Color.TRANSPARENT);
         mLayout.onFinishInflate();
         int bg = SemanticColorUtils.getDefaultBgColor(mActivity);
-        verify(spyBackdrop).setBackgroundColor(eq(bg));
+        assertEquals(bg, ((ColorDrawable) backdrop.getBackground()).getColor());
         verify(mMediator).onBackgroundColorUpdated(eq(bg));
-    }
-
-    private View replaceWithSpy(int childId) {
-        View original = mLayout.findViewById(childId);
-        ViewGroup parent = (ViewGroup) original.getParent();
-
-        int index = parent.indexOfChild(original);
-        parent.removeViewAt(index);
-
-        View spy = Mockito.spy(original);
-        parent.addView(spy, index);
-        assertEquals(spy, parent.findViewById(childId));
-        return spy;
     }
 }

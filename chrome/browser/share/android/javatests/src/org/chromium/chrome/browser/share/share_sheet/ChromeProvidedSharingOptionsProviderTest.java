@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,7 +77,6 @@ import java.util.List;
 
 /** Instrumentation Unit tests {@link ChromeProvidedSharingOptionsProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeProvidedSharingOptionsProviderTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -580,7 +578,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private void assertCorrectLinkGenerationMetrics(
             List<PropertyModel> propertyModels, @LinkGeneration int linkGenerationStatus) {
         mActionTester = new UserActionTester();
-        View view = mock(View.class);
+        View view = new View(mActivity);
         for (PropertyModel propertyModel : propertyModels) {
             String label = propertyModel.get(ShareSheetItemViewProperties.LABEL);
             Resources res = mActivity.getResources();

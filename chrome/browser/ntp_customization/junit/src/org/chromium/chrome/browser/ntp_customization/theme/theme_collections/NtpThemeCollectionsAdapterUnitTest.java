@@ -12,8 +12,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,6 +20,7 @@ import static org.chromium.chrome.browser.ntp_customization.theme.theme_collecti
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -58,7 +57,6 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeCollectionsAdapter}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeCollectionsAdapterUnitTest {
     private static final String THEME_COLLECTION_TITLE = "Theme Collection 1";
     private static final GURL PREVIEW_IMAGE_URL = JUnitTestGURLs.URL_1;
@@ -262,18 +260,16 @@ public class NtpThemeCollectionsAdapterUnitTest {
         itemViewTypeField.setAccessible(true);
         itemViewTypeField.set(viewHolder, THEME_COLLECTIONS_ITEM);
 
-        // Spy the image view to verify calls to setImageBitmap.
-        viewHolder.mImage = spy(viewHolder.mImage);
-
         adapter.onBindViewHolder(viewHolder, 0);
 
         verify(mImageFetcher).fetchImage(any(), mCallbackCaptor.capture());
         assertEquals(PREVIEW_IMAGE_URL, viewHolder.mImage.getTag());
+        assertNull(viewHolder.mImage.getDrawable());
 
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mCallbackCaptor.getValue().onResult(bitmap);
 
-        verify(viewHolder.mImage).setImageBitmap(bitmap);
+        assertEquals(bitmap, ((BitmapDrawable) viewHolder.mImage.getDrawable()).getBitmap());
     }
 
     @Test
@@ -287,9 +283,6 @@ public class NtpThemeCollectionsAdapterUnitTest {
         Field itemViewTypeField = RecyclerView.ViewHolder.class.getDeclaredField("mItemViewType");
         itemViewTypeField.setAccessible(true);
         itemViewTypeField.set(viewHolder, THEME_COLLECTIONS_ITEM);
-
-        // Spy the image view to verify calls to setImageBitmap.
-        viewHolder.mImage = spy(viewHolder.mImage);
 
         // First bind
         adapter.onBindViewHolder(viewHolder, 0);
@@ -306,7 +299,7 @@ public class NtpThemeCollectionsAdapterUnitTest {
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         firstCallback.onResult(bitmap);
 
-        verify(viewHolder.mImage, never()).setImageBitmap(bitmap);
+        assertNull(viewHolder.mImage.getDrawable());
     }
 
     @Test

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.readaloud.player;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.doReturn;
@@ -13,6 +15,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -53,7 +56,6 @@ import org.chromium.components.prefs.PrefService;
 /** Unit tests for {@link PlayerCoordinator}. */
 @DisableFeatures({ChromeFeatureList.FEED_AUDIO_OVERVIEWS})
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PlayerCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
@@ -95,14 +97,10 @@ public class PlayerCoordinatorUnitTest {
         // Need to set theme before inflating layout.
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        ViewStub mockMiniPlayerStub = Mockito.mock(ViewStub.class);
-        MiniPlayerCoordinator.setViewStubForTesting(mockMiniPlayerStub);
-        var miniPlayerLayout =
-                (MiniPlayerLayout)
-                        mActivity
-                                .getLayoutInflater()
-                                .inflate(R.layout.readaloud_mini_player_layout, null);
-        doReturn(miniPlayerLayout).when(mockMiniPlayerStub).inflate();
+        FrameLayout container = new FrameLayout(mActivity);
+        ViewStub miniPlayerStub = new ViewStub(mActivity);
+        container.addView(miniPlayerStub);
+        MiniPlayerCoordinator.setViewStubForTesting(miniPlayerStub);
 
         doReturn(mBottomSheetController).when(mDelegate).getBottomSheetController();
 
@@ -129,7 +127,8 @@ public class PlayerCoordinatorUnitTest {
         mPlayerCoordinator = new PlayerCoordinator(mDelegate);
 
         // Mini player should be inflated and attached.
-        verify(mockMiniPlayerStub).inflate();
+        assertNull(miniPlayerStub.getParent());
+        assertTrue(container.getChildAt(0) instanceof MiniPlayerLayout);
         // User prefs should be read into the model.
         verify(prefs).getDouble(eq("readaloud.speed"));
     }

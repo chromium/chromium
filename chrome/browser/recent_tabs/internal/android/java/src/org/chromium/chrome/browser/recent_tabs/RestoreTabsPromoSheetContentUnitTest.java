@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.recent_tabs;
 
-import static org.mockito.Mockito.when;
-
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.DEVICE_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.HOME_SCREEN;
@@ -14,8 +12,10 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISI
 
 import android.content.Context;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ScrollView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -36,15 +37,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for the RestoreTabsPromoSheetContent class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RestoreTabsPromoSheetContentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private View mContentView;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private RecyclerView mRecyclerView;
-    @Mock private View mChildView;
-    @Mock private ScrollView mScrollView;
 
+    private final View mContentView = new View(ContextUtils.getApplicationContext());
+    private final RecyclerView mRecyclerView =
+            new RecyclerView(ContextUtils.getApplicationContext());
+    private final ScrollView mScrollView = new ScrollView(ContextUtils.getApplicationContext());
     private RestoreTabsPromoSheetContent mSheetContent;
     private final PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
 
@@ -78,9 +78,37 @@ public class RestoreTabsPromoSheetContentUnitTest {
     public void testSheetContent_getVerticalScrollOffsetRecyclerView() {
         mSheetContent.setRecyclerViewForTesting(mRecyclerView);
         mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
-        when(mRecyclerView.getChildAt(0)).thenReturn(mChildView);
-        when(mChildView.getTop()).thenReturn(0);
-        when(mRecyclerView.getPaddingTop()).thenReturn(1);
+        mRecyclerView.setLayoutManager(
+                new LinearLayoutManager(ContextUtils.getApplicationContext()));
+        mRecyclerView.setAdapter(
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        View view = new View(parent.getContext());
+                        view.setLayoutParams(
+                                new RecyclerView.LayoutParams(
+                                        ViewGroup.LayoutParams.MATCH_PARENT, 100));
+                        return new RecyclerView.ViewHolder(view) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+                    @Override
+                    public int getItemCount() {
+                        return 3;
+                    }
+                });
+        mRecyclerView.setPadding(0, 1, 0, 0);
+        mRecyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(100, View.MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, 100, 100);
+        Assert.assertEquals(0, mSheetContent.getVerticalScrollOffset());
+
+        // Scroll so that the first child's top is 1px above the top padding.
+        mRecyclerView.scrollBy(0, 1);
         Assert.assertEquals(1, mSheetContent.getVerticalScrollOffset());
         mSheetContent.setRecyclerViewForTesting(null);
     }
@@ -89,7 +117,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
     public void testSheetContent_getVerticalScrollOffsetScrollView() {
         mSheetContent.setScrollViewForTesting(mScrollView);
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
-        when(mScrollView.getScrollY()).thenReturn(1);
+        View child = new View(ContextUtils.getApplicationContext());
+        mScrollView.addView(child);
+        mScrollView.layout(0, 0, 100, 100);
+        child.layout(0, 0, 100, 200);
+        mScrollView.setScrollY(1);
         Assert.assertEquals(1, mSheetContent.getVerticalScrollOffset());
         mSheetContent.setScrollViewForTesting(null);
     }

@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +19,7 @@ import static org.chromium.build.NullUtil.assertNonNull;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
@@ -36,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -65,7 +64,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link TabbedOpenInAppEntryPoint}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedOpenInAppEntryPointUnitTest {
     private static final String LABEL = "Label";
     private static final String PACKAGE = "com.example.package";
@@ -84,10 +82,10 @@ public class TabbedOpenInAppEntryPointUnitTest {
     @Mock private Drawable mIcon;
     @Mock private ActivityInfo mActivityInfo;
     @Mock private PackageManager mPackageManager;
-    @Spy private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ExternalNavigationHelper mExternalNavigationHelper;
 
+    private Context mContext;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private TabbedOpenInAppEntryPoint mEntryPoint;
     private UserDataHost mUserDataHost;
@@ -96,7 +94,13 @@ public class TabbedOpenInAppEntryPointUnitTest {
 
     @Before
     public void setUp() throws PackageManager.NameNotFoundException {
-        mContext = spy(Robolectric.buildActivity(Activity.class).setup().get());
+        mContext =
+                new ContextWrapper(Robolectric.buildActivity(Activity.class).get()) {
+                    @Override
+                    public PackageManager getPackageManager() {
+                        return mPackageManager;
+                    }
+                };
         mTabSupplier = ObservableSuppliers.createNullable();
         mUserDataHost = new UserDataHost();
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
@@ -106,7 +110,6 @@ public class TabbedOpenInAppEntryPointUnitTest {
         when(mPackageManager.getApplicationInfo(any(), anyInt())).thenReturn(new ApplicationInfo());
         when(mPackageManager.getApplicationLogo(any(ApplicationInfo.class))).thenReturn(mIcon);
         when(mPackageManager.getApplicationLabel(any(ApplicationInfo.class))).thenReturn(LABEL);
-        when(mContext.getPackageManager()).thenReturn(mPackageManager);
 
         mResolveInfo.filter = mIntentFilter;
         mActivityInfo.packageName = PACKAGE;

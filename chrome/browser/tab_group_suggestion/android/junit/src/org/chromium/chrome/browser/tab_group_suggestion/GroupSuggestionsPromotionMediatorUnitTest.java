@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,6 +39,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -59,7 +59,6 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GroupSuggestionsPromotionMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -81,13 +80,13 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
 
     @Mock GroupSuggestionsService mGroupSuggestionsService;
     @Mock BottomSheetController mBottomSheetController;
-    @Mock View mContainerView;
     @Mock TabModel mTabModel;
     @Mock Tab mTab1;
     @Mock Tab mTab2;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserver;
 
+    private final View mContainerView = new View(ContextUtils.getApplicationContext());
     private PropertyModel mModel;
     private GroupSuggestionsPromotionMediator mMediator;
 
@@ -226,7 +225,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         assertNotNull(currentContent);
 
         mModel.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER)
-                .onClick(mock(View.class));
+                .onClick(mContainerView);
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
@@ -265,7 +264,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         assertNotNull(currentContent);
 
         mModel.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER)
-                .onClick(mock(View.class));
+                .onClick(mContainerView);
 
         verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));

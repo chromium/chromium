@@ -5,21 +5,19 @@
 package org.chromium.chrome.browser.ntp_customization.theme.theme_collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,6 +31,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,9 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.R;
 
 /** Unit tests for {@link NtpThemeCollectionsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NtpThemeCollectionsUtilsUnitTest {
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private GridLayoutManager mGridLayoutManager;
@@ -97,51 +95,53 @@ public class NtpThemeCollectionsUtilsUnitTest {
 
     @Test
     public void testUpdateSpanCountOnLayoutChange() {
+        // Attach the RecyclerView to a window so that isShown() can return true.
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         RecyclerView recyclerView = new RecyclerView(mContext);
-        RecyclerView recyclerViewSpy = spy(recyclerView);
-        ViewTreeObserver viewTreeObserver = recyclerView.getViewTreeObserver();
-        ViewTreeObserver viewTreeObserverSpy = spy(viewTreeObserver);
-        doReturn(viewTreeObserverSpy).when(recyclerViewSpy).getViewTreeObserver();
+        activity.setContentView(recyclerView);
+        ShadowLooper.idleMainLooper();
 
         GridLayoutManager layoutManager = new GridLayoutManager(mContext, 1);
         GridLayoutManager layoutManagerSpy = spy(layoutManager);
-        recyclerViewSpy.setLayoutManager(layoutManagerSpy);
+        recyclerView.setLayoutManager(layoutManagerSpy);
 
         NtpThemeCollectionsUtils.updateSpanCountOnLayoutChange(
-                layoutManagerSpy, recyclerViewSpy, 180, 20);
-
-        ArgumentCaptor<OnGlobalLayoutListener> listenerCaptor =
-                ArgumentCaptor.forClass(ViewTreeObserver.OnGlobalLayoutListener.class);
-        verify(viewTreeObserverSpy).addOnGlobalLayoutListener(listenerCaptor.capture());
-        OnGlobalLayoutListener listener = listenerCaptor.getValue();
+                layoutManagerSpy, recyclerView, 180, 20);
+        ViewTreeObserver viewTreeObserver = recyclerView.getViewTreeObserver();
 
         // 1. Not shown, should do nothing.
-        doReturn(false).when(recyclerViewSpy).isShown();
-        recyclerViewSpy.measure(
+        recyclerView.setVisibility(View.INVISIBLE);
+        recyclerView.measure(
                 View.MeasureSpec.makeMeasureSpec(410, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
-        recyclerViewSpy.layout(0, 0, 410, 800);
-        listener.onGlobalLayout();
+        recyclerView.layout(0, 0, 410, 800);
+        viewTreeObserver.dispatchOnGlobalLayout();
 
         // 2. Shown but width is 0, should do nothing.
-        doReturn(true).when(recyclerViewSpy).isShown();
-        recyclerViewSpy.measure(
+        recyclerView.setVisibility(View.VISIBLE);
+        recyclerView.measure(
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
-        recyclerViewSpy.layout(0, 0, 0, 800);
-        listener.onGlobalLayout();
+        recyclerView.layout(0, 0, 0, 800);
+        viewTreeObserver.dispatchOnGlobalLayout();
 
         // At this point, no update should have happened.
         verify(layoutManagerSpy, never()).setSpanCount(anyInt());
-        verify(viewTreeObserverSpy, never()).removeOnGlobalLayoutListener(any());
 
         // 3. Shown and has width, should update span count and remove listener.
-        recyclerViewSpy.measure(
+        recyclerView.measure(
                 View.MeasureSpec.makeMeasureSpec(410, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
-        recyclerViewSpy.layout(0, 0, 410, 800);
-        listener.onGlobalLayout();
+        recyclerView.layout(0, 0, 410, 800);
+        viewTreeObserver.dispatchOnGlobalLayout();
         verify(layoutManagerSpy).setSpanCount(3);
-        verify(viewTreeObserverSpy).removeOnGlobalLayoutListener(listener);
+
+        // 4. The listener was removed, so further layouts should not update the span count.
+        recyclerView.measure(
+                View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(800, View.MeasureSpec.EXACTLY));
+        recyclerView.layout(0, 0, 800, 800);
+        viewTreeObserver.dispatchOnGlobalLayout();
+        verify(layoutManagerSpy, never()).setSpanCount(5);
     }
 }
