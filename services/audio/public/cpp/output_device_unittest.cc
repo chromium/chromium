@@ -13,7 +13,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "media/audio/audio_output_device.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_renderer_sink.h"
@@ -41,6 +40,10 @@ constexpr char kDeviceId[] = "testdeviceid";
 constexpr int kFrames = 789;
 constexpr char kNonDefaultDeviceId[] = "valid-nondefault-device-id";
 constexpr base::TimeDelta kAuthTimeout = base::Milliseconds(10000);
+// `SyncReader`'s default timeout is a fraction of the buffer duration (~17ms,
+// or ~9ms on Mac and ChromeOS), which slow bots regularly exceed. `Read()`
+// returns as soon as data arrives, so this doesn't slow down passing runs.
+constexpr base::TimeDelta kReaderTimeout = base::Milliseconds(250);
 
 class MockRenderCallback : public media::AudioRendererSink::RenderCallback {
  public:
@@ -91,12 +94,7 @@ struct DataFlowTestEnvironment {
     CHECK(reader->IsValid());
     time_stamp = base::TimeTicks::Now();
 
-#if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/40574274): Fuchsia bots use nested virtualization,
-    // which can result in unusually long scheduling delays, so allow a longer
-    // timeout.
-    reader->set_max_wait_timeout_for_test(base::Milliseconds(250));
-#endif
+    reader->set_max_wait_timeout_for_test(kReaderTimeout);
   }
 
   base::CancelableSyncSocket client_socket;
@@ -151,14 +149,7 @@ TEST_F(AudioServiceOutputDeviceTest, CreatePlayPause) {
   task_env_.RunUntilIdle();
 }
 
-// Flaky on Linux Chromium OS ASan LSan (https://crbug.com/889845)
-// Disabled on Android (crbug.com/395710100).
-#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_VerifyDataFlow DISABLED_VerifyDataFlow
-#else
-#define MAYBE_VerifyDataFlow VerifyDataFlow
-#endif
-TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
+TEST_F(AudioServiceOutputDeviceTest, VerifyDataFlow) {
   auto params(media::AudioParameters::UnavailableDeviceParams());
   params.set_frames_per_buffer(kFrames);
   ASSERT_EQ(2, params.channels());
@@ -192,7 +183,7 @@ TEST_F(AudioServiceOutputDeviceTest, MAYBE_VerifyDataFlow) {
           return client_bus->frames();
         }));
     env.reader->RequestMoreData(kDelay, env.time_stamp, glitch_info);
-    env.reader->Read(test_bus.get(), false);
+    ASSERT_TRUE(env.reader->Read(test_bus.get(), false));
 
     Mock::VerifyAndClear(&env.render_callback);
     constexpr auto samples_match = [](float sample) {
