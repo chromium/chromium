@@ -171,10 +171,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
       match.image_url = image_url;
     }
   }
-  if (suggest_template_info) {
-    match.entity_id = suggest_template_info->entity_id();
-    match.website_uri = suggest_template_info->website_uri();
-  }
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
   match.suggestion_group_id = suggestion.suggestion_group_id();

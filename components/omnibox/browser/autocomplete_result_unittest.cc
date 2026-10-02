@@ -1741,9 +1741,6 @@ TEST_F(AutocompleteResultTest,
   matches[0].duplicate_matches.push_back(matches.back());
   matches.pop_back();
 
-  // Simulate the top match having an `entity_id`.
-  matches[0].entity_id = "/m/012abc";
-
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
   AutocompleteResult result;
@@ -1762,8 +1759,6 @@ TEST_F(AutocompleteResultTest,
   EXPECT_EQ(match->relevance, 900);
   EXPECT_TRUE(match->allowed_to_be_default_match);
   EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo");
-  // Expect that the Entity's ID was merged over to the plain match equivalent.
-  EXPECT_EQ(match->entity_id, "/m/012abc");
 
   match = result.match_at(1);
   // The search entity suggestion should be ranked higher than the higher
@@ -1774,14 +1769,12 @@ TEST_F(AutocompleteResultTest,
   EXPECT_EQ(match->relevance, 1000);
   EXPECT_TRUE(match->allowed_to_be_default_match);
   EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo");
-  EXPECT_EQ(match->entity_id, "/m/012abc");
 
   match = result.match_at(2);
   EXPECT_EQ(match->type, AutocompleteMatchType::kSearchSuggest);
   EXPECT_EQ(match->relevance, 1200);
   EXPECT_FALSE(match->allowed_to_be_default_match);
   EXPECT_EQ(match->stripped_destination_url.spec(), "http://search/?q=foo2");
-  EXPECT_TRUE(match->entity_id.empty());
 }
 
 TEST_F(AutocompleteResultTest,

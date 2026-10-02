@@ -268,8 +268,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       image_dominant_color(match.image_dominant_color),
       image_url(match.image_url),
       icon_url(match.icon_url),
-      entity_id(match.entity_id),
-      website_uri(match.website_uri),
       document_type(match.document_type),
       enterprise_search_aggregator_type(
           match.enterprise_search_aggregator_type),
@@ -345,8 +343,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   image_dominant_color = std::move(match.image_dominant_color);
   image_url = std::move(match.image_url);
   icon_url = std::move(match.icon_url);
-  entity_id = std::move(match.entity_id);
-  website_uri = std::move(match.website_uri);
   document_type = std::move(match.document_type);
   enterprise_search_aggregator_type =
       std::move(match.enterprise_search_aggregator_type);
@@ -427,8 +423,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   image_dominant_color = match.image_dominant_color;
   image_url = match.image_url;
   icon_url = match.icon_url;
-  entity_id = match.entity_id;
-  website_uri = match.website_uri;
   document_type = match.document_type;
   enterprise_search_aggregator_type = match.enterprise_search_aggregator_type;
   tail_suggest_common_prefix = match.tail_suggest_common_prefix;
@@ -1969,8 +1963,6 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(image_dominant_color);
   res += base::trace_event::EstimateMemoryUsage(image_url);
   res += base::trace_event::EstimateMemoryUsage(icon_url);
-  res += base::trace_event::EstimateMemoryUsage(entity_id);
-  res += base::trace_event::EstimateMemoryUsage(website_uri);
   res += base::trace_event::EstimateMemoryUsage(tail_suggest_common_prefix);
   res += base::trace_event::EstimateMemoryUsage(contents);
   res += base::trace_event::EstimateMemoryUsage(contents_class);
