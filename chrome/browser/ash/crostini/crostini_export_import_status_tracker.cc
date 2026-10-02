@@ -77,9 +77,10 @@ void CrostiniExportImportStatusTracker::SetStatusFailed() {
 }
 
 void CrostiniExportImportStatusTracker::SetStatusFailedBadImage() {
-  CHECK(type() == ExportImportType::IMPORT ||
-            type() == ExportImportType::IMPORT_DISK_IMAGE,
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/568530393): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(type() == ExportImportType::IMPORT ||
+         type() == ExportImportType::IMPORT_DISK_IMAGE);
   SetStatusFailedWithMessage(
       Status::FAILED_BAD_IMAGE,
       l10n_util::GetStringUTF16(
@@ -110,9 +111,10 @@ void CrostiniExportImportStatusTracker::SetStatusFailedInsufficientSpace(
 
 void CrostiniExportImportStatusTracker::
     SetStatusFailedInsufficientSpaceUnknownAmount() {
-  CHECK(type() == ExportImportType::IMPORT ||
-            type() == ExportImportType::IMPORT_DISK_IMAGE,
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/568530393): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(type() == ExportImportType::IMPORT ||
+         type() == ExportImportType::IMPORT_DISK_IMAGE);
   SetStatusFailedWithMessage(
       Status::FAILED_INSUFFICIENT_SPACE,
       l10n_util::GetStringUTF16(
