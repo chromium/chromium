@@ -476,7 +476,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   void SetPaymentsCvcStorageEnabled(bool enabled);
 
   // TODO(crbug.com/322170538): Remove.
-  scoped_refptr<AutofillWebDataService> GetLocalDatabase();
+  scoped_refptr<AutofillWebDataService> GetProfileDatabase();
   scoped_refptr<AutofillWebDataService> GetServerDatabase();
   bool IsUsingAccountStorageForServerDataForTest();
 

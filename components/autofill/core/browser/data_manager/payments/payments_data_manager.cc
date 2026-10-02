@@ -192,8 +192,9 @@ class PaymentsDatabaseHelper {
     }
   }
 
-  // Returns the database that should be used for storing local data.
-  scoped_refptr<AutofillWebDataService> GetLocalDatabase() {
+  // Returns the profile database (stores local data and synced server data
+  // persisted across restarts).
+  scoped_refptr<AutofillWebDataService> GetProfileDatabase() {
     return profile_database_;
   }
 
@@ -1452,7 +1453,7 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   // IBANs from the settings page using this pref.
   SetAutofillHasSeenIban();
 
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return std::string();
   }
 
@@ -1472,7 +1473,7 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
   }
 
   // Add the new IBAN to the web database.
-  GetLocalDatabase()->AddLocalIban(iban);
+  GetProfileDatabase()->AddLocalIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1480,12 +1481,12 @@ std::string PaymentsDataManager::AddAsLocalIban(Iban iban) {
 }
 
 std::string PaymentsDataManager::UpdateIban(const Iban& iban) {
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return std::string();
   }
 
   // Make the update.
-  GetLocalDatabase()->UpdateLocalIban(iban);
+  GetProfileDatabase()->UpdateLocalIban(iban);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1505,7 +1506,7 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
     return;
   }
 
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return;
   }
 
@@ -1517,7 +1518,7 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.PaymentsDataManager.LocalCardAdded", true);
 
   // Add the new credit card to the web database.
-  GetLocalDatabase()->AddCreditCard(credit_card);
+  GetProfileDatabase()->AddCreditCard(credit_card);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1526,10 +1527,10 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
 void PaymentsDataManager::DeleteLocalCreditCards(
     const std::vector<CreditCard>& cards) {
   DCHECK(database_helper_);
-  DCHECK(GetLocalDatabase()) << "Use of local card without local storage.";
+  DCHECK(GetProfileDatabase()) << "Use of local card without local storage.";
 
   for (const auto& card : cards) {
-    GetLocalDatabase()->RemoveCreditCard(card.guid());
+    GetProfileDatabase()->RemoveCreditCard(card.guid());
   }
 
   // Refresh the database, so latest state is reflected in all consumers.
@@ -1573,12 +1574,12 @@ void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   // Update the cached version.
   *existing_credit_card = credit_card;
 
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return;
   }
 
   // Make the update.
-  GetLocalDatabase()->UpdateCreditCard(credit_card);
+  GetProfileDatabase()->UpdateCreditCard(credit_card);
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1586,7 +1587,7 @@ void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
 
 void PaymentsDataManager::UpdateLocalCvc(const std::string& guid,
                                          const std::u16string& cvc) {
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return;
   }
 
@@ -1595,7 +1596,7 @@ void PaymentsDataManager::UpdateLocalCvc(const std::string& guid,
     return;
   }
 
-  GetLocalDatabase()->UpdateLocalCvc(guid, cvc);
+  GetProfileDatabase()->UpdateLocalCvc(guid, cvc);
   Refresh();
 }
 
@@ -1669,10 +1670,10 @@ void PaymentsDataManager::ClearServerCvcs() {
 }
 
 void PaymentsDataManager::ClearLocalCvcs() {
-  CHECK(GetLocalDatabase()) << "Removing Local cvcs without local storage.";
+  CHECK(GetProfileDatabase()) << "Removing Local cvcs without local storage.";
 
   // Clear the local CVCs in the web database.
-  GetLocalDatabase()->ClearLocalCvcs();
+  GetProfileDatabase()->ClearLocalCvcs();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1680,11 +1681,11 @@ void PaymentsDataManager::ClearLocalCvcs() {
 
 #if BUILDFLAG(IS_IOS)
 void PaymentsDataManager::CleanupForCrbug445879524() {
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return;
   }
 
-  GetLocalDatabase()->CleanupForCrbug445879524();
+  GetProfileDatabase()->CleanupForCrbug445879524();
 
   // Refresh our local cache and send notifications to observers.
   Refresh();
@@ -1739,16 +1740,16 @@ bool PaymentsDataManager::SaveCardLocallyIfNew(
 }
 
 void PaymentsDataManager::RemoveByGUID(const std::string& guid) {
-  if (!GetLocalDatabase()) {
+  if (!GetProfileDatabase()) {
     return;
   }
 
   if (FindByGUID(local_credit_cards_, guid)) {
-    GetLocalDatabase()->RemoveCreditCard(guid);
+    GetProfileDatabase()->RemoveCreditCard(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
   } else if (FindByGUID(local_ibans_, guid)) {
-    GetLocalDatabase()->RemoveLocalIban(guid);
+    GetProfileDatabase()->RemoveLocalIban(guid);
     // Refresh our local cache and send notifications to observers.
     Refresh();
   }
@@ -1785,8 +1786,8 @@ void PaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
   if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
     // Fail silently if there's no local database, because we need to
     // support this for tests.
-    if (GetLocalDatabase()) {
-      GetLocalDatabase()->UpdateCreditCard(*credit_card);
+    if (GetProfileDatabase()) {
+      GetProfileDatabase()->UpdateCreditCard(*credit_card);
     }
   } else {
     DCHECK(GetServerDatabase())
@@ -1805,20 +1806,17 @@ void PaymentsDataManager::RecordUseOfIban(Iban& iban) {
         << "Recording use of server IBAN metadata without server storage.";
     GetServerDatabase()->UpdateServerIbanMetadata(iban);
   } else {
-    if (GetLocalDatabase()) {
-      GetLocalDatabase()->UpdateLocalIban(iban);
+    if (GetProfileDatabase()) {
+      GetProfileDatabase()->UpdateLocalIban(iban);
     }
   }
 
   Refresh();
 }
 
-// TODO(crbug.com/546252995): Rename these (and the corresponding
-// `PaymentsDatabaseHelper` methods). "Local" is a misnomer now: the profile
-// database stores local data as well as server data that is persisted across
-// restarts, such as Wallet direct offers written by the `ValuableSyncBridge`.
-scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetLocalDatabase() {
-  return database_helper_->GetLocalDatabase();
+scoped_refptr<AutofillWebDataService>
+PaymentsDataManager::GetProfileDatabase() {
+  return database_helper_->GetProfileDatabase();
 }
 scoped_refptr<AutofillWebDataService> PaymentsDataManager::GetServerDatabase() {
   return database_helper_->GetServerDatabase();
@@ -1873,7 +1871,7 @@ base::WeakPtr<PaymentsDataManager> PaymentsDataManager::GetWeakPtr() {
 }
 
 void PaymentsDataManager::LoadCreditCards() {
-  if (!database_helper_->GetLocalDatabase()) {
+  if (!database_helper_->GetProfileDatabase()) {
     NOTREACHED();
   }
 
@@ -1881,7 +1879,7 @@ void PaymentsDataManager::LoadCreditCards() {
   CancelPendingServerQuery(&pending_server_creditcards_query_);
 
   pending_creditcards_query_ =
-      database_helper_->GetLocalDatabase()->GetCreditCards(
+      database_helper_->GetProfileDatabase()->GetCreditCards(
           base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
                          weak_ptr_factory_.GetWeakPtr()));
   if (database_helper_->GetServerDatabase()) {
@@ -1906,14 +1904,14 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
 }
 
 void PaymentsDataManager::LoadIbans() {
-  if (!database_helper_->GetLocalDatabase()) {
+  if (!database_helper_->GetProfileDatabase()) {
     NOTREACHED();
   }
   CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
 
   pending_local_ibans_query_ =
-      database_helper_->GetLocalDatabase()->GetLocalIbans(
+      database_helper_->GetProfileDatabase()->GetLocalIbans(
           base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
                          weak_ptr_factory_.GetWeakPtr()));
   if (database_helper_->GetServerDatabase()) {
@@ -1957,14 +1955,14 @@ void PaymentsDataManager::LoadAutofillOffers() {
   // offers are read from there. Reading them from the server database would
   // miss them entirely for users who didn't enable the sync feature, since in
   // that case the server database is the ephemeral account storage.
-  if (!database_helper_->GetLocalDatabase()) {
+  if (!database_helper_->GetProfileDatabase()) {
     return;
   }
 
   CancelPendingLocalQuery(&pending_offer_data_query_);
 
   pending_offer_data_query_ =
-      database_helper_->GetLocalDatabase()->GetAutofillOffers(
+      database_helper_->GetProfileDatabase()->GetAutofillOffers(
           base::BindOnce(&PaymentsDataManager::OnWebDataServiceRequestDone,
                          weak_ptr_factory_.GetWeakPtr()));
 }
@@ -2012,10 +2010,10 @@ void PaymentsDataManager::LoadPaymentInstrumentCreationOptions() {
 void PaymentsDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
-    if (!database_helper_->GetLocalDatabase()) {
+    if (!database_helper_->GetProfileDatabase()) {
       NOTREACHED();
     }
-    database_helper_->GetLocalDatabase()->CancelRequest(*handle);
+    database_helper_->GetProfileDatabase()->CancelRequest(*handle);
   }
   *handle = 0;
 }
@@ -2285,7 +2283,7 @@ std::string PaymentsDataManager::SaveImportedCreditCard(
   // Potentially merge the card with an existing card.
   for (std::unique_ptr<CreditCard>& card : local_credit_cards_) {
     if (card->UpdateFromImportedCard(imported_card, app_locale_)) {
-      GetLocalDatabase()->UpdateCreditCard(*card);
+      GetProfileDatabase()->UpdateCreditCard(*card);
       Refresh();
       return card->guid();
     }
