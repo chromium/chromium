@@ -2931,6 +2931,155 @@ void MaybeAppendBlinkSettingsSwitchForFieldTrial(
                                   base::JoinString(blink_settings, ","));
 }
 
+void AppendExtraCommandLineSwitchesFromPrefs(base::CommandLine* command_line,
+                                             PrefService* prefs) {
+  PrefService* local_state = g_browser_process->local_state();
+  // Currently this pref is only registered if applied via a policy.
+  if (prefs->HasPrefPath(prefs::kDisable3DAPIs) &&
+      prefs->GetBoolean(prefs::kDisable3DAPIs)) {
+    // Turn this policy into a command line switch.
+    command_line->AppendSwitch(switches::kDisable3DAPIs);
+  }
+
+  if (prefs->GetBoolean(prefs::kPrintPreviewDisabled)) {
+    command_line->AppendSwitch(switches::kDisablePrintPreview);
+  }
+
+  if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
+    command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
+  }
+
+  if (prefs->FindPreference(policy::policy_prefs::kXSLTEnabled)->IsManaged()) {
+    command_line->AppendSwitchASCII(
+        blink::switches::kXSLTEnabledPolicy,
+        prefs->GetBoolean(policy::policy_prefs::kXSLTEnabled) ? "true"
+                                                              : "false");
+  }
+
+  if (prefs
+          ->FindPreference(policy::policy_prefs::
+                               kRestrictBackgroundFetchFromServiceWorkerEnabled)
+          ->IsManaged()) {
+    command_line->AppendSwitchASCII(
+        blink::switches::kRestrictBackgroundFetchFromServiceWorker,
+        prefs->GetBoolean(policy::policy_prefs::
+                              kRestrictBackgroundFetchFromServiceWorkerEnabled)
+            ? "true"
+            : "false");
+  }
+
+  if (!prefs->GetBoolean(prefs::kPartitionedBlobUrlUsage)) {
+    command_line->AppendSwitch(blink::switches::kDisableBlobUrlPartitioning);
+  }
+
+  if (!prefs->GetBoolean(
+          policy::policy_prefs::kStandardizedBrowserZoomEnabled)) {
+    command_line->AppendSwitch(
+        blink::switches::kDisableStandardizedBrowserZoom);
+  }
+  if (prefs->GetBoolean(
+          policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled)) {
+    command_line->AppendSwitch(
+        blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled);
+  }
+
+  if (prefs->GetBoolean(
+          policy::policy_prefs::kForcePermissionPolicyUnloadDefaultEnabled)) {
+    command_line->AppendSwitch(
+        network::switches::kForcePermissionPolicyUnloadDefaultEnabled);
+  }
+
+  if (local_state->GetBoolean(
+          policy::policy_prefs::
+              kLocalNetworkAccessPermissionsPolicyDefaultEnabled)) {
+    command_line->AppendSwitch(
+        network::switches::kLocalNetworkAccessPermissionsPolicyDefaultEnabled);
+  }
+
+  if (prefs->GetBoolean(prefs::kWebAudioOutputBufferingEnabled)) {
+    command_line->AppendSwitch(
+        blink::switches::kWebAudioBypassOutputBufferingOptOut);
+  }
+
+  if (!prefs->GetBoolean(
+          policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed)) {
+    command_line->AppendSwitch(
+        blink::switches::kDisableBackForwardCacheForWebSockets);
+  }
+
+  if (!prefs->GetBoolean(prefs::kReduceAcceptLanguageEnabled)) {
+    command_line->AppendSwitch(blink::switches::kDisableReduceAcceptLanguage);
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Enable SharedArrayBuffer on desktop if allowed by Enterprise Policy.
+  // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is
+  // complete.
+  if (prefs->GetBoolean(prefs::kSharedArrayBufferUnrestrictedAccessAllowed)) {
+    command_line->AppendSwitch(
+        switches::kSharedArrayBufferUnrestrictedAccessAllowed);
+  }
+#endif
+  if (!prefs->GetBoolean(prefs::kSandboxExternalProtocolBlocked)) {
+    command_line->AppendSwitch(kDisableSandboxExternalProtocolSwitch);
+  }
+
+  if (prefs->HasPrefPath(prefs::kAllowDinosaurEasterEgg) &&
+      !prefs->GetBoolean(prefs::kAllowDinosaurEasterEgg)) {
+    command_line->AppendSwitch(error_page::switches::kDisableDinosaurEasterEgg);
+  }
+
+  MaybeAppendSecureOriginsAllowlistSwitch(command_line);
+
+  if (prefs->HasPrefPath(prefs::kScrollToTextFragmentEnabled) &&
+      !prefs->GetBoolean(prefs::kScrollToTextFragmentEnabled)) {
+    command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
+  }
+
+  if (!prefs->GetList(enterprise_reporting::kCloudLegacyTechReportAllowlist)
+           .empty()) {
+    command_line->AppendSwitch(blink::switches::kLegacyTechReportPolicyEnabled);
+  }
+
+  // The IntensiveWakeUpThrottling feature is typically managed via a
+  // base::Feature, but it has a managed policy override. The override is
+  // communicated to blink via a custom command-line flag. See
+  // PageSchedulerImpl for the other half of related logic.
+  const PrefService::Preference* pref = local_state->FindPreference(
+      policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled);
+  if (pref && pref->IsManaged()) {
+    command_line->AppendSwitchASCII(
+        blink::switches::kIntensiveWakeUpThrottlingPolicy,
+        pref->GetValue()->GetBool()
+            ? blink::switches::kIntensiveWakeUpThrottlingPolicy_ForceEnable
+            : blink::switches::kIntensiveWakeUpThrottlingPolicy_ForceDisable);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Communicating to content/ for BackForwardCache.
+  if (prefs->HasPrefPath(policy::policy_prefs::kBackForwardCacheEnabled) &&
+      !prefs->GetBoolean(policy::policy_prefs::kBackForwardCacheEnabled)) {
+    command_line->AppendSwitch(switches::kDisableBackForwardCache);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
+  // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+  // feature.
+  if (prefs->GetBoolean(webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
+    command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
+  }
+#endif
+  // Make the WebAuthenticationRemoteDesktopAllowedOrigins policy enable the
+  // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
+  // feature.
+  if (!prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
+           .empty()) {
+    command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
+  }
+}
+
 }  // namespace
 
 void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
@@ -3026,90 +3175,8 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     if (process) {
       Profile* profile =
           Profile::FromBrowserContext(process->GetBrowserContext());
-      PrefService* prefs = profile->GetPrefs();
-      PrefService* local_state = g_browser_process->local_state();
-      // Currently this pref is only registered if applied via a policy.
-      if (prefs->HasPrefPath(prefs::kDisable3DAPIs) &&
-          prefs->GetBoolean(prefs::kDisable3DAPIs)) {
-        // Turn this policy into a command line switch.
-        command_line->AppendSwitch(switches::kDisable3DAPIs);
-      }
-
-      if (prefs->GetBoolean(prefs::kPrintPreviewDisabled)) {
-        command_line->AppendSwitch(switches::kDisablePrintPreview);
-      }
-
-      if (prefs->GetBoolean(prefs::kDataUrlInSvgUseEnabled)) {
-        command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
-      }
-
-      if (prefs->FindPreference(policy::policy_prefs::kXSLTEnabled)
-              ->IsManaged()) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kXSLTEnabledPolicy,
-            prefs->GetBoolean(policy::policy_prefs::kXSLTEnabled) ? "true"
-                                                                  : "false");
-      }
-
-      if (prefs
-              ->FindPreference(
-                  policy::policy_prefs::
-                      kRestrictBackgroundFetchFromServiceWorkerEnabled)
-              ->IsManaged()) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kRestrictBackgroundFetchFromServiceWorker,
-            prefs->GetBoolean(
-                policy::policy_prefs::
-                    kRestrictBackgroundFetchFromServiceWorkerEnabled)
-                ? "true"
-                : "false");
-      }
-
-      if (!prefs->GetBoolean(prefs::kPartitionedBlobUrlUsage)) {
-        command_line->AppendSwitch(
-            blink::switches::kDisableBlobUrlPartitioning);
-      }
-
-      if (!prefs->GetBoolean(
-              policy::policy_prefs::kStandardizedBrowserZoomEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kDisableStandardizedBrowserZoom);
-      }
-      if (prefs->GetBoolean(
-              policy::policy_prefs::kCSSCustomStateDeprecatedSyntaxEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kCSSCustomStateDeprecatedSyntaxEnabled);
-      }
-
-      if (prefs->GetBoolean(policy::policy_prefs::
-                                kForcePermissionPolicyUnloadDefaultEnabled)) {
-        command_line->AppendSwitch(
-            network::switches::kForcePermissionPolicyUnloadDefaultEnabled);
-      }
-
-      if (local_state->GetBoolean(
-              policy::policy_prefs::
-                  kLocalNetworkAccessPermissionsPolicyDefaultEnabled)) {
-        command_line->AppendSwitch(
-            network::switches::
-                kLocalNetworkAccessPermissionsPolicyDefaultEnabled);
-      }
-
-      if (prefs->GetBoolean(prefs::kWebAudioOutputBufferingEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kWebAudioBypassOutputBufferingOptOut);
-      }
-
-      if (!prefs->GetBoolean(
-              policy::policy_prefs::kBackForwardCacheForWebSocketsAllowed)) {
-        command_line->AppendSwitch(
-            blink::switches::kDisableBackForwardCacheForWebSockets);
-      }
-
-      if (!prefs->GetBoolean(prefs::kReduceAcceptLanguageEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kDisableReduceAcceptLanguage);
-      }
+      AppendExtraCommandLineSwitchesFromPrefs(command_line,
+                                              profile->GetPrefs());
 
       if (process->GetUserData(search::kIsNTPProcessKey)) {
         command_line->AppendSwitch(switches::kNtpProcess);
@@ -3124,78 +3191,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(switches::kInstantProcess);
       }
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-      // Enable SharedArrayBuffer on desktop if allowed by Enterprise Policy.
-      // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is
-      // complete.
-      if (prefs->GetBoolean(
-              prefs::kSharedArrayBufferUnrestrictedAccessAllowed)) {
-        command_line->AppendSwitch(
-            switches::kSharedArrayBufferUnrestrictedAccessAllowed);
-      }
-#endif
-      if (!prefs->GetBoolean(prefs::kSandboxExternalProtocolBlocked)) {
-        command_line->AppendSwitch(kDisableSandboxExternalProtocolSwitch);
-      }
-
-      if (prefs->HasPrefPath(prefs::kAllowDinosaurEasterEgg) &&
-          !prefs->GetBoolean(prefs::kAllowDinosaurEasterEgg)) {
-        command_line->AppendSwitch(
-            error_page::switches::kDisableDinosaurEasterEgg);
-      }
-
-      MaybeAppendSecureOriginsAllowlistSwitch(command_line);
-
-      if (prefs->HasPrefPath(prefs::kScrollToTextFragmentEnabled) &&
-          !prefs->GetBoolean(prefs::kScrollToTextFragmentEnabled)) {
-        command_line->AppendSwitch(switches::kDisableScrollToTextFragment);
-      }
-
-      if (!prefs->GetList(enterprise_reporting::kCloudLegacyTechReportAllowlist)
-               .empty()) {
-        command_line->AppendSwitch(
-            blink::switches::kLegacyTechReportPolicyEnabled);
-      }
-
-      // The IntensiveWakeUpThrottling feature is typically managed via a
-      // base::Feature, but it has a managed policy override. The override is
-      // communicated to blink via a custom command-line flag. See
-      // PageSchedulerImpl for the other half of related logic.
-      const PrefService::Preference* pref = local_state->FindPreference(
-          policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled);
-      if (pref && pref->IsManaged()) {
-        command_line->AppendSwitchASCII(
-            blink::switches::kIntensiveWakeUpThrottlingPolicy,
-            pref->GetValue()->GetBool()
-                ? blink::switches::kIntensiveWakeUpThrottlingPolicy_ForceEnable
-                : blink::switches::
-                      kIntensiveWakeUpThrottlingPolicy_ForceDisable);
-      }
-
-#if BUILDFLAG(IS_ANDROID)
-      // Communicating to content/ for BackForwardCache.
-      if (prefs->HasPrefPath(policy::policy_prefs::kBackForwardCacheEnabled) &&
-          !prefs->GetBoolean(policy::policy_prefs::kBackForwardCacheEnabled)) {
-        command_line->AppendSwitch(switches::kDisableBackForwardCache);
-      }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-      // Make the WebAuthenticationRemoteProxiedRequestsAllowed policy enable
-      // the experimental WebAuthenticationRemoteDesktopSupport Blink runtime
-      // feature.
-      if (prefs->GetBoolean(
-              webauthn::pref_names::kRemoteProxiedRequestsAllowed)) {
-        command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
-      }
-#endif
-      // Make the WebAuthenticationRemoteDesktopAllowedOrigins policy enable the
-      // experimental WebAuthenticationRemoteDesktopSupport Blink runtime
-      // feature.
-      if (!prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins)
-               .empty()) {
-        command_line->AppendSwitch(switches::kWebAuthRemoteDesktopSupport);
-      }
     }
 
     MaybeAppendBlinkSettingsSwitchForFieldTrial(browser_command_line,
