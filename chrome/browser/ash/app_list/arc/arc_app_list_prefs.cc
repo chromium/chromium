@@ -1073,9 +1073,11 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   if (maybe_version_name && *maybe_version_name != std::string())
     version_name = *maybe_version_name;
 
-  CHECK(!name.empty(), base::NotFatalUntil::M160);
-  CHECK(!shortcut || activity.empty(), base::NotFatalUntil::M160);
-  CHECK(!shortcut || !intent_uri.empty(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568596167): CHECK-exclusion: Convert to CHECKs once we are
+  // confident it won't be triggered.
+  DCHECK(!name.empty());
+  DCHECK(!shortcut || activity.empty());
+  DCHECK(!shortcut || !intent_uri.empty());
 
   int64_t last_launch_time_internal = 0;
   base::Time last_launch_time;
