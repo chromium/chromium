@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "base/check_deref.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/extensions/api/odfs_config_private.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/constants.h"
@@ -80,7 +82,8 @@ OdfsConfigPrivateShowAutomatedMountErrorFunction::
 ExtensionFunction::ResponseAction
 OdfsConfigPrivateShowAutomatedMountErrorFunction::Run() {
   ash::cloud_upload::ShowAutomatedMountErrorNotification(
-      *Profile::FromBrowserContext(browser_context()));
+      CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context())));
   return RespondNow(NoArguments());
 }
 

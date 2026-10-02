@@ -27,6 +27,8 @@ include_rules = [
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {

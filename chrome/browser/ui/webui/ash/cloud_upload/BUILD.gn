@@ -103,6 +103,7 @@ static_library("cloud_upload") {
     "//net",
     "//ui/base",
     "//ui/chromeos/strings",
+    "//ui/message_center",
     "//ui/webui",
   ]
 

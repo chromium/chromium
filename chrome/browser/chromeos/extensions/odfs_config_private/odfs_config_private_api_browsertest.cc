@@ -8,16 +8,14 @@
 #include <set>
 
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -30,13 +28,15 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/api_test_utils.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 const char kExampleUrl[] = "https://www.example.com";
@@ -53,22 +53,31 @@ class OfdsConfigPrivateApiBrowserTest : public ExtensionApiTest {
       const OfdsConfigPrivateApiBrowserTest&) = delete;
   ~OfdsConfigPrivateApiBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    ClearAllNotifications();
+  }
+
  protected:
-  auto GetAllNotifications() {
-    base::test::TestFuture<std::set<std::string>, bool> get_displayed_future;
-    NotificationDisplayServiceFactory::GetForProfile(profile())->GetDisplayed(
-        get_displayed_future.GetCallback());
-    const auto& notification_ids = get_displayed_future.Get<0>();
-    EXPECT_TRUE(get_displayed_future.Wait());
+  std::string GetAutomatedMountErrorNotificationId() {
+    const user_manager::User& user = CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    return ash::CreateUserScopedNotificationId(
+        "automated_mount_error_notification_id", user.username_hash());
+  }
+
+  std::set<std::string> GetAllNotifications() {
+    std::set<std::string> notification_ids;
+    for (const message_center::Notification* notification :
+         message_center::MessageCenter::Get()->GetNotifications()) {
+      notification_ids.insert(notification->id());
+    }
     return notification_ids;
   }
 
   void ClearAllNotifications() {
-    NotificationDisplayService* service =
-        NotificationDisplayServiceFactory::GetForProfile(profile());
-    for (const std::string& notification_id : GetAllNotifications()) {
-      service->Close(NotificationHandler::Type::TRANSIENT, notification_id);
-    }
+    message_center::MessageCenter::Get()->RemoveAllNotifications(
+        /*by_user=*/false, message_center::MessageCenter::RemoveType::ALL);
   }
 
   size_t GetDisplayedNotificationsCount() {
@@ -112,11 +121,10 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
   api_test_utils::RunFunction(function.get(), /*args=*/"[]", profile());
 
   WaitUntilDisplayNotificationCount(/*display_count=*/1u);
-  auto notifications = GetAllNotifications();
+  const std::set<std::string> notifications = GetAllNotifications();
 
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_THAT(*notifications.begin(),
-              testing::HasSubstr("automated_mount_error_notification_id"));
+  EXPECT_EQ(*notifications.begin(), GetAutomatedMountErrorNotificationId());
 }
 
 IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
@@ -127,11 +135,10 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
                               profile());
 
   WaitUntilDisplayNotificationCount(/*display_count=*/1u);
-  auto notifications = GetAllNotifications();
+  const std::set<std::string> notifications = GetAllNotifications();
 
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_THAT(*notifications.begin(),
-              testing::HasSubstr("automated_mount_error_notification_id"));
+  EXPECT_EQ(*notifications.begin(), GetAutomatedMountErrorNotificationId());
 
   auto function_second_call = base::MakeRefCounted<
       extensions::OdfsConfigPrivateShowAutomatedMountErrorFunction>();
@@ -139,11 +146,11 @@ IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,
                               profile());
 
   WaitUntilDisplayNotificationCount(/*display_count=*/1u);
-  auto second_notifications = GetAllNotifications();
+  const std::set<std::string> second_notifications = GetAllNotifications();
 
   ASSERT_EQ(1u, second_notifications.size());
-  EXPECT_THAT(*second_notifications.begin(),
-              testing::HasSubstr("automated_mount_error_notification_id"));
+  EXPECT_EQ(*second_notifications.begin(),
+            GetAutomatedMountErrorNotificationId());
 }
 
 IN_PROC_BROWSER_TEST_F(OfdsConfigPrivateApiBrowserTest,

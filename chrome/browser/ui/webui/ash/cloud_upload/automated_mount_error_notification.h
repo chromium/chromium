@@ -5,13 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_AUTOMATED_MOUNT_ERROR_NOTIFICATION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_CLOUD_UPLOAD_AUTOMATED_MOUNT_ERROR_NOTIFICATION_H_
 
-class Profile;
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 namespace ash::cloud_upload {
 
 // Shows the error state for the automated mount indefinitely, until closed by
-// the user.
-void ShowAutomatedMountErrorNotification(Profile& profile);
+// the user. The notification is only visible while `user` is the active user.
+void ShowAutomatedMountErrorNotification(const user_manager::User& user);
 
 }  // namespace ash::cloud_upload
 

@@ -22,6 +22,8 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/common",
   "+chrome/test/base",
+
+  "+ui/message_center/message_center.h",
 ]
 
 specific_include_rules = {
