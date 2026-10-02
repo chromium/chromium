@@ -914,7 +914,7 @@ class ProxyResolverV8::Context {
   static Context* ContextFromArgs(
       const v8::FunctionCallbackInfo<v8::Value>& args) {
     auto* holder = static_cast<ContextHolder*>(
-        v8::External::Cast(*args.Data())
+        v8::External::Cast(*args.DataV2())
             ->Value(gin::kProxyResolverV8ContextTag));
     return holder ? holder->context : nullptr;
   }
