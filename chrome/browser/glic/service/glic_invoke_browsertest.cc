@@ -787,7 +787,8 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest,
 }
 
 // TODO(b/564473727): Test is flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/568827075): Re-enable the test on Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_InvokeTimeoutBehaviors DISABLED_InvokeTimeoutBehaviors
 #else
 #define MAYBE_InvokeTimeoutBehaviors InvokeTimeoutBehaviors
