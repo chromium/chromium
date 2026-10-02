@@ -110,12 +110,25 @@ void CriticalActionService::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Return early when clearing all history, as this wipes the entire database.
   if (deletion_info.IsAllHistory()) {
     DeleteCriticalActionsInTimeRange(base::Time(), base::Time::Max());
-  } else if (deletion_info.time_range().IsValid()) {
+    return;
+  }
+
+  // Only delete by time range when restrict_urls() is unset (e.g., Clear
+  // Browsing Data). Deleting individual items on chrome://history sets a
+  // full-day time_range() restricted to specific URLs, which must be deleted
+  // by deleted_visit_ids() below rather than wiping the entire day.
+  if (deletion_info.time_range().IsValid() &&
+      !deletion_info.restrict_urls().has_value()) {
     DeleteCriticalActionsInTimeRange(deletion_info.time_range().begin(),
                                      deletion_info.time_range().end());
-  } else if (!deletion_info.deleted_visit_ids().empty()) {
+  }
+
+  // Always clean up by `deleted_visit_ids()` as well, since an action's
+  // `timestamp` can fall outside `time_range()` even when its visit is inside.
+  if (!deletion_info.deleted_visit_ids().empty()) {
     std::vector<int64_t> visit_ids(deletion_info.deleted_visit_ids().begin(),
                                    deletion_info.deleted_visit_ids().end());
     DeleteCriticalActionsByVisitIds(visit_ids);

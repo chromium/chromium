@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <optional>
+#include <set>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
@@ -177,6 +179,60 @@ TEST_F(CriticalActionServiceTest, DeleteHistoryByRange) {
   EXPECT_TRUE(get_future2.Get().has_value());
 }
 
+// Test that a time-range deletion also deletes actions via `deleted_visit_ids`
+// when a deleted visit's action occurred after `time_range` ended.
+TEST_F(CriticalActionServiceTest, DeleteHistoryByRangeAndVisitIds) {
+  static constexpr int64_t kDeletedVisitId = 100;
+  static constexpr int64_t kKeptVisitId = 200;
+  base::Time start_time = base::Time::Now();
+  base::Time end_time = start_time + base::Minutes(10);
+
+  // Inside `time_range`: deleted by `DeleteCriticalActionsInTimeRange`.
+  CriticalActionEntry entry_in_range =
+      CreateDefaultEntry(ActionType::kCredentialAccess);
+  entry_in_range.timestamp = start_time + base::Minutes(5);
+  service_->AddCriticalAction(entry_in_range);
+
+  // Outside `time_range`, but its visit is in `deleted_visit_ids`: deleted by
+  // `DeleteCriticalActionsByVisitIds`.
+  CriticalActionEntry entry_deleted_visit =
+      CreateDefaultEntry(ActionType::kCredentialAccess);
+  entry_deleted_visit.visit_id = kDeletedVisitId;
+  entry_deleted_visit.timestamp = end_time + base::Minutes(1);
+  service_->AddCriticalAction(entry_deleted_visit);
+
+  // Outside `time_range` and not in `deleted_visit_ids`: kept.
+  CriticalActionEntry entry_kept =
+      CreateDefaultEntry(ActionType::kCredentialAccess);
+  entry_kept.visit_id = kKeptVisitId;
+  entry_kept.timestamp = end_time + base::Minutes(5);
+  service_->AddCriticalAction(entry_kept);
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(start_time, end_time),
+      /*is_from_expiration=*/false, history::DeletionInfo::Reason::kOther,
+      /*deleted_rows=*/{},
+      /*deleted_visit_ids=*/{kDeletedVisitId},
+      /*favicon_urls=*/{},
+      /*restrict_urls=*/std::nullopt);
+  service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_in_range;
+  service_->GetCriticalAction(entry_in_range.critical_action_id,
+                              get_in_range.GetCallback());
+  EXPECT_FALSE(get_in_range.Get().has_value());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_deleted_visit;
+  service_->GetCriticalAction(entry_deleted_visit.critical_action_id,
+                              get_deleted_visit.GetCallback());
+  EXPECT_FALSE(get_deleted_visit.Get().has_value());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_kept;
+  service_->GetCriticalAction(entry_kept.critical_action_id,
+                              get_kept.GetCallback());
+  EXPECT_TRUE(get_kept.Get().has_value());
+}
+
 TEST_F(CriticalActionServiceTest, DeleteHistoryByVisitId) {
   int64_t visit_id_to_delete = base::RandIntInclusive(1, 1000000);
   int64_t visit_id_to_keep = visit_id_to_delete + 1;
@@ -209,6 +265,48 @@ TEST_F(CriticalActionServiceTest, DeleteHistoryByVisitId) {
   service_->GetCriticalAction(entry2.critical_action_id,
                               get_future2.GetCallback());
   EXPECT_TRUE(get_future2.Get().has_value());
+}
+
+// Test that URL-restricted time-range deletions (such as deleting a single
+// visit in `chrome://history`) only delete actions matching `deleted_visit_ids`
+// and do not wipe other actions in the same `time_range`.
+TEST_F(CriticalActionServiceTest, DeleteHistoryByUrlRestrictedRange) {
+  static constexpr std::string_view kRestrictedUrl = "https://example.com";
+  static constexpr int64_t kVisitIdToDelete = 100;
+  static constexpr int64_t kVisitIdToKeep = 200;
+  base::Time start_time = base::Time::Now();
+  base::Time end_time = start_time + base::Hours(24);
+
+  CriticalActionEntry entry_to_delete =
+      CreateDefaultEntry(ActionType::kCredentialAccess);
+  entry_to_delete.visit_id = kVisitIdToDelete;
+  entry_to_delete.timestamp = start_time + base::Minutes(5);
+  service_->AddCriticalAction(entry_to_delete);
+
+  CriticalActionEntry entry_to_keep =
+      CreateDefaultEntry(ActionType::kCredentialAccess);
+  entry_to_keep.visit_id = kVisitIdToKeep;
+  entry_to_keep.timestamp = start_time + base::Minutes(10);
+  service_->AddCriticalAction(entry_to_keep);
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(start_time, end_time),
+      /*is_from_expiration=*/false, history::DeletionInfo::Reason::kOther,
+      /*deleted_rows=*/{},
+      /*deleted_visit_ids=*/{kVisitIdToDelete},
+      /*favicon_urls=*/{},
+      /*restrict_urls=*/std::set<GURL>{GURL(kRestrictedUrl)});
+  service_->OnHistoryDeletions(nullptr, deletion_info);
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_deleted;
+  service_->GetCriticalAction(entry_to_delete.critical_action_id,
+                              get_deleted.GetCallback());
+  EXPECT_FALSE(get_deleted.Get().has_value());
+
+  base::test::TestFuture<std::optional<CriticalActionEntry>> get_kept;
+  service_->GetCriticalAction(entry_to_keep.critical_action_id,
+                              get_kept.GetCallback());
+  EXPECT_TRUE(get_kept.Get().has_value());
 }
 
 TEST_F(CriticalActionServiceTest, GetCriticalActionsWithOptions) {
