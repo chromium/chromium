@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 
 #include "base/functional/callback.h"
+#include "base/not_fatal_until.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 
 namespace content {
@@ -106,11 +107,27 @@ size_t FileSystemAccessChangeSource::current_usage() const {
   return 0;
 }
 
+bool FileSystemAccessChangeSource::CanNotifyOfChanges() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Changes may arrive while initialization is still pending. Once it
+  // completes, only a successfully initialized source may notify observers.
+  return !initialization_callbacks_.empty() ||
+         (initialization_result_.has_value() &&
+          (*initialization_result_)->status ==
+              blink::mojom::FileSystemAccessStatus::kOk);
+}
+
 void FileSystemAccessChangeSource::NotifyOfChange(
     const storage::FileSystemURL& changed_url,
     bool error,
     const ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool can_notify = CanNotifyOfChanges();
+  CHECK(can_notify, base::NotFatalUntil::M160);
+  if (!can_notify) {
+    return;
+  }
   CHECK(scope().Contains(changed_url));
   CHECK(changed_url.is_valid());
 
@@ -124,6 +141,11 @@ void FileSystemAccessChangeSource::NotifyOfChange(
     bool error,
     const ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool can_notify = CanNotifyOfChanges();
+  CHECK(can_notify, base::NotFatalUntil::M160);
+  if (!can_notify) {
+    return;
+  }
   CHECK(!relative_path.IsAbsolute());
   CHECK(!relative_path.ReferencesParent());
 
@@ -149,6 +171,11 @@ void FileSystemAccessChangeSource::NotifyOfChange(
 void FileSystemAccessChangeSource::NotifyOfUsageChange(size_t old_usage,
                                                        size_t new_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool can_notify = CanNotifyOfChanges();
+  CHECK(can_notify, base::NotFatalUntil::M160);
+  if (!can_notify) {
+    return;
+  }
 
   for (RawChangeObserver& observer : observers_) {
     observer.OnUsageChange(old_usage, new_usage, scope());

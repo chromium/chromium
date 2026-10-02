@@ -842,6 +842,11 @@ TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   watcher_manager().RegisterSourceForTesting(&source_for_dir);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source_for_dir));
 
+  // Observing the file only initializes `source_for_file`.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  source_for_dir.EnsureInitialized(future.GetCallback());
+  ASSERT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+
   ChangeAccumulator accumulator(ObserveFile(file_url));
 
   source_for_file.Signal();
@@ -872,6 +877,12 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       file_system_context_);
   watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
+
+  // Observations use the manager's built-in bucket source, so initialize this
+  // additional source explicitly before signaling changes.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  source.EnsureInitialized(future.GetCallback());
+  ASSERT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   ChangeAccumulator dir_accumulator(
       ObserveDirectory(dir_url, /*is_recursive=*/true));
@@ -972,6 +983,12 @@ TEST_F(FileSystemAccessWatcherManagerTest,
       file_system_context_);
   watcher_manager().RegisterSourceForTesting(&source);
   EXPECT_TRUE(watcher_manager().HasSourceForTesting(&source));
+
+  // Observations use the manager's built-in bucket source, so initialize this
+  // additional source explicitly before signaling changes.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  source.EnsureInitialized(future.GetCallback());
+  ASSERT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
 
   ChangeAccumulator accumulator(
       ObserveDirectory(sub_dir_url, /*is_recursive=*/false));
