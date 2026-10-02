@@ -1231,6 +1231,9 @@ by a child template that "extends" this file.
             android:exported="false"
             android:theme="@style/Theme.Chromium.Activity"
             android:launchMode="singleInstance">
+            <layout
+                android:defaultWidth="720dp"
+                android:defaultHeight="524dp" />
         </activity>
 
         <activity
