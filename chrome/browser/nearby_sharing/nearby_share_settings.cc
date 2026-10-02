@@ -157,7 +157,9 @@ void NearbyShareSettings::GetIsFastInitiationHardwareSupported(
 }
 
 void NearbyShareSettings::SetEnabled(bool enabled) {
-  CHECK(!enabled || IsOnboardingComplete(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568539098): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!enabled || IsOnboardingComplete());
   pref_service_->SetBoolean(prefs::kNearbySharingEnabledPrefName, enabled);
   if (enabled && GetVisibility() == nearby_share::mojom::Visibility::kUnknown) {
     CD_LOG(ERROR, Feature::NS)
