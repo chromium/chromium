@@ -131,4 +131,33 @@ TEST_F(ScopedAutofillManagersObservationTest,
   DeleteAutofillDriver(autofill_driver());
 }
 
+TEST_F(ScopedAutofillManagersObservationTest,
+       ObserverResetsObservationDuringPendingDeletion) {
+  MockAutofillManagerObserver observer;
+  ScopedAutofillManagersObservation observation(&observer);
+  observation.Observe(&autofill_client());
+  CreateAutofillDriver();
+
+  EXPECT_CALL(observer,
+              OnAutofillManagerStateChanged(Ref(autofill_manager()), kInactive,
+                                            kPendingDeletion))
+      .WillOnce([&] { observation.Reset(); });
+  DeleteAutofillDriver(autofill_driver());
+}
+
+TEST_F(ScopedAutofillManagersObservationTest,
+       ObserverDestroysObservationDuringPendingDeletion) {
+  MockAutofillManagerObserver observer;
+  auto observation =
+      std::make_unique<ScopedAutofillManagersObservation>(&observer);
+  observation->Observe(&autofill_client());
+  CreateAutofillDriver();
+
+  EXPECT_CALL(observer,
+              OnAutofillManagerStateChanged(Ref(autofill_manager()), kInactive,
+                                            kPendingDeletion))
+      .WillOnce([&] { observation.reset(); });
+  DeleteAutofillDriver(autofill_driver());
+}
+
 }  // namespace autofill
