@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationContentDetectionManager.SuspiciousNotificationWarningInteractions;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationLifecycleEvent;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -964,6 +965,21 @@ public class NotificationPlatformBridge {
                             // `skipUAButtons` set to true.
                             if (suspended && !skipUAButtons) {
                                 return;
+                            }
+
+                            // Track site notification arrival before channel blocks and Android
+                            // OS dispatch to measure top-of-funnel queued volume for Chrome-handled
+                            // site notifications. Excludes synthetic confirmation notifications
+                            // (skipUAButtons == true).
+                            if (!skipUAButtons
+                                    && (identifyingAttributes.notificationType
+                                                    == NotificationType.WEB_PERSISTENT
+                                            || identifyingAttributes.notificationType
+                                                    == NotificationType.WEB_NON_PERSISTENT)) {
+                                NotificationUmaTracker.getInstance()
+                                        .recordLifecycleEvent(
+                                                SystemNotificationType.SITES,
+                                                SystemNotificationLifecycleEvent.QUEUED);
                             }
 
                             // Display notification as Chrome.

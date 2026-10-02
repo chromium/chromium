@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.TrampolineActivityTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
@@ -657,6 +658,7 @@ public class ProcessInitializationHandler {
                 });
 
         tasks.add(() -> LocaleManager.getInstance().recordStartupMetrics());
+        tasks.add(() -> NotificationUmaTracker.getInstance().recordStartupMetrics());
 
         tasks.add(
                 () -> {

@@ -65,6 +65,43 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for Translate Infobar."/>
 </variants>
 
+<!-- LINT.IfChange(NotificationChannelId) -->
+
+<variants name="NotificationChannelId">
+  <variant name="Actor"/>
+  <variant name="Announcement"/>
+  <variant name="Bluetooth"/>
+  <variant name="Browser"/>
+  <variant name="ChromeFinds"/>
+  <variant name="Collaboration"/>
+  <variant name="CompletedDownloads"/>
+  <variant name="ContentSuggestions"/>
+  <variant name="Downloads"/>
+  <variant name="Incognito"/>
+  <variant name="Media"/>
+  <variant name="PermissionRequests"/>
+  <variant name="PermissionRequestsHigh"/>
+  <variant name="ScreenCapture"/>
+  <variant name="SecurityKey"/>
+  <variant name="Serial"/>
+  <variant name="Sharing"/>
+  <variant name="ShoppingPriceDropAlerts"/>
+  <variant name="ShoppingPriceDropAlertsDefault"/>
+  <variant name="Sites"/>
+  <variant name="Tips"/>
+  <variant name="TipsV2"/>
+  <variant name="TwaDisclosureInitial"/>
+  <variant name="TwaDisclosureSubsequent"/>
+  <variant name="Unknown"/>
+  <variant name="Updates"/>
+  <variant name="Usb"/>
+  <variant name="Vr"/>
+  <variant name="WebappActions"/>
+  <variant name="WebrtcCamAndMic"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java:ChannelId) -->
+
 <variants name="SystemNotificationAgeType">
   <variant name=".Actor" summary="Actor"/>
   <variant name=".ClickToCall" summary="Click To Call"/>
@@ -75,6 +112,60 @@ chromium-metrics-reviews@google.com.
   <variant name=".SendTabToSelf" summary="Send Tab To Self"/>
   <variant name=".SharedClipboard" summary="Shared Clipboard"/>
 </variants>
+
+<!-- LINT.IfChange(SystemNotificationType) -->
+
+<variants name="SystemNotificationType">
+  <variant name="Actor"/>
+  <variant name="Announcement"/>
+  <variant name="Bluetooth"/>
+  <variant name="BrowserActions"/>
+  <variant name="ChromeFinds"/>
+  <variant name="ChromeReengagement1"/>
+  <variant name="ChromeReengagement2"/>
+  <variant name="ChromeReengagement3"/>
+  <variant name="ChromeTips"/>
+  <variant name="ClickToCall"/>
+  <variant name="CloseIncognito"/>
+  <variant name="ContentSuggestion"/>
+  <variant name="DataSharing"/>
+  <variant name="DownloadFiles"/>
+  <variant name="DownloadPages"/>
+  <variant name="Media"/>
+  <variant name="MediaCapture"/>
+  <variant name="OfflineContentSuggestion"/>
+  <variant name="OfflinePages"/>
+  <variant name="PermissionRequests"/>
+  <variant name="PermissionRequestsHigh"/>
+  <variant name="PhysicalWeb"/>
+  <variant name="PriceDropAlerts"/>
+  <variant name="PriceDropAlertsChromeManaged"/>
+  <variant name="PriceDropAlertsUserManaged"/>
+  <variant name="SafetyHubUnsubscribedNotifications"/>
+  <variant name="SendTabToSelf"/>
+  <variant name="Serial"/>
+  <variant name="SharedClipboard"/>
+  <variant name="ShareSaveImage"/>
+  <variant name="Sites"/>
+  <variant name="SmsFetcher"/>
+  <variant name="Sync"/>
+  <variant name="Tracing"/>
+  <variant name="TrustedWebActivitySites"/>
+  <variant name="TwaDisclosureInitial"/>
+  <variant name="TwaDisclosureSubsequent"/>
+  <variant name="Unknown"/>
+  <variant name="Updates"/>
+  <variant name="UpmAccessLossWarning"/>
+  <variant name="UpmError"/>
+  <variant name="Usb"/>
+  <variant name="WebApk"/>
+  <variant name="WebApkInstallComplete"/>
+  <variant name="WebApkInstallFailed"/>
+  <variant name="WebApkInstallInProgress"/>
+  <variant name="WebappActions"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:SystemNotificationTypeSuffix) -->
 
 <histogram name="Mobile.AppMenu.TimeToTakeAction.Abandoned" units="ms"
     expires_after="2026-10-25">
@@ -699,6 +790,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mobile.SystemNotification.Lifecycle.{NotificationType}"
+    enum="SystemNotificationLifecycleEvent" expires_after="2027-04-01">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records the lifecycle events (Queued, Shown, Clicked, Dismissed) for Android
+    notifications of type {NotificationType}. Clicked includes user clicks on
+    either the notification body or an action button.
+  </summary>
+  <token key="NotificationType" variants="SystemNotificationType"/>
+</histogram>
+
 <histogram name="Mobile.SystemNotification.Permission.Change"
     enum="BooleanEnabled" expires_after="2027-03-28">
   <owner>salg@google.com</owner>
@@ -720,42 +823,7 @@ chromium-metrics-reviews@google.com.
     of a change, which involves granting/blocking access via the OS settings,
     for the specified notification channel. {NotificationChannelId}
   </summary>
-<!-- LINT.IfChange(NotificationChannelId) -->
-
-  <token key="NotificationChannelId">
-    <variant name="Actor"/>
-    <variant name="Announcement"/>
-    <variant name="Bluetooth"/>
-    <variant name="Browser"/>
-    <variant name="ChromeFinds"/>
-    <variant name="Collaboration"/>
-    <variant name="CompletedDownloads"/>
-    <variant name="ContentSuggestions"/>
-    <variant name="Downloads"/>
-    <variant name="Incognito"/>
-    <variant name="Media"/>
-    <variant name="PermissionRequests"/>
-    <variant name="PermissionRequestsHigh"/>
-    <variant name="ScreenCapture"/>
-    <variant name="SecurityKey"/>
-    <variant name="Serial"/>
-    <variant name="Sharing"/>
-    <variant name="ShoppingPriceDropAlerts"/>
-    <variant name="ShoppingPriceDropAlertsDefault"/>
-    <variant name="Sites"/>
-    <variant name="Tips"/>
-    <variant name="TipsV2"/>
-    <variant name="TwaDisclosureInitial"/>
-    <variant name="TwaDisclosureSubsequent"/>
-    <variant name="Unknown"/>
-    <variant name="Updates"/>
-    <variant name="Usb"/>
-    <variant name="Vr"/>
-    <variant name="WebappActions"/>
-    <variant name="WebrtcCamAndMic"/>
-  </token>
-<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java:ChannelId) -->
-
+  <token key="NotificationChannelId" variants="NotificationChannelId"/>
 </histogram>
 
 <histogram
@@ -913,6 +981,48 @@ chromium-metrics-reviews@google.com.
     Android: Represents the number of system notifications that will be
     successfully shown to the user by type.
   </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Sites.AllowedCount" units="sites"
+    expires_after="2027-04-01">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records the number of unique site origins with an enabled Android
+    notification channel. Recorded once on startup.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Sites.DisallowedCount" units="sites"
+    expires_after="2027-04-01">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records the number of unique site origins with a blocked Android
+    notification channel. Recorded once on startup.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Startup.AppLevelEnabled"
+    enum="BooleanEnabled" expires_after="2027-04-01">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records whether Chrome has app-level notification permissions enabled on
+    Android. Recorded once on startup.
+  </summary>
+</histogram>
+
+<histogram
+    name="Mobile.SystemNotification.Startup.ChannelStatus.{NotificationChannelId}"
+    enum="SystemNotificationChannelStatus" expires_after="2027-04-01">
+  <owner>bjfong@google.com</owner>
+  <owner>wylieb@google.com</owner>
+  <summary>
+    Records the enabled status of the {NotificationChannelId} notification
+    channel on Android. Recorded once on startup for each predefined channel.
+  </summary>
+  <token key="NotificationChannelId" variants="NotificationChannelId"/>
 </histogram>
 
 <histogram name="MobileDownload.DownloadPromptStatus"

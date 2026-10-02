@@ -573,6 +573,29 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="View actor task"/>
 </enum>
 
+<!-- LINT.IfChange(SystemNotificationChannelStatus) -->
+
+<enum name="SystemNotificationChannelStatus">
+  <int value="0" label="Blocked (IMPORTANCE_NONE)"/>
+  <int value="1" label="Enabled (Default / High / Low / Min)"/>
+  <int value="2" label="Unavailable / Not Created"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:SystemNotificationChannelStatus) -->
+
+<!-- LINT.IfChange(SystemNotificationLifecycleEvent) -->
+
+<enum name="SystemNotificationLifecycleEvent">
+  <int value="0" label="Queued"/>
+  <int value="1" label="Shown"/>
+  <int value="2" label="Clicked"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:SystemNotificationLifecycleEvent) -->
+
+<!-- LINT.IfChange(SystemNotificationType2) -->
+
 <enum name="SystemNotificationType2">
   <int value="0" label="Unknown"/>
   <int value="1" label="Downloads - Files"/>
@@ -622,6 +645,8 @@ chromium-metrics-reviews@google.com.
   <int value="45" label="Actor"/>
   <int value="46" label="Chrome Finds"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:SystemNotificationType) -->
 
 </enums>
 

@@ -709,6 +709,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTrackerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",

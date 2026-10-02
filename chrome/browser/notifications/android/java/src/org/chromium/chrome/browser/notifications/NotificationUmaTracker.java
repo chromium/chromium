@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.text.format.DateUtils;
 
@@ -19,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
@@ -27,6 +29,10 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Helper class to make tracking notification UMA stats easier for various features. Having a single
@@ -41,6 +47,7 @@ public class NotificationUmaTracker {
      *
      * A SystemNotificationType value can also be saved in shared preferences.
      */
+    // LINT.IfChange(SystemNotificationType)
     @IntDef({
         SystemNotificationType.UNKNOWN,
         SystemNotificationType.DOWNLOAD_FILES,
@@ -142,6 +149,13 @@ public class NotificationUmaTracker {
 
         int NUM_ENTRIES = 47;
     }
+
+    // clang-format off
+    // LINT.ThenChange(
+    //   //tools/metrics/histograms/metadata/mobile/enums.xml:SystemNotificationType2,
+    //   NotificationUmaTracker.java:SystemNotificationTypeSuffix
+    // )
+    // clang-format on
 
     /*
      * A list of notification action types, each maps to a notification button.
@@ -301,6 +315,50 @@ public class NotificationUmaTracker {
     }
 
     /**
+     * A list of notification lifecycle events, defined in enums.xml. Entries should not be
+     * renumbered and numeric values should never be reused.
+     */
+    // LINT.IfChange(SystemNotificationLifecycleEvent)
+    @IntDef({
+        SystemNotificationLifecycleEvent.QUEUED,
+        SystemNotificationLifecycleEvent.SHOWN,
+        SystemNotificationLifecycleEvent.CLICKED,
+        SystemNotificationLifecycleEvent.DISMISSED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SystemNotificationLifecycleEvent {
+        int QUEUED = 0;
+        int SHOWN = 1;
+        int CLICKED = 2;
+        int DISMISSED = 3;
+
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:SystemNotificationLifecycleEvent)
+
+    /**
+     * A list of notification channel enabled statuses on startup, defined in enums.xml. Entries
+     * should not be renumbered and numeric values should never be reused.
+     */
+    // LINT.IfChange(SystemNotificationChannelStatus)
+    @IntDef({
+        SystemNotificationChannelStatus.BLOCKED,
+        SystemNotificationChannelStatus.ENABLED,
+        SystemNotificationChannelStatus.UNAVAILABLE,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SystemNotificationChannelStatus {
+        int BLOCKED = 0;
+        int ENABLED = 1;
+        int UNAVAILABLE = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:SystemNotificationChannelStatus)
+
+    /**
      * A list of results from showing the notification permission rationale dialog, defined in
      * enums.xml These values are persisted to logs. Entries should not be renumbered and numeric
      * values should never be reused.
@@ -437,6 +495,7 @@ public class NotificationUmaTracker {
     public void onNotificationContentClick(@SystemNotificationType int type, long createTime) {
         if (type == SystemNotificationType.UNKNOWN) return;
 
+        recordLifecycleEvent(type, SystemNotificationLifecycleEvent.CLICKED);
         RecordHistogram.recordEnumeratedHistogram(
                 "Mobile.SystemNotification.Content.Click2",
                 type,
@@ -489,6 +548,8 @@ public class NotificationUmaTracker {
     public void onNotificationDismiss(@SystemNotificationType int type, long createTime) {
         if (type == SystemNotificationType.UNKNOWN) return;
 
+        recordLifecycleEvent(type, SystemNotificationLifecycleEvent.DISMISSED);
+
         // TODO(xingliu): This may not work if Android kill Chrome before native library is loaded.
         // Cache data in Android shared preference and flush them to native when available.
         RecordHistogram.recordEnumeratedHistogram(
@@ -538,16 +599,22 @@ public class NotificationUmaTracker {
             @ActionType int actionType,
             @SystemNotificationType int notificationType,
             long createTime) {
+        if (notificationType == SystemNotificationType.UNKNOWN) return;
+
+        // COMMIT_UNSUBSCRIBE_IMPLICIT is fired via delete intent when the provisionally
+        // unsubscribed notification times out or is dismissed; it is not a user click.
+        if (actionType != ActionType.COMMIT_UNSUBSCRIBE_IMPLICIT) {
+            recordLifecycleEvent(notificationType, SystemNotificationLifecycleEvent.CLICKED);
+        }
+
         if (actionType == ActionType.UNKNOWN) return;
 
         // TODO(xingliu): This may not work if Android kill Chrome before native library is loaded.
         // Cache data in Android shared preference and flush them to native when available.
-        if (notificationType != SystemNotificationType.UNKNOWN) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Mobile.SystemNotification.AnyButton.Click",
-                    notificationType,
-                    SystemNotificationType.NUM_ENTRIES);
-        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Mobile.SystemNotification.AnyButton.Click",
+                notificationType,
+                SystemNotificationType.NUM_ENTRIES);
         RecordHistogram.recordEnumeratedHistogram(
                 "Mobile.SystemNotification.Action.Click", actionType, ActionType.NUM_ENTRIES);
         recordNotificationAgeHistogram("Mobile.SystemNotification.Action.Click.Age", createTime);
@@ -764,6 +831,99 @@ public class NotificationUmaTracker {
                 count);
     }
 
+    /**
+     * Records a lifecycle event for the notification type.
+     *
+     * <p>Notes:
+     *
+     * <ul>
+     *   <li>{@link SystemNotificationLifecycleEvent#QUEUED} is currently only recorded for {@link
+     *       SystemNotificationType#SITES}; other notification types have not implemented queue
+     *       recording yet.
+     *   <li>{@link SystemNotificationLifecycleEvent#CLICKED} represents any user click, including
+     *       both clicks on the notification body and clicks on notification action buttons.
+     * </ul>
+     *
+     * @param type The type of the notification.
+     * @param event The lifecycle event (QUEUED, SHOWN, CLICKED, DISMISSED).
+     */
+    public void recordLifecycleEvent(
+            @SystemNotificationType int type, @SystemNotificationLifecycleEvent int event) {
+        String suffix = notificationTypeToLifecycleSuffix(type);
+        if (suffix == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Mobile.SystemNotification.Lifecycle." + suffix,
+                event,
+                SystemNotificationLifecycleEvent.NUM_ENTRIES);
+    }
+
+    /**
+     * Records startup metrics for notification status:
+     *
+     * <ul>
+     *   <li>Mobile.SystemNotification.Startup.AppLevelEnabled
+     *   <li>Mobile.SystemNotification.Startup.ChannelStatus.{NotificationChannelId}
+     *   <li>Mobile.SystemNotification.Sites.AllowedCount
+     *   <li>Mobile.SystemNotification.Sites.DisallowedCount
+     * </ul>
+     */
+    public void recordStartupMetrics() {
+        RecordHistogram.recordBooleanHistogram(
+                "Mobile.SystemNotification.Startup.AppLevelEnabled",
+                NotificationProxyUtils.areNotificationsEnabled());
+
+        mNotificationManager.getNotificationChannels(
+                (channels) -> {
+                    Map<String, NotificationChannel> channelMap = new HashMap<>();
+                    Set<String> allowedOrigins = new HashSet<>();
+                    Set<String> disallowedOrigins = new HashSet<>();
+                    if (channels != null) {
+                        for (NotificationChannel channel : channels) {
+                            String channelId = channel.getId();
+                            if (SiteChannelsManager.isValidSiteChannelId(channelId)) {
+                                String origin = SiteChannelsManager.toSiteOrigin(channelId);
+                                if (channel.getImportance()
+                                        == NotificationManager.IMPORTANCE_NONE) {
+                                    disallowedOrigins.add(origin);
+                                } else {
+                                    allowedOrigins.add(origin);
+                                }
+                            } else {
+                                channelMap.put(channelId, channel);
+                            }
+                        }
+                    }
+                    // If an origin has both an enabled and a blocked channel due to past
+                    // migrations, consider it allowed and remove it from disallowed.
+                    disallowedOrigins.removeAll(allowedOrigins);
+
+                    for (String channelId :
+                            ChromeChannelDefinitions.getInstance().getAllChannelIds()) {
+                        String suffix = notificationChannelIdToSuffix(channelId);
+                        @Nullable NotificationChannel channel = channelMap.get(channelId);
+                        @SystemNotificationChannelStatus int status;
+                        if (channel == null) {
+                            status = SystemNotificationChannelStatus.UNAVAILABLE;
+                        } else if (channel.getImportance() == NotificationManager.IMPORTANCE_NONE) {
+                            status = SystemNotificationChannelStatus.BLOCKED;
+                        } else {
+                            status = SystemNotificationChannelStatus.ENABLED;
+                        }
+                        RecordHistogram.recordEnumeratedHistogram(
+                                "Mobile.SystemNotification.Startup.ChannelStatus." + suffix,
+                                status,
+                                SystemNotificationChannelStatus.NUM_ENTRIES);
+                    }
+
+                    RecordHistogram.recordCount1000Histogram(
+                            "Mobile.SystemNotification.Sites.AllowedCount", allowedOrigins.size());
+                    RecordHistogram.recordCount1000Histogram(
+                            "Mobile.SystemNotification.Sites.DisallowedCount",
+                            disallowedOrigins.size());
+                });
+    }
+
     private void logNotificationShown(
             @SystemNotificationType int type,
             @ChromeChannelDefinitions.ChannelId String channelId) {
@@ -775,6 +935,7 @@ public class NotificationUmaTracker {
         if (channelId == null) {
             saveLastShownNotification(type);
             recordHistogram("Mobile.SystemNotification.Shown2", type);
+            recordLifecycleEvent(type, SystemNotificationLifecycleEvent.SHOWN);
             return;
         }
 
@@ -786,6 +947,7 @@ public class NotificationUmaTracker {
                     } else {
                         saveLastShownNotification(type);
                         recordHistogram("Mobile.SystemNotification.Shown2", type);
+                        recordLifecycleEvent(type, SystemNotificationLifecycleEvent.SHOWN);
                     }
                 });
     }
@@ -918,5 +1080,114 @@ public class NotificationUmaTracker {
                 return "Unknown";
         }
         // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java:ChannelId)
+    }
+
+    private static @Nullable String notificationTypeToLifecycleSuffix(
+            @SystemNotificationType int type) {
+        // LINT.IfChange(SystemNotificationTypeSuffix)
+        switch (type) {
+            case SystemNotificationType.UNKNOWN:
+                return "Unknown";
+            case SystemNotificationType.DOWNLOAD_FILES:
+                return "DownloadFiles";
+            case SystemNotificationType.DOWNLOAD_PAGES:
+                return "DownloadPages";
+            case SystemNotificationType.CLOSE_INCOGNITO:
+                return "CloseIncognito";
+            case SystemNotificationType.CONTENT_SUGGESTION:
+                return "ContentSuggestion";
+            case SystemNotificationType.MEDIA_CAPTURE:
+                return "MediaCapture";
+            case SystemNotificationType.PHYSICAL_WEB:
+                return "PhysicalWeb";
+            case SystemNotificationType.MEDIA:
+                return "Media";
+            case SystemNotificationType.SITES:
+                return "Sites";
+            case SystemNotificationType.SYNC:
+                return "Sync";
+            case SystemNotificationType.WEBAPK:
+                return "WebApk";
+            case SystemNotificationType.BROWSER_ACTIONS:
+                return "BrowserActions";
+            case SystemNotificationType.WEBAPP_ACTIONS:
+                return "WebappActions";
+            case SystemNotificationType.OFFLINE_CONTENT_SUGGESTION:
+                return "OfflineContentSuggestion";
+            case SystemNotificationType.TRUSTED_WEB_ACTIVITY_SITES:
+                return "TrustedWebActivitySites";
+            case SystemNotificationType.OFFLINE_PAGES:
+                return "OfflinePages";
+            case SystemNotificationType.SEND_TAB_TO_SELF:
+                return "SendTabToSelf";
+            case SystemNotificationType.UPDATES:
+                return "Updates";
+            case SystemNotificationType.CLICK_TO_CALL:
+                return "ClickToCall";
+            case SystemNotificationType.SHARED_CLIPBOARD:
+                return "SharedClipboard";
+            case SystemNotificationType.PERMISSION_REQUESTS:
+                return "PermissionRequests";
+            case SystemNotificationType.PERMISSION_REQUESTS_HIGH:
+                return "PermissionRequestsHigh";
+            case SystemNotificationType.ANNOUNCEMENT:
+                return "Announcement";
+            case SystemNotificationType.SHARE_SAVE_IMAGE:
+                return "ShareSaveImage";
+            case SystemNotificationType.TWA_DISCLOSURE_INITIAL:
+                return "TwaDisclosureInitial";
+            case SystemNotificationType.TWA_DISCLOSURE_SUBSEQUENT:
+                return "TwaDisclosureSubsequent";
+            case SystemNotificationType.CHROME_REENGAGEMENT_1:
+                return "ChromeReengagement1";
+            case SystemNotificationType.CHROME_REENGAGEMENT_2:
+                return "ChromeReengagement2";
+            case SystemNotificationType.CHROME_REENGAGEMENT_3:
+                return "ChromeReengagement3";
+            case SystemNotificationType.PRICE_DROP_ALERTS:
+                return "PriceDropAlerts";
+            case SystemNotificationType.SMS_FETCHER:
+                return "SmsFetcher";
+            case SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS:
+                return "WebApkInstallInProgress";
+            case SystemNotificationType.WEBAPK_INSTALL_COMPLETE:
+                return "WebApkInstallComplete";
+            case SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED:
+                return "PriceDropAlertsChromeManaged";
+            case SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED:
+                return "PriceDropAlertsUserManaged";
+            case SystemNotificationType.CHROME_TIPS:
+                return "ChromeTips";
+            case SystemNotificationType.BLUETOOTH:
+                return "Bluetooth";
+            case SystemNotificationType.USB:
+                return "Usb";
+            case SystemNotificationType.UPM_ERROR:
+                return "UpmError";
+            case SystemNotificationType.WEBAPK_INSTALL_FAILED:
+                return "WebApkInstallFailed";
+            case SystemNotificationType.DATA_SHARING:
+                return "DataSharing";
+            case SystemNotificationType.UPM_ACCESS_LOSS_WARNING:
+                return "UpmAccessLossWarning";
+            case SystemNotificationType.TRACING:
+                return "Tracing";
+            case SystemNotificationType.SERIAL:
+                return "Serial";
+            case SystemNotificationType.SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS:
+                return "SafetyHubUnsubscribedNotifications";
+            case SystemNotificationType.ACTOR:
+                return "Actor";
+            case SystemNotificationType.CHROME_FINDS:
+                return "ChromeFinds";
+            default:
+                return null;
+        }
+        // clang-format off
+        // LINT.ThenChange(
+        //   //tools/metrics/histograms/metadata/mobile/histograms.xml:SystemNotificationType,
+        //   NotificationUmaTracker.java:SystemNotificationType
+        // )
+        // clang-format on
     }
 }
