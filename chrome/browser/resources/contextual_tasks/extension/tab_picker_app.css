@@ -46,8 +46,8 @@
 }
 
 #shareTabsTrigger {
-  --iron-icon-height: 16px;
-  --iron-icon-width: 16px;
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
   align-items: center;
   background: transparent;
   border: none;
@@ -55,16 +55,26 @@
   color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
-  font-family: var(--cr-composebox-context-menu-font-family, inherit);
-  font-size: 13px;
+  font-family: var(--cr-composebox-context-menu-font-family,
+      'Google Sans', Roboto, sans-serif);
+  font-size: 14px;
   font-weight: 400;
-  gap: 8px;
+  gap: 0;
   height: 100%;
   justify-content: flex-start;
-  min-height: 32px;
-  padding: 6px 14px;
+  line-height: 18px;
+  min-height: 38px;
+  padding: 0 20px 0 2px;
   text-align: left;
   width: 100%;
+}
+
+#shareTabsTrigger > cr-icon:first-child {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  height: 20px;
+  margin: 9px;
+  width: 20px;
 }
 
 #shareTabsTrigger:hover {
@@ -97,8 +107,8 @@ composebox-favicon-group {
 }
 
 .share-tabs-arrow {
-  --iron-icon-height: 16px;
-  --iron-icon-width: 16px;
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
   flex-shrink: 0;
 }
 
@@ -137,7 +147,8 @@ composebox-favicon-group {
   color: var(--tab-picker-item-color);
   cursor: pointer;
   display: flex;
-  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-family: var(--cr-composebox-context-menu-font-family,
+      'Google Sans', Roboto, sans-serif);
   font-size: 13px;
   font-weight: 400;
   gap: 8px;
@@ -176,7 +187,8 @@ composebox-favicon-group {
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  font-family: var(--cr-composebox-context-menu-font-family, inherit);
+  font-family: var(--cr-composebox-context-menu-font-family,
+      'Google Sans', Roboto, sans-serif);
   font-size: 12px;
   font-weight: 400;
   height: 20px;
