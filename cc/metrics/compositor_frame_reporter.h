@@ -42,10 +42,6 @@ class FrameSorter;
 struct GlobalMetricsTrackers {
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
-  RAW_PTR_EXCLUSION PredictorJankTracker* predictor_jank_tracker = nullptr;
-  RAW_PTR_EXCLUSION ScrollJankDroppedFrameTracker*
-      scroll_jank_dropped_frame_tracker = nullptr;
-  RAW_PTR_EXCLUSION ScrollJankV4Processor* scroll_jank_v4_processor = nullptr;
   RAW_PTR_EXCLUSION FrameSorter* frame_sorter = nullptr;
 };
 
@@ -460,8 +456,12 @@ class CC_EXPORT CompositorFrameReporter {
 
   // Called after the frame corresponding to this reporter was successfully
   // presented. It doesn't get called when the frame is dropped or not submitted
-  // at all.
-  void DidSuccessfullyPresentFrame();
+  // at all. The trackers may be null (e.g. when histograms are not reported)
+  // and are only used for the duration of this call.
+  void DidSuccessfullyPresentFrame(
+      PredictorJankTracker& predictor_jank_tracker,
+      ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker,
+      ScrollJankV4Processor& scroll_jank_v4_processor);
 
   // If this is a cloned reporter, then this returns a weak-ptr to the original
   // reporter this was cloned from (using |CopyReporterAtBeginImplStage()|).
@@ -534,9 +534,15 @@ class CC_EXPORT CompositorFrameReporter {
   void ReportEventLatencyMetrics() const;
   void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
-  void ReportScrollJankMetrics();
-  void ReportScrollJankV1Metrics();
-  void ReportScrollJankV4Metrics();
+  void ReportScrollJankMetrics(
+      PredictorJankTracker& predictor_jank_tracker,
+      ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker,
+      ScrollJankV4Processor& scroll_jank_v4_processor);
+  void ReportScrollJankV1Metrics(
+      PredictorJankTracker& predictor_jank_tracker,
+      ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker);
+  void ReportScrollJankV4Metrics(
+      ScrollJankV4Processor& scroll_jank_v4_processor);
 
   void ReportPaintMetric() const;
 

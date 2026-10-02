@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/predictor_jank_tracker.h"
 #include "cc/metrics/scroll_jank_dropped_frame_tracker.h"
 #include "cc/metrics/scroll_jank_os_reporter.h"
 #include "cc/metrics/scroll_jank_v4_processor.h"
@@ -36,19 +37,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
           report_event_latency_to_custom_recorder),
       should_report_scroll_timing_(should_report_scroll_timing),
       layer_tree_host_id_(layer_tree_host_id),
-      is_trees_in_viz_client_(is_trees_in_viz_client) {
-  if (should_report_histograms_) {
-    predictor_jank_tracker_ = std::make_unique<PredictorJankTracker>();
-    scroll_jank_dropped_frame_tracker_ =
-        std::make_unique<ScrollJankDroppedFrameTracker>();
-    scroll_jank_v4_processor_ =
-        std::make_unique<ScrollJankV4Processor>(should_report_scroll_timing);
-    global_trackers_.predictor_jank_tracker = predictor_jank_tracker_.get();
-    global_trackers_.scroll_jank_dropped_frame_tracker =
-        scroll_jank_dropped_frame_tracker_.get();
-    global_trackers_.scroll_jank_v4_processor = scroll_jank_v4_processor_.get();
-  }
-}
+      is_trees_in_viz_client_(is_trees_in_viz_client),
+      scroll_jank_v4_processor_(should_report_scroll_timing) {}
 
 CompositorFrameReportingController::~CompositorFrameReportingController() {
   base::TimeTicks now = Now();
@@ -77,9 +67,9 @@ void CompositorFrameReportingController::SetVisible(bool visible) {
 
   visible_ = visible;
   pending_scroll_timing_flush_ = false;
-  if (scroll_jank_v4_processor_) {
+  if (should_report_histograms_) {
     // On show, this also suppresses gestures received while hidden.
-    scroll_jank_v4_processor_->ResetScrollTiming(Now());
+    scroll_jank_v4_processor_.ResetScrollTiming(Now());
   }
   if (visible_) {
     // Note:`waiting_for_did_present_after_visible_` will be set to false
@@ -117,9 +107,7 @@ bool CompositorFrameReportingController::HasReporterAt(
 
 void CompositorFrameReportingController::SetScrollJankOsReporter(
     base::WeakPtr<ScrollJankOsReporter> os_reporter) {
-  if (scroll_jank_v4_processor_) {
-    scroll_jank_v4_processor_->SetOsReporter(std::move(os_reporter));
-  }
+  scroll_jank_v4_processor_.SetOsReporter(std::move(os_reporter));
 }
 
 void CompositorFrameReportingController::ProcessSkippedFramesIfNecessary(
@@ -712,7 +700,9 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
                                              submitted_frame->frame_token,
                                              next_reporter_from_same_frame);
 
-      reporter_ptr->DidSuccessfullyPresentFrame();
+      reporter_ptr->DidSuccessfullyPresentFrame(
+          predictor_jank_tracker_, scroll_jank_dropped_frame_tracker_,
+          scroll_jank_v4_processor_);
     } else {
       StoreEventMetricsFromDroppedFrames(*reporter,
                                          submitted_frame->frame_token);
@@ -759,7 +749,7 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
 }
 
 void CompositorFrameReportingController::MaybeFlushAndDrainScrollTiming() {
-  if (!should_report_scroll_timing_ || !scroll_jank_v4_processor_) {
+  if (!should_report_scroll_timing_) {
     return;
   }
 
@@ -768,20 +758,20 @@ void CompositorFrameReportingController::MaybeFlushAndDrainScrollTiming() {
     // now could permanently report an end time that excludes that movement.
     bool dropped_movement_can_extend = false;
     for (const auto& dropped_frame : events_metrics_from_dropped_frames_) {
-      if (scroll_jank_v4_processor_->CanExtendActiveScrollTiming(
+      if (scroll_jank_v4_processor_.CanExtendActiveScrollTiming(
               dropped_frame.second)) {
         dropped_movement_can_extend = true;
         break;
       }
     }
     if (!dropped_movement_can_extend) {
-      scroll_jank_v4_processor_->OnCompositorIdle();
+      scroll_jank_v4_processor_.OnCompositorIdle();
       pending_scroll_timing_flush_ = false;
     }
   }
 
   std::vector<ScrollTimingInfo> scroll_timing_infos =
-      scroll_jank_v4_processor_->TakeCompletedScrollTimingInfos();
+      scroll_jank_v4_processor_.TakeCompletedScrollTimingInfos();
   if (visible_ && !scroll_timing_infos.empty()) {
     OnScrollTimingInfosCompleted(std::move(scroll_timing_infos));
   }

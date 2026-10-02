@@ -1111,8 +1111,13 @@ EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
   return result;
 }
 
-void CompositorFrameReporter::DidSuccessfullyPresentFrame() {
-  ReportScrollJankMetrics();
+void CompositorFrameReporter::DidSuccessfullyPresentFrame(
+    PredictorJankTracker& predictor_jank_tracker,
+    ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker,
+    ScrollJankV4Processor& scroll_jank_v4_processor) {
+  ReportScrollJankMetrics(predictor_jank_tracker,
+                          scroll_jank_dropped_frame_tracker,
+                          scroll_jank_v4_processor);
 }
 
 void CompositorFrameReporter::TerminateReporter() {
@@ -1828,15 +1833,21 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
   TRACE_EVENT_END(kTraceCategory, trace_track, frame_termination_time_);
 }
 
-void CompositorFrameReporter::ReportScrollJankMetrics() {
+void CompositorFrameReporter::ReportScrollJankMetrics(
+    PredictorJankTracker& predictor_jank_tracker,
+    ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker,
+    ScrollJankV4Processor& scroll_jank_v4_processor) {
   if (!should_report_histograms_) {
     return;
   }
-  ReportScrollJankV1Metrics();
-  ReportScrollJankV4Metrics();
+  ReportScrollJankV1Metrics(predictor_jank_tracker,
+                            scroll_jank_dropped_frame_tracker);
+  ReportScrollJankV4Metrics(scroll_jank_v4_processor);
 }
 
-void CompositorFrameReporter::ReportScrollJankV1Metrics() {
+void CompositorFrameReporter::ReportScrollJankV1Metrics(
+    PredictorJankTracker& predictor_jank_tracker,
+    ScrollJankDroppedFrameTracker& scroll_jank_dropped_frame_tracker) {
   int32_t fling_input_count = 0;
   int32_t normal_input_count = 0;
   float total_predicted_delta = 0;
@@ -1905,13 +1916,9 @@ void CompositorFrameReporter::ReportScrollJankV1Metrics() {
   if (!had_latest_gesture_scroll) {
     return;
   }
-  if (is_scroll_start) {
-    if (global_trackers_.predictor_jank_tracker) {
-      global_trackers_.predictor_jank_tracker->ResetCurrentScrollReporting();
-    }
-    if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-      global_trackers_.scroll_jank_dropped_frame_tracker->OnScrollStarted();
-    }
+  if (is_scroll_start && should_report_histograms_) {
+    predictor_jank_tracker.ResetCurrentScrollReporting();
+    scroll_jank_dropped_frame_tracker.OnScrollStarted();
   }
 
   TRACE_EVENT("input,input.scrolling", "PresentedFrameInformation",
@@ -1922,31 +1929,26 @@ void CompositorFrameReporter::ReportScrollJankV1Metrics() {
               });
 
   const auto end_timestamp = viz_breakdown_.presentation_feedback.timestamp;
-  if (global_trackers_.predictor_jank_tracker) {
-    global_trackers_.predictor_jank_tracker->ReportLatestScrollDelta(
+  if (should_report_histograms_) {
+    predictor_jank_tracker.ReportLatestScrollDelta(
         total_predicted_delta, end_timestamp, args_.interval,
         latest_event->trace_id());
-  }
-  if (global_trackers_.scroll_jank_dropped_frame_tracker) {
-    global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(*latest_event, last_coalesced_ts,
-                                       end_timestamp, args_.interval);
+    scroll_jank_dropped_frame_tracker.ReportLatestPresentationData(
+        *latest_event, last_coalesced_ts, end_timestamp, args_.interval);
   }
 }
 
-void CompositorFrameReporter::ReportScrollJankV4Metrics() {
+void CompositorFrameReporter::ReportScrollJankV4Metrics(
+    ScrollJankV4Processor& scroll_jank_v4_processor) {
   // In order for the fast scroll and fling continuity rules of the scroll jank
   // v4 metric to work correctly, they need to be informed about `EventMetrics`
   // that didn't cause frame updates.
   DCHECK(!dropped_non_damaging_events_metrics_);
 
-  if (auto* scroll_jank_v4_processor =
-          global_trackers_.scroll_jank_v4_processor) {
-    scroll_jank_v4_processor->ProcessEventsMetricsForPresentedFrame(
-        events_metrics_,
-        /* presentation_ts= */ viz_breakdown_.presentation_feedback.timestamp,
-        args_);
-  }
+  scroll_jank_v4_processor.ProcessEventsMetricsForPresentedFrame(
+      events_metrics_,
+      /* presentation_ts= */ viz_breakdown_.presentation_feedback.timestamp,
+      args_);
 }
 
 void CompositorFrameReporter::ReportPaintMetric() const {

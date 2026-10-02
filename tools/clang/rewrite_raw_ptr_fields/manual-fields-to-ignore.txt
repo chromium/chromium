@@ -318,8 +318,6 @@ cc::HeadsUpDisplayLayerImpl::placeholder_quad_
 cc::GlobalMetricsTrackers::dropped_frame_counter
 cc::GlobalMetricsTrackers::latency_ukm_reporter
 cc::GlobalMetricsTrackers::frame_sequence_trackers
-cc::GlobalMetricsTrackers::predictor_jank_tracker
-cc::GlobalMetricsTrackers::scroll_jank_dropped_frame_tracker
 cc::GlobalMetricsTrackers::scroll_jank_ukm_reporter
 cc::CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator::owner_
 cc::CompositorFrameReporter::ProcessedVizBreakdown::Iterator::owner_

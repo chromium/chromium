@@ -209,7 +209,7 @@ class CompositorFrameReporterTest : public testing::Test {
   }
 
   std::unique_ptr<CompositorFrameReporter> CreatePipelineReporter() {
-    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, &frame_sorter_};
+    GlobalMetricsTrackers trackers{.frame_sorter = &frame_sorter_};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), viz::BeginFrameArgs(),
         /*should_report_metrics=*/true,
@@ -228,7 +228,7 @@ class CompositorFrameReporterTest : public testing::Test {
           FrameInfo::SmoothThread::kSmoothNone,
       FrameInfo::SmoothEffectDrivingThread scrolling_thread =
           FrameInfo::SmoothEffectDrivingThread::kUnknown) {
-    GlobalMetricsTrackers trackers{nullptr, nullptr, nullptr, mock_sorter_ptr};
+    GlobalMetricsTrackers trackers{.frame_sorter = mock_sorter_ptr};
     auto reporter = std::make_unique<CompositorFrameReporter>(
         ActiveTrackers(), args,
         /*should_report_metrics=*/true,

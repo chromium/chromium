@@ -218,10 +218,9 @@ class CC_EXPORT CompositorFrameReportingController {
   GlobalMetricsTrackers global_trackers_;
   raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers_ = nullptr;
 
-  std::unique_ptr<PredictorJankTracker> predictor_jank_tracker_;
-  std::unique_ptr<ScrollJankDroppedFrameTracker>
-      scroll_jank_dropped_frame_tracker_;
-  std::unique_ptr<ScrollJankV4Processor> scroll_jank_v4_processor_;
+  PredictorJankTracker predictor_jank_tracker_;
+  ScrollJankDroppedFrameTracker scroll_jank_dropped_frame_tracker_;
+  ScrollJankV4Processor scroll_jank_v4_processor_;
 
   std::array<std::unique_ptr<CompositorFrameReporter>,
              PipelineStage::kNumPipelineStages>
