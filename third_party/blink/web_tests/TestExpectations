@@ -9144,3 +9144,7 @@ crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/execute_scrip
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/new_session/page_load_strategy.py [ Failure Pass ]
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/set_timeouts/user_prompts.py [ Failure Pass ]
 
+# Gardener 2026-10-02
+crbug.com/568811068 [ Linux ] external/wpt/html/semantics/embedded-content/the-img-element/update-the-image-data/src-then-lazy-load.html [ Failure Pass ]
+crbug.com/568811068 [ Win ] external/wpt/html/semantics/embedded-content/the-img-element/update-the-image-data/src-then-lazy-load.html [ Failure Pass ]
+
