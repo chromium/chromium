@@ -211,8 +211,7 @@ absl::Status ParseProtectedHeader(
 
       case CoseHeaderParameter::kSrcState:
         if (src_state) {
-          if (value.is_simple() &&
-              value.GetSimpleValue() == cbor::Value::SimpleValue::NULL_VALUE) {
+          if (value.is_null()) {
             *src_state = std::optional<std::string>(std::nullopt);
           } else if (value.is_bytestring()) {
             *src_state = value.GetBytestringAsString();
