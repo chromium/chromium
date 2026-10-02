@@ -74,7 +74,6 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
 @EnableFeatures(ChromeFeatureList.PRICE_CHANGE_MODULE)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PriceChangeModuleMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -216,7 +215,7 @@ public class PriceChangeModuleMediatorUnitTest {
 
         // Check onClickListener setup.
         OnClickListener listener = mModel.get(PriceChangeModuleProperties.MODULE_ON_CLICK_LISTENER);
-        listener.onClick(mock(View.class));
+        listener.onClick(new View(mContext));
         verify(mModuleDelegate).onTabClicked(eq(123), eq(ModuleType.PRICE_CHANGE));
     }
 

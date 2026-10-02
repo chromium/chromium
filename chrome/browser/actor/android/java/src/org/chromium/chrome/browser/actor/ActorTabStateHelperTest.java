@@ -32,6 +32,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
@@ -80,7 +81,6 @@ import java.util.List;
 
 /** Unit tests for {@link ActorTabStateHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorTabStateHelperTest {
     private static final int TAB_ID = 100;
     private static final boolean IS_PINNED = false;
@@ -98,13 +98,15 @@ public class ActorTabStateHelperTest {
     @Mock private Callback<Tab> mOnTabDetaching;
     @Mock private Callback<Tab> mOnTabSelected;
     @Mock private LayoutManager mLayoutManager;
-    @Mock private Activity mActivity;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
+    private Activity mActivity;
+
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier())
@@ -704,8 +706,6 @@ public class ActorTabStateHelperTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.isDestroyed()).thenReturn(false);
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
 
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         supplier.set(mProfileProvider);
@@ -741,8 +741,6 @@ public class ActorTabStateHelperTest {
         when(regularTab.isIncognito()).thenReturn(false);
         when(regularTab.isDestroyed()).thenReturn(false);
         when(mTabModelSelector.getCurrentTab()).thenReturn(regularTab);
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
 
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         supplier.set(mProfileProvider);
@@ -764,7 +762,7 @@ public class ActorTabStateHelperTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.isDestroyed()).thenReturn(false);
-        when(mActivity.isFinishing()).thenReturn(true);
+        mActivity.finish();
 
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         supplier.set(mProfileProvider);
@@ -781,8 +779,6 @@ public class ActorTabStateHelperTest {
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         when(mTab.isIncognito()).thenReturn(false);
         when(mTab.isDestroyed()).thenReturn(true);
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
 
         OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
         supplier.set(mProfileProvider);

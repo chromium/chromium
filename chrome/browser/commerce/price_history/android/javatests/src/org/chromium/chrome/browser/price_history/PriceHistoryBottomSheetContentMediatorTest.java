@@ -60,7 +60,6 @@ import java.util.Arrays;
 
 /** Tests for {@link PriceHistoryBottomSheetContentMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PriceHistoryBottomSheetContentMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -71,7 +70,6 @@ public class PriceHistoryBottomSheetContentMediatorTest {
     @Mock private ShoppingService mMockShoppingService;
     @Mock private PriceInsightsDelegate mMockPriceInsightsDelegate;
     @Mock private Callback<Boolean> mMockCallback;
-    @Mock private View mMockPriceHistoryChart;
 
     private static final String PRODUCT_TITLE = "Testing Sneaker";
     private static final String PRICE_HISTORY_SINGLE_CATALOGS_TITLE =
@@ -106,10 +104,12 @@ public class PriceHistoryBottomSheetContentMediatorTest {
     private PriceHistoryBottomSheetContentMediator mMediator;
     private final PropertyModel mPropertyModel = new PropertyModel(ALL_KEYS);
     private Activity mActivity;
+    private View mPriceHistoryChart;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mPriceHistoryChart = new View(mActivity);
 
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
@@ -142,7 +142,7 @@ public class PriceHistoryBottomSheetContentMediatorTest {
 
     @Test
     public void testRequestShowContent_PriceHistorySingleCatalog() {
-        doReturn(mMockPriceHistoryChart)
+        doReturn(mPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
         setUpGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_SINGLE_CATALOG);
@@ -153,12 +153,12 @@ public class PriceHistoryBottomSheetContentMediatorTest {
         assertEquals(PRICE_HISTORY_SINGLE_CATALOGS_TITLE, mPropertyModel.get(PRICE_HISTORY_TITLE));
         assertFalse(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION_VISIBLE));
         assertNull(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
-        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
+        assertEquals(mPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
     }
 
     @Test
     public void testRequestShowContent_PriceHistoryMultipleCatalogs() {
-        doReturn(mMockPriceHistoryChart)
+        doReturn(mPriceHistoryChart)
                 .when(mMockPriceInsightsDelegate)
                 .getPriceHistoryChartForPriceInsightsInfo(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
         setUpGetPriceInsightsInfoForUrl(PRICE_INSIGHTS_INFO_MULTIPLE_CATALOGS);
@@ -170,7 +170,7 @@ public class PriceHistoryBottomSheetContentMediatorTest {
                 PRICE_HISTORY_MULTIPLE_CATALOGS_TITLE, mPropertyModel.get(PRICE_HISTORY_TITLE));
         assertTrue(mPropertyModel.get(PRICE_HISTORY_DESCRIPTION_VISIBLE));
         assertEquals(CATALOG_ATTRIBUTES, mPropertyModel.get(PRICE_HISTORY_DESCRIPTION));
-        assertEquals(mMockPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
+        assertEquals(mPriceHistoryChart, mPropertyModel.get(PRICE_HISTORY_CHART));
     }
 
     @Test

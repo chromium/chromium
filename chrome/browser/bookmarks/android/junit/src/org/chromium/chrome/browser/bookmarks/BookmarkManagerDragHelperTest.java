@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
@@ -40,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BookmarkManagerDragHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkManagerDragHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -50,12 +50,11 @@ public class BookmarkManagerDragHelperTest {
 
     @Mock SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock ItemTouchHelper mItemTouchHelper;
-    @Mock RecyclerView mRecyclerView;
-    @Mock View mItemView;
 
-    @Mock View mDragHandle;
-
-    RecyclerView.ViewHolder mViewHolder;
+    private RecyclerView mRecyclerView;
+    private FrameLayout mItemView;
+    private View mDragHandle;
+    private RecyclerView.ViewHolder mViewHolder;
     private Activity mActivity;
     private BookmarkManagerDragHelper mDragHelper;
     private BookmarkId mBookmarkId;
@@ -65,10 +64,12 @@ public class BookmarkManagerDragHelperTest {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         mBookmarkId = new BookmarkId(12345L, BookmarkType.NORMAL);
+        mRecyclerView = new RecyclerView(mActivity);
+        mDragHandle = new View(mActivity);
+        mDragHandle.setId(R.id.drag_handle);
+        mItemView = new FrameLayout(mActivity);
+        mItemView.addView(mDragHandle);
         mViewHolder = new RecyclerView.ViewHolder(mItemView) {};
-
-        when(mItemView.getContext()).thenReturn(mActivity);
-        doReturn(mDragHandle).when(mItemView).findViewById(R.id.drag_handle);
 
         mDragHelper =
                 new BookmarkManagerDragHelper(
@@ -138,6 +139,10 @@ public class BookmarkManagerDragHelperTest {
 
     @Test
     public void test_onViewDetachedFromWindow() {
+        FrameLayout parent = new FrameLayout(mActivity);
+        mActivity.setContentView(parent);
+        parent.addView(mItemView);
+
         // Perform action down.
         mDragHelper.onRowBodyTouch(
                 mItemView,
@@ -148,7 +153,7 @@ public class BookmarkManagerDragHelperTest {
                         /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
 
         // Simulate the recyclerView recycling the view (ImprovedBookmarkRow gets detached).
-        mDragHelper.onViewDetachedFromWindow(mItemView);
+        parent.removeView(mItemView);
 
         // Fast forward time significantly.
         ShadowLooper.idleMainLooper(10000, TimeUnit.MILLISECONDS);
@@ -157,8 +162,19 @@ public class BookmarkManagerDragHelperTest {
         verify(mSelectionDelegate, never()).toggleSelectionForItem(any());
         verify(mItemTouchHelper, never()).startDrag(any());
 
-        // Verify that the we cleaned up the listener.
-        verify(mItemView).removeOnAttachStateChangeListener(mDragHelper);
+        // Verify that the we cleaned up the listener: a subsequent detach no longer cancels the
+        // timers.
+        parent.addView(mItemView);
+        mDragHelper.onRowBodyTouch(
+                mItemView,
+                obtainEvent(
+                        /* action= */ MotionEvent.ACTION_DOWN,
+                        /* x= */ 50f,
+                        /* y= */ 50f,
+                        /* toolType= */ MotionEvent.TOOL_TYPE_FINGER));
+        parent.removeView(mItemView);
+        ShadowLooper.idleMainLooper(10000, TimeUnit.MILLISECONDS);
+        verify(mSelectionDelegate).toggleSelectionForItem(mBookmarkId);
     }
 
     @Test
@@ -219,8 +235,9 @@ public class BookmarkManagerDragHelperTest {
         verify(mItemTouchHelper).startDrag(mViewHolder);
 
         // 5. Verify the Row View (mItemView) gets the "closed hand" cursor.
-        verify(mItemView)
-                .setPointerIcon(PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRABBING));
+        assertEquals(
+                PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRABBING),
+                mItemView.getPointerIcon());
     }
 
     @Test
@@ -243,7 +260,7 @@ public class BookmarkManagerDragHelperTest {
 
         // Verify: Icon becomes "Closed Hand" (GRABBING).
         PointerIcon grabbingIcon = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRABBING);
-        verify(mDragHandle).setPointerIcon(grabbingIcon);
+        assertEquals(grabbingIcon, mDragHandle.getPointerIcon());
 
         // 2. Mouse up.
         MotionEvent upEvent =
@@ -256,13 +273,14 @@ public class BookmarkManagerDragHelperTest {
 
         // Verify: Icon reverts to "Open Hand" (GRAB).
         PointerIcon grabIcon = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRAB);
-        verify(mDragHandle).setPointerIcon(grabIcon);
+        assertEquals(grabIcon, mDragHandle.getPointerIcon());
     }
 
     @Test
     public void testHover_DragHandle_ShowsOpenHand() {
         // Scenario: Mouse hovers over the drag handle.
         // Expectation: Cursor changes from default to open hand.
+        mDragHandle.setVisibility(View.GONE);
 
         MotionEvent hoverEvent =
                 obtainEvent(
@@ -274,11 +292,11 @@ public class BookmarkManagerDragHelperTest {
 
         // Verify cursor set to Open Hand.
         PointerIcon openHand = PointerIcon.getSystemIcon(mActivity, PointerIcon.TYPE_GRAB);
-        verify(mDragHandle).setPointerIcon(openHand);
+        assertEquals(openHand, mDragHandle.getPointerIcon());
 
         // Also verify it ensures the handle is visible (by calling onRowBodyHover logic
         // internally).
-        verify(mDragHandle).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mDragHandle.getVisibility());
     }
 
     @Test
@@ -286,6 +304,7 @@ public class BookmarkManagerDragHelperTest {
         // Scenario: Mouse enters row -> Handle is visible. Mouse exits -> Handle disappear after a
         // 50ms delay. This case only happens when the item is unselected.
         doReturn(false).when(mSelectionDelegate).isItemSelected(mBookmarkId);
+        mDragHandle.setVisibility(View.GONE);
 
         // 1. Mouse hover enter.
         MotionEvent enterEvent =
@@ -297,7 +316,7 @@ public class BookmarkManagerDragHelperTest {
         mDragHelper.onRowBodyHover(mItemView, enterEvent);
 
         // Verify handle becomes visible.
-        verify(mDragHandle).setVisibility(View.VISIBLE);
+        assertEquals(View.VISIBLE, mDragHandle.getVisibility());
 
         // 2. Mouse hover exit.
         MotionEvent exitEvent =
@@ -309,13 +328,13 @@ public class BookmarkManagerDragHelperTest {
         mDragHelper.onRowBodyHover(mItemView, exitEvent);
 
         // Verify handle is not hidden immediately.
-        verify(mDragHandle, never()).setVisibility(View.GONE);
+        assertEquals(View.VISIBLE, mDragHandle.getVisibility());
 
         // 3. Fast forward 50ms.
         ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
 
         // Verify handle is now hidden.
-        verify(mDragHandle).setVisibility(View.GONE);
+        assertEquals(View.GONE, mDragHandle.getVisibility());
     }
 
     @Test
@@ -336,7 +355,7 @@ public class BookmarkManagerDragHelperTest {
         ShadowLooper.idleMainLooper(50, TimeUnit.MILLISECONDS);
 
         // Verify handle is still visible.
-        verify(mDragHandle, never()).setVisibility(View.GONE);
+        assertEquals(View.VISIBLE, mDragHandle.getVisibility());
     }
 
     // Obtain the action event we want to perform (ACTION_DOWN, etc.).

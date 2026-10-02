@@ -48,7 +48,6 @@ import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit tests for {@link BookmarkBarPopup}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarPopupTest {
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -58,17 +57,17 @@ public class BookmarkBarPopupTest {
 
     @Mock private AnchoredPopupWindow mAnchoredPopupWindow;
     @Mock private BasicListMenu mMockListMenu;
-
-    @Mock private View mAnchorView;
     @Mock private ChromePopupWindow mMockPopupWindow;
     @Captor private ArgumentCaptor<Drawable> mDrawableCaptor;
 
     private Activity mActivity;
+    private View mAnchorView;
     private BookmarkBarPopup mPopup;
 
     @Before
     public void setUp() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        mAnchorView = new View(mActivity);
         when(mMockPopupWindow.getBackground()).thenReturn(new ColorDrawable(Color.TRANSPARENT));
 
         mPopup = new BookmarkBarPopup(mActivity, () -> new Pair<>(0, 0)); // controlsHeightSupplier
@@ -181,10 +180,6 @@ public class BookmarkBarPopupTest {
 
     @Test
     public void testShow_usesTransparentBackground() {
-        View rootView = new View(mActivity);
-        when(mAnchorView.getRootView()).thenReturn(rootView);
-        when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
-
         UiWidgetFactory originalFactory = UiWidgetFactory.getInstance();
         UiWidgetFactory.setInstance(
                 new UiWidgetFactory() {
@@ -216,10 +211,6 @@ public class BookmarkBarPopupTest {
 
     @Test
     public void testShowAtOffset_usesTransparentBackground() {
-        View rootView = new View(mActivity);
-        when(mAnchorView.getRootView()).thenReturn(rootView);
-        when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
-
         UiWidgetFactory originalFactory = UiWidgetFactory.getInstance();
         UiWidgetFactory.setInstance(
                 new UiWidgetFactory() {
@@ -252,10 +243,6 @@ public class BookmarkBarPopupTest {
 
     @Test
     public void testShow_initializesFlyoutController() {
-        View rootView = new View(mActivity);
-        when(mAnchorView.getRootView()).thenReturn(rootView);
-        when(mAnchorView.getViewTreeObserver()).thenReturn(rootView.getViewTreeObserver());
-
         mPopup.show(
                 mAnchorView,
                 new ModelList(),

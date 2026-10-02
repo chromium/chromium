@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
-import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -19,9 +17,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -31,23 +26,23 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link BookmarkManagerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkManagerViewBinderTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
     @Rule
     public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock View mView;
-    @Mock TextView mTextView;
-
     private Activity mActivity;
+    private ViewGroup mView;
+    private TextView mTextView;
     private PropertyModel mModel;
 
     @Before
     public void before() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+        mView = new FrameLayout(mActivity);
+        mTextView = new TextView(mActivity);
+        mTextView.setId(R.id.title);
+        mView.addView(mTextView);
         mModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
     }
 
@@ -65,9 +60,6 @@ public class BookmarkManagerViewBinderTest {
 
     @Test
     public void testBindSectionHeaderView() {
-        when(mView.getResources()).thenReturn(mActivity.getResources());
-        when(mView.findViewById(anyInt())).thenReturn(mTextView);
-
         BookmarkListEntry bookmarkListEntry =
                 BookmarkListEntry.createSectionHeader(
                         R.string.reading_list_read,
@@ -77,14 +69,16 @@ public class BookmarkManagerViewBinderTest {
         PropertyModelChangeProcessor.create(
                 mModel, mView, BookmarkManagerViewBinder::bindSectionHeaderView);
 
-        verify(mTextView).setText(mActivity.getResources().getString(R.string.reading_list_read));
+        assertEquals(
+                mActivity.getResources().getString(R.string.reading_list_read),
+                mTextView.getText());
         int expectedTopPadding =
                 (int)
                         mActivity
                                 .getResources()
                                 .getDimension(
                                         R.dimen.bookmark_reading_list_section_header_padding_top);
-        verify(mTextView).setPaddingRelative(anyInt(), eq(expectedTopPadding), anyInt(), anyInt());
+        assertEquals(expectedTopPadding, mTextView.getPaddingTop());
     }
 
     @Test

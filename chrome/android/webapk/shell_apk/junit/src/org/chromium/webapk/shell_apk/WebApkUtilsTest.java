@@ -8,11 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.setupActivity;
 
 import android.app.Activity;
@@ -29,12 +27,8 @@ import android.view.View;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
@@ -48,12 +42,7 @@ import java.util.Arrays;
 
 /** Tests for WebApkUtils. */
 @RunWith(RobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebApkUtilsTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mMockApplicationContext;
-    @Mock private PackageManager mMockPackageManager;
-
     protected static final String WEBAPK_PACKAGE_NAME = "org.chromium.test";
 
     private Context mContext;
@@ -135,11 +124,8 @@ public class WebApkUtilsTest {
     @Test
     public void testStatusBarBlackInAutomotive() {
         // Create an "automotive" Activity.
-        Activity testActivity = spy(setupActivity(Activity.class));
-        doReturn(mMockApplicationContext).when(testActivity).getApplicationContext();
-        when(mMockApplicationContext.getPackageManager()).thenReturn(mMockPackageManager);
-        when(mMockPackageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE))
-                .thenReturn(true);
+        mPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, true);
+        Activity testActivity = setupActivity(Activity.class);
         View rootView = testActivity.getWindow().getDecorView().getRootView();
 
         WebApkUtils.setStatusBarColor(testActivity, Color.RED);

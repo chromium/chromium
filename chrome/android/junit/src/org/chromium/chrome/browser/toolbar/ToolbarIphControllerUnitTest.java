@@ -34,20 +34,20 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 
 /** Unit tests for {@link ToolbarIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ToolbarIphControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserEducationHelper mUserEducationHelper;
-    @Mock private View mAnchorView;
     @Captor private ArgumentCaptor<IphCommand> mIphCommandCaptor;
 
     private Context mContext;
+    private View mAnchorView;
     private ToolbarIphController mController;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        mAnchorView = new View(mContext);
         mController = new ToolbarIphController(mContext, mUserEducationHelper);
     }
 

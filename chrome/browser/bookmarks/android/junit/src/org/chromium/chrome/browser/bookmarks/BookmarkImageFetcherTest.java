@@ -11,7 +11,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +55,6 @@ import java.util.Arrays;
 
 /** Unit tests for {@link BookmarkImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkImageFetcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -135,7 +133,7 @@ public class BookmarkImageFetcherTest {
                 .getScenario()
                 .onActivity(
                         (activity) -> {
-                            mActivity = spy(activity);
+                            mActivity = activity;
 
                             // Setup BookmarkModel.
                             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Resources;
 import android.os.Looper;
 import android.view.View;
 
@@ -62,7 +61,6 @@ import java.util.function.Supplier;
 
 /** Unit test for {@link PriceTrackingButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PriceTrackingButtonControllerUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -141,9 +139,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
     @Test
     public void testPriceTrackingButtonClick_shouldRemoveTrackingWhenAlreadyTracking() {
-        View mockView = Mockito.mock(View.class);
-        Resources mockResources = Mockito.mock(Resources.class);
-        when(mockView.getResources()).thenReturn(mockResources);
+        View view = new View(mActivity);
 
         BookmarkId bookmarkId = new BookmarkId(1234, BookmarkType.NORMAL);
         when(mMockBookmarkModel.getUserBookmarkIdForTab(mMockTab)).thenReturn(bookmarkId);
@@ -155,7 +151,7 @@ public class PriceTrackingButtonControllerUnitTest {
 
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
-        buttonData.getButtonSpec().getOnClickListener().onClick(mockView);
+        buttonData.getButtonSpec().getOnClickListener().onClick(view);
 
         verify(mMockTabBookmarker, never()).startOrModifyPriceTracking(mMockTab);
         verify(mMockPriceTrackingUtilsJni)

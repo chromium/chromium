@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Answers.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -23,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,19 +30,18 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.components.browser_ui.widget.loading.LoadingFullscreenCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.ui.base.TestActivity;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link TabbedRootUiCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedRootUiCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock(answer = CALLS_REAL_METHODS)
     private TabbedRootUiCoordinator mCoordinator;
 
-    @Mock private AppCompatActivity mActivity;
-    @Mock private ViewStub mLoadingStub;
-    @Mock private FrameLayout mLoadingContainer;
     @Mock private ScrimManager mScrimManager;
 
     /**
@@ -71,11 +70,17 @@ public class TabbedRootUiCoordinatorUnitTest {
      */
     @Test
     public void testGetLoadingFullscreenCoordinator_cachesResultAfterFirstCreation() {
-        ReflectionHelpers.setField(mCoordinator, "mActivity", mActivity);
+        AppCompatActivity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        FrameLayout root = new FrameLayout(activity);
+        ViewStub loadingStub = new ViewStub(activity);
+        loadingStub.setId(R.id.loading_stub);
+        AtomicInteger inflateCount = new AtomicInteger();
+        loadingStub.setOnInflateListener((stub, inflated) -> inflateCount.incrementAndGet());
+        root.addView(loadingStub);
+        activity.setContentView(root);
+
+        ReflectionHelpers.setField(mCoordinator, "mActivity", activity);
         ReflectionHelpers.setField(mCoordinator, "mLoadingFullscreenCoordinator", null);
-        doReturn(mLoadingStub).when(mActivity).findViewById(R.id.loading_stub);
-        doReturn(mLoadingContainer).when(mLoadingStub).inflate();
-        doReturn(mLoadingContainer).when(mActivity).findViewById(R.id.loading_fullscreen_container);
         doReturn(mScrimManager).when(mCoordinator).getScrimManager();
 
         LoadingFullscreenCoordinator first = mCoordinator.getLoadingFullscreenCoordinator();
@@ -83,6 +88,6 @@ public class TabbedRootUiCoordinatorUnitTest {
 
         assertNotNull(first);
         assertSame(first, second);
-        verify(mLoadingStub, times(1)).inflate();
+        assertEquals(1, inflateCount.get());
     }
 }

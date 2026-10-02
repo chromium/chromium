@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.commerce;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -29,21 +31,22 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CommerceBottomSheetContentMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock View mContentItemCustomView;
     @Mock BottomSheetController mBottomSheetController;
-    @Mock View mContentView;
 
     private Activity mActivity;
+    private View mContentItemCustomView;
+    private View mContentView;
     private ModelList mModelList;
     private CommerceBottomSheetContentMediator mMediator;
 
     @Before
     public void setup() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mContentItemCustomView = new View(mActivity);
+        mContentView = new View(mActivity);
         mModelList = new ModelList();
     }
 
@@ -160,10 +163,11 @@ public class CommerceBottomSheetContentMediatorUnitTest {
         PropertyModel model0 = createPropertyModel(0);
         PropertyModel model1 = createPropertyModel(1);
         mMediator.onContentReady(model1);
+        assertNull(mContentView.getAccessibilityDelegate());
         mMediator.onContentReady(model0);
-        verify(mContentView, times(1)).setAccessibilityDelegate(any());
+        assertNotNull(mContentView.getAccessibilityDelegate());
 
         mMediator.onBottomSheetClosed();
-        verify(mContentView, times(1)).setAccessibilityDelegate(eq(null));
+        assertNull(mContentView.getAccessibilityDelegate());
     }
 }

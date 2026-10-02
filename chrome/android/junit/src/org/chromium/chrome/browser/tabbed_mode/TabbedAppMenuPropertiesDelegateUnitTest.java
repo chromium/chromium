@@ -215,7 +215,6 @@ import java.util.Set;
     ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM,
     ChromeFeatureList.ANDROID_VERTICAL_TABS
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean WIN_M = true; // in multi-window mode
@@ -257,7 +256,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabModel mIncognitoTabModel;
     @Mock private ToolbarManager mToolbarManager;
-    @Mock private View mDecorView;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private Profile mProfile;
@@ -300,6 +298,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private ShadowPackageManager mShadowPackageManager;
 
     private FakeBookmarkModel mBookmarkModel;
+    private final View mDecorView = new View(ContextUtils.getApplicationContext());
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -559,6 +558,19 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(tabmodel.getTabAt(1)).thenReturn(mockTab2);
     }
 
+    private void setDecorViewWidthDp(int widthDp) {
+        mDecorView.layout(
+                0,
+                0,
+                (int)
+                        (widthDp
+                                * ContextUtils.getApplicationContext()
+                                        .getResources()
+                                        .getDisplayMetrics()
+                                        .density),
+                0);
+    }
+
     @Test
     @Config(qualifiers = "sw320dp")
     public void testShouldShowIconRow_Phone() {
@@ -568,14 +580,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     @Config(qualifiers = "sw600dp")
     public void testShouldShowIconRow_Tablet() {
-        when(mDecorView.getWidth())
-                .thenReturn(
-                        (int)
-                                (600
-                                        * ContextUtils.getApplicationContext()
-                                                .getResources()
-                                                .getDisplayMetrics()
-                                                .density));
+        setDecorViewWidthDp(600);
         assertFalse(mTabbedAppMenuPropertiesDelegate.shouldShowIconRow());
     }
 
@@ -584,28 +589,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_TABLET_RESIZE_REFACTOR)
     public void testShouldShowIconRow_Tablet_MissingToolbarComponents() {
         doReturn(true).when(mToolbarManager).areAnyToolbarComponentsMissingForWidth(any());
-        when(mDecorView.getWidth())
-                .thenReturn(
-                        (int)
-                                (600
-                                        * ContextUtils.getApplicationContext()
-                                                .getResources()
-                                                .getDisplayMetrics()
-                                                .density));
+        setDecorViewWidthDp(600);
         assertTrue(mTabbedAppMenuPropertiesDelegate.shouldShowIconRow());
     }
 
     @Test
     @Config(qualifiers = "sw600dp")
     public void testShouldShowIconRow_TabletNarrow() {
-        when(mDecorView.getWidth())
-                .thenReturn(
-                        (int)
-                                (100
-                                        * ContextUtils.getApplicationContext()
-                                                .getResources()
-                                                .getDisplayMetrics()
-                                                .density));
+        setDecorViewWidthDp(100);
         assertTrue(mTabbedAppMenuPropertiesDelegate.shouldShowIconRow());
     }
 

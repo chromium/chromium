@@ -9,10 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,18 +23,18 @@ import android.widget.FrameLayout;
 
 import androidx.activity.ComponentActivity;
 import androidx.core.pip.PictureInPictureDelegate;
-import androidx.lifecycle.Lifecycle;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.Shadows;
+import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -64,8 +62,17 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link ActorPictureInPictureController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorPictureInPictureControllerTest {
+    private static class TestActivity extends ComponentActivity {
+        PictureInPictureParams mPictureInPictureParams;
+
+        @Override
+        public void setPictureInPictureParams(PictureInPictureParams params) {
+            super.setPictureInPictureParams(params);
+            mPictureInPictureParams = params;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorService;
@@ -80,9 +87,9 @@ public class ActorPictureInPictureControllerTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Lifecycle mLifecycle;
 
-    private ComponentActivity mActivity;
+    private ActivityController<TestActivity> mActivityController;
+    private TestActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
     private ActorPictureInPictureController mController;
 
@@ -92,10 +99,9 @@ public class ActorPictureInPictureControllerTest {
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
 
-        ComponentActivity realActivity =
-                Robolectric.buildActivity(ComponentActivity.class).create().get();
-        realActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mActivity = spy(realActivity);
+        mActivityController = Robolectric.buildActivity(TestActivity.class).create();
+        mActivity = mActivityController.get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         FrameLayout contentView = new FrameLayout(mActivity);
         contentView.setId(android.R.id.content);
@@ -124,8 +130,7 @@ public class ActorPictureInPictureControllerTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mTabModelSelector.getTabById(anyInt())).thenReturn(mTab);
 
-        when(mActivity.getLifecycle()).thenReturn(mLifecycle);
-        when(mLifecycle.getCurrentState()).thenReturn(Lifecycle.State.RESUMED);
+        mActivityController.start().resume();
     }
 
     @After
@@ -389,18 +394,17 @@ public class ActorPictureInPictureControllerTest {
     @Test
     public void testAttemptPictureInPicture_Success() {
         when(mActorService.getActiveTasksCount()).thenReturn(1);
-        doNothing().when(mActivity).enterPictureInPictureMode();
 
         mController.attemptPictureInPicture();
 
-        verify(mActivity).enterPictureInPictureMode();
+        assertTrue(mActivity.isInPictureInPictureMode());
     }
 
     @Test
     public void testAttemptPictureInPicture_NoTasks() {
         mController.attemptPictureInPicture();
 
-        verify(mActivity, never()).enterPictureInPictureMode();
+        assertFalse(mActivity.isInPictureInPictureMode());
     }
 
     @Test
@@ -441,7 +445,7 @@ public class ActorPictureInPictureControllerTest {
         mController.onTaskStateChanged(101, ActorTaskState.FINISHED);
 
         // Should NOT exit immediately
-        verify(mActivity, never()).moveTaskToBack(true);
+        assertFalse(Shadows.shadowOf(mActivity).isTaskMovedToBack());
 
         // Advance time by 1 hour
         ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
@@ -450,7 +454,7 @@ public class ActorPictureInPictureControllerTest {
         durationWatcher.assertExpected();
 
         // Now it should exit
-        verify(mActivity).moveTaskToBack(true);
+        assertTrue(Shadows.shadowOf(mActivity).isTaskMovedToBack());
         verify(mMockCoordinator).setVisibility(false);
     }
 
@@ -471,11 +475,7 @@ public class ActorPictureInPictureControllerTest {
         createMockActorTask(101, "Task", ActorTaskState.ACTING);
         mController.updatePipState();
 
-        ArgumentCaptor<PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(PictureInPictureParams.class);
-        verify(mActivity).setPictureInPictureParams(captor.capture());
-
-        List<RemoteAction> actions = captor.getValue().getActions();
+        List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertEquals(1, actions.size());
         assertEquals(
                 mActivity.getString(R.string.actor_pip_working_status), actions.get(0).getTitle());
@@ -487,11 +487,7 @@ public class ActorPictureInPictureControllerTest {
 
         mController.updatePipState();
 
-        ArgumentCaptor<PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(PictureInPictureParams.class);
-        verify(mActivity).setPictureInPictureParams(captor.capture());
-
-        List<RemoteAction> actions = captor.getValue().getActions();
+        List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertEquals(1, actions.size());
         assertEquals(
                 mActivity.getString(R.string.actor_pip_paused_status), actions.get(0).getTitle());
@@ -503,11 +499,7 @@ public class ActorPictureInPictureControllerTest {
 
         mController.updatePipState();
 
-        ArgumentCaptor<PictureInPictureParams> captor =
-                ArgumentCaptor.forClass(PictureInPictureParams.class);
-        verify(mActivity).setPictureInPictureParams(captor.capture());
-
-        List<RemoteAction> actions = captor.getValue().getActions();
+        List<RemoteAction> actions = mActivity.mPictureInPictureParams.getActions();
         assertTrue(actions.isEmpty());
     }
 
@@ -594,7 +586,7 @@ public class ActorPictureInPictureControllerTest {
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
 
         // Set lifecycle to background to simulate CLOSE
-        when(mLifecycle.getCurrentState()).thenReturn(Lifecycle.State.CREATED);
+        mActivityController.pause().stop();
 
         var exitWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
