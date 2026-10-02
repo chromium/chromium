@@ -108,10 +108,6 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteAutofillFeedbackCommand(const LocalFrameToken& frame_token,
                                       AutofillManager& manager);
 
-  // Triggers AtMemory search popup on the field that the context menu was
-  // opened on.
-  void ExecuteFallbackForAtMemoryCommand(AutofillDriver& driver);
-
   // Triggers passwords suggestions on the field that the context menu was
   // opened on.
   void ExecuteFallbackForSelectPasswordCommand(AutofillDriver& driver);
