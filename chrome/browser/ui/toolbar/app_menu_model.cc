@@ -804,9 +804,6 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
   // Builds the Send Tab to Self submenu or simple menu item.
   void BuildSendTabToSelfItem(BrowserWindowInterface* browser);
 
-  // Fallback helper to add simple Send Tab to Self menu item.
-  void BuildSendTabToSelfSimpleItem();
-
   std::unique_ptr<ui::SimpleMenuModel> send_tab_to_self_submenu_;
 };
 
@@ -817,7 +814,9 @@ void SaveAndShareSubMenuModel::BuildSendTabToSelfItem(
           browser->tab_strip_model()->GetActiveWebContents(),
           send_tab_to_self::ShareEntryPoint::kShareMenu);
   if (!send_tab_to_self_submenu_) {
-    BuildSendTabToSelfSimpleItem();
+    AddItemWithStringIdAndVectorIcon(this, IDC_SEND_TAB_TO_SELF,
+                                     IDS_MENU_SEND_TAB_TO_SELF,
+                                     GetSendTabToSelfIcon());
     return;
   }
 
@@ -830,12 +829,6 @@ void SaveAndShareSubMenuModel::BuildSendTabToSelfItem(
                     UserEducationService::MaybeShowNewBadge(
                         browser->GetProfile(),
                         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2));
-}
-
-void SaveAndShareSubMenuModel::BuildSendTabToSelfSimpleItem() {
-  AddItemWithStringIdAndVectorIcon(this, IDC_SEND_TAB_TO_SELF,
-                                   IDS_MENU_SEND_TAB_TO_SELF,
-                                   GetSendTabToSelfIcon());
 }
 
 SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
