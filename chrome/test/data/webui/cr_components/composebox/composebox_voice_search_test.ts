@@ -1258,6 +1258,7 @@ suite('ComposeboxVoiceSearch', () => {
               ],
               suggestionGroupsMap: {},
               smartComposeInlineHint: '',
+              showAimActivityLink: false,
               sequenceId: 0,
             },
           });

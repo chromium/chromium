@@ -1449,8 +1449,7 @@ export const ComposeboxEmbedderMixin =
 
         shouldShowSuggestionActivityLink(): boolean {
           const showActivityLink = this.result && this.showDropdown &&
-              this.result.matches.some(
-                  (match) => match.isNoncannedAimSuggestion);
+              this.result.showAimActivityLink;
           this.fire('show-suggestion-activity-link', showActivityLink);
           return !!showActivityLink;
         }

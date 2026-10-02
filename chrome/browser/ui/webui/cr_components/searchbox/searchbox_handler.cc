@@ -806,12 +806,19 @@ SearchboxHandler::CreateAutocompleteResult(
     bookmarks::BookmarkModel* bookmark_model,
     const PrefService* prefs,
     const TemplateURLService* turl_service) const {
+  // The AIM suggestion activity link is shown below the dropdown when any
+  // match is a non-canned AIM suggestion.
+  const bool show_aim_activity_link =
+      std::ranges::any_of(result, [](const AutocompleteMatch& match) {
+        return match.suggestion_group_id == omnibox::GROUP_MIA_RECOMMENDATIONS;
+      });
   return searchbox::mojom::AutocompleteResult::New(
       query_id, result.sequence_id(), input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, bookmark_model,
                                 result.suggestion_groups_map(), turl_service),
-      base::UTF8ToUTF16(result.smart_compose_inline_hint()));
+      base::UTF8ToUTF16(result.smart_compose_inline_hint()),
+      show_aim_activity_link);
 }
 
 base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
@@ -1066,9 +1073,6 @@ SearchboxHandler::CreateAutocompleteMatch(
   // `PopulateAccessibilityLabels()`, since they depend on the whole result.
 
   mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
-
-  mojom_match->is_noncanned_aim_suggestion =
-      match.suggestion_group_id == omnibox::GROUP_MIA_RECOMMENDATIONS;
 
   mojom_match->is_contextual_suggestion = match.IsContextualSearchSuggestion();
 
