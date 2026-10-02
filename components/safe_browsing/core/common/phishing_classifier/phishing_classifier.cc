@@ -92,9 +92,12 @@ void PhishingClassifier::BeginClassificationInternal(
   classification_url_ = url;
   image_ = image;
 
+  // The classification verdict can surface a warning to the user, so the
+  // (cheap) visual feature extraction must not be queued behind long-running
+  // `BEST_EFFORT` tasks, which can delay it by tens of seconds.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&visual_utils::ExtractVisualFeatures,
                      visual_utils::GetBitmapForVisualFeatures(image_)),

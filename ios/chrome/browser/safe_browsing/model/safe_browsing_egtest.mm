@@ -1320,31 +1320,33 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // Enable Enhanced Safe Browsing, which is required for force request caching.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnhanced];
 
-  // Inject the FORCE_REQUEST verdict into the cache for `_safeURL1`.
-  [SafeBrowsingAppInterface
-      cacheRealTimeVerdictForURL:base::SysUTF8ToNSString(_safeURL1.spec())
-                    forceRequest:YES
-                 intelligentScan:NO];
+  // Inject the `FORCE_REQUEST` verdict into the cache for `_safeURL2`. Unlike
+  // `_safeURL1`, `_safeURL2` is not marked as high-confidence allowlisted in
+  // `appConfigurationForTestCase`, so no sampled real-time lookup ping (which
+  // bypasses the verdict cache and overwrites it with the server's response) is
+  // sent when it is loaded.
+  NSString* url = base::SysUTF8ToNSString(_safeURL2.spec());
+  [SafeBrowsingAppInterface cacheRealTimeVerdictForURL:url
+                                          forceRequest:YES
+                                       intelligentScan:NO];
 
   // Verify that it was correctly cached.
   NSInteger type = [SafeBrowsingAppInterface
-      cachedRealTimeURLClientSideDetectionTypeForURL:base::SysUTF8ToNSString(
-                                                         _safeURL1.spec())];
+      cachedRealTimeURLClientSideDetectionTypeForURL:url];
   GREYAssertEqual(type,
                   static_cast<NSInteger>(
                       safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
                   @"Type in cache was not FORCE_REQUEST. Actual: %ld", type);
 
   // Load the safe URL.
-  [ChromeEarlGrey loadURL:_safeURL1];
-  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+  [ChromeEarlGrey loadURL:_safeURL2];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent2];
 
   // Trigger visual classification completion with non-phishing scores. This
   // simulates the classifier completing with a non-phishing result.
   NSArray<NSNumber*>* nonPhishingScores = @[ @0.1, @0.2 ];
-  [SafeBrowsingAppInterface
-      triggerClassificationDoneWithURL:base::SysUTF8ToNSString(_safeURL1.spec())
-                          visualScores:nonPhishingScores];
+  [SafeBrowsingAppInterface triggerClassificationDoneWithURL:url
+                                                visualScores:nonPhishingScores];
 
   // Verify image classification completed event is logged.
   GREYAssertTrue(
