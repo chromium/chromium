@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/system/system_monitor.h"
+#include "base/thread_annotations.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -198,10 +199,9 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   // The duration of the delay between iterations of DoPoll.
   base::TimeDelta sampling_interval_delta_;
 
-  // Keeps track of when the background thread is paused. Access to is_paused_
-  // must be guarded by is_paused_lock_.
+  // Keeps track of when the background thread is paused.
   base::Lock is_paused_lock_;
-  bool is_paused_ = true;
+  bool is_paused_ GUARDED_BY(is_paused_lock_) = true;
 
   // Keep track of when a polling task is schedlued, so as to prevent us from
   // accidentally scheduling more than one at any time, when rapidly toggling
@@ -217,15 +217,15 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   using ClosureAndThread =
       std::pair<base::OnceClosure, scoped_refptr<base::SingleThreadTaskRunner>>;
   using UserGestureObserverVector = std::vector<ClosureAndThread>;
-  UserGestureObserverVector user_gesture_observers_;
+  UserGestureObserverVector user_gesture_observers_
+      GUARDED_BY(user_gesture_lock_);
 
   // Updated based on notification from SystemMonitor when the system devices
   // have been updated, and this notification is passed on to the data fetcher
   // to enable it to avoid redundant (and possibly expensive) is-connected
-  // tests. Access to devices_changed_ must be guarded by
-  // devices_changed_lock_.
+  // tests.
   base::Lock devices_changed_lock_;
-  bool devices_changed_ = true;
+  bool devices_changed_ GUARDED_BY(devices_changed_lock_) = true;
 
   bool ever_had_user_gesture_ = false;
   bool sanitize_ = true;
