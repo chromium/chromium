@@ -16,6 +16,14 @@ bool IsGeometryAttribute(NSAccessibilityAttributeName attribute) {
          [attribute isEqualToString:NSAccessibilitySizeAttribute];
 }
 
+// Reads proxied to the root parent. Moom only resizes a window that has a zoom
+// button; the borderless popup has none, so it would move the browser but not
+// resize it.
+bool IsForwardedAttribute(NSAccessibilityAttributeName attribute) {
+  return IsGeometryAttribute(attribute) ||
+         [attribute isEqualToString:NSAccessibilityZoomButtonAttribute];
+}
+
 class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
  public:
   explicit OmniboxPopupNativeWidgetMac(views::Widget* widget)
@@ -58,7 +66,7 @@ class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
 
 - (id)accessibilityAttributeValue:(NSAccessibilityAttributeName)attribute {
   NSWindow* target = self.windowManagementTarget;
-  if (target != self && IsGeometryAttribute(attribute)) {
+  if (target != self && IsForwardedAttribute(attribute)) {
     return [target accessibilityAttributeValue:attribute];
   }
   return [super accessibilityAttributeValue:attribute];
