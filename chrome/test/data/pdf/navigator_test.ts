@@ -108,8 +108,7 @@ async function doNavigationUrlTests(
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
   const getNamedDestinationCallback = function(_name: string) {
-    return Promise.resolve(
-        {messageId: 'getNamedDestination_1', pageNumber: -1});
+    return Promise.resolve({messageId: 'getNamedDestination_1', pageIndex: -1});
   };
   const getPageBoundingBoxCallback = function(_page: number) {
     return Promise.resolve({x: -1, y: -1, width: -1, height: -1});
@@ -147,13 +146,13 @@ chrome.test.runTests([
     const getNamedDestinationCallback = function(destination: string) {
       if (destination === 'US') {
         return Promise.resolve(
-            {messageId: 'getNamedDestination_1', pageNumber: 0});
+            {messageId: 'getNamedDestination_1', pageIndex: 0});
       } else if (destination === 'UY') {
         return Promise.resolve(
-            {messageId: 'getNamedDestination_2', pageNumber: 2});
+            {messageId: 'getNamedDestination_2', pageIndex: 2});
       } else {
         return Promise.resolve(
-            {messageId: 'getNamedDestination_3', pageNumber: -1});
+            {messageId: 'getNamedDestination_3', pageIndex: -1});
       }
     };
     const getPageBoundingBoxCallback = function(_page: number) {

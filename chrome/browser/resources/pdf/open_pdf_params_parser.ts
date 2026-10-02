@@ -392,9 +392,9 @@ export class OpenPdfParamsParser {
       const data =
           await this.getNamedDestinationCallback_(urlParams.get('nameddest')!);
 
-      if (data.pageNumber !== -1) {
-        params.page = data.pageNumber;
-        pageNumber = data.pageNumber;
+      if (data.pageIndex !== -1) {
+        params.page = data.pageIndex;
+        pageNumber = data.pageIndex;
       }
 
       if (data.namedDestinationView) {

@@ -164,7 +164,7 @@ export enum FormFieldFocusType {
 
 export interface NamedDestinationMessageData {
   messageId: string;
-  pageNumber: number;
+  pageIndex: number;
   namedDestinationView?: string;
 }
 

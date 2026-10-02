@@ -1950,7 +1950,7 @@ void PdfViewWebPlugin::HandleGetNamedDestinationMessage(
           : -1;
 
   base::DictValue reply = PrepareReplyMessage(message);
-  reply.Set("pageNumber", page_index);
+  reply.Set("pageIndex", page_index);
 
   if (named_destination.has_value() && !named_destination->view.empty()) {
     std::ostringstream view_stream;

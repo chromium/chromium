@@ -17,81 +17,81 @@ function getParamsParser(): OpenPdfParamsParser {
 
     if (destination === 'RU') {
       return Promise.resolve(
-          {messageId: 'getNamedDestination_1', pageNumber: 26});
+          {messageId: 'getNamedDestination_1', pageIndex: 26});
     }
     if (destination === 'US') {
       return Promise.resolve(
-          {messageId: 'getNamedDestination_2', pageNumber: 0});
+          {messageId: 'getNamedDestination_2', pageIndex: 0});
     }
     if (destination === 'UY') {
       return Promise.resolve(
-          {messageId: 'getNamedDestination_3', pageNumber: 22});
+          {messageId: 'getNamedDestination_3', pageIndex: 22});
     }
     if (destination === 'DestWithXYZ') {
       return Promise.resolve({
         messageId: 'getNamedDestination_4',
         namedDestinationView: `${ViewMode.XYZ},111,222,1.7`,
-        pageNumber: 10,
+        pageIndex: 10,
       });
     }
     if (destination === 'DestWithXYZAtZoomNull') {
       return Promise.resolve({
         messageId: 'getNamedDestination_5',
         namedDestinationView: `${ViewMode.XYZ},111,222,null`,
-        pageNumber: 10,
+        pageIndex: 10,
       });
     }
     if (destination === 'DestWithXYZWithX0') {
       return Promise.resolve({
         messageId: 'getNamedDestination_6',
         namedDestinationView: `${ViewMode.XYZ},0,200,1.7`,
-        pageNumber: 11,
+        pageIndex: 11,
       });
     }
     if (destination === 'DestWithXYZWithXNull') {
       return Promise.resolve({
         messageId: 'getNamedDestination_7',
         namedDestinationView: `${ViewMode.XYZ},null,200,1.7`,
-        pageNumber: 11,
+        pageIndex: 11,
       });
     }
     if (destination === 'DestWithXYZWithY0') {
       return Promise.resolve({
         messageId: 'getNamedDestination_8',
         namedDestinationView: `${ViewMode.XYZ},100,0,1.7`,
-        pageNumber: 11,
+        pageIndex: 11,
       });
     }
     if (destination === 'DestWithXYZWithYNull') {
       return Promise.resolve({
         messageId: 'getNamedDestination_9',
         namedDestinationView: `${ViewMode.XYZ},100,null,1.7`,
-        pageNumber: 11,
+        pageIndex: 11,
       });
     }
     if (destination === 'DestWithFitR') {
       return Promise.resolve({
         messageId: 'getNamedDestination_10',
         namedDestinationView: `${ViewMode.FIT_R},20,100,120,300`,
-        pageNumber: 0,
+        pageIndex: 0,
       });
     }
     if (destination === 'DestWithFitRReversedCoordinates') {
       return Promise.resolve({
         messageId: 'getNamedDestination_11',
         namedDestinationView: `${ViewMode.FIT_R},120,300,20,100`,
-        pageNumber: 0,
+        pageIndex: 0,
       });
     }
     if (destination === 'DestWithFitRWithNull') {
       return Promise.resolve({
         messageId: 'getNamedDestination_12',
         namedDestinationView: `${ViewMode.FIT_R},null,100,100,300`,
-        pageNumber: 0,
+        pageIndex: 0,
       });
     }
     return Promise.resolve(
-        {messageId: 'getNamedDestination_13', pageNumber: -1});
+        {messageId: 'getNamedDestination_13', pageIndex: -1});
   }, getPageBoundingBoxCallback);
   return paramsParser;
 }
