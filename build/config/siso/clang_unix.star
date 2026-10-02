@@ -5,12 +5,12 @@
 """Siso configuration for clang/unix."""
 
 load("@builtin//path.star", "path")
-load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
 load("./clang_all.star", "clang_all")
 load("./config.star", "config")
 load("./gn_logs.star", "gn_logs")
+load("./mac_sdk.star", "mac_sdk")
 load("./platform.star", "platform")
 load("./win_sdk.star", "win_sdk")
 
@@ -106,7 +106,9 @@ def __rules(ctx):
     remote_link_timeout = "80m" if use_thin_lto else "10m"
 
     remote_link = config.get(ctx, "remote-link") or config.get(ctx, "default-remote")
-    if runtime.os == "darwin":
+
+    # Remote linking is not supported for Mac/iOS targets.
+    if mac_sdk.enabled(ctx):
         remote_link = False
 
     rules = []

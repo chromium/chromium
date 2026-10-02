@@ -6,6 +6,7 @@
 
 load("@builtin//struct.star", "module")
 load("./android.star", "android")
+load("./apple.star", "apple")
 load("./clang_linux.star", "clang")
 load("./config.star", "config")
 load("./cros.star", "cros")
@@ -46,6 +47,7 @@ __handlers = {
     "dump_app_syms": __dump_app_syms,
 }
 __handlers.update(android.handlers)
+__handlers.update(apple.handlers)
 __handlers.update(clang.handlers)
 __handlers.update(cros.handlers)
 __handlers.update(devtools_frontend.handlers)
@@ -62,6 +64,7 @@ def __step_config(ctx, step_config):
     if not reclient.enabled(ctx):
         step_config = cros.step_config(ctx, step_config)
 
+    step_config = apple.step_config(ctx, step_config)
     step_config = clang.step_config(ctx, step_config)
     step_config = devtools_frontend.step_config(ctx, step_config)
     step_config = nasm.step_config(ctx, step_config)

@@ -973,7 +973,7 @@ deps = {
         'sha256sum': 'ad3042a17255b065a75fa7f9d80be2eb07df0902bd762cec53b9f2f5c3beba87',
         'size_bytes': 5925392,
         'generation': 1790797381953168,
-        'condition': '((checkout_linux or checkout_mac or checkout_android) and host_os == "linux") and non_git_source',
+        'condition': '((checkout_linux or checkout_mac or checkout_ios or checkout_android) and host_os == "linux") and non_git_source',
       },
       {
         'object_name': 'Mac/clang-llvmorg-24-init-7747-g62397f8b-57.tar.xz',
@@ -987,7 +987,7 @@ deps = {
         'sha256sum': '31569c5a0a8e133ea5033d3a462273ce65100e0402307319af644ee4fb78d77c',
         'size_bytes': 978876,
         'generation': 1790797399057345,
-        'condition': 'checkout_mac and not host_os == "mac"',
+        'condition': '(checkout_mac or checkout_ios) and not host_os == "mac"',
       },
       {
         'object_name': 'Mac/clang-tidy-llvmorg-24-init-7747-g62397f8b-57.tar.xz',
@@ -2751,7 +2751,7 @@ deps = {
               'version': '4wxov_ILjFdgBumBqgUgOgIcr4kcMh7i4b4oJi_cLjcC',
           },
       ],
-      'condition': 'host_os == "linux" and checkout_mac',
+      'condition': 'host_os == "linux" and (checkout_mac or checkout_ios)',
       'dep_type': 'cipd',
   },
 
