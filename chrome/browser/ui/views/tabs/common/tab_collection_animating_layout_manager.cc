@@ -577,6 +577,13 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
 }
 
 gfx::Rect TabCollectionAnimatingLayoutManager::HostAnimationOffsets::
+    ConvertScreenRectToStartBounds(const views::View* host,
+                                   const gfx::Rect& bounds_in_screen) const {
+  return views::View::ConvertRectFromScreen(host, bounds_in_screen) +
+         start_to_current_bounds;
+}
+
+gfx::Rect TabCollectionAnimatingLayoutManager::HostAnimationOffsets::
     InterpolateChildBounds(double value,
                            const gfx::Rect& start_bounds,
                            const gfx::Rect& target_bounds) const {
@@ -612,6 +619,8 @@ TabCollectionAnimatingLayoutManager::GetHostAnimationOffsets(
       .target = host_target.OffsetFromOrigin(),
       .current = gfx::Tween::RectValueBetween(value, host_start, host_target)
                      .OffsetFromOrigin(),
+      .start_to_current_bounds = host_view()->bounds().OffsetFromOrigin() -
+                                 host_start.OffsetFromOrigin(),
   };
 }
 
@@ -681,8 +690,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
         gfx::Rect* previous_container_bounds =
             child_view->GetProperty(kPreviousCollectionBounds);
         if (previous_container_bounds) {
-          gfx::Rect initial_bounds = views::View::ConvertRectFromScreen(
-              host_view(), *previous_container_bounds);
+          gfx::Rect initial_bounds =
+              host_offsets.ConvertScreenRectToStartBounds(
+                  host_view(), *previous_container_bounds);
           interpolated_child.bounds = host_offsets.InterpolateChildBounds(
               value, initial_bounds, target_it->second.bounds);
         } else {
@@ -778,8 +788,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     DCHECK(!target_view_layout_map_.contains(child_view));
     if (previous_collection_bounds &&
         !start_view_layout_map_.contains(child_view)) {
-      const gfx::Rect start_bounds = views::View::ConvertRectFromScreen(
-          host_view(), *previous_collection_bounds);
+      const gfx::Rect start_bounds =
+          host_offsets.ConvertScreenRectToStartBounds(
+              host_view(), *previous_collection_bounds);
 
       // Target bounds for the animate-out animation depends on
       // source_layout_info.
