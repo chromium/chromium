@@ -88,12 +88,24 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
     @Test
     public void testHide() {
         mCoordinator.requestShowContent();
-        mCoordinator.hide(StateChangeReason.NONE);
+        mCoordinator.hide();
 
         verify(mBottomSheetController)
                 .hideContent(
                         any(EmailVerificationBottomSheetContent.class),
                         /* animate= */ eq(true),
+                        eq(StateChangeReason.INTERACTION_COMPLETE));
+    }
+
+    @Test
+    public void testDestroy() {
+        mCoordinator.requestShowContent();
+        mCoordinator.destroy();
+
+        verify(mBottomSheetController)
+                .hideContent(
+                        any(EmailVerificationBottomSheetContent.class),
+                        /* animate= */ eq(false),
                         eq(StateChangeReason.NONE));
     }
 
@@ -145,7 +157,7 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
 
         confirmBtn.performClick();
 
-        verify(mDelegate).onUiDecision(EmailVerificationPermissionUiStatus.ALLOWED);
+        verify(mDelegate).onUiAccepted();
         PropertyModel model = mCoordinator.getPropertyModelForTesting();
         assertTrue(model.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE));
         assertEquals(View.VISIBLE, confirmBtn.getVisibility());
@@ -165,7 +177,7 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
         PropertyModel model = mCoordinator.getPropertyModelForTesting();
         assertTrue(model.get(EmailVerificationBottomSheetProperties.SHOW_LOADING_STATE));
 
-        mCoordinator.hide(StateChangeReason.INTERACTION_COMPLETE);
+        mCoordinator.hide();
         Shadows.shadowOf(Looper.getMainLooper())
                 .idleFor(
                         EmailVerificationBottomSheetMediator.MIN_LOADING_TIME_MS,
@@ -191,7 +203,7 @@ public final class EmailVerificationBottomSheetCoordinatorTest {
         Button cancelBtn = view.mContentView.findViewById(R.id.email_verification_cancel_button);
         cancelBtn.performClick();
 
-        verify(mDelegate).onUiDecision(EmailVerificationPermissionUiStatus.DECLINED);
+        verify(mDelegate).onUiDismissed(EmailVerificationPermissionUiStatus.DECLINED);
     }
 
     @Test

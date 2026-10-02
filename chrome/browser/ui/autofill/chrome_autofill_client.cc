@@ -16,6 +16,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
@@ -1427,8 +1429,33 @@ void ChromeAutofillClient::ShowEmailVerificationPopup(
     std::move(callback).Run(EmailVerificationPermissionUiStatus::kOther);
     return;
   }
+  auto decision_callback = base::MakeRefCounted<base::RefCountedData<
+      base::OnceCallback<void(EmailVerificationPermissionUiStatus)>>>(
+      std::move(callback));
+
+  auto on_accepted = base::BindOnce(
+      [](scoped_refptr<base::RefCountedData<base::OnceCallback<void(
+             EmailVerificationPermissionUiStatus)>>> cb) {
+        if (cb->data) {
+          std::move(cb->data).Run(
+              EmailVerificationPermissionUiStatus::kAllowed);
+        }
+      },
+      decision_callback);
+
+  auto on_dismissed = base::BindOnce(
+      [](scoped_refptr<base::RefCountedData<
+             base::OnceCallback<void(EmailVerificationPermissionUiStatus)>>> cb,
+         EmailVerificationPermissionUiStatus reason) {
+        if (cb->data) {
+          std::move(cb->data).Run(reason);
+        }
+      },
+      decision_callback);
+
   email_verification_bottom_sheet_bridge_->RequestShowContent(
-      base::UTF8ToUTF16(issuer_site.Serialize()), email, std::move(callback));
+      base::UTF8ToUTF16(issuer_site.Serialize()), email, std::move(on_accepted),
+      std::move(on_dismissed));
 #else
   const gfx::Rect client_area = web_contents()->GetContainerBounds();
   const gfx::RectF element_bounds_in_screen_space =

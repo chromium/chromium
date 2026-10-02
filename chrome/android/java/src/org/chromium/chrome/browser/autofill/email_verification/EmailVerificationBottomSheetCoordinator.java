@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.autofill.AutofillSheetUiControllerFactory;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.components.autofill.EmailVerificationPermissionUiStatus;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -29,11 +28,15 @@ public class EmailVerificationBottomSheetCoordinator {
         /** Called when the bottom sheet is shown to the user. */
         void onUiShown();
 
-        /** Called when a UI decision is made. */
-        void onUiDecision(@EmailVerificationPermissionUiStatus int status);
+        /** Called when the user clicks the accept/verify button. */
+        void onUiAccepted();
 
-        /** Called when the bottom sheet has been dismissed/hidden. */
-        default void onUiDismissed() {}
+        /**
+         * Called when the bottom sheet has been dismissed, closed, or failed to show.
+         *
+         * @param reason The reason/status corresponding to the dismissal.
+         */
+        void onUiDismissed(@EmailVerificationPermissionUiStatus int reason);
     }
 
     private final EmailVerificationBottomSheetView mView;
@@ -84,8 +87,16 @@ public class EmailVerificationBottomSheetCoordinator {
     }
 
     /** Hides this component, hiding the bottom sheet if needed. */
-    public void hide(@StateChangeReason int hideReason) {
-        mMediator.hide(hideReason);
+    public void hide() {
+        mMediator.hide();
+    }
+
+    /**
+     * Destroys this component immediately, dismissing the bottom sheet without animation and
+     * cancelling any pending callbacks.
+     */
+    public void destroy() {
+        mMediator.destroy();
     }
 
     /*package*/ EmailVerificationBottomSheetView getViewForTesting() {

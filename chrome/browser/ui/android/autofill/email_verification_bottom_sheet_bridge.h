@@ -12,6 +12,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
 class TabModel;
@@ -38,12 +39,17 @@ class EmailVerificationBottomSheetBridge {
   virtual ~EmailVerificationBottomSheetBridge();
 
   // Requests to show the email verification bottom sheet.
+  // `on_accepted_callback` is executed if the user clicks the "Verify" button.
+  // `on_dismissed_callback` is executed when the bottom sheet is dismissed or
+  // closed, with the dismissal reason.
   // Overridden in tests.
   virtual void RequestShowContent(
       const std::u16string& issuer,
       const std::u16string& email,
+      base::OnceClosure on_accepted_callback,
       base::OnceCallback<
-          void(AutofillClient::EmailVerificationPermissionUiStatus)> callback);
+          void(AutofillClient::EmailVerificationPermissionUiStatus)>
+          on_dismissed_callback);
 
   // Hides the email verification bottom sheet.
   virtual void Hide();
@@ -51,8 +57,10 @@ class EmailVerificationBottomSheetBridge {
   // -- JNI calls bridged from Java --
   // Called when the UI is shown.
   void OnUiShown(JNIEnv* env);
-  // Called when a UI decision is made with the corresponding status code.
-  void OnUiDecision(JNIEnv* env, int status);
+  // Called when the user clicks the accept/verify button.
+  void OnUiAccepted(JNIEnv* env);
+  // Called when the UI is dismissed/hidden.
+  void OnUiDismissed(JNIEnv* env, int reason);
 
  protected:
   // Used in tests to inject dependencies.
@@ -61,12 +69,11 @@ class EmailVerificationBottomSheetBridge {
           java_email_verification_bottom_sheet_bridge);
 
  private:
-  void RunCallback(AutofillClient::EmailVerificationPermissionUiStatus status);
-
   base::android::ScopedJavaGlobalRef<jobject>
       java_email_verification_bottom_sheet_bridge_;
+  base::OnceClosure on_accepted_callback_;
   base::OnceCallback<void(AutofillClient::EmailVerificationPermissionUiStatus)>
-      callback_;
+      on_dismissed_callback_;
 };
 
 }  // namespace autofill

@@ -36,20 +36,36 @@ EmailVerificationBottomSheetBridge::~EmailVerificationBottomSheetBridge() {
         base::android::AttachCurrentThread(),
         java_email_verification_bottom_sheet_bridge_);
   }
-  RunCallback(AutofillClient::EmailVerificationPermissionUiStatus::
-                  kViewDestroyedDirectly);
+  on_accepted_callback_.Reset();
+  if (on_dismissed_callback_) {
+    std::move(on_dismissed_callback_)
+        .Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                 kViewDestroyedDirectly);
+  }
 }
 
 void EmailVerificationBottomSheetBridge::RequestShowContent(
     const std::u16string& issuer,
     const std::u16string& email,
+    base::OnceClosure on_accepted_callback,
     base::OnceCallback<
-        void(AutofillClient::EmailVerificationPermissionUiStatus)> callback) {
-  if (callback_) {
-    RunCallback(AutofillClient::EmailVerificationPermissionUiStatus::
-                    kOverlappingPrompt);
+        void(AutofillClient::EmailVerificationPermissionUiStatus)>
+        on_dismissed_callback) {
+  // If a bottom sheet is already active (either awaiting user decision or
+  // displaying its loading spinner), reject the new request with
+  // kOverlappingPrompt without disrupting the existing sheet.
+  if (on_accepted_callback_ || on_dismissed_callback_) {
+    if (on_dismissed_callback) {
+      std::move(on_dismissed_callback)
+          .Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                   kOverlappingPrompt);
+    }
+    return;
   }
-  callback_ = std::move(callback);
+  on_accepted_callback_ = std::move(on_accepted_callback);
+  on_dismissed_callback_ = std::move(on_dismissed_callback);
+  // TODO(crbug.com/496177772): Use `java_email_verification_bottom_sheet_bridge_`
+  // as the single source of truth once initialized in `RequestShowContent()`.
   if (!java_email_verification_bottom_sheet_bridge_) {
     return;
   }
@@ -67,9 +83,16 @@ void EmailVerificationBottomSheetBridge::Hide() {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_EmailVerificationBottomSheetBridge_hide(
         env, java_email_verification_bottom_sheet_bridge_);
+  } else {
+    // TODO(crbug.com/496177772): Remove this branch when
+    // `java_email_verification_bottom_sheet_bridge_` is initialized in
+    // `RequestShowContent()`.
+    auto status =
+        on_accepted_callback_
+            ? AutofillClient::EmailVerificationPermissionUiStatus::kOther
+            : AutofillClient::EmailVerificationPermissionUiStatus::kAllowed;
+    OnUiDismissed(/*env=*/nullptr, static_cast<int>(status));
   }
-  RunCallback(
-      AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted);
 }
 
 EmailVerificationBottomSheetBridge::EmailVerificationBottomSheetBridge(
@@ -80,15 +103,19 @@ EmailVerificationBottomSheetBridge::EmailVerificationBottomSheetBridge(
 
 void EmailVerificationBottomSheetBridge::OnUiShown(JNIEnv* env) {}
 
-void EmailVerificationBottomSheetBridge::OnUiDecision(JNIEnv* env, int status) {
-  RunCallback(
-      static_cast<AutofillClient::EmailVerificationPermissionUiStatus>(status));
+void EmailVerificationBottomSheetBridge::OnUiAccepted(JNIEnv* env) {
+  if (on_accepted_callback_) {
+    std::move(on_accepted_callback_).Run();
+  }
 }
 
-void EmailVerificationBottomSheetBridge::RunCallback(
-    AutofillClient::EmailVerificationPermissionUiStatus status) {
-  if (callback_) {
-    std::move(callback_).Run(status);
+void EmailVerificationBottomSheetBridge::OnUiDismissed(JNIEnv* env,
+                                                       int reason) {
+  on_accepted_callback_.Reset();
+  if (on_dismissed_callback_) {
+    std::move(on_dismissed_callback_)
+        .Run(static_cast<AutofillClient::EmailVerificationPermissionUiStatus>(
+            reason));
   }
 }
 

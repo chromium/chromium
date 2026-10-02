@@ -37,104 +37,136 @@ class EmailVerificationBottomSheetBridgeTest
   std::unique_ptr<TestEmailVerificationBottomSheetBridge> bridge_;
 };
 
-// Tests that accepting the bottom sheet forwards kAllowed to the callback.
-TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDecisionAllowed) {
+// Tests that accepting the bottom sheet runs the on_accepted callback.
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiAccepted) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run);
+  EXPECT_CALL(on_dismissed, Run).Times(0);
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
-  bridge_->OnUiDecision(
-      /*env=*/nullptr,
-      static_cast<int>(
-          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // Accepting the prompt does not dismiss it.
+  testing::Mock::VerifyAndClearExpectations(&on_dismissed);
+
+  // When destroyed while still loading, on_dismissed is resolved with
+  // kViewDestroyedDirectly.
+  EXPECT_CALL(on_dismissed,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                      kViewDestroyedDirectly));
+  bridge_.reset();
 }
 
-// Tests that declining the bottom sheet forwards kDeclined to the callback.
-TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDecisionDeclined) {
+// Tests that declining the bottom sheet forwards kDeclined to on_dismissed.
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedDeclined) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run).Times(0);
   EXPECT_CALL(
-      callback,
+      on_dismissed,
       Run(AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
-  bridge_->OnUiDecision(
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiDismissed(
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kDeclined));
 }
 
 // Tests that user dismissal (e.g. back press or swipe) forwards kUserAborted.
-TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDecisionUserAborted) {
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedUserAborted) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run).Times(0);
   EXPECT_CALL(
-      callback,
+      on_dismissed,
       Run(AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
-  bridge_->OnUiDecision(
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiDismissed(
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
 }
 
-// Tests that tab destruction or tab switching forwards kTabGone to the
-// callback.
-TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDecisionTabGone) {
+// Tests that tab destruction or tab switching forwards kTabGone.
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedTabGone) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run).Times(0);
   EXPECT_CALL(
-      callback,
+      on_dismissed,
       Run(AutofillClient::EmailVerificationPermissionUiStatus::kTabGone));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
-  bridge_->OnUiDecision(
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiDismissed(
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kTabGone));
 }
 
-// Tests that fallback/unknown UI decision status forwards kOther to the
-// callback.
-TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDecisionOther) {
+// Tests that fallback/unknown dismissal status forwards kOther.
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedOther) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
-  EXPECT_CALL(callback,
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run).Times(0);
+  EXPECT_CALL(on_dismissed,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
-  bridge_->OnUiDecision(
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiDismissed(
       /*env=*/nullptr,
       static_cast<int>(
           AutofillClient::EmailVerificationPermissionUiStatus::kOther));
 }
 
-// Tests that programmatically hiding the sheet resolves the callback with
-// kUserAborted.
-TEST_F(EmailVerificationBottomSheetBridgeTest, Hide) {
+// Tests that programmatically hiding the sheet resolves on_dismissed with
+// kOther if not yet accepted.
+TEST_F(EmailVerificationBottomSheetBridgeTest, HideBeforeAccepted) {
+  base::MockCallback<base::OnceClosure> on_accepted;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run).Times(0);
+  EXPECT_CALL(on_dismissed,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::kOther));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->Hide();
+}
+
+// Tests that programmatically hiding the sheet resolves on_dismissed with
+// kAllowed if already accepted (e.g. interaction complete).
+TEST_F(EmailVerificationBottomSheetBridgeTest, HideAfterAccepted) {
+  base::MockCallback<base::OnceClosure> on_accepted;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run);
+  EXPECT_CALL(
+      on_dismissed,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+
+  bridge_->RequestShowContent(u"google.com", u"user@example.com",
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
   bridge_->Hide();
 }
 
@@ -144,42 +176,80 @@ TEST_F(EmailVerificationBottomSheetBridgeTest,
        DestroyWhileShowingInvokesCallback) {
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback;
-  EXPECT_CALL(callback,
+      on_dismissed;
+  EXPECT_CALL(on_dismissed,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::
                       kViewDestroyedDirectly));
 
   bridge_->RequestShowContent(u"google.com", u"user@example.com",
-                              callback.Get());
+                              base::DoNothing(), on_dismissed.Get());
   bridge_.reset();
 }
 
-// Tests that requesting a new prompt while showing cancels previous callback
-// with kOverlappingPrompt.
+// Tests that requesting a new prompt while already showing rejects the new
+// request with kOverlappingPrompt and leaves the existing callbacks active.
 TEST_F(EmailVerificationBottomSheetBridgeTest,
-       ReentrantRequestShowContentResolvesPreviousCallback) {
+       ReentrantRequestShowContentRejectsNewCallback) {
+  base::MockCallback<base::OnceClosure> on_accepted1;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback1;
+      on_dismissed1;
+  base::MockCallback<base::OnceClosure> on_accepted2;
   base::MockCallback<base::OnceCallback<void(
       AutofillClient::EmailVerificationPermissionUiStatus)>>
-      callback2;
+      on_dismissed2;
 
-  EXPECT_CALL(callback1,
+  EXPECT_CALL(on_accepted1, Run);
+  EXPECT_CALL(on_dismissed1, Run).Times(0);
+  EXPECT_CALL(on_dismissed2,
               Run(AutofillClient::EmailVerificationPermissionUiStatus::
                       kOverlappingPrompt));
-  EXPECT_CALL(
-      callback2,
-      Run(AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
 
   bridge_->RequestShowContent(u"google.com", u"user1@example.com",
-                              callback1.Get());
+                              on_accepted1.Get(), on_dismissed1.Get());
   bridge_->RequestShowContent(u"google.com", u"user2@example.com",
-                              callback2.Get());
-  bridge_->OnUiDecision(
-      /*env=*/nullptr,
-      static_cast<int>(
-          AutofillClient::EmailVerificationPermissionUiStatus::kAllowed));
+                              on_accepted2.Get(), on_dismissed2.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  testing::Mock::VerifyAndClearExpectations(&on_dismissed1);
+  EXPECT_CALL(on_dismissed1,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                      kViewDestroyedDirectly));
+  bridge_.reset();
+}
+
+// Tests that requesting a new prompt while the sheet is in the loading state
+// (after OnUiAccepted) rejects the new request with kOverlappingPrompt.
+TEST_F(EmailVerificationBottomSheetBridgeTest,
+       RequestShowContentWhileLoadingRejectsNewCallback) {
+  base::MockCallback<base::OnceClosure> on_accepted1;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed1;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed2;
+
+  EXPECT_CALL(on_accepted1, Run);
+  EXPECT_CALL(on_dismissed1, Run).Times(0);
+  EXPECT_CALL(on_dismissed2,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                      kOverlappingPrompt));
+
+  bridge_->RequestShowContent(u"google.com", u"user1@example.com",
+                              on_accepted1.Get(), on_dismissed1.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+
+  // Requesting again while loading must reject callback2 with
+  // kOverlappingPrompt.
+  bridge_->RequestShowContent(u"google.com", u"user2@example.com",
+                              base::DoNothing(), on_dismissed2.Get());
+
+  testing::Mock::VerifyAndClearExpectations(&on_dismissed1);
+  EXPECT_CALL(on_dismissed1,
+              Run(AutofillClient::EmailVerificationPermissionUiStatus::
+                      kViewDestroyedDirectly));
+  bridge_.reset();
 }
 
 // Tests that instantiating the bridge with a WindowAndroid and TabModel
@@ -192,6 +262,28 @@ TEST_F(EmailVerificationBottomSheetBridgeTest, ConstructorWithWindow) {
   auto bridge = std::make_unique<EmailVerificationBottomSheetBridge>(
       window->get(), tab_model.get());
   EXPECT_NE(bridge, nullptr);
+}
+
+// Tests that OnUiDismissed invokes the dismissal callback passed to
+// RequestShowContent when the sheet was accepted and remained open in loading
+// state.
+TEST_F(EmailVerificationBottomSheetBridgeTest, OnUiDismissedAfterAccepted) {
+  base::MockCallback<base::OnceClosure> on_accepted;
+  base::MockCallback<base::OnceCallback<void(
+      AutofillClient::EmailVerificationPermissionUiStatus)>>
+      on_dismissed;
+  EXPECT_CALL(on_accepted, Run);
+  EXPECT_CALL(
+      on_dismissed,
+      Run(AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
+
+  bridge_->RequestShowContent(u"google.com", u"user@example.com",
+                              on_accepted.Get(), on_dismissed.Get());
+  bridge_->OnUiAccepted(/*env=*/nullptr);
+  bridge_->OnUiDismissed(
+      /*env=*/nullptr,
+      static_cast<int>(
+          AutofillClient::EmailVerificationPermissionUiStatus::kUserAborted));
 }
 
 }  // namespace autofill

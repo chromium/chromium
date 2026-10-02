@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.autofill.email_verification;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -85,7 +87,18 @@ public final class EmailVerificationBottomSheetBridgeTest {
     }
 
     @Test
-    public void testRequestShowContent_whenNullProvider_callsOnUiDecisionOther() {
+    public void testRequestShowContent_whenAlreadyShowing_isNoOp() {
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        clearInvocations(mBottomSheetController, mBridgeNatives);
+
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+
+        verifyNoInteractions(mBottomSheetController);
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testRequestShowContent_whenNullProvider_callsOnUiDismissedOther() {
         WindowAndroid unattachedWindow =
                 new WindowAndroid(
                         Robolectric.buildActivity(Activity.class).create().get(),
@@ -97,13 +110,14 @@ public final class EmailVerificationBottomSheetBridgeTest {
         bridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
 
         verify(mBridgeNatives)
-                .onUiDecision(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
+                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
         unattachedWindow.destroy();
     }
 
     @Test
     public void testHide() {
         mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        clearInvocations(mBridgeNatives);
         mBridge.hide();
 
         verify(mBottomSheetController)
@@ -111,6 +125,8 @@ public final class EmailVerificationBottomSheetBridgeTest {
                         any(EmailVerificationBottomSheetContent.class),
                         /* animate= */ eq(true),
                         eq(StateChangeReason.INTERACTION_COMPLETE));
+        verify(mBridgeNatives)
+                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.OTHER);
     }
 
     @Test
@@ -121,8 +137,9 @@ public final class EmailVerificationBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .hideContent(
                         any(EmailVerificationBottomSheetContent.class),
-                        /* animate= */ eq(true),
+                        /* animate= */ eq(false),
                         eq(StateChangeReason.NONE));
+        verify(mBridgeNatives, never()).onUiDismissed(eq(MOCK_POINTER), anyInt());
     }
 
     @Test
@@ -160,18 +177,51 @@ public final class EmailVerificationBottomSheetBridgeTest {
     }
 
     @Test
-    public void testOnUiDecision_callsNativeOnUiDecision() {
-        mBridge.onUiDecision(EmailVerificationPermissionUiStatus.ALLOWED);
+    public void testOnUiAccepted_callsNativeOnUiAccepted() {
+        mBridge.onUiAccepted();
 
-        verify(mBridgeNatives)
-                .onUiDecision(MOCK_POINTER, EmailVerificationPermissionUiStatus.ALLOWED);
+        verify(mBridgeNatives).onUiAccepted(MOCK_POINTER);
     }
 
     @Test
-    public void testOnUiDecision_doesNotCallNative_afterDestroy() {
+    public void testOnUiAccepted_doesNotCallNative_afterDestroy() {
         mBridge.destroy();
 
-        mBridge.onUiDecision(EmailVerificationPermissionUiStatus.ALLOWED);
+        mBridge.onUiAccepted();
+
+        verifyNoInteractions(mBridgeNatives);
+    }
+
+    @Test
+    public void testOnUiDismissed_clearsCoordinator() {
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        mBridge.onUiDismissed(EmailVerificationPermissionUiStatus.OTHER);
+
+        // Coordinator should be cleared so subsequent requests can be shown.
+        clearInvocations(mBottomSheetController, mBridgeNatives);
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        verify(mBottomSheetController)
+                .requestShowContent(
+                        any(EmailVerificationBottomSheetContent.class), /* animate= */ eq(true));
+    }
+
+    @Test
+    public void testOnUiDismissed_callsNativeOnUiDismissedWithReason() {
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        clearInvocations(mBridgeNatives);
+
+        mBridge.onUiDismissed(EmailVerificationPermissionUiStatus.USER_ABORTED);
+        verify(mBridgeNatives)
+                .onUiDismissed(MOCK_POINTER, EmailVerificationPermissionUiStatus.USER_ABORTED);
+    }
+
+    @Test
+    public void testOnUiDismissed_doesNotCallNative_afterDestroy() {
+        mBridge.requestShowContent(TEST_TITLE, TEST_DESCRIPTION);
+        clearInvocations(mBridgeNatives);
+
+        mBridge.destroy();
+        mBridge.onUiDismissed(EmailVerificationPermissionUiStatus.USER_ABORTED);
 
         verifyNoInteractions(mBridgeNatives);
     }
