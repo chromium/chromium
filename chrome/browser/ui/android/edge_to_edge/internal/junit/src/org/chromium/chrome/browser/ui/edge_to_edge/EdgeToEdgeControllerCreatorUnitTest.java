@@ -235,6 +235,17 @@ public class EdgeToEdgeControllerCreatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "xlarge")
+    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TABLET)
+    public void bottomChinUnsupported_neverInitializesController() {
+        mEdgeToEdgeControllerCreator.onApplyWindowInsets(mView, GESTURE_NAV_WINDOW_INSETS);
+        assertEquals(
+                "The controller should not be initialized when bottom chin is not supported.",
+                0,
+                mInitializeController.getCallCount());
+    }
+
+    @Test
     public void destroyRemovesInsetConsumption() {
         verify(mInsetObserver, never()).removeInsetsConsumer(any());
         mEdgeToEdgeControllerCreator.destroy();

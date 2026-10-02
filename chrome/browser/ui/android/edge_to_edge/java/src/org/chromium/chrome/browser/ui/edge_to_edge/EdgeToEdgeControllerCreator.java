@@ -19,11 +19,17 @@ import java.lang.ref.WeakReference;
 
 /**
  * The EdgeToEdgeControllerCreator exists just to listen to the InsetObserver as a window inset
- * consumer and initialize an {@link EdgeToEdgeController} when appropriate gesture navigation
- * insets are seen. This delayed creation is needed as window insets are not fully reliable during
- * initialization, and thus it is safer to wait until the right insets are explicitly seen, rather
- * than assume that the absence of tappable navigation insets are enough to guess that the device is
- * in gesture navigation.
+ * consumer and initialize an {@link EdgeToEdgeController} when appropriate window insets are seen.
+ *
+ * <p>When controller initialization is gated on bottom edge-to-edge (e.g., bottom chin and {@link
+ * SimpleEdgeToEdgeController}), this delayed creation waits for gesture-navigation (non-tappable)
+ * insets. Window insets are not fully reliable during initialization, so it is safer to wait until
+ * gesture navigation insets are explicitly seen rather than assuming that the absence of tappable
+ * navigation insets means the device is in gesture navigation mode.
+ *
+ * <p>When top edge-to-edge is supported by the host activity and device, {@link
+ * EdgeToEdgeController} is initialized once non-empty status bar insets are seen, without waiting
+ * for gesture navigation insets.
  */
 @NullMarked
 public class EdgeToEdgeControllerCreator {
@@ -36,17 +42,18 @@ public class EdgeToEdgeControllerCreator {
 
     /**
      * Creates an EdgeToEdgeControllerCreator, which will listen to the InsetObserver as a window
-     * inset consumer and will initialize an {@link EdgeToEdgeController} when appropriate gesture
-     * navigation insets are seen.
+     * inset consumer and will initialize an {@link EdgeToEdgeController} when appropriate window
+     * insets are seen (e.g., gesture navigation insets for bottom edge-to-edge, or status bar
+     * insets for top edge-to-edge).
      *
      * @param activity The current Activity, for evaluating if edge-to-edge is supported by the
      *     current configuration.
      * @param insetObserver The {@link InsetObserver} for observing window insets.
      * @param initializeEdgeToEdgeController The runnable to initialize the {@link
      *     EdgeToEdgeController} when the conditions are right.
-     * @param supportsTopInset Whether top inset edge-to-edge is supported by the caller, so {@code
-     *     shouldInitTopInset} only triggers for ChromeTabbedActivity and not secondary activities
-     *     that use {@link SimpleEdgeToEdgeController}.
+     * @param supportsTopInset Whether top inset edge-to-edge is supported by the caller, so top
+     *     edge-to-edge initialization only triggers for ChromeTabbedActivity and not secondary
+     *     activities that use {@link SimpleEdgeToEdgeController}.
      */
     public EdgeToEdgeControllerCreator(
             WeakReference<Activity> activity,
@@ -72,23 +79,38 @@ public class EdgeToEdgeControllerCreator {
         @Nullable Activity activity = mActivity.get();
         if (activity == null) return insets;
 
-        Insets navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-        Insets statusBarsInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars());
         // Bottom chin requires gesture navigation insets, whereas top edge-to-edge (migrated
         // from TopInsetCoordinator) only requires status bar insets and operates independently
         // of the navigation bar mode.
-        boolean shouldInitBottomChin =
-                EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
-                        && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insets)
-                        && !navigationBarInsets.equals(Insets.NONE);
-        boolean shouldInitTopInset =
-                mSupportsTopInset
-                        && EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
-                        && !statusBarsInsets.equals(Insets.NONE);
-        if (shouldInitBottomChin || shouldInitTopInset) {
+        if (shouldInitializeForBottomEdgeToEdge(activity, insets)
+                || shouldInitializeForTopEdgeToEdge(activity, insets)) {
             mInitializeEdgeToEdgeController.run();
         }
         return insets;
+    }
+
+    /**
+     * Returns whether the {@link EdgeToEdgeController} should be initialized for bottom
+     * edge-to-edge (e.g., bottom chin and {@link SimpleEdgeToEdgeController}), which requires
+     * waiting for non-empty gesture-navigation (non-tappable) navigation bar insets.
+     */
+    private static boolean shouldInitializeForBottomEdgeToEdge(
+            Activity activity, WindowInsetsCompat insets) {
+        Insets navigationBarInsets = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+        return EdgeToEdgeUtils.isEdgeToEdgeBottomChinSupportedByDevice(activity)
+                && EdgeToEdgeUtils.doAllInsetsIndicateGestureNavigation(insets)
+                && !navigationBarInsets.equals(Insets.NONE);
+    }
+
+    /**
+     * Returns whether the {@link EdgeToEdgeController} should be initialized for top edge-to-edge,
+     * which requires non-empty status bar insets and does not depend on the navigation bar mode.
+     */
+    private boolean shouldInitializeForTopEdgeToEdge(Activity activity, WindowInsetsCompat insets) {
+        Insets statusBarsInsets = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+        return mSupportsTopInset
+                && EdgeToEdgeUtils.isEdgelessTopInsetSupported(activity)
+                && !statusBarsInsets.equals(Insets.NONE);
     }
 
     @SuppressWarnings("NullAway")
