@@ -90,7 +90,8 @@
 #     cpp_api_from_rust: Either a boolean (e.g. `cpp_api_from_rust = true`) or
 #       a sub-table (e.g. `cpp_api_from_rust = { deps = ["png/v0_18"] }`) that
 #       asks for Crubit-based C++ bindings to be generated for the given crate.
-#       See `//docs/rust/crubit.md` for more details.
+#       See `//docs/rust/crubit/cpp_api_from_rust.md` for more details
+#       (and `//docs/rust/crubit/README.md` for general Crubit information).
 #
 #     extra_deps: A list of dependencies to be added to the crate.
 #

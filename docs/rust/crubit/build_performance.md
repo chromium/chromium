@@ -7,7 +7,7 @@
 > the bindings), the effect on build times is small and no action is
 > necessary.
 
-For more information about Crubit, see the main [crubit.md](../crubit.md) doc.
+For more information about Crubit, see [`README.md`](README.md).
 
 ## Background
 

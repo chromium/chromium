@@ -29,7 +29,7 @@ code (tracked in <https://crbug.com/351793625>). Chromium now supports
 However, because the Android build system does not yet support Crubit, it cannot be used in
 `//base`, `//net`, or other dependencies of Cronet (see https://crbug.com/535682335).
 The reverse direction (Rust calling C++) is not yet supported, but integration
-is underway. See [`crubit.md`](crubit.md) for details.
+is underway. See [`crubit/README.md`](crubit/README.md) for details.
 
 Chromium **does not support any other FFI tools** (e.g.
 [`cbindgen`](https://github.com/mozilla/cbindgen) or

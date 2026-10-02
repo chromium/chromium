@@ -65,7 +65,7 @@ Rust:
 * Q: How do I interoperate with C++ code?
   * A: Our standard tool is [cxx](https://cxx.rs/). We also support
     [Crubit](https://crubit.rs/) for calling Rust from C++ (with some
-    limitations; see [`crubit.md`](./crubit.md) for details).
+    limitations; see [`crubit/README.md`](./crubit/README.md) for details).
     An alternative if you're implementing a service in Rust is to use
     [Mojo](/docs/mojo_and_services.md) as a communication method, which avoids
     the need for direct interop. See [//docs/rust/ffi.md](/docs/rust/ffi.md)

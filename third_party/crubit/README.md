@@ -41,4 +41,4 @@ on additional directories).
 # Where can I find additional information about Crubit?
 
 For more information about using Crubit in Chromium please see
-`//docs/rust/crubit.md`.
+`//docs/rust/crubit/README.md`.

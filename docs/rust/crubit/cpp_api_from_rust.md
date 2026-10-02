@@ -1,79 +1,18 @@
 # `cpp_api_from_rust`
 
+## Introduction
+
 `cpp_api_from_rust` (aka `cc_bindings_from_rs`) is a Crubit tool that takes
 a Rust crate as input and generates C++ APIs (a `.h` header) as output,
 enabling C++ to call Rust.
+This document provides instructions for using `cpp_api_from_rust` in Chromium.
 
-## Availability
+See [`//docs/rust/crubit/README.md`](./README.md) for general information about
+Crubit.
 
-`cpp_api_from_rust` is fully supported by the Rust in Chrome team, with the
-following caveats:
+[TOC]
 
-*   **Some directories cannot use Crubit:** The Android project's
-    Soong/bp build system
-    does not support Crubit at this point. Consequently, Crubit cannot be
-    used in `//base`, `//net`, or
-    [other directories](https://source.chromium.org/chromium/chromium/src/+/main:components/cronet/android/dependencies.txt)
-    that [Cronet](../../components/cronet/README.md) depends on.
-    This is tracked in https://crbug.com/535682335.
-    (Quick clarification:
-    Chromium's GN/ninja build system supports Crubit on all Chromium target
-    platforms, including Android.  For example, QR code generator in
-    Chromium [uses Crubit](https://crrev.com/c/7749970)
-    and ships to mobile and desktop targets.)
-
-*   **2nd-party project limitations:** In principle, Crubit will work in
-    projects like PDFium or V8 as well. However, such projects usually
-    support non-Chromium clients or alternative toolchains that may lack
-    Crubit support. In order to use Crubit in a 2nd-party project, that
-    project must first:
-    * Make a policy decision to only support clients that have Crubit available,
-      and/or help their clients set up Crubit support.
-    * Enable Crubit in their build system by
-      [providing `//build_overrides/crubit.gni`](https://source.chromium.org/chromium/chromium/src/+/main:build/rust/gni_impl/cpp_api_from_rust.gni;l=59-62;drc=51d2448c9b469ac9a7e5fd349a624c71291a7510).
-
-Other notes:
-
-*   `cxx` remains fully supported; there are no plans to migrate existing
-    `cxx::bridge` code to Crubit.
-*   `rust_api_from_cpp` (calling C++ from Rust) is not yet supported, but
-    integration work is ongoing.
-
-## Other docs
-
-* Generic, Chromium-agnostic documentation of Crubit can be found at
-  https://crubit.rs.
-    * Note that some examples are Bazel-specific, but most of the documentation
-      should still apply to Chromium.
-    * Note that the documentation covers both `cpp_api_from_rust`
-      (with some Chromium support - see "availability" above) and
-      `rust_api_from_cpp` (with no Chromium support at this point).
-* Google-internal Crubit documentation can be found at
-  [go/crubit](https://goto2.corp.google.com/crubit)
-    * This is mostly the same content as above, but is mentioned here because it
-      includes a few extra things like document freshness and owner metadata,
-      link to a Google-internal chatroom, etc.)
-* Crubit's Discord server can be joined using the following invite link:
-  https://discord.gg/nHq5fdADKV
-* TODO: Cover Crubit in
-  [Chromium/FFI chapter of Comprehensive Rust course](https://google.github.io/comprehensive-rust/chromium/interoperability-with-cpp.html)
-
-## Known issues
-
-* https://crbug.com/545486505:
-  Crubit link failure: `lld-link: error: undefined symbol: ___crubit_thunk_foo_bar_baz`
-    - `cpp_api_from_rust`-generated APIs cannot be called from another build
-      component (another `.so` or `.dll`) than the one that contains the
-      Crubit-generated `source_set`.
-    - A workaround is to define and call out-of-line functions.  See for example
-      https://crbug.com/545486505#comment2
-* https://crbug.com/549864599:
-  `cpp_api_from_rust` is not supported in the host toolchain (e.g. when
-  generating bindings for host-side build tools).
-
-## Using `cpp_api_from_rust` in Chromium
-
-### Enabling `cpp_api_from_rust` for a `rust_static_library` crate
+## Enabling `cpp_api_from_rust` for a `rust_static_library` crate
 
 Example:
 
@@ -118,7 +57,7 @@ void foo() {
 }
 ```
 
-### Enabling `cpp_api_from_rust` for a `third_party/rust` crate
+## Enabling `cpp_api_from_rust` for a `third_party/rust` crate
 
 Set `cpp_api_from_rust = true` in `gnrt_config.toml` as follows:
 
@@ -157,7 +96,7 @@ void foo() {
 }
 ```
 
-### Inspecting the generated bindings
+## Inspecting the generated bindings
 
 Let's assume that `cpp_api_from_rust` bindings are generated for
 `//some/dir:some_target` - e.g.:
@@ -186,12 +125,12 @@ $ cat out/rel/gen/build/rust/tests/test_cpp_api_from_rust/rust_lib.h | head -3
 // Features: <none>
 ```
 
-### Specifying binding dependencies
+## Specifying binding dependencies
 
 If public APIs of a crate depend on types from another crate, then the
 dependency on the other crate needs to be explicitly specified in `BUILD.gn`.
 
-#### Bindings dependencies for 1st-party Rust libraries
+### Bindings dependencies for 1st-party Rust libraries
 
 1st-party Rust libraries can specify dependencies of their bindings
 as follows:
@@ -238,7 +177,7 @@ Note that types from `internal_helper` are _not_ used in public APIs of
 `rust_lib` and therefore `internal_helper` is _not_ listed
 in `deps` attribute of `cpp_api_from_rust`.
 
-#### Bindings dependencies for `//third_party/rust` libraries
+### Bindings dependencies for `//third_party/rust` libraries
 
 3rd-party Rust crates can specify dependencies of their bindings
 with the following `gnrt_config.toml` entry:
@@ -252,7 +191,7 @@ cpp_api_from_rust = { deps = ["some_other_crate/v123"] }
 After modifying `gnrt_config.toml` you have to re-run
 `tools/crates/run_gnrt.py gen` to regenerate the crate's `BUILD.gn` file.
 
-#### Bindings dependencies for Rust standard library
+### Bindings dependencies for Rust standard library
 
 C++ bindings for Rust standard library
 are automatically injected as a dependency of all other bindings.
@@ -308,4 +247,17 @@ Then you want to read the "Specifying binding dependencies" section above.
 Most Crubit users do not need to worry about this.  But if the bindings are used
 by a widely used C++ target (for example by a `component` that thousands of C++
 files depend on, directly or transitively), then see
-[Crubit and build performance](crubit/build_performance.md).
+[Crubit and build performance](build_performance.md).
+
+## Known issues
+
+* https://crbug.com/545486505:
+  Crubit link failure: `lld-link: error: undefined symbol: ___crubit_thunk_foo_bar_baz`
+    - `cpp_api_from_rust`-generated APIs cannot be called from another build
+      component (another `.so` or `.dll`) than the one that contains the
+      Crubit-generated `source_set`.
+    - A workaround is to define and call out-of-line functions.  See for example
+      https://crbug.com/545486505#comment2
+* https://crbug.com/549864599:
+  `cpp_api_from_rust` is not supported in the host toolchain (e.g. when
+  generating bindings for host-side build tools).
