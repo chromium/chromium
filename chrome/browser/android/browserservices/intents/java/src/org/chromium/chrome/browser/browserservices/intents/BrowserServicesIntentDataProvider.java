@@ -881,4 +881,11 @@ public abstract class BrowserServicesIntentDataProvider {
     public boolean isCctTabSwitcherEnabled() {
         return false;
     }
+
+    /**
+     * @return The {@link CustomTabIntentDataHolder} for this provider, or null if not applicable.
+     */
+    public @Nullable CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
+        return null;
+    }
 }

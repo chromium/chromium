@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
@@ -281,6 +282,27 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     /** Builds {@link BrowserServicesIntentDataProvider} for this {@link CustomTabActivity}. */
     protected BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
+        return buildIntentDataProvider(intent, colorScheme, /* dataHolder= */ null);
+    }
+
+    /** Builds {@link BrowserServicesIntentDataProvider} for this {@link CustomTabActivity}. */
+    protected BrowserServicesIntentDataProvider buildIntentDataProvider(
+            Intent intent,
+            @CustomTabsIntent.ColorScheme int colorScheme,
+            @Nullable CustomTabIntentDataHolder dataHolder) {
+        if (dataHolder != null) {
+            if (dataHolder.mActivityType == ActivityType.AUTH_TAB) {
+                return new AuthTabIntentDataProvider(intent, this, colorScheme, dataHolder);
+            } else if (dataHolder.mCustomTabMode == CustomTabProfileType.INCOGNITO) {
+                return new IncognitoCustomTabIntentDataProvider(
+                        intent, this, colorScheme, dataHolder);
+            } else if (dataHolder.mCustomTabMode == CustomTabProfileType.EPHEMERAL) {
+                return new EphemeralCustomTabIntentDataProvider(
+                        intent, this, colorScheme, dataHolder);
+            }
+            return new CustomTabIntentDataProvider(intent, this, colorScheme, dataHolder);
+        }
+
         if (AuthTabIntentDataProvider.isAuthTabIntent(intent)) {
             return new AuthTabIntentDataProvider(intent, this, colorScheme);
         } else if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(

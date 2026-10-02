@@ -341,7 +341,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         int OPEN_IN_BROWSER_STATE_DEFAULT = CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
     }
 
-    private final CustomTabIntentDataHolder mDataHolder;
+    protected final CustomTabIntentDataHolder mDataHolder;
     private final Intent mIntent;
     private final ColorProvider mColorProvider;
     private final int mShareState;
@@ -520,10 +520,19 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         this(intent, context, colorScheme, /* dataHolder= */ null);
     }
 
+    public CustomTabIntentDataProvider(
+            Intent intent,
+            Context context,
+            int colorScheme,
+            @Nullable CustomTabIntentDataHolder dataHolder) {
+        this(intent, context, colorScheme, dataHolder, CustomTabProfileType.REGULAR);
+    }
+
     /**
      * Constructs a {@link CustomTabIntentDataProvider}.
      *
      * @param intent The intent to launch the CCT.
+     * @param context The {@link Context}.
      * @param colorScheme The colorScheme parameter specifies which color scheme the Custom Tab
      *     should use. It can currently be either {@link CustomTabsIntent#COLOR_SCHEME_LIGHT} or
      *     {@link CustomTabsIntent#COLOR_SCHEME_DARK}. If Custom Tab was launched with {@link
@@ -532,12 +541,14 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      *     be created.
      * @param dataHolder Data holder used to recover intent data from the saved instance state. A
      *     null value should be passed if there is no saved instance state.
+     * @param customTabMode The {@link CustomTabProfileType} for the Custom Tab.
      */
-    public CustomTabIntentDataProvider(
+    protected CustomTabIntentDataProvider(
             Intent intent,
             Context context,
             int colorScheme,
-            @Nullable CustomTabIntentDataHolder dataHolder) {
+            @Nullable CustomTabIntentDataHolder dataHolder,
+            @CustomTabProfileType int customTabMode) {
         assert intent != null;
         mIntent = intent;
 
@@ -549,7 +560,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
             var session = token != null ? SessionHolder.of(token) : null;
 
-            if (session != null) builder.setSession(session);
+            builder.setSessionHolder(session);
+            builder.setClientPackageName(
+                    getClientPackageNameFromSessionOrCallingActivity(intent, session));
+            builder.setCustomTabMode(customTabMode);
             boolean isTrustedIntent = isTrustedCustomTab(intent, session);
             builder.setIsTrustedIntent(isTrustedIntent);
 
@@ -611,6 +625,18 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
             boolean isCloseButtonEnabled = getIsCloseButtonEnabled(intent, uiType);
             builder.setIsCloseButtonEnabled(isCloseButtonEnabled);
+            if (isCloseButtonEnabled) {
+                // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
+                Bitmap bitmap =
+                        IntentUtils.safeGetParcelableExtra(
+                                intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+                if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
+                    IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+                builder.setCloseButtonIcon(bitmap);
+            }
 
             int intentVisibilityState =
                     IntentUtils.safeGetIntExtra(
@@ -655,7 +681,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setIsFromMediaLauncherActivity(isFromMediaLauncherActivity);
 
             builder.setDisableStar(!CustomTabsIntent.isBookmarksButtonEnabled(intent));
-            builder.setDisableDownload(!CustomTabsIntent.isDownloadButtonEnabled(intent));
+            builder.setDisableDownload(
+                    !CustomTabsIntent.isDownloadButtonEnabled(intent)
+                            || customTabMode == CustomTabProfileType.EPHEMERAL);
 
             builder.setTranslateLanguage(getTranslateLanguage(intent));
             builder.setAutoTranslateLanguage(
@@ -716,7 +744,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                             EXTRA_OPEN_IN_BROWSER_STATE,
                             OpenInBrowserButtonState.OPEN_IN_BROWSER_STATE_DEFAULT);
             if (isOpenInBrowserDisallowed(
-                    uiType, getCustomTabMode() == CustomTabProfileType.INCOGNITO)) {
+                    uiType, customTabMode == CustomTabProfileType.INCOGNITO)) {
                 openInBrowserState = CustomTabsButtonState.BUTTON_STATE_OFF;
             }
             builder.setOpenInBrowserState(openInBrowserState);
@@ -746,20 +774,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
 
         if (isCloseButtonEnabled()) {
-            // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
-            Bitmap bitmap =
-                    IntentUtils.safeGetParcelableExtra(
-                            intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-            if (bitmap != null && !checkCloseButtonSize(context, bitmap)) {
-                IntentUtils.safeRemoveExtra(intent, CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON);
-                bitmap.recycle();
-                bitmap = null;
-            }
-            if (bitmap == null) {
+            if (mDataHolder.mCloseButtonIcon == null) {
                 mCloseButtonIcon =
                         TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
             } else {
-                mCloseButtonIcon = new TintedDrawable(context, bitmap);
+                mCloseButtonIcon = new TintedDrawable(context, mDataHolder.mCloseButtonIcon);
             }
         }
 
@@ -774,10 +793,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         maybeAddShareOption(intent, context);
 
         logCustomTabFeatures(intent, colorScheme);
-        String packageName =
-                getClientPackageNameFromSessionOrCallingActivity(mIntent, mDataHolder.mSession);
         RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.HasNonSpoofablePackageName", !TextUtils.isEmpty(packageName));
+                "CustomTabs.HasNonSpoofablePackageName",
+                !TextUtils.isEmpty(getClientPackageName()));
     }
 
     /** Returns the toolbar corner radius in px. */
@@ -1258,7 +1276,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (colorScheme == CustomTabsIntent.COLOR_SCHEME_SYSTEM) {
             featureUsage.log(CustomTabsFeature.CTF_SYSTEM);
         }
-        if (mDataHolder.mDisableDownload) {
+        if (!CustomTabsIntent.isDownloadButtonEnabled(intent)) {
             featureUsage.log(CustomTabsFeature.EXTRA_DISABLE_DOWNLOAD_BUTTON);
         }
         if (mDataHolder.mDisableStar) {
@@ -1414,8 +1432,8 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     }
 
     @Override
-    public SessionHolder.@Nullable CustomTab getSession() {
-        return mDataHolder.mSession;
+    public @Nullable SessionHolder getSession() {
+        return mDataHolder.mSessionHolder;
     }
 
     @Override
@@ -1455,7 +1473,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Nullable String getClientPackageName() {
-        return getClientPackageNameFromSessionOrCallingActivity(mIntent, mDataHolder.mSession);
+        return mDataHolder.mClientPackageName;
     }
 
     @Override
@@ -2039,5 +2057,16 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         && mDataHolder.mCctTabSwitcherEnabledForChromeExperiment;
 
         return isEnabledForEmbedderExperiment || isEnabledForChromeExperiment;
+    }
+
+    @Override
+    public @CustomTabProfileType int getCustomTabMode() {
+        assert mDataHolder.mCustomTabMode == CustomTabProfileType.REGULAR;
+        return mDataHolder.mCustomTabMode;
+    }
+
+    @Override
+    public CustomTabIntentDataHolder getCustomTabIntentDataHolder() {
+        return mDataHolder;
     }
 }

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Network;
 import android.os.Bundle;
 import android.widget.RemoteViews;
@@ -19,7 +20,9 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.TitleVisibility;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
 import java.util.List;
 
@@ -29,19 +32,21 @@ import java.util.List;
  */
 @NullMarked
 public class CustomTabIntentDataHolder {
-    public final SessionHolder.@Nullable CustomTab mSession;
+    public final @Nullable SessionHolder mSessionHolder;
+    public final @Nullable String mClientPackageName;
     public final boolean mIsTrustedIntent;
     public final @Nullable Bundle mAnimationBundle;
     public final @Nullable Intent mKeepAliveServiceIntent;
     public final @Nullable Network mNetwork;
     public final boolean mIsOpenedByChrome;
     public final @CustomTabsUiType int mUiType;
-    public final int mTitleVisibilityState;
+    public final @TitleVisibility int mTitleVisibilityState;
     public final @Px int mInitialActivityHeight;
     public final @Px int mInitialActivityWidth;
     public final int mBreakPointDp;
     public final @Px int mPartialTabToolbarCornerRadius;
     public final @ActivityType int mActivityType;
+    public final @CustomTabProfileType int mCustomTabMode;
     public final @Nullable String mMediaViewerUrl;
     public final boolean mEnableEmbeddedMediaExperience;
     public final boolean mIsFromMediaLauncherActivity;
@@ -52,6 +57,8 @@ public class CustomTabIntentDataHolder {
     public final List<TrustedWebActivityDisplayMode> mTwaDisplayOverrideMode;
     public final boolean mEnableUrlBarHiding;
     public final boolean mIsCloseButtonEnabled;
+    // Stored as a Bitmap rather than a Drawable because Drawable is not Parcelable.
+    public final @Nullable Bitmap mCloseButtonIcon;
     public final @Nullable RemoteViews mRemoteViews;
     public final @ActivitySideSheetDecorationType int mSideSheetDecorationType;
     public final @ActivitySideSheetRoundedCornersPosition int mSideSheetRoundedCornersPosition;
@@ -68,9 +75,13 @@ public class CustomTabIntentDataHolder {
     public final boolean mInteractWithBackground;
     public final boolean mCctTabSwitcherEnabledForChromeExperiment;
     public final boolean mCctTabSwitcherEnabledForEmbedderExperiment;
+    public final @Nullable String mAuthRedirectScheme;
+    public final @Nullable String mAuthRedirectHost;
+    public final @Nullable String mAuthRedirectPath;
 
     private CustomTabIntentDataHolder(Builder builder) {
-        mSession = builder.mSession;
+        mSessionHolder = builder.mSessionHolder;
+        mClientPackageName = builder.mClientPackageName;
         mIsTrustedIntent = builder.mIsTrustedIntent;
         mAnimationBundle = builder.mAnimationBundle;
         mKeepAliveServiceIntent = builder.mKeepAliveServiceIntent;
@@ -83,6 +94,7 @@ public class CustomTabIntentDataHolder {
         mBreakPointDp = builder.mBreakPointDp;
         mPartialTabToolbarCornerRadius = builder.mPartialTabToolbarCornerRadius;
         mActivityType = builder.mActivityType;
+        mCustomTabMode = builder.mCustomTabMode;
         mMediaViewerUrl = builder.mMediaViewerUrl;
         mEnableEmbeddedMediaExperience = builder.mEnableEmbeddedMediaExperience;
         mIsFromMediaLauncherActivity = builder.mIsFromMediaLauncherActivity;
@@ -93,6 +105,7 @@ public class CustomTabIntentDataHolder {
         mTwaDisplayOverrideMode = builder.mTwaDisplayOverrideMode;
         mEnableUrlBarHiding = builder.mEnableUrlBarHiding;
         mIsCloseButtonEnabled = builder.mIsCloseButtonEnabled;
+        mCloseButtonIcon = builder.mCloseButtonIcon;
         mRemoteViews = builder.mRemoteViews;
         mSideSheetDecorationType = builder.mSideSheetDecorationType;
         mSideSheetRoundedCornersPosition = builder.mSideSheetRoundedCornersPosition;
@@ -111,22 +124,27 @@ public class CustomTabIntentDataHolder {
                 builder.mCctTabSwitcherEnabledForChromeExperiment;
         mCctTabSwitcherEnabledForEmbedderExperiment =
                 builder.mCctTabSwitcherEnabledForEmbedderExperiment;
+        mAuthRedirectScheme = builder.mAuthRedirectScheme;
+        mAuthRedirectHost = builder.mAuthRedirectHost;
+        mAuthRedirectPath = builder.mAuthRedirectPath;
     }
 
     public static final class Builder {
-        private SessionHolder.@Nullable CustomTab mSession;
+        private @Nullable SessionHolder mSessionHolder;
+        private @Nullable String mClientPackageName;
         private boolean mIsTrustedIntent;
         private @Nullable Bundle mAnimationBundle;
         private @Nullable Intent mKeepAliveServiceIntent;
         private @Nullable Network mNetwork;
         private boolean mIsOpenedByChrome;
         private @CustomTabsUiType int mUiType;
-        private int mTitleVisibilityState;
+        private @TitleVisibility int mTitleVisibilityState;
         private @Px int mInitialActivityHeight;
         private @Px int mInitialActivityWidth;
         private int mBreakPointDp;
         private @Px int mPartialTabToolbarCornerRadius;
         private @ActivityType int mActivityType;
+        private @CustomTabProfileType int mCustomTabMode = CustomTabProfileType.REGULAR;
         private @Nullable String mMediaViewerUrl;
         private boolean mEnableEmbeddedMediaExperience;
         private boolean mIsFromMediaLauncherActivity;
@@ -137,6 +155,7 @@ public class CustomTabIntentDataHolder {
         private List<TrustedWebActivityDisplayMode> mTwaDisplayOverrideMode = List.of();
         private boolean mEnableUrlBarHiding;
         private boolean mIsCloseButtonEnabled;
+        private @Nullable Bitmap mCloseButtonIcon;
         private @Nullable RemoteViews mRemoteViews;
         private @ActivitySideSheetDecorationType int mSideSheetDecorationType;
         private @ActivitySideSheetRoundedCornersPosition int mSideSheetRoundedCornersPosition;
@@ -153,9 +172,17 @@ public class CustomTabIntentDataHolder {
         private boolean mInteractWithBackground;
         private boolean mCctTabSwitcherEnabledForChromeExperiment;
         private boolean mCctTabSwitcherEnabledForEmbedderExperiment;
+        private @Nullable String mAuthRedirectScheme;
+        private @Nullable String mAuthRedirectHost;
+        private @Nullable String mAuthRedirectPath;
 
-        public Builder setSession(SessionHolder.@Nullable CustomTab session) {
-            mSession = session;
+        public Builder setSessionHolder(@Nullable SessionHolder sessionHolder) {
+            mSessionHolder = sessionHolder;
+            return this;
+        }
+
+        public Builder setClientPackageName(@Nullable String clientPackageName) {
+            mClientPackageName = clientPackageName;
             return this;
         }
 
@@ -189,7 +216,7 @@ public class CustomTabIntentDataHolder {
             return this;
         }
 
-        public Builder setTitleVisibilityState(int titleVisibilityState) {
+        public Builder setTitleVisibilityState(@TitleVisibility int titleVisibilityState) {
             mTitleVisibilityState = titleVisibilityState;
             return this;
         }
@@ -216,6 +243,11 @@ public class CustomTabIntentDataHolder {
 
         public Builder setActivityType(@ActivityType int activityType) {
             mActivityType = activityType;
+            return this;
+        }
+
+        public Builder setCustomTabMode(@CustomTabProfileType int customTabMode) {
+            mCustomTabMode = customTabMode;
             return this;
         }
 
@@ -267,6 +299,11 @@ public class CustomTabIntentDataHolder {
 
         public Builder setIsCloseButtonEnabled(boolean isCloseButtonEnabled) {
             mIsCloseButtonEnabled = isCloseButtonEnabled;
+            return this;
+        }
+
+        public Builder setCloseButtonIcon(@Nullable Bitmap closeButtonIcon) {
+            mCloseButtonIcon = closeButtonIcon;
             return this;
         }
 
@@ -354,6 +391,21 @@ public class CustomTabIntentDataHolder {
                 boolean cctTabSwitcherEnabledForEmbedderExperiment) {
             mCctTabSwitcherEnabledForEmbedderExperiment =
                     cctTabSwitcherEnabledForEmbedderExperiment;
+            return this;
+        }
+
+        public Builder setAuthRedirectScheme(@Nullable String authRedirectScheme) {
+            mAuthRedirectScheme = authRedirectScheme;
+            return this;
+        }
+
+        public Builder setAuthRedirectHost(@Nullable String authRedirectHost) {
+            mAuthRedirectHost = authRedirectHost;
+            return this;
+        }
+
+        public Builder setAuthRedirectPath(@Nullable String authRedirectPath) {
+            mAuthRedirectPath = authRedirectPath;
             return this;
         }
 

@@ -13,6 +13,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.browserservices.intents.CustomTabIntentDataHolder;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
 import java.util.Collections;
@@ -30,7 +31,16 @@ import java.util.List;
 public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataProvider {
     /** Constructs an {@link EphemeralCustomTabIntentDataProvider}. */
     public EphemeralCustomTabIntentDataProvider(Intent intent, Context context, int colorScheme) {
-        super(intent, context, colorScheme);
+        this(intent, context, colorScheme, /* dataHolder= */ null);
+    }
+
+    /** Constructs an {@link EphemeralCustomTabIntentDataProvider}. */
+    public EphemeralCustomTabIntentDataProvider(
+            Intent intent,
+            Context context,
+            int colorScheme,
+            @Nullable CustomTabIntentDataHolder dataHolder) {
+        super(intent, context, colorScheme, dataHolder, CustomTabProfileType.EPHEMERAL);
         assert isOffTheRecord();
         logFeatureUsage();
     }
@@ -69,7 +79,8 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
 
     @Override
     public @CustomTabProfileType int getCustomTabMode() {
-        return CustomTabProfileType.EPHEMERAL;
+        assert mDataHolder.mCustomTabMode == CustomTabProfileType.EPHEMERAL;
+        return mDataHolder.mCustomTabMode;
     }
 
     @Override
@@ -90,6 +101,7 @@ public class EphemeralCustomTabIntentDataProvider extends CustomTabIntentDataPro
     @Override
     public boolean shouldShowDownloadButton() {
         // TODO(crbug.com/335609494): Enable once Offline downloads is supported for OTR profiles.
-        return false;
+        assert mDataHolder.mDisableDownload;
+        return !mDataHolder.mDisableDownload;
     }
 }
