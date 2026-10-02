@@ -67,9 +67,9 @@ AXAuraObjWrapper* AXTreeSourceViews::GetFromId(int32_t id) const {
 
   // We must do a lookup in AXVirtualView as well if the main cache doesn't hold
   // this node.
-  if (!wrapper && AXVirtualView::GetFromId(id)) {
+  if (!wrapper) {
     AXVirtualView* virtual_view = AXVirtualView::GetFromId(id);
-    return virtual_view->GetOrCreateWrapper(cache_);
+    return virtual_view ? virtual_view->GetOrCreateWrapper(cache_) : nullptr;
   }
 
   return wrapper;
