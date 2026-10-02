@@ -403,9 +403,7 @@ AudioManagerAndroid::AudioManagerAndroid(
     std::unique_ptr<AudioThread> audio_thread,
     AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
-      communication_mode_is_on_(false),
-      output_volume_override_set_(false),
-      output_volume_override_(0) {
+      communication_mode_is_on_(false) {
   const int max_output_streams = base::android::device_info::is_desktop()
                                      ? kDesktopMaxOutputStreams
                                      : kMaxOutputStreams;
@@ -1038,19 +1036,6 @@ AudioManagerAndroid::AddInputMuteStateChangeCallback(
   return microphone_mute_state_change_callbacks_.Add(std::move(callback));
 }
 
-void AudioManagerAndroid::SetOutputVolumeOverride(double volume) {
-  GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&AudioManagerAndroid::DoSetVolumeOnAudioThread,
-                                base::Unretained(this), volume));
-}
-
-bool AudioManagerAndroid::HasOutputVolumeOverride(double* out_volume) const {
-  if (output_volume_override_set_) {
-    *out_volume = output_volume_override_;
-  }
-  return output_volume_override_set_;
-}
-
 base::TimeDelta AudioManagerAndroid::GetOutputLatency() {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   return GetJniDelegate().GetOutputLatency();
@@ -1264,16 +1249,6 @@ void AudioManagerAndroid::DoSetMuteOnAudioThread(bool muted) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   for (auto stream : output_streams_) {
     stream->SetMute(muted);
-  }
-}
-
-void AudioManagerAndroid::DoSetVolumeOnAudioThread(double volume) {
-  output_volume_override_set_ = true;
-  output_volume_override_ = volume;
-
-  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  for (auto stream : output_streams_) {
-    stream->SetVolume(volume);
   }
 }
 

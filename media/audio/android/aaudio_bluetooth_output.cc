@@ -64,11 +64,6 @@ void AAudioBluetoothOutputStream::Flush() {
 }
 
 void AAudioBluetoothOutputStream::SetVolume(double volume) {
-  double volume_override = 0;
-  if (manager_->HasOutputVolumeOverride(&volume_override)) {
-    volume = volume_override;
-  }
-
   inner_a2dp_stream_->SetVolume(volume);
   inner_sco_stream_->SetVolume(volume);
 }

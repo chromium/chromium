@@ -239,12 +239,6 @@ void AAudioOutputStream::OnError() {
 void AAudioOutputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  double volume_override = 0;
-  if (audio_manager_ &&
-      audio_manager_->HasOutputVolumeOverride(&volume_override)) {
-    volume = volume_override;
-  }
-
   if (volume < 0.0 || volume > 1.0) {
     return;
   }
