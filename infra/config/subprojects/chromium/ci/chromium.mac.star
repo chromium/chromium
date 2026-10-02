@@ -570,6 +570,9 @@ ci.thin_tester(
             "isolate_profile_data",
         ],
         per_test_modifications = {
+            "blink_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             # TODO(crbug.com/436628295): test fails on VM
             "blink_web_tests": targets.per_test_modification(
                 mixins = "mac_26_arm64",
