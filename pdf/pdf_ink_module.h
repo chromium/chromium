@@ -28,11 +28,11 @@
 #include "pdf/ui/thumbnail.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/partitioned_mesh.h"
-#include "third_party/ink/src/ink/rendering/skia/native/skia_renderer.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -471,16 +471,6 @@ class PdfInkModule {
 
   // Returns whether the drawing brush was set or not.
   bool MaybeSetDrawingBrush();
-
-  void DrawStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
-                            SkCanvas& canvas,
-                            int page_index,
-                            const ink::Stroke& stroke);
-
-  void DrawInProgressStrokeInRenderer(ink::SkiaRenderer& skia_renderer,
-                                      SkCanvas& canvas,
-                                      int page_index,
-                                      const ink::InProgressStroke& stroke);
 
   // Returns the transform and the clip page rect needed to render strokes on
   // page `page_index`.
