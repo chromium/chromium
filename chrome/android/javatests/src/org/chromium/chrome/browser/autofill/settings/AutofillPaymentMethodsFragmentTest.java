@@ -1621,17 +1621,7 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     public void testFirstCardPromo_promoShownAndButtonOpensAddCard() throws Exception {
-        var cardsShownWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillPaymentMethodsFragment
-                                        .VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                true)
-                        .build();
-
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
-
-        cardsShownWithoutExistingCardsHistogram.assertExpected();
 
         Preference promoPreference = getFirstPaymentMethodPreference(activity);
         assertTrue(promoPreference instanceof CardWithButtonPreference);
@@ -1651,19 +1641,9 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     public void testFirstCardPromo_promoNotShownWithExistingCards() throws Exception {
-        var cardsShownWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillPaymentMethodsFragment
-                                        .VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                false)
-                        .build();
-
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
 
         SettingsActivityInterface activity = mSettingsTestRule.startSettingsActivity();
-
-        cardsShownWithoutExistingCardsHistogram.assertExpected();
 
         Preference cardPreference = getFirstPaymentMethodPreference(activity);
         assertFalse(cardPreference instanceof CardWithButtonPreference);

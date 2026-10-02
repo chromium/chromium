@@ -13,7 +13,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 // </if>
 import {createCreditCardEntry} from './autofill_fake_data.js';
-import {createPaymentsPage, getDefaultExpectations, getFirstCreditCardEntry, getLocalAndServerCreditCardListItems, setupPaymentsPrefs, verifyBooleanHistogramNotRecorded, verifyBooleanHistogramRecorded} from './payments_page_test_utils.js';
+import {createPaymentsPage, getDefaultExpectations, getFirstCreditCardEntry, getLocalAndServerCreditCardListItems, setupPaymentsPrefs} from './payments_page_test_utils.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -87,9 +87,6 @@ suite('PaymentsPage', function() {
   });
 
   test('verifyNoCreditCards', async function() {
-    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
     const page = await createPaymentsPage(
         /*creditCards=*/[], /*ibans=*/[], /*payOverTimeIssuers=*/[],
         {credit_card_enabled: {value: true}});
@@ -110,17 +107,9 @@ suite('PaymentsPage', function() {
         page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
-
-    await verifyBooleanHistogramRecorded(
-        testMetricsBrowserProxy,
-        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
-        true);
   });
 
   test('verifyCreditCardsDisabled', async function() {
-    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
     loadTimeData.overrideValues({
       showIbansSettings: false,
     });
@@ -134,12 +123,6 @@ suite('PaymentsPage', function() {
     assertTrue(!!addCreditCardButton);
     assertFalse(addCreditCardButton.hidden);
     assertTrue(addCreditCardButton.disabled);
-
-    // This metric should only be recorded when autofilling of credit cards is
-    // enabled.
-    await verifyBooleanHistogramNotRecorded(
-        testMetricsBrowserProxy,
-        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards');
   });
 
   test('verifyTypesBlockedEnterprisePolicy', async function() {
@@ -278,9 +261,6 @@ suite('PaymentsPage', function() {
       });
 
   test('verifyCreditCardCount', async function() {
-    const testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
     const creditCards = [
       createCreditCardEntry(),
       createCreditCardEntry(),
@@ -310,11 +290,6 @@ suite('PaymentsPage', function() {
         page.shadowRoot.querySelector<CrButtonElement>('#addPaymentMethods');
     assertTrue(!!addPaymentMethodsButton);
     assertFalse(addPaymentMethodsButton.disabled);
-
-    await verifyBooleanHistogramRecorded(
-        testMetricsBrowserProxy,
-        'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
-        false);
   });
 
   test('CanMakePaymentToggle_RecordsMetrics', async function() {

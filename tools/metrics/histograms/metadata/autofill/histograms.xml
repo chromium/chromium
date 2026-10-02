@@ -7179,85 +7179,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.PaymentMethods.SettingsPage.StoredCreditCardCountBeforeCardAdded"
-    units="cards" expires_after="2026-10-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Tracks the number of stored credit cards (both local and server) after a
-    user adds a new local card through the Chrome payment methods settings page.
-    The number of existing cards is calculated before saving the new card, but
-    the value is recorded after saving the new card. Note that the new local
-    card is not counted towards this number (i.e. if there aren't any existing
-    cards when adding the new card, the &quot;cards&quot; bucket labeled 0 will
-    be incremented).
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2"
-    enum="Boolean" expires_after="2026-10-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Logs true when the add card flow is started when the user does not have any
-    existing cards. If the user has existing cards, this metric is logged as
-    false. Recorded when a user starts the flow to add a new card through the
-    Chrome payment methods settings page and they do not have any existing
-    cards.
-
-    Note that a previous version of this histogram incorrectly measured both add
-    and edit cases, and was obsoleted in mid-June 2025.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.PaymentMethodsSettingsPage.CardAddedWithoutExistingCards"
-    enum="Boolean" expires_after="2026-10-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Logs true when a card is saved when the user does not have any existing
-    cards. If the user has existing cards, this metric is logged as false.
-    Recorded when a user adds a new card through the Chrome payment methods
-    settings page and they do not have any existing cards.
-  </summary>
-</histogram>
-
-<histogram
-    name="Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards"
-    enum="Boolean" expires_after="2026-10-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>smcgruer@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Logs true when the cards are viewed when the user does not have any existing
-    cards. If the user has existing cards, this metric is logged as false.
-    Recorded only if Autofill for Payment methods is enabled, when a user either
-    enters the Payment Methods Settings Page or if that page is rebuilt while
-    the user is on it (e.g., if a preference toggle is changed or new payment
-    methods are synced).
-
-    Note that this metric does not care about the presence or absence of other
-    payment methods (e.g., IBAN, pay over time, etc). It only measures whether
-    or not there are local or server cards shown on the settings page.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.PaymentMethodsSettingsPage.ScanCardResult"
-    enum="AutofillScanCreditCardResult" expires_after="2026-12-06">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    Logs how (or if) the credit card scanner is used by the user in the payment
-    methods settings page. Recorded when a user hits the save button to save a
-    new credit card through the Chrome payment methods settings page and there
-    is a credit card scanner shown to the user on the payments methods settings
-    page.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.PaymentMethodsSettingsPage.VisitReferrer"
     enum="AutofillSettingsReferrer" expires_after="2027-01-17">
   <owner>ireneuszszulc@google.com</owner>
@@ -8893,20 +8814,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Tracks whether the card was scanned with OCR (camera) or NFC (tap). Logged
     when a credit card scan completes.
   </summary>
-</histogram>
-
-<histogram name="Autofill.ScanCreditCard.Duration{CreditCardScanSuccess}"
-    units="ms" expires_after="2026-10-01">
-  <owner>darwinyang@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <summary>
-    How long a credit card took to scan. {CreditCardScanSuccess}
-  </summary>
-  <token key="CreditCardScanSuccess">
-    <variant name=""/>
-    <variant name="_Cancelled" summary="Credit card scan was cancelled."/>
-    <variant name="_Completed" summary="Credit card scan completed."/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.ScanCreditCardPrompt"

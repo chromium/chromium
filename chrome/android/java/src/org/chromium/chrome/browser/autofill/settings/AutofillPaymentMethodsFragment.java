@@ -106,8 +106,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";
-    static final String VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM =
-            "Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards";
     static final String MANDATORY_REAUTH_OPT_IN_HISTOGRAM =
             "Autofill.PaymentMethods.MandatoryReauth.OptChangeEvent.SettingsPage.OptIn";
     static final String MANDATORY_REAUTH_OPT_OUT_HISTOGRAM =
@@ -409,8 +407,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                             /* fragmentArgs= */ null,
                                             /* addToBackStack= */ true));
             getPreferenceScreen().addPreference(addFirstCardPref);
-            RecordHistogram.recordBooleanHistogram(
-                    VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM, true);
         }
         if (shouldShowAddCardPref(personalDataManager, getProfile())) {
             Preference addCardPref = new ChromeBasePreference(getStyledContext());
@@ -424,11 +420,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             addCardPref.setFragment(AutofillLocalCardEditor.class.getName());
             addCardPref.setKey(PREF_ADD_CARD);
             getPreferenceScreen().addPreference(addCardPref);
-            // TODO: crbug.com/392952237 - Update histogram when feature flag is
-            // being cleaned up.
-            RecordHistogram.recordBooleanHistogram(
-                    VIEWED_CARDS_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                    personalDataManager.getCreditCardsForSettings().isEmpty());
         }
 
         // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to

@@ -14,7 +14,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -60,7 +59,6 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerJni;
-import org.chromium.chrome.browser.autofill.settings.CreditCardScannerManager.FieldType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -174,7 +172,6 @@ public class AutofillLocalCardEditorTest {
     @Mock private SettingsNavigation mMockSettingsNavigation;
     @Mock private ChromeBrowserInitializer mMockInitializer;
     @Mock private CreditCardScanner mMockScanner;
-    @Mock private CreditCardScannerManager mMockScannerManager;
     @Mock private ProfileManagerUtilsJni mMockProfileManagerUtilsJni;
     @Mock private ActorKeyedService mMockActorKeyedService;
 
@@ -620,57 +617,6 @@ public class AutofillLocalCardEditorTest {
     }
 
     @Test
-    public void testRecordHistogram_whenNewCreditCardIsAddedWithCvc() {
-        initFragment(null);
-
-        // Mock that there are already 4 cards saved.
-        when(mMockPersonalDataManager.getCreditCardCountForSettings()).thenReturn(4);
-
-        // Expect histogram to record 4 for 4 existing cards.
-        HistogramWatcher saveCardCountHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                AutofillLocalCardEditor.CARD_COUNT_BEFORE_ADDING_NEW_CARD_HISTOGRAM,
-                                4)
-                        .build();
-
-        // Expect histogram to record false for adding a with existing cards.
-        HistogramWatcher saveCardWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                false)
-                        .build();
-
-        mNumberText.setText(NON_AMEX_CARD_NUMBER);
-        mExpirationDate.setText(String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
-        mCvc.setText(/* code= */ "321");
-        mDoneButton.performClick();
-
-        saveCardCountHistogram.assertExpected();
-        saveCardWithoutExistingCardsHistogram.assertExpected();
-    }
-
-    @Test
-    public void testRecordHistogram_whenNewCreditCardIsAddedWithoutExistingCards() {
-        initFragment(null);
-        // Expect histogram to record true for adding a card without existing cards.
-        HistogramWatcher saveCardWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillLocalCardEditor.CARD_ADDED_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                true)
-                        .build();
-
-        mNumberText.setText(NON_AMEX_CARD_NUMBER);
-        mExpirationDate.setText(String.format("12/%s", AutofillTestHelper.nextYear().substring(2)));
-        mCvc.setText(/* code= */ "321");
-        mDoneButton.performClick();
-
-        saveCardWithoutExistingCardsHistogram.assertExpected();
-    }
-
-    @Test
     public void testRecordUserAction_whenNewCreditCardIsAddedWithCvc() {
         initFragment(null);
         String validExpirationYear = AutofillTestHelper.nextYear();
@@ -743,53 +689,6 @@ public class AutofillLocalCardEditorTest {
 
         assertTrue(
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
-    }
-
-    @Test
-    public void testRecordHistogram_whenAddCardFlowStartedWithoutExistingCards() {
-        // Expect histogram to record true for entering the add card flow without existing cards.
-        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillLocalCardEditor
-                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                true)
-                        .build();
-        initFragment(null);
-
-        addCardFlowWithoutExistingCardsHistogram.assertExpected();
-    }
-
-    @Test
-    public void testRecordHistogram_whenAddCardFlowStartedWithExistingCards() {
-        when(mMockPersonalDataManager.getCreditCardsForSettings())
-                .thenReturn(List.of(getSampleLocalCard()));
-        // Expect histogram to record false for entering the card added with existing cards.
-        HistogramWatcher addCardFlowWithoutExistingCardsHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectBooleanRecord(
-                                AutofillLocalCardEditor
-                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM,
-                                false)
-                        .build();
-        initFragment(null);
-
-        addCardFlowWithoutExistingCardsHistogram.assertExpected();
-    }
-
-    @Test
-    public void testRecordHistogram_notRecordedWhenCardEditFlowStarted() {
-        // If the editor is opened for editing an existing card, the 'add card' histograms should
-        // not be recorded.
-        HistogramWatcher addCardFlowHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords(
-                                AutofillLocalCardEditor
-                                        .ADD_CARD_FLOW_WITHOUT_EXISTING_CARDS_HISTOGRAM)
-                        .build();
-        initFragment(getSampleLocalCard());
-
-        addCardFlowHistogram.assertExpected();
     }
 
     @Test
@@ -934,57 +833,6 @@ public class AutofillLocalCardEditorTest {
 
         assertThat(mExpirationDate.getText().toString())
                 .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
-    }
-
-    @Test
-    public void onFinishPage_scannerManagerFormClosedIsCalled() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-
-        mCardEditor.finishPage();
-
-        verify(mMockScannerManager).formClosed();
-    }
-
-    @Test
-    public void nameFieldEdited_scannerManagerFieldEditedIsCalledWithName() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-        mNameText.setText("Okarun");
-
-        verify(mMockScannerManager).fieldEdited(FieldType.NAME);
-    }
-
-    @Test
-    public void numberFieldEdited_scannerManagerFieldEditedIsCalledWithNumber() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-        mNumberText.setText(NON_AMEX_CARD_NUMBER);
-
-        // Field edit may be called more than once because there are other listeners for the number
-        // field that format the number as it's entered into the text field.
-        verify(mMockScannerManager, atLeastOnce()).fieldEdited(FieldType.NUMBER);
-    }
-
-    @Test
-    public void expirationDateFieldEdited_scannerManagerFieldEditedIsCalledWithMonthAndYear() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-
-        mExpirationDate.setText("10/95");
-
-        verify(mMockScannerManager).fieldEdited(FieldType.MONTH);
-        verify(mMockScannerManager).fieldEdited(FieldType.YEAR);
-    }
-
-    @Test
-    public void cvcFieldEdited_scannerManagerFieldEditedIsCalledWithUnknown() {
-        initFragment(null);
-        mCardEditor.setCreditCardScannerManagerForTesting(mMockScannerManager);
-
-        mCvc.setText("101");
-
-        verify(mMockScannerManager).fieldEdited(FieldType.UNKNOWN);
     }
 
     @Test

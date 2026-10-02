@@ -635,12 +635,9 @@ class AutofillMetrics {
   static std::string_view GetDialogTypeStringForLogging(
       AutofillProgressUiType autofill_progress_dialog_type);
 
-  // Should be called when credit card scan is finished. |duration| should be
-  // the time elapsed between launching the credit card scanner and getting back
-  // the result. |completed| should be true if a credit card was scanned, false
-  // if the scan was cancelled.
-  static void LogScanCreditCardCompleted(base::TimeDelta duration,
-                                         bool completed);
+  // Should be called when credit card scan is finished. |completed| should be
+  // true if a credit card was scanned, false if the scan was cancelled.
+  static void LogScanCreditCardCompleted(bool completed);
   static void LogScanCreditCardScreenType(ScanCreditCardScreenType screen_type);
   static void LogScanCreditCardCompletedNewUser(bool is_new_user);
 

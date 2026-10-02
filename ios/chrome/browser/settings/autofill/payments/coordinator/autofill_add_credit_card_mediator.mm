@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/settings/autofill/payments/coordinator/autofill_add_credit_card_mediator.h"
 
-#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -115,10 +114,6 @@
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileAddCreditCard.CreditCardAdded"));
-    base::UmaHistogramCounts100(
-        "Autofill.PaymentMethods.SettingsPage."
-        "StoredCreditCardCountBeforeCardAdded",
-        _personalDataManager->payments_data_manager().GetCreditCards().size());
     if (!creditCard.cvc().empty()) {
       base::RecordAction(
           base::UserMetricsAction("AutofillCreditCardsAddedWithCvc"));

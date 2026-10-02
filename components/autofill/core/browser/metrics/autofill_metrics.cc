@@ -322,11 +322,7 @@ void AutofillMetrics::LogScanCreditCardPromptSelected(
 }
 
 // static
-void AutofillMetrics::LogScanCreditCardCompleted(base::TimeDelta duration,
-                                                 bool completed) {
-  std::string suffix = completed ? "Completed" : "Cancelled";
-  base::UmaHistogramLongTimes("Autofill.ScanCreditCard.Duration_" + suffix,
-                              duration);
+void AutofillMetrics::LogScanCreditCardCompleted(bool completed) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.ScanCreditCard.Completed", completed);
 }
 

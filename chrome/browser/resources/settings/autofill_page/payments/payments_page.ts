@@ -322,18 +322,6 @@ export class SettingsPaymentsPageElement extends
 
   private setCreditCards_(cardList: chrome.autofillPrivate.CreditCardEntry[]) {
     this.creditCards = cardList;
-
-    // To align with Android, only record this histogram when the pref is
-    // enabled.
-    if (this.prefsInitialized_ &&
-        (this.creditCardEnabledSyntheticPref_.value ||
-         PrefService.getInstance()
-             .getPref<boolean>('autofill.credit_card_enabled')
-             .value)) {
-      MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
-          'Autofill.PaymentMethodsSettingsPage.CardsViewedWithoutExistingCards',
-          this.creditCards.length === 0);
-    }
   }
 
   /**
@@ -390,10 +378,6 @@ export class SettingsPaymentsPageElement extends
    */
   protected onAddCreditCardClick_(e: Event) {
     e.preventDefault();
-
-    MetricsBrowserProxyImpl.getInstance().recordBooleanHistogram(
-        'Autofill.PaymentMethodsSettingsPage.AddCardClickedWithoutExistingCards2',
-        this.creditCards.length === 0);
 
     const date = new Date();  // Default to current month/year.
     const expirationMonth = date.getMonth() + 1;  // Months are 0 based.
