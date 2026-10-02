@@ -856,7 +856,7 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtons) {
   }
   ASSERT_TRUE(incognito_label);
   EXPECT_EQ(incognito_label->GetText(),
-            l10n_util::GetStringUTF16(IDS_INCOGNITO));
+            l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO));
   EXPECT_EQ(incognito_button->GetViewAccessibility().GetCachedName(),
             BrowserActions::GetCleanTitleAndTooltipText(
                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
