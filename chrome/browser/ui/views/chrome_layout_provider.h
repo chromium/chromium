@@ -225,6 +225,8 @@ enum ChromeDistanceMetric {
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT,
   // Size of vector icon inside a block-style entry.
   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE,
+  // Line height of the label inside a block-style entry.
+  DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT,
   // Spacing between action items in the Block-style Action App Menu footer.
   DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_SPACING,
   // Spacing between child views in a Block-style Action App Menu footer button.
