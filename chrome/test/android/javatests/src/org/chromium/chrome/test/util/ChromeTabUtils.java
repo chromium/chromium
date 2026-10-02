@@ -25,12 +25,12 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabClosingSource;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
-import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -560,23 +560,11 @@ public class ChromeTabUtils {
 
     /**
      * Closes the current tab through TabModelSelector.
-     *
-     * <p>Returns after the tab has been closed.
+     * <p>
+     * Returns after the tab has been closed.
      */
     public static void closeCurrentTab(
             final Instrumentation instrumentation, final ChromeActivity activity) {
-        closeCurrentTab(instrumentation, activity, TabClosingSource.UNKNOWN);
-    }
-
-    /**
-     * Closes the current tab through TabModelSelector with an explicit closing source.
-     *
-     * <p>Returns after the tab has been closed.
-     */
-    public static void closeCurrentTab(
-            final Instrumentation instrumentation,
-            final ChromeActivity activity,
-            @TabClosingSource int source) {
         closeTabWithAction(
                 instrumentation,
                 activity,
@@ -594,7 +582,6 @@ public class ChromeTabUtils {
                                                 .closeTabs(
                                                         TabClosureParams.closeTab(tab)
                                                                 .allowUndo(false)
-                                                                .tabClosingSource(source)
                                                                 .build(),
                                                         /* allowDialog= */ false);
                                     }
@@ -681,10 +668,7 @@ public class ChromeTabUtils {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabClosureParams params =
-                            TabClosureParams.closeAllTabs()
-                                    .uponExit(false)
-                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
-                                    .build();
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
                     TabModelSelector selector = tabModelSelectorSupplier.get();
                     selector.getModel(false)
                             .getTabRemover()

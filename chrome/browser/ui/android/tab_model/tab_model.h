@@ -214,24 +214,12 @@ class TabModel : public TabListInterface {
 
   // Various ways tabs can be closed.
   // Values must be numbered from 0 and can't have gaps.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tabmodel
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.tab
   enum class TabClosingSource {
     // Tab closing from all other sources.
     UNKNOWN,
-    // Tab closing is from tablet tab strip.
+    // Tab closing from tablet tab strip.
     TABLET_TAB_STRIP,
-    // Tab closing is from keyboard shortcut.
-    KEYBOARD_SHORTCUT,
-    // Tab closing is from vertical tab strip.
-    VERTICAL_TAB_STRIP,
-    // Tab closing is from Open in app.
-    OPEN_IN_APP,
-    // Tab closing is from Quick Delete.
-    QUICK_DELETE,
-    // Tab closing is from grid tab switcher.
-    GRID_TAB_SWITCHER,
-    // Tab closing is from bottom tab group strip.
-    BOTTOM_TAB_GROUP_STRIP,
     // Must be last.
     SIZE
   };
