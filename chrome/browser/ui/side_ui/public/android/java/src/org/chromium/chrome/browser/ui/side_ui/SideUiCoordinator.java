@@ -260,6 +260,20 @@ public interface SideUiCoordinator extends SideUiStateProvider {
                     UpdateReason.ANDROID_CONFIGURATION_CHANGED);
         }
 
+        /**
+         * Returns a {@link UiUpdateRequest} for tests that simulates a top controls height change,
+         * with no originating {@link SideUiContainer}.
+         *
+         * @param suppressAnimations Whether animations should be suppressed during the UI update.
+         */
+        public static UiUpdateRequest getTopControlsHeightChangeRequestForTesting(
+                boolean suppressAnimations) {
+            return new UiUpdateRequest(
+                    /* sideUiId= */ null,
+                    suppressAnimations,
+                    UpdateReason.TOP_CONTROLS_HEIGHT_CHANGED);
+        }
+
         @Override
         public boolean equals(@Nullable Object obj) {
             if (this == obj) return true;
@@ -421,8 +435,8 @@ public interface SideUiCoordinator extends SideUiStateProvider {
         }
 
         /**
-         * Returns all the entries in the SideUiSpecs. Each entry has a mapping from
-         * {@link @AnchorSide} to {@link SideUiSize}.
+         * Returns all the entries in the SideUiSpecs. Each entry has a mapping from {@link
+         * AnchorSide} to {@link SideUiSize}.
          */
         public Set<Map.Entry<@AnchorSide Integer, SideUiSize>> entrySet() {
             return mSideUiSpecs.entrySet();

@@ -37,6 +37,8 @@
 #include "chrome/browser/ui/side_panel/test/android/browser_test_support_jni/SidePanelCoordinatorAndroidBrowserTestSupport_jni.h"
 
 namespace {
+using DeferredEntry = SidePanelDeferredEntryTracker::DeferredEntry;
+using DeferredReason = SidePanelDeferredEntryTracker::DeferredReason;
 using jni_zero::AttachCurrentThread;
 using jni_zero::ScopedJavaGlobalRef;
 using jni_zero::ScopedJavaLocalRef;
@@ -1764,10 +1766,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_TRUE(coordinator_->IsSidePanelEntryShowing(window_entry_key));
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
-                       TestAutoClose_ClosesSidePanel) {
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAutoClose_InsufficientSpace_ClosesSidePanelWithDeferredEntry) {
   // Arrange:
-
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
   std::unique_ptr<SidePanelEntry> entry =
       CreateSidePanelEntry(entry_key, browser_);
@@ -1794,6 +1796,50 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
 
   // Assert: Registry should be reset (consistent with kBackgrounded).
   EXPECT_FALSE(registry->GetActiveEntry().has_value());
+
+  // Assert: Entry should be tracked as deferred due to insufficient space.
+  std::optional<DeferredEntry> deferred_entry =
+      coordinator_->GetDeferredEntryTrackerForTesting()
+          .GetTabOrWindowScopedEntry(tab_list_->GetActiveTab()->GetHandle());
+  ASSERT_TRUE(deferred_entry.has_value());
+  EXPECT_EQ(deferred_entry->key.key, entry_key);
+  EXPECT_EQ(deferred_entry->reason, DeferredReason::kInsufficientSpace);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    TestAutoClose_SufficientSpace_ClosesSidePanelWithoutDeferringEntry) {
+  // Arrange:
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  TestSidePanelEntryObserver entry_observer(entry.get());
+
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+
+  coordinator_->SidePanelUIBase::Show(entry_key,
+                                      SidePanelOpenTrigger::kToolbarButton,
+                                      /*suppress_animations=*/true);
+  WaitUntilOpened(coordinator_);
+  ASSERT_TRUE(
+      coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
+
+  // Act: Simulate the scenario in Java `SideUiContainer#onWillAutoClose` where
+  // the side panel's internal state indicates there is no content to show while
+  // space is still sufficient, and an external UI update triggers auto-close.
+  registry->ResetActiveEntry();
+  coordinator_->SimulateTopControlsHeightChangeForTesting();
+  WaitUntilClosed(coordinator_);
+
+  // Assert:
+  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
+  EXPECT_EQ(SidePanelEntryHideReason::kBackgrounded,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
+  EXPECT_FALSE(
+      coordinator_->GetDeferredEntryTrackerForTesting()
+          .GetTabOrWindowScopedEntry(tab_list_->GetActiveTab()->GetHandle())
+          .has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
@@ -1833,6 +1879,31 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   // Assert:
   EXPECT_TRUE(coordinator_->IsSidePanelShowing());
   EXPECT_TRUE(coordinator_->IsSidePanelEntryShowing(entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       TestAutoRestore_NoPreviousAutoClose_OpensSidePanel) {
+  // Arrange: Register an entry and set it as active in the registry while the
+  // side panel is closed.
+  auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser_);
+  SidePanelEntry* entry_ptr = entry.get();
+  auto* registry = SidePanelRegistry::From(browser_);
+  registry->Register(std::move(entry));
+  registry->SetActiveEntry(entry_ptr);
+  ASSERT_FALSE(coordinator_->IsSidePanelShowing());
+
+  // Act: Simulate an external UI update triggering `onWillAutoRestore` while
+  // there is an active entry in the registry (not deferred for insufficient
+  // space).
+  coordinator_->SimulateTopControlsHeightChangeForTesting();
+  WaitUntilOpened(coordinator_);
+
+  // Assert:
+  EXPECT_TRUE(coordinator_->IsSidePanelShowing());
+  EXPECT_TRUE(coordinator_->IsSidePanelEntryShowing(entry_key));
+  EXPECT_EQ(entry_ptr->last_open_trigger(), SidePanelOpenTrigger::kTabChanged);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2322,13 +2393,14 @@ IN_PROC_BROWSER_TEST_F(
   src_coordinator->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(src_coordinator);
   ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
-  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+  std::optional<DeferredEntry> src_deferred_entry =
       src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
           side_panel_tab_handle);
   ASSERT_TRUE(src_deferred_entry.has_value());
-  EXPECT_EQ(src_deferred_entry->tab_handle, side_panel_tab_handle);
-  EXPECT_EQ(src_deferred_entry->key,
+  EXPECT_EQ(src_deferred_entry->key.tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(src_deferred_entry->key.key,
             SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry));
+  EXPECT_EQ(src_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 
   // Arrange: Create the destination window.
   BrowserWindowInterface* dst_window =
@@ -2387,12 +2459,13 @@ IN_PROC_BROWSER_TEST_F(
   src_coordinator->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(src_coordinator);
   ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
-  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+  std::optional<DeferredEntry> src_deferred_entry =
       src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
           tab_to_reparent_handle);
   ASSERT_TRUE(src_deferred_entry.has_value());
-  EXPECT_FALSE(src_deferred_entry->tab_handle.has_value());
-  EXPECT_EQ(src_deferred_entry->key, side_panel_entry_key);
+  EXPECT_FALSE(src_deferred_entry->key.tab_handle.has_value());
+  EXPECT_EQ(src_deferred_entry->key.key, side_panel_entry_key);
+  EXPECT_EQ(src_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 
   // Arrange: Create the destination window.
   BrowserWindowInterface* dst_window =
@@ -2419,8 +2492,9 @@ IN_PROC_BROWSER_TEST_F(
   src_deferred_entry = src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
       tab_to_reparent_handle);
   EXPECT_TRUE(src_deferred_entry.has_value());
-  EXPECT_FALSE(src_deferred_entry->tab_handle.has_value());
-  EXPECT_EQ(src_deferred_entry->key, side_panel_entry_key);
+  EXPECT_FALSE(src_deferred_entry->key.tab_handle.has_value());
+  EXPECT_EQ(src_deferred_entry->key.key, side_panel_entry_key);
+  EXPECT_EQ(src_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 }
 
 // Setup:
@@ -2472,13 +2546,14 @@ IN_PROC_BROWSER_TEST_F(
             SidePanelEntryId::kTestTabScopedEntry);
   EXPECT_EQ(side_panel_entry_observer.num_on_entry_show_deferred_received_, 1);
 
-  std::optional<SidePanelUIBase::UniqueKey> dst_deferred_entry =
+  std::optional<DeferredEntry> dst_deferred_entry =
       dst_coordinator->GetDeferredEntryTrackerForTesting()
           .GetTabOrWindowScopedEntry(side_panel_tab_handle);
   ASSERT_TRUE(dst_deferred_entry.has_value());
-  EXPECT_EQ(dst_deferred_entry->tab_handle, side_panel_tab_handle);
-  EXPECT_EQ(dst_deferred_entry->key,
+  EXPECT_EQ(dst_deferred_entry->key.tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(dst_deferred_entry->key.key,
             SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry));
+  EXPECT_EQ(dst_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 
   // Act: Simulate auto-restore in the destination window.
   dst_coordinator->SimulateAutoRestoreConditionForTesting();
@@ -2522,13 +2597,14 @@ IN_PROC_BROWSER_TEST_F(
   src_coordinator->SimulateAutoCloseConditionForTesting();
   WaitUntilClosed(src_coordinator);
   ASSERT_FALSE(src_coordinator->IsSidePanelShowing());
-  std::optional<SidePanelUIBase::UniqueKey> src_deferred_entry =
+  std::optional<DeferredEntry> src_deferred_entry =
       src_deferred_entry_tracker.GetTabOrWindowScopedEntry(
           side_panel_tab_handle);
   ASSERT_TRUE(src_deferred_entry.has_value());
-  EXPECT_EQ(src_deferred_entry->tab_handle, side_panel_tab_handle);
-  EXPECT_EQ(src_deferred_entry->key,
+  EXPECT_EQ(src_deferred_entry->key.tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(src_deferred_entry->key.key,
             SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry));
+  EXPECT_EQ(src_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 
   // Arrange: Create the destination window.
   BrowserWindowInterface* dst_window =
@@ -2555,13 +2631,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // Assert: The destination window's SidePanelDeferredEntryTracker should track
   // the SidePanelEntry.
-  std::optional<SidePanelUIBase::UniqueKey> dst_deferred_entry =
+  std::optional<DeferredEntry> dst_deferred_entry =
       dst_coordinator->GetDeferredEntryTrackerForTesting()
           .GetTabOrWindowScopedEntry(side_panel_tab_handle);
   ASSERT_TRUE(dst_deferred_entry.has_value());
-  EXPECT_EQ(dst_deferred_entry->tab_handle, side_panel_tab_handle);
-  EXPECT_EQ(dst_deferred_entry->key,
+  EXPECT_EQ(dst_deferred_entry->key.tab_handle, side_panel_tab_handle);
+  EXPECT_EQ(dst_deferred_entry->key.key,
             SidePanelEntryKey(SidePanelEntryId::kTestTabScopedEntry));
+  EXPECT_EQ(dst_deferred_entry->reason, DeferredReason::kInsufficientSpace);
 
   // Act: Simulate auto-restore in the destination window.
   dst_coordinator->SimulateAutoRestoreConditionForTesting();

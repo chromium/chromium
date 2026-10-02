@@ -126,6 +126,11 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // for documentation.
   void SimulateAutoRestoreConditionForTesting();
 
+  // See the Java
+  // `SidePanelContainerCoordinatorImpl#simulateTopControlsHeightChangeForTesting`
+  // for documentation.
+  void SimulateTopControlsHeightChangeForTesting();
+
   SidePanelState GetStateForTesting();
   int GetContainerWidthForTesting();
   SidePanelEntryWaiter* GetWaiterForTesting() { return waiter(); }
@@ -163,8 +168,15 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   UniqueKey GetCurrentKeyNonNull() const;
   SidePanelEntry* GetEntryForCurrentKeyNonNull() const;
 
-  // Returns the key for the entry that can be shown for the given `tab`.
-  std::optional<UniqueKey> GetKeyToShow(TabAndroid* tab) const;
+  // The key for a `SidePanelEntry` that can be shown.
+  struct ShowableKey {
+    UniqueKey key;
+
+    // Set if `key` comes from `deferred_entry_tracker_`.
+    std::optional<SidePanelDeferredEntryTracker::DeferredReason>
+        deferred_reason;
+  };
+  std::optional<ShowableKey> GetKeyToShow(TabAndroid* tab) const;
 
   jni_zero::ScopedJavaLocalRef<jobject> java_coordinator() const;
 
@@ -258,9 +270,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   // A weak reference to the Java `SidePanelCoordinatorAndroid`, which is
   // the sole owner of the C++ `SidePanelCoordinatorAndroid`.
   jni_zero::ScopedJavaGlobalWeakRef java_coordinator_;
-
-  // Whether there is insufficient space to show the side panel.
-  bool has_insufficient_space_ = false;
 
   SidePanelDeferredEntryTracker deferred_entry_tracker_{browser()};
 

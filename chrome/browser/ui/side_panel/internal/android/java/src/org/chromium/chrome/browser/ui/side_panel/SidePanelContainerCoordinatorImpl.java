@@ -380,6 +380,13 @@ final class SidePanelContainerCoordinatorImpl
                         /* suppressAnimations= */ true));
     }
 
+    /** Simulates a top controls height change that triggers a UI update. */
+    void simulateTopControlsHeightChangeForTesting() {
+        mSideUiCoordinator.updateUi(
+                UiUpdateRequest.getTopControlsHeightChangeRequestForTesting( // IN-TEST
+                        /* suppressAnimations= */ true));
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //              End of SidePanelContainerCoordinator Implementation                          //
     ///////////////////////////////////////////////////////////////////////////////////////////////

@@ -328,6 +328,16 @@ final class SidePanelNativeBridgeSelector {
         mSidePanelContainerCoordinator.simulateAutoRestoreConditionForTesting(); // IN-TEST
     }
 
+    /**
+     * See {@link SidePanelContainerCoordinatorImpl#simulateTopControlsHeightChangeForTesting}.
+     *
+     * <p>The given {@link Profile} must be the current {@link Profile}.
+     */
+    void simulateTopControlsHeightChangeForTesting(Profile profile) {
+        assertCurrentProfile(profile);
+        mSidePanelContainerCoordinator.simulateTopControlsHeightChangeForTesting(); // IN-TEST
+    }
+
     /** See {@link SidePanelContainerCoordinatorImpl#getView}. */
     @Nullable View getView(Profile profile) {
         return profile.equals(mTabModelSelector.getCurrentModel().getProfile())

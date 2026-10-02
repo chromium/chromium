@@ -248,6 +248,12 @@ final class SidePanelCoordinatorAndroidBridge implements ChromeAndroidTaskFeatur
     }
 
     @CalledByNativeForTesting
+    private void simulateTopControlsHeightChangeForTesting(@JniType("Profile*") Profile profile) {
+        log(TAG, "simulateTopControlsHeightChangeForTesting", profile);
+        mNativeBridgeSelector.simulateTopControlsHeightChangeForTesting(profile); // IN-TEST
+    }
+
+    @CalledByNativeForTesting
     private void disableAnimationsForTesting() {
         log(TAG, "disableAnimationsForTesting");
         mDisableAnimationsForTesting = true;

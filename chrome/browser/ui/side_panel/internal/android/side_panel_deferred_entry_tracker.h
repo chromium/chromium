@@ -31,6 +31,18 @@
 // from a feature.
 class SidePanelDeferredEntryTracker {
  public:
+  // Why a `SidePanelEntry` was deferred.
+  enum class DeferredReason {
+    kInactiveTabModel,
+    kInsufficientSpace,
+    kPreparingForUndoTabClosure,
+  };
+
+  struct DeferredEntry {
+    SidePanelUIBase::UniqueKey key;
+    DeferredReason reason;
+  };
+
   explicit SidePanelDeferredEntryTracker(BrowserWindowInterface* browser);
   ~SidePanelDeferredEntryTracker();
 
@@ -41,22 +53,22 @@ class SidePanelDeferredEntryTracker {
   // Adds the active entries from the window-scoped registry and the active
   // tab's tab-scoped registry as deferred entries.
   // This will also reset the active entry in the corresponding registries.
-  void AddActiveEntries();
+  void AddActiveEntries(DeferredReason reason);
 
   // Adds the given entry key as deferred.
-  void AddEntry(const SidePanelUIBase::UniqueKey& key);
+  void AddEntry(const SidePanelUIBase::UniqueKey& key, DeferredReason reason);
 
   // Returns the deferred entry for the given tab if one exists, or
   // std::nullopt if there is none.
   //
   // The entry for a tab can be either tab-scoped or window-scoped, and the
   // priority is: tab-scoped deferred entry > window-scoped deferred entry.
-  std::optional<SidePanelUIBase::UniqueKey> GetTabOrWindowScopedEntry(
+  std::optional<DeferredEntry> GetTabOrWindowScopedEntry(
       const tabs::TabHandle& tab_handle) const;
 
   // Returns the tab-scoped deferred entry for the given tab if one exists, or
   // std::nullopt if there is none.
-  std::optional<SidePanelUIBase::UniqueKey> GetTabScopedEntry(
+  std::optional<DeferredEntry> GetTabScopedEntry(
       const tabs::TabHandle& tab_handle) const;
 
   // Clears the deferred state for the given entry `key`.
@@ -72,11 +84,11 @@ class SidePanelDeferredEntryTracker {
   const raw_ptr<BrowserWindowInterface> browser_;
 
   // Maps a specific tab to the side panel entry that was deferred.
-  absl::flat_hash_map<tabs::TabHandle, SidePanelEntryKey>
+  absl::flat_hash_map<tabs::TabHandle, DeferredEntry>
       tab_scoped_deferred_entries_;
 
   // Tracks the window scoped side panel entry that was deferred.
-  std::optional<SidePanelEntryKey> window_scoped_deferred_entry_;
+  std::optional<DeferredEntry> window_scoped_deferred_entry_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_DEFERRED_ENTRY_TRACKER_H_

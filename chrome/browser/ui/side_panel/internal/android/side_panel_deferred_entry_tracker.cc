@@ -15,7 +15,7 @@ SidePanelDeferredEntryTracker::SidePanelDeferredEntryTracker(
 
 SidePanelDeferredEntryTracker::~SidePanelDeferredEntryTracker() = default;
 
-void SidePanelDeferredEntryTracker::AddActiveEntries() {
+void SidePanelDeferredEntryTracker::AddActiveEntries(DeferredReason reason) {
   auto* tab_list = TabListInterface::From(browser_);
   CHECK(tab_list);
 
@@ -23,7 +23,8 @@ void SidePanelDeferredEntryTracker::AddActiveEntries() {
     if (auto* tab_scoped_registry = SidePanelRegistry::From(tab)) {
       if (auto tab_scoped_entry = tab_scoped_registry->GetActiveEntry()) {
         AddEntry(SidePanelUIBase::UniqueKey{tab->GetHandle(),
-                                            (*tab_scoped_entry)->key()});
+                                            (*tab_scoped_entry)->key()},
+                 reason);
       }
     }
   }
@@ -31,16 +32,18 @@ void SidePanelDeferredEntryTracker::AddActiveEntries() {
   if (auto* window_scoped_registry = SidePanelRegistry::From(browser_)) {
     if (auto window_scoped_entry = window_scoped_registry->GetActiveEntry()) {
       AddEntry(SidePanelUIBase::UniqueKey{std::nullopt,
-                                          (*window_scoped_entry)->key()});
+                                          (*window_scoped_entry)->key()},
+               reason);
     }
   }
 }
 
 void SidePanelDeferredEntryTracker::AddEntry(
-    const SidePanelUIBase::UniqueKey& key) {
+    const SidePanelUIBase::UniqueKey& key,
+    DeferredReason reason) {
   if (key.tab_handle) {
-    tab_scoped_deferred_entries_.insert_or_assign(key.tab_handle.value(),
-                                                  key.key);
+    tab_scoped_deferred_entries_.insert_or_assign(
+        key.tab_handle.value(), DeferredEntry{.key = key, .reason = reason});
     SidePanelRegistry* registry = nullptr;
     if (tabs::TabInterface* tab = key.tab_handle.value().Get()) {
       registry = SidePanelRegistry::From(tab);
@@ -50,7 +53,7 @@ void SidePanelDeferredEntryTracker::AddEntry(
       registry->ResetActiveEntry();
     }
   } else {
-    window_scoped_deferred_entry_ = key.key;
+    window_scoped_deferred_entry_ = DeferredEntry{.key = key, .reason = reason};
     SidePanelRegistry* registry = SidePanelRegistry::From(browser_);
     if (registry && registry->GetActiveEntry() &&
         (*registry->GetActiveEntry())->key() == key.key) {
@@ -59,7 +62,7 @@ void SidePanelDeferredEntryTracker::AddEntry(
   }
 }
 
-std::optional<SidePanelUIBase::UniqueKey>
+std::optional<SidePanelDeferredEntryTracker::DeferredEntry>
 SidePanelDeferredEntryTracker::GetTabOrWindowScopedEntry(
     const tabs::TabHandle& tab_handle) const {
   // 1. Check for tab-scoped deferred entry.
@@ -69,21 +72,18 @@ SidePanelDeferredEntryTracker::GetTabOrWindowScopedEntry(
 
   // 2. Check for window-scoped deferred entry.
   if (window_scoped_deferred_entry_) {
-    SidePanelUIBase::UniqueKey key{std::nullopt,
-                                   *window_scoped_deferred_entry_};
-    return key;
+    return *window_scoped_deferred_entry_;
   }
 
   return std::nullopt;
 }
 
-std::optional<SidePanelUIBase::UniqueKey>
+std::optional<SidePanelDeferredEntryTracker::DeferredEntry>
 SidePanelDeferredEntryTracker::GetTabScopedEntry(
     const tabs::TabHandle& tab_handle) const {
   auto it = tab_scoped_deferred_entries_.find(tab_handle);
   if (it != tab_scoped_deferred_entries_.end()) {
-    SidePanelUIBase::UniqueKey key{tab_handle, it->second};
-    return key;
+    return it->second;
   }
 
   return std::nullopt;
