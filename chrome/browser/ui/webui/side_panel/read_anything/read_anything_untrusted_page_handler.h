@@ -197,8 +197,6 @@ class ReadAnythingUntrustedPageHandler :
 
   bool ack_timed_out_for_testing() const { return ack_timed_out_for_testing_; }
 
-  static const int kMaxWordsDistilled = 25000;
-  static const int kWordsDistilledBuckets = 100;
   static const int kMaxNodesForDistillationQualityEvaluation = 5000;
   static constexpr base::TimeDelta kReadingModeHiddenAckTimeout =
       base::Seconds(2);
@@ -473,9 +471,6 @@ class ReadAnythingUntrustedPageHandler :
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
-
-  ReadAnythingOpenTrigger last_open_trigger_ =
-      ReadAnythingOpenTrigger::kUnknown;
 
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.

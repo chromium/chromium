@@ -57,7 +57,6 @@
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -91,7 +90,6 @@ using ash::language_packs::PackResult;
 using read_anything::mojom::InstallationState;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-using ::base::i18n::GetKnownLanguageTag;
 using read_anything::mojom::ReadAnythingOpenTrigger;
 
 namespace {
@@ -2375,9 +2373,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   EXPECT_CALL(page_, OnReadingModeHidden).Times(0);
 }
 
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerTest,
-    OnDistillationStatus_AfterActivateWithOmnibox_LogsStatus) {
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnDistillationStatus_ForwardsToController) {
   base::HistogramTester histogram_tester;
   handler_ = CreateHandler();
   auto status = read_anything::mojom::DistillationStatus::kSuccess;
@@ -2389,86 +2386,6 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerTest,
-    OnDistillationStatus_AfterActivateWithOtherEntrypoint_DoesNotLogStatus) {
-  base::HistogramTester histogram_tester;
-  handler_ = CreateHandler();
-  auto status = read_anything::mojom::DistillationStatus::kSuccess;
-  int word_count = 3002;
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingContextMenu;
-  Activate(true, &trigger);
-
-  handler_->OnDistillationStatus(status, word_count);
-
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", 0);
-  histogram_tester.ExpectTotalCount(
-      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", 0);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerTest,
-    OnDistillationStatus_AfterAlreadyLogged_DoesNotLogStatusAgain) {
-  base::HistogramTester histogram_tester;
-  handler_ = CreateHandler();
-  auto status1 = read_anything::mojom::DistillationStatus::kSuccess;
-  auto status2 = read_anything::mojom::DistillationStatus::kFailure;
-  int word_count1 = 3003;
-  int word_count2 = 3004;
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
-  Activate(true, &trigger);
-
-  handler_->OnDistillationStatus(status1, word_count1);
-  handler_->OnDistillationStatus(status2, word_count2);
-
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count1, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
-                       OnDistillationStatus_AfterDeactivate_StillLogsStatus) {
-  base::HistogramTester histogram_tester;
-  handler_ = CreateHandler();
-  auto status = read_anything::mojom::DistillationStatus::kSuccess;
-  int word_count = 3005;
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
-  Activate(true, &trigger);
-
-  Activate(false);
-  handler_->OnDistillationStatus(status, word_count);
-
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerTest,
-    OnDistillationStatus_AfterDeactivateAndStatusAlreadyLogged_DoesNotLogStatus) {
-  base::HistogramTester histogram_tester;
-  handler_ = CreateHandler();
-  auto status = read_anything::mojom::DistillationStatus::kSuccess;
-  int word_count = 3006;
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kReadAnythingOmniboxChip;
-  Activate(true, &trigger);
-
-  handler_->OnDistillationStatus(status, word_count);
-
-  Activate(false);
-  handler_->OnDistillationStatus(status, word_count);
-
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
@@ -2584,113 +2501,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   controller = TranslateBubbleController::From(browser());
   ASSERT_NE(controller, nullptr);
   EXPECT_NE(controller->GetTranslateBubble(), nullptr);
-}
-
-class ReadAnythingUntrustedPageHandlerPdfTranslationTest
-    : public ReadAnythingUntrustedPageHandlerTest {
- public:
-  ReadAnythingUntrustedPageHandlerPdfTranslationTest()
-      : ReadAnythingUntrustedPageHandlerTest(
-            {features::kReadAnythingTranslateEntryPoint,
-             translate::kEnableTranslatePdf}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
-    OnDistillationStatus_AfterActivateWithPdfTranslation_TriggersTranslation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigate to a PDF so IsPdfTranslation() returns true.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  handler_ = CreateHandler();
-
-  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
-  Activate(true, &trigger);
-
-  // Set pending translation languages in the tab's language state.
-  ChromeTranslateClient* chrome_translate_client =
-      ChromeTranslateClient::FromWebContents(web_contents);
-  ASSERT_NE(chrome_translate_client, nullptr);
-  translate::LanguageState* language_state =
-      chrome_translate_client->GetTranslateManager()->GetLanguageState();
-  language_state->SetPendingTranslationLanguages(
-      base::i18n::GetKnownLanguageTag("la"),
-      base::i18n::GetKnownLanguageTag("en"));
-
-  // Verify that they are initially set.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
-
-  // Register a side panel agent with the driver so side_panel_agent.is_bound()
-  // is true when MaybeTriggerPendingPdfTranslation is called.
-  mojo::PendingRemote<translate::mojom::TranslateAgent> side_panel_agent;
-  mojo::PendingReceiver<translate::mojom::TranslateAgent>
-      side_panel_agent_receiver =
-          side_panel_agent.InitWithNewPipeAndPassReceiver();
-  translate::LanguageDetectionDetails side_panel_details;
-  side_panel_details.url =
-      GURL("chrome-untrusted://read-anything-side-panel.top-chrome/");
-  side_panel_details.adopted_language = "en";
-  side_panel_details.is_model_reliable = true;
-  chrome_translate_client->translate_driver()->RegisterPage(
-      std::move(side_panel_agent), side_panel_details, true);
-
-  // Call OnDistillationStatus with Success. This should trigger
-  // MaybeTriggerPendingPdfTranslation and clear the pending languages.
-  handler_->OnDistillationStatus(
-      read_anything::mojom::DistillationStatus::kSuccess, 100);
-
-  // Verify that the pending languages are cleared.
-  EXPECT_FALSE(language_state->pending_source_language().has_value());
-  EXPECT_FALSE(language_state->pending_target_language().has_value());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingUntrustedPageHandlerPdfTranslationTest,
-    OnDistillationStatus_AfterActivateWithPdfTranslation_FailedDoesNotTriggerTranslation) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigate to a PDF so IsPdfTranslation() returns true.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  handler_ = CreateHandler();
-
-  // Set the open trigger of ReadAnything/SidePanel to kPdfTranslation
-  SidePanelOpenTrigger trigger = SidePanelOpenTrigger::kPdfTranslation;
-  Activate(true, &trigger);
-
-  // Set pending translation languages in the tab's language state.
-  ChromeTranslateClient* chrome_translate_client =
-      ChromeTranslateClient::FromWebContents(web_contents);
-  ASSERT_NE(chrome_translate_client, nullptr);
-  translate::LanguageState* language_state =
-      chrome_translate_client->GetTranslateManager()->GetLanguageState();
-  language_state->SetPendingTranslationLanguages(
-      base::i18n::GetKnownLanguageTag("la"),
-      base::i18n::GetKnownLanguageTag("en"));
-
-  // Verify that they are initially set.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
-
-  // Call OnDistillationStatus with Failed. This should NOT trigger
-  // MaybeTriggerPendingPdfTranslation.
-  handler_->OnDistillationStatus(
-      read_anything::mojom::DistillationStatus::kFailure, 100);
-
-  // Verify that the pending languages are NOT cleared.
-  EXPECT_TRUE(language_state->pending_source_language().has_value());
-  EXPECT_TRUE(language_state->pending_target_language().has_value());
 }
 
 // Tests the legacy distiller path (kReadAnythingDistillerRefactor disabled).

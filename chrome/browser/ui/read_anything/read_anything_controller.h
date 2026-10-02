@@ -183,6 +183,16 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   void OnDistillationStateChanged(DistillationState new_state);
 
+  // Called when the Reading Mode WebUI reports the result of a distillation
+  // attempt. Coordinates any follow-up work that depends on how Reading Mode
+  // was opened (e.g. triggering a pending PDF translation, or logging omnibox
+  // entry point metrics).
+  void OnDistillationStatus(read_anything::mojom::DistillationStatus status,
+                            int word_count);
+
+  static constexpr int kMaxWordsDistilled = 25000;
+  static constexpr int kWordsDistilledBuckets = 100;
+
   // For testing only. Pauses distillation-related reactions from occurring.
   static void SetFreezeDistillationOnCreationForTesting(bool locked);
 
@@ -314,6 +324,14 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   void ReleaseMainContentsCapture();
 
   DistillationState distillation_state_ = DistillationState::kUndefined;
+
+  // The trigger used the last time Reading Mode was shown. Intentionally not
+  // reset when Reading Mode is hidden, so that a distillation result arriving
+  // after the UI is closed is still attributed to the right entry point.
+  // OnDistillationStatus() resets it to kUnknown after logging the omnibox
+  // distillation metrics, so they are only recorded once per omnibox open.
+  ReadAnythingOpenTrigger last_open_trigger_ =
+      ReadAnythingOpenTrigger::kUnknown;
 
   // The handle returned by web_contents_->IncrementCapturerCount. This is
   // used to release the capture when the ReadAnythingController is destroyed.

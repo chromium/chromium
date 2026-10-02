@@ -42,9 +42,16 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/buildflags.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/translate/content/browser/content_translate_driver.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 ///////////////////////////////////////////////////////////////////////////////
 // WebContentsObserverInstance
@@ -201,6 +208,7 @@ void ReadAnythingController::RemoveImmersiveActivationObserver(
 }
 
 void ReadAnythingController::OnEntryShown(ReadAnythingOpenTrigger trigger) {
+  last_open_trigger_ = trigger;
   observers_.Notify(&Observer::Activate, /*active=*/true, trigger,
                     /*completed_session_duration=*/std::nullopt);
   // At the moment, services are created for normal, guest, and incognito
@@ -772,6 +780,44 @@ void ReadAnythingController::OnDistillationStateChanged(
         feature_engagement::kIPHReadingModeLineFocusFeature);
   }
   distillation_state_ = new_state;
+}
+
+void ReadAnythingController::OnDistillationStatus(
+    read_anything::mojom::DistillationStatus status,
+    int word_count) {
+  content::WebContents* web_contents = tab_->GetContents();
+#if BUILDFLAG(ENABLE_PDF)
+  if (last_open_trigger_ == ReadAnythingOpenTrigger::kPdfTranslation &&
+      status == read_anything::mojom::DistillationStatus::kSuccess) {
+    // Target the tab's WebContents because ContentTranslateDriver is attached
+    // to the outer primary tab WebContents, not the inner GuestView
+    // WebContents hosting the PDF.
+    if (web_contents) {
+      auto* driver =
+          translate::ContentTranslateDriver::FromWebContents(web_contents);
+      if (driver) {
+        driver->MaybeTriggerPendingPdfTranslation();
+      }
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+  if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
+    if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
+      last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;
+      base::UmaHistogramEnumeration(
+          "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
+      base::UmaHistogramCustomCounts(
+          "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count,
+          1, kMaxWordsDistilled, kWordsDistilledBuckets);
+
+      if (web_contents && web_contents->GetPrimaryMainFrame()) {
+        ukm::builders::Accessibility_ReadAnything_OmniboxEntryPointDistillation(
+            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
+            .SetDistillationStatus(static_cast<int>(status))
+            .Record(ukm::UkmRecorder::Get());
+      }
+    }
+  }
 }
 
 void ReadAnythingController::SetDwellTimeForTesting(base::TimeTicks test_time) {

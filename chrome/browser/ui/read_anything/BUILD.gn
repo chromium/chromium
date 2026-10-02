@@ -122,7 +122,10 @@ source_set("impl") {
     "//components/language/core/browser",
     "//components/language/core/common",
     "//components/page_load_metrics/browser",
+    "//components/translate/content/browser",
+    "//pdf:buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 
@@ -145,6 +148,7 @@ source_set("browser_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/search_engines",
+    "//chrome/browser/translate",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:ui_features",
@@ -164,8 +168,14 @@ source_set("browser_tests") {
     "//components/optimization_guide/core",
     "//components/page_load_metrics/browser:test_support",
     "//components/search_engines",
+    "//components/translate/content/browser",
+    "//components/translate/content/common",
+    "//components/translate/core/browser",
+    "//components/translate/core/common",
     "//content/test:test_support",
+    "//pdf:buildflags",
     "//testing/gtest",
+    "//ui/accessibility",
     "//ui/views",
   ]
 }

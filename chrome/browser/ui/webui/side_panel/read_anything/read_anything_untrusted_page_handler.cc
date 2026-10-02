@@ -1437,42 +1437,10 @@ void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
 void ReadAnythingUntrustedPageHandler::OnDistillationStatus(
     read_anything::mojom::DistillationStatus status,
     int word_count) {
-#if BUILDFLAG(ENABLE_PDF)
-  if (last_open_trigger_ == ReadAnythingOpenTrigger::kPdfTranslation &&
-      status == read_anything::mojom::DistillationStatus::kSuccess) {
-    // Target main_observer_'s WebContents because ContentTranslateDriver is
-    // attached to the outer primary tab WebContents, not the inner GuestView
-    // WebContents (pdf_observer_).
-    content::WebContents* web_contents =
-        main_observer_ ? main_observer_->web_contents() : nullptr;
-    if (web_contents) {
-      auto* driver =
-          translate::ContentTranslateDriver::FromWebContents(web_contents);
-      if (driver) {
-        driver->MaybeTriggerPendingPdfTranslation();
-      }
-    }
+  if (!read_anything_controller_) {
+    return;
   }
-#endif  // BUILDFLAG(ENABLE_PDF)
-  if (last_open_trigger_ == ReadAnythingOpenTrigger::kOmniboxChip) {
-    if (status != read_anything::mojom::DistillationStatus::kStillRunning) {
-      last_open_trigger_ = ReadAnythingOpenTrigger::kUnknown;
-      base::UmaHistogramEnumeration(
-          "Accessibility.ReadAnything.DistillationStatusAfterOmnibox", status);
-      base::UmaHistogramCustomCounts(
-          "Accessibility.ReadAnything.WordsDistilledAfterOmnibox", word_count,
-          1, kMaxWordsDistilled, kWordsDistilledBuckets);
-
-      content::WebContents* web_contents =
-          main_observer_ ? main_observer_->web_contents() : nullptr;
-      if (web_contents && web_contents->GetPrimaryMainFrame()) {
-        ukm::builders::Accessibility_ReadAnything_OmniboxEntryPointDistillation(
-            web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId())
-            .SetDistillationStatus(static_cast<int>(status))
-            .Record(ukm::UkmRecorder::Get());
-      }
-    }
-  }
+  read_anything_controller_->OnDistillationStatus(status, word_count);
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
@@ -1491,7 +1459,6 @@ void ReadAnythingUntrustedPageHandler::Activate(
     std::optional<base::TimeDelta> completed_session_duration) {
   active_ = active;
   if (active_) {
-    last_open_trigger_ = open_trigger;
     if (features::IsReadAnythingImprovedUiEnabled() &&
         open_trigger == ReadAnythingOpenTrigger::kListenToThisPageContextMenu) {
       if (listen_to_this_page_playback_state_ !=
