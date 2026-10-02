@@ -1268,13 +1268,20 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
           base::WrapUnique(page_context->release_annotated_page_content()),
           webState);
 
-  __weak __typeof(self) weakSelf = self;
-  SnapshotTabHelper::FromWebState(webState)->RetrieveColorSnapshot(
-      ^(UIImage* image) {
-        [weakSelf didRetrieveColorSnapshot:image
-                                 inputData:std::move(input_data)
-                                identifier:identifier];
-      });
+  SnapshotTabHelper* snapshotTabHelper =
+      SnapshotTabHelper::FromWebState(webState);
+  if (snapshotTabHelper) {
+    __weak __typeof(self) weakSelf = self;
+    snapshotTabHelper->RetrieveColorSnapshot(^(UIImage* image) {
+      [weakSelf didRetrieveColorSnapshot:image
+                               inputData:std::move(input_data)
+                              identifier:identifier];
+    });
+  } else {
+    [self didRetrieveColorSnapshot:nil
+                         inputData:std::move(input_data)
+                        identifier:identifier];
+  }
 }
 
 // Uploads the tab context for the given identifier.

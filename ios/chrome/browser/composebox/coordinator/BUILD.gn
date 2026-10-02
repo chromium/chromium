@@ -361,6 +361,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser",
     "//components/omnibox/browser:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/signin/public/identity_manager",

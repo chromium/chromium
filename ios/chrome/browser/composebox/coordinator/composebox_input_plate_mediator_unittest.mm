@@ -24,6 +24,7 @@
 #import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
@@ -89,6 +90,11 @@
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs;
 - (void)updateAutoAttachedCurrentTab;
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier;
+- (void)handlePageContextResponse:
+            (std::unique_ptr<optimization_guide::proto::PageContext>)
+                page_context
+                         webState:(web::WebState*)webState
+                       identifier:(base::UnguessableToken)identifier;
 @end
 
 // Mock delegate for the mediator.
@@ -1582,6 +1588,70 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   [mediator handleFailedAttachment:user_item_id];
   EXPECT_TRUE(delegate.showedSnackbarForItemUploadDidFail);
   EXPECT_EQ(consumer.items.count, 0U);
+}
+
+// Tests that `handlePageContextResponse:webState:identifier:` uploads the tab
+// context even when the WebState has no `SnapshotTabHelper` attached.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       HandlePageContextResponseWithoutSnapshotTabHelperUploadsTab) {
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  base::UnguessableToken expected_server_token =
+      base::UnguessableToken::Create();
+  ON_CALL(*raw_mock_session, CreateContextToken())
+      .WillByDefault(testing::Return(expected_server_token));
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:std::move(mock_session)
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  base::UnguessableToken identifier = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+
+  EXPECT_CALL(*raw_mock_session,
+              StartTabContextUploadFlow(testing::Eq(expected_server_token),
+                                        testing::NotNull(), testing::_))
+      .Times(1);
+
+  auto page_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  page_context->mutable_annotated_page_content();
+  [mediator handlePageContextResponse:std::move(page_context)
+                             webState:active_web_state
+                           identifier:identifier];
+
+  EXPECT_EQ(consumer.items.firstObject.serverToken, expected_server_token);
 }
 
 }  // namespace
