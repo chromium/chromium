@@ -46,10 +46,11 @@ void MemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
   memory_consumers_.AddObserver(consumer);
 
   // Ensure the added consumer is up to date with the current memory limit
-  // applied to this consumer group.
+  // applied to this consumer group. The consumer's callback is suppressed
+  // while it is being registered.
   if (memory_limit_ != base::MemoryLimit::Default()) {
-    base::MemoryConsumerRegistry::NotifyUpdateMemoryLimitNoNotification(
-        consumer, memory_limit_);
+    base::MemoryConsumerRegistry::NotifyUpdateMemoryLimit(consumer,
+                                                          memory_limit_);
   }
 }
 

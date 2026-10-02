@@ -51,9 +51,10 @@ class MemoryConsumerRegistry;
 // a consumer should wait for a subsequent call to `OnReleaseMemory()` to free
 // any memory that exceeds that limit.
 //
-// IMPORTANT: For synchronous registrations (via `MemoryConsumerRegistration`),
-// `OnUpdateMemoryLimit()` is NOT invoked during registration to avoid
-// re-entrancy during construction. If your implementation maintains state
+// IMPORTANT: `OnUpdateMemoryLimit()` and `OnReleaseMemory()` are NOT invoked
+// while a consumer is being registered, because synchronous registrations (via
+// `MemoryConsumerRegistration`) typically happen during construction. The
+// initial limit is still applied, so if your implementation maintains state
 // derived from the limit, you must query `memory_limit()` in your constructor
 // body to initialize it correctly. (Asynchronous registrations do not have
 // this limitation as they notify asynchronously after construction).
@@ -124,15 +125,17 @@ class BASE_EXPORT MemoryConsumer : public CheckedObserver {
   // comment above for a detailed description of how this limit works.
   void UpdateMemoryLimit(MemoryLimit memory_limit);
 
-  // Similar to UpdateMemoryLimit, but does not invoke OnUpdateMemoryLimit
-  // callback.
-  void UpdateMemoryLimitNoNotification(MemoryLimit memory_limit);
-
   // Instructs this consumer to release memory that is above the current
   // `memory_limit()`.
   void ReleaseMemory();
 
   MemoryLimit memory_limit_ = MemoryLimit::Default();
+
+  // True while this consumer is being added to the MemoryConsumerRegistry.
+  // `OnUpdateMemoryLimit()` and `OnReleaseMemory()` are suppressed during that
+  // time because synchronous registration typically happens during the
+  // consumer's construction. `memory_limit_` is still updated.
+  bool is_registering_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

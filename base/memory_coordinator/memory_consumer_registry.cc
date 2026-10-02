@@ -4,6 +4,7 @@
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/hash/hash.h"
@@ -30,13 +31,6 @@ void MemoryConsumerRegistry::NotifyUpdateMemoryLimit(MemoryConsumer* consumer,
                                                      MemoryLimit memory_limit) {
   CHECK(consumer);
   consumer->UpdateMemoryLimit(memory_limit);
-}
-
-void MemoryConsumerRegistry::NotifyUpdateMemoryLimitNoNotification(
-    MemoryConsumer* consumer,
-    MemoryLimit memory_limit) {
-  CHECK(consumer);
-  consumer->UpdateMemoryLimitNoNotification(memory_limit);
 }
 
 // static
@@ -94,6 +88,12 @@ void MemoryConsumerRegistry::AddMemoryConsumer(std::string_view consumer_name,
   // don't register with active traits once all clients have been migrated.
 
   uint32_t consumer_id = PersistentHash(consumer_name);
+
+  // Suppress the consumer's callbacks for the duration of the registration,
+  // which typically happens during its construction. Implementations may
+  // still push an initial limit to the consumer synchronously; only
+  // `memory_limit()` is updated in that case.
+  AutoReset<bool> is_registering(&consumer->is_registering_, true);
   OnMemoryConsumerAdded(consumer_id, consumer_name, traits, consumer);
 }
 

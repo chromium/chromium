@@ -63,6 +63,49 @@ TEST(MemoryConsumerRegistryTest, AddAndRemoveMemoryConsumer) {
   registry.RemoveMemoryConsumer(kObserverName, &consumer);
 }
 
+TEST(MemoryConsumerRegistryTest, CallbacksSuppressedDuringRegistration) {
+  // A registry that synchronously pushes a limit and a release request to the
+  // consumer while it is being registered.
+  class SyncNotifyingRegistry : public MemoryConsumerRegistry {
+   public:
+    ~SyncNotifyingRegistry() override { NotifyDestruction(); }
+
+    void OnMemoryConsumerAdded(uint32_t consumer_id,
+                               std::string_view consumer_name,
+                               MemoryConsumerTraits traits,
+                               MemoryConsumer* consumer) override {
+      NotifyUpdateMemoryLimit(consumer, MemoryLimit::FromPercent(50));
+      NotifyReleaseMemory(consumer);
+    }
+    void OnMemoryConsumerRemoved(uint32_t consumer_id,
+                                 MemoryConsumer* consumer) override {}
+
+    void UpdateLimit(MemoryConsumer* consumer, MemoryLimit memory_limit) {
+      NotifyUpdateMemoryLimit(consumer, memory_limit);
+    }
+    void Release(MemoryConsumer* consumer) { NotifyReleaseMemory(consumer); }
+  };
+
+  SyncNotifyingRegistry registry;
+  MockMemoryConsumer consumer;
+
+  // No callbacks during registration, but the limit is applied.
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
+  EXPECT_CALL(consumer, OnReleaseMemory()).Times(0);
+  registry.AddMemoryConsumer("observer", kTestTraits, &consumer);
+  EXPECT_EQ(consumer.memory_limit(), MemoryLimit::FromPercent(50));
+  testing::Mock::VerifyAndClearExpectations(&consumer);
+
+  // Callbacks are delivered normally once registration is complete.
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+  registry.UpdateLimit(&consumer, MemoryLimit::FromPercent(25));
+  EXPECT_EQ(consumer.memory_limit(), MemoryLimit::FromPercent(25));
+  EXPECT_CALL(consumer, OnReleaseMemory());
+  registry.Release(&consumer);
+
+  registry.RemoveMemoryConsumer("observer", &consumer);
+}
+
 TEST(MemoryConsumerRegistryTest, MemoryConsumerRegistration) {
   MockMemoryConsumer consumer;
 

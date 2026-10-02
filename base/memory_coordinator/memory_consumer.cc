@@ -27,18 +27,19 @@ bool PassiveMemoryConsumer::IsPassive() const {
 
 void MemoryConsumer::ReleaseMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_registering_) {
+    return;
+  }
   OnReleaseMemory();
 }
 
 void MemoryConsumer::UpdateMemoryLimit(MemoryLimit memory_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  UpdateMemoryLimitNoNotification(memory_limit);
-  OnUpdateMemoryLimit();
-}
-
-void MemoryConsumer::UpdateMemoryLimitNoNotification(MemoryLimit memory_limit) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   memory_limit_ = memory_limit;
+  if (is_registering_) {
+    return;
+  }
+  OnUpdateMemoryLimit();
 }
 
 // MemoryConsumerRegistration ---------------------------------------
