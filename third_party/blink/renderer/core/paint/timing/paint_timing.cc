@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
-#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
@@ -656,7 +655,6 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(fmp_detector_);
   visitor->Trace(element_timing_);
-  visitor->Trace(text_element_timing_);
   visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
   visitor->Trace(clients_);
@@ -672,7 +670,6 @@ PaintTiming::PaintTiming(Document& document)
   // detach). Typically `PaintTiming` will be created before this, but this
   // isn't guaranteed since it's created lazily.
   if (LocalDOMWindow* window = document.domWindow()) {
-    text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
     element_timing_ = MakeGarbageCollected<ElementTiming>(
         *window, paint_timing_detector_->GetImagePaintTimingDetector());
     largest_contentful_paint_manager_ =
@@ -681,7 +678,6 @@ PaintTiming::PaintTiming(Document& document)
     // Note: these are added in the order that the spec calls out to the various
     // other specs in https://w3c.github.io/paint-timing/#mark-paint-timing.
     AddClient(largest_contentful_paint_manager_);
-    AddClient(text_element_timing_);
     AddClient(element_timing_);
   }
 }

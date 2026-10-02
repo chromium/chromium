@@ -178,10 +178,14 @@ void ContainerTiming::OnElementPainted(
   Element* container_root =
       paint_attribution_tracker_->GetContainerRootFor(element);
   if (!container_root) {
-    // The element may also have been detached since paint, leaving no reachable
-    // container root. Don't report it.
-    // TODO(crbug.com/535107494): attributing at paint time would let this
-    // become a CHECK.
+    // ElementTiming sends elements that contribute to either element timing or
+    // container timing, so `container_root` will be null if the `element`
+    // doesn't contribute to container timing. The element may have also been
+    // detached since paint, leaving no reachable container root.
+    //
+    // TODO(crbug.com/535107494, crbug.com/559075199): decoupling
+    // ContainerTiming from ElementTiming and attributing at paint time would
+    // let this become a CHECK.
     return;
   }
 

@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_paint_attribution_tracker.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing_test_utils.h"
-#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -749,10 +749,10 @@ TEST_F(ContainerTimingTest, TextGateUsesTracker) {
   ASSERT_TRUE(outside);
   ASSERT_TRUE(et);
 
-  EXPECT_TRUE(TextElementTiming::NeededForTiming(*inside));
-  EXPECT_FALSE(TextElementTiming::NeededForTiming(*outside));
+  EXPECT_TRUE(ElementTiming::IsNeededForElementOrContainerTiming(inside));
+  EXPECT_FALSE(ElementTiming::IsNeededForElementOrContainerTiming(outside));
   // elementtiming registration is independent of container timing.
-  EXPECT_TRUE(TextElementTiming::NeededForTiming(*et));
+  EXPECT_TRUE(ElementTiming::IsNeededForElementOrContainerTiming(et));
 }
 
 // lastPaintedElement reports the largest element painted, not whichever

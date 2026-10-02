@@ -11,11 +11,11 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_utils.h"
-#include "third_party/blink/renderer/core/paint/timing/text_element_timing.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -133,8 +133,8 @@ TextRecord* TextPaintTimingDetector::CreateTextRecord(
   } else {
     return MakeGarbageCollected<TextRecord>(
         node, effective_visual_size,
-        TextElementTiming::ComputeIntersectionRect(object, frame_visual_rect,
-                                                   property_tree_state),
+        ElementTiming::ComputeIntersectionRect(
+            object.GetFrame(), frame_visual_rect, property_tree_state),
         frame_visual_rect, root_visual_rect);
   }
 }

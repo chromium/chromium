@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
@@ -37,7 +38,7 @@ class ElementTimingTest : public PaintTimingTestBase,
                           public PaintTestConfigurations {
  protected:
   // Returns true if the LayoutObject/Image with the given hash was recorded,
-  // meaning it was processed. Note that this does not mean it an entry will be
+  // meaning it was processed. Note that this does not mean an entry will be
   // emitted for it.
   bool IsRecorded(const char* id, const MediaTiming* timing) {
     return IsRecorded(GetLayoutObjectById(id), timing);
@@ -66,7 +67,7 @@ class ElementTimingTest : public PaintTimingTestBase,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ElementTimingTest);
 
-TEST_P(ElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
+TEST_P(ElementTimingTest, TestIsRegisteredForElementTiming) {
   SetMainFrameBodyContent(R"HTML(
     <img id="missing-attribute" style='width: 100px; height: 100px;'/>
     <img id="unset-attribute" elementtiming
@@ -78,31 +79,27 @@ TEST_P(ElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
   )HTML");
   SimulateRenderingAndPresentationTime();
 
-  LayoutObject* without_attribute = GetLayoutObjectById("missing-attribute");
-  bool actual =
-      ElementTiming::IsExplicitlyRegisteredForElementTiming(*without_attribute);
+  Element* without_attribute = GetElementById("missing-attribute");
+  bool actual = ElementTiming::IsRegisteredForElementTiming(without_attribute);
   EXPECT_FALSE(actual) << "Nodes without an 'elementtiming' attribute should "
-                          "not be explicitly registered.";
+                          "not be registered.";
 
-  LayoutObject* with_undefined_attribute =
-      GetLayoutObjectById("unset-attribute");
-  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
-      *with_undefined_attribute);
+  Element* with_undefined_attribute = GetElementById("unset-attribute");
+  actual =
+      ElementTiming::IsRegisteredForElementTiming(with_undefined_attribute);
   EXPECT_TRUE(actual) << "Nodes with undefined 'elementtiming' attribute "
-                         "should be explicitly registered.";
+                         "should be registered.";
 
-  LayoutObject* with_empty_attribute = GetLayoutObjectById("empty-attribute");
-  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
-      *with_empty_attribute);
+  Element* with_empty_attribute = GetElementById("empty-attribute");
+  actual = ElementTiming::IsRegisteredForElementTiming(with_empty_attribute);
   EXPECT_TRUE(actual) << "Nodes with an empty 'elementtiming' attribute "
-                         "should be explicitly registered.";
+                         "should be registered.";
 
-  LayoutObject* with_explicit_element_timing =
-      GetLayoutObjectById("valid-attribute");
-  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
-      *with_explicit_element_timing);
+  Element* with_explicit_element_timing = GetElementById("valid-attribute");
+  actual =
+      ElementTiming::IsRegisteredForElementTiming(with_explicit_element_timing);
   EXPECT_TRUE(actual) << "Nodes with a non-empty 'elementtiming' attribute "
-                         "should be explicitly registered.";
+                         "should be registered.";
 }
 
 TEST_P(ElementTimingTest, IgnoresUnmarkedElement) {
@@ -166,7 +163,7 @@ TEST_P(ElementTimingTest, ImageRemoved) {
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
-  // `image` should no longer be part of `images_notified_` since it will
+  // `image` should no longer be part of `recorded_images_` since it will
   // be destroyed.
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
@@ -184,7 +181,7 @@ TEST_P(ElementTimingTest, SVGImageRemoved) {
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
   GetDocument().getElementById(AtomicString("target"))->remove();
-  // `image` should no longer be part of `images_notified_` since it will be
+  // `image` should no longer be part of `recorded_images_` since it will be
   // destroyed.
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
@@ -299,6 +296,31 @@ TEST_P(ElementTimingTest, VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
   test::RunPendingTasks();
   SimulateRenderingAndPresentationTime();
   EXPECT_EQ(RecordedImagesSize(), 0u);
+}
+
+TEST_P(ElementTimingTest, TextElementTimingBasic) {
+  SetMainFrameBodyContent(R"HTML(
+    <p id="target" elementtiming="paragraph">Sample paragraph text</p>
+    <p id="unmarked">Unmarked paragraph text</p>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
+}
+
+TEST_P(ElementTimingTest, TextElementTimingInShadowTreeIgnored) {
+  SetMainFrameBodyContent(R"HTML(
+    <div id="host"></div>
+  )HTML");
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <p id="shadow-target" elementtiming="shadow-para">Shadow paragraph</p>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
 }  // namespace blink

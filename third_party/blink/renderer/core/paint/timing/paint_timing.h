@@ -38,7 +38,6 @@ class ImageRecord;
 class LocalFrame;
 class PaintTimingClient;
 class PaintTimingDetector;
-class TextElementTiming;
 class TextRecord;
 
 CORE_EXPORT BASE_DECLARE_FEATURE(kPaintTimingWaitForPresentationFrameIndex);
@@ -416,7 +415,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   Member<PaintTimingDetector> paint_timing_detector_;
   Member<ElementTiming> element_timing_;
-  Member<TextElementTiming> text_element_timing_;
   Member<LargestContentfulPaintManager> largest_contentful_paint_manager_;
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
   // The callback ID for requestAnimationFrame to record its time after the page
