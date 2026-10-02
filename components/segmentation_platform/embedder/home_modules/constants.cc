@@ -40,6 +40,10 @@ TipIdentifier TipIdentifierForOutputLabel(std::string_view label) {
     return TipIdentifier::kEnhancedSafeBrowsing;
   }
 
+  if (label == kNTPThemeEphemeralModule) {
+    return TipIdentifier::kNTPTheme;
+  }
+
   return TipIdentifier::kUnknown;
 }
 
@@ -60,6 +64,8 @@ std::optional<std::string_view> OutputLabelForTipIdentifier(
       return kAutofillPasswordsEphemeralModule;
     case TipIdentifier::kEnhancedSafeBrowsing:
       return kEnhancedSafeBrowsingEphemeralModule;
+    case TipIdentifier::kNTPTheme:
+      return kNTPThemeEphemeralModule;
     case TipIdentifier::kUnknown:
       return std::nullopt;
   }

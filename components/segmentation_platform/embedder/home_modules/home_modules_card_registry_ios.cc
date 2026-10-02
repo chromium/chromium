@@ -39,6 +39,9 @@ void AddCardForTip(TipIdentifier tip,
   switch (tip) {
     case TipIdentifier::kUnknown:
       return;  // Do nothing for unknown tips
+    case TipIdentifier::kNTPTheme:
+      // TODO(crbug.com/566958720): push back the NTP theme ephemeral module.
+      return;
     case TipIdentifier::kLensSearch:
     case TipIdentifier::kLensShop:
     case TipIdentifier::kLensTranslate: {

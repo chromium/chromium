@@ -801,6 +801,9 @@ using segmentation_platform::TipIdentifier;
           showPasswordsTipForIdentifier:_tipsMediator.config.identifier];
       break;
     }
+    case TipIdentifier::kNTPTheme:
+      // TODO(crbug.com/566958720): Open the NTP theme tips destination.
+      NOTREACHED();
   }
 
   [self.NTPActionsDelegate tipsOpened];

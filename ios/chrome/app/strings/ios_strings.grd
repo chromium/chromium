@@ -5093,6 +5093,12 @@ You can restart anytime.
       <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_DESCRIPTION" desc="The description of the use Lens for translation tip for the Magic Stack.">
         Translate text in your photos or your surroundings with your camera.
       </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_DESCRIPTION" desc="The description of the NTP theme tip for the Magic Stack.">
+        Choose from themes, colors or upload your own photo.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_NTP_THEME_TITLE" desc="The title of the NTP theme tip for the Magic Stack.">
+        Customize Your New Tab Page
+      </message>
       <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_DESCRIPTION" desc="The description of the Safe Browsing tip for the Magic Stack.">
         Add an extra layer of protection against online threats.
       </message>
