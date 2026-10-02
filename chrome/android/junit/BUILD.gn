@@ -1642,6 +1642,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/webapps/WebappDirectoryManagerTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappFilterTouchUnitTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappIntentDataProviderTest.java",
+      "src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetricsTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappLauncherActivityTest.java",
       "src/org/chromium/chrome/browser/webapps/WebappRegistryTest.java",
     ]

@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import android.app.Activity;
-import android.os.Build;
+import static org.junit.Assert.assertEquals;
 
-import androidx.test.annotation.UiThreadTest;
-import androidx.test.filters.SmallTest;
+import android.app.Activity;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -20,14 +17,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics.LaunchCause;
@@ -36,36 +29,26 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.components.webapps.WebApkDistributor;
 
 /** Tests basic functionality of WebappLaunchCauseMetrics. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class WebappLaunchCauseMetricsTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Activity mActivity;
     @Mock private WebappInfo mWebappInfo;
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
     @Before
     public void setUp() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
-                });
+        ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
     }
 
     @After
     public void tearDown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ApplicationStatus.resetActivitiesForInstrumentationTests();
-                    LaunchCauseMetrics.resetForTests();
-                });
+        ApplicationStatus.resetActivitiesForInstrumentationTests();
+        LaunchCauseMetrics.resetForTests();
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
-    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.R, message = "crbug.com/40816321")
     public void testHomescreenLaunch() throws Throwable {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -80,7 +63,7 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.onReceivedIntent();
         int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
-        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
+        assertEquals(LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -92,7 +75,7 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.onReceivedIntent();
         launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
-        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, launchCause);
+        assertEquals(LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, launchCause);
 
         LaunchCauseMetrics.resetForTests();
 
@@ -104,12 +87,10 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.onReceivedIntent();
         launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
-        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
+        assertEquals(LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, launchCause);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testViewIntentLaunch() throws Throwable {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -123,12 +104,10 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.onReceivedIntent();
         int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
-        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
+        assertEquals(LaunchCause.EXTERNAL_VIEW_INTENT, launchCause);
     }
 
     @Test
-    @SmallTest
-    @UiThreadTest
     public void testNullWebAppInfo() throws Throwable {
         var histogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -139,6 +118,6 @@ public final class WebappLaunchCauseMetricsTest {
         metrics.onReceivedIntent();
         int launchCause = metrics.recordLaunchCause();
         histogram.assertExpected();
-        Assert.assertEquals(LaunchCauseMetrics.LaunchCause.OTHER, launchCause);
+        assertEquals(LaunchCause.OTHER, launchCause);
     }
 }

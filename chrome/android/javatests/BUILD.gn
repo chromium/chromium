@@ -2151,7 +2151,6 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/tabmodel/RestoreMigrateTest.java",
     "src/org/chromium/chrome/browser/toolbar/HomeButtonTest.java",
     "src/org/chromium/chrome/browser/toolbar/ToolbarSecurityIconTest.java",
-    "src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetricsTest.java",
   ]
 
   deps = [
