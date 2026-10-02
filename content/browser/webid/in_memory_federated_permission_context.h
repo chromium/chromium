@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
-#define CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
+#ifndef CONTENT_BROWSER_WEBID_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
+#define CONTENT_BROWSER_WEBID_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
 
 #include <map>
 #include <set>
@@ -32,6 +32,8 @@ struct LoginStatusOptions;
 
 namespace content {
 class WebContents;
+
+namespace webid {
 
 // This class implements the various FedCM delegates. It is used to store
 // permission and login state in memory as a default implementation.
@@ -155,6 +157,7 @@ class InMemoryFederatedPermissionContext
   std::set<net::SchemefulSite> require_user_mediation_sites_;
 };
 
+}  // namespace webid
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_
+#endif  // CONTENT_BROWSER_WEBID_IN_MEMORY_FEDERATED_PERMISSION_CONTEXT_H_

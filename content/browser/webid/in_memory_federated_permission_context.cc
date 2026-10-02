@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/in_memory_federated_permission_context.h"
+#include "content/browser/webid/in_memory_federated_permission_context.h"
 
 #include <algorithm>
 
@@ -19,6 +19,7 @@
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 
 namespace content {
+namespace webid {
 
 InMemoryFederatedPermissionContext::InMemoryFederatedPermissionContext() =
     default;
@@ -329,4 +330,5 @@ void InMemoryFederatedPermissionContext::ResetForTesting() {
   require_user_mediation_sites_.clear();
 }
 
+}  // namespace webid
 }  // namespace content

@@ -25,11 +25,11 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/identity_registry.h"
+#include "content/browser/webid/in_memory_federated_permission_context.h"
 #include "content/browser/webid/request.h"
 #include "content/browser/webid/request_service.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
@@ -438,9 +438,9 @@ class WebIdBrowserTest : public ContentBrowserTest {
 
 class WebIdIdpSigninStatusBrowserTest : public WebIdBrowserTest {
  public:
-  InMemoryFederatedPermissionContext* sharing_context() {
+  webid::InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<InMemoryFederatedPermissionContext*>(
+    return static_cast<webid::InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -453,9 +453,9 @@ class WebIdLightweightFedcmBrowserTest : public WebIdBrowserTest {
     scoped_feature_list_.InitWithFeatures(features, {});
   }
 
-  InMemoryFederatedPermissionContext* sharing_context() {
+  webid::InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<InMemoryFederatedPermissionContext*>(
+    return static_cast<webid::InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -468,9 +468,9 @@ class WebIdIdpSigninStatusForFetchKeepAliveBrowserTest
         {blink::features::kKeepAliveInBrowserMigration}, {});
   }
 
-  InMemoryFederatedPermissionContext* sharing_context() {
+  webid::InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<InMemoryFederatedPermissionContext*>(
+    return static_cast<webid::InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 };
@@ -487,9 +487,9 @@ class WebIdIdPRegistryBrowserTest : public WebIdBrowserTest {
     scoped_feature_list_.InitWithFeatures(features, {});
   }
 
-  InMemoryFederatedPermissionContext* sharing_context() {
+  webid::InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<InMemoryFederatedPermissionContext*>(
+    return static_cast<webid::InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 
@@ -1174,9 +1174,9 @@ class WebIdDigitalCredentialsBrowserTest : public WebIdBrowserTest {
     scoped_feature_list_.InitWithFeatures(features, {});
   }
 
-  InMemoryFederatedPermissionContext* sharing_context() {
+  webid::InMemoryFederatedPermissionContext* sharing_context() {
     BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<InMemoryFederatedPermissionContext*>(
+    return static_cast<webid::InMemoryFederatedPermissionContext*>(
         context->GetFederatedIdentityPermissionContext());
   }
 
@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
   // The client id `client_id_1` is on the `approved_clients` list defined in
   // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from
   // the check, auto re-authn can be triggered and a token can be returned.
-  static_cast<InMemoryFederatedPermissionContext*>(
+  static_cast<webid::InMemoryFederatedPermissionContext*>(
       shell()
           ->web_contents()
           ->GetBrowserContext()

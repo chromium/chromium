@@ -20,7 +20,6 @@
 #include "content/browser/browsing_data/browsing_data_remover_impl.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/renderer_host/initiator_navigation_state_impl.h"
@@ -31,6 +30,7 @@
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
+#include "content/browser/webid/in_memory_federated_permission_context.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -360,11 +360,11 @@ PrefetchService* BrowserContextImpl::GetPrefetchService() {
   return prefetch_service_.get();
 }
 
-InMemoryFederatedPermissionContext*
+webid::InMemoryFederatedPermissionContext*
 BrowserContextImpl::GetFederatedPermissionContext() {
   if (!federated_permission_context_) {
     federated_permission_context_ =
-        std::make_unique<InMemoryFederatedPermissionContext>();
+        std::make_unique<webid::InMemoryFederatedPermissionContext>();
   }
   return federated_permission_context_.get();
 }

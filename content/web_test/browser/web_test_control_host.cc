@@ -46,13 +46,13 @@
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "content/browser/in_memory_federated_permission_context.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webid/in_memory_federated_permission_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
@@ -750,7 +750,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
-  static_cast<InMemoryFederatedPermissionContext*>(
+  static_cast<webid::InMemoryFederatedPermissionContext*>(
       browser_context->GetFederatedIdentityPermissionContext())
       ->ResetForTesting();
 
