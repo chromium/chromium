@@ -1238,7 +1238,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1261,7 +1261,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1287,7 +1287,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1310,7 +1310,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1326,6 +1326,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1345,8 +1346,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "0",
-            "os": "Ubuntu-22.04",
+            "gce": "1",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1361,6 +1362,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1380,8 +1382,8 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "gce": "0",
-            "os": "Ubuntu-22.04",
+            "gce": "1",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1396,6 +1398,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1417,7 +1420,7 @@
             "cpu": "x86-64",
             "gce": "0",
             "gpu": "10de|1002|8086:4680|8086:a780|8086:a7a0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1432,6 +1435,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1453,7 +1457,7 @@
             "cpu": "x86-64",
             "gce": "0",
             "gpu": "10de|1002",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1468,6 +1472,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1488,7 +1493,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1503,6 +1508,7 @@
           "--release",
           "--timeout-multiplier=5",
           "--child-processes=1",
+          "--additional-driver-flag=--no-sandbox",
           "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
         ],
         "merge": {
@@ -1524,7 +1530,7 @@
             "cpu": "x86-64",
             "gce": "0",
             "gpu": "10de|1002",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1552,7 +1558,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1579,7 +1585,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1606,7 +1612,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1633,7 +1639,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "0",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1664,7 +1670,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1691,7 +1697,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gce": "1",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1721,7 +1727,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1752,7 +1758,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1779,7 +1785,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "gpu": "10de:2184",
-            "os": "Ubuntu-22.04",
+            "os": "Ubuntu",
             "pool": "chrome.tests.intelligence"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

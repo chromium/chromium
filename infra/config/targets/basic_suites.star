@@ -1480,6 +1480,9 @@ _CHROME_AI_WPT_TEST_CONFIG = targets.legacy_test_config(
         "--timeout-multiplier=5",
         "--child-processes=1",
     ],
+    linux_args = [
+        "--additional-driver-flag=--no-sandbox",
+    ],
     mac_args = [
         "--driver-name",
         "Google Chrome",
@@ -1502,6 +1505,9 @@ _CHROME_AI_WPT_GPU_HIGH_TIER_TEST_CONFIG = targets.legacy_test_config(
         "--release",
         "--timeout-multiplier=5",
         "--child-processes=1",
+    ],
+    linux_args = [
+        "--additional-driver-flag=--no-sandbox",
     ],
     # Lower minimum VRAM requirement to 5000 MB for Windows AI WPT runner bots
     # equipped with NVIDIA GeForce GTX 1660 GPUs (which report 5981 MB VRAM,

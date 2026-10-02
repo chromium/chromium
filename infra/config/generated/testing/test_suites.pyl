@@ -63,6 +63,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -96,6 +99,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -131,6 +137,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -161,6 +170,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -197,6 +209,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -230,6 +245,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -269,6 +287,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -307,6 +328,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -340,6 +364,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -375,6 +402,9 @@
           '--timeout-multiplier=5',
           '--child-processes=1',
         ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
+        ],
         'mac_args': [
           '--driver-name',
           'Google Chrome',
@@ -405,6 +435,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -440,6 +473,9 @@
           '--release',
           '--timeout-multiplier=5',
           '--child-processes=1',
+        ],
+        'linux_args': [
+          '--additional-driver-flag=--no-sandbox',
         ],
         'mac_args': [
           '--driver-name',
@@ -3511,14 +3547,14 @@
       'chrome_ai_wpt_tests_manifest_cpu_gemma4_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'non-gce',
+          'gce',
           'x64_ai_wpt_shards',
         ],
       },
       'chrome_ai_wpt_tests_manifest_cpu_suite': {
         'mixins': [
           'chrome-intelligence-swarming-pool',
-          'non-gce',
+          'gce',
           'x64_ai_wpt_shards',
         ],
       },
