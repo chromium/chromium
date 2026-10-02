@@ -4,11 +4,9 @@
 
 #include "components/commerce/core/commerce_feature_list.h"
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "components/commerce/core/commerce_heuristics_data.h"
-#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -44,7 +42,6 @@ class CommerceFeatureListTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList features_;
-  base::HistogramTester histogram_tester_;
 };
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -62,14 +59,6 @@ TEST_F(CommerceFeatureListTest, TestRulePartnerMerchant_FromFeatureParam) {
       GURL(kCouponFeatureParamPartnerMerchantURL)));
   ASSERT_FALSE(commerce::IsCouponDiscountPartnerMerchant(
       GURL(kRuleFeatureParamPartnerMerchantURL)));
-  histogram_tester_.ExpectBucketCount(
-      "Commerce.Heuristics.PartnerMerchantPatternSource",
-      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
-          FROM_FEATURE_PARAMETER,
-      2);
-  histogram_tester_.ExpectBucketCount(
-      "Commerce.Heuristics.PartnerMerchantPatternSource",
-      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 0);
 }
 
 TEST_F(CommerceFeatureListTest, TestRulePartnerMerchant_FromComponent) {
@@ -85,14 +74,6 @@ TEST_F(CommerceFeatureListTest, TestRulePartnerMerchant_FromComponent) {
       GURL(kCouponComponentPartnerMerchantURL)));
   ASSERT_FALSE(commerce::IsCouponDiscountPartnerMerchant(
       GURL(kRuleComponentPartnerMerchantURL)));
-  histogram_tester_.ExpectBucketCount(
-      "Commerce.Heuristics.PartnerMerchantPatternSource",
-      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
-          FROM_FEATURE_PARAMETER,
-      0);
-  histogram_tester_.ExpectBucketCount(
-      "Commerce.Heuristics.PartnerMerchantPatternSource",
-      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 2);
 }
 
 TEST_F(CommerceFeatureListTest, TestCouponPartnerMerchant_Priority) {

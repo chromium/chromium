@@ -51,14 +51,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Is Transaction"/>
 </enum>
 
-<enum name="CommerceHeuristicsDataSource">
-  <summary>Sources of commerce heuristics data.</summary>
-  <int value="0" label="FromComponent"/>
-  <int value="1" label="FromResource"/>
-  <int value="2" label="FromFeatureParameter"/>
-  <int value="3" label="Missing"/>
-</enum>
-
 <enum name="CommerceIconInteractionState">
   <int value="0" label="Clicked (not expanded)"/>
   <int value="1" label="Clicked (after expansion)"/>
