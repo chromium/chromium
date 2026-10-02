@@ -29,13 +29,16 @@ class CommerceTabHelperTest : public content::RenderViewHostTestHarness {
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
-    tab_helper_ = base::WrapUnique(new CommerceTabHelper(
+    tab_helper_ = std::make_unique<CommerceTabHelper>(
         web_contents(), browser_context()->IsOffTheRecord(), &shopping_service_,
-        0));
+        0);
     NavigateAndCommit(GURL(kLastMainFrameUrl));
   }
 
-  void TearDown() override { content::RenderViewHostTestHarness::TearDown(); }
+  void TearDown() override {
+    tab_helper_.reset();
+    content::RenderViewHostTestHarness::TearDown();
+  }
 
  protected:
   std::unique_ptr<CommerceTabHelper> tab_helper_;

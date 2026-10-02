@@ -207,8 +207,10 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
+#include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -449,6 +451,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   page_context_eligibility_helper_ =
       GetUserDataFactory().CreateInstance<tabs::PageContextEligibilityHelper>(
           tab, tab);
+
+  commerce_tab_helper_ = std::make_unique<commerce::CommerceTabHelper>(
+      tab.GetContents(), profile->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
 
   // Features that are only enabled for normal browser windows. By default most
   // features should be instantiated in this block.
@@ -1570,6 +1577,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
               *tab, *tab, new_contents, optimization_guide_decider);
     }
   }
+
+  commerce_tab_helper_.reset();
+  commerce_tab_helper_ = std::make_unique<commerce::CommerceTabHelper>(
+      new_contents, profile->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
 }
 
 customize_chrome::SidePanelController*

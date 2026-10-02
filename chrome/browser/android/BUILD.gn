@@ -162,6 +162,7 @@ source_set("tabs_impl") {
     "//chrome/browser:chained_back_navigation_tracker",
     "//chrome/browser/actor",
     "//chrome/browser/actor/android",
+    "//chrome/browser/commerce",
     "//chrome/browser/complex_tasks",
     "//chrome/browser/content_settings",
     "//chrome/browser/contextual_search",
@@ -206,12 +207,14 @@ source_set("tabs_impl") {
     "//chrome/browser/ui/tabs:page_context_eligibility_helper",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/v8_compile_hints",
+    "//chrome/common",
 
     # TODO(crbug.com/489548570): Remove "side_panel/internal/android:dev"
     # from release builds. We need it in tests.
     "//chrome/browser/ui/side_panel/internal/android:dev",
     "//components/autofill/content/browser",
     "//components/client_hints/browser",
+    "//components/commerce/content/browser",
     "//components/content_capture/common",
     "//components/download/content/factory",
     "//components/download/content/public",

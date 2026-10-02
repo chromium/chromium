@@ -16,6 +16,7 @@
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
@@ -90,9 +91,11 @@
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/actor/core/actor_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
+#include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/content_capture/common/content_capture_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
@@ -477,6 +480,11 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
               return tab_android && tab_android->IsCustomTab();
             }));
   }
+
+  commerce_tab_helper_ = std::make_unique<commerce::CommerceTabHelper>(
+      web_contents, profile->IsOffTheRecord(),
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile),
+      ISOLATED_WORLD_ID_CHROME_INTERNAL);
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

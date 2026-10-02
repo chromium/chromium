@@ -11,7 +11,6 @@
 #include "components/commerce/content/browser/web_contents_wrapper.h"
 #include "components/commerce/core/web_wrapper.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 class KeyedService;
 
@@ -28,10 +27,12 @@ class ShoppingService;
 // This tab helper creates and maintains a WebWrapper that is backed by
 // WebContents. Events that occur on the wrapper are reported back to the
 // shopping service where they are used by various commerce features.
-class CommerceTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<CommerceTabHelper> {
+class CommerceTabHelper : public content::WebContentsObserver {
  public:
+  CommerceTabHelper(content::WebContents* contents,
+                    bool is_off_the_record,
+                    ShoppingService* shopping_service,
+                    int32_t js_world_id);
   ~CommerceTabHelper() override;
   CommerceTabHelper(const CommerceTabHelper& other) = delete;
   CommerceTabHelper& operator=(const CommerceTabHelper& other) = delete;
@@ -53,12 +54,6 @@ class CommerceTabHelper
 
  private:
   friend class CommerceTabHelperTest;
-  friend class content::WebContentsUserData<CommerceTabHelper>;
-
-  CommerceTabHelper(content::WebContents* contents,
-                    bool is_off_the_record,
-                    ShoppingService* shopping_service,
-                    int32_t js_world_id);
 
   const bool is_off_the_record_;
 
@@ -71,8 +66,6 @@ class CommerceTabHelper
   // track of this because the URL kepkt by the backing WebContents will have
   // changed before we get the signal for it.
   GURL previous_main_frame_url_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace commerce

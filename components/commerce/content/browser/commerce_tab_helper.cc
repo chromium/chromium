@@ -18,7 +18,6 @@ CommerceTabHelper::CommerceTabHelper(content::WebContents* content,
                                      ShoppingService* shopping_service,
                                      int32_t js_world_id)
     : content::WebContentsObserver(content),
-      content::WebContentsUserData<CommerceTabHelper>(*content),
       is_off_the_record_(is_off_the_record),
       web_wrapper_(std::make_unique<WebContentsWrapper>(content, js_world_id)),
       shopping_service_(shopping_service) {
@@ -26,7 +25,11 @@ CommerceTabHelper::CommerceTabHelper(content::WebContents* content,
     shopping_service_->WebWrapperCreated(web_wrapper_.get());
 }
 
-CommerceTabHelper::~CommerceTabHelper() = default;
+CommerceTabHelper::~CommerceTabHelper() {
+  if (shopping_service_) {
+    shopping_service_->WebWrapperDestroyed(web_wrapper_.get());
+  }
+}
 
 void CommerceTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -101,8 +104,10 @@ void CommerceTabHelper::OnWebContentsFocused(content::RenderWidgetHost* host) {
 }
 
 void CommerceTabHelper::WebContentsDestroyed() {
-  if (shopping_service_)
+  if (shopping_service_) {
     shopping_service_->WebWrapperDestroyed(web_wrapper_.get());
+    shopping_service_ = nullptr;
+  }
 
   web_wrapper_->ClearWebContentsPointer();
 }
@@ -116,7 +121,5 @@ void CommerceTabHelper::SetShoppingServiceForTesting(KeyedService* service) {
     shopping_service_->WebWrapperCreated(web_wrapper_.get());
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(CommerceTabHelper);
 
 }  // namespace commerce

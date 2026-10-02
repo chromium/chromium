@@ -41,6 +41,10 @@ namespace client_hints {
 class ClientHintsWebContentsObserver;
 }  // namespace client_hints
 
+namespace commerce {
+class CommerceTabHelper;
+}  // namespace commerce
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -300,6 +304,7 @@ class TabFeatures {
       ml_installability_promoter_;
   std::unique_ptr<ChromeFacilitatedPaymentsClient>
       chrome_facilitated_payments_client_;
+  std::unique_ptr<commerce::CommerceTabHelper> commerce_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

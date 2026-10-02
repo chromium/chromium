@@ -145,6 +145,7 @@ class NetErrorTabHelper;
 }  // namespace chrome_browser_net
 
 namespace commerce {
+class CommerceTabHelper;
 class CommerceUiTabHelper;
 class DiscountsPageActionViewController;
 class InStockNotificationManager;
@@ -546,6 +547,7 @@ class TabFeatures {
   std::unique_ptr<ReadAnythingController> read_anything_controller_;
 
   // Responsible for commerce related features.
+  std::unique_ptr<commerce::CommerceTabHelper> commerce_tab_helper_;
   std::unique_ptr<commerce::CommerceUiTabHelper> commerce_ui_tab_helper_;
   std::unique_ptr<commerce::InStockNotificationManager>
       in_stock_notification_manager_;
