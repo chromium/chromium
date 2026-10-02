@@ -17,8 +17,11 @@ import type {Bookmark} from '../bookmark_type.js';
 import type {Attachment} from '../constants.js';
 import {record, UserAction} from '../metrics.js';
 
+import type {ViewerAttachmentBarElement} from './viewer_attachment_bar.js';
+import type {ViewerDocumentOutlineElement} from './viewer_document_outline.js';
 import {getCss} from './viewer_pdf_sidenav.css.js';
 import {getHtml} from './viewer_pdf_sidenav.html.js';
+import type {ViewerThumbnailBarElement} from './viewer_thumbnail_bar.js';
 
 enum TabId {
   THUMBNAIL = 0,
@@ -34,7 +37,11 @@ interface Tab {
 
 export interface ViewerPdfSidenavElement {
   $: {
+    attachmentBar: ViewerAttachmentBarElement,
+    content: HTMLElement,
     icons: HTMLElement,
+    outline: ViewerDocumentOutlineElement,
+    thumbnailBar: ViewerThumbnailBarElement,
   };
 }
 

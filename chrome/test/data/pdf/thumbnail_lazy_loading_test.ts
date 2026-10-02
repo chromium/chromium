@@ -14,9 +14,7 @@ chrome.test.runTests([
     assert(viewer);
     const sidenav = viewer.shadowRoot.querySelector('viewer-pdf-sidenav');
     assert(sidenav);
-    const thumbnailBar =
-        sidenav.shadowRoot.querySelector('viewer-thumbnail-bar');
-    assert(thumbnailBar);
+    const thumbnailBar = sidenav.$.thumbnailBar;
 
     // Check if the initial batch of thumbnails has already been painted.
     let painted =
@@ -47,9 +45,7 @@ chrome.test.runTests([
     assert(viewer);
     const sidenav = viewer.shadowRoot.querySelector('viewer-pdf-sidenav');
     assert(sidenav);
-    const thumbnailBar =
-        sidenav.shadowRoot.querySelector('viewer-thumbnail-bar');
-    assert(thumbnailBar);
+    const thumbnailBar = sidenav.$.thumbnailBar;
 
     // Page 50 should not be painted on initial load.
     const thumbnail50 = thumbnailBar.getThumbnailForPage(50);

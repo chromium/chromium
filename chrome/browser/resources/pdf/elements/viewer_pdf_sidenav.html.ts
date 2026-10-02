@@ -23,7 +23,7 @@ export function getHtml(this: ViewerPdfSidenavElement) {
   `)}
 </div>
 <div id="content">
-  <viewer-thumbnail-bar id="thumbnail-bar" tabindex="0"
+  <viewer-thumbnail-bar id="thumbnailBar" tabindex="0"
       ?hidden="${this.hideThumbnailView_()}" .activePage="${this.activePage}"
       .clockwiseRotations="${this.clockwiseRotations}"
       .docLength="${this.docLength}">
@@ -31,7 +31,7 @@ export function getHtml(this: ViewerPdfSidenavElement) {
   <viewer-document-outline id="outline" ?hidden="${this.hideOutlineView_()}"
       .bookmarks="${this.bookmarks}">
   </viewer-document-outline>
-  <viewer-attachment-bar id="attachment-bar"
+  <viewer-attachment-bar id="attachmentBar"
       ?hidden="${this.hideAttachmentView_()}"
       .attachments="${this.attachments}">
   </viewer-attachment-bar>
