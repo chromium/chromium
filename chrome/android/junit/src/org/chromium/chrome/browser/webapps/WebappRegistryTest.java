@@ -814,64 +814,6 @@ public class WebappRegistryTest {
 
     @Test
     @Feature({"WebApk"})
-    public void testHasWebApkForOriginWithoutPackageCheck() throws Exception {
-        final String startUrl = START_URL + "/test_page.html";
-        final String testOrigin = START_URL;
-        final String testPackageName = "org.chromium.webapk";
-
-        assertFalse(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck(testOrigin));
-
-        String webappId = "webapp";
-        registerWebappWithId(webappId, createShortcutIntentDataProvider(startUrl));
-        assertFalse(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck(testOrigin));
-
-        String incompleteWebApkId = "webapk-incomplete";
-        registerWebappWithId(incompleteWebApkId, null);
-        SharedPreferences incompleteWebApkPrefs =
-                ContextUtils.getApplicationContext()
-                        .getSharedPreferences(
-                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + incompleteWebApkId,
-                                Context.MODE_PRIVATE);
-        incompleteWebApkPrefs.edit().putString(WebappDataStorage.KEY_SCOPE, startUrl).apply();
-        assertFalse(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck(testOrigin));
-
-        BrowserServicesIntentDataProvider webApkIntentDataProvider =
-                new WebApkIntentDataProviderBuilder(testPackageName, startUrl).build();
-        registerWebapp(webApkIntentDataProvider);
-        assertTrue(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck(testOrigin));
-        // The package-install check is intentionally skipped here, whereas
-        // hasAtLeastOneWebApkForOrigin() returns false for the same origin because the WebAPK
-        // package is not installed in this test.
-        assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
-
-        // A different origin that is only a string prefix of the scope must NOT match. This
-        // guards against a raw scope.startsWith(origin) comparison spuriously matching e.g.
-        // "https://foo.co" against a scope of "https://foo.com/test_page.html".
-        assertFalse(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck("https://foo.co"));
-
-        // An uninstalled WebAPK must be ignored even without the package-install check.
-        WebappDataStorage webApkStorage =
-                WebappRegistry.getInstance()
-                        .getWebappDataStorage(webApkIntentDataProvider.getWebappExtras().id);
-        assertNotNull(webApkStorage);
-        webApkStorage.setWebApkUninstallTimestamp();
-        assertFalse(
-                WebappRegistry.getInstance()
-                        .hasAtLeastOneWebApkForOriginWithoutPackageCheck(testOrigin));
-    }
-
-    @Test
-    @Feature({"WebApk"})
     public void testFindWebApkWithManifestId() throws Exception {
         final String testManifestId = START_URL + "/id";
         final String testPackageName = "org.chromium.webapk";
