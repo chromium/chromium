@@ -1,11 +1,13 @@
 # Crubit and build performance
 
-> **Most Crubit users can skip this doc.**  It is only relevant if the
-> `cpp_api_from_rust` bindings are used by a widely used C++ target (for
-> example a `component` that thousands of C++ files depend on, directly or
-> transitively).  For typical usage (e.g. a feature-specific target that uses
-> the bindings), the effect on build times is small and no action is
-> necessary.
+Even if the `cpp_api_from_rust` bindings are only used by a feature-specific
+target, that target usually ends up being depended on (transitively) by widely
+used targets like `//chrome/browser:browser` or `//chrome/browser/ui:ui`.
+Without `check_includes_strict = true` (or `public = []`) as described below,
+thousands of C++ files then have to wait for the Rust compilation.  For
+example, `cpp_api_from_rust` bindings of the QR code generator delayed most of
+`//chrome/browser/ui` (see https://crrev.com/c/8497030).  This document
+explains how to optimize build performance when depending on Crubit bindings.
 
 For more information about Crubit, see [`README.md`](README.md).
 
@@ -19,11 +21,14 @@ in:
 
 * The target that depends on the bindings.
 * All targets that depend on that target (directly or transitively),
-  unless a target in the dependency chain sets `public = []`.
+  unless a target in the dependency chain sets `check_includes_strict = true`
+  (with the dependency in private `deps`) or `public = []`.
 
-Therefore, if a widely used target depends on the bindings, then many C++
-files may have to wait for the Rust compilation, even if they do not
-`#include` the bindings.  This can make builds slower.  See
+Therefore, if the bindings are depended on by a widely used target, even
+transitively, then many C++ files may have to wait for the Rust compilation,
+even if they do not `#include` the bindings.  In practice this is the case for
+most bindings, because most feature-specific targets are eventually depended on
+by targets like `//chrome/browser`.  This can make builds slower.  See
 https://crbug.com/563098656 for an example.
 
 This is not specific to Crubit.  GN handles all generated headers the same
@@ -41,10 +46,50 @@ an unused dependency on `//base` made the bindings action (and many C++
 compilation steps in `//chrome/browser`) wait until `libbase.so` was linked.
 See https://crrev.com/c/8423119.
 
-## Isolate the `#include`s of the bindings with `public = []`
+## Set `check_includes_strict = true` on the target that uses the bindings
 
-Move the `.cc` files that `#include` the bindings into a separate `source_set`
-with `public = []`.  Make sure that no public header `#include`s the bindings.
+By default, standard `gn check` allows a target's public headers to `#include`
+headers from its private `deps`, so GN conservatively forwards order-only
+dependencies of generated headers from both `public_deps` and private `deps`.
+
+When a target sets `check_includes_strict = true`, `gn check` enforces that its
+`public` headers do not `#include` anything from private `deps`, and GN only
+forwards order-only dependencies from `public_deps` (see
+https://gn-review.googlesource.com/c/gn/+/27100).
+
+Therefore, when only `.cc` files (and no public headers) `#include` the
+bindings, you can stop the order-only dependency from propagating to dependent
+targets by setting `check_includes_strict = true`, listing the public headers
+in `public`, and keeping the bindings in private `deps`:
+
+```gn
+# components/qr_code_generator/BUILD.gn
+
+source_set("qr_code_generator") {
+  # Enforces that `qr_code_generator.h` does not #include headers from private
+  # `deps`, which also stops GN from forwarding the Crubit bindings' hard_deps
+  # to targets depending on `:qr_code_generator`.
+  check_includes_strict = true
+  public = [ "qr_code_generator.h" ]
+  sources = [ "qr_code_generator.cc" ]
+  public_deps = [
+    ":error",
+    "//base",
+  ]
+  deps = [
+    "//build/rust/crubit",
+    "//third_party/rust/qr_code/v2:cpp_api_from_rust",
+  ]
+}
+```
+
+## Alternative: Isolate the `#include`s of the bindings with `public = []`
+
+If setting `check_includes_strict = true` on the whole target is not feasible
+(for example, in a large existing target whose public headers `#include` many
+other private `deps`), move the `.cc` files that `#include` the bindings into
+a separate `source_set` with `public = []`.  Make sure that no public header
+`#include`s the bindings.
 
 This is an idiom that is officially recommended by the
 [GN reference for `public`](https://gn.googlesource.com/gn/+/main/docs/reference.md#var_public):
@@ -101,20 +146,20 @@ component("cbor") {
 
 Notes:
 
-* Using `deps` instead of `public_deps` does not prevent this problem.
-  GN forwards these order-only dependencies through both kinds of
-  dependencies.  A non-empty `public` list does not prevent this problem
-  either.  Nevertheless, list the bindings in `deps` (not in `public_deps`)
-  when no public header `#include`s the bindings.
+* Without `check_includes_strict = true`, using `deps` instead of `public_deps`
+  or setting a non-empty `public` list does not prevent this problem, because
+  GN forwards order-only dependencies through both `deps` and `public_deps`
+  unless `check_includes_strict = true` or `public = []` is set.
 * If a public header needs to `#include` the bindings, then the dependent C++
   targets have to wait for the bindings action.  In this case, list the
   bindings in `public_deps`.
 * Isolate the bindings in the target that directly depends on them.  Then the
   targets that depend on this target do not need changes.  If this is not
-  possible, then the same `public = []` pattern can be used at a higher level
-  of the dependency chain.  For example, see how `//crypto` and
-  `//components/web_package` isolate their dependency on `//components/cbor`
-  in https://crrev.com/c/8424841 and https://crrev.com/c/8428640.
+  possible, then `check_includes_strict = true` or the `public = []` pattern
+  can be used at a higher level of the dependency chain.  For example, see how
+  `//crypto` and `//components/web_package` isolate their dependency on
+  `//components/cbor` in https://crrev.com/c/8424841 and
+  https://crrev.com/c/8428640.
 * If you move files out of a `component` into a `source_set` that is linked
   directly into other targets, then remove the `..._EXPORT` macros from the
   declarations of these files.  Otherwise Windows component builds can fail

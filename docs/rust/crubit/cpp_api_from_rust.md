@@ -71,11 +71,19 @@ After modifying `gnrt_config.toml` you have to re-run
 `tools/crates/run_gnrt.py gen` to regenerate the crate's `BUILD.gn` file.
 
 At this point you should be able to depend on the bindings and use them
-as follows:
+as follows.  Note that `check_includes_strict = true` and `public` are set so
+that C++ targets depending on `:my_cpp_code` do not have to wait for the Rust
+compilation (see [Crubit and build performance](build_performance.md)):
 
 ```
 # My BUILD.gn:
 source_set("my_cpp_code") {
+  # Enforces that `my_cpp_code.h` does not #include headers from private
+  # `deps`, which also stops GN from forwarding the bindings-related
+  # order-only dependencies to C++ targets that depend on `:my_cpp_code`.
+  check_includes_strict = true
+  public = [ "my_cpp_code.h" ]
+  sources = [ "my_cpp_code.cc" ]
   # ...
   deps += [ "//third_party/rust/qr_code/v2:cpp_api_from_rust" ]
 }
@@ -244,10 +252,13 @@ Then you want to read the "Specifying binding dependencies" section above.
 
 ### Build performance
 
-Most Crubit users do not need to worry about this.  But if the bindings are used
-by a widely used C++ target (for example by a `component` that thousands of C++
-files depend on, directly or transitively), then see
-[Crubit and build performance](build_performance.md).
+C++ targets that depend on the bindings (directly or transitively) have to wait
+for the Rust compilation, unless the target that depends on the bindings sets
+`check_includes_strict = true` (with the bindings in private `deps`) or
+isolates the `.cc` files in a `source_set` with `public = []`.  Most bindings
+end up being transitively used by many C++ targets, so please follow
+[Crubit and build performance](build_performance.md) when adding a
+dependency on the bindings.
 
 ## Known issues
 
