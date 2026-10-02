@@ -160,7 +160,10 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();
   }
-  return resource_provider->Snapshot(orientation);
+  if (!resource_provider->IsValid()) {
+    return nullptr;
+  }
+  return resource_provider->resource()->Bitmap();
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
