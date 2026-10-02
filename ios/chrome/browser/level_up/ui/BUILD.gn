@@ -74,13 +74,13 @@ source_set("promo") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/animated_promo:utils",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
+    "//ui/gfx",
   ]
 
   public_deps = [ ":lottie_resources" ]
