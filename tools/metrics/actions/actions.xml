@@ -855,8 +855,6 @@ should be able to be added at any place in this file.
       summary="For the explanation of what the shopping collection is."/>
   <variant name="_ShoppingListMenuItem"
       summary="For ShoppingListMenuItem feature."/>
-  <variant name="_ShoppingListSaveFlow"
-      summary="For ShoppingListSaveFlow feature."/>
   <variant name="_SideBySidePinnableFeature"
       summary="For side by side split view pinning feature."/>
   <variant name="_SideBySideTabSwitchFeature"

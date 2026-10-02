@@ -118,7 +118,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.SHARED_HIGHLIGHTING_RECEIVER_FEATURE,
     FeatureConstants.SHARING_HUB_WEBNOTES_STYLIZE_FEATURE,
     FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
-    FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.SITE_CONTROLS_FEATURE,
     FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE,
     FeatureConstants.TAB_GROUPS_REMOTE_GROUP,
@@ -429,9 +428,6 @@ public @interface FeatureConstants {
      * item is available to track price.
      */
     String SHOPPING_LIST_MENU_ITEM_FEATURE = "IPH_ShoppingListMenuItem";
-
-    /** An IPH that shows in the bookmark save flow when bookmarking a product. */
-    String SHOPPING_LIST_SAVE_FLOW_FEATURE = "IPH_ShoppingListSaveFlow";
 
     /** An IPH feature to inform users that Site Controls have moved to the app menu. */
     String SITE_CONTROLS_FEATURE = "IPH_SiteControls";

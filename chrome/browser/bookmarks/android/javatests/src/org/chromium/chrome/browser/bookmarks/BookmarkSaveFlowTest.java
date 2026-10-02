@@ -46,7 +46,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -83,7 +82,6 @@ public class BookmarkSaveFlowTest {
 
     @Mock private ShoppingService mShoppingService;
     @Mock private PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
-    @Mock private UserEducationHelper mUserEducationHelper;
     @Mock private IdentityManager mIdentityManager;
     @Mock private PriceDropNotificationManager mPriceDropNotificationManager;
 
@@ -113,7 +111,6 @@ public class BookmarkSaveFlowTest {
                                     mActivity,
                                     mBottomSheetController,
                                     mShoppingService,
-                                    mUserEducationHelper,
                                     ProfileManager.getLastUsedRegularProfile(),
                                     mIdentityManager,
                                     new BookmarkManagerOpenerImpl(),

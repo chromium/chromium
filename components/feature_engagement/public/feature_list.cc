@@ -109,7 +109,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHShareScreenshotFeature,
     &kIPHSharingHubWebnotesStylizeFeature,
     &kIPHShoppingListMenuItemFeature,
-    &kIPHShoppingListSaveFlowFeature,
     &kIPHSiteControlsFeature,
     &kIPHTabGroupCreationDialogSyncTextFeature,
     &kIPHTabGroupsDragAndDropFeature,

@@ -8,9 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Handler;
 import android.os.LocaleList;
-import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -337,9 +334,6 @@ public class BookmarkUtils {
             popupCoordinator.show(bookmarkId, isNewBookmark);
             return;
         }
-        UserEducationHelper userEducationHelper =
-                new UserEducationHelper(
-                        activity, profile, new Handler(assumeNonNull(Looper.myLooper())));
         // Redirect the original profile when getting the identity manager, it's not done
         // automatically in native.
         IdentityManager identityManager =
@@ -351,7 +345,6 @@ public class BookmarkUtils {
                         activity,
                         bottomSheetController,
                         shoppingService,
-                        userEducationHelper,
                         profile,
                         identityManager,
                         bookmarkManagerOpener,

@@ -23,20 +23,13 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
-import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.user_education.IphCommandBuilder;
-import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
-import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -63,7 +56,6 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
     private BookmarkSaveFlowMediator mMediator;
     private View mBookmarkSaveFlowView;
     private final BookmarkModel mBookmarkModel;
-    private final UserEducationHelper mUserEducationHelper;
     private boolean mClosedViaRunnable;
     private @Nullable CancelableRunnable mAutoDismissTask;
 
@@ -72,7 +64,6 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
      *     destruction to release its resources.
      * @param bottomSheetController Allows displaying content in the bottom sheet.
      * @param shoppingService Allows un/subscribing for product updates, used for price-tracking.
-     * @param userEducationHelper A means of triggering IPH.
      * @param profile The current chrome profile.
      * @param identityManager The {@link IdentityManager} which supplies the account data.
      * @param bookmarkManagerOpener Manaages opening bookmarkms.
@@ -82,14 +73,12 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
             Activity activity,
             BottomSheetController bottomSheetController,
             ShoppingService shoppingService,
-            UserEducationHelper userEducationHelper,
             Profile profile,
             IdentityManager identityManager,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager) {
         mActivity = activity;
         mBottomSheetController = bottomSheetController;
-        mUserEducationHelper = userEducationHelper;
         mBookmarkModel = BookmarkModel.getForProfile(profile);
         assert mBookmarkModel != null;
         mDestroyChecker = new DestroyChecker();
@@ -192,54 +181,11 @@ public class BookmarkSaveFlowCoordinator implements ActivityStateListener {
         // Order matters here: Calling show on the mediator first allows the height to be fully
         // determined before the sheet is shown.
         mMediator.show(bookmarkId, meta, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark);
-        boolean shown =
-                mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
+        mBottomSheetController.requestShowContent(mBottomSheetContent, /* animate= */ true);
 
         if (!AccessibilityState.isTouchExplorationEnabled()) {
             setupAutodismiss();
         }
-
-        if (CommerceFeatureUtils.isShoppingListEligible(
-                ShoppingServiceFactory.getForProfile(mProfile))) {
-            PriceTrackingUtils.isBookmarkPriceTracked(
-                    mProfile,
-                    bookmarkId.getId(),
-                    (isTracked) -> {
-                        if (isTracked) return;
-
-                        if (shown) {
-                            showShoppingSaveFlowIph();
-                        } else {
-                            mBottomSheetController.addObserver(
-                                    new BottomSheetObserver() {
-                                        @Override
-                                        public void onSheetContentChanged(
-                                                @Nullable BottomSheetContent newContent) {
-                                            if (newContent == mBottomSheetContent) {
-                                                showShoppingSaveFlowIph();
-                                            }
-
-                                            mBottomSheetController.removeObserver(this);
-                                        }
-                                    });
-                        }
-                    });
-        }
-    }
-
-    /**
-     * Show the IPH for the save flow that tells a user that they can organize their products from
-     * the bookmarks surface.
-     */
-    private void showShoppingSaveFlowIph() {
-        mUserEducationHelper.requestShowIph(
-                new IphCommandBuilder(
-                                mBookmarkSaveFlowView.getResources(),
-                                FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
-                                R.string.iph_shopping_list_save_flow,
-                                R.string.iph_shopping_list_save_flow)
-                        .setAnchorView(mBookmarkSaveFlowView.findViewById(R.id.edit_chev))
-                        .build());
     }
 
     @VisibleForTesting
