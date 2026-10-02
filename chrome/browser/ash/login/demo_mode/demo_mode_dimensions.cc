@@ -41,7 +41,9 @@ std::string Country(PrefService& local_state) {
 }
 
 std::string RetailerName(const PrefService& local_state) {
-  CHECK(AreDemoDimensionsAccessible(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568459773): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(AreDemoDimensionsAccessible());
   return local_state.GetString(prefs::kDemoModeRetailerId);
 }
 
