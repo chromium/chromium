@@ -99,8 +99,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"  // nogncheck
-#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"  // nogncheck
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
+#include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -112,7 +112,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "chrome/browser/startup/startup_launch_manager.h"  // nogncheck
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "chrome/browser/ui/startup/startup_launch_infobar_manager_impl.h"
 #endif
 
