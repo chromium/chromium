@@ -122,7 +122,7 @@ class CalculationValueHandleMap
 };
 
 static CalculationValueHandleMap& CalcHandles() {
-  DCHECK(IsMainThread());
+  CHECK(IsMainThread());
   DEFINE_STATIC_LOCAL(Persistent<CalculationValueHandleMap>, handle_map,
                       (MakeGarbageCollected<CalculationValueHandleMap>()));
   return *handle_map;

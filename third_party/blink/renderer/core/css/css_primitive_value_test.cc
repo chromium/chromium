@@ -148,7 +148,9 @@ TEST_F(CSSPrimitiveValueTest, Zooming) {
 
 TEST_F(CSSPrimitiveValueTest,
        ConvertToLengthTypedArithmeticCancelsTimeAndPercent) {
-  const CSSPrimitiveValue* value = ParseValue("calc(10px * 1% * 1s / 1% / 1s)");
+  const CSSPrimitiveValue* value = To<CSSPrimitiveValue>(
+      css_test_helpers::ParseValue(GetDocument(), "<length-percentage>",
+                                   "calc(10px * 1% * 1s / 1% / 1s)"));
 
   CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
