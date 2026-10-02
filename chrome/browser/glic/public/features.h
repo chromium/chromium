@@ -75,6 +75,8 @@ BASE_DECLARE_FEATURE(kGlicSelectionSuggestions);
 BASE_DECLARE_FEATURE(kGlicSelectionSmallChip);
 extern const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop;
 
+BASE_DECLARE_FEATURE(kGlicSuggestionContextMenu);
+
 BASE_DECLARE_FEATURE(kGlicCreateTabAdjacent);
 
 BASE_DECLARE_FEATURE(kGlicDynamicChromeTools);

@@ -262,6 +262,8 @@
     IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE) \
   E(kActionContentContextGlicShareImage, \
     IDC_CONTENT_CONTEXT_GLICSHAREIMAGE) \
+  E(kActionContentContextGlicSmartSuggestion, \
+    IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION) \
   E(kActionContentContextTranslateImageWithWeb) \
   E(kActionContentContextTranslateImageWithLens) \
   /* Audio/video items. */ \

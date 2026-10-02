@@ -432,6 +432,7 @@ chromium-metrics-reviews@google.com.
   <int value="169" label="IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED"/>
   <int value="170" label="IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE"/>
   <int value="171" label="IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU"/>
+  <int value="172" label="IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

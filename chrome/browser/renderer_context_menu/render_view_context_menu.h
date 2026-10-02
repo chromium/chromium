@@ -277,6 +277,7 @@ class RenderViewContextMenu
                                         gfx::BreakType break_type);
 
   void ExecGlic();
+  void ExecGlicSmartSuggestion();
 
   friend class RenderViewContextMenuTest;
   friend class TestRenderViewContextMenu;
@@ -512,6 +513,7 @@ class RenderViewContextMenu
       supervised_user::WebFilteringResult result);
 
   void MaybeAppendOpenGlicItem(bool add_separator = true);
+  void MaybeAppendGlicSmartSuggestionItem();
 
   // Opens the Lens overlay to search a region defined by the given bounds of
   // the view and the image to be searched. Tab bounds and view bounds are

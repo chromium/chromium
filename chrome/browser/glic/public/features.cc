@@ -77,6 +77,8 @@ BASE_FEATURE(kGlicSelectionSmallChip, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicSelectionSmallChipOnTop{
     &kGlicSelectionSmallChip, "on_top", true};
 
+BASE_FEATURE(kGlicSuggestionContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicClearTurnIdOnPanelWillOpen,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

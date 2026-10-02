@@ -668,13 +668,14 @@ int UmaEnumForCommand(int key, UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED, 169},
        {IDC_CONTENT_CONTEXT_ASK_GOOGLE_ABOUT_THIS_PAGE, 170},
        {IDC_CONTENT_CONTEXT_CONTEXTUAL_TASKS_SUBMENU, 171},
+       {IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, 172},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {kUmaMaxValueKey, 172}});
+       {kUmaMaxValueKey, 173}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -969,6 +970,16 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 bool IsAnyGlicWebContents(const RenderViewContextMenu* menu) {
   return glic::GlicEnabling::IsEnabledByGlobalCriteria() &&
          glic::IsAnyGlicWebContents(menu->GetWebContents());
+}
+
+bool IsPageContextEligible(content::WebContents* web_contents) {
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  tabs::PageContextEligibilityHelper* helper =
+      tab ? tabs::PageContextEligibilityHelper::From(tab) : nullptr;
+  return helper &&
+         helper->IsPageContextEligible() ==
+             optimization_guide::PageContextEligibilityStatus::kEligible;
 }
 
 bool IsPrintPreviewContent(const GURL& current_url) {
@@ -1285,6 +1296,8 @@ bool RenderViewContextMenu::IsInProgressiveWebApp() const {
 
 void RenderViewContextMenu::InitMenu() {
   RenderViewContextMenuBase::InitMenu();
+
+  MaybeAppendGlicSmartSuggestionItem();
 
   const bool use_simplified_menu_for_text_selection =
       ShouldUseSimplifiedTextSelection();
@@ -3686,6 +3699,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_RELOAD_GLIC:
     case IDC_CONTENT_CONTEXT_ARCHIVE_GLIC:
     case IDC_CONTENT_CONTEXT_GLIC:
+    case IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION:
       return true;
 
     case IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN:
@@ -3978,6 +3992,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
     case IDC_CONTENT_CONTEXT_GLIC:
       ExecGlic();
+      break;
+
+    case IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION:
+      ExecGlicSmartSuggestion();
       break;
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE:
@@ -5250,6 +5268,19 @@ void RenderViewContextMenu::ExecGlic() {
   }
 }
 
+void RenderViewContextMenu::ExecGlicSmartSuggestion() {
+  // See `ExecGlic()` for why the source document must still be active.
+  content::RenderFrameHost* source_frame =
+      source_document_at_menu_open_.AsRenderFrameHostIfValid();
+  if (!source_frame ||
+      &source_frame->GetPage() != &source_web_contents_->GetPrimaryPage()) {
+    return;
+  }
+
+  glic::GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
+      *source_frame, params_);
+}
+
 void RenderViewContextMenu::ExecGlicShareImage() {
   if (!glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile())) {
     // If this has changed since the context menu was summoned, bail early.
@@ -5702,15 +5733,7 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
                        u" ", &params_.selection_text);
     base::TrimWhitespace(params_.selection_text, base::TRIM_ALL,
                          &params_.selection_text);
-    tabs::TabInterface* tab_interface =
-        tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
-    tabs::PageContextEligibilityHelper* helper =
-        tab_interface ? tabs::PageContextEligibilityHelper::From(tab_interface)
-                      : nullptr;
-    const bool is_page_eligible =
-        helper &&
-        helper->IsPageContextEligible() ==
-            optimization_guide::PageContextEligibilityStatus::kEligible;
+    const bool is_page_eligible = IsPageContextEligible(source_web_contents_);
     const bool show_text_selection_menu_item =
         base::FeatureList::IsEnabled(features::kGlicTextSelectionContextMenu) &&
         !params_.selection_text.empty() && is_page_eligible;
@@ -5746,6 +5769,49 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
     }
     glic_item_shown_ = true;
   }
+}
+
+void RenderViewContextMenu::MaybeAppendGlicSmartSuggestionItem() {
+  if (!base::FeatureList::IsEnabled(features::kGlicSuggestionContextMenu) ||
+      !IsNormalBrowser() || IsAnyGlicWebContents(this) ||
+      !glic::GlicEnabling::IsEnabledForProfile(GetProfile()) ||
+      !IsPageContextEligible(source_web_contents_)) {
+    return;
+  }
+  // Selections in editable fields, including password fields, are excluded.
+  const bool has_selection =
+      !params_.is_editable &&
+      !base::TrimWhitespace(params_.selection_text, base::TRIM_ALL).empty();
+  const bool is_image = content_type_->SupportsGroup(
+      ContextMenuContentType::ITEM_GROUP_MEDIA_IMAGE);
+  const bool is_page =
+      content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PAGE);
+  if (!has_selection && !is_image && !is_page) {
+    return;
+  }
+
+  // A text selection takes precedence over an image.
+  std::u16string label;
+  if (has_selection) {
+    std::u16string printable_selection_text(
+        base::TrimWhitespace(PrintableSelectionText(), base::TRIM_ALL));
+    EscapeAmpersands(&printable_selection_text);
+    label = l10n_util::GetStringFUTF16(
+        IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION, printable_selection_text);
+  } else if (is_image) {
+    label = l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS);
+  } else {
+    label =
+        l10n_util::GetStringUTF16(IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS_PAGE);
+  }
+
+  menu_model_.AddItemWithIcon(
+      IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION, label,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kTextAnalysisIcon
+                                         : kTextAnalysisOldIcon,
+                                     ui::kColorMenuIcon, kTabMenuIconSize));
+  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
 }
 
 void RenderViewContextMenu::ExecPictureInPicture() {

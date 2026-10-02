@@ -539,10 +539,16 @@
   <if expr="use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create Image with Gemini</message>
     <message name="IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI" desc="In Title Case: Text for the 'Summarize this page' context menu item.">Summarize This Page with Gemini</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION" desc="In Title Case: Text for the context menu item that provides smart suggestions about the selected text.">Ask About “<ph name="SELECTION">$1<ex>selected text</ex></ph>”</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS" desc="In Title Case: Text for the context menu item that provides smart suggestions about an image.">Ask About This</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS_PAGE" desc="In Title Case: Text for the context menu item that provides smart suggestions about a page.">Ask About This Page</message>
   </if>
   <if expr="not use_titlecase">
     <message name="IDS_CONTENT_CONTEXT_GLICSHAREIMAGE" desc="Share image with Gemini and recreate based on user-selected prompt">Create image with Gemini</message>
     <message name="IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI" desc="Text for the 'Summarize this page' context menu item.">Summarize this page with Gemini</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_SELECTION" desc="Text for the context menu item that provides smart suggestions about the selected text.">Ask about “<ph name="SELECTION">$1<ex>selected text</ex></ph>”</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS" desc="Text for the context menu item that provides smart suggestions about an image.">Ask about this</message>
+    <message name="IDS_GLIC_CONTEXT_MENU_ASK_ABOUT_THIS_PAGE" desc="Text for the context menu item that provides smart suggestions about a page.">Ask about this page</message>
   </if>
 
   <message name="IDS_GLIC_SUMMARIZE_PAGE_PROMPT" desc="Prompt sent to request page summarization via context menu.">Summarize this page</message>

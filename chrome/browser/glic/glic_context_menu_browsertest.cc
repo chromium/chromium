@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -1093,6 +1094,66 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayContextMenuBrowserTest,
   EXPECT_FALSE(menu->IsItemPresent(IDC_SAVE_PAGE));
   EXPECT_FALSE(menu->IsItemPresent(IDC_VIEW_SOURCE));
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC));
+}
+
+class GlicSmartSuggestionContextMenuBrowserTest
+    : public GlicContextMenuBrowserTestBase {
+ public:
+  GlicSmartSuggestionContextMenuBrowserTest() {
+    feature_list_.InitWithFeatures({features::kGlic, features::kGlicContextMenu,
+                                    features::kGlicSuggestionContextMenu},
+                                   {});
+  }
+
+ protected:
+  std::unique_ptr<TestRenderViewContextMenu> CreateContextMenuWithParams(
+      content::ContextMenuParams params) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.page_url = web_contents->GetVisibleURL();
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents->GetPrimaryMainFrame(), params);
+    menu->Init();
+    return menu;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ItemPresentAndOpensOverlay) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+  auto* controller = SelectionOverlayController::FromTabWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(controller);
+
+  auto menu = CreateContextMenu();
+  ASSERT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION,
+                       /*event_flags=*/0);
+
+  ASSERT_OK(RunUntilEqual([&]() { return controller->state(); },
+                          SelectionOverlayController::State::kOverlay,
+                          "Timed out waiting for the selection overlay."));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
+                       ItemPresentForImage) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  content::ContextMenuParams params;
+  params.has_image_contents = true;
+  params.media_type = blink::mojom::ContextMenuDataMediaType::kImage;
+  EXPECT_TRUE(CreateContextMenuWithParams(params)->IsItemPresent(
+      IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+
+  // The item is not shown for a plain link.
+  content::ContextMenuParams link_params;
+  link_params.link_url = GURL("https://example.com");
+  link_params.unfiltered_link_url = GURL("https://example.com");
+  EXPECT_FALSE(CreateContextMenuWithParams(link_params)
+                   ->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
 }
 
 }  // namespace glic

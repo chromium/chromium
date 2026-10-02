@@ -4,6 +4,7 @@
 #include "chrome/browser/glic/public/glic_context_menu_invocation_helper.h"
 
 #include "base/containers/span.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -14,12 +15,16 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #endif
 
@@ -120,6 +125,46 @@ void GlicContextMenuInvocationHelper::HandleContextualMenuClick(
       glic_service->Invoke(std::move(options));
     }
   }
+}
+
+// static
+void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
+    content::RenderFrameHost& frame,
+    const content::ContextMenuParams& params) {
+#if !BUILDFLAG(IS_ANDROID)
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&frame);
+  if (!web_contents ||
+      !GlicEnabling::IsEnabledForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+    return;
+  }
+  tabs::PageContextEligibilityHelper* helper =
+      tabs::PageContextEligibilityHelper::From(
+          tabs::TabInterface::MaybeGetFromContents(web_contents));
+  if (!helper ||
+      helper->IsPageContextEligible() !=
+          optimization_guide::PageContextEligibilityStatus::kEligible) {
+    return;
+  }
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  if (!controller) {
+    return;
+  }
+
+  // A text selection takes precedence over an image.
+  // Selections in editable fields are ignored.
+  // TODO(b/559202240): Pre-select the image when `params` targets an image.
+  gfx::Rect selection_bounds;
+  if (!params.is_editable &&
+      !base::TrimWhitespace(params.selection_text, base::TRIM_ALL).empty()) {
+    selection_bounds =
+        web_contents->GetTextSelectionBounds(&frame).value_or(gfx::Rect());
+  }
+  controller->ShowWithSelection(&frame, selection_bounds,
+                                selection::InteractionOptions::New());
+#endif
 }
 
 }  // namespace glic
