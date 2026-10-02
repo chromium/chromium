@@ -7,8 +7,6 @@ found in the LICENSE file.
 
 <resources>
     <!-- Task Manager Toolbar dimensions -->
-    <dimen name="task_manager_toolbar_height">70dp</dimen>
-    <dimen name="task_manager_search_box_width">283dp</dimen>
     <dimen name="task_manager_search_box_height">48dp</dimen>
     <dimen name="task_manager_search_box_padding">4dp</dimen>
     <dimen name="task_manager_search_icon_margin_start">8dp</dimen>
