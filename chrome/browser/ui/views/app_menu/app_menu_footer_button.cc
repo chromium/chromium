@@ -44,7 +44,7 @@ constexpr int kRowLineHeight = 16;
 AppMenuFooterButton::AppMenuFooterButton(views::MenuItemView* submenu_item) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int icon_size =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING);
 
@@ -147,7 +147,7 @@ void AppMenuFooterButton::SetImageModel(const ui::ImageModel& image_model) {
     icon_view_->SetVisible(false);
   } else if (image_model.IsVectorIcon()) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+        DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
     ui::ColorId icon_color = ui::kColorMenuIconDisabled;
     if (GetState() != STATE_DISABLED) {
       icon_color = use_row_style_
@@ -212,7 +212,7 @@ void AppMenuFooterButton::UpdateColors() {
 
   if (submenu_arrow_view_) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+        DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
     submenu_arrow_view_->SetImage(ui::ImageModel::FromVectorIcon(
         features::IsRoundedIconsEnabled()
             ? vector_icons::kKeyboardArrowRightFlippableIcon

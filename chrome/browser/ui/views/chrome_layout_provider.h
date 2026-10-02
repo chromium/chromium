@@ -207,9 +207,15 @@ enum ChromeDistanceMetric {
   // Horizontal padding for the infobar buttons.
   DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING,
   // Size of vector icons in the Block-style Action App Menu.
-  DISTANCE_ACTION_APP_MENU_ICON_SIZE,
+  DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE,
+  // Size of vector icons in notification items in the Block-style Action App
+  // Menu.
+  DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE,
   // Full height of a Block-style Action App Menu item row.
   DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT,
+  // Height of a medium Block-style Action App Menu item row (e.g.
+  // Notifications).
+  DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT,
   // Height of an expanded Block-style Action App Menu item row (e.g. Zoom,
   // Profile).
   DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT,

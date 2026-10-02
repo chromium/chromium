@@ -46,7 +46,7 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
   ASSERT_NE(search_bar->GetBorder(), nullptr);
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);

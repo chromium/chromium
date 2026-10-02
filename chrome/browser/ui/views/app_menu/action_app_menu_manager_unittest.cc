@@ -556,6 +556,9 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }
@@ -610,6 +613,9 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
 }
@@ -647,6 +653,9 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderGlobalError) {
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);
@@ -699,6 +708,9 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderDefaultBrowserPrompt) {
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kDisplayTypeKey),
             AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
   EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
                 AppMenuActionItem::kContainerColorKey),
             ui::kColorAppMenuUpgradeRowBackground);

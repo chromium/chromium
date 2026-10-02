@@ -260,10 +260,14 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 8;
     case DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING:
       return 12;
-    case DISTANCE_ACTION_APP_MENU_ICON_SIZE:
+    case DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE:
       return 16;
+    case DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE:
+      return 18;
     case DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT:
       return 32;
+    case DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT:
+      return 36;
     case DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT:
       return 48;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH:

@@ -43,7 +43,8 @@ class AppMenuActionItem {
   };
 
   enum class ItemHeight {
-    kDefault,
+    kCompact,
+    kMedium,
     kExpanded,
   };
 

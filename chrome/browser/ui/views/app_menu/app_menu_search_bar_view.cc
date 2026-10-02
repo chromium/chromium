@@ -28,7 +28,7 @@
 AppMenuSearchBarView::AppMenuSearchBarView() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
@@ -81,7 +81,7 @@ void AppMenuSearchBarView::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
   if (search_icon_) {
     int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+        DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
     int icon_x = 12;
     int icon_y = (height() - icon_size) / 2;
     search_icon_->SetBounds(icon_x, icon_y, icon_size, icon_size);

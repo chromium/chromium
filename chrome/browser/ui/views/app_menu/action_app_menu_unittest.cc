@@ -1596,7 +1596,7 @@ TEST_F(ActionAppMenuTest, SearchBarEnabledWithFeatureFlag) {
   // Verify empty border with insets and background is transparent.
   ASSERT_NE(search_bar->GetBorder(), nullptr);
   int icon_size =
-      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE);
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
@@ -1918,6 +1918,8 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
           kActionUpgradeDialog, browser_actions_->root_action_item());
   ASSERT_NE(upgrade_action, nullptr);
   upgrade_action->SetVisible(true);
+  upgrade_action->SetImage(ui::ImageModel::FromVectorIcon(
+      kRocketLaunchIcon, ui::kColorMenuIconOnEmphasizedBackground));
 
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
@@ -1945,6 +1947,9 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
   ASSERT_TRUE(upgrade_item);
   EXPECT_TRUE(upgrade_item->GetVisible());
   EXPECT_EQ(upgrade_item->title(), u"Update Chrome");
+  EXPECT_EQ(upgrade_item->GetIcon().Size(), gfx::Size(18, 18));
+  EXPECT_EQ(upgrade_item->GetTopMargin(), 9);
+  EXPECT_EQ(upgrade_item->GetBottomMargin(), 9);
   AppMenuMinorTextView* minor_text_view = nullptr;
   for (views::View* child : upgrade_item->children()) {
     if (auto* candidate = views::AsViewClass<AppMenuMinorTextView>(child)) {
@@ -2067,6 +2072,12 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationHiddenWhenInvisible) {
 #endif
 
 TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(
+          kActionGlobalError, browser_actions_->root_action_item());
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
   base::MockCallback<base::RepeatingClosure> on_menu_closed;
   ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
 
@@ -2079,13 +2090,27 @@ TEST_F(ActionAppMenuTest, MenuItemVerticalMarginExpandedHeight) {
   const auto* provider = ChromeLayoutProvider::Get();
   const int expected_normal_margin =
       (provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT) -
-       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
+       provider->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE)) /
+      2;
+  const int expected_notification_margin =
+      (provider->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT) -
+       provider->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE)) /
       2;
   const int expected_expanded_margin =
       (provider->GetDistanceMetric(
            DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT) -
-       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE)) /
+       provider->GetDistanceMetric(
+           DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE)) /
       2;
+
+  views::MenuItemView* global_error_item =
+      root->GetMenuItemByID(kActionGlobalError);
+  ASSERT_TRUE(global_error_item);
+  EXPECT_EQ(global_error_item->GetTopMargin(), expected_notification_margin);
+  EXPECT_EQ(global_error_item->GetBottomMargin(), expected_notification_margin);
 
   views::MenuItemView* zoom_item = root->GetMenuItemByID(kActionZoomSubmenu);
   ASSERT_TRUE(zoom_item);

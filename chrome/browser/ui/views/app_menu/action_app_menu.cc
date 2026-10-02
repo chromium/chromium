@@ -29,7 +29,6 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -45,13 +44,14 @@
 
 namespace {
 
-ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon) {
+ui::ImageModel StandardizeMenuIconSize(const ui::ImageModel& icon,
+                                       int icon_size) {
   if (icon.IsVectorIcon()) {
     const ui::VectorIconModel& vector_model = icon.GetVectorIcon();
-    if (vector_model.icon_size() != ui::SimpleMenuModel::kDefaultIconSize) {
-      return ui::ImageModel::FromVectorIcon(
-          *vector_model.vector_icon(), vector_model.color(),
-          ui::SimpleMenuModel::kDefaultIconSize, vector_model.badge_icon());
+    if (vector_model.icon_size() != icon_size) {
+      return ui::ImageModel::FromVectorIcon(*vector_model.vector_icon(),
+                                            vector_model.color(), icon_size,
+                                            vector_model.badge_icon());
     }
   }
   return icon;
@@ -112,10 +112,8 @@ bool ShouldRoundTopCorners(size_t index,
 }
 
 bool SupportsVerticalPadding(const actions::ActionItem* item) {
-  return item->GetProperty(AppMenuActionItem::kItemHeightKey) !=
-             AppMenuActionItem::ItemHeight::kExpanded &&
-         item->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
-             AppMenuActionItem::DisplayType::kNotification;
+  return item->GetProperty(AppMenuActionItem::kItemHeightKey) ==
+         AppMenuActionItem::ItemHeight::kCompact;
 }
 
 bool ShouldAddTopPadding(size_t index, const actions::ActionListVector& items) {
@@ -469,13 +467,23 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetProperty(views::kElementIdentifierKey, element_id);
   }
 
+  const auto* provider = ChromeLayoutProvider::Get();
+  const bool is_notification =
+      action_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+      AppMenuActionItem::DisplayType::kNotification;
+  const int default_icon_size = provider->GetDistanceMetric(
+      is_notification ? DISTANCE_ACTION_APP_MENU_NOTIFICATION_ICON_SIZE
+                      : DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
+
   if (ui::ImageModel* icon_override =
           child_base->GetProperty(AppMenuActionItem::kIconOverrideKey)) {
-    menu_item->SetIcon(action_item->GetActionId() == kActionProfileSubmenu
-                           ? *icon_override
-                           : StandardizeMenuIconSize(*icon_override));
+    menu_item->SetIcon(
+        action_item->GetActionId() == kActionProfileSubmenu
+            ? *icon_override
+            : StandardizeMenuIconSize(*icon_override, default_icon_size));
   } else if (!action_item->GetImage().IsEmpty()) {
-    menu_item->SetIcon(StandardizeMenuIconSize(action_item->GetImage()));
+    menu_item->SetIcon(
+        StandardizeMenuIconSize(action_item->GetImage(), default_icon_size));
   }
 
   if (ui::ImageModel* minor_icon =
@@ -513,19 +521,24 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
     menu_item->SetAlerted();
   }
 
-  const auto* provider = ChromeLayoutProvider::Get();
-
-  const auto item_height =
-      action_item->GetProperty(AppMenuActionItem::kItemHeightKey);
-
-  const int target_item_height = provider->GetDistanceMetric(
-      item_height == AppMenuActionItem::ItemHeight::kExpanded
-          ? DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT
-          : DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT);
+  int target_item_height = 0;
+  switch (action_item->GetProperty(AppMenuActionItem::kItemHeightKey)) {
+    case AppMenuActionItem::ItemHeight::kCompact:
+      target_item_height = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_FULL_ITEM_HEIGHT);
+      break;
+    case AppMenuActionItem::ItemHeight::kMedium:
+      target_item_height = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_MEDIUM_ITEM_HEIGHT);
+      break;
+    case AppMenuActionItem::ItemHeight::kExpanded:
+      target_item_height = provider->GetDistanceMetric(
+          DISTANCE_ACTION_APP_MENU_EXPANDED_ITEM_HEIGHT);
+      break;
+  }
 
   const int content_height =
-      std::max(provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_ICON_SIZE),
-               menu_item->GetIconPreferredSize().height());
+      std::max(default_icon_size, menu_item->GetIconPreferredSize().height());
 
   const int vertical_padding = (target_item_height - content_height) / 2;
 

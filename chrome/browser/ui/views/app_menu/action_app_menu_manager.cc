@@ -485,6 +485,7 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
                 section.AddDivider(ui::MenuSeparatorType::SPACING_SEPARATOR);
               }
               params.display_type = DisplayType::kNotification;
+              params.item_height = AppMenuActionItem::ItemHeight::kMedium;
               section.AddAction(id, std::move(params));
               has_notification = true;
               return true;
