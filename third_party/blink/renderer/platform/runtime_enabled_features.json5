@@ -3852,10 +3852,8 @@
       // Enables InputMultipleFieldsUI on all platforms by tweaking the inner
       // fields to be non-focusable and making the whole input element
       // focusable for coarse input devices. When this flag is removed, the
-      // InputMultipleFieldsUI flag can also be removed. Enabled in M154, safe
-      // to remove in M158.
+      // InputMultipleFieldsUI flag can also be removed.
       name: "InputMultipleFieldsUIWithPointerChecks",
-      status: "stable",
     },
     // Enables the `alpha` and `colorspace` content/IDL attributes on
     // <input type=color>, allowing alpha and Display P3 color values.
