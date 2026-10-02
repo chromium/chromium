@@ -113,7 +113,7 @@ class StatefulTestModelReference {
 #if defined(UNDEFINED_SANITIZER)
 #define MAYBE_CreateWorks DISABLED_CreateWorks
 #define MAYBE_ProcessAudioWorks DISABLED_ProcessAudioWorks
-#define MAYBE_FailsOnIncompatibleModel DSIABLED_FailsOnIncompatibleModel
+#define MAYBE_FailsOnIncompatibleModel DISABLED_FailsOnIncompatibleModel
 #else
 #define MAYBE_CreateWorks CreateWorks
 #define MAYBE_ProcessAudioWorks ProcessAudioWorks
