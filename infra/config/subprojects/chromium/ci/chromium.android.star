@@ -4269,6 +4269,9 @@ ci.builder(
                     shards = 47,
                 ),
             ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "content_browsertests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_16.content_browsertests.filter",
