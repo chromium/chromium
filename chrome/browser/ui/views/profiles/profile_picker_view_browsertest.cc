@@ -376,7 +376,7 @@ class BrowserAddedWaiter : public BrowserCollectionObserver {
   const ReturnMode return_mode_;
   raw_ptr<BrowserWindowInterface, AcrossTasksDanglingUntriaged> browser_ =
       nullptr;
-  std::set<BrowserWindowInterface*> initial_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface>> initial_browsers_;
   base::RunLoop run_loop_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       observation_{this};
