@@ -1434,7 +1434,9 @@ CacheStorageCacheHandle CacheStorage::GetLoadedCache(
   if (!cache) {
     const CacheStorageIndex::CacheMetadata* metadata =
         cache_index_->GetMetadata(cache_name);
-    CHECK(metadata, base::NotFatalUntil::M158);
+    // TODO(crbug.com/568292495): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(metadata);
     std::unique_ptr<CacheStorageCache> new_cache = cache_loader_->CreateCache(
         cache_name, metadata->size, metadata->padding);
     CacheStorageCache* cache_ptr = new_cache.get();
