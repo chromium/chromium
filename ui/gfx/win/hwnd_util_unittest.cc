@@ -7,6 +7,10 @@
 #include <dwmapi.h>
 #include <winuser.h>
 
+#include <string>
+#include <tuple>
+#include <utility>
+
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,6 +81,56 @@ HWND TestWin32Window::Create(DWORD style) {
                          nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
   ShowWindow(hwnd_, SW_SHOWNORMAL);
   EXPECT_TRUE(UpdateWindow(hwnd_));
+  return hwnd_;
+}
+
+// Registers a window class with the given name, and creates and shows a window
+// of that class. Destroys the window and unregisters the class when destroyed.
+class TestWindowOfClass {
+ public:
+  explicit TestWindowOfClass(std::wstring class_name)
+      : class_name_(std::move(class_name)) {}
+
+  TestWindowOfClass(const TestWindowOfClass&) = delete;
+  TestWindowOfClass& operator=(const TestWindowOfClass&) = delete;
+
+  ~TestWindowOfClass();
+
+  // Returns null on failure.
+  HWND Create(DWORD style, DWORD ex_style);
+
+ private:
+  const std::wstring class_name_;
+  const HINSTANCE instance_ = ::GetModuleHandle(nullptr);
+  bool registered_ = false;
+  HWND hwnd_ = nullptr;
+};
+
+TestWindowOfClass::~TestWindowOfClass() {
+  // The window must be gone before its class can be unregistered.
+  if (hwnd_) {
+    EXPECT_TRUE(DestroyWindow(hwnd_));
+  }
+  if (registered_) {
+    EXPECT_TRUE(UnregisterClass(class_name_.c_str(), instance_));
+  }
+}
+
+HWND TestWindowOfClass::Create(DWORD style, DWORD ex_style) {
+  WNDCLASSEX wcex = {sizeof(wcex)};
+  wcex.lpfnWndProc = DefWindowProc;
+  wcex.hInstance = instance_;
+  wcex.lpszClassName = class_name_.c_str();
+  registered_ = RegisterClassEx(&wcex) != 0;
+  if (!registered_) {
+    return nullptr;
+  }
+  hwnd_ =
+      CreateWindowEx(ex_style, class_name_.c_str(), class_name_.c_str(), style,
+                     0, 0, 100, 100, nullptr, nullptr, instance_, nullptr);
+  if (hwnd_) {
+    ShowWindow(hwnd_, SW_SHOWNORMAL);
+  }
   return hwnd_;
 }
 
@@ -235,6 +289,63 @@ TEST_F(WindowVisibleAndFullyOpaqueTest, CloakedWindow) {
   DwmSetWindowAttribute(hwnd, DWMWA_CLOAK, &cloak, sizeof(cloak));
   // Cloaked Windows are not considered visible.
   EXPECT_FALSE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
+TEST_F(WindowVisibleAndFullyOpaqueTest, SimpleRegionWindow) {
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
+  Rect win_rect;
+  base::win::ScopedGDIObject<HRGN> region(CreateRectRgn(0, 0, 50, 50));
+  ASSERT_TRUE(region.is_valid());
+  ASSERT_TRUE(SetWindowRgn(hwnd, region.get(), /*redraw=*/TRUE));
+  // The system owns the region once SetWindowRgn() succeeds.
+  std::ignore = region.release();
+  RECT region_box;
+  ASSERT_EQ(GetWindowRgnBox(hwnd, &region_box), SIMPLEREGION);
+  // A rectangular region is a simple region, so the window still counts.
+  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
+TEST_F(WindowVisibleAndFullyOpaqueTest, MaximizedWindow) {
+  HWND hwnd = CreateNativeWindow(/*style=*/0, /*ex_style=*/0);
+  ShowWindow(hwnd, SW_MAXIMIZE);
+  ASSERT_TRUE(IsZoomed(hwnd));
+  Rect returned_rect;
+  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &returned_rect));
+
+  // The frame of a maximized window extends past the monitor's work area, so
+  // the returned rect is the window rect fitted to the work area.
+  RECT win_rect;
+  ASSERT_TRUE(GetWindowRect(hwnd, &win_rect));
+  MONITORINFO monitor_info = {sizeof(monitor_info)};
+  ASSERT_TRUE(GetMonitorInfo(MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST),
+                             &monitor_info));
+  Rect expected_rect(win_rect);
+  expected_rect.AdjustToFit(Rect(monitor_info.rcWork));
+  EXPECT_EQ(returned_rect, expected_rect);
+}
+
+// The Windows taskbar is a popup tool window. Its class name exempts it from
+// both the tool window and the popup window filters.
+TEST_F(WindowVisibleAndFullyOpaqueTest, TaskbarWindow) {
+  TestWindowOfClass test_window(L"Shell_TrayWnd");
+  HWND hwnd = test_window.Create(WS_POPUP, WS_EX_TOOLWINDOW);
+  ASSERT_TRUE(hwnd);
+  Rect win_rect;
+  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
+}
+
+// A popup window whose class name starts with "Chrome_WidgetWin_" is exempt
+// from the popup window filter, even when the class name has the maximum
+// length of 255 characters. A name that long must not be mistaken for a
+// truncated one.
+TEST_F(WindowVisibleAndFullyOpaqueTest, PopupWindowWithLongestClassName) {
+  std::wstring class_name = L"Chrome_WidgetWin_";
+  class_name.resize(255, L'x');
+  TestWindowOfClass test_window(class_name);
+  HWND hwnd = test_window.Create(WS_POPUP, /*ex_style=*/0);
+  ASSERT_TRUE(hwnd);
+  Rect win_rect;
+  EXPECT_TRUE(CheckWindowVisibleAndFullyOpaque(hwnd, &win_rect));
 }
 
 // Verifies that WindowImpl::WndProc forwards messages to DefWindowProc when
