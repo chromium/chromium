@@ -319,12 +319,10 @@ GlicInstanceImpl::GlicInstanceImpl(
       GlobalBrowserCollection::GetInstance());
   host_.SetDelegate(&empty_embedder_delegate_);
   host_observation_.Observe(&host_);
-  if (base::FeatureList::IsEnabled(features::kGlicBindPinnedUnboundTab)) {
-    pinned_tabs_change_subscription_ =
-        GetSharingManagerInternal().AddTabPinningStatusEventCallback(
-            base::BindRepeating(&GlicInstanceImpl::OnTabPinningStatusEvent,
-                                weak_ptr_factory_.GetWeakPtr()));
-  }
+  pinned_tabs_change_subscription_ =
+      GetSharingManagerInternal().AddTabPinningStatusEventCallback(
+          base::BindRepeating(&GlicInstanceImpl::OnTabPinningStatusEvent,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 GlicInstanceImpl::~GlicInstanceImpl() {

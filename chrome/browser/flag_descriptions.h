@@ -1888,11 +1888,6 @@ inline constexpr char kGlicContextualCueBubbleName[] =
     "Glic contextual cue bubble";
 inline constexpr char kGlicContextualCueBubbleDescription[] =
     "Show glic contextual cues in a bubble UI.";
-inline constexpr char kGlicBindPinnedUnboundTabName[] =
-    "Glic Bind a Shared Tab If Unbound";
-inline constexpr char kGlicBindPinnedUnboundTabDescription[] =
-    "When a tab is shared with conversation and not yet bound to any "
-    "conversation, bind it to the current one";
 inline constexpr char kGlicButtonPressedStateName[] =
     "Glic Button Pressed State";
 inline constexpr char kGlicButtonPressedStateDescription[] =
