@@ -563,6 +563,46 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.char_count = chars_.size();
   }
 
+  void SetUpLanguageSplittingTestRunsAndChars() {
+    // Define three runs on the same line with identical styles so they get
+    // merged into a single paragraph block node, with language transitions.
+    chrome_pdf::AccessibilityTextRunInfo run1;
+    run1.start_index = 0;
+    run1.len = 5;
+    run1.bounds = gfx::RectF(0.0f, 0.0f, 50.0f, 10.0f);
+    run1.style = CreateNormalStyle();
+    run1.style.font_name = "Arial";
+    run1.style.is_italic = false;
+    run1.language = "en";
+
+    chrome_pdf::AccessibilityTextRunInfo run2;
+    run2.start_index = 5;
+    run2.len = 5;
+    run2.bounds = gfx::RectF(50.0f, 0.0f, 50.0f, 10.0f);
+    run2.style = run1.style;
+    run2.language = "fr";
+
+    chrome_pdf::AccessibilityTextRunInfo run3;
+    run3.start_index = 10;
+    run3.len = 5;
+    run3.bounds = gfx::RectF(100.0f, 0.0f, 50.0f, 10.0f);
+    run3.style = run1.style;
+    run3.language = "en";
+
+    text_runs_ = {run1, run2, run3};
+
+    // 15 dummy characters.
+    for (int i = 0; i < 15; ++i) {
+      chrome_pdf::AccessibilityCharInfo char_info;
+      char_info.unicode_character = 'a' + i;
+      char_info.char_width = 10.0f;
+      chars_.push_back(char_info);
+    }
+
+    page_info_.text_run_count = text_runs_.size();
+    page_info_.char_count = chars_.size();
+  }
+
   chrome_pdf::AccessibilityViewportInfo viewport_info_;
   uint32_t page_count_ = 1u;
   chrome_pdf::AccessibilityPageInfo page_info_;
@@ -839,6 +879,222 @@ TEST_F(PdfAccessibilityTreeTest, HeuristicStyleSplittingDisabled) {
   EXPECT_EQ(ax::mojom::Role::kStaticText, child->GetRole());
   EXPECT_EQ("abcdefghijklmno",
             child->GetStringAttribute(ax::mojom::StringAttribute::kName));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicLanguageSplittingEnabled) {
+  SetUpLanguageSplittingTestRunsAndChars();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(root_node->GetChildCount(), 1u);
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  ASSERT_EQ(1u, page_node->GetChildCount());
+
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(paragraph_node);
+  // Because the paragraph contains multiple languages, the language attribute
+  // is placed on the individual static text nodes rather than the paragraph.
+  EXPECT_FALSE(paragraph_node->HasStringAttribute(
+      ax::mojom::StringAttribute::kLanguage));
+  // Language transitions create 3 static text nodes.
+  ASSERT_EQ(3u, paragraph_node->GetChildCount());
+
+  ui::AXNode* child1 = paragraph_node->GetChildAtIndex(0);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, child1->GetRole());
+  EXPECT_EQ("abcde",
+            child1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("en",
+            child1->GetStringAttribute(ax::mojom::StringAttribute::kLanguage));
+
+  ui::AXNode* child2 = paragraph_node->GetChildAtIndex(1);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, child2->GetRole());
+  EXPECT_EQ("fghij",
+            child2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("fr",
+            child2->GetStringAttribute(ax::mojom::StringAttribute::kLanguage));
+
+  ui::AXNode* child3 = paragraph_node->GetChildAtIndex(2);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, child3->GetRole());
+  EXPECT_EQ("klmno",
+            child3->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("en",
+            child3->GetStringAttribute(ax::mojom::StringAttribute::kLanguage));
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicBlockLanguageUniformVsMixedWithDocFallback) {
+  SetUpLanguageSplittingTestRunsAndChars();
+  // First two runs are on line 1 ("fr" then "", where "" should inherit the
+  // document language "en" rather than the first run's "fr").
+  // Third run is on line 2 after a paragraph break, with uniform language "es".
+  text_runs_[0].language = "fr";
+  text_runs_[1].language = "";
+  text_runs_[2].language = "es";
+  text_runs_[2].bounds = gfx::RectF(0.0f, 50.0f, 50.0f, 10.0f);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  std::unique_ptr<chrome_pdf::AccessibilityDocInfo> doc_info =
+      CreateAccessibilityDocInfo();
+  doc_info->language = "en";
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(std::move(doc_info));
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(root_node->GetChildCount(), 1u);
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  ASSERT_EQ(2u, page_node->GetChildCount());
+
+  // Mixed-language paragraph: `kLanguage` is only on `child1`, so `child2`
+  // inherits the document language ("en") instead of `child1`'s "fr".
+  ui::AXNode* mixed_para = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(mixed_para);
+  EXPECT_FALSE(
+      mixed_para->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
+  ASSERT_EQ(2u, mixed_para->GetChildCount());
+
+  ui::AXNode* mixed_child1 = mixed_para->GetChildAtIndex(0);
+  EXPECT_EQ("fr", mixed_child1->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ("fr", mixed_child1->GetLanguage());
+
+  ui::AXNode* mixed_child2 = mixed_para->GetChildAtIndex(1);
+  EXPECT_FALSE(
+      mixed_child2->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ("en", mixed_child2->GetLanguage());
+
+  // Uniform-language paragraph: `kLanguage` stays on the paragraph node and is
+  // not duplicated on its static text child.
+  ui::AXNode* uniform_para = page_node->GetChildAtIndex(1);
+  ASSERT_TRUE(uniform_para);
+  EXPECT_EQ("es", uniform_para->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+  ASSERT_EQ(1u, uniform_para->GetChildCount());
+
+  ui::AXNode* uniform_child = uniform_para->GetChildAtIndex(0);
+  EXPECT_FALSE(
+      uniform_child->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
+  EXPECT_EQ("es", uniform_child->GetLanguage());
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicLanguageSplittingInHeading) {
+  SetUpLanguageSplittingTestRunsAndChars();
+  // Make the first two runs a large heading on line 1 ("en" then "fr"), and the
+  // third run smaller body text on line 2 so the first block is classified as a
+  // heading.
+  text_runs_[0].style.font_size = 24.0f;
+  text_runs_[0].bounds = gfx::RectF(0.0f, 0.0f, 50.0f, 24.0f);
+
+  text_runs_[1].style.font_size = 24.0f;
+  text_runs_[1].bounds = gfx::RectF(55.0f, 0.0f, 50.0f, 24.0f);
+
+  text_runs_[2].style.font_size = 10.0f;
+  text_runs_[2].bounds = gfx::RectF(0.0f, 50.0f, 150.0f, 10.0f);
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(root_node->GetChildCount(), 1u);
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  ASSERT_EQ(2u, page_node->GetChildCount());
+
+  ui::AXNode* heading_node = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(heading_node);
+  EXPECT_EQ(ax::mojom::Role::kHeading, heading_node->GetRole());
+  EXPECT_FALSE(
+      heading_node->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
+  ASSERT_EQ(2u, heading_node->GetChildCount());
+
+  ui::AXNode* heading_child1 = heading_node->GetChildAtIndex(0);
+  EXPECT_EQ("abcde", heading_child1->GetStringAttribute(
+                         ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("en", heading_child1->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+
+  ui::AXNode* heading_child2 = heading_node->GetChildAtIndex(1);
+  EXPECT_EQ("fghij", heading_child2->GetStringAttribute(
+                         ax::mojom::StringAttribute::kName));
+  EXPECT_EQ("fr", heading_child2->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(1);
+  ASSERT_TRUE(paragraph_node);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, paragraph_node->GetRole());
+  EXPECT_EQ("en", paragraph_node->GetStringAttribute(
+                      ax::mojom::StringAttribute::kLanguage));
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicLanguageSplittingDisabled) {
+  SetUpLanguageSplittingTestRunsAndChars();
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {::features::kPdfAccessibilityHeuristicEnhancements,
+           chrome_pdf::features::kPdfTags});
+
+  CreatePdfAccessibilityTree();
+  pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  pdf_accessibility_tree_->SetAccessibilityDocInfo(
+      CreateAccessibilityDocInfo());
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info_, text_runs_,
+                                                    chars_, page_objects_);
+  WaitForThreadTasks();
+  WaitForThreadDelayedTasks();
+
+  ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(root_node->GetChildCount(), 1u);
+  ui::AXNode* page_node = root_node->GetChildAtIndex(1);
+  ASSERT_TRUE(page_node);
+  ASSERT_EQ(1u, page_node->GetChildCount());
+
+  ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
+  ASSERT_TRUE(paragraph_node);
+  EXPECT_FALSE(paragraph_node->HasStringAttribute(
+      ax::mojom::StringAttribute::kLanguage));
+  ASSERT_EQ(1u, paragraph_node->GetChildCount());
+
+  ui::AXNode* child = paragraph_node->GetChildAtIndex(0);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, child->GetRole());
+  EXPECT_EQ("abcdefghijklmno",
+            child->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  EXPECT_FALSE(
+      child->HasStringAttribute(ax::mojom::StringAttribute::kLanguage));
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeadingsDetectedByHeuristic) {

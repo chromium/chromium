@@ -22,6 +22,8 @@
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/pdfium/public/fpdf_edit.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -320,6 +322,126 @@ TEST_P(AccessibilityTest, DocumentLanguageFromCatalog) {
   // Verify the document root has the language from the catalog's /Lang entry.
   EXPECT_EQ(PdfTagType::kDocument, doc_structure->type);
   EXPECT_EQ("en-US", doc_structure->language);
+}
+
+TEST_P(AccessibilityTest, TextRunLanguageFromMarkedContent) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  FPDF_PAGE fpdf_page = page.GetPage();
+  ASSERT_TRUE(fpdf_page);
+  ASSERT_GE(FPDFPage_CountObjects(fpdf_page), 2);
+
+  // Nested marks on the first object: the innermost /Lang ("fr") wins.
+  FPDF_PAGEOBJECT first_object = FPDFPage_GetObject(fpdf_page, 0);
+  ASSERT_TRUE(first_object);
+  FPDF_PAGEOBJECTMARK outer_mark = FPDFPageObj_AddMark(first_object, "P");
+  ASSERT_TRUE(outer_mark);
+  ASSERT_TRUE(FPDFPageObjMark_SetStringParam(engine->doc(), first_object,
+                                             outer_mark, "Lang", "en"));
+  FPDF_PAGEOBJECTMARK inner_mark = FPDFPageObj_AddMark(first_object, "Span");
+  ASSERT_TRUE(inner_mark);
+  ASSERT_TRUE(FPDFPageObjMark_SetStringParam(engine->doc(), first_object,
+                                             inner_mark, "Lang", "fr"));
+
+  AccessibilityPageInfo page_info;
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityCharInfo> chars;
+  AccessibilityPageObjects page_objects;
+  GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                       page_objects);
+
+  ASSERT_EQ(2u, text_runs.size());
+  EXPECT_EQ("fr", text_runs[0].language);
+  EXPECT_EQ("", text_runs[1].language);
+}
+
+TEST_P(AccessibilityTest, TextRunLanguageFromMarkedContentSplitsTextRun) {
+  base::test::ScopedFeatureList feature_list(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("abbreviation_expansion.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  // In `abbreviation_expansion.pdf`, objects 1 ("PDF", 3 chars) and 2
+  // (" format.", 8 chars) share the same style and line and normally merge into
+  // a single 11-character text run. Adding a /Lang mark to object 1 splits them
+  // into separate runs.
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  FPDF_PAGE fpdf_page = page.GetPage();
+  ASSERT_TRUE(fpdf_page);
+  ASSERT_EQ(3, FPDFPage_CountObjects(fpdf_page));
+
+  FPDF_PAGEOBJECT second_object = FPDFPage_GetObject(fpdf_page, 1);
+  ASSERT_TRUE(second_object);
+  FPDF_PAGEOBJECTMARK mark = FPDFPageObj_AddMark(second_object, "Span");
+  ASSERT_TRUE(mark);
+  ASSERT_TRUE(FPDFPageObjMark_SetStringParam(engine->doc(), second_object, mark,
+                                             "Lang", "fr"));
+
+  AccessibilityPageInfo page_info;
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityCharInfo> chars;
+  AccessibilityPageObjects page_objects;
+  GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                       page_objects);
+
+  ASSERT_EQ(3u, text_runs.size());
+  EXPECT_EQ(10u, text_runs[0].len);
+  EXPECT_EQ("", text_runs[0].language);
+  // The leading space of object 2 (" format.") is absorbed into `text_runs[1]`
+  // because `CalculateTextRunInfoAt()` only checks style and language changes
+  // on non-whitespace characters.
+  EXPECT_EQ(4u, text_runs[1].len);
+  EXPECT_EQ("fr", text_runs[1].language);
+  EXPECT_EQ(7u, text_runs[2].len);
+  EXPECT_EQ("", text_runs[2].language);
+}
+
+TEST_P(AccessibilityTest, TextRunLanguageFromMarkedContentFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ::features::kPdfAccessibilityHeuristicEnhancements);
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("abbreviation_expansion.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+
+  PDFiumPage& page = GetPDFiumPage(*engine, 0);
+  FPDF_PAGE fpdf_page = page.GetPage();
+  ASSERT_TRUE(fpdf_page);
+  ASSERT_EQ(3, FPDFPage_CountObjects(fpdf_page));
+
+  FPDF_PAGEOBJECT second_object = FPDFPage_GetObject(fpdf_page, 1);
+  ASSERT_TRUE(second_object);
+  FPDF_PAGEOBJECTMARK mark = FPDFPageObj_AddMark(second_object, "Span");
+  ASSERT_TRUE(mark);
+  ASSERT_TRUE(FPDFPageObjMark_SetStringParam(engine->doc(), second_object, mark,
+                                             "Lang", "fr"));
+
+  AccessibilityPageInfo page_info;
+  std::vector<AccessibilityTextRunInfo> text_runs;
+  std::vector<AccessibilityCharInfo> chars;
+  AccessibilityPageObjects page_objects;
+  GetAccessibilityInfo(engine.get(), 0, page_info, text_runs, chars,
+                       page_objects);
+
+  // With the feature disabled, objects 1 and 2 remain merged in a single
+  // 11-char run and no language is populated.
+  ASSERT_EQ(2u, text_runs.size());
+  EXPECT_EQ(10u, text_runs[0].len);
+  EXPECT_EQ("", text_runs[0].language);
+  EXPECT_EQ(11u, text_runs[1].len);
+  EXPECT_EQ("", text_runs[1].language);
 }
 
 TEST_P(AccessibilityTest, GetAccessibilityPageWithTags) {

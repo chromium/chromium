@@ -101,6 +101,7 @@ struct AccessibilityTextRunInfo {
   AccessibilityTextDirection direction = AccessibilityTextDirection::kNone;
   AccessibilityTextStyleInfo style;
   bool is_searchified = false;
+  std::string language;
 };
 
 struct AccessibilityImageInfo {

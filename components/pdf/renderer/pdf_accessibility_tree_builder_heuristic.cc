@@ -1358,20 +1358,34 @@ bool BreakParagraph(uint32_t text_run_index,
   return heading_classifier != next_classifier;
 }
 
-// Returns whether `style` or `text_position` differs from the in-progress
-// static text node, which requires starting a new one so that text runs of
-// different styles (e.g. bold vs regular, or superscript vs normal) are not
-// merged into a single static text node.
+// Returns whether `text_run` differs in style, language, or position from the
+// in-progress static text node, which requires starting a new one so that text
+// runs of different styles (e.g. bold vs regular, or superscript vs normal) or
+// languages are not merged into a single static text node.
 bool BreaksStaticTextNode(const StaticTextState& static_text_state,
-                          const chrome_pdf::AccessibilityTextStyleInfo& style,
+                          const chrome_pdf::AccessibilityTextRunInfo& text_run,
                           ax::mojom::TextPosition text_position) {
-  if (!static_text_state.node || !static_text_state.style) {
+  // Check for an active node first; when none is open, `language` is empty and
+  // comparing it against a non-empty `text_run.language` would falsely report a
+  // break on the opening run of a block.
+  if (!static_text_state.node) {
+    return false;
+  }
+  // Check `language` before `style` because `language` is tracked on all static
+  // text nodes, including inside headings where `style` is left unset.
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      static_text_state.language != text_run.language) {
+    return true;
+  }
+  // Guard the style and `text_position` checks below, which are only populated
+  // for non-heading nodes when the flag is enabled.
+  if (!static_text_state.style) {
     return false;
   }
   // `style` is only ever set when the flag is enabled.
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   return !PdfAccessibilityTreeBuilder::AreStylesEquivalent(
-             *static_text_state.style, style) ||
+             *static_text_state.style, text_run.style) ||
          static_text_state.text_position != text_position;
 }
 
@@ -1386,6 +1400,7 @@ void BuildStaticNode(StaticTextState* static_text_state) {
   static_text_state->node = nullptr;
   static_text_state->style.reset();
   static_text_state->text_position.reset();
+  static_text_state->language.clear();
 }
 
 void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
@@ -1533,10 +1548,10 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           (builder_->highlights())[current_highlight_index_++], block_node,
           &previous_on_line_node, &text_run_index);
     } else {
-      // A style or text position change starts a new static text node, which
-      // ends any heading the current block was classified as.
+      // A style, language, or text position change starts a new static text
+      // node, which ends any heading the current block was classified as.
       if (BreaksStaticTextNode(
-              static_text_state, text_run.style,
+              static_text_state, text_run,
               GetTextPosition(builder_->text_runs(), text_run_index,
                               run_context.chars))) {
         current_heading_classifier = HeadingClassifier::kNone;
@@ -1623,6 +1638,13 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
       ax::mojom::Role::kParagraph, ax::mojom::Restriction::kReadOnly);
   block_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
                                true);
+  current_block_node_ = block_node;
+  current_block_static_text_nodes_.clear();
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      !run_context.run->language.empty()) {
+    block_node->AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
+                                   run_context.run->language);
+  }
   *out_heading_classifier = HeadingClassifier::kNone;
 
   if (!builder_->mark_headings_using_heuristic()) {
@@ -1714,7 +1736,25 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
                       base::span(builder_->chars())
                           .subspan(page_char_index.char_index, text_run.len));
 
-  if (BreaksStaticTextNode(*static_text_state, text_run.style, text_position)) {
+  // If the current block was given the opening run's language and a later run
+  // in the block has a different language, move the language attribute from the
+  // block node onto its individual static text children.
+  ax::mojom::StringAttribute lang_attr = ax::mojom::StringAttribute::kLanguage;
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      current_block_node_ &&
+      current_block_node_->HasStringAttribute(lang_attr)) {
+    std::string block_language =
+        current_block_node_->GetStringAttribute(lang_attr);
+    if (text_run.language != block_language) {
+      for (ui::AXNodeData* node : current_block_static_text_nodes_) {
+        node->AddStringAttribute(lang_attr, block_language);
+      }
+      current_block_static_text_nodes_.clear();
+      current_block_node_->RemoveStringAttribute(lang_attr);
+    }
+  }
+
+  if (BreaksStaticTextNode(*static_text_state, text_run, text_position)) {
     BuildStaticNode(static_text_state);
   }
 
@@ -1736,6 +1776,16 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
       }
     } else {
       static_text_state->node = builder_->CreateStaticTextNode(page_char_index);
+    }
+    static_text_state->language = text_run.language;
+    if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+      if (current_block_node_ && current_block_node_->HasStringAttribute(
+                                     ax::mojom::StringAttribute::kLanguage)) {
+        current_block_static_text_nodes_.push_back(static_text_state->node);
+      } else if (!text_run.language.empty()) {
+        static_text_state->node->AddStringAttribute(
+            ax::mojom::StringAttribute::kLanguage, text_run.language);
+      }
     }
     parent_node->child_ids.push_back(static_text_state->node->id);
   }
