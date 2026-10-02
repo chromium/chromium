@@ -2144,7 +2144,6 @@ android_library("chrome_unit_test_java_various") {
     "src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
     "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
     "src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
-    "src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
     "src/org/chromium/chrome/browser/payments/ui/CurrencyFormatterTest.java",
     "src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettingsRenderTest.java",
     "src/org/chromium/chrome/browser/share/ShareUrlTest.java",

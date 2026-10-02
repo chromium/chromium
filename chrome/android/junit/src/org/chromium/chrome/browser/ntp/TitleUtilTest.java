@@ -7,23 +7,18 @@ package org.chromium.chrome.browser.ntp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.url.GURL;
 
 /** Unit tests for TitleUtil. */
-@RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@RunWith(BaseRobolectricTestRunner.class)
 public class TitleUtilTest {
     /** Tests for the getTitleForDisplay method. */
     @Test
-    @SmallTest
     @Feature({"Ntp"})
     public void testGetTitleForDisplay() {
         // If the title is not null or empty it is simply returned.
@@ -45,7 +40,7 @@ public class TitleUtilTest {
                 "example.com",
                 TitleUtil.getTitleForDisplay(null, new GURL("https://example.com/")));
         assertEquals("foo/bar", TitleUtil.getTitleForDisplay(null, new GURL("file://foo/bar")));
-        assertEquals(null, TitleUtil.getTitleForDisplay(null, new GURL("/")));
+        assertNull(TitleUtil.getTitleForDisplay(null, new GURL("/")));
         assertEquals("", TitleUtil.getTitleForDisplay("", new GURL("/")));
     }
 }
