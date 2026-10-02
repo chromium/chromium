@@ -4,19 +4,23 @@
 
 #include "chrome/browser/ui/tab_dialogs.h"
 
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
-int kUserDataKey;  // The value is not important, the address is a key.
+DEFINE_USER_DATA(TabDialogs);
+
+TabDialogs::TabDialogs(tabs::TabInterface& tab)
+    : scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+
+TabDialogs::~TabDialogs() = default;
+
+// static
+TabDialogs* TabDialogs::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
 
 // static
 TabDialogs* TabDialogs::FromWebContents(content::WebContents* contents) {
   DCHECK(contents);
-  return static_cast<TabDialogs*>(contents->GetUserData(UserDataKey()));
-}
-
-// static
-const void* TabDialogs::UserDataKey() {
-  return &kUserDataKey;
+  return From(tabs::TabInterface::MaybeGetFromContents(contents));
 }

@@ -1285,9 +1285,13 @@ source_set("tab_dialogs") {
   sources = [ "tab_dialogs.cc" ]
   public_deps = [
     "//base",
+    "//ui/base/unowned_user_data",
     "//ui/gfx",
   ]
-  deps = [ "//content/public/browser" ]
+  deps = [
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
   if (enable_extensions_core) {
     public_deps += [ "//extensions/common" ]
   }
@@ -1310,7 +1314,6 @@ source_set("tab_helpers_impl") {
 
   deps = [
     ":recently_audible_helper",
-    ":tab_dialogs",
     ":ui_features",
     "//base",
     "//chrome/browser:browser_process",

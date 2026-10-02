@@ -97,6 +97,7 @@ class StorageAccessAPITabHelper;
 class SupervisedUserNavigationObserver;
 class TabCaptureContentsBorderHelper;
 class TabContextDecryptionTokenTabHelper;
+class TabDialogs;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class ThumbnailTabHelper;
@@ -977,6 +978,8 @@ class TabFeatures {
 
   std::unique_ptr<AutoPictureInPictureTabHelper>
       auto_picture_in_picture_tab_helper_;
+
+  std::unique_ptr<TabDialogs> tab_dialogs_;
 
   std::unique_ptr<ManagePasswordsUIController> manage_passwords_ui_controller_;
 

@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_UI_TAB_DIALOGS_H_
 #define CHROME_BROWSER_UI_TAB_DIALOGS_H_
 
+#include <memory>
 #include <set>
 
 #include "base/functional/callback_forward.h"
-#include "base/supports_user_data.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace content {
@@ -17,21 +19,29 @@ class RenderWidgetHost;
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace ui {
 class ProfileSigninConfirmationDelegate;
 }
 
 // A cross-platform interface for invoking various tab modal dialogs/bubbles.
-class TabDialogs : public base::SupportsUserData::Data {
+class TabDialogs {
  public:
-  ~TabDialogs() override = default;
+  DECLARE_USER_DATA(TabDialogs);
 
-  // Creates a platform specific instance, and attaches it to |contents|.
-  // If an instance is already attached, does nothing.
-  static void CreateForWebContents(content::WebContents* contents);
+  explicit TabDialogs(tabs::TabInterface& tab);
+  virtual ~TabDialogs();
 
-  // Returns the instance that was attached to |contents|.
-  // If no instance was attached, returns NULL.
+  // Creates a platform-specific instance for `tab` and `contents`.
+  static std::unique_ptr<TabDialogs> Create(tabs::TabInterface& tab,
+                                            content::WebContents* contents);
+
+  // Returns the instance associated with `tab` or `contents`, or nullptr if
+  // none exists.
+  static TabDialogs* From(tabs::TabInterface* tab);
   static TabDialogs* FromWebContents(content::WebContents* contents);
 
   // Returns the parent view to use when showing a tab modal dialog.
@@ -69,8 +79,8 @@ class TabDialogs : public base::SupportsUserData::Data {
   virtual void ShowManagePasswordsBubble(bool user_action) = 0;
   virtual void HideManagePasswordsBubble() = 0;
 
- protected:
-  static const void* UserDataKey();
+ private:
+  ui::ScopedUnownedUserData<TabDialogs> scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_DIALOGS_H_

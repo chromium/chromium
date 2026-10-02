@@ -114,6 +114,7 @@
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
+#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
@@ -397,6 +398,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, *page_action_controller_);
   }
 
+  tab_dialogs_ = TabDialogs::Create(tab, tab.GetContents());
   if (page_action_controller_->ActionExists(kActionShowPasswordsBubbleOrPage)) {
     manage_passwords_page_action_controller_ =
         std::make_unique<ManagePasswordsPageActionController>(
@@ -1525,6 +1527,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           *tab, *tab, new_contents);
 
   manage_passwords_ui_controller_.reset();
+  tab_dialogs_.reset();
+  tab_dialogs_ = TabDialogs::Create(*tab, new_contents);
   manage_passwords_ui_controller_ =
       GetUserDataFactory().CreateInstance<ManagePasswordsUIController>(
           *tab, *tab, new_contents);

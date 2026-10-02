@@ -11,7 +11,7 @@
 // Views implementation of TabDialogs interface.
 class TabDialogsViews : public TabDialogs {
  public:
-  explicit TabDialogsViews(content::WebContents* contents);
+  TabDialogsViews(tabs::TabInterface& tab, content::WebContents* contents);
 
   TabDialogsViews(const TabDialogsViews&) = delete;
   TabDialogsViews& operator=(const TabDialogsViews&) = delete;

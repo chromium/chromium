@@ -92,7 +92,6 @@
 #include "chrome/browser/ui/profiles/profile_ui_test_utils.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
-#include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -380,50 +379,6 @@ class BrowserAddedWaiter : public BrowserCollectionObserver {
   base::RunLoop run_loop_;
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       observation_{this};
-};
-
-class TestTabDialogs : public TabDialogs {
- public:
-  TestTabDialogs(content::WebContents* contents, base::RunLoop* run_loop)
-      : contents_(contents), run_loop_(run_loop) {}
-  ~TestTabDialogs() override = default;
-
-  // Creates a platform specific instance, and attaches it to |contents|.
-  // If an instance is already attached, it overwrites it.
-  static void OverwriteForWebContents(content::WebContents* contents,
-                                      base::RunLoop* run_loop) {
-    DCHECK(contents);
-    contents->SetUserData(UserDataKey(),
-                          std::make_unique<TestTabDialogs>(contents, run_loop));
-  }
-
-  gfx::NativeView GetDialogParentView() const override {
-    return contents_->GetNativeView();
-  }
-  void ShowCollectedCookies() override {}
-  void ShowHungRendererDialog(
-      content::RenderWidgetHost* render_widget_host,
-      base::RepeatingClosure hang_monitor_restarter) override {}
-  void HideHungRendererDialog(
-      content::RenderWidgetHost* render_widget_host) override {}
-  bool IsShowingHungRendererDialog() override { return false; }
-
-  void ShowManagePasswordsBubble(bool user_action) override {}
-  void HideManagePasswordsBubble() override {}
-  void ShowDeprecatedAppsDialog(
-      const extensions::ExtensionId& optional_launched_extension_id,
-      const std::set<extensions::ExtensionId>& deprecated_app_ids,
-      content::WebContents* web_contents) override {}
-  void ShowForceInstalledDeprecatedAppsDialog(
-      const extensions::ExtensionId& app_id,
-      content::WebContents* web_contents) override {}
-  void ShowForceInstalledPreinstalledDeprecatedAppDialog(
-      const extensions::ExtensionId& app_id,
-      content::WebContents* web_contents) override {}
-
- private:
-  raw_ptr<content::WebContents> contents_;
-  raw_ptr<base::RunLoop> run_loop_;
 };
 
 class PageNonEmptyPaintObserver : public content::WebContentsObserver {
