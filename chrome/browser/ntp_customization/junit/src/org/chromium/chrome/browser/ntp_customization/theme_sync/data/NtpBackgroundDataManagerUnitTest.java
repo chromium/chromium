@@ -62,7 +62,7 @@ public class NtpBackgroundDataManagerUnitTest {
 
     @After
     public void tearDown() {
-        NtpBackgroundDataManager.resetSharedPreferenceForTesting();
+        NtpBackgroundDataManager.resetSharedPreference();
         NtpCustomizationUtils.deleteThemeImageFileDir(
                 NtpCustomizationUtils.NTP_THEME_COLLECTION_IMAGES_DIR);
     }

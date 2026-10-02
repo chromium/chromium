@@ -14,8 +14,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH;
@@ -1188,16 +1186,19 @@ public class NtpCustomizationUtils {
      */
     public static void resetNtpCustomBackgroundDataForPolicy() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE)) {
-            // If the no data has been cached or has been cleaned up before, exits here.
+        if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE)
+                && prefsManager
+                        .readStringsWithPrefix(
+                                ChromePreferenceKeys.NTP_CUSTOMIZATION_SYNC_HISTORY_DATA)
+                        .isEmpty()) {
+            // If no data has been cached or it has been cleaned up before, exits here to avoid
+            // repeated disk and SharedPreferences operations on every startup.
             return;
         }
 
-        @NtpBackgroundType int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE);
         removeAllNtpBackgroundDataFromSharedPreference();
-        if (type == IMAGE_FROM_DISK || type == THEME_COLLECTION) {
-            deleteAllNtpBackgroundImageFiles();
-        }
+        NtpBackgroundDataManager.resetSharedPreference();
+        deleteAllNtpBackgroundImageFiles();
     }
 
     /**
@@ -1798,7 +1799,7 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN);
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS);
-        NtpBackgroundDataManager.resetSharedPreferenceForTesting();
+        NtpBackgroundDataManager.resetSharedPreference();
     }
 
     public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {

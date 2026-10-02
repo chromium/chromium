@@ -644,7 +644,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testResetNtpCustomBackgroundData_colorFromHex() {
+    public void testResetNtpCustomBackgroundData_colorFromHex() throws IOException {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE, COLOR_FROM_HEX);
         sharedPreferencesManager.writeInt(
@@ -653,6 +653,12 @@ public class NtpCustomizationUtilsUnitTest {
         sharedPreferencesManager.writeInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, Color.GREEN);
         NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference("/path/to/image");
+        String syncHistoryKey =
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_SYNC_HISTORY_DATA.createKey("history_test");
+        sharedPreferencesManager.writeString(syncHistoryKey, "history_data");
+        File dailyRefreshFile = NtpCustomizationUtils.createDailyRefreshBackgroundImageFile();
+        dailyRefreshFile.createNewFile();
+        assertTrue(dailyRefreshFile.exists());
 
         NtpCustomizationUtils.resetNtpCustomBackgroundDataForPolicy();
         RobolectricUtil.runAllBackgroundAndUi();
@@ -666,6 +672,20 @@ public class NtpCustomizationUtilsUnitTest {
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK));
         assertNull(NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
+        assertFalse(sharedPreferencesManager.contains(syncHistoryKey));
+        assertFalse(dailyRefreshFile.exists());
+
+        // Also cleans up when active theme was reset to default (no background type key), but sync
+        // history and cached images remain.
+        sharedPreferencesManager.writeString(syncHistoryKey, "history_data");
+        dailyRefreshFile.createNewFile();
+        assertTrue(dailyRefreshFile.exists());
+
+        NtpCustomizationUtils.resetNtpCustomBackgroundDataForPolicy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(sharedPreferencesManager.contains(syncHistoryKey));
+        assertFalse(dailyRefreshFile.exists());
     }
 
     @Test

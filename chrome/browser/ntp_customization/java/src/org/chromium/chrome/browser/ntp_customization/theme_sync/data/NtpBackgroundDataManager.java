@@ -446,8 +446,8 @@ public class NtpBackgroundDataManager {
                         imageBaseData.getLastUploadImageFilePath()));
     }
 
-    /** Resets the shared preferences used by this manager for testing purposes. */
-    public static void resetSharedPreferenceForTesting() {
+    /** Resets the shared preferences used by this manager. */
+    public static void resetSharedPreference() {
         ChromeSharedPreferences.getInstance()
                 .removeKeysWithPrefix(ChromePreferenceKeys.NTP_CUSTOMIZATION_SYNC_HISTORY_DATA);
     }
