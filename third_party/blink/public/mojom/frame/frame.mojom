@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "cc/mojom/browser_controls_offset_tag_modifications.mojom";
 import "cc/mojom/browser_controls_state.mojom";
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/byte_size.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -134,11 +135,11 @@ struct DownloadURLParams {
   mojo_base.mojom.String16? suggested_name;
   network.mojom.RedirectMode cross_origin_redirects;
 
-  // Non-null when |url| is for "blob:".
+  // Non-null when `url` is for "blob:".
   pending_remote<BlobURLToken>? blob_url_token;
 
-  // Non-null when |url| is for "data:", eg. when saving an image.
-  pending_remote<Blob>? data_url_blob;
+  // Non-null when `url` is for "data:", eg. when saving an image.
+  mojo_base.mojom.BigBuffer? data_url_buffer;
 
   // Whether to prompt the user for a destination filepath.
   bool should_prompt_for_save_location = false;

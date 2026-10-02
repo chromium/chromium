@@ -60,8 +60,6 @@
 #include "cc/trees/scroll_node.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "skia/public/mojom/skcolor.mojom-blink.h"
@@ -211,7 +209,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/core/testing/wait_for_event.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/blob/testing/fake_blob.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
@@ -240,7 +237,6 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
-#include "third_party/blink/renderer/platform/wtf/uuid.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
 #include "ui/base/mojom/menu_source_type.mojom-blink.h"
@@ -12190,100 +12186,22 @@ TEST(WebFrameGlobalReuseTest, ReuseForMainFrameIfEnabled) {
                              .ToLocalChecked()));
 }
 
-// This class intercepts the registration of Blob instances.
-//
-// Given that the content of the Blob is known (data URL)
-// it gets the data from the DataElement's BytesProvider, and creates
-// FakeBlob's accordingly.
-class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
- public:
-  void Register(mojo::PendingReceiver<mojom::blink::Blob> blob,
-                const String& content_type,
-                const String& content_disposition,
-                Vector<mojom::blink::DataElementPtr> elements,
-                RegisterCallback callback) override {
-    const String uuid = CreateCanonicalUuidString();
-    DCHECK_EQ(elements.size(), 1u);
-    DCHECK(elements[0]->is_bytes());
-
-    auto& element0 = elements[0];
-    const auto& bytes = element0->get_bytes();
-    auto length = bytes->length;
-    String body(
-        base::span(*bytes->embedded_data).first(static_cast<uint32_t>(length)));
-    mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid, body),
-                                std::move(blob));
-    std::move(callback).Run(uuid);
-  }
-
-  void RegisterFromStream(
-      const String& content_type,
-      const String& content_disposition,
-      uint64_t expected_length,
-      mojo::ScopedDataPipeConsumerHandle,
-      mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
-      RegisterFromStreamCallback) override {
-    NOTREACHED();
-  }
-};
-
-// blink::mojom::LocalFrameHost instance that intecepts DownloadURL() mojo
-// calls and reads the blob data URL sent by the renderer accordingly.
+// blink::mojom::LocalFrameHost instance that intercepts DownloadURL() calls.
 class TestLocalFrameHostForSaveImageFromDataURL : public FakeLocalFrameHost {
  public:
-  TestLocalFrameHostForSaveImageFromDataURL()
-      : blob_registry_receiver_(
-            &blob_registry_,
-            blob_registry_remote_.BindNewPipeAndPassReceiver()) {
-    BlobDataHandle::SetBlobRegistryForTesting(blob_registry_remote_.get());
-  }
-  ~TestLocalFrameHostForSaveImageFromDataURL() override {
-    BlobDataHandle::SetBlobRegistryForTesting(nullptr);
-  }
+  TestLocalFrameHostForSaveImageFromDataURL() = default;
+  ~TestLocalFrameHostForSaveImageFromDataURL() override = default;
 
   // FakeLocalFrameHost:
   void DownloadURL(mojom::blink::DownloadURLParamsPtr params) override {
-    mojo::Remote<mojom::blink::Blob> blob(std::move(params->data_url_blob));
-    mojo::ScopedDataPipeProducerHandle producer_handle;
-    mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    auto result =
-        mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle);
-    DCHECK(result == MOJO_RESULT_OK);
-
-    blob->ReadAll(std::move(producer_handle), mojo::NullRemote());
-
-    DataPipeDrainerClient client(&data_url_);
-    auto data_pipe_drainer = std::make_unique<mojo::DataPipeDrainer>(
-        &client, std::move(consumer_handle));
-    client.Run();
+    ASSERT_TRUE(params->data_url_buffer);
+    data_url_ = String(base::span(*params->data_url_buffer));
   }
 
   const String& Result() const { return data_url_; }
   void Reset() { data_url_ = String(); }
 
  private:
-  // Helper class to copy a blob to a string.
-  class DataPipeDrainerClient : public mojo::DataPipeDrainer::Client {
-   public:
-    explicit DataPipeDrainerClient(String* output)
-        : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
-          output_(output) {}
-    void Run() { run_loop_.Run(); }
-
-    void OnDataAvailable(base::span<const uint8_t> data) override {
-      *output_ = String(data);
-    }
-    void OnDataComplete() override { run_loop_.Quit(); }
-
-   private:
-    base::RunLoop run_loop_;
-    raw_ptr<String, UnprotectedInRelease | DanglingUntriaged> output_;
-  };
-
-  BlobRegistryForSaveImageFromDataURL blob_registry_;
-  mojo::Remote<mojom::blink::BlobRegistry> blob_registry_remote_;
-  mojo::Receiver<mojom::blink::BlobRegistry> blob_registry_receiver_;
-
   // Data URL retrieved from the blob.
   String data_url_;
 };
@@ -12311,9 +12229,6 @@ TEST_F(WebFrameTest, SaveImageAt) {
 
   frame_host.Reset();
   local_frame->SaveImageAt(gfx::Point(1, 1));
-  // Note that in this test does not use RunPendingTasks() since
-  // TestLocalFrameHostForSaveImageFromDataURL trigger its own loops, so nesting
-  // must be allowed.
   base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed).RunUntilIdle();
 
   EXPECT_EQ(

@@ -220,10 +220,11 @@ bool VerifyDownloadUrlParams(RenderProcessHost* process,
     }
   }
 
-  // If |params.url| is not set, this must be a large data URL being passed
-  // through |params.data_url_blob|.
-  if (!params.url.is_valid() && !params.data_url_blob.is_valid())
+  // If `params.url` is not set, this must be a large data URL being passed
+  // through `params.data_url_buffer`.
+  if (!params.url.is_valid() && !params.data_url_buffer) {
     return false;
+  }
 
   // Verification succeeded.
   return true;

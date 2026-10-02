@@ -49,6 +49,7 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/cpp/features.h"
@@ -228,7 +229,6 @@
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_histogram_accumulator.h"
-#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
@@ -254,6 +254,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -305,15 +306,9 @@ inline float ParentCssZoomFactor(LocalFrame* frame) {
   return parent_local_frame ? parent_local_frame->CssZoomFactor() : 1;
 }
 
-// Convert a data url to a message pipe handle that corresponds to a remote
-// blob, so that it can be passed across processes.
-mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
-  auto blob_data = std::make_unique<BlobData>();
+mojo_base::BigBuffer DataURLToBigBuffer(const String& data_url) {
   StringUtf8Adaptor data_url_utf8(data_url);
-  blob_data->AppendBytes(base::as_byte_span(data_url_utf8));
-  scoped_refptr<BlobDataHandle> blob_data_handle =
-      BlobDataHandle::Create(std::move(blob_data), data_url_utf8.size());
-  return blob_data_handle->CloneBlobRemote();
+  return mojo_base::BigBuffer(base::as_byte_span(data_url_utf8));
 }
 
 RemoteFrame* SourceFrameForOptionalToken(
@@ -3936,7 +3931,7 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
 
   auto params = mojom::blink::DownloadURLParams::New();
   params->should_prompt_for_save_location = true;
-  params->data_url_blob = DataURLToBlob(url);
+  params->data_url_buffer = DataURLToBigBuffer(url);
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
 }
 
@@ -4075,10 +4070,9 @@ void LocalFrame::DownloadURL(
 
   auto params = mojom::blink::DownloadURLParams::New();
   const KURL& url = request.Url();
-  // Pass data URL through blob.
   if (url.ProtocolIs("data")) {
     params->url = KURL();
-    params->data_url_blob = DataURLToBlob(url.GetString());
+    params->data_url_buffer = DataURLToBigBuffer(url.GetString());
   } else {
     params->url = url;
   }
