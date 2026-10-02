@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.keyboard_accessory;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
@@ -113,13 +112,13 @@ public class ManualFillingIntegrationTest {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
         // Focus the field to bring up the accessory.
-        onView(withId(R.id.keyboard_accessory)).check(doesNotExist());
+        waitToBeHidden(withId(R.id.keyboard_accessory));
         mHelper.focusPasswordField();
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Check that ONLY the accessory is there but the sheet is still hidden.
         whenDisplayed(withId(R.id.keyboard_accessory));
-        onView(withChild(withId(R.id.keyboard_accessory_sheet_frame))).check(doesNotExist());
+        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
     }
 
     @Test
@@ -151,7 +150,7 @@ public class ManualFillingIntegrationTest {
 
         // Check that ONLY the accessory is there but the sheet is still hidden.
         whenDisplayed(withId(R.id.keyboard_accessory));
-        onView(withChild(withId(R.id.keyboard_accessory_sheet_frame))).check(doesNotExist());
+        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
         // Trigger the sheet and wait for it to open and the keyboard to disappear.
         whenDisplayed(withId(R.id.bar_items_view))
@@ -204,7 +203,7 @@ public class ManualFillingIntegrationTest {
                                     accessoryMargins.get().bottomMargin,
                                     is(0)); // Attached to keyboard.
                         });
-        onView(withChild(withId(R.id.keyboard_accessory_sheet_frame))).check(doesNotExist());
+        waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
         // Trigger the sheet and wait for it to open and the keyboard to disappear.
         whenDisplayed(withId(R.id.bar_items_view))
