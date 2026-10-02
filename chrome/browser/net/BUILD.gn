@@ -556,6 +556,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ash/login:test_support",
         "//chrome/browser/ash/net",
+        "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/dbus/regmon",
       ]

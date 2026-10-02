@@ -87,6 +87,7 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     "//chromeos/ash/components/kcer:chaps_proto",
     "//chromeos/ash/components/platform_keys",
     "//components/prefs",

@@ -2808,6 +2808,7 @@ source_set("browser_tests") {
       "//chrome/browser/ui/login",
       "//chrome/browser/ui/views/notifications",
       "//chrome/browser/ui/webui/ash/parent_access:test_support",
+      "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
       "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/chaps_util:test_support",
       "//chromeos/ash/components/dbus/audio",

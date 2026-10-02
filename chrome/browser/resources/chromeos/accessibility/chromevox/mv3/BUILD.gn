@@ -492,6 +492,7 @@ js2gtest("chromevox_extension_js_tests") {
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/common",
+    "//chrome/test/base:cros_extension_js_browser_test",
   ]
   test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")
   deps_js = test_deps_js_outputs[0]

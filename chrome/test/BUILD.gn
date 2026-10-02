@@ -530,13 +530,6 @@ static_library("test_support") {
   }
 
   if (is_chromeos) {
-    public_deps += [
-      "//chrome/test/base:aura_window_title_observer",
-      "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
-      "//chrome/test/base:cros_extension_js_browser_test",
-      "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
-    ]
-
     deps += [
       "//ash/constants",
       "//base/test:proto_test_support",

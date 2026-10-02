@@ -479,6 +479,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     "//chrome/test/base:testing_browser_process",
     "//chromeos:test_support",
     "//chromeos/ash/components/assistant:buildflags",

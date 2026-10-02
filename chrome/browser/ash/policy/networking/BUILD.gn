@@ -84,6 +84,7 @@ source_set("browser_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:scoped_test_system_nss_key_slot_mixin",
     "//chromeos:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/install_attributes:test_support",

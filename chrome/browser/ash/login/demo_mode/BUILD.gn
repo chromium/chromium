@@ -128,6 +128,7 @@ static_library("test_support") {
     "//base",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/test:test_support",
+    "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
   ]
 
   deps = [
@@ -190,6 +191,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/demo_mode",
@@ -256,6 +258,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chrome/test/base:browser_process_platform_part_test_api_chromeos",
     "//chrome/test/base:test_browser_window",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/cryptohome",
