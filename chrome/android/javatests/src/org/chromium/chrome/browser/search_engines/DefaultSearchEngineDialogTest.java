@@ -165,6 +165,7 @@ public class DefaultSearchEngineDialogTest {
 
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491344
     public void testButtonClickRunsCallback() {
         showDialog(SearchEnginePromoType.SHOW_EXISTING);
         onView(withText(R.string.search_engine_dialog_title))
