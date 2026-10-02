@@ -461,7 +461,7 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
 }
 
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesInput&) {
+    const MinMaxSizesInput& input) {
   const LayoutUnit override_intrinsic_inline_size =
       Node().OverrideIntrinsicContentInlineSize();
   if (override_intrinsic_inline_size != kIndefiniteSize) {
@@ -470,13 +470,22 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
     return {{size, size}, /* depends_on_block_constraints */ false};
   }
 
+  const int column_count = Style().ColumnCount();
+  DCHECK_GE(column_count, 1);
+  const LayoutUnit column_gap =
+      ResolveColumnGapForMulticol(Style(), LayoutUnit());
+  const LayoutUnit gap_extra = column_gap * (column_count - 1);
+
   // First calculate the min/max sizes of columns.
   ConstraintSpace space = CreateConstraintSpaceForMinMax();
   FragmentGeometry fragment_geometry = CalculateInitialFragmentGeometry(
       space, Node(), /* break_token */ nullptr, /* is_intrinsic */ true);
   BlockLayoutAlgorithm algorithm({Node(), fragment_geometry, space});
-  MinMaxSizesResult result =
-      algorithm.ComputeMinMaxSizes(MinMaxSizesInput::UnconstrainedUntriaged());
+  MinMaxSizesInput column_input = input;
+  column_input.constrained_inline_size =
+      (input.constrained_inline_size - gap_extra).ClampNegativeToZero() /
+      column_count;
+  MinMaxSizesResult result = algorithm.ComputeMinMaxSizes(column_input);
 
   // How column-width affects min/max sizes is currently not defined in any
   // spec, but there used to be a definition, which everyone still follows to
@@ -502,10 +511,6 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
 
   // Now convert those column min/max values to multicol container min/max
   // values. We typically have multiple columns and also gaps between them.
-  int column_count = Style().ColumnCount();
-  DCHECK_GE(column_count, 1);
-  LayoutUnit column_gap = ResolveColumnGapForMulticol(Style(), LayoutUnit());
-  LayoutUnit gap_extra = column_gap * (column_count - 1);
 
   // Another peculiarity in the (old and only) spec (see above) is that
   // column-count (and therefore also column-gap) is ignored in intrinsic min
@@ -521,7 +526,7 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeMinMaxSizes(
   // they shouldn't be part of the column-count multiplication above). Calculate
   // min/max inline-size for spanners now.
   if (!Node().ShouldApplyInlineSizeContainment())
-    result.sizes.Encompass(ComputeSpannersMinMaxSizes(Node()).sizes);
+    result.sizes.Encompass(ComputeSpannersMinMaxSizes(Node(), input).sizes);
 
   result.sizes += BorderScrollbarPadding().InlineSum();
   return result;
@@ -551,7 +556,8 @@ const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
 }
 
 MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
-    const BlockNode& search_parent) const {
+    const BlockNode& search_parent,
+    const MinMaxSizesInput& input) const {
   MinMaxSizesResult result;
   for (LayoutInputNode child = search_parent.FirstChild(); child;
        child = child.NextSibling()) {
@@ -564,15 +570,14 @@ MinMaxSizesResult ColumnLayoutAlgorithm::ComputeSpannersMinMaxSizes(
       // they need to be in its formatting context.
       if (child_block->CreatesNewFormattingContext())
         continue;
-      child_result = ComputeSpannersMinMaxSizes(*child_block);
+      child_result = ComputeSpannersMinMaxSizes(*child_block, input);
     } else {
       MinMaxConstraintSpaceBuilder builder(GetConstraintSpace(), Style(),
                                            *child_block, /* is_new_fc */ true);
       builder.SetAvailableBlockSize(ChildAvailableSize().block_size);
       const ConstraintSpace child_space = builder.ToConstraintSpace();
-      child_result = ComputeMinAndMaxContentContribution(
-          Style(), *child_block, child_space,
-          MinMaxSizesInput::UnconstrainedUntriaged());
+      child_result = ComputeMinAndMaxContentContribution(Style(), *child_block,
+                                                         child_space, input);
     }
     result.sizes.Encompass(child_result.sizes);
   }

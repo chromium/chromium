@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/check-layout-th.js"></script>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+#outer {
+  width: 160px;
+}
+
+#outer > div {
+  max-content-sizing: shrink-to-fit;
+}
+
+#column1, #column2, #column3 {
+  columns: 2;
+  background: blue;
+  color: white;
+  width: fit-content;
+  max-width: 140px;
+  font: 20px/1 Ahem;
+}
+#column1 > div {
+  column-span: all;
+  background: lime;
+}
+#column2 {
+  column-gap: 20px;
+}
+#column3 {
+  column-count: auto;
+  column-width: 60px;
+}
+</style>
+
+<div id="outer">
+
+  <div id="column1" data-expected-width="80"
+       title="Column container's width should match to the width of the spanner">
+    c
+    <div data-expected-width="80" title="Spanner's width should fit to 'span'."
+    >span span span span</div>
+  </div>
+
+  <div id="column2" data-expected-width="100"
+       title="Column container's width should fit to 'c1' * 2 + gap">
+    c1 c2 c3 c4
+  </div>
+
+  <!-- Note that this test won't work on Firefox because Firefox doesn't expand
+       the column width larger than the specified column-width in this case. -->
+  <div id="column3" data-expected-width="80"
+       title="Column container with column-width should shrink">
+    col1 col2 col3 col4
+  </div>
+</div>
+
+<script>
+document.fonts.ready.then(() => checkLayout('[data-expected-width]'));
+</script>

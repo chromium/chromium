@@ -90,7 +90,8 @@ class CORE_EXPORT ColumnLayoutAlgorithm
 
  private:
   MinMaxSizesResult ComputeSpannersMinMaxSizes(
-      const BlockNode& search_parent) const;
+      const BlockNode& search_parent,
+      const MinMaxSizesInput& input) const;
 
   // Lay out as many children as we can. If |kNeedsEarlierBreak| is returned, it
   // means that we ran out of space at an unappealing location, and need to
