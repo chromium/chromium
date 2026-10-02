@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -279,6 +280,10 @@ class PaymentHandlerWebFlowViewController
   //
   // TODO(crbug.com/344626785): Remove once WebViews obey parent clips.
   std::unique_ptr<RoundedCornerViewClipper> rounded_corner_clipper_;
+
+  // Keeps the parent tab's video recording alert active while the Payment
+  // Handler is capturing video.
+  base::ScopedClosureRunner video_recording_tab_alert_;
 
   // Must be the last member of a leaf class.
   base::WeakPtrFactory<PaymentHandlerWebFlowViewController> weak_ptr_factory_{

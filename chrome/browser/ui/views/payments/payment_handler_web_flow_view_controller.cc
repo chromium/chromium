@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/alert/child_tab_alert_helper.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_reopen_suppressor.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
@@ -52,6 +53,7 @@
 #include "components/permissions/request_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_alert.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
@@ -446,6 +448,7 @@ bool PaymentHandlerWebFlowViewController::CanContentViewBeScrollable() {
 }
 
 void PaymentHandlerWebFlowViewController::Stop() {
+  video_recording_tab_alert_.RunAndReset();
   chip_model_.reset();
   delay_prompt_timer_.Stop();
   indicator_chip_collapse_timer_.Stop();
@@ -771,8 +774,13 @@ void PaymentHandlerWebFlowViewController::OnIsCapturingVideoChanged(
   }
 
   if (is_capturing_video) {
+    video_recording_tab_alert_ =
+        tabs::ChildTabAlertHelper::From(
+            tabs::TabInterface::GetFromContents(state()->GetWebContents()))
+            ->CreateChildMediaAlert(tabs::TabAlert::kVideoRecording);
     ShowInUseCameraIndicator();
   } else {
+    video_recording_tab_alert_.RunAndReset();
     media_capture_stop_time_ = base::TimeTicks::Now();
     HideInUseCameraIndicator();
   }

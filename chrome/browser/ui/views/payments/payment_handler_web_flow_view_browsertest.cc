@@ -16,6 +16,7 @@
 #include "chrome/browser/permissions/one_time_permissions_tracker_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -41,6 +42,8 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_alert.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
@@ -1627,6 +1630,102 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
       test_api(web_flow_controller).is_indicator_dismiss_timer_running());
   EXPECT_FALSE(dashboard->GetVisible());
   EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+                       CameraInUseIndicator_UpdatesParentTabAlert) {
+  NavigateTo("/payment_handler.html");
+  std::string method_name;
+  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
+
+  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
+                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
+                               DialogEvent::DIALOG_OPENED,
+                               DialogEvent::LOADING_VIEW_SHOWN,
+                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
+                               DialogEvent::LOADING_VIEW_HIDDEN,
+                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
+  ASSERT_EQ(
+      "success",
+      content::EvalJs(
+          GetActiveWebContents(),
+          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  views::View* top_view = test_api(dialog_view()).view_stack()->top();
+  auto* sheet_controller =
+      test_api(dialog_view()).controller_map()->at(top_view).get();
+  auto* web_flow_controller =
+      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
+  content::WebContents* payment_handler_contents =
+      web_flow_controller->web_contents();
+
+  GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetContentSettingDefaultScope(payment_app_url, payment_app_url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_ALLOW);
+
+  tabs::TabAlertController* tab_alert_controller =
+      tabs::TabAlertController::From(
+          tabs::TabInterface::GetFromContents(GetActiveWebContents()));
+  ASSERT_NE(nullptr, tab_alert_controller);
+
+  // Initial state: parent tab has no video recording alert.
+  EXPECT_FALSE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
+
+  {
+    // Start video capture in the Payment Handler.
+    VideoCaptureWaiter waiter(payment_handler_contents);
+    ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+                navigator.mediaDevices.getUserMedia({video: true})
+                  .then(stream => {
+                    window.activeStream = stream;
+                    return 'success';
+                  })
+                  .catch(err => err.name);
+              )"));
+    waiter.WaitForCaptureState(true);
+
+    // Parent tab alert should show video recording.
+    EXPECT_TRUE(
+        tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
+    EXPECT_EQ(tabs::TabAlert::kVideoRecording,
+              tab_alert_controller->GetAlertToShow());
+
+    // Stop video capture in the Payment Handler.
+    ASSERT_EQ("stopped", content::EvalJs(payment_handler_contents, R"(
+                window.activeStream.getVideoTracks().forEach(t => t.stop());
+                'stopped';
+              )"));
+    waiter.WaitForCaptureState(false);
+
+    // Parent tab alert should be cleared.
+    EXPECT_FALSE(
+        tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
+
+    // Restart video capture in the Payment Handler.
+    ASSERT_EQ("success", content::EvalJs(payment_handler_contents, R"(
+                navigator.mediaDevices.getUserMedia({video: true})
+                  .then(stream => {
+                    window.activeStream = stream;
+                    return 'success';
+                  })
+                  .catch(err => err.name);
+              )"));
+    waiter.WaitForCaptureState(true);
+    EXPECT_TRUE(
+        tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
+  }
+
+  // Close the Payment Handler dialog while capture is still active to verify
+  // Stop() releases the parent tab alert.
+  ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
+  dialog_view()->CloseDialog();
+  ASSERT_TRUE(WaitForObservedEvent());
+  EXPECT_FALSE(
+      tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
