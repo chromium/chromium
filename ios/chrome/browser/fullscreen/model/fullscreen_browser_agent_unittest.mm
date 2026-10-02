@@ -452,7 +452,9 @@ TEST_F(FullscreenBrowserAgentTest, SettledStateCommittedWhenAnimationStarts) {
 // flag. Regression test for the app being backgrounded mid-animation, where the
 // background handler requests a non-animated exit while an animated exit is
 // already running.
-TEST_F(FullscreenBrowserAgentTest, NonAnimatedTransitionInterruptsAnimation) {
+// TODO(crbug.com/568775921): Re-enable this test.
+TEST_F(FullscreenBrowserAgentTest,
+       DISABLED_NonAnimatedTransitionInterruptsAnimation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});

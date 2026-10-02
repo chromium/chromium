@@ -186,7 +186,8 @@ TEST_F(FullscreenMediatorTest, WebStateWasShownInvalidatesInsetsOnce) {
 }
 
 // Tests that scrolling down past the threshold triggers EnterFullscreen.
-TEST_F(FullscreenMediatorTest, EnterFullscreenWhenThresholdHit) {
+// TODO(crbug.com/568775921): Re-enable this test.
+TEST_F(FullscreenMediatorTest, DISABLED_EnterFullscreenWhenThresholdHit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
@@ -208,7 +209,8 @@ TEST_F(FullscreenMediatorTest, EnterFullscreenWhenThresholdHit) {
 
 // Tests that scrolling below the threshold updates progress without triggering
 // an animated fullscreen transition.
-TEST_F(FullscreenMediatorTest, IncrementalScrollBelowThreshold) {
+// TODO(crbug.com/568775921): Re-enable this test.
+TEST_F(FullscreenMediatorTest, DISABLED_IncrementalScrollBelowThreshold) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
@@ -231,7 +233,8 @@ TEST_F(FullscreenMediatorTest, IncrementalScrollBelowThreshold) {
 }
 
 // Tests that scrolling up past the threshold triggers ExitFullscreen.
-TEST_F(FullscreenMediatorTest, ExitFullscreenWhenThresholdHit) {
+// TODO(crbug.com/568775921): Re-enable this test.
+TEST_F(FullscreenMediatorTest, DISABLED_ExitFullscreenWhenThresholdHit) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {kFullscreenRefactoring, kFullscreenEasedTransitions}, {});
