@@ -36,6 +36,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -125,6 +126,7 @@ public class IncognitoStorageLeakageTest {
     @LargeTest
     @UseMethodParameter(TestParams.AllTypesToAllTypes.class)
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41484832")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/563034651
     public void testStorageDoesNotLeakFromActivityToActivity(
             String activityType1, String activityType2)
             throws ExecutionException, TimeoutException {
