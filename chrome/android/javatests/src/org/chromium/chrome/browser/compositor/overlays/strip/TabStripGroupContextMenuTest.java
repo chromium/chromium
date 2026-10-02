@@ -11,6 +11,7 @@ import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
@@ -53,7 +54,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -68,6 +68,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.CtaPageStation;
+import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -99,6 +100,7 @@ public class TabStripGroupContextMenuTest {
 
     @Before
     public void setUp() throws Exception {
+        ModalDialogView.disableButtonTapProtectionForTesting();
         mPage = mActivityTestRule.startOnBlankPage();
         mInitialRegularActivity = (ChromeTabbedActivity) mPage.getActivity();
         mStripLayoutHelper =
@@ -147,7 +149,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491500
     public void testUngroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -168,7 +169,7 @@ public class TabStripGroupContextMenuTest {
         // Verify confirmation dialog is showing and tab group is ungrouped after confirming the
         // action.
         verifyModalDialog(/* shouldShow= */ true);
-        onView(withText(R.string.ungroup_tab_group_action)).perform(click());
+        onView(withText(R.string.ungroup_tab_group_action)).inRoot(isDialog()).perform(click());
         int finalTabCount =
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getTabCountForGroup(mTabGroupId));
         assertEquals("Tab group should be ungrouped", 0, finalTabCount);
@@ -305,7 +306,6 @@ public class TabStripGroupContextMenuTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/568491500
     public void testDeleteGroup() {
         // Prepare standard state and show menu.
         prepareStandardState();
@@ -333,7 +333,7 @@ public class TabStripGroupContextMenuTest {
         // Verify confirmation dialog is showing and tab group is deleted after confirming the
         // action.
         verifyModalDialog(/* shouldShow= */ true);
-        onView(withText(R.string.delete_tab_group_action)).perform(click());
+        onView(withText(R.string.delete_tab_group_action)).inRoot(isDialog()).perform(click());
         assertFalse(
                 "Tab group should be deleted",
                 ThreadUtils.runOnUiThreadBlocking(() -> tabModel.tabGroupExists(mTabGroupId)));
