@@ -12,8 +12,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Theme setting variations. This is also used for histograms and should therefore be treated
- * as append-only. See DarkThemePreferences in tools/metrics/histograms/enums.xml.
+ * Theme setting variations. This is also used for histograms and should therefore be treated as
+ * append-only. See DarkThemePreferences in tools/metrics/histograms/enums.xml. Values must also
+ * match ThemeService::BrowserColorScheme (static_assert'ed in theme_service_android.cc).
  */
 @IntDef({ThemeType.SYSTEM_DEFAULT, ThemeType.LIGHT, ThemeType.DARK})
 @Retention(RetentionPolicy.SOURCE)

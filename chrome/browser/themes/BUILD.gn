@@ -105,6 +105,11 @@ source_set("themes") {
       "//ui/ozone",
     ]
   }
+  if (is_android) {
+    public += [ "theme_service_android.h" ]
+    sources += [ "theme_service_android.cc" ]
+    deps += [ "//chrome/browser/ui/android/night_mode:jni_headers" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/app/theme:theme_resources",

@@ -13,12 +13,16 @@ import android.view.ContextThemeWrapper;
 
 import androidx.annotation.StyleRes;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Helper methods for supporting night mode. */
+@JNINamespace("night_mode")
 @NullMarked
 public class NightModeUtils {
     private static @Nullable Boolean sNightModeSupportedForTest;
@@ -102,8 +106,10 @@ public class NightModeUtils {
     /**
      * The current theme setting, reflecting either the user setting or the default if the user has
      * not explicitly set a preference.
+     *
      * @return The current theme setting. See {@link ThemeType}.
      */
+    @CalledByNative
     public static @ThemeType int getThemeSetting() {
         int userSetting = ChromeSharedPreferences.getInstance().readInt(UI_THEME_SETTING, -1);
         if (userSetting == -1) {
@@ -111,6 +117,17 @@ public class NightModeUtils {
         } else {
             return userSetting;
         }
+    }
+
+    /**
+     * Sets the theme setting. This may trigger activity recreation if the effective night mode
+     * changes.
+     *
+     * @param theme The new theme setting. See {@link ThemeType}.
+     */
+    @CalledByNative
+    public static void setThemeSetting(@ThemeType int theme) {
+        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, theme);
     }
 
     /**

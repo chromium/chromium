@@ -148,8 +148,13 @@ public final class ThinWebViewHost {
             ViewEventSink.from(webContents).setAccessDelegate(contentView);
         }
 
+        // Theming makes prefers-color-scheme follow the host activity's night mode. Web
+        // preferences are re-computed on each attach, which keeps them up-to-date across
+        // activity recreations (e.g. when the light / dark theme setting changes).
         mThinWebView.attachWebContents(
-                webContents, contentView, new ThinWebViewAttachParams.Builder().build());
+                webContents,
+                contentView,
+                new ThinWebViewAttachParams.Builder().setSupportTheming(true).build());
     }
 
     /**

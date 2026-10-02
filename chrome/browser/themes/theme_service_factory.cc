@@ -32,6 +32,10 @@
 #include "chrome/browser/themes/theme_service_aura_linux.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service_android.h"
+#endif
+
 namespace {
 
 const ThemeHelper& GetThemeHelper() {
@@ -109,6 +113,8 @@ ThemeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
 #if BUILDFLAG(IS_LINUX)
   using ThemeService = ThemeServiceAuraLinux;
+#elif BUILDFLAG(IS_ANDROID)
+  using ThemeService = ThemeServiceAndroid;
 #endif
 
   auto provider = std::make_unique<ThemeService>(static_cast<Profile*>(profile),
