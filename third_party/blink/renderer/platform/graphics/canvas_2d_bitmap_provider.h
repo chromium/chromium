@@ -14,7 +14,6 @@
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -59,10 +58,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
       const gfx::ColorSpace& color_space,
       const gfx::HDRMetadata& hdr_metadata,
       CanvasResourceProviderDelegate* delegate = nullptr);
-
-  static std::unique_ptr<Canvas2DBitmapProvider> CreateForTesting(
-      gfx::Size size,
-      const Canvas2DColorParams& color_params);
 
   ~Canvas2DBitmapProvider() override;
 

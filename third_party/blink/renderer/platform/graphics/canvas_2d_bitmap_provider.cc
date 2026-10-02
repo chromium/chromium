@@ -211,13 +211,4 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
       std::move(surface), format, color_space, hdr_metadata, delegate));
 }
 
-std::unique_ptr<Canvas2DBitmapProvider>
-Canvas2DBitmapProvider::CreateForTesting(
-    gfx::Size size,
-    const Canvas2DColorParams& color_params) {
-  return Canvas2DBitmapProvider::CreateWithClear(
-      size, color_params.GetSharedImageFormat(), color_params.GetAlphaType(),
-      color_params.GetGfxColorSpace(), color_params.GetGfxHdrMetadata());
-}
-
 }  // namespace blink
