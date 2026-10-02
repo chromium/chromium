@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/metrics/profile_metrics_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
@@ -199,6 +201,10 @@ void DiceTabHelper::InitializeSigninFlow(
   SetIsChromeSigninPage(true);
   signin_page_load_recorded_ = false;
 
+  if (switches::IsMagiChromePasskeyAutofillEnabled()) {
+    KeepBluetoothAdapterAlive();
+  }
+
   if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
     state_->signin_flow_status = SigninFlowStatus::kStarted;
   }
@@ -353,6 +359,25 @@ bool DiceTabHelper::IsTokenExchangeDone() const {
   return state_->elapsed_time_since_lst_arrival_timer.get();
 }
 
+void DiceTabHelper::KeepBluetoothAdapterAlive() {
+  // Runs the check as soon as the sign-in flow starts, so that the Bluetooth
+  // power state is available by the time the sign-in page loads and its
+  // WebAuthn request reuses the adapter. On macOS, the check starts the
+  // adapter's first background poll when Bluetooth is present and permitted;
+  // until that poll completes, the adapter reports Bluetooth as off. The result
+  // is ignored: only the adapter is needed, to hold it in `bluetooth_adapter_`.
+  signin::IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
+      &DiceTabHelper::OnGetBluetoothAdapter, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DiceTabHelper::OnGetBluetoothAdapter(
+    bool hybrid_transport_supported,
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  if (is_chrome_signin_page_) {
+    bluetooth_adapter_ = std::move(adapter);
+  }
+}
+
 void DiceTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!is_chrome_signin_page_) {
@@ -418,6 +443,9 @@ void DiceTabHelper::SetIsChromeSigninPage(bool is_signin_page) {
     return;
   }
   is_chrome_signin_page_ = is_signin_page;
+  if (!is_chrome_signin_page_) {
+    bluetooth_adapter_.reset();
+  }
   for (auto& observer : observer_list_) {
     observer.OnIsChromeSigninPageChanged(is_chrome_signin_page_);
   }

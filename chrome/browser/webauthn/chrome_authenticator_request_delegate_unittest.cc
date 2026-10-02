@@ -58,6 +58,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/web_contents_tester.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -147,6 +148,11 @@ class ChromeAuthenticatorRequestDelegateTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    // Keeps `DiceTabHelper` from creating a real Bluetooth adapter on the
+    // Chrome sign-in page.
+    bluetooth_values_ =
+        device::BluetoothAdapterFactory::Get()->InitGlobalOverrideValues();
+    bluetooth_values_->SetLESupported(false);
     PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(
@@ -169,6 +175,8 @@ class ChromeAuthenticatorRequestDelegateTest
 
  protected:
   Observer observer_;
+  std::unique_ptr<device::BluetoothAdapterFactory::GlobalOverrideValues>
+      bluetooth_values_;
 };
 
 class TestAuthenticatorModelObserver final

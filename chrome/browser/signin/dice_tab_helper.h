@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -17,6 +19,10 @@
 
 namespace content {
 class NavigationHandle;
+}
+
+namespace device {
+class BluetoothAdapter;
 }
 
 struct CoreAccountInfo;
@@ -229,6 +235,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
 
   bool IsTokenExchangeDone() const;
 
+  // Gets the Bluetooth adapter via
+  // `signin::IsHybridTransportSupportedForQrCodeSignin()` and stores it in
+  // `bluetooth_adapter_`.
+  void KeepBluetoothAdapterAlive();
+  void OnGetBluetoothAdapter(bool hybrid_transport_supported,
+                             scoped_refptr<device::BluetoothAdapter> adapter);
+
   static base::TimeDelta g_delay_before_interception_bubble_retry;
 
   std::unique_ptr<ResetableState> state_;
@@ -236,7 +249,17 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;
 
+  // Never read, but do not remove. Holding this reference while the tab shows
+  // the Chrome sign-in page keeps the Bluetooth adapter alive, so the page's
+  // WebAuthn request reuses it instead of creating a new one. On macOS, a new
+  // adapter reports Bluetooth as off until its first background poll
+  // completes, which hides the passkey QR code from the Autofill suggestions.
+  // See crbug.com/568301366.
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
+
   base::ObserverList<Observer> observer_list_;
+
+  base::WeakPtrFactory<DiceTabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

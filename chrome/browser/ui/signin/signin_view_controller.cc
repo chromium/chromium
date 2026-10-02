@@ -89,6 +89,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "content/public/browser/navigation_handle.h"
+#include "device/bluetooth/bluetooth_adapter.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/google_api_keys.h"
@@ -745,7 +746,8 @@ void SigninViewController::ShowDiceSigninTab(
   if (switches::IsMagiChromePasskeyBannerEnabled()) {
     SigninQRCodeInfoBarLoader::CreateForWebContents(active_contents);
     signin::IsHybridTransportSupportedForQrCodeSignin(base::BindOnce(
-        [](base::WeakPtr<content::WebContents> web_contents, bool can_start) {
+        [](base::WeakPtr<content::WebContents> web_contents, bool can_start,
+           scoped_refptr<device::BluetoothAdapter>) {
           if (!web_contents) {
             return;
           }
