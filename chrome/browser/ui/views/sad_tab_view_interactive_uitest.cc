@@ -15,14 +15,17 @@
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/web_view_focus_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
@@ -31,6 +34,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -56,6 +60,7 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     browser()->GetProfile()->GetPrefs()->SetBoolean(
         prefs::kTabSearchPinnedToTabstrip, true);
+    WaitForInitialWebUIToolbar(browser());
   }
 
   void TearDownOnMainThread() override {
@@ -76,15 +81,36 @@ class SadTabViewInteractiveUITest : public InProcessBrowserTest {
     crash_observer.Wait();
   }
 
-  void PressTab() {
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                                false, false, false));
+  void AdvanceFocus(bool reverse) {
+    views::WebView* focused_web_view =
+        views::AsViewClass<views::WebView>(GetFocusedView());
+    if (focused_web_view) {
+      ui_test_utils::WebViewFocusManager(GetFocusManager(),
+                                         focused_web_view->web_contents())
+          .AdvanceFocus(reverse);
+    } else {
+      ui_test_utils::FocusChangeObserver obs(GetFocusManager());
+      ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+          browser(), ui::VKEY_TAB, false, /*shift=*/reverse, false, false));
+      ASSERT_TRUE(obs.WaitForFocusChange());
+    }
+
+    // When focus moves into a `views::WebView`, `FocusChangeObserver` finishes
+    // as soon as `FocusManager` updates the focused View in the browser
+    // process, while `WebContents::Focus()` and initial focus traversal are
+    // sent asynchronously to the renderer over Mojo. Perform a round-trip to
+    // the renderer main thread so that the renderer has processed the focus
+    // transition before the next key event is sent.
+    if (views::WebView* new_web_view =
+            views::AsViewClass<views::WebView>(GetFocusedView());
+        new_web_view && new_web_view != focused_web_view) {
+      ASSERT_TRUE(content::ExecJs(new_web_view->web_contents(), ""));
+    }
   }
 
-  void PressShiftTab() {
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                                true, false, false));
-  }
+  void PressTab() { AdvanceFocus(/*reverse=*/false); }
+
+  void PressShiftTab() { AdvanceFocus(/*reverse=*/true); }
 
   void PressSpacebar() {
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_SPACE,
@@ -163,6 +189,7 @@ IN_PROC_BROWSER_TEST_F(SadTabViewInteractiveUITest,
 
   // Start with focus in the location bar.
   chrome::FocusLocationBar(browser());
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   ASSERT_FALSE(IsFocusedViewInsideSadTab());
   ASSERT_TRUE(IsFocusedViewInsideBrowserToolbar());
   ASSERT_FALSE(IsFocusedViewInsideTabStrip());
