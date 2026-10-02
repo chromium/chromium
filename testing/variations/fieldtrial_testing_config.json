@@ -5476,6 +5476,21 @@
             ]
         }
     ],
+    "ContextualTasks_AllowSignedOutUserInDesktopAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AllowSignedOutUserInDesktopAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualTasks_EphemeralPinning_Desktop": [
         {
             "platforms": [
