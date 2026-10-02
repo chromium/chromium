@@ -1264,7 +1264,10 @@ ShoppingService::OptGuideResultToPriceInsightsInfo(
       }
 
       if (history.has_jackpot_url() && !history.jackpot_url().empty()) {
-        info->jackpot_url = GURL(history.jackpot_url());
+        GURL jackpot_url(history.jackpot_url());
+        if (jackpot_url.is_valid() && jackpot_url.SchemeIsHTTPOrHTTPS()) {
+          info->jackpot_url = std::move(jackpot_url);
+        }
       }
     }
   }

@@ -1685,6 +1685,31 @@ TEST_P(ShoppingServiceTest, TestPriceInsightsInfoResponse_EmptyRange) {
   run_loop.Run();
 }
 
+TEST_P(ShoppingServiceTest,
+       TestPriceInsightsInfoResponse_InvalidJackpotUrlScheme) {
+  test_features_.InitAndEnableFeature(kPriceInsights);
+
+  OptimizationMetadata meta = opt_guide_->BuildPriceInsightsResponse(
+      kClusterId, kCurrencyCode, kLowTypicalPrice, kHighTypicalPrice,
+      kCurrencyCode, kAttributes, {}, "chrome://version",
+      PriceBucket::kHighPrice, true);
+
+  opt_guide_->SetResponse(GURL(kPriceInsightsUrl),
+                          OptimizationType::PRICE_INSIGHTS,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  base::RunLoop run_loop;
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      GURL(kPriceInsightsUrl),
+      base::BindOnce([](const GURL& url,
+                        const std::optional<PriceInsightsInfo>& info) {
+        ASSERT_TRUE(info.has_value());
+        ASSERT_EQ(kClusterId, info->product_cluster_id);
+        ASSERT_FALSE(info->jackpot_url.has_value());
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 TEST_P(ShoppingServiceTest, TestPriceInsightsInfoResponse_WithoutCache) {
   test_features_.InitAndEnableFeature(kPriceInsights);
 
