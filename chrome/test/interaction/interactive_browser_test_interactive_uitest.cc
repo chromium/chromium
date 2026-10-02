@@ -32,6 +32,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -40,6 +41,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
@@ -856,6 +858,18 @@ class DraggableView : public views::View {
 
   bool CanDrop(const OSExchangeData& data) override { return true; }
 
+  views::View::DropCallback GetDropCallback(
+      const ui::DropTargetEvent& event) override {
+    return base::BindOnce(
+        [](DraggableView* view, const ui::DropTargetEvent& /*event*/,
+           ui::mojom::DragOperation& output_drag_op,
+           std::unique_ptr<ui::LayerTreeOwner> /*drag_image_layer_owner*/) {
+          view->dropped_ = true;
+          output_drag_op = ui::mojom::DragOperation::kMove;
+        },
+        base::Unretained(this));
+  }
+
   bool GetDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override {
@@ -864,9 +878,11 @@ class DraggableView : public views::View {
   }
 
   gfx::Point last_drag_position() const { return last_drag_position_; }
+  bool dropped() const { return dropped_; }
 
  private:
   gfx::Point last_drag_position_;
+  bool dropped_ = false;
 };
 
 BEGIN_METADATA(DraggableView)
@@ -881,8 +897,9 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
     views::Widget::InitParams params(
         views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.bounds = gfx::Rect(0, 0, 1000, 1000);
+    params.bounds = gfx::Rect(0, 0, 800, 800);
     params.context = browser()->GetWindow()->GetNativeWindow();
+    params.activatable = views::Widget::InitParams::Activatable::kYes;
     test_widget_ = std::make_unique<views::Widget>();
     test_widget_->Init(std::move(params));
     draggable_view_ =
@@ -913,14 +930,17 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
 // A simple test that verifies widget dragging works by moving a view around.
 // The bounds of the view are expected to change as the mouse moves.
 // TODO(crbug.com/40249472): Dragging views does not work on all platforms.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_DragView DragView
 #else
 #define MAYBE_DragView DISABLED_DragView
 #endif
 IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, MAYBE_DragView) {
-  RunTestSequence(
-      InAnyContext(MoveMouseTo(kDraggableViewId)), Log("Start drag"),
+  ui::ElementContext widget_context =
+      views::ElementTrackerViews::GetContextForWidget(test_widget_.get());
+  RunTestSequenceInContext(
+      widget_context, WaitForShow(kDraggableViewId),
+      MoveMouseTo(kDraggableViewId), Log("Start drag"),
       DragMouseTo(gfx::Point(50, 50), false),
       // The initial drag movement isn't checked because some platforms consume
       // the initial input event, preventing the view from getting the "drag
@@ -930,5 +950,6 @@ IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, MAYBE_DragView) {
       CheckLastDragPosition({100, 100}), Log("Continue drag to (400, 400)"),
       MoveMouseTo(gfx::Point(400, 400)), CheckLastDragPosition({400, 400}),
       Log("Continue drag to (200, 200)"), MoveMouseTo(gfx::Point(200, 200)),
-      CheckLastDragPosition({200, 200}), Log("End drag"), ReleaseMouse());
+      CheckLastDragPosition({200, 200}), Log("End drag"), ReleaseMouse(),
+      CheckResult([this]() { return draggable_view_->dropped(); }, true));
 }

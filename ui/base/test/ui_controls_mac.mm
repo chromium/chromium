@@ -14,8 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#import "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -235,6 +235,231 @@ NSEvent* MakeMouseEvent(NSEventType event_type, NSWindow* window) {
 
 }  // namespace
 
+// Mock implementation of NSDraggingInfo for use in the fake drag loop.
+// Only the four writable properties below are read by Chromium's drag-and-drop
+// clients; the remaining members are required by the NSDraggingInfo protocol.
+@interface StubDraggingInfo : NSObject <NSDraggingInfo>
+@property(assign, nonatomic) NSPoint draggingLocation;
+@property(assign, nonatomic) NSDragOperation draggingSourceOperationMask;
+@property(weak, nonatomic) NSWindow* draggingDestinationWindow;
+@property(strong, nonatomic) NSPasteboard* draggingPasteboard;
+@end
+
+@implementation StubDraggingInfo
+@synthesize draggingLocation = _draggingLocation;
+@synthesize draggingSourceOperationMask = _draggingSourceOperationMask;
+@synthesize draggingDestinationWindow = _draggingDestinationWindow;
+@synthesize draggingPasteboard = _draggingPasteboard;
+@synthesize draggedImageLocation = _draggedImageLocation;
+@synthesize draggedImage = _draggedImage;
+@synthesize draggingSource = _draggingSource;
+@synthesize draggingSequenceNumber = _draggingSequenceNumber;
+@synthesize animatesToDestination = _animatesToDestination;
+@synthesize numberOfValidItemsForDrop = _numberOfValidItemsForDrop;
+@synthesize draggingFormation = _draggingFormation;
+@synthesize springLoadingHighlight = _springLoadingHighlight;
+
+- (NSArray*)namesOfPromisedFilesDroppedAtDestination:(NSURL*)dropDestination {
+  return nil;
+}
+
+- (void)slideDraggedImageTo:(NSPoint)screenPoint {
+}
+
+- (void)enumerateDraggingItemsWithOptions:
+            (NSDraggingItemEnumerationOptions)enumOpts
+                                  forView:(NSView*)view
+                                  classes:(NSArray*)classArray
+                            searchOptions:(NSDictionary*)searchOptions
+                               usingBlock:(void (^)(NSDraggingItem*,
+                                                    NSInteger,
+                                                    BOOL*))block {
+}
+
+- (void)resetSpringLoading {
+}
+
+@end
+
+@interface NSView (UIControlsFakeDragDonor)
+- (NSDraggingSession*)
+    cr_beginDraggingSessionWithItems:(NSArray<NSDraggingItem*>*)items
+                               event:(NSEvent*)event
+                              source:(id<NSDraggingSource>)source;
+@end
+
+namespace {
+
+struct FakeDragSessionState {
+  id<NSDraggingSource> source = nil;
+  NSDraggingSession* session = nil;
+  StubDraggingInfo* dragging_info = nil;
+  __weak NSView* last_target_view = nil;
+  NSDragOperation last_drag_operation = NSDragOperationNone;
+};
+
+FakeDragSessionState& GetFakeDragSessionState() {
+  static base::NoDestructor<FakeDragSessionState> state;
+  return *state;
+}
+
+bool IsDragSessionActive() {
+  return GetFakeDragSessionState().session != nil;
+}
+
+// Populates a unique pasteboard with the writers from `items`.
+NSPasteboard* CreateDragPasteboard(NSArray<NSDraggingItem*>* items) {
+  NSPasteboard* pasteboard = [NSPasteboard pasteboardWithUniqueName];
+  NSMutableArray<id<NSPasteboardWriting>>* writers = [NSMutableArray array];
+  for (NSDraggingItem* item in items) {
+    if (item.item) {
+      [writers addObject:item.item];
+    }
+  }
+  if (writers.count > 0) {
+    [pasteboard writeObjects:writers];
+  }
+  return pasteboard;
+}
+
+// Finds the nearest ancestor view with registered dragged types.
+NSView* FindDraggingDestinationView(NSWindow* window, NSPoint point_in_window) {
+  if (!window) {
+    return nil;
+  }
+  NSView* view = [window.contentView hitTest:point_in_window];
+  // BridgedContentView returns nil from -hitTest: in HTCAPTION
+  // (kDraggableBackground) regions so AppKit can initiate a window drag, but
+  // those regions can still host drop targets in Views.
+  if (!view && window.contentView &&
+      NSMouseInRect(point_in_window, window.contentView.frame,
+                    window.contentView.isFlipped)) {
+    view = window.contentView;
+  }
+  while (view && view.registeredDraggedTypes.count == 0) {
+    view = [view superview];
+  }
+  return view;
+}
+
+// Clears the active drag session and notifies the source that dragging ended.
+void EndDragSession(NSDragOperation operation) {
+  FakeDragSessionState& state = GetFakeDragSessionState();
+  id<NSDraggingSource> source = state.source;
+  NSDraggingSession* session = state.session;
+  StubDraggingInfo* dragging_info = state.dragging_info;
+  NSView* last_target_view = state.last_target_view;
+  state = FakeDragSessionState();
+
+  if (operation == NSDragOperationNone &&
+      [last_target_view respondsToSelector:@selector(draggingExited:)]) {
+    [last_target_view draggingExited:dragging_info];
+  }
+  if (source && session &&
+      [source
+          respondsToSelector:@selector(
+                                 draggingSession:endedAtPoint:operation:)]) {
+    [source draggingSession:session
+               endedAtPoint:[NSEvent mouseLocation]
+                  operation:operation];
+  }
+  [dragging_info.draggingPasteboard releaseGlobally];
+}
+
+// Performs the drop (or exits if rejected) and ends the drag session.
+void CompleteDragDrop(NSView* target_view, StubDraggingInfo* dragging_info) {
+  FakeDragSessionState& state = GetFakeDragSessionState();
+  NSDragOperation operation = NSDragOperationNone;
+  if (target_view && state.last_drag_operation != NSDragOperationNone &&
+      [target_view respondsToSelector:@selector(performDragOperation:)] &&
+      [target_view performDragOperation:dragging_info]) {
+    operation = state.last_drag_operation;
+    state.last_target_view = nil;
+  }
+  EndDragSession(operation);
+}
+
+// Sends enter/exit/update notifications to the destination view as the mouse
+// moves.
+void UpdateDragDestination(NSView* target_view,
+                           StubDraggingInfo* dragging_info) {
+  FakeDragSessionState& state = GetFakeDragSessionState();
+  if (state.last_target_view != target_view) {
+    state.last_target_view = target_view;
+    state.last_drag_operation =
+        [target_view respondsToSelector:@selector(draggingEntered:)]
+            ? [target_view draggingEntered:dragging_info]
+            : NSDragOperationNone;
+  } else if ([target_view respondsToSelector:@selector(draggingUpdated:)]) {
+    state.last_drag_operation = [target_view draggingUpdated:dragging_info];
+  }
+}
+
+// Advances the active fake drag session to the current mouse location, and
+// drops if `is_mouse_up`. Called directly by the synthetic event senders:
+// AppKit does not deliver mouse events to the application while an
+// NSDraggingSession is active, so these events are never posted to the event
+// queue (where e.g. an unrelated CocoaMouseCapture monitor could consume them).
+void DispatchDragSessionEvent(bool is_mouse_up) {
+  FakeDragSessionState& state = GetFakeDragSessionState();
+  StubDraggingInfo* dragging_info = state.dragging_info;
+  NSWindow* window = WindowAtCurrentMouseLocation();
+  NSPoint point_in_window =
+      window ? [window convertPointFromScreen:g_mouse_location]
+             : g_mouse_location;
+  NSView* target_view = FindDraggingDestinationView(window, point_in_window);
+
+  if (state.last_target_view != target_view) {
+    if ([state.last_target_view
+            respondsToSelector:@selector(draggingExited:)]) {
+      [state.last_target_view draggingExited:dragging_info];
+    }
+    state.last_target_view = nil;
+    state.last_drag_operation = NSDragOperationNone;
+  }
+
+  dragging_info.draggingLocation = point_in_window;
+  dragging_info.draggingDestinationWindow = window;
+
+  UpdateDragDestination(target_view, dragging_info);
+  if (is_mouse_up) {
+    CompleteDragDrop(target_view, dragging_info);
+  }
+}
+
+}  // namespace
+
+@implementation NSView (UIControlsFakeDragDonor)
+- (NSDraggingSession*)
+    cr_beginDraggingSessionWithItems:(NSArray<NSDraggingItem*>*)items
+                               event:(NSEvent*)event
+                              source:(id<NSDraggingSource>)source {
+  EndDragSession(NSDragOperationNone);
+
+  // Set up a fake session and synthetic dragging info for this drag.
+  FakeDragSessionState& state = GetFakeDragSessionState();
+  state.source = source;
+  state.session = (NSDraggingSession*)[[NSObject alloc] init];
+  StubDraggingInfo* draggingInfo = [[StubDraggingInfo alloc] init];
+  draggingInfo.draggingSourceOperationMask =
+      [source draggingSession:state.session
+          sourceOperationMaskForDraggingContext:
+              NSDraggingContextOutsideApplication];
+  draggingInfo.draggingPasteboard = CreateDragPasteboard(items);
+  state.dragging_info = draggingInfo;
+
+  if ([source
+          respondsToSelector:@selector(draggingSession:willBeginAtPoint:)]) {
+    [source draggingSession:state.session
+           willBeginAtPoint:[NSEvent mouseLocation]];
+  }
+
+  // Subsequent synthetic mouse events drive the session via
+  // DispatchDragSessionEvent().
+  return state.session;
+}
+@end
+
 // Donates testing implementations of NSEvent methods.
 @interface FakeNSEventTestingDonor : NSObject
 @end
@@ -286,10 +511,15 @@ class MockNSEventClassMethods {
                                  @selector(mouseLocation)),
         pressed_mouse_buttons_swizzler_([NSEvent class],
                                         [FakeNSEventTestingDonor class],
-                                        @selector(pressedMouseButtons)) {}
+                                        @selector(pressedMouseButtons)),
+        drag_swizzler_(
+            [NSView class],
+            @selector(beginDraggingSessionWithItems:event:source:),
+            @selector(cr_beginDraggingSessionWithItems:event:source:)) {}
 
   base::apple::ScopedObjCClassSwizzler mouse_location_swizzler_;
   base::apple::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
+  base::apple::ScopedObjCClassSwizzler drag_swizzler_;
 };
 
 }  // namespace
@@ -305,7 +535,13 @@ bool IsUIControlsEnabled() {
   return g_ui_controls_enabled;
 }
 
-void ResetUIControlsIfEnabled() {}
+void ResetUIControlsIfEnabled() {
+  if (!g_ui_controls_enabled) {
+    return;
+  }
+  EndDragSession(NSDragOperationNone);
+  g_mouse_button_down = {false, false, false};
+}
 
 bool SendKeyPress(gfx::NativeWindow window,
                   ui::KeyboardCode key,
@@ -425,9 +661,13 @@ bool SendMouseMoveNotifyWhenDone(int x,
   // to the target NSView directly.
   // TODO(crbug.com/503006742): mouse enter and exit events are not generated
   // for subviews. Fix it.
-  NSEvent* event = MakeMouseEvent(event_type, window);
-  if (window_hint && event_type == NSEventTypeMouseMoved) {
+  if (IsDragSessionActive()) {
+    // A move with the left button already released means the drop was missed;
+    // complete it now rather than leaving the session dangling.
+    DispatchDragSessionEvent(/*is_mouse_up=*/!g_mouse_button_down[LEFT]);
+  } else if (window_hint && event_type == NSEventTypeMouseMoved) {
     if (window) {
+      NSEvent* event = MakeMouseEvent(event_type, window);
       NSPoint point_in_window = [event locationInWindow];
       // `target_view` might be the contentView or a subview (e.g. a
       // WebView's native view). hitTest: will find that target.
@@ -439,7 +679,9 @@ bool SendMouseMoveNotifyWhenDone(int x,
       }
     }
   } else {
-    [[NSApplication sharedApplication] postEvent:event atStart:NO];
+    [[NSApplication sharedApplication]
+        postEvent:MakeMouseEvent(event_type, window)
+          atStart:NO];
   }
 
   // Maybe post the follow-up task.
@@ -525,7 +767,13 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
                       eventNumber:0
                        clickCount:1
                          pressure:button_state == DOWN ? 1.0 : 0.0];
-  [[NSApplication sharedApplication] postEvent:event atStart:NO];
+  if (IsDragSessionActive() && type == LEFT) {
+    // The fake drag session consumes left-button events (see
+    // DispatchDragSessionEvent()); a release completes the drop.
+    DispatchDragSessionEvent(/*is_mouse_up=*/button_state == UP);
+  } else {
+    [[NSApplication sharedApplication] postEvent:event atStart:NO];
+  }
 
   if (!task.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
