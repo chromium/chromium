@@ -3048,20 +3048,6 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  # This duplication is intentional, so we avoid updating the r8.jar used by
-  # dexing unless necessary, since each update invalidates all incremental
-  # dexing and unnecessarily slows down all bots.
-  'src/third_party/r8/d8/cipd': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/r8',
-              'version': 'P7Pq70iaBKGCBVqKGS1XPUFyG7yWFSBWVy7yOBsghLcC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/requests/src': {
       'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'c2b307dbefe21177af03f9feb37181a89a799fcc',
       'condition': 'checkout_android',

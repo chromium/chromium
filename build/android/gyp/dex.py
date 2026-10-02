@@ -6,8 +6,11 @@
 
 import argparse
 import collections
+import concurrent.futures
+import functools
 import logging
 import os
+import platform
 import re
 import shutil
 import shlex
@@ -22,6 +25,17 @@ import zip_helpers
 
 
 _DEX_XMX = '3G'  # Increase this when __final_dex OOMs.
+_CUSTOM_D8_BINARY_PATH = os.path.join(
+    build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'bin', 'custom_d8'
+)
+# For dexing, GraalVM is faster up to ~8 MiB.
+_GRAALVM_MAX_DEX_INPUT_SIZE = 8 * 1024 * 1024
+# For dex merging, GraalVM is faster up to ~20 MiB.
+_GRAALVM_MAX_MERGE_INPUT_SIZE = 20 * 1024 * 1024
+# For --file-per-class-file invocations (_CreateIntermediateDexFiles), shard
+# inputs across concurrent GraalVM processes targeting ~1.5 MB per shard to
+# avoid GraalVM Serial GC pauses (e.g. 20.4 MB chrome_java: 5.60s JVM -> 1.18s).
+_GRAALVM_SHARD_TARGET_SIZE = int(1.5 * 1024 * 1024)
 
 DEFAULT_IGNORE_WARNINGS = (
     # Warning: Running R8 version main (build engineering), which cannot be
@@ -492,6 +506,43 @@ def _ExtractClassFiles(changes, tmp_dir, class_inputs, required_classes_set):
     return classes_list
 
 
+@functools.cache
+def _GetFileSize(path):
+    return os.path.getsize(path)
+
+
+def _PartitionClassFilesIntoShards(class_files, target_shard_size):
+    """Partitions .class files into balanced shards, keeping nests together."""
+    total_size = sum(_GetFileSize(p) for p in class_files)
+    num_shards = min(
+        os.cpu_count() or 8,
+        max(1, round(total_size / target_shard_size)),
+    )
+    if num_shards <= 1:
+        return [class_files]
+
+    groups = collections.defaultdict(list)
+    group_sizes = collections.defaultdict(int)
+    for path in class_files:
+        prefix = _ClassFileNestPrefix(path)
+        groups[prefix].append(path)
+        group_sizes[prefix] += _GetFileSize(path)
+
+    num_shards = min(num_shards, len(groups))
+    if num_shards <= 1:
+        return [class_files]
+
+    sorted_prefixes = sorted(groups.keys(), key=lambda p: (-group_sizes[p], p))
+    shards = [[] for _ in range(num_shards)]
+    shard_sizes = [0] * num_shards
+    # Keep adding the next largest class cluster to the smallest shard.
+    for prefix in sorted_prefixes:
+        idx = min(range(num_shards), key=lambda i: shard_sizes[i])
+        shards[idx].extend(groups[prefix])
+        shard_sizes[idx] += group_sizes[prefix]
+    return [s for s in shards if s]
+
+
 def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
     # Create temporary directory for classes to be extracted to.
     tmp_extract_dir = os.path.join(tmp_dir, 'tmp_extract_dir')
@@ -548,13 +599,35 @@ def _CreateIntermediateDexFiles(changes, options, tmp_dir, dex_cmd):
                 # file, whenever full dexes are required the .desugardeps files need to
                 # be manually removed.
                 os.unlink(options.desugar_dependencies)
-        _RunD8(
-            dex_cmd,
-            class_files,
-            options.incremental_dir,
-            options.warnings_as_errors,
-            options.show_desugar_default_interface_warnings,
-        )
+        if (
+            dex_cmd[0] == _CUSTOM_D8_BINARY_PATH
+            and not options.desugar_dependencies
+            and not options.dump_inputs
+        ):
+            shards = _PartitionClassFilesIntoShards(
+                class_files, _GRAALVM_SHARD_TARGET_SIZE
+            )
+        else:
+            shards = [class_files]
+
+        def run_d8(shard):
+            _RunD8(
+                dex_cmd,
+                shard,
+                options.incremental_dir,
+                options.warnings_as_errors,
+                options.show_desugar_default_interface_warnings,
+            )
+
+        if len(shards) == 1:
+            run_d8(shards[0])
+        else:
+            logging.debug('Dexing across %d shards.', len(shards))
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=len(shards)
+            ) as executor:
+                for _ in executor.map(run_d8, shards):
+                    pass
         logging.debug('Dexed class files.')
 
 
@@ -659,15 +732,7 @@ def main(args):
     options.class_inputs += options.class_inputs_filearg
     options.dex_inputs += options.dex_inputs_filearg
 
-    input_paths = (
-        [
-            build_utils.JAVA_PATH_FOR_INPUTS,
-            options.r8_jar_path,
-            options.custom_d8_jar_path,
-        ]
-        + options.class_inputs
-        + options.dex_inputs
-    )
+    input_paths = options.class_inputs + options.dex_inputs
 
     depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
@@ -686,14 +751,53 @@ def main(args):
     service_jars += options.dex_inputs
     final_dex_inputs += options.dex_inputs
 
-    dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
+    # Shard only for dexing intermediates (not dex merging).
+    # desugar_dependencies produces an extra output, and sharding / merging it
+    # has not been implemented.
+    can_shard = bool(
+        options.incremental_dir
+        and options.intermediate
+        and options.class_inputs
+        and not options.dex_inputs
+        and not options.desugar_dependencies
+        and not options.dump_inputs
+    )
+    use_custom_d8_binary = (
+        not options.skip_custom_d8
+        and sys.platform == 'linux'
+        and platform.machine() == 'x86_64'
+    )
+    if use_custom_d8_binary and not can_shard:
+        total_input_size = sum(
+            _GetFileSize(p) for p in options.class_inputs + options.dex_inputs
+        )
+        max_input_size = (
+            _GRAALVM_MAX_DEX_INPUT_SIZE
+            if options.class_inputs
+            else _GRAALVM_MAX_MERGE_INPUT_SIZE
+        )
+        use_custom_d8_binary = total_input_size < max_input_size
 
-    # As of Feb 2026, a hyperfine benchmark of dexing chrome_java:
-    # Without flags:
-    # Time (mean ± σ): 7.744 s ±  0.177 s   [User: 161.982 s, System: 8.416 s]
-    # With flags:
-    # Time (mean ± σ): 6.579 s ±  0.057 s   [User: 37.612 s, System: 8.015 s]
-    dex_cmd += ['-XX:TieredStopAtLevel=1']
+    if use_custom_d8_binary:
+        input_paths.append(_CUSTOM_D8_BINARY_PATH)
+        dex_cmd = [
+            _CUSTOM_D8_BINARY_PATH,
+            f'-Djava.home={build_utils.JAVA_HOME}',
+        ]
+    else:
+        input_paths += [
+            build_utils.JAVA_PATH_FOR_INPUTS,
+            options.r8_jar_path,
+            options.custom_d8_jar_path,
+        ]
+        dex_cmd = build_utils.JavaCmd(xmx=_DEX_XMX)
+
+        # As of Feb 2026, a hyperfine benchmark of dexing chrome_java:
+        # Without flags:
+        # Time (mean ± σ): 7.744 s ±  0.177 s   [User: 161.982 s, System: 8.416 s]
+        # With flags:
+        # Time (mean ± σ): 6.579 s ±  0.057 s   [User: 37.612 s, System: 8.015 s]
+        dex_cmd += ['-XX:TieredStopAtLevel=1']
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         dex_cmd += ['-Dcom.android.tools.r8.printtimes=1']
@@ -701,17 +805,17 @@ def main(args):
     if options.dump_inputs:
         dex_cmd += ['-Dcom.android.tools.r8.dumpinputtofile=d8inputs.zip']
 
-    if not options.skip_custom_d8:
-        dex_cmd += [
-            '-cp',
-            '{}:{}'.format(options.r8_jar_path, options.custom_d8_jar_path),
-            'org.chromium.build.CustomD8',
-        ]
-    else:
+    if options.skip_custom_d8:
         dex_cmd += [
             '-cp',
             options.r8_jar_path,
             'com.android.tools.r8.D8',
+        ]
+    elif not use_custom_d8_binary:
+        dex_cmd += [
+            '-cp',
+            f'{options.r8_jar_path}:{options.custom_d8_jar_path}',
+            'org.chromium.build.CustomD8',
         ]
 
     if options.release:

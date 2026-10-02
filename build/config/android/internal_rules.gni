@@ -95,12 +95,8 @@ java_target_patterns = java_library_patterns + java_resource_patterns
 
 _r8_path = "//third_party/r8/cipd/lib/r8.jar"
 _custom_r8_path = "//third_party/r8/custom_r8.jar"
-
-# This duplication is intentional, so we avoid updating the r8.jar used by
-# dexing unless necessary, since each update invalidates all incremental dexing
-# and unnecessarily slows down all bots.
-_d8_path = "//third_party/r8/d8/cipd/lib/r8.jar"
 _custom_d8_path = "//third_party/r8/custom_d8.jar"
+_custom_d8_binary_path = "//third_party/r8/cipd/bin/custom_d8"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
 _manifest_merger_jar_path =
     "//third_party/android_build_tools/manifest_merger/cipd/manifest-merger.jar"
@@ -1707,8 +1703,9 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = [
+                   _custom_d8_binary_path,
                    _custom_d8_path,
-                   _d8_path,
+                   _r8_path,
                  ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
@@ -1733,7 +1730,7 @@ if (enable_java_templates) {
           rebase_path(invoker.output, root_build_dir),
           "--min-api=$_min_sdk_version",
           "--r8-jar-path",
-          rebase_path(_d8_path, root_build_dir),
+          rebase_path(_r8_path, root_build_dir),
           "--custom-d8-jar-path",
           rebase_path(_custom_d8_path, root_build_dir),
 
