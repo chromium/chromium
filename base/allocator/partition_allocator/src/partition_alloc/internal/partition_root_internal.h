@@ -122,14 +122,15 @@ SmuggleRequestedSize(void* object, size_t usable_size, size_t requested_size) {
 
 // Preconditions: as above.
 PA_ALWAYS_INLINE internal::CheckedSpanSmuggledRequestedSize GetSmuggledSize(
-    void* object,
+    UntaggedSlotStart slot_start,
     size_t usable_size) {
   internal::CheckedSpanSmuggledRequestedSize requested_size =
       *reinterpret_cast<internal::CheckedSpanSmuggledRequestedSize*>(
           // SAFETY: as long as preconditions are met, this is an
           // ordinary read from the usable space of the slot.
           PA_UNSAFE_BUFFERS(
-              static_cast<uint8_t*>(object) + usable_size -
+              static_cast<unsigned char*>(slot_start.Tag().ToObject()) +
+              usable_size -
               sizeof(internal::CheckedSpanSmuggledRequestedSize)));
   return requested_size;
 }

@@ -2142,7 +2142,8 @@ TEST_P(PartitionAllocTest, Realloc) {
                     ->InSlotMetadataPointerFromObjectForTesting(ptr2)
                     ->IsSmuggledSizeAvailable());
     EXPECT_EQ(internal::GetSmuggledSize(
-                  ptr2, allocator.root()->GetSlotUsableSize(slot_span)),
+                  UntaggedSlotStart::Unchecked(UntagPtr(ptr2)),
+                  allocator.root()->GetSlotUsableSize(slot_span)),
               size + 1);
   }
 #endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)

@@ -32,6 +32,36 @@ enum class SlotLiveness {
   kDontCheck,
 };
 
+template <SlotLiveness check>
+size_t UsableOrSmuggledSizeFrom(const std::ptrdiff_t offset,
+                                const SlotAddressAndSize slot_and_size) {
+  auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
+      slot_and_size.slot_start, offset);
+  const auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
+  const size_t usable_size = root->GetSlotUsableSize(slot_span);
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  if (root->brp_enabled()) [[likely]] {
+    internal::InSlotMetadata* metadata =
+        internal::InSlotMetadata::From(slot_and_size);
+    if constexpr (check == SlotLiveness::kCheck) {
+      metadata->EnsureAlive(slot_and_size.slot_start, slot_span);
+    }
+
+    if (metadata->IsSmuggledSizeAvailable()) {
+      auto smuggled_size =
+          internal::GetSmuggledSize(slot_and_size.slot_start, usable_size);
+      // The usable size is the absolute upper bound; if the smuggled
+      // size exceeds this, this slot has probably been corrupted.
+      PA_CHECK(smuggled_size <= usable_size);
+      return smuggled_size;
+    }
+  }
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+
+  return usable_size;
+}
+
 template <SlotLiveness check = SlotLiveness::kDontCheck>
 PtrPosWithinAlloc IsPtrWithinSameAlloc(
     uintptr_t orig_address,
@@ -47,22 +77,10 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(
   // Zero it just in case, to catch errors.
   orig_address = 0;
 
-  auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
-      slot_and_size.slot_start, offset);
-  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-
-#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
-  if constexpr (check == SlotLiveness::kCheck) {
-    if (root->brp_enabled()) [[likely]] {
-      internal::InSlotMetadata* metadata =
-          internal::InSlotMetadata::From(slot_and_size);
-      metadata->EnsureAlive(slot_and_size.slot_start, slot_span);
-    }
-  }
-#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  size_t extent = UsableOrSmuggledSizeFrom<check>(offset, slot_and_size);
 
   uintptr_t object_addr = slot_and_size.slot_start.value();
-  uintptr_t object_end = object_addr + root->GetSlotUsableSize(slot_span);
+  uintptr_t object_end = object_addr + extent;
   if (test_address < object_addr || object_end < test_address) [[unlikely]] {
     return PtrPosWithinAlloc::kFarOOB;
 #if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)

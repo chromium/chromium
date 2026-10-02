@@ -33,6 +33,7 @@
 #include "base/test/gtest_util.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc.h"
+#include "partition_alloc/partition_root.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/hash/hash_testing.h"
@@ -3474,7 +3475,7 @@ TEST_F(CheckedSpanTest, OobSpanWillCrash) {
   // Were this the same size, that would mean that the end of the
   // allocation already touches the end of the slot, and this test case
   // becomes bogus.
-  CHECK_GT(usable_bytes, 31u);
+  ASSERT_GT(usable_bytes, 31u);
 
   // SAFETY: This is not safe. PartitionAlloc should force a crash.
   EXPECT_DEATH_IF_SUPPORTED(
@@ -3515,22 +3516,53 @@ TEST_F(CheckedSpanTest, WraparoundSpanWillCrash) {
 }
 
 TEST_F(CheckedSpanTest, SlackSpace) {
-  std::unique_ptr<char, PartitionAllocationDeleter> thirtyone_chars =
-      AllocFromPartitionAlloc(31u);
+  // 64-bit PartitionAlloc implementation detail: using 33 bytes forces
+  // us into slot size 48 (the next lowest being 32). We stay in this
+  // bucket regardless of extras (usu. 4 bytes, but 8 when Dangling
+  // Pointer Detector is enabled), and are guaranteed enough headroom
+  // for the Checked Span smuggled size (4 bytes) to fit at the end of
+  // the usable space.
+  //
+  //  +--- requested size
+  //  |   +--- `InSlotMetadata`
+  //  |   |   +--- (enlarged `InSlotMetadata` if DPD is enabled)
+  //  |   |   |   +--- Checked Span smuggled size
+  //  |   |   |   |
+  // 33 + 4 + 4 + 4 < 48
+  std::unique_ptr<char, PartitionAllocationDeleter> thirtythree_chars =
+      AllocFromPartitionAlloc(33u);
 
-  const size_t usable_bytes =
-      partition_alloc::PartitionRoot::GetExternalUsableSize(
-          thirtyone_chars.get());
+  size_t usable_bytes = partition_alloc::PartitionRoot::GetExternalUsableSize(
+      thirtythree_chars.get());
 
   // Were this the same size, that would mean that the end of the
   // allocation already touches the end of the slot, and this test case
   // becomes bogus.
-  CHECK_GT(usable_bytes, 31u);
+  ASSERT_GT(usable_bytes, 33u);
+
+#if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
+  // When "requested size smuggling" is enabled, PartitionAlloc
+  // (with exceptions) bounds-checks down to the exact requested size.
+  // This provides a stricter upper bound that Checked Span can enforce.
+  //
+  // "Requested size smuggling" is tied to BackupRefPtr enablement.
+  // Properly speaking, we should be gating this on
+  // `allocator_.root()->brp_enabled()`, but the method is internal and
+  // can't be uttered here. Luckily, the test fixture is written s.t.
+  // Checked Span metadata build support means that this instance of
+  // PartitionAlloc has BRP enabled.
+  usable_bytes = 33u;
+  // SAFETY: This is not safe. PartitionAlloc knows that the
+  // allocation is 33 bytes and will force a crash if a span is made
+  // any larger than that.
+  EXPECT_DEATH_IF_SUPPORTED(
+      UNSAFE_BUFFERS(base::span<char>(thirtythree_chars.get(), 34u)), "");
+#endif  // PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 
   for (size_t extent = 0u; extent <= usable_bytes; ++extent) {
     // SAFETY: This is safe insofar as PartitionAlloc guarantees that an
     // extent of `usable_bytes` will not crash.
-    UNSAFE_BUFFERS(base::span<char>(thirtyone_chars.get(), extent));
+    UNSAFE_BUFFERS(base::span<char>(thirtythree_chars.get(), extent));
   }
 }
 
