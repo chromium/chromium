@@ -4,8 +4,10 @@
 
 #include "components/omnibox/browser/url_index_private_data.h"
 
+#include <cstdint>
 #include <set>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -547,4 +549,61 @@ TEST_F(URLIndexPrivateDataTest, WordStartsArePopulated) {
   ASSERT_NE(it, word_starts_map().end());
   EXPECT_FALSE(it->second.url_word_starts_.empty());
   EXPECT_FALSE(it->second.title_word_starts_.empty());
+}
+
+TEST_F(URLIndexPrivateDataTest, RowWordStartsHaveNoSpareCapacity) {
+  // Word start vectors are reserved for the whole URL although only starts
+  // within the first 200 characters are kept, and the title's starts outgrow
+  // their reservation. Neither kind of slack should be retained.
+  std::string path;
+  for (int i = 0; i < 100; ++i) {
+    path += "segment/";
+  }
+  history::URLRow row = MakeRow("http://example.com/" + path, 1);
+  row.set_title(u"a b c d e f g h");
+  ASSERT_TRUE(IndexRow(row));
+
+  history::URLRow batch_row = MakeRow("http://example.org/" + path, 2);
+  batch_row.set_title(u"a b c d e f g h");
+  history::HistoryDatabase::RecentVisitsMap batch_visits;
+  ASSERT_TRUE(IndexRowWithPreFetchedVisits(batch_row, batch_visits));
+
+  for (HistoryID history_id : {1, 2}) {
+    SCOPED_TRACE(history_id);
+    auto it = word_starts_map().find(history_id);
+    ASSERT_NE(it, word_starts_map().end());
+    const WordStarts& url_starts = it->second.url_word_starts_;
+    const WordStarts& title_starts = it->second.title_word_starts_;
+    EXPECT_FALSE(url_starts.empty());
+    EXPECT_EQ(url_starts.size(), url_starts.capacity());
+    EXPECT_FALSE(title_starts.empty());
+    EXPECT_EQ(title_starts.size(), title_starts.capacity());
+  }
+}
+
+// --- Word IDs ---
+
+// WordID is 32 bits to halve the storage of every WordIDSet.
+static_assert(std::is_same_v<WordID, uint32_t>);
+
+TEST_F(URLIndexPrivateDataTest, WordIDsReuseFreedSlots) {
+  ASSERT_TRUE(IndexRow(MakeRow("http://alpha.com/", 1)));
+  ASSERT_TRUE(IndexRow(MakeRow("http://beta.com/", 2)));
+  const size_t word_list_size = word_list().size();
+  auto beta_it = word_map().find(u"beta");
+  ASSERT_NE(beta_it, word_map().end());
+  const WordID beta_id = beta_it->second;
+
+  // Only "beta" is unique to the deleted row, so only its slot is freed.
+  ASSERT_TRUE(data_->DeleteURL(GURL("http://beta.com/")));
+  EXPECT_EQ(0u, word_map().count(u"beta"));
+  EXPECT_EQ(word_list_size, word_list().size());
+
+  // The next new word takes the freed slot instead of growing the list.
+  ASSERT_TRUE(IndexRow(MakeRow("http://gamma.com/", 3)));
+  auto gamma_it = word_map().find(u"gamma");
+  ASSERT_NE(gamma_it, word_map().end());
+  EXPECT_EQ(beta_id, gamma_it->second);
+  EXPECT_EQ(word_list_size, word_list().size());
+  EXPECT_EQ(u"gamma", word_list()[gamma_it->second]);
 }

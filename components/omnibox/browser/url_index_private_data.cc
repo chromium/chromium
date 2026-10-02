@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -41,8 +42,8 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/string_cleaning.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "components/search_engines/template_url_service.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
@@ -883,6 +884,14 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
   const std::u16string& title = omnibox::CleanUpTitleForMatching(row.title());
   String16Vector title_words = String16VectorFromString16(
       title, word_starts ? &word_starts->title_word_starts_ : nullptr);
+  // String16VectorFromString16() reserves word starts for the whole string,
+  // but only records those within `kMaxSignificantChars`, and they may also
+  // outgrow the reservation. The caller keeps them in `word_starts_map_` while
+  // the row is indexed, so drop the unused capacity.
+  if (word_starts) {
+    word_starts->url_word_starts_.shrink_to_fit();
+    word_starts->title_word_starts_.shrink_to_fit();
+  }
 
   for (const auto& word : url_words) {
     if (!word.empty()) {
@@ -928,13 +937,15 @@ void URLIndexPrivateData::AddWordToIndex(const std::u16string& term,
 
 WordID URLIndexPrivateData::AddNewWordToWordList(const std::u16string& term) {
   CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
-  WordID word_id = word_list_.size();
   if (available_words_.empty()) {
+    // Only a new slot needs the range check. Freed IDs are already in range,
+    // so they stay reusable once the list is full.
+    const WordID word_id = base::checked_cast<WordID>(word_list_.size());
     word_list_.push_back(term);
     return word_id;
   }
 
-  word_id = available_words_.top();
+  const WordID word_id = available_words_.top();
   available_words_.pop();
   word_list_[word_id] = term;
   return word_id;
