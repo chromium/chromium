@@ -9008,161 +9008,209 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.WatchTime.AudioVideo.Muted.{Category}" units="ms"
+    expires_after="2027-01-31">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records foreground, muted watch time for {Category}
+
+    Watch time is defined as the amount of elapsed media time aggregated per
+    player instance (requiring a minimum video size of 200x140 pixels). Watch
+    time is checked every 5 seconds and reported to UMA upon finalization if at
+    least 7 seconds of muted, foreground media time have elapsed.
+
+    Any one of paused, hidden (backgrounded), or unmuted (becoming audible) is
+    sufficient to stop muted watch time collection (transitioning to unmuted or
+    background watch time metrics where applicable). Each of these state changes
+    has a 5-second hysteresis where if the state change is undone within that
+    window, the watch time is counted as uninterrupted.
+
+    Dominant/auxiliary visible content changes have a similar hysteresis, but
+    partition watch time into their respective sub-category metrics without
+    stopping overall muted watch time collection. Each seek event immediately
+    finalizes the current watch time metric and starts a new metric upon seek
+    completion.
+  </summary>
+  <token key="Category">
+    <variant name="All"
+        summary="all media with both an audio and video track."/>
+    <variant name="AuxiliaryVisibleContent"
+        summary="all media with both an audio and video track displayed as a
+                 smaller element on screen."/>
+    <variant name="DominantVisibleContent"
+        summary="all media with both an audio and video track displayed as
+                 the dominant visible content on screen."/>
+    <variant name="EME"
+        summary="EME media with both an audio and video track."/>
+    <variant name="HLS"
+        summary="HLS media with both an audio and video track."/>
+    <variant name="MSE"
+        summary="MSE media with both an audio and video track."/>
+    <variant name="SRC"
+        summary="SRC media with both an audio and video track."/>
+  </token>
+</histogram>
+
+<histogram name="Media.WatchTime.{TrackType}.Background.{Category}" units="ms"
+    expires_after="2027-01-31">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records background (hidden), unmuted watch time for {Category} {TrackType}.
+
+    Watch time is defined as the amount of elapsed media time aggregated per
+    player instance (for audio-only media, or video media of at least 200x140
+    pixels). Watch time is checked every 5 seconds and reported to UMA upon
+    finalization if at least 7 seconds of unmuted, background media time have
+    elapsed.
+
+    Any one of paused, shown (foregrounded), or muted is sufficient to stop
+    background watch time collection (transitioning to foreground or muted watch
+    time metrics where applicable). Each of these state changes has a 5-second
+    hysteresis where if the state change is undone within that window, the
+    background watch time is counted as uninterrupted.
+
+    Power events (on/off battery power) have a similar hysteresis, but partition
+    watch time into their respective sub-category metrics without stopping
+    overall background watch time collection. Each seek event immediately
+    finalizes the current watch time metric and starts a new metric upon seek
+    completion.
+  </summary>
+  <token key="TrackType">
+    <variant name="Audio" summary="with only an audio track"/>
+    <variant name="AudioVideo" summary="with both an audio and video track"/>
+  </token>
+  <token key="Category">
+    <variant name="AC" summary="all media on AC power"/>
+    <variant name="All" summary="all media"/>
+    <variant name="Battery" summary="all media on battery power"/>
+    <variant name="EmbeddedExperience" summary="downloaded media on Android"/>
+    <variant name="EME" summary="EME media"/>
+    <variant name="HLS" summary="HLS media"/>
+    <variant name="MSE" summary="MSE media"/>
+    <variant name="SRC" summary="SRC media"/>
+  </token>
+</histogram>
+
+<histogram name="Media.WatchTime.{TrackType}.Discarded.{Category}" units="ms"
+    expires_after="2027-01-31">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records watch time less than 7 seconds for foreground, unmuted {Category}
+    media {TrackType}.
+
+    Standard Media.WatchTime.* metrics require a minimum of 7 seconds of elapsed
+    playback time to be reported to UMA. When a foreground, unmuted playback is
+    finalized (due to being paused, hidden, muted, seeked, or destroyed) with
+    more than 0 seconds but less than 7 seconds of elapsed media time, that
+    discarded watch time is recorded here instead. This allows estimating an
+    upper bound on uncollected short watch time. See
+    Media.WatchTime.AudioVideo.All for details on watch time monitoring and
+    hysteresis.
+  </summary>
+  <token key="TrackType">
+    <variant name="Audio" summary="with only an audio track"/>
+    <variant name="AudioVideo" summary="with both an audio and video track"/>
+  </token>
+  <token key="Category">
+    <variant name="EME"/>
+    <variant name="HLS"/>
+    <variant name="MSE"/>
+    <variant name="SRC"/>
+  </token>
+</histogram>
+
 <histogram name="Media.WatchTime{MediaWatchTimeCategories}" units="ms"
     expires_after="2027-01-31">
   <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    Watch time is defined as the amount of elapsed media time for audio+video
-    media aggregated per player instance. A minimum of 7 seconds of unmuted,
-    foreground media must be watched to start watch time monitoring. Watch time
-    is checked on a regular basis and reported to UMA upon one of the stop
-    events mentioned below or at player destruction if none occur prior.
+    Records foreground, unmuted {MediaWatchTimeCategories}
 
-    Any one of paused, hidden, or muted is sufficient to stop watch time metric
-    reports. Each of these has a hysteresis where if the state change is undone
-    within some time, the watch time will be counted as uninterrupted.
+    Watch time is defined as the amount of elapsed media time aggregated per
+    player instance (for audio-only media, or video media of at least 200x140
+    pixels). Watch time is checked every 5 seconds and reported to UMA upon
+    finalization if at least 7 seconds of unmuted, foreground media time have
+    elapsed (shorter playbacks are reported to Media.WatchTime.*.Discarded.*).
 
-    Power events (on/off battery power) have a similar hysteresis, but unlike
-    the aforementioned properties, will not stop metric collection.
+    Any one of paused, hidden (backgrounded), or muted is sufficient to stop
+    foreground, unmuted watch time collection (transitioning to .Background.* or
+    .Muted.* metrics where applicable). Each of these state changes has a
+    5-second hysteresis where if the state change is undone within that window,
+    the watch time is counted as uninterrupted.
 
-    Each seek event will result in a new watch time metric being started and the
-    old metric finalized as accurately as possible. {MediaWatchTimeCategories}
+    Other property changes (power source on/off battery, display type, native
+    controls, dominant visible content, or HDR) have a similar hysteresis, but
+    partition watch time into their respective sub-category metrics without
+    stopping overall watch time collection. Each seek event immediately
+    finalizes the current watch time metric and starts a new metric upon seek
+    completion.
   </summary>
   <token key="MediaWatchTimeCategories">
-    <variant name=""/>
+    <variant name="" summary="watch time for media."/>
     <variant name=".Audio.AC"
-        summary="Watch time for all media with only an audio track on AC
+        summary="watch time for all media with only an audio track on AC
                  power."/>
     <variant name=".Audio.All"
-        summary="Watch time for all media with only an audio track."/>
+        summary="watch time for all media with only an audio track."/>
     <variant name=".Audio.AutoPipMediaPlayback"
-        summary="Watch time for all media with only an audio track on a
+        summary="watch time for all media with only an audio track on a
                  window opened due to auto picture in picture for media
                  playback."/>
-    <variant name=".Audio.Background.AC"
-        summary="Background watch time for all media with only an audio track
-                 on AC power."/>
-    <variant name=".Audio.Background.All"
-        summary="Background watch time for all media with only an audio
-                 track."/>
-    <variant name=".Audio.Background.Battery"
-        summary="Background watch time for all media with only an audio track
-                 on battery power."/>
-    <variant name=".Audio.Background.EmbeddedExperience"
-        summary="Background watch time for downloaded media on Android with
-                 only an audio track."/>
-    <variant name=".Audio.Background.EME"
-        summary="Background watch time for EME media with only an audio
-                 track."/>
-    <variant name=".Audio.Background.HLS"
-        summary="Background watch time for HLS media with only an audio
-                 track."/>
-    <variant name=".Audio.Background.MSE"
-        summary="Background watch time for MSE media with only an audio
-                 track."/>
-    <variant name=".Audio.Background.SRC"
-        summary="Background watch time for SRC media with only an audio
-                 track."/>
     <variant name=".Audio.Battery"
-        summary="Watch time for all media with only an audio track on battery
+        summary="watch time for all media with only an audio track on battery
                  power."/>
-    <variant name=".Audio.Discarded.EME"
-        summary="Watch time less than 7 seconds for EME media with only an
-                 audio track."/>
-    <variant name=".Audio.Discarded.HLS"
-        summary="Watch time less than 7 seconds for HLS media with only an
-                 audio track."/>
-    <variant name=".Audio.Discarded.MSE"
-        summary="Watch time less than 7 seconds for MSE media with only an
-                 audio track."/>
-    <variant name=".Audio.Discarded.SRC"
-        summary="Watch time less than 7 seconds for SRC media with only an
-                 audio track."/>
     <variant name=".Audio.EmbeddedExperience"
-        summary="Watch time for downloaded media on Android with only an
+        summary="watch time for downloaded media on Android with only an
                  audio track."/>
     <variant name=".Audio.EME"
-        summary="Watch time for EME media with only an audio track."/>
+        summary="watch time for EME media with only an audio track."/>
     <variant name=".Audio.HLS"
-        summary="Watch time for HLS media with only an audio track."/>
+        summary="watch time for HLS media with only an audio track."/>
     <variant name=".Audio.MSE"
-        summary="Watch time for MSE media with only an audio track."/>
+        summary="watch time for MSE media with only an audio track."/>
     <variant name=".Audio.NativeControlsOff"
-        summary="Watch time for all media with only an audio track not using
+        summary="watch time for all media with only an audio track not using
                  native controls."/>
     <variant name=".Audio.NativeControlsOn"
-        summary="Watch time for all media with only an audio track using
+        summary="watch time for all media with only an audio track using
                  native controls."/>
     <variant name=".Audio.SRC"
-        summary="Watch time for SRC media with only an audio track."/>
+        summary="watch time for SRC media with only an audio track."/>
     <variant name=".AudioVideo.AC"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  on AC power."/>
     <variant name=".AudioVideo.All"
-        summary="Watch time for all media with both an audio and video track."/>
+        summary="watch time for all media with both an audio and video track."/>
     <variant name=".AudioVideo.AutoPipMediaPlayback"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  on a window opened due to auto picture in picture for media
                  playback."/>
     <variant name=".AudioVideo.AuxiliaryVisibleContent"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  displayed as a smaller element on screen."/>
-    <variant name=".AudioVideo.Background.AC"
-        summary="Background watch time for all media with both an audio and
-                 video track on AC power."/>
-    <variant name=".AudioVideo.Background.All"
-        summary="Background watch time for all media with both an audio and
-                 video track."/>
-    <variant name=".AudioVideo.Background.Battery"
-        summary="Background watch time for all media with both an audio and
-                 video track on battery power."/>
-    <variant name=".AudioVideo.Background.EmbeddedExperience"
-        summary="Background watch time for downloaded media on Android with
-                 both an audio and video track."/>
-    <variant name=".AudioVideo.Background.EME"
-        summary="Background watch time for EME media with both an audio and
-                 video track."/>
-    <variant name=".AudioVideo.Background.HLS"
-        summary="Background watch time for HLS media with both an audio and
-                 video track."/>
-    <variant name=".AudioVideo.Background.MSE"
-        summary="Background watch time for MSE media with both an audio and
-                 video track."/>
-    <variant name=".AudioVideo.Background.SRC"
-        summary="Background watch time for SRC media with both an audio and
-                 video track."/>
     <variant name=".AudioVideo.Battery"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  on battery power."/>
-    <variant name=".AudioVideo.Discarded.EME"
-        summary="Watch time less than 7 seconds for EME media with only with
-                 both an audio and video track."/>
-    <variant name=".AudioVideo.Discarded.HLS"
-        summary="Watch time less than 7 seconds for HLS media with with both
-                 an audio and video track."/>
-    <variant name=".AudioVideo.Discarded.MSE"
-        summary="Watch time less than 7 seconds for MSE media with only with
-                 both an audio and video track."/>
-    <variant name=".AudioVideo.Discarded.SRC"
-        summary="Watch time less than 7 seconds for SRC media with with both
-                 an audio and video track."/>
     <variant name=".AudioVideo.DisplayFullscreen"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  displayed in fullscreen."/>
     <variant name=".AudioVideo.DisplayInline"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  displayed inline."/>
     <variant name=".AudioVideo.DisplayPictureInPicture"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  displayed in picture-in-picture."/>
     <variant name=".AudioVideo.DominantVisibleContent"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  displayed as the dominant visible content on screen."/>
     <variant name=".AudioVideo.EmbeddedExperience"
-        summary="Watch time for downloaded media on Android with both an
+        summary="watch time for downloaded media on Android with both an
                  audio and video track."/>
     <variant name=".AudioVideo.EME"
-        summary="Watch time for EME media with both an audio and video track."/>
+        summary="watch time for EME media with both an audio and video track."/>
     <variant name=".AudioVideo.HDR.All"
         summary="HDR watch time for all media with both an audio and video
                  track."/>
@@ -9170,50 +9218,29 @@ chromium-metrics-reviews@google.com.
         summary="HDR watch time for EME media with both an audio and video
                  track."/>
     <variant name=".AudioVideo.HLS"
-        summary="Watch time for HLS media with both an audio and video track."/>
+        summary="watch time for HLS media with both an audio and video track."/>
     <variant name=".AudioVideo.MediaFoundation.All"
-        summary="MediaFoundations renderer watch time for all media with both
+        summary="MediaFoundation renderer watch time for all media with both
                  an audio and video track."/>
     <variant name=".AudioVideo.MediaFoundation.Eme"
-        summary="MediaFoundations renderer watch time for EME media with both
+        summary="MediaFoundation renderer watch time for EME media with both
                  an audio and video track."/>
     <variant name=".AudioVideo.MediaFoundation.HDR.All"
-        summary="MediaFoundations renderer HDR watch time for all media with
+        summary="MediaFoundation renderer HDR watch time for all media with
                  both an audio and video track."/>
     <variant name=".AudioVideo.MediaFoundation.HDR.EME"
-        summary="MediaFoundations renderer HDR watch time for EME media with
+        summary="MediaFoundation renderer HDR watch time for EME media with
                  both an audio and video track."/>
     <variant name=".AudioVideo.MSE"
-        summary="Watch time for MSE media with both an audio and video track."/>
-    <variant name=".AudioVideo.Muted.All"
-        summary="Muted watch time for all media with both an audio and video
-                 track."/>
-    <variant name=".AudioVideo.Muted.AuxiliaryVisibleContent"
-        summary="Muted watch time for all media with both an audio and video
-                 track displayed as a smaller element on screen."/>
-    <variant name=".AudioVideo.Muted.DominantVisibleContent"
-        summary="Muted watch time for all media with both an audio and video
-                 track displayed as the dominant visible content on screen."/>
-    <variant name=".AudioVideo.Muted.EME"
-        summary="Muted watch time for EME media with both an audio and video
-                 track."/>
-    <variant name=".AudioVideo.Muted.HLS"
-        summary="Muted watch time for HLS media with both an audio and video
-                 track."/>
-    <variant name=".AudioVideo.Muted.MSE"
-        summary="Muted watch time for MSE media with both an audio and video
-                 track."/>
-    <variant name=".AudioVideo.Muted.SRC"
-        summary="Muted watch time for SRC media with both an audio and video
-                 track."/>
+        summary="watch time for MSE media with both an audio and video track."/>
     <variant name=".AudioVideo.NativeControlsOff"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  not using native controls."/>
     <variant name=".AudioVideo.NativeControlsOn"
-        summary="Watch time for all media with both an audio and video track
+        summary="watch time for all media with both an audio and video track
                  using native controls."/>
     <variant name=".AudioVideo.SRC"
-        summary="Watch time for SRC media with both an audio and video track."/>
+        summary="watch time for SRC media with both an audio and video track."/>
   </token>
 </histogram>
 
