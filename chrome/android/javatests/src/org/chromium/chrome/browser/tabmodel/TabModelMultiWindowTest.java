@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +36,6 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -110,15 +110,17 @@ public class TabModelMultiWindowTest {
         runOnUiThreadBlocking(
                 () -> mTabModelJni.moveTabToWindowForTesting(tabToMove, nativeBrowserWindow2, 0));
 
-        assertEquals(initialTabCount - 1, getTabCountOnUiThread(mTabModelJni));
         TabModel model2 = activity2.getTabModelSelector().getModel(false);
-        assertEquals(2, getTabCountOnUiThread(model2));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mTabModelJni.getCount(), is(initialTabCount - 1));
+                    Criteria.checkThat(model2.getCount(), is(2));
+                });
         assertEquals(tabToMove, runOnUiThreadBlocking(() -> model2.getTabAt(0)));
     }
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/568380656")
     public void testMoveTabGroupToWindow() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         TabModel tabModel = activity1.getTabModelSelector().getModel(false);
@@ -141,9 +143,12 @@ public class TabModelMultiWindowTest {
                     assertTrue(moved);
                 });
 
-        assertEquals(initialTabCount - 2, getTabCountOnUiThread(mTabModelJni));
         TabModel model2 = activity2.getTabModelSelector().getModel(false);
-        assertEquals(3, getTabCountOnUiThread(model2));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mTabModelJni.getCount(), is(initialTabCount - 2));
+                    Criteria.checkThat(model2.getCount(), is(3));
+                });
         assertEquals(group.get(0), runOnUiThreadBlocking(() -> model2.getTabAt(0)));
         assertEquals(group.get(1), runOnUiThreadBlocking(() -> model2.getTabAt(1)));
         assertEquals(groupId, group.get(0).getTabGroupId());
