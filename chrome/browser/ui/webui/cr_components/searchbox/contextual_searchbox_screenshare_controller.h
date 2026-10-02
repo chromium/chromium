@@ -201,6 +201,7 @@ class ContextualSearchboxScreenshareController {
       active_screenshot_request_;
   raw_ptr<DesktopMediaPickerFactory> picker_factory_ = nullptr;
   bool is_native_picker_open_ = false;
+  bool is_picker_open_notified_ = false;
   bool is_region_overlay_open_ = false;
 
   // State for coordinating screenshot capture with picker dialog destruction
