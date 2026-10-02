@@ -9,6 +9,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/check_deref.h"
 #include "base/containers/enum_set.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
-#include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
@@ -56,6 +56,7 @@
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
@@ -68,6 +69,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -118,7 +120,9 @@ enum class Microsoft365Availability {
 };
 
 // Handle system error notification "Sign in" click.
-void HandleSignInClick(Profile* profile, std::optional<int> button_index) {
+void HandleSignInClick(Profile* profile,
+                       const std::string& notification_id,
+                       std::optional<int> button_index) {
   // If the "Sign in" button was pressed, rather than a click to somewhere
   // else in the notification.
   if (button_index) {
@@ -126,10 +130,8 @@ void HandleSignInClick(Profile* profile, std::optional<int> button_index) {
     // Request an ODFS mount which will trigger reauthentication.
     RequestODFSMount(profile, base::DoNothing());
   }
-  NotificationDisplayService* notification_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile);
-  notification_service->Close(NotificationHandler::Type::TRANSIENT,
-                              kNotificationId);
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /*by_user=*/false);
 }
 
 // TODO(b/288038136): Use a notification manager to handle error notifications.
@@ -146,6 +148,25 @@ void ShowUnableToOpenNotification(
                                         1),
     message_center::SystemNotificationWarningLevel warning_level =
         message_center::SystemNotificationWarningLevel::WARNING) {
+  // During logout or shutdown, the message center is destroyed before profile
+  // teardown aborts pending ODFS requests. The aborted request's error callback
+  // still calls this function, but there is no message center to show the
+  // notification in.
+  auto* message_center = message_center::MessageCenter::Get();
+  if (!message_center) {
+    return;
+  }
+
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  const std::string notification_id = ash::CreateUserScopedNotificationId(
+      kNotificationId, user.username_hash());
+
+  // Set `profile_id` so that the notification is hidden while another
+  // signed-in user is active.
+  message_center::NotifierId notifier_id;
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
+
   std::vector<message_center::ButtonInfo> notification_buttons;
 
   if (message == GetReauthenticationRequiredMessage()) {
@@ -158,28 +179,23 @@ void ShowUnableToOpenNotification(
 
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/kNotificationId,
+      /*id=*/notification_id,
       /*title*/ base::UTF8ToUTF16(title),
       /*message=*/base::UTF8ToUTF16(message),
       /*display_source=*/
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
-      /*notifier_id=*/message_center::NotifierId(),
+      /*notifier_id=*/notifier_id,
       /*optional_fields=*/{},
       /*delegate=*/
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-          base::BindRepeating(&HandleSignInClick, profile)),
+          base::BindRepeating(&HandleSignInClick, profile, notification_id)),
       /*small_image=*/ash::kFolderIcon, warning_level);
 
   notification->set_buttons(notification_buttons);
-  // Set never_timeout with the highest priority, SYSTEM_PRIORITY, so that the
-  // notification never times out.
-  notification->set_never_timeout(true);
+  // Set SYSTEM_PRIORITY so that the notification has the highest priority and
+  // never times out.
   notification->SetSystemPriority();
-  NotificationDisplayService* notification_service =
-      NotificationDisplayServiceFactory::GetForProfile(profile);
-  notification_service->Display(NotificationHandler::Type::TRANSIENT,
-                                *notification,
-                                /*metadata=*/nullptr);
+  message_center->AddNotification(std::move(notification));
 }
 
 // Check if reauthentication to OneDrive is required from the ODFS metadata

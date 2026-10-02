@@ -86,6 +86,8 @@ specific_include_rules = {
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
     "+chrome/test/interaction",
+    "+ui/message_center/message_center.h",
+    "+ui/message_center/message_center_observer.h",
   ],
   "cloud_upload_prompt_prefs_handler_factory\\.cc": [
     "+chrome/browser/sync/sync_service_factory.h",

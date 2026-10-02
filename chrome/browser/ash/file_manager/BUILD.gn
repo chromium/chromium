@@ -577,6 +577,7 @@ source_set("browser_tests") {
     "//ui/file_manager:file_manager_gen_resources",
     "//ui/file_manager:resources",
     "//ui/gfx/geometry",
+    "//ui/message_center",
     "//ui/message_center/public/cpp",
     "//ui/shell_dialogs",
     "//ui/views",

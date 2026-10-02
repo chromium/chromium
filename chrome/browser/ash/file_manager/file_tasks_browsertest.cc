@@ -14,7 +14,9 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/file_manager/url_constants.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -25,6 +27,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -65,8 +68,6 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -87,6 +88,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_manager_private.h"
@@ -94,6 +96,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -109,6 +112,8 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace file_manager::file_tasks {
@@ -1630,7 +1635,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
 // Tests the cloud upload/open flow as well as the office fallback flow using a
 // fake ODFS.
 class OneDriveTest : public TestAccountBrowserTest,
-                     public NotificationDisplayService::Observer {
+                     public message_center::MessageCenterObserver {
  public:
   OneDriveTest() : TestAccountBrowserTest(kNonManaged) {
     // Relative paths for files on ODFS and Android OneDrive.
@@ -1644,6 +1649,11 @@ class OneDriveTest : public TestAccountBrowserTest,
     cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
         ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
+  }
+
+  void TearDownOnMainThread() override {
+    notification_observer_.Reset();
+    TestAccountBrowserTest::TearDownOnMainThread();
   }
 
   void TearDown() override {
@@ -1773,23 +1783,22 @@ class OneDriveTest : public TestAccountBrowserTest,
   }
 
   // Record the notification message shown.
-  void OnNotificationDisplayed(
-      const message_center::Notification& notification,
-      const NotificationCommon::Metadata* const metadata) override {
-    notification_title_ = base::UTF16ToUTF8(notification.title());
-    notification_message_ = base::UTF16ToUTF8(notification.message());
-    notification_warning_level_ =
-        notification.system_notification_warning_level();
+  void OnNotificationAdded(const std::string& notification_id) override {
+    RecordNotification(notification_id);
   }
 
-  void OnNotificationClosed(const std::string& notification_id) override {}
-  void OnNotificationDisplayServiceDestroyed(
-      NotificationDisplayService* service) override {}
+  void OnNotificationUpdated(const std::string& notification_id) override {
+    RecordNotification(notification_id);
+  }
 
  protected:
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      notification_observer_{this};
   std::string notification_title_;
   std::string notification_message_;
-  message_center::SystemNotificationWarningLevel notification_warning_level_;
+  message_center::SystemNotificationWarningLevel notification_warning_level_ =
+      message_center::SystemNotificationWarningLevel::NORMAL;
   FileSystemURL odfs_docx_test_file_url_1_;
   FileSystemURL odfs_pptx_test_file_url_2_;
   std::unique_ptr<FakeWebAppPublisher> web_app_publisher_;
@@ -1808,6 +1817,28 @@ class OneDriveTest : public TestAccountBrowserTest,
   std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics_;
 
  private:
+  void RecordNotification(const std::string& notification_id) {
+    if (notification_id != GetOpenFailureNotificationId()) {
+      return;
+    }
+    message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindNotificationById(
+            notification_id);
+    ASSERT_TRUE(notification);
+    notification_title_ = base::UTF16ToUTF8(notification->title());
+    notification_message_ = base::UTF16ToUTF8(notification->message());
+    notification_warning_level_ =
+        notification->system_notification_warning_level();
+  }
+
+  // Returns the user-scoped ID of the cloud upload open failure notification.
+  std::string GetOpenFailureNotificationId() {
+    const user_manager::User& user = CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+    return ash::CreateUserScopedNotificationId("cloud_upload_open_failure",
+                                               user.username_hash());
+  }
+
   base::test::ScopedFeatureList feature_list_;
   const std::string test_docx_file_name_1_ = "text.docx";
   const std::string test_pptx_file_name_2_ = "presentation.pptx";
@@ -2160,8 +2191,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateSetupDialogs) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   // Fails to launch a second setup dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2223,8 +2253,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, CannotShowDuplicateMoveConfirmation) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   // Fails to launch a second move confirmation dialog for the same file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2353,8 +2382,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   ASSERT_TRUE(event_router);
   event_router->AddCloudOpenTask(odfs_docx_test_file_url_1_);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   // Fail to execute a duplicate CloudOpenTask for the file.
   base::test::TestFuture<TaskResult, std::string> failed_future;
@@ -2476,8 +2504,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(true);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   web_app_publisher_->ClearPastLaunches();
 
@@ -2507,9 +2534,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsReauthRequired,
       1);
-
-  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
-      ->RemoveObserver(this);
 }
 
 // Test that when opening a file from ODFS fails due an access error that is not
@@ -2524,8 +2548,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
       base::File::Error::FILE_ERROR_ACCESS_DENIED);
   provided_file_system_->SetReauthenticationRequired(false);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   web_app_publisher_->ClearPastLaunches();
 
@@ -2553,9 +2576,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSOtherAccessError) {
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kGetActionsAccessDenied, 1);
-
-  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
-      ->RemoveObserver(this);
 }
 
 // Test that OpenOrMoveFiles() will open an Android OneDrive office file via
@@ -2616,8 +2636,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   // Creates a fake ODFS with a test file.
   SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   web_app_publisher_->Uninstall(
       ash::kMicrosoft365AppId, apps::UninstallSource::kUnknown,
@@ -2648,9 +2667,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest,
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveErrorMetricName,
       ash::cloud_upload::OfficeOneDriveOpenErrors::kMS365NotInstalled, 1);
-
-  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
-      ->RemoveObserver(this);
 }
 
 // Test that when the web app publisher fails to launch the MS365 app, the open
@@ -2659,8 +2675,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSWhenLaunchFails) {
   // Creates a fake ODFS with a test file.
   SetUpTest(/*disable_set_up=*/true, /*launch_files_app=*/false);
 
-  NotificationDisplayServiceFactory::GetForProfile(profile())->AddObserver(
-      this);
+  notification_observer_.Observe(message_center::MessageCenter::Get());
 
   web_app_publisher_->set_fail_launch(true);
 
@@ -2686,9 +2701,6 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FailToOpenFileFromODFSWhenLaunchFails) {
       ash::cloud_upload::OfficeOneDriveOpenErrors::kFailedToLaunch, 1);
 
   web_app_publisher_->set_fail_launch(false);
-
-  NotificationDisplayServiceFactory::GetForProfile(browser()->GetProfile())
-      ->RemoveObserver(this);
 }
 
 // Same as OpenFileFromAndroidOneDriveViaODFS test the email account associated
