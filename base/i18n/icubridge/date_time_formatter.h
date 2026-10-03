@@ -10,6 +10,7 @@
 
 #include "base/i18n/base_i18n_export.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/time_formatting_types.h"
 #include "base/i18n/timezone.h"
 #include "base/time/time.h"
@@ -20,11 +21,14 @@ namespace base::i18n {
 class IcuBridge;
 struct DateTimeFormatterOptions;
 
-class LanguageTag;
-
 // DateTimeFormatter provides a set of helper functions for formatting dates and
 // times using ICU. It handles locale-specific formatting and provides
 // common patterns used across the codebase.
+//
+// Each instance is bound to the locale it was created with. Instances are owned
+// by `IcuBridge` and are obtained via `IcuBridge::date_time_formatter()`, which
+// returns the formatter for the default ICU locale, or via
+// `IcuBridge::date_time_formatter(locale)` for a specific locale.
 //
 // Usage example:
 //
@@ -53,27 +57,26 @@ class LanguageTag;
 // auto locale = base::i18n::LanguageTagConverter::GetInstance()
 //     .FromString("ja-JP");
 // std::u16string localized = base::i18n::IcuBridge::GetInstance()
-//     .date_time_formatter()
+//     .date_time_formatter(*locale)
 //     .Format(base::Time::Now(),
-//             *locale,
 //             base::i18n::datetime_options::YMDT::Short());
 class BASE_I18N_EXPORT IcuBridge::DateTimeFormatter {
  public:
   // Formats date and time according to the provided options.
-  // The formatting is locale-aware and uses the default locale set for the
-  // process.
+  // The formatting is locale-aware and uses the locale this formatter was
+  // created with.
   std::u16string Format(base::Time time,
-                        const DateTimeFormatterOptions& options) const;
-
-  // Formats date and time according to the provided options and locale.
-  std::u16string Format(base::Time time,
-                        const LanguageTag& locale,
                         const DateTimeFormatterOptions& options) const;
 
   // Returns the hour clock type for the default locale.
   base::HourClockType GetHourClockType() const;
 
-  explicit DateTimeFormatter(base::PassKey<IcuBridge>) {}
+  DateTimeFormatter(base::PassKey<IcuBridge>, const LanguageTag& locale)
+      : locale_(locale) {}
+
+ private:
+  // The locale used by this formatter.
+  const LanguageTag locale_;
 };
 
 // Options for date and time formatting.

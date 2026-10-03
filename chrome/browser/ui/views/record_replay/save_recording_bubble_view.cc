@@ -116,8 +116,9 @@ void SaveRecordingBubbleView::Init() {
 
     base::Time now = base::Time::Now();
     std::string date_str =
-        base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
-            now, GetKnownLanguageTag("en-US"), YMD::Short()));
+        base::UTF16ToUTF8(IcuBridge::GetInstance()
+                              .date_time_formatter(GetKnownLanguageTag("en-US"))
+                              .Format(now, YMD::Short()));
 
     placeholder_text =
         base::UTF8ToUTF16(domain) + u"_" + base::UTF8ToUTF16(date_str);

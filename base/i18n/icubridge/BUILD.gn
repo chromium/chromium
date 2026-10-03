@@ -31,6 +31,7 @@ source_set("icubridge") {
     "//base/i18n:language_tag",
     "//base/i18n:time_formatting_types",
     "//base/i18n:timezone",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [

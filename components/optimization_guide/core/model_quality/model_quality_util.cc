@@ -59,9 +59,9 @@ std::string TimeToYYYYMMDDString(base::Time ts) {
   using base::i18n::datetime_options::YMD;
 
   return base::UTF16ToUTF8(
-      IcuBridge::GetInstance().date_time_formatter().Format(
-          ts, GetKnownLanguageTag("en-US"),
-          YMD::Short().with_time_zone(TimeZone::GMT())));
+      IcuBridge::GetInstance()
+          .date_time_formatter(GetKnownLanguageTag("en-US"))
+          .Format(ts, YMD::Short().with_time_zone(TimeZone::GMT())));
 }
 
 int64_t ShiftAndHash(int64_t client_id, int64_t shift, base::Time day) {

@@ -237,10 +237,12 @@ std::string TimeFormatHTTP(Time time) {
   // (e.g. "Sat, 01 Apr" for a Sunday, May 1 GMT instant).
   const base::i18n::TimeZone gmt = base::i18n::TimeZone::GMT();
   static constexpr i18n::LanguageTag en_us = i18n::GetKnownLanguageTag("en-US");
-  std::string day_of_week = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
-      time, en_us, i18n::datetime_options::E::Medium().with_time_zone(gmt)));
-  std::string month_long = base::UTF16ToUTF8(GetDateTimeFormatter().Format(
-      time, en_us, i18n::datetime_options::M::Medium().with_time_zone(gmt)));
+  const i18n::IcuBridge::DateTimeFormatter& en_us_formatter =
+      i18n::IcuBridge::GetInstance().date_time_formatter(en_us);
+  std::string day_of_week = base::UTF16ToUTF8(en_us_formatter.Format(
+      time, i18n::datetime_options::E::Medium().with_time_zone(gmt)));
+  std::string month_long = base::UTF16ToUTF8(en_us_formatter.Format(
+      time, i18n::datetime_options::M::Medium().with_time_zone(gmt)));
   Time::Exploded exploded;
   time.UTCExplode(&exploded);
   // This is mimic the skeleton: "E, dd MMM yyyy HH:mm:ss 'GMT'"

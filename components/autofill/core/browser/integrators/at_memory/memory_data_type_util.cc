@@ -115,10 +115,12 @@ std::optional<std::u16string> FormatShortDate(
 std::u16string FormatTimeOfDay(base::Time time, std::string_view app_locale) {
   if (std::optional<base::i18n::LanguageTag> tag =
           base::i18n::GetLanguageTagFromString(app_locale)) {
-    return base::i18n::IcuBridge::GetInstance().date_time_formatter().Format(
-        time, *tag,
-        base::i18n::datetime_options::T::Short().with_time_precision(
-            base::i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
+    return base::i18n::IcuBridge::GetInstance()
+        .date_time_formatter(*tag)
+        .Format(
+            time,
+            base::i18n::datetime_options::T::Short().with_time_precision(
+                base::i18n::DateTimeFormatterOptions::TimePrecision::kMinute));
   }
   return base::TimeFormatTimeOfDay(time);
 }

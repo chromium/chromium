@@ -28,6 +28,12 @@ class DateTimeFormatterTest : public testing::Test {
   void SetUp() override { InitializeICU(); }
 
  protected:
+  // Returns the formatter bound to `locale`.
+  static const IcuBridge::DateTimeFormatter& FormatterFor(
+      const LanguageTag& locale) {
+    return IcuBridge::GetInstance().date_time_formatter(locale);
+  }
+
   // Force UTC timezone for predictable results.
   base::test::ScopedRestoreDefaultTimezone gmt_timezone_{"GMT"};
 
@@ -43,9 +49,6 @@ class DateTimeFormatterTest : public testing::Test {
   };
 
   void RunExactMatchTests(const std::vector<ExactMatchTestEntry>& test_data) {
-    const IcuBridge::DateTimeFormatter& formatter =
-        IcuBridge::GetInstance().date_time_formatter();
-
     for (const auto& entry : test_data) {
       base::Time time;
       ASSERT_TRUE(
@@ -97,7 +100,7 @@ class DateTimeFormatterTest : public testing::Test {
 
         for (size_t i = 0; i < entry.options.size(); ++i) {
           std::u16string actual =
-              formatter.Format(time, *language_tag, entry.options[i]);
+              FormatterFor(*language_tag).Format(time, entry.options[i]);
           std::u16string_view expected_str = expectation.expected[i];
           EXPECT_THAT(actual, ::testing::Eq(expected_str))
               << "Failed: " << entry.description << " Locale: " << locale_str
@@ -351,10 +354,8 @@ TEST_F(DateTimeFormatterTest, FormatShortDate) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMDT::Short());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMDT::Short());
 
   EXPECT_FALSE(result.empty());
   // US short date/time might be "5/25/26, 10:30 AM"
@@ -366,10 +367,8 @@ TEST_F(DateTimeFormatterTest, FormatYMD) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMD::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMD::Medium());
 
   EXPECT_FALSE(result.empty());
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
@@ -380,10 +379,8 @@ TEST_F(DateTimeFormatterTest, FormatY) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::Y::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::Y::Medium());
 
   EXPECT_EQ(result, u"2026");
 }
@@ -393,10 +390,8 @@ TEST_F(DateTimeFormatterTest, FormatE) {
   // 2026-05-25 is a Monday
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::E::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::E::Medium());
 
   EXPECT_EQ(result, u"Mon");
 }
@@ -405,12 +400,10 @@ TEST_F(DateTimeFormatterTest, FormatWithPrecision) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
-      formatter.Format(time, GetKnownLanguageTag("en-US"),
-                       datetime_options::YMDT::Medium().with_time_precision(
-                           DateTimeFormatterOptions::TimePrecision::kMinute));
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::YMDT::Medium().with_time_precision(
+                            DateTimeFormatterOptions::TimePrecision::kMinute));
 
   EXPECT_FALSE(result.empty());
   EXPECT_NE(result.find(u"10:30"), std::u16string::npos);
@@ -420,12 +413,10 @@ TEST_F(DateTimeFormatterTest, FormatWithEra) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
   std::u16string result =
-      formatter.Format(time, GetKnownLanguageTag("en-US"),
-                       datetime_options::Y::Medium().with_year_style(
-                           DateTimeFormatterOptions::YearStyle::kWithEra));
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::Y::Medium().with_year_style(
+                            DateTimeFormatterOptions::YearStyle::kWithEra));
 
   EXPECT_NE(result.find(u"AD"), std::u16string::npos);
 }
@@ -434,26 +425,22 @@ TEST_F(DateTimeFormatterTest, FormatWithEra) {
 TEST_F(DateTimeFormatterTest, FormatD) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::D::Medium()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::D::Medium()),
             u"25");
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::D::Short()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::D::Short()),
             u"25");
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::D::Long()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::D::Long()),
             u"25");
 }
 
 TEST_F(DateTimeFormatterTest, FormatDE) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::DE::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::DE::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
 }
@@ -461,10 +448,8 @@ TEST_F(DateTimeFormatterTest, FormatDE) {
 TEST_F(DateTimeFormatterTest, FormatDET) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::DET::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::DET::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
@@ -473,10 +458,8 @@ TEST_F(DateTimeFormatterTest, FormatDET) {
 TEST_F(DateTimeFormatterTest, FormatDT) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::DT::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::DT::Medium());
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
 }
@@ -484,10 +467,8 @@ TEST_F(DateTimeFormatterTest, FormatDT) {
 TEST_F(DateTimeFormatterTest, FormatET) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::ET::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::ET::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
 }
@@ -495,30 +476,24 @@ TEST_F(DateTimeFormatterTest, FormatET) {
 TEST_F(DateTimeFormatterTest, FormatM) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::M::Medium()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::M::Medium()),
             u"May");
 }
 
 TEST_F(DateTimeFormatterTest, FormatMD) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::MD::Medium()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::MD::Medium()),
             u"May 25");
 }
 
 TEST_F(DateTimeFormatterTest, FormatMDE) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::MDE::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::MDE::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"May"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
@@ -527,10 +502,8 @@ TEST_F(DateTimeFormatterTest, FormatMDE) {
 TEST_F(DateTimeFormatterTest, FormatMDET) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::MDET::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::MDET::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"May"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
@@ -540,10 +513,8 @@ TEST_F(DateTimeFormatterTest, FormatMDET) {
 TEST_F(DateTimeFormatterTest, FormatMDT) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::MDT::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::MDT::Medium());
   EXPECT_NE(result.find(u"May"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
@@ -552,11 +523,8 @@ TEST_F(DateTimeFormatterTest, FormatMDT) {
 TEST_F(DateTimeFormatterTest, FormatT) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  EXPECT_NE(formatter
-                .Format(time, GetKnownLanguageTag("en-US"),
-                        datetime_options::T::Medium())
+  EXPECT_NE(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::T::Medium())
                 .find(u"10:30:00"),
             std::u16string::npos);
 }
@@ -564,20 +532,16 @@ TEST_F(DateTimeFormatterTest, FormatT) {
 TEST_F(DateTimeFormatterTest, FormatYM) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  EXPECT_EQ(formatter.Format(time, GetKnownLanguageTag("en-US"),
-                             datetime_options::YM::Medium()),
+  EXPECT_EQ(FormatterFor(GetKnownLanguageTag("en-US"))
+                .Format(time, datetime_options::YM::Medium()),
             u"May 2026");
 }
 
 TEST_F(DateTimeFormatterTest, FormatYMDE) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMDE::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMDE::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"2026"), std::u16string::npos);
@@ -586,10 +550,8 @@ TEST_F(DateTimeFormatterTest, FormatYMDE) {
 TEST_F(DateTimeFormatterTest, FormatYMDET) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMDET::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMDET::Medium());
   EXPECT_NE(result.find(u"Mon"), std::u16string::npos);
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"2026"), std::u16string::npos);
@@ -599,10 +561,8 @@ TEST_F(DateTimeFormatterTest, FormatYMDET) {
 TEST_F(DateTimeFormatterTest, FormatYMDT) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-  std::u16string result = formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMDT::Medium());
+  std::u16string result = FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMDT::Medium());
   EXPECT_NE(result.find(u"25"), std::u16string::npos);
   EXPECT_NE(result.find(u"2026"), std::u16string::npos);
   EXPECT_NE(result.find(u"10:30:00"), std::u16string::npos);
@@ -613,20 +573,19 @@ TEST_F(DateTimeFormatterTest, HourClockType) {
   // 10:30 PM is 22:30
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // 12-hour clock
-  std::u16string result12 = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::T::Short().with_hour_clock_type(base::k12HourClock));
+  std::u16string result12 =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::T::Short().with_hour_clock_type(
+                            base::k12HourClock));
   EXPECT_NE(result12.find(u"10:30"), std::u16string::npos);
   EXPECT_NE(result12.find(u"PM"), std::u16string::npos);
 
   // 24-hour clock
-  std::u16string result24 = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::T::Short().with_hour_clock_type(base::k24HourClock));
+  std::u16string result24 =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::T::Short().with_hour_clock_type(
+                            base::k24HourClock));
   EXPECT_NE(result24.find(u"22:30"), std::u16string::npos);
   EXPECT_EQ(result24.find(u"PM"), std::u16string::npos);
 
@@ -634,18 +593,18 @@ TEST_F(DateTimeFormatterTest, HourClockType) {
   // YMDT. en-US normally uses 12-hour clock for YMDT. Let's verify we can
   // override to 24-hour.
   std::u16string result_ymdt24 =
-      formatter.Format(time, GetKnownLanguageTag("en-US"),
-                       datetime_options::YMDT::Medium().with_hour_clock_type(
-                           base::k24HourClock));
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::YMDT::Medium().with_hour_clock_type(
+                            base::k24HourClock));
   EXPECT_NE(result_ymdt24.find(u"22:30:00"), std::u16string::npos);
   EXPECT_EQ(result_ymdt24.find(u"PM"), std::u16string::npos);
 
   // en-GB normally uses 24-hour clock for YMDT. Let's verify we can override to
   // 12-hour.
   std::u16string result_ymdt12 =
-      formatter.Format(time, GetKnownLanguageTag("en-GB"),
-                       datetime_options::YMDT::Medium().with_hour_clock_type(
-                           base::k12HourClock));
+      FormatterFor(GetKnownLanguageTag("en-GB"))
+          .Format(time, datetime_options::YMDT::Medium().with_hour_clock_type(
+                            base::k12HourClock));
   EXPECT_NE(result_ymdt12.find(u"10:30:00"), std::u16string::npos);
   EXPECT_TRUE(result_ymdt12.find(u"pm") != std::u16string::npos ||
               result_ymdt12.find(u"PM") != std::u16string::npos ||
@@ -658,24 +617,21 @@ TEST_F(DateTimeFormatterTest, AmPmClockType) {
   // 10:30 PM
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // 12-hour clock, keep AM/PM
   std::u16string result_keep =
-      formatter.Format(time, GetKnownLanguageTag("en-US"),
-                       datetime_options::T::Short()
-                           .with_hour_clock_type(base::k12HourClock)
-                           .with_am_pm_clock_type(base::kKeepAmPm));
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::T::Short()
+                            .with_hour_clock_type(base::k12HourClock)
+                            .with_am_pm_clock_type(base::kKeepAmPm));
   EXPECT_NE(result_keep.find(u"10:30"), std::u16string::npos);
   EXPECT_NE(result_keep.find(u"PM"), std::u16string::npos);
 
   // 12-hour clock, drop AM/PM
   std::u16string result_drop =
-      formatter.Format(time, GetKnownLanguageTag("en-US"),
-                       datetime_options::T::Short()
-                           .with_hour_clock_type(base::k12HourClock)
-                           .with_am_pm_clock_type(base::kDropAmPm));
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time, datetime_options::T::Short()
+                            .with_hour_clock_type(base::k12HourClock)
+                            .with_am_pm_clock_type(base::kDropAmPm));
   EXPECT_NE(result_drop.find(u"10:30"), std::u16string::npos);
   EXPECT_EQ(result_drop.find(u"PM"), std::u16string::npos);
 }
@@ -685,9 +641,6 @@ TEST_F(DateTimeFormatterTest, HourClockTypeWithLength) {
   // 10:30 PM is 22:30
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 22:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   DateTimeFormatterOptions options;
   options.format_identifier = DateTimeFormatterOptions::FormatIdentifier::kT;
   options.length = DateTimeFormatterOptions::ItemLength::kShort;
@@ -695,14 +648,14 @@ TEST_F(DateTimeFormatterTest, HourClockTypeWithLength) {
   // 12-hour clock
   options.hour_clock_type = base::k12HourClock;
   std::u16string result12 =
-      formatter.Format(time, GetKnownLanguageTag("en-US"), options);
+      FormatterFor(GetKnownLanguageTag("en-US")).Format(time, options);
   EXPECT_NE(result12.find(u"10:30"), std::u16string::npos);
   EXPECT_NE(result12.find(u"PM"), std::u16string::npos);
 
   // 24-hour clock
   options.hour_clock_type = base::k24HourClock;
   std::u16string result24 =
-      formatter.Format(time, GetKnownLanguageTag("en-US"), options);
+      FormatterFor(GetKnownLanguageTag("en-US")).Format(time, options);
 
   EXPECT_NE(result24.find(u"22:30"), std::u16string::npos);
   EXPECT_EQ(result24.find(u"PM"), std::u16string::npos);
@@ -712,59 +665,56 @@ TEST_F(DateTimeFormatterTest, MultiLocaleFormat) {
   base::Time time;
   // 2011-04-30 is a Saturday
   ASSERT_TRUE(base::Time::FromUTCString("2011-04-30 15:42:07", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   {
-    EXPECT_EQ(u"4/30/11", formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                           datetime_options::YMD::Short()));
+    EXPECT_EQ(u"4/30/11", FormatterFor(GetKnownLanguageTag("en-US"))
+                              .Format(time, datetime_options::YMD::Short()));
     EXPECT_EQ(u"Apr 30, 2011",
-              formatter.Format(time, GetKnownLanguageTag("en-US"),
-                               datetime_options::YMD::Medium()));
+              FormatterFor(GetKnownLanguageTag("en-US"))
+                  .Format(time, datetime_options::YMD::Medium()));
     // "3:42:07 PM" (might have narrow non-breaking space)
-    std::u16string result_t = formatter.Format(
-        time, GetKnownLanguageTag("en-US"), datetime_options::T::Medium());
+    std::u16string result_t = FormatterFor(GetKnownLanguageTag("en-US"))
+                                  .Format(time, datetime_options::T::Medium());
     EXPECT_NE(result_t.find(u"3:42:07"), std::u16string::npos);
     EXPECT_NE(result_t.find(u"PM"), std::u16string::npos);
   }
   {
-    EXPECT_EQ(u"30/04/2011",
-              formatter.Format(time, GetKnownLanguageTag("en-GB"),
-                               datetime_options::YMD::Short()));
+    EXPECT_EQ(u"30/04/2011", FormatterFor(GetKnownLanguageTag("en-GB"))
+                                 .Format(time, datetime_options::YMD::Short()));
     EXPECT_EQ(u"30 Apr 2011",
-              formatter.Format(time, GetKnownLanguageTag("en-GB"),
-                               datetime_options::YMD::Medium()));
+              FormatterFor(GetKnownLanguageTag("en-GB"))
+                  .Format(time, datetime_options::YMD::Medium()));
     EXPECT_EQ(u"30 April 2011",
-              formatter.Format(time, GetKnownLanguageTag("en-GB"),
-                               datetime_options::YMD::Long()));
-    EXPECT_EQ(u"15:42:07", formatter.Format(time, GetKnownLanguageTag("en-GB"),
-                                            datetime_options::T::Medium()));
+              FormatterFor(GetKnownLanguageTag("en-GB"))
+                  .Format(time, datetime_options::YMD::Long()));
+    EXPECT_EQ(u"15:42:07", FormatterFor(GetKnownLanguageTag("en-GB"))
+                               .Format(time, datetime_options::T::Medium()));
   }
   {
-    EXPECT_EQ(u"2011/04/30", formatter.Format(time, GetKnownLanguageTag("ja"),
-                                              datetime_options::YMD::Short()));
-    EXPECT_EQ(u"2011/04/30", formatter.Format(time, GetKnownLanguageTag("ja"),
-                                              datetime_options::YMD::Medium()));
+    EXPECT_EQ(u"2011/04/30", FormatterFor(GetKnownLanguageTag("ja"))
+                                 .Format(time, datetime_options::YMD::Short()));
+    EXPECT_EQ(u"2011/04/30",
+              FormatterFor(GetKnownLanguageTag("ja"))
+                  .Format(time, datetime_options::YMD::Medium()));
     EXPECT_EQ(u"2011年4月30日",
-              formatter.Format(time, GetKnownLanguageTag("ja"),
-                               datetime_options::YMD::Long()));
-    EXPECT_EQ(u"15:42:07", formatter.Format(time, GetKnownLanguageTag("ja"),
-                                            datetime_options::T::Medium()));
+              FormatterFor(GetKnownLanguageTag("ja"))
+                  .Format(time, datetime_options::YMD::Long()));
+    EXPECT_EQ(u"15:42:07", FormatterFor(GetKnownLanguageTag("ja"))
+                               .Format(time, datetime_options::T::Medium()));
   }
   {
-    EXPECT_EQ(u"30.04.11", formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                                            datetime_options::YMD::Short()));
+    EXPECT_EQ(u"30.04.11", FormatterFor(GetKnownLanguageTag("de-DE"))
+                               .Format(time, datetime_options::YMD::Short()));
     EXPECT_EQ(u"30.04.2011",
-              formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                               datetime_options::YMD::Medium()));
+              FormatterFor(GetKnownLanguageTag("de-DE"))
+                  .Format(time, datetime_options::YMD::Medium()));
     EXPECT_EQ(u"30. April 2011",
-              formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                               datetime_options::YMD::Long()));
+              FormatterFor(GetKnownLanguageTag("de-DE"))
+                  .Format(time, datetime_options::YMD::Long()));
     EXPECT_EQ(u"Samstag, 30. April 2011",
-              formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                               datetime_options::YMDE::Long()));
-    EXPECT_EQ(u"15:42:07", formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                                            datetime_options::T::Medium()));
+              FormatterFor(GetKnownLanguageTag("de-DE"))
+                  .Format(time, datetime_options::YMDE::Long()));
+    EXPECT_EQ(u"15:42:07", FormatterFor(GetKnownLanguageTag("de-DE"))
+                               .Format(time, datetime_options::T::Medium()));
   }
 }
 
@@ -772,14 +722,12 @@ TEST_F(DateTimeFormatterTest, SubsecondPrecision) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00.987", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // kSubsecond_3 should show .987
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::T::Medium().with_time_precision(
-          DateTimeFormatterOptions::TimePrecision::kSubsecond_3));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(time,
+                  datetime_options::T::Medium().with_time_precision(
+                      DateTimeFormatterOptions::TimePrecision::kSubsecond_3));
   EXPECT_NE(result.find(u"10:30:00.987"), std::u16string::npos);
 }
 
@@ -787,15 +735,14 @@ TEST_F(DateTimeFormatterTest, FormatShortSpecificTimeZone) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::YMDT::Medium()
-          .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
-          .with_time_zone_style(
-              DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(
+              time,
+              datetime_options::YMDT::Medium()
+                  .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
+                  .with_time_zone_style(
+                      DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
   EXPECT_NE(result.find(u"PDT"), std::u16string::npos)
       << base::UTF16ToUTF8(result);
 }
@@ -804,15 +751,14 @@ TEST_F(DateTimeFormatterTest, FormatLongSpecificTimeZone) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::YMDT::Medium()
-          .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
-          .with_time_zone_style(
-              DateTimeFormatterOptions::TimeZoneStyle::kLongSpecific));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(
+              time,
+              datetime_options::YMDT::Medium()
+                  .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
+                  .with_time_zone_style(
+                      DateTimeFormatterOptions::TimeZoneStyle::kLongSpecific));
   EXPECT_NE(result.find(u"Pacific Daylight Time"), std::u16string::npos)
       << base::UTF16ToUTF8(result);
 }
@@ -821,15 +767,14 @@ TEST_F(DateTimeFormatterTest, FormatShortGenericTimeZone) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::YMDT::Medium()
-          .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
-          .with_time_zone_style(
-              DateTimeFormatterOptions::TimeZoneStyle::kShortGeneric));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(
+              time,
+              datetime_options::YMDT::Medium()
+                  .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
+                  .with_time_zone_style(
+                      DateTimeFormatterOptions::TimeZoneStyle::kShortGeneric));
   // "PT" or "Pacific Time" depending on ICU data/version.
   EXPECT_TRUE(result.find(u"PT") != std::u16string::npos ||
               result.find(u"Pacific Time") != std::u16string::npos)
@@ -840,15 +785,14 @@ TEST_F(DateTimeFormatterTest, FormatLongGenericTimeZone) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::YMDT::Medium()
-          .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
-          .with_time_zone_style(
-              DateTimeFormatterOptions::TimeZoneStyle::kLongGeneric));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(
+              time,
+              datetime_options::YMDT::Medium()
+                  .with_time_zone(TimeZone::FromString("America/Los_Angeles"))
+                  .with_time_zone_style(
+                      DateTimeFormatterOptions::TimeZoneStyle::kLongGeneric));
   EXPECT_NE(result.find(u"Pacific Time"), std::u16string::npos)
       << base::UTF16ToUTF8(result);
 }
@@ -858,18 +802,17 @@ TEST_F(DateTimeFormatterTest, FormatWithSpecificTimeZoneObject) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2026-05-25 10:30:00", &time));
 
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // Format with Los Angeles timezone object.
   TimeZone la_tz = TimeZone::FromString("America/Los_Angeles");
 
-  std::u16string result = formatter.Format(
-      time, GetKnownLanguageTag("en-US"),
-      datetime_options::YMDT::Medium()
-          .with_time_zone(la_tz)
-          .with_time_zone_style(
-              DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
+  std::u16string result =
+      FormatterFor(GetKnownLanguageTag("en-US"))
+          .Format(
+              time,
+              datetime_options::YMDT::Medium()
+                  .with_time_zone(la_tz)
+                  .with_time_zone_style(
+                      DateTimeFormatterOptions::TimeZoneStyle::kShortSpecific));
 
   // 10:30:00 UTC is 03:30:00 PDT.
   EXPECT_NE(result.find(u"3:30:00"), std::u16string::npos)
@@ -882,44 +825,39 @@ TEST_F(DateTimeFormatterTest, FormatWithLanguageTag) {
   base::Time time;
   // 2011-04-30 is a Saturday
   ASSERT_TRUE(base::Time::FromUTCString("2011-04-30 15:42:07", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
+  EXPECT_EQ(u"2011/04/30", FormatterFor(GetKnownLanguageTag("ja"))
+                               .Format(time, datetime_options::YMD::Short()));
 
-  EXPECT_EQ(u"2011/04/30", formatter.Format(time, GetKnownLanguageTag("ja"),
-                                            datetime_options::YMD::Short()));
+  EXPECT_EQ(u"4/30/11", FormatterFor(GetKnownLanguageTag("en-US"))
+                            .Format(time, datetime_options::YMD::Short()));
 
-  EXPECT_EQ(u"4/30/11", formatter.Format(time, GetKnownLanguageTag("en-US"),
-                                         datetime_options::YMD::Short()));
-
-  EXPECT_EQ(u"30.04.11", formatter.Format(time, GetKnownLanguageTag("de-DE"),
-                                          datetime_options::YMD::Short()));
+  EXPECT_EQ(u"30.04.11", FormatterFor(GetKnownLanguageTag("de-DE"))
+                             .Format(time, datetime_options::YMD::Short()));
 
   // Persian short date for 2011-04-30 (Solar Hijri 1390-02-10) is "۱۳۹۰/۲/۱۰"
   // or similar depending on ICU version.
-  EXPECT_EQ(u"۱۳۹۰/۲/۱۰", formatter.Format(time, GetKnownLanguageTag("fa"),
-                                           datetime_options::YMD::Short()));
+  EXPECT_EQ(u"۱۳۹۰/۲/۱۰", FormatterFor(GetKnownLanguageTag("fa"))
+                              .Format(time, datetime_options::YMD::Short()));
 }
 
 TEST_F(DateTimeFormatterTest, FormatWithLanguageTagExtensions) {
   base::Time time;
   // 22:42:07
   ASSERT_TRUE(base::Time::FromUTCString("2011-04-30 22:42:07", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   // en-US defaults to 12h clock. Test extension for 24h.
   auto en_us_h23 =
       LanguageTagConverter::GetInstance().FromString("en-US-u-hc-h23");
   ASSERT_TRUE(en_us_h23.has_value());
   std::u16string result =
-      formatter.Format(time, *en_us_h23, datetime_options::T::Short());
+      FormatterFor(*en_us_h23).Format(time, datetime_options::T::Short());
   EXPECT_NE(result.find(u"22:42"), std::u16string::npos);
   EXPECT_EQ(result.find(u"PM"), std::u16string::npos);
 
   // Test precedence: Options should override LanguageTag extensions.
-  std::u16string result_override = formatter.Format(
-      time, *en_us_h23,
-      datetime_options::T::Short().with_hour_clock_type(base::k12HourClock));
+  std::u16string result_override =
+      FormatterFor(*en_us_h23)
+          .Format(time, datetime_options::T::Short().with_hour_clock_type(
+                            base::k12HourClock));
   EXPECT_NE(result_override.find(u"10:42"), std::u16string::npos);
   EXPECT_NE(result_override.find(u"PM"), std::u16string::npos);
 }
@@ -927,9 +865,6 @@ TEST_F(DateTimeFormatterTest, FormatWithLanguageTagExtensions) {
 TEST_F(DateTimeFormatterTest, FormatWithInvalidLanguageTag) {
   base::Time time;
   ASSERT_TRUE(base::Time::FromUTCString("2011-04-30 15:42:07", &time));
-  const IcuBridge::DateTimeFormatter& formatter =
-      IcuBridge::GetInstance().date_time_formatter();
-
   UErrorCode status = U_ZERO_ERROR;
   icu::Locale::setDefault(icu::Locale::getUK(), status);
 
@@ -939,8 +874,8 @@ TEST_F(DateTimeFormatterTest, FormatWithInvalidLanguageTag) {
   auto bogus = LanguageTagConverter::GetInstance().FromString("xx-Bogus-Tag");
   if (bogus) {
     // UK format is DD/MM/YYYY
-    EXPECT_EQ(u"30/04/2011",
-              formatter.Format(time, *bogus, datetime_options::YMD::Short()));
+    EXPECT_EQ(u"30/04/2011", FormatterFor(*bogus).Format(
+                                 time, datetime_options::YMD::Short()));
   }
 }
 

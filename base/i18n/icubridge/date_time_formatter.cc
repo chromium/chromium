@@ -597,16 +597,7 @@ std::u16string FormatWithLocale(base::Time time,
 std::u16string IcuBridge::DateTimeFormatter::Format(
     base::Time time,
     const DateTimeFormatterOptions& options) const {
-  LanguageTag default_tag = IcuLocaleConverter::GetInstance().ToLanguageTag(
-      icu::Locale::getDefault());
-  return FormatWithLocale(time, options, default_tag);
-}
-
-std::u16string IcuBridge::DateTimeFormatter::Format(
-    base::Time time,
-    const LanguageTag& locale,
-    const DateTimeFormatterOptions& options) const {
-  return FormatWithLocale(time, options, locale);
+  return FormatWithLocale(time, options, locale_);
 }
 
 base::HourClockType IcuBridge::DateTimeFormatter::GetHourClockType() const {

@@ -101,15 +101,17 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
   using base::i18n::IcuBridge;
   using base::i18n::datetime_options::YMD;
 
+  const IcuBridge::DateTimeFormatter& formatter =
+      IcuBridge::GetInstance().date_time_formatter(
+          GetKnownLanguageTag("en-US"));
+
   return connectors_internals::mojom::CertificateMetadata::New(
       base::HexEncodeLower(certificate->serial_number()),
       base::HexEncodeLower(certificate->CalculateChainFingerprint256()),
-      base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
-          certificate->valid_start(), GetKnownLanguageTag("en-US"),
-          YMD::Medium())),
-      base::UTF16ToUTF8(IcuBridge::GetInstance().date_time_formatter().Format(
-          certificate->valid_expiry(), GetKnownLanguageTag("en-US"),
-          YMD::Medium())),
+      base::UTF16ToUTF8(
+          formatter.Format(certificate->valid_start(), YMD::Medium())),
+      base::UTF16ToUTF8(
+          formatter.Format(certificate->valid_expiry(), YMD::Medium())),
       certificate->subject().GetDisplayName(),
       certificate->issuer().GetDisplayName());
 }
@@ -264,10 +266,11 @@ std::string GetStringFromTimestamp(base::Time timestamp) {
   return (timestamp == base::Time())
              ? std::string()
              : base::UTF16ToUTF8(
-                   IcuBridge::GetInstance().date_time_formatter().Format(
-                       timestamp, GetKnownLanguageTag("en-US"),
-                       YMDT::Short().with_time_precision(
-                           DateTimeFormatterOptions::TimePrecision::kMinute)));
+                   IcuBridge::GetInstance()
+                       .date_time_formatter(GetKnownLanguageTag("en-US"))
+                       .Format(timestamp, YMDT::Short().with_time_precision(
+                                              DateTimeFormatterOptions::
+                                                  TimePrecision::kMinute)));
 }
 
 std::string ConvertPolicyLevelToString(
