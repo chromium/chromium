@@ -834,8 +834,7 @@ void ExpectExtensionsJSONMatch(
                       .ToLocal(&blob_val));
       ASSERT_TRUE(blob_val->IsString());
       EXPECT_EQ(ToCoreString(isolate, blob_val.As<v8::String>()),
-                WebAuthnBase64UrlEncode(
-                    DOMArrayBuffer::Create(*values.large_blob_data)));
+                WebAuthnBase64UrlEncode(*values.large_blob_data));
     }
     if (values.large_blob_written) {
       v8::Local<v8::Value> written_val;
@@ -856,9 +855,8 @@ void ExpectExtensionsJSONMatch(
   }
   if (values.get_cred_blob) {
     ASSERT_TRUE(extensions.hasGetCredBlob());
-    EXPECT_EQ(
-        extensions.getCredBlob(),
-        WebAuthnBase64UrlEncode(DOMArrayBuffer::Create(*values.get_cred_blob)));
+    EXPECT_EQ(extensions.getCredBlob(),
+              WebAuthnBase64UrlEncode(*values.get_cred_blob));
   } else {
     EXPECT_FALSE(extensions.hasGetCredBlob());
   }
@@ -897,8 +895,7 @@ void ExpectExtensionsJSONMatch(
                       .ToLocal(&first_val));
       ASSERT_TRUE(first_val->IsString());
       EXPECT_EQ(ToCoreString(isolate, first_val.As<v8::String>()),
-                WebAuthnBase64UrlEncode(
-                    DOMArrayBuffer::Create(*values.prf_eval->first)));
+                WebAuthnBase64UrlEncode(*values.prf_eval->first));
 
       if (values.prf_eval->second) {
         v8::Local<v8::Value> second_val;
@@ -906,8 +903,7 @@ void ExpectExtensionsJSONMatch(
                         .ToLocal(&second_val));
         ASSERT_TRUE(second_val->IsString());
         EXPECT_EQ(ToCoreString(isolate, second_val.As<v8::String>()),
-                  WebAuthnBase64UrlEncode(
-                      DOMArrayBuffer::Create(*values.prf_eval->second)));
+                  WebAuthnBase64UrlEncode(*values.prf_eval->second));
       }
     } else {
       v8::Local<v8::Value> results_val;
@@ -925,14 +921,12 @@ void ExpectExtensionsJSONMatch(
     if (values.cmtg_key_data) {
       ASSERT_TRUE(cmtg_key->hasCmtgKey());
       EXPECT_EQ(cmtg_key->cmtgKey(),
-                WebAuthnBase64UrlEncode(
-                    DOMArrayBuffer::Create(*values.cmtg_key_data)));
+                WebAuthnBase64UrlEncode(*values.cmtg_key_data));
     }
     if (values.cmtg_key_sig) {
       ASSERT_TRUE(cmtg_key->hasSignature());
       EXPECT_EQ(cmtg_key->signature(),
-                WebAuthnBase64UrlEncode(
-                    DOMArrayBuffer::Create(*values.cmtg_key_sig)));
+                WebAuthnBase64UrlEncode(*values.cmtg_key_sig));
     }
   } else {
     EXPECT_FALSE(extensions.hasCmtgKey());

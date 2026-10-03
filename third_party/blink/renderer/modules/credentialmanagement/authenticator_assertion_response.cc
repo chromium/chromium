@@ -41,11 +41,13 @@ std::variant<AuthenticatorAssertionResponseJSON*,
              AuthenticatorAttestationResponseJSON*>
 AuthenticatorAssertionResponse::toJSON() const {
   auto* json = AuthenticatorAssertionResponseJSON::Create();
-  json->setClientDataJSON(WebAuthnBase64UrlEncode(clientDataJSON()));
-  json->setAuthenticatorData(WebAuthnBase64UrlEncode(authenticatorData()));
-  json->setSignature(WebAuthnBase64UrlEncode(signature()));
+  json->setClientDataJSON(
+      WebAuthnBase64UrlEncode(clientDataJSON()->ByteSpan()));
+  json->setAuthenticatorData(
+      WebAuthnBase64UrlEncode(authenticatorData()->ByteSpan()));
+  json->setSignature(WebAuthnBase64UrlEncode(signature()->ByteSpan()));
   if (user_handle_) {
-    json->setUserHandle(WebAuthnBase64UrlEncode(userHandle()));
+    json->setUserHandle(WebAuthnBase64UrlEncode(userHandle()->ByteSpan()));
   }
   return json;
 }

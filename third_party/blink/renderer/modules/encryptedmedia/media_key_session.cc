@@ -491,7 +491,7 @@ MediaKeyStatusMap* MediaKeySession::keyStatuses() {
 ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
     ScriptState* script_state,
     const String& init_data_type_string,
-    const DOMArrayPiece& init_data,
+    base::span<const uint8_t> init_data,
     ExceptionState& exception_state) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL)
       << __func__ << "(" << this << ") " << init_data_type_string;
@@ -526,7 +526,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
 
   // 5. If initData is an empty array, return a promise rejected with a
   //    newly created TypeError.
-  if (!init_data.ByteLength()) {
+  if (init_data.empty()) {
     exception_state.ThrowTypeError("The initData parameter is empty.");
     return EmptyPromise();
   }
@@ -556,8 +556,7 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
                                    IsPersistentSessionType(session_type_));
 
   // 7. Let init data be a copy of the contents of the initData parameter.
-  DOMArrayBuffer* init_data_buffer =
-      DOMArrayBuffer::Create(init_data.ByteSpan());
+  DOMArrayBuffer* init_data_buffer = DOMArrayBuffer::Create(init_data);
 
   // 8. Let session type be this object's session type.
   //    (Done in constructor.)
@@ -760,7 +759,7 @@ void MediaKeySession::FinishLoad() {
 
 ScriptPromise<IDLUndefined> MediaKeySession::update(
     ScriptState* script_state,
-    const DOMArrayPiece& response,
+    base::span<const uint8_t> response,
     ExceptionState& exception_state) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
@@ -782,13 +781,13 @@ ScriptPromise<IDLUndefined> MediaKeySession::update(
 
   // 3. If response is an empty array, return a promise rejected with a
   //    newly created TypeError.
-  if (!response.ByteLength()) {
+  if (response.empty()) {
     exception_state.ThrowTypeError("The response parameter is empty.");
     return EmptyPromise();
   }
 
   // 4. Let response copy be a copy of the contents of the response parameter.
-  DOMArrayBuffer* response_copy = DOMArrayBuffer::Create(response.ByteSpan());
+  DOMArrayBuffer* response_copy = DOMArrayBuffer::Create(response);
 
   // Log the usage of update().
   EncryptedMediaUtils::ReportUsage(EmeApiType::kUpdate, GetExecutionContext(),

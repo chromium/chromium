@@ -29,13 +29,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -78,7 +78,7 @@ class MediaKeys : public ScriptWrappable,
 
   ScriptPromise<IDLBoolean> setServerCertificate(
       ScriptState*,
-      const DOMArrayPiece& server_certificate,
+      base::span<const uint8_t> server_certificate,
       ExceptionState&);
 
   ScriptPromise<V8MediaKeyStatus> getStatusForPolicy(ScriptState*,

@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity_js_on.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_base.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -251,10 +251,9 @@ AuthenticationExtensionsClientInputsFromJSON(
 
 }  // namespace
 
-String WebAuthnBase64UrlEncode(DOMArrayPiece buffer) {
+String WebAuthnBase64UrlEncode(base::span<const uint8_t> buffer) {
   // Tell Base64URLEncode to not include padding (trailing '=').
-  return Base64UrlEncode(buffer.ByteSpan(),
-                         Base64UrlEncodePolicy::kOmitPadding);
+  return Base64UrlEncode(buffer, Base64UrlEncodePolicy::kOmitPadding);
 }
 
 AuthenticationExtensionsClientOutputsJSON*
@@ -278,7 +277,8 @@ AuthenticationExtensionsClientOutputsToJSON(
       builder.AddBoolean("supported", large_blob->supported());
     }
     if (large_blob->hasBlob()) {
-      builder.AddString("blob", WebAuthnBase64UrlEncode(large_blob->blob()));
+      builder.AddString(
+          "blob", WebAuthnBase64UrlEncode(large_blob->blob()->ByteSpan()));
     }
     if (large_blob->hasWritten()) {
       builder.AddBoolean("written", large_blob->written());
@@ -289,7 +289,7 @@ AuthenticationExtensionsClientOutputsToJSON(
     json->setCredBlob(in.credBlob());
   }
   if (in.hasGetCredBlob()) {
-    json->setGetCredBlob(WebAuthnBase64UrlEncode(in.getCredBlob()));
+    json->setGetCredBlob(WebAuthnBase64UrlEncode(in.getCredBlob()->ByteSpan()));
   }
   if (in.hasPrf()) {
     V8ObjectBuilder builder(script_state);
@@ -300,10 +300,14 @@ AuthenticationExtensionsClientOutputsToJSON(
     if (prf.hasResults()) {
       V8ObjectBuilder results_builder(script_state);
       results_builder.AddString(
-          "first", WebAuthnBase64UrlEncode(prf.results()->first()));
+          "first",
+          WebAuthnBase64UrlEncode(
+              AsSpan<SharedBufferPolicy::kDisallow>(*prf.results()->first())));
       if (prf.results()->hasSecond()) {
         results_builder.AddString(
-            "second", WebAuthnBase64UrlEncode(prf.results()->second()));
+            "second",
+            WebAuthnBase64UrlEncode(AsSpan<SharedBufferPolicy::kDisallow>(
+                *prf.results()->second())));
       }
       builder.Add("results", results_builder);
     }
@@ -314,9 +318,10 @@ AuthenticationExtensionsClientOutputsToJSON(
   }
   if (in.hasCmtgKey()) {
     auto* cmtg_key_json = AuthenticationExtensionsCmtgKeyOutputsJSON::Create();
-    cmtg_key_json->setCmtgKey(WebAuthnBase64UrlEncode(in.cmtgKey()->cmtgKey()));
+    cmtg_key_json->setCmtgKey(
+        WebAuthnBase64UrlEncode(in.cmtgKey()->cmtgKey()->ByteSpan()));
     cmtg_key_json->setSignature(
-        WebAuthnBase64UrlEncode(in.cmtgKey()->signature()));
+        WebAuthnBase64UrlEncode(in.cmtgKey()->signature()->ByteSpan()));
     json->setCmtgKey(cmtg_key_json);
   }
   if (in.hasRemoteClientDataJSON()) {

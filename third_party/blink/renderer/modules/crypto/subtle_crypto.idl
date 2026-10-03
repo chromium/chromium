@@ -128,7 +128,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
     Promise<CryptoKey> decapsulateKey(
         AlgorithmIdentifier decapsulationAlgorithm,
         CryptoKey decapsulationKey,
-        BufferSource ciphertext,
+        [PassAsSpan] BufferSource ciphertext,
         AlgorithmIdentifier sharedKeyAlgorithm,
         boolean extractable,
         sequence<KeyUsage> keyUsages);
@@ -138,7 +138,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
     Promise<ArrayBuffer> decapsulateBits(
         AlgorithmIdentifier decapsulationAlgorithm,
         CryptoKey decapsulationKey,
-        BufferSource ciphertext);
+        [PassAsSpan] BufferSource ciphertext);
     [CallWith=ScriptState, MeasureAs=SubtleCryptoGetPublicKey,
      RaisesException, RuntimeEnabled=WebCryptoPQC]
     Promise<CryptoKey> getPublicKey(CryptoKey key, sequence<KeyUsage> keyUsages);

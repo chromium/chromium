@@ -12,7 +12,6 @@ blink_modules_sources("crypto") {
     "crypto_key.h",
     "crypto_result_impl.cc",
     "crypto_result_impl.h",
-    "crypto_utilities.h",
     "global_crypto.cc",
     "global_crypto.h",
     "normalize_algorithm.cc",

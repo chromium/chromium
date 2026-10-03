@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/crypto/subtle_crypto.h"
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/public/web/web_crypto_histograms.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_bits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encapsulated_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_json_web_key.h"
@@ -49,11 +51,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cryptokey_cryptokeypair.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
-#include "third_party/blink/renderer/modules/crypto/crypto_utilities.h"
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -263,7 +264,8 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::encrypt(
   //           the data parameter passed to the encrypt method. This must
   //           happen after normalizing the algorithm, since normalization can
   //           run author getters that mutate or detach the data buffer.
-  std::vector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_data));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
@@ -313,7 +315,8 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::decrypt(
   //           the data parameter passed to the decrypt method. This must
   //           happen after normalizing the algorithm, since normalization can
   //           run author getters that mutate or detach the data buffer.
-  std::vector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_data));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
@@ -363,7 +366,8 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::sign(
   //           the data parameter passed to the sign method. This must happen
   //           after normalizing the algorithm, since normalization can run
   //           author getters that mutate or detach the data buffer.
-  std::vector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_data));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
@@ -418,8 +422,10 @@ ScriptPromise<IDLBoolean> SubtleCrypto::verifySignature(
   //
   // Both copies must happen after normalizing the algorithm, since
   // normalization can run author getters that mutate or detach these buffers.
-  std::vector<uint8_t> signature = CopyBytes(raw_signature);
-  std::vector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> signature =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_signature));
+  std::vector<uint8_t> data =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_data));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
@@ -468,7 +474,8 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::digest(
   //           the data parameter passed to the digest method. This must
   //           happen after normalizing the algorithm, since normalization can
   //           run author getters that mutate or detach the data buffer.
-  std::vector<uint8_t> data = CopyBytes(raw_data);
+  std::vector<uint8_t> data =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_data));
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<DOMArrayBuffer>>(script_state);
@@ -586,10 +593,12 @@ ScriptPromise<CryptoKey> SubtleCrypto::importKey(
     case kWebCryptoKeyFormatSpki:
       switch (raw_key_data->GetContentType()) {
         case V8UnionBufferSourceOrJsonWebKey::ContentType::kArrayBuffer:
-          key_data = CopyBytes(raw_key_data->GetAsArrayBuffer());
+          key_data =
+              base::ToVector(raw_key_data->GetAsArrayBuffer()->ByteSpan());
           break;
         case V8UnionBufferSourceOrJsonWebKey::ContentType::kArrayBufferView:
-          key_data = CopyBytes(raw_key_data->GetAsArrayBufferView().Get());
+          key_data =
+              base::ToVector(raw_key_data->GetAsArrayBufferView()->ByteSpan());
           break;
         case V8UnionBufferSourceOrJsonWebKey::ContentType::kJsonWebKey:
           exception_state.ThrowTypeError(
@@ -813,7 +822,8 @@ ScriptPromise<CryptoKey> SubtleCrypto::unwrapKey(
   // 14.3.12.2: Let wrappedKey be the result of getting a copy of the bytes
   //            held by the wrappedKey parameter passed to the unwrapKey
   //            method.
-  std::vector<uint8_t> wrapped_key = CopyBytes(raw_wrapped_key);
+  std::vector<uint8_t> wrapped_key =
+      base::ToVector(AsSpan<SharedBufferPolicy::kDisallow>(*raw_wrapped_key));
 
   // 14.3.12.11: If the name member of normalizedAlgorithm is not equal to
   //             the name attribute of the [[algorithm]] internal slot of
@@ -1102,7 +1112,7 @@ ScriptPromise<CryptoKey> SubtleCrypto::decapsulateKey(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_decapsulation_algorithm,
     CryptoKey* decapsulation_key,
-    const V8BufferSource* raw_ciphertext,
+    base::span<const uint8_t> raw_ciphertext,
     const V8AlgorithmIdentifier* raw_shared_key_algorithm,
     bool extractable,
     const Vector<String>& raw_key_usages,
@@ -1117,7 +1127,7 @@ ScriptPromise<CryptoKey> SubtleCrypto::decapsulateKey(
 
   // 3.2.3.2: Let ciphertext be the result of getting a copy of the bytes held
   //          by the ciphertext parameter passed to the decapsulateKey() method.
-  std::vector<uint8_t> ciphertext = CopyBytes(raw_ciphertext);
+  std::vector<uint8_t> ciphertext = base::ToVector(raw_ciphertext);
 
   // 3.2.3.3: Let normalizedAlgorithm be the result of normalizing an
   //          algorithm, with alg set to algorithm and op set to
@@ -1180,7 +1190,7 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_decapsulation_algorithm,
     CryptoKey* decapsulation_key,
-    const V8BufferSource* raw_ciphertext,
+    base::span<const uint8_t> raw_ciphertext,
     ExceptionState& exception_state) {
   // Method described by:
   // https://wicg.github.io/webcrypto-modern-algos/#SubtleCrypto-method-decapsulateBits
@@ -1188,7 +1198,7 @@ ScriptPromise<DOMArrayBuffer> SubtleCrypto::decapsulateBits(
   // 3.2.4.2: Let ciphertext be the result of getting a copy of the bytes held
   //          by the ciphertext parameter passed to the decapsulateBits()
   //          method.
-  std::vector<uint8_t> ciphertext = CopyBytes(raw_ciphertext);
+  std::vector<uint8_t> ciphertext = base::ToVector(raw_ciphertext);
 
   // 3.2.4.3: Let normalizedDecapsulationAlgorithm be the result of normalizing
   //          an algorithm, with alg set to decapsulationAlgorithm and op set to

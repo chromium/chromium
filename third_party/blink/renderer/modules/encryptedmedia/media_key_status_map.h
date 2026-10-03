@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_STATUS_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_STATUS_MAP_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_media_key_status_map.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediakeystatus_undefined.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -44,9 +44,9 @@ class MediaKeyStatusMap final : public ScriptWrappable,
 
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
-  bool has(const V8BufferSource* key_id);
+  bool has(base::span<const uint8_t> key_id);
   V8UnionMediaKeyStatusOrUndefined::Ret get(ScriptState*,
-                                            const V8BufferSource* key_id);
+                                            base::span<const uint8_t> key_id);
 
   void Trace(Visitor*) const override;
 
@@ -54,7 +54,7 @@ class MediaKeyStatusMap final : public ScriptWrappable,
   // PairSyncIterable<> implementation.
   IterationSource* CreateIterationSource(ScriptState*) override;
 
-  uint32_t IndexOf(const DOMArrayPiece& key_id) const;
+  uint32_t IndexOf(base::span<const uint8_t> key_id) const;
 
   MediaKeyStatusMapType entries_;
 };

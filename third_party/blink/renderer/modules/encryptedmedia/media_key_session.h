@@ -29,13 +29,13 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_session.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_session_closed_reason.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_status_map.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -95,15 +95,16 @@ class MediaKeySession final
   DEFINE_ATTRIBUTE_EVENT_LISTENER(keystatuseschange, kKeystatuseschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(message, kMessage)
 
-  ScriptPromise<IDLUndefined> generateRequest(ScriptState*,
-                                              const String& init_data_type,
-                                              const DOMArrayPiece& init_data,
-                                              ExceptionState&);
+  ScriptPromise<IDLUndefined> generateRequest(
+      ScriptState*,
+      const String& init_data_type,
+      base::span<const uint8_t> init_data,
+      ExceptionState&);
   ScriptPromise<IDLBoolean> load(ScriptState*,
                                  const String& session_id,
                                  ExceptionState&);
   ScriptPromise<IDLUndefined> update(ScriptState*,
-                                     const DOMArrayPiece& response,
+                                     base::span<const uint8_t> response,
                                      ExceptionState&);
   ScriptPromise<IDLUndefined> close(ScriptState*, ExceptionState&);
   ScriptPromise<IDLUndefined> remove(ScriptState*, ExceptionState&);

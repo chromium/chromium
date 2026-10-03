@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediakeystatus_undefined.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -111,11 +110,12 @@ const MediaKeyStatusMap::MapEntry& MediaKeyStatusMap::at(uint32_t index) const {
   return *entries_.at(index);
 }
 
-uint32_t MediaKeyStatusMap::IndexOf(const DOMArrayPiece& key) const {
+uint32_t MediaKeyStatusMap::IndexOf(base::span<const uint8_t> key) const {
   for (uint32_t index = 0; index < entries_.size(); ++index) {
     auto* const current = entries_.at(index)->KeyId();
-    if (key == *current)
+    if (key == current->ByteSpan()) {
       return index;
+    }
   }
 
   // Not found, so return an index outside the valid range. The caller
@@ -123,16 +123,14 @@ uint32_t MediaKeyStatusMap::IndexOf(const DOMArrayPiece& key) const {
   return std::numeric_limits<uint32_t>::max();
 }
 
-bool MediaKeyStatusMap::has(
-    const V8BufferSource* key_id
-) {
+bool MediaKeyStatusMap::has(base::span<const uint8_t> key_id) {
   uint32_t index = IndexOf(key_id);
   return index < entries_.size();
 }
 
 V8UnionMediaKeyStatusOrUndefined::Ret MediaKeyStatusMap::get(
     ScriptState* script_state,
-    const V8BufferSource* key_id) {
+    base::span<const uint8_t> key_id) {
   uint32_t index = IndexOf(key_id);
   if (index >= entries_.size()) {
     return V8UnionMediaKeyStatusOrUndefined::Ret(script_state,

@@ -147,7 +147,7 @@ class SubtleCrypto final : public ScriptWrappable {
       ScriptState*,
       const V8AlgorithmIdentifier* decapsulation_algorithm,
       CryptoKey* decapsulation_key,
-      const V8BufferSource* ciphertext,
+      base::span<const uint8_t> ciphertext,
       const V8AlgorithmIdentifier* shared_key_algorithm,
       bool extractable,
       const Vector<String>& key_usages,
@@ -157,7 +157,7 @@ class SubtleCrypto final : public ScriptWrappable {
       ScriptState*,
       const V8AlgorithmIdentifier* decapsulation_algorithm,
       CryptoKey* decapsulation_key,
-      const V8BufferSource* ciphertext,
+      base::span<const uint8_t> ciphertext,
       ExceptionState&);
   ScriptPromise<CryptoKey> getPublicKey(ScriptState*,
                                         CryptoKey*,

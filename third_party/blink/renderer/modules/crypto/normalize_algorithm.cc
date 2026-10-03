@@ -36,16 +36,15 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/to_vector.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_object_string.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_key.h"
-#include "third_party/blink/renderer/modules/crypto/crypto_utilities.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -310,7 +309,7 @@ bool GetOptionalBufferSource(const Dictionary& raw,
             .Get();
     if (exception_state.HadException())
       return false;
-    bytes = CopyBytes(array_buffer_view);
+    bytes = base::ToVector(array_buffer_view->ByteSpan());
     return true;
   }
 
@@ -320,7 +319,7 @@ bool GetOptionalBufferSource(const Dictionary& raw,
             raw.GetIsolate(), v8_value, exception_state);
     if (exception_state.HadException())
       return false;
-    bytes = CopyBytes(array_buffer);
+    bytes = base::ToVector(array_buffer->ByteSpan());
     return true;
   }
 
@@ -366,7 +365,7 @@ bool GetUint8Array(const Dictionary& raw,
   if (exception_state.HadException()) {
     return false;
   }
-  bytes = CopyBytes(array.Get());
+  bytes = base::ToVector(array->ByteSpan());
   return true;
 }
 

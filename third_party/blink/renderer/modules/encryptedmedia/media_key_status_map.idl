@@ -21,6 +21,6 @@ enum MediaKeyStatus {
 ] interface MediaKeyStatusMap {
     iterable <BufferSource, MediaKeyStatus>;
     readonly attribute unsigned long size;
-    boolean has(BufferSource keyId);
-    [CallWith=ScriptState] (MediaKeyStatus or undefined) get(BufferSource keyId);
+    boolean has([PassAsSpan] BufferSource keyId);
+    [CallWith=ScriptState] (MediaKeyStatus or undefined) get([PassAsSpan] BufferSource keyId);
 };

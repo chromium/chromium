@@ -52,7 +52,7 @@ class SmartCardConnection final : public ScriptWrappable,
       ExceptionState& exception_state);
   ScriptPromise<DOMArrayBuffer> control(ScriptState* script_state,
                                         uint32_t control_code,
-                                        const DOMArrayPiece& data,
+                                        base::span<const uint8_t> data,
                                         ExceptionState& exception_state);
   ScriptPromise<DOMArrayBuffer> getAttribute(ScriptState* script_state,
                                              uint32_t tag,
