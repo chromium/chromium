@@ -28,6 +28,9 @@ class UrlLoadingBrowserAgent;
                          bundle:(NSBundle*)bundle NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Sets whether AI Mode is allowed.
+- (void)setAIMAllowed:(BOOL)isAIMAllowed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_H_

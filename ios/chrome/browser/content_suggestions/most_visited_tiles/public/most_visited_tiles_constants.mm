@@ -14,6 +14,9 @@ constexpr CGFloat kMostVisitedIconTitleSpacing = 10.0;
 constexpr CGFloat kMostVisitedIconTitleSpacingUICleanup = 8.0;
 constexpr CGFloat kMostVisitedIconTitleSpacingWithoutBackground = 13.0;
 constexpr CGFloat kMostVisitedTileImageContainerSquareCornerRadius = 16.0;
+constexpr NSUInteger kMostVisitedMaximumVisibleItemsOnScreen = 4;
+constexpr NSUInteger kMostVisitedMaximumVisibleItemsOnScreenWithAIMModule =
+    kMostVisitedMaximumVisibleItemsOnScreen - 1;
 
 constexpr CGFloat kContainerTopInset = 20.0;
 constexpr CGFloat kContainerHorizontalInset = 20.0;
@@ -44,6 +47,15 @@ CGFloat MostVisitedIconContainerCornerRadius() {
   return IsNewTabPageUICleanupEnabled()
              ? kMostVisitedTileImageContainerSquareCornerRadius
              : (kMagicStackImageContainerWidth / 2);
+}
+
+NSUInteger MostVisitedMaximumVisibleItemsOnScreen(BOOL aim_available) {
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    return aim_available ? kMostVisitedMaximumVisibleItemsOnScreenWithAIMModule
+                         : kMostVisitedMaximumVisibleItemsOnScreen;
+  }
+  return kMostVisitedMaximumVisibleItemsOnScreen;
 }
 
 const NSDirectionalEdgeInsets kMostVisitedContainerInsets = {

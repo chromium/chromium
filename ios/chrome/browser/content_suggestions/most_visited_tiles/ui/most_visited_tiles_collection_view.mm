@@ -52,6 +52,8 @@ const int kPlusButtonIdentifier = -1;
   __weak id<MostVisitedTilesCommands> _mostVisitedTilesHandler;
   /// Data source object powering the display of the collection view.
   UICollectionViewDiffableDataSource* _diffableDataSource;
+  /// Compositional layout of the collection view.
+  MostVisitedTilesCollectionViewLayout* _layout;
 }
 
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config {
@@ -60,6 +62,7 @@ const int kPlusButtonIdentifier = -1;
           initWithItemCount:config.mostVisitedItems.count + 1];
   self = [super initWithFrame:CGRectZero collectionViewLayout:layout];
   if (self) {
+    _layout = layout;
     _items = config.mostVisitedItems;
     _imageDataSource = config.imageDataSource;
     _layoutGuideCenter = config.layoutGuideCenter;
@@ -80,6 +83,14 @@ const int kPlusButtonIdentifier = -1;
     [self initializeDataSource];
   }
   return self;
+}
+
+- (NSUInteger)maxVisibleItems {
+  return _layout.maxVisibleItems;
+}
+
+- (void)setMaxVisibleItems:(NSUInteger)maxVisibleItems {
+  _layout.maxVisibleItems = maxVisibleItems;
 }
 
 - (void)setContentSize:(CGSize)contentSize {

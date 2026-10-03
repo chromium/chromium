@@ -27,6 +27,9 @@
 
 namespace {
 
+using ntp_tiles::AimButtonRefactorArm;
+using ntp_tiles::GetAimButtonRefactorArm;
+
 // Corner radius for the most visited tiles container.
 constexpr CGFloat kModuleContainerCornerRadius = 24.0;
 
@@ -52,6 +55,12 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   // AIM button displayed as a module in the
   // `_contentSuggestionsModuleStackView`.
   UIView* _aimModuleView;
+  // Constraint setting `_aimModuleView`'s width equal to its height.
+  NSLayoutConstraint* _aimModuleWidthConstraint;
+  // Whether AI Mode is allowed.
+  BOOL _isAIMAllowed;
+  // Most Visited tiles collection view.
+  MostVisitedTilesCollectionView* _mostVisitedCollectionView;
   // Most Visited tiles collection displayed as a module in the
   // `_contentSuggestionsModuleStackView`.
   UIView* _mostVisitedView;
@@ -61,6 +70,20 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 
 - (instancetype)init {
   return [super initWithNibName:nil bundle:nil];
+}
+
+#pragma mark - Public
+
+- (void)setAIMAllowed:(BOOL)isAIMAllowed {
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
+  if (isAIMAllowed == _isAIMAllowed) {
+    return;
+  }
+  _isAIMAllowed = isAIMAllowed;
+  _aimModuleView.hidden = !isAIMAllowed;
+  _aimModuleWidthConstraint.active = isAIMAllowed;
+  _mostVisitedCollectionView.maxVisibleItems =
+      MostVisitedMaximumVisibleItemsOnScreen(/*aim_available=*/isAIMAllowed);
 }
 
 #pragma mark - UIViewController
@@ -75,9 +98,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   self.view.backgroundColor = [UIColor clearColor];
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
 
-  if (IsAimEnabledInNtp() &&
-      ntp_tiles::GetAimButtonRefactorArm() ==
-          ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     _aimModuleView = [self createAIMModule];
   }
 
@@ -136,12 +157,16 @@ constexpr CGFloat kStackViewSpacing = 12.0;
     [_mostVisitedView removeFromSuperview];
   }
   if (!config) {
+    _mostVisitedCollectionView = nil;
     _mostVisitedView = nil;
     return;
   }
 
   MostVisitedTilesCollectionView* collectionView =
       [[MostVisitedTilesCollectionView alloc] initWithConfig:config];
+  collectionView.maxVisibleItems =
+      MostVisitedMaximumVisibleItemsOnScreen(/*aim_available=*/_isAIMAllowed);
+  _mostVisitedCollectionView = collectionView;
 
   _mostVisitedView =
       [self createContainerForContentSuggestionsModule:collectionView];
@@ -166,9 +191,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
     return;
   }
 
-  if (IsAimEnabledInNtp() &&
-      ntp_tiles::GetAimButtonRefactorArm() ==
-          ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+  if (GetAimButtonRefactorArm() == AimButtonRefactorArm::kAimAsModule) {
     if (_aimModuleView) {
       [_contentSuggestionsModuleStackView addArrangedSubview:_aimModuleView];
     }
@@ -235,9 +258,7 @@ constexpr CGFloat kStackViewSpacing = 12.0;
 // Returns a module containing an AI Mode button.
 - (UIView*)createAIMModule {
   // TODO(crbug.com/549012340): Add an accessibility identifier.
-  CHECK(IsAimEnabledInNtp());
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
 
   MostVisitedTileView* aimTile =
       [[MostVisitedTileView alloc] initWithFrame:CGRectZero];
@@ -255,19 +276,17 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   UIView* aimModuleView =
       [self createContainerForContentSuggestionsModule:aimTile
                                             withInsets:insets];
-  [NSLayoutConstraint activateConstraints:@[
-    [aimModuleView.widthAnchor
-        constraintEqualToAnchor:aimModuleView.heightAnchor],
-  ]];
+  aimModuleView.hidden = !_isAIMAllowed;
+  _aimModuleWidthConstraint = [aimModuleView.widthAnchor
+      constraintEqualToAnchor:aimModuleView.heightAnchor];
+  _aimModuleWidthConstraint.active = !aimModuleView.isHidden;
   return aimModuleView;
 }
 
 #pragma mark - Actions
 
 - (void)aimModuleTapped {
-  CHECK(IsAimEnabledInNtp());
-  CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
-           ntp_tiles::AimButtonRefactorArm::kAimAsModule);
+  CHECK_EQ(GetAimButtonRefactorArm(), AimButtonRefactorArm::kAimAsModule);
   const GURL aimURL = GURL(ntp_tiles::kAiModeTileUrl);
   const UrlLoadParams params = UrlLoadParams::InCurrentTab(aimURL);
   self.urlLoadingBrowserAgent->Load(params);
