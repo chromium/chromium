@@ -72,6 +72,7 @@ template("cpp_api_from_rust") {
   _action_target_name = "${target_name}_crubit_action"
   _rust_impl_target_name = "${target_name}_crubit_impl"
   _h_target_name = target_name
+  _metadata_target_name = "${target_name}_crubit_metadata"
 
   assert(defined(invoker.deps))
   assert(defined(invoker.sources))
@@ -101,9 +102,35 @@ template("cpp_api_from_rust") {
 
   _action_rsp_path = "$target_out_dir/$_action_target_name.rsp"
 
+  # A pure metadata target with no dependencies or actions. This allows
+  # `_rspgen_target_name` to collect header and namespace information at
+  # `gn gen` time without introducing Ninja-level build-time serialization
+  # on upstream Crubit header generation actions.
+  group(_metadata_target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    _gen_dir_relative_h_out = rebase_path(_h_out, root_gen_dir)
+    _crate_feature = []
+    foreach(_feature, _globally_enabled_crubit_features) {
+      _crate_feature += [ "--crate-feature=${_crate_name}=${_feature}" ]
+    }
+    metadata = {
+      crate_feature = _crate_feature
+      crate_header =
+          [ "--crate-header=${_crate_name}=${_gen_dir_relative_h_out}" ]
+      crate_namespace = [ "--crate-namespace=${_crate_name}=${_cpp_namespace}" ]
+    }
+  }
+
+  _rspgen_deps = []
+  foreach(_dep, _original_attributes.deps) {
+    _dep_dir = get_label_info(_dep, "dir")
+    _dep_name = get_label_info(_dep, "name")
+    _rspgen_deps += [ "${_dep_dir}:${_dep_name}_crubit_metadata" ]
+  }
+
   generated_file(_rspgen_target_name) {
     forward_variables_from(invoker, [ "testonly" ])
-    forward_variables_from(_original_attributes, [ "deps" ])
+    deps = _rspgen_deps
     outputs = [ _action_rsp_path ]
     data_keys = [
       "crate_feature",
@@ -131,6 +158,7 @@ template("cpp_api_from_rust") {
     script = "//build/rust/gni_impl/cpp_api_from_rust_wrapper.py"
     inputs = rustc_wrapper_inputs
     inputs += [
+      _action_rsp_path,
       cpp_api_from_rust_exe_path,
       rustfmt_exe_path,
       rustfmt_config_path,
@@ -254,18 +282,6 @@ template("cpp_api_from_rust") {
     # `**public**_deps` to propagate `include_dirs` for including Crubit
     # support libraries.
     public_deps = [ "//build/rust/crubit:cpp_api_from_rust_bindings_cpp_deps" ]
-
-    _gen_dir_relative_h_out = rebase_path(_h_out, root_gen_dir)
-    _crate_feature = []
-    foreach(_feature, _globally_enabled_crubit_features) {
-      _crate_feature += [ "--crate-feature=${_crate_name}=${_feature}" ]
-    }
-    metadata = {
-      crate_feature = _crate_feature
-      crate_header =
-          [ "--crate-header=${_crate_name}=${_gen_dir_relative_h_out}" ]
-      crate_namespace = [ "--crate-namespace=${_crate_name}=${_cpp_namespace}" ]
-    }
 
     public = [ _h_out ]
   }

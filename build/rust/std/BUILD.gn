@@ -239,6 +239,14 @@ if (toolchain_has_rust) {
           "rules:std_bindings",
         ]
       }
+
+      group("std_bindings_crubit_metadata") {
+        public_deps = [
+          "rules:alloc_bindings_crubit_metadata",
+          "rules:core_bindings_crubit_metadata",
+          "rules:std_bindings_crubit_metadata",
+        ]
+      }
     }
   } else {
     action("find_stdlib") {
