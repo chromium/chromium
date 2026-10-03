@@ -14,7 +14,6 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
-import '/shared/settings/prefs/prefs.js';
 import '../ai_page/ai_logging_info_bullet.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
@@ -26,19 +25,18 @@ import './walletable_pass_detection_toggle.js';
 
 // </if>
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
-import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
-import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {getTemplate} from './collapsible_autofill_settings_card.html.js';
+import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
+import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
 export interface CollapsibleCardElement {
   $: {
@@ -47,7 +45,7 @@ export interface CollapsibleCardElement {
 }
 
 export class CollapsibleCardElement extends SettingsViewMixin
-(PrefsMixin(I18nMixin(PolymerElement))) {
+(PrefServiceObserverMixin(I18nMixin(PolymerElement))) {
   static get is() {
     return 'collapsible-autofill-settings-card';
   }
@@ -125,19 +123,22 @@ export class CollapsibleCardElement extends SettingsViewMixin
               'AutofillSettingsEnterprisePolicyEnabled');
         },
       },
-      prefsInitialized_: {
-        type: Boolean,
-        value: false,
+
+      profileEnabledPref_: {
+        type: Object,
+        value: null,
+      },
+
+      autofillAiEnterprisePolicyPref_: {
+        type: Object,
+        value: null,
       },
     };
   }
 
   static get observers() {
     return [
-      `onEnterprisePolicyChanged_(prefs.${
-          AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value,
-          prefs.autofill.profile_enabled.*,
-          prefsInitialized_)`,
+      'onEnterprisePolicyChanged_(autofillAiEnterprisePolicyPref_, profileEnabledPref_)',
     ];
   }
 
@@ -149,7 +150,11 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private enhancedAutofillOptedIn_: chrome.settingsPrivate.PrefObject;
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private prefsInitialized_: boolean;
+  declare private profileEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|null;
+  declare private autofillAiEnterprisePolicyPref_:
+      chrome.settingsPrivate.PrefObject<ModelExecutionEnterprisePolicyValue>|
+      null;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -159,8 +164,10 @@ export class CollapsibleCardElement extends SettingsViewMixin
   override connectedCallback() {
     super.connectedCallback();
 
-    CrSettingsPrefs.initialized.then(() => {
-      this.prefsInitialized_ = true;
+    this.mirrorPrefs({
+      'autofill.profile_enabled': 'profileEnabledPref_',
+      [AiEnterpriseFeaturePrefName.AUTOFILL_AI]:
+          'autofillAiEnterprisePolicyPref_',
     });
   }
 
@@ -212,11 +219,10 @@ export class CollapsibleCardElement extends SettingsViewMixin
    * without blocking the UI.
    */
   private async onEnterprisePolicyChanged_() {
-    if (!this.prefsInitialized_) {
+    if (!this.profileEnabledPref_ || !this.autofillAiEnterprisePolicyPref_) {
       return;
     }
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
+    const addressAutofillEnabled = this.profileEnabledPref_;
 
     if (!this.autofillSettingsEnterprisePolicyEnabled_ &&
         addressAutofillEnabled.enforcement ===
@@ -238,8 +244,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
       return;
     }
 
-    const autofillAiPolicyValue =
-        this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value;
+    const autofillAiPolicyValue = this.autofillAiEnterprisePolicyPref_.value;
 
     if (autofillAiPolicyValue === ModelExecutionEnterprisePolicyValue.DISABLE) {
       this.set(
@@ -270,30 +275,26 @@ export class CollapsibleCardElement extends SettingsViewMixin
   }
 
   private showExtensionControlledIndicator_(): boolean {
-    if (!this.prefsInitialized_) {
+    if (!this.profileEnabledPref_) {
       return false;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
-
-    return !!addressAutofillEnabled.extensionId &&
-        !addressAutofillEnabled.value;
+    return !!this.profileEnabledPref_.extensionId &&
+        !this.profileEnabledPref_.value;
   }
 
   private optInToggleDisabled_(): boolean {
-    if (!this.prefsInitialized_) {
+    if (!this.profileEnabledPref_) {
       return true;
     }
 
-    const addressAutofillEnabled =
-        this.getPref<boolean>('autofill.profile_enabled');
-    const addressAutofillEnforcedFalse = addressAutofillEnabled.enforcement ===
+    const addressAutofillEnforcedFalse =
+        this.profileEnabledPref_.enforcement ===
             chrome.settingsPrivate.Enforcement.ENFORCED &&
-        !addressAutofillEnabled.value;
-    // We need to check addressAutofillEnabled.value here.
+        !this.profileEnabledPref_.value;
+    // We need to check this.profileEnabledPref_.value here.
     // this.enhancedAutofillEligibleUser_ does consider
-    // addressAutofillEnabled.value, but loadTimeData constants are refreshed
+    // this.profileEnabledPref_.value, but loadTimeData constants are refreshed
     // only after page reload.
     return !this.enhancedAutofillEligibleUser_ || addressAutofillEnforcedFalse;
   }

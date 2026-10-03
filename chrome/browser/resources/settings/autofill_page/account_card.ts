@@ -61,14 +61,6 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      /**
        * This flag is used to conditionally show a set of new sign-in UIs to the
        * profiles that have been migrated to be consistent with the web
        * sign-ins.
@@ -126,7 +118,6 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private signinAllowed_: boolean;
   declare syncStatus: SyncStatus|null;
 

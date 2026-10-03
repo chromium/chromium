@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsWalletablePassDetectionToggleElement} from 'chrome://settings/lazy_load.js';
 
@@ -17,11 +17,6 @@ import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 suite('WalletablePassDetectionToggleTest', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let toggleComponent: SettingsWalletablePassDetectionToggleElement;
-
-  suiteSetup(function() {
-    document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

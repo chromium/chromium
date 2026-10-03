@@ -6,9 +6,8 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsAutofillPageIndexElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {loadTimeData, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import type {SettingsAutofillPageIndexElement} from 'chrome://settings/settings.js';
+import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -19,17 +18,25 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('AutofillPageIndex', function() {
   let index: SettingsAutofillPageIndexElement;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(async function() {
-    settingsPrefs = document.createElement('settings-prefs');
     const prefsBrowserProxy = new TestPrefsBrowserProxy([
       ...getPaymentsPrefs(),
       ...getContactInfoPrefs(),
       {
+        key: 'signin.allowed_on_next_startup',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
         key: AiEnterpriseFeaturePrefName.AUTOFILL_AI,
         type: chrome.settingsPrivate.PrefType.NUMBER,
         value: ModelExecutionEnterprisePolicyValue.ALLOW,
+      },
+      {
+        key: 'autofill.autofill_ai.reauth_before_viewing_sensitive_data',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
       },
       {
         key: 'autofill.autofill_ai.identity_entities_enabled',
@@ -46,13 +53,30 @@ suite('AutofillPageIndex', function() {
         type: chrome.settingsPrivate.PrefType.BOOLEAN,
         value: true,
       },
+      {
+        key: 'generated.find_and_fill_with_gemini',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: 'autofill.at_memory.double_ctrl_trigger_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: 'autofill.at_memory.shortcut',
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: '',
+      },
+      {
+        key: 'autofill.personal_context.find_and_fill_with_gemini_settings',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: ModelExecutionEnterprisePolicyValue.ALLOW,
+      },
     ]);
     PrefsBrowserProxy.setInstance(prefsBrowserProxy);
     PrefService.resetInstanceForTesting();
-    await Promise.all([
-      CrSettingsPrefs.initialized,
-      PrefService.getInstance().whenInitialized(),
-    ]);
+    await PrefService.getInstance().whenInitialized();
   });
 
   setup(function() {
@@ -65,21 +89,8 @@ suite('AutofillPageIndex', function() {
     resetRouterForTesting();
 
     index = document.createElement('settings-autofill-page-index');
-
-    settingsPrefs.set(
-        `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
-        ModelExecutionEnterprisePolicyValue.ALLOW);
-    settingsPrefs.set(
-        'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
-        ModelExecutionEnterprisePolicyValue.ALLOW);
-    index.prefs = settingsPrefs.prefs!;
-
     document.body.appendChild(index);
     return flushTasks();
-  });
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
   });
 
   test('Routing', async function() {
@@ -128,7 +139,6 @@ suite('AutofillPageIndex', function() {
     resetRouterForTesting();
 
     index = document.createElement('settings-autofill-page-index');
-    index.prefs = settingsPrefs.prefs!;
     document.body.appendChild(index);
     await flushTasks();
 
@@ -145,7 +155,6 @@ suite('AutofillPageIndex', function() {
     resetRouterForTesting();
 
     index = document.createElement('settings-autofill-page-index');
-    index.prefs = settingsPrefs.prefs!;
     document.body.appendChild(index);
     await flushTasks();
 

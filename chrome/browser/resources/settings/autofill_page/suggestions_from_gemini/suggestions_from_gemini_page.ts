@@ -13,8 +13,8 @@ import '../../settings_page/settings_subpage.js';
 import '../../settings_shared.css.js';
 import '../autofill_shared.css.js';
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,9 +28,9 @@ import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
 import {getTemplate} from './suggestions_from_gemini_page.html.js';
 
 const SettingsSuggestionsFromGeminiPageElementBase =
-    SettingsViewMixin(PrefsMixin(PolymerElement));
+    SettingsViewMixin(PrefServiceObserverMixin(PolymerElement));
 
-const atMemoryShortcutPrefName = 'autofill.at_memory.shortcut';
+const AT_MEMORY_SHORTCUT_PREF_NAME = 'autofill.at_memory.shortcut';
 
 export interface SettingsSuggestionsFromGeminiPageElement {
   $: {
@@ -50,8 +50,6 @@ export class SettingsSuggestionsFromGeminiPageElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       isAtMemoryEnabled_: {
         type: Boolean,
         value() {
@@ -67,17 +65,22 @@ export class SettingsSuggestionsFromGeminiPageElement extends
         },
       },
 
-      prefsInitialized_: {
-        type: Boolean,
-        value: false,
-      },
+      findAndFillWithGeminiPref_: Object,
+
+      atMemoryShortcutPref_: Object,
+
+      findAndFillWithGeminiSettingsPref_: Object,
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private isAtMemoryEnabled_: boolean;
   declare private isAtMemoryTriggerCustomizationAllowed_: boolean;
-  declare private prefsInitialized_: boolean;
+  declare private findAndFillWithGeminiPref_:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  declare private atMemoryShortcutPref_:
+      chrome.settingsPrivate.PrefObject<string>|undefined;
+  declare private findAndFillWithGeminiSettingsPref_:
+      chrome.settingsPrivate.PrefObject<number>|undefined;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -85,27 +88,25 @@ export class SettingsSuggestionsFromGeminiPageElement extends
   override connectedCallback() {
     super.connectedCallback();
 
-    CrSettingsPrefs.initialized.then(() => {
-      this.prefsInitialized_ = true;
+    this.mirrorPrefs({
+      'generated.find_and_fill_with_gemini': 'findAndFillWithGeminiPref_',
+      [AT_MEMORY_SHORTCUT_PREF_NAME]: 'atMemoryShortcutPref_',
+      'autofill.personal_context.find_and_fill_with_gemini_settings':
+          'findAndFillWithGeminiSettingsPref_',
     });
   }
 
-  private showQualityLogging_(toggleOn: boolean, atMemoryEnabled: boolean):
-      boolean {
-    return toggleOn && atMemoryEnabled;
+  private showQualityLogging_(): boolean {
+    return !!this.findAndFillWithGeminiPref_?.value && this.isAtMemoryEnabled_;
   }
 
   private showDoubleCtrlShortcut_(): boolean {
-    if (!this.prefsInitialized_) {
-      return false;
-    }
     return this.isAtMemoryTriggerCustomizationAllowed_ &&
-        !!this.getPref('generated.find_and_fill_with_gemini').value;
+        !!this.findAndFillWithGeminiPref_?.value;
   }
 
-  private showConsiderNoLoggingEnterprise_(enterprisePolicyValue: number):
-      boolean {
-    return enterprisePolicyValue ===
+  private showConsiderNoLoggingEnterprise_(): boolean {
+    return this.findAndFillWithGeminiSettingsPref_?.value ===
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
   }
   private onManageConnectedAppsClick_() {
@@ -123,7 +124,8 @@ export class SettingsSuggestionsFromGeminiPageElement extends
   }
 
   private onAtMemoryShortcutUpdated_(event: CustomEvent<string>) {
-    this.setPrefValue(atMemoryShortcutPrefName, event.detail);
+    PrefService.getInstance().setPrefValue(
+        AT_MEMORY_SHORTCUT_PREF_NAME, event.detail);
   }
 
   // SettingsViewMixin implementation.

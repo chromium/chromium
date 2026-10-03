@@ -12,7 +12,6 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './account_card.js';
 import './category_reference_card.js';
 import './collapsible_autofill_settings_card.js';
-import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_section.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
@@ -21,7 +20,6 @@ import '../internal/icons.html.js';
 
 // </if>
 
-import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
@@ -88,8 +86,8 @@ export interface DataChip {
   isVisibleWhenNoEntitiesOfTypeExists: () => boolean;
 }
 
-const SettingsAutofillPageElementBase = WebUiListenerMixin(
-    SettingsViewMixin(PrefsMixin(I18nMixin(PolymerElement))));
+const SettingsAutofillPageElementBase =
+    WebUiListenerMixin(SettingsViewMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAutofillPageElement extends
     SettingsAutofillPageElementBase {
@@ -103,8 +101,6 @@ export class SettingsAutofillPageElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       hierarchy_: {
         type: Object,
       },
@@ -138,7 +134,6 @@ export class SettingsAutofillPageElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private hierarchy_: DataTypeHierarchy;
   declare private isShoppingEnabled_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;

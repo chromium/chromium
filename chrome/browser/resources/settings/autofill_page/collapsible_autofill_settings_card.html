@@ -25,23 +25,22 @@
       on-settings-boolean-control-change="onOptInToggleChange_"
       disabled=
           "[[optInToggleDisabled_(
-              prefs.autofill.profile_enabled,
-              enhancedAutofillEligibleUser_, prefsInitialized_)]]"
+              profileEnabledPref_,
+              enhancedAutofillEligibleUser_)]]"
       pref="{{enhancedAutofillOptedIn_}}" no-extension-indicator
       label="$i18n{autofillAiPageTitle}"
       sub-label="$i18n{autofillAiToggleSubLabel}">
   </settings-toggle-button>
   <template is="dom-if"
-        if="[[showExtensionControlledIndicator_(
-            prefs.autofill.profile_enabled, prefsInitialized_)]]">
+        if="[[showExtensionControlledIndicator_(profileEnabledPref_)]]">
     <div class="cr-row continuation">
       <extension-controlled-indicator class="flex"
           id="autofillExtensionIndicator"
-          extension-id="[[prefs.autofill.profile_enabled.extensionId]]"
+          extension-id="[[profileEnabledPref_.extensionId]]"
           extension-name=
-              "[[prefs.autofill.profile_enabled.controlledByName]]"
+              "[[profileEnabledPref_.controlledByName]]"
           extension-can-be-disabled="[[
-              prefs.autofill.profile_enabled.extensionCanBeDisabled]]">
+              profileEnabledPref_.extensionCanBeDisabled]]">
       </extension-controlled-indicator>
     </div>
   </template>
@@ -69,7 +68,7 @@
           </div>
         </li>
         <template is="dom-if" if="[[showLoggingInfoBullet_(
-            prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value)]]"
+            autofillAiEnterprisePolicyPref_.value)]]"
             restamp>
           <settings-ai-logging-info-bullet
               id="enterpriseInfoBullet"
@@ -86,7 +85,7 @@
       restamp>
   <settings-toggle-button id="optInAuthenticationToggle"
       disabled="[[!enhancedAutofillEligibleUser_]]"
-      pref="{{prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data}}"
+      pref-key="autofill.autofill_ai.reauth_before_viewing_sensitive_data"
       no-extension-indicator
       label="$i18n{autofillAiAuthenticationToggleTitle}"
       sub-label="$i18n{autofillAiAuthenticationToggleSubtitle}"

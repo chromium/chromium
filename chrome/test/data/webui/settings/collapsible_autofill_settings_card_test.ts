@@ -8,49 +8,53 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleCardElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
+import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
-
-function setupDefaultPrefs(settingsPrefs: SettingsPrefsElement) {
-  settingsPrefs.set(
-      `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
-      ModelExecutionEnterprisePolicyValue.ALLOW);
-  settingsPrefs.set(
-      'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
-      ModelExecutionEnterprisePolicyValue.ALLOW);
-  settingsPrefs.set('prefs.autofill.profile_enabled.value', true);
-}
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('CollapsibleAutofillSettingsCard', function() {
   let entityDataManager: TestEntityDataManagerProxy;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
+  let prefService: PrefService;
   // Note that authentication is not available on linux.
   // <if expr="is_win or is_macosx or is_chromeos">
   const authenticationPref =
-      'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
+      'autofill.autofill_ai.reauth_before_viewing_sensitive_data';
   // </if>
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    settingsPrefs = document.createElement('settings-prefs');
-    document.body.appendChild(settingsPrefs);
-    await CrSettingsPrefs.initialized;
+    prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: ModelExecutionEnterprisePolicyValue.ALLOW,
+      },
+      {
+        key: 'autofill.profile_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: 'autofill.autofill_ai.reauth_before_viewing_sensitive_data',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
     entityDataManager.setGetOptInStatusResponse(false);
-
-    setupDefaultPrefs(settingsPrefs);
-  });
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
   });
 
   async function createCollapsibleAutofillSettingsCard(
@@ -66,7 +70,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
     const card: CollapsibleCardElement =
         document.createElement('collapsible-autofill-settings-card');
-    card.prefs = settingsPrefs.prefs!;
     document.body.appendChild(card);
 
     await flushTasks();
@@ -243,8 +246,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test(
       'AutofillAiEnterpriseUserLoggingNotAllowedHaveLoggingInfoBullet',
       async function() {
-        settingsPrefs.set(
-            `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+        prefService.setPrefValue(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
         const card = await createCollapsibleAutofillSettingsCard();
 
@@ -260,8 +263,8 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
   test(
       'AutofillAiEnterpriseUserDisabledHasLoggingInfoBullet', async function() {
-        settingsPrefs.set(
-            `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
+        prefService.setPrefValue(
+            AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.DISABLE);
         const card = await createCollapsibleAutofillSettingsCard();
 
@@ -311,7 +314,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     assertTrue(!!toggle);
     assertTrue(toggle.checked);
 
-    card.set('prefs.autofill.profile_enabled.value', false);
+    prefService.setPrefValue('autofill.profile_enabled', false);
     await flushTasks();
 
     // Check that when the autofill pref is off, the feature is disabled.
@@ -332,7 +335,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertTrue(!!toggle);
         assertTrue(toggle.checked);
 
-        card.set('prefs.autofill.profile_enabled.value', false);
+        prefService.setPrefValue('autofill.profile_enabled', false);
         await flushTasks();
 
         // Check that even when the address autofill pref is off, the feature is
@@ -365,7 +368,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertFalse(!!getLoggingBullet());
 
         // State: Policy `DISABLE`.
-        card.setPrefValue(
+        prefService.setPrefValue(
             AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.DISABLE);
         await flushTasks();
@@ -380,7 +383,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertTrue(!!getLoggingBullet());
 
         // State: Policy `ALLOW` again.
-        card.setPrefValue(
+        prefService.setPrefValue(
             AiEnterpriseFeaturePrefName.AUTOFILL_AI,
             ModelExecutionEnterprisePolicyValue.ALLOW);
         await flushTasks();
@@ -417,11 +420,12 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertFalse(!!getPolicyIcon());
 
         // State: Policy `DISABLE`.
-        card.set('prefs.autofill.profile_enabled', {
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'autofill.profile_enabled',
           value: false,
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        });
+        }]);
         await flushTasks();
 
         assertFalse(card.get('enhancedAutofillOptedIn_.value'));
@@ -434,7 +438,12 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertTrue(!!getPolicyIcon());
 
         // State: Policy `ALLOW` again.
-        card.set('prefs.autofill.profile_enabled', {value: true});
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'autofill.profile_enabled',
+          value: true,
+          enforcement: undefined,
+          controlledBy: undefined,
+        }]);
         await flushTasks();
 
         assertTrue(card.get('enhancedAutofillOptedIn_.value'));
@@ -467,12 +476,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertFalse(!!getExtensionIndicator());
 
         // State: Extension `DISABLE`.
-        card.set('prefs.autofill.profile_enabled', {
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'autofill.profile_enabled',
           value: false,
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
           extensionId: 'test-extension-id',
-        });
+        }]);
         await flushTasks();
 
         assertFalse(card.get('enhancedAutofillOptedIn_.value'));
@@ -485,7 +495,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
         assertTrue(!!getExtensionIndicator());
 
         // State: Extension `ALLOW` again.
-        card.set('prefs.autofill.profile_enabled', {value: true});
+        prefsBrowserProxy.fakeApi.sendPrefChanges([{
+          key: 'autofill.profile_enabled',
+          value: true,
+          enforcement: undefined,
+          controlledBy: undefined,
+          extensionId: undefined,
+        }]);
         await flushTasks();
 
         assertTrue(card.get('enhancedAutofillOptedIn_.value'));
@@ -502,12 +518,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
         /*eligibleUser=*/ true,
         /*autofillSettingsEnterprisePolicyEnabled=*/ false,
         /*optInStatusResponse=*/ false);
-    card.set('prefs.autofill.profile_enabled', {
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'autofill.profile_enabled',
       value: true,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
       controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       extensionId: 'test-extension-id',
-    });
+    }]);
 
     const expandButton = card.shadowRoot!.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
@@ -575,10 +592,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         '#optInAuthenticationToggle');
     assertTrue(!!toggle);
 
-    card.set(authenticationPref, {
-      type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value: false,
-    });
+    prefService.setPrefValue(authenticationPref, false);
     await flushTasks();
     assertFalse(toggle.checked);
 

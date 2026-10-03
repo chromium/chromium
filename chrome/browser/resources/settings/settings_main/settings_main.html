@@ -76,8 +76,7 @@
     <div slot="view" id="yourSavedInfo">
       <template is="dom-if" if="[[renderPlugin_(
           routes_.AUTOFILL, lastRoute_, inSearchMode_)]]">
-        <settings-autofill-page-index prefs="{{prefs}}"
-            in-search-mode="[[inSearchMode_]]">
+        <settings-autofill-page-index in-search-mode="[[inSearchMode_]]">
         </settings-autofill-page-index>
       </template>
     </div>
@@ -200,8 +199,7 @@
   <div slot="view" id="about">
     <template is="dom-if" if="[[renderPlugin_(
         routes_.ABOUT, lastRoute_, inSearchMode_)]]">
-      <settings-about-page role="main" class="cr-centered-card-container"
-          prefs="{{prefs}}">
+      <settings-about-page role="main" class="cr-centered-card-container">
       </settings-about-page>
     </template>
   </div>

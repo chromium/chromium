@@ -8,7 +8,6 @@
  * settings for passwords, payment methods, addresses and more.
  */
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import '/shared/settings/prefs/prefs.js';
 import './autofill_page.js';
 import '../settings_shared.css.js';
 
@@ -48,8 +47,6 @@ export class SettingsAutofillPageIndexElement extends
 
   static get properties() {
     return {
-      prefs: Object,
-
       isShoppingEnabled_: {
         type: Boolean,
         value() {
@@ -66,7 +63,6 @@ export class SettingsAutofillPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
   declare private isShoppingEnabled_: boolean;
   declare private showSuggestionsFromGeminiSettings_: boolean;
 

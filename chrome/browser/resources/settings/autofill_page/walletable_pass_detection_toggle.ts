@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '/shared/settings/prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';

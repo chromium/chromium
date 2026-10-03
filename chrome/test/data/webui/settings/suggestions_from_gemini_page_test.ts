@@ -5,9 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrShortcutInputElement, SettingsSuggestionsFromGeminiPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, loadTimeData, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {MetricsBrowserProxyImpl, SuggestionsFromGeminiAction} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, SuggestionsFromGeminiAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,10 +13,11 @@ import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('SuggestionsFromGeminiPage', function() {
   let openWindowProxy: TestOpenWindowProxy;
-  let settingsPrefs: SettingsPrefsElement;
+  let prefService: PrefService;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   setup(async function() {
@@ -26,8 +25,32 @@ suite('SuggestionsFromGeminiPage', function() {
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    settingsPrefs = document.createElement('settings-prefs');
-    await CrSettingsPrefs.initialized;
+    const prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: 'autofill.at_memory.double_ctrl_trigger_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: false,
+      },
+      {
+        key: 'autofill.at_memory.shortcut',
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: '',
+      },
+      {
+        key: 'generated.find_and_fill_with_gemini',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: 'autofill.personal_context.find_and_fill_with_gemini_settings',
+        type: chrome.settingsPrivate.PrefType.NUMBER,
+        value: ModelExecutionEnterprisePolicyValue.ALLOW,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
 
     loadTimeData.overrideValues({
       personalContextConnectedAppsUrl: 'https://gemini.google.com/apps',
@@ -39,22 +62,10 @@ suite('SuggestionsFromGeminiPage', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
 
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
-
   async function setupPage():
       Promise<SettingsSuggestionsFromGeminiPageElement> {
     const page: SettingsSuggestionsFromGeminiPageElement =
         document.createElement('settings-suggestions-from-gemini-page');
-
-    page.prefs = settingsPrefs.prefs!;
-    page.setPrefValue('autofill.at_memory.double_ctrl_trigger_enabled', false);
-    page.setPrefValue('autofill.at_memory.shortcut', '');
-    page.setPrefValue('generated.find_and_fill_with_gemini', true);
-    page.setPrefValue(
-        'autofill.personal_context.find_and_fill_with_gemini_settings',
-        ModelExecutionEnterprisePolicyValue.ALLOW);
 
     document.body.appendChild(page);
     await flushTasks();
@@ -136,7 +147,7 @@ suite('SuggestionsFromGeminiPage', function() {
 
     // When policy is set to ALLOW_WITHOUT_LOGGING = 1, it should become
     // visible.
-    subpage.setPrefValue(
+    prefService.setPrefValue(
         'autofill.personal_context.find_and_fill_with_gemini_settings',
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING);
     await flushTasks();
@@ -156,7 +167,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertTrue(
         isVisible(subpage.shadowRoot!.querySelector('#qualityLoggingCard')));
 
-    subpage.setPrefValue('generated.find_and_fill_with_gemini', false);
+    prefService.setPrefValue('generated.find_and_fill_with_gemini', false);
     await flushTasks();
 
     assertFalse(
@@ -227,7 +238,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertTrue(!!inputElement);
     assertTrue(isVisible(inputElement));
 
-    subpage.setPrefValue('generated.find_and_fill_with_gemini', false);
+    prefService.setPrefValue('generated.find_and_fill_with_gemini', false);
     await flushTasks();
 
     assertFalse(isVisible(toggleElement));
@@ -245,7 +256,7 @@ suite('SuggestionsFromGeminiPage', function() {
     await flushTasks();
 
     assertTrue(
-        subpage
+        prefService
             .getPref<boolean>('autofill.at_memory.double_ctrl_trigger_enabled')
             .value);
     assertTrue(toggleElement.checked);
@@ -254,7 +265,7 @@ suite('SuggestionsFromGeminiPage', function() {
     await flushTasks();
 
     assertFalse(
-        subpage
+        prefService
             .getPref<boolean>('autofill.at_memory.double_ctrl_trigger_enabled')
             .value);
     assertFalse(toggleElement.checked);
@@ -271,7 +282,7 @@ suite('SuggestionsFromGeminiPage', function() {
     assertEquals('', inputElement.shortcut);
 
     const shortcutString = 'Ctrl+A';
-    subpage.setPrefValue('autofill.at_memory.shortcut', shortcutString);
+    prefService.setPrefValue('autofill.at_memory.shortcut', shortcutString);
     await flushTasks();
 
     assertEquals(shortcutString, inputElement.shortcut);
@@ -289,12 +300,13 @@ suite('SuggestionsFromGeminiPage', function() {
     await flushTasks();
 
     assertEquals(
-        'Ctrl+A', subpage.getPref<string>('autofill.at_memory.shortcut').value);
+        'Ctrl+A',
+        prefService.getPref<string>('autofill.at_memory.shortcut').value);
   });
 
   test('AtMemoryTriggerSettingClearsShortcut', async function() {
     const subpage = await setupPage();
-    subpage.setPrefValue('autofill.at_memory.shortcut', 'Ctrl+A');
+    prefService.setPrefValue('autofill.at_memory.shortcut', 'Ctrl+A');
     await flushTasks();
 
     const inputElement =
@@ -306,7 +318,7 @@ suite('SuggestionsFromGeminiPage', function() {
     await flushTasks();
 
     assertEquals(
-        '', subpage.getPref<string>('autofill.at_memory.shortcut').value);
+        '', prefService.getPref<string>('autofill.at_memory.shortcut').value);
   });
 
   test('FocusBackButton', async function() {

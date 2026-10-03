@@ -4,29 +4,47 @@
 
 import 'chrome://settings/settings.js';
 
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {AiEnterpriseFeaturePrefName, AutofillManagerImpl, EntityDataManagerProxyImpl, PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
-import type {SettingsAutofillPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
+import type {SettingsAutofillPageElement} from 'chrome://settings/settings.js';
+import {loadTimeData, MetricsBrowserProxyImpl, ModelExecutionEnterprisePolicyValue, OpenWindowProxyImpl, PasswordManagerImpl, PasswordManagerPage, PrefsBrowserProxy, PrefService, resetRouterForTesting, Router, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
-import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-
 
 import {createAddressEntry, createCreditCardEntry, createIbanEntry, createPayOverTimeIssuerEntry, TestAutofillManager, TestPaymentsManager} from './autofill_fake_data.js';
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
-function setDefaultPrefs(objectToSetup: SettingsPrefsElement) {
-  objectToSetup.set(
-      `prefs.${AiEnterpriseFeaturePrefName.AUTOFILL_AI}.value`,
-      ModelExecutionEnterprisePolicyValue.ALLOW);
-  objectToSetup.set(
-      'prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value',
-      ModelExecutionEnterprisePolicyValue.ALLOW);
+async function setupPrefs() {
+  const prefsBrowserProxy = new TestPrefsBrowserProxy([
+    {
+      key: 'signin.allowed_on_next_startup',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: 'autofill.profile_enabled',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    },
+    {
+      key: AiEnterpriseFeaturePrefName.AUTOFILL_AI,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: ModelExecutionEnterprisePolicyValue.ALLOW,
+    },
+    {
+      key: 'autofill.autofill_ai.reauth_before_viewing_sensitive_data',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: false,
+    },
+  ]);
+  PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+  PrefService.resetInstanceForTesting();
+  await PrefService.getInstance().whenInitialized();
 }
 
 suite('AutofillPage', function() {
@@ -35,11 +53,9 @@ suite('AutofillPage', function() {
   let passwordManager: TestPasswordManagerProxy;
   let paymentsManager: TestPaymentsManager;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    return setupPrefs();
   });
 
   setup(async function() {
@@ -68,8 +84,6 @@ suite('AutofillPage', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     autofillPage = document.createElement('settings-autofill-page');
-    setDefaultPrefs(settingsPrefs);
-    autofillPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(autofillPage);
     await flushTasks();
   }
@@ -93,10 +107,6 @@ suite('AutofillPage', function() {
     }
     return undefined;
   }
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   test('TitleExists', function() {
     const autofillPageTitleElement =
@@ -326,12 +336,10 @@ suite('AutofillPage', function() {
 });
 
 suite('DataChipsVisibility', function() {
-  let settingsPrefs: SettingsPrefsElement;
   let entityDataManager: TestEntityDataManagerProxy;
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    return setupPrefs();
   });
 
   setup(function() {
@@ -376,16 +384,10 @@ suite('DataChipsVisibility', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const autofillPage: SettingsAutofillPageElement =
         document.createElement('settings-autofill-page');
-    setDefaultPrefs(settingsPrefs);
-    autofillPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(autofillPage);
     await flushTasks();
     return autofillPage;
   }
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
-  });
 
   function getChipLabels(
       autofillPage: SettingsAutofillPageElement,
@@ -569,12 +571,10 @@ suite('RelatedServices', function() {
   let autofillPage: SettingsAutofillPageElement;
   let openWindowProxy: TestOpenWindowProxy;
   let passwordManager: TestPasswordManagerProxy;
-  let settingsPrefs: SettingsPrefsElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
   suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
+    return setupPrefs();
   });
 
   setup(function() {
@@ -591,13 +591,7 @@ suite('RelatedServices', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     autofillPage = document.createElement('settings-autofill-page');
-    setDefaultPrefs(settingsPrefs);
-    autofillPage.prefs = settingsPrefs.prefs!;
     document.body.appendChild(autofillPage);
-  });
-
-  teardown(function() {
-    CrSettingsPrefs.resetForTesting();
   });
 
   async function testRowOpensUrl(selector: string, urlStringId: string) {

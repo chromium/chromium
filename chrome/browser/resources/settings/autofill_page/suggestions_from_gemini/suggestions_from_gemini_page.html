@@ -6,7 +6,7 @@
     class="multi-card">
   <div class="card">
     <settings-toggle-button id="suggestionsFromGeminiToggle"
-        pref="{{prefs.generated.find_and_fill_with_gemini}}"
+        pref-key="generated.find_and_fill_with_gemini"
         label="$i18n{autofillPersonalContextSettingsToggleTitle}"
         sub-label="$i18n{autofillPersonalContextSettingsToggleSummary}"
         on-settings-boolean-control-change="onToggleChange_">
@@ -19,11 +19,10 @@
     </cr-link-row>
   </div>
   <div class="card" hidden$="[[!showDoubleCtrlShortcut_(
-      prefs.generated.find_and_fill_with_gemini.value,
-      isAtMemoryTriggerCustomizationAllowed_,
-      prefsInitialized_)]]">
+      findAndFillWithGeminiPref_,
+      isAtMemoryTriggerCustomizationAllowed_)]]">
     <settings-toggle-button id="atMemoryDoubleCtrlTriggerToggle"
-        pref="{{prefs.autofill.at_memory.double_ctrl_trigger_enabled}}"
+        pref-key="autofill.at_memory.double_ctrl_trigger_enabled"
         label="$i18n{atMemoryTriggerLabel}"
         sub-label="$i18n{atMemoryTriggerSubLabel}">
     </settings-toggle-button>
@@ -42,14 +41,14 @@
           edit-button-aria-label="$i18n{atMemoryShortcutEditButtonLabel}"
           clear-button-aria-label=
               "$i18n{atMemoryShortcutClearButtonLabel}"
-          shortcut="[[prefs.autofill.at_memory.shortcut.value]]"
+          shortcut="[[atMemoryShortcutPref_.value]]"
           allow-ctrl-alt-shortcuts
           on-shortcut-updated="onAtMemoryShortcutUpdated_">
       </cr-shortcut-input>
     </div>
   </div>
   <div id="qualityLoggingCard" class="card" hidden$="[[!showQualityLogging_(
-          prefs.generated.find_and_fill_with_gemini.value, isAtMemoryEnabled_)]]">
+          findAndFillWithGeminiPref_, isAtMemoryEnabled_)]]">
     <div class="cr-row first">
       <div class="flex cr-padded-text">
         <h2 class="flex">$i18n{suggestionsFromGeminiQualityLoggingTitle}</h2>
@@ -96,8 +95,9 @@
               $i18n{suggestionsFromGeminiConsider2}
             </div>
           </li>
-          <li id="considerNoLoggingEnterprise" hidden$="[[!showConsiderNoLoggingEnterprise_(
-                          prefs.autofill.personal_context.find_and_fill_with_gemini_settings.value)]]">
+          <li id="considerNoLoggingEnterprise"
+              hidden$="[[!showConsiderNoLoggingEnterprise_(
+                  findAndFillWithGeminiSettingsPref_)]]">
             <cr-icon icon="cr20:domain" aria-hidden="true"></cr-icon>
             <div class="cr-secondary-text">
               $i18n{suggestionsFromGeminiConsider3}

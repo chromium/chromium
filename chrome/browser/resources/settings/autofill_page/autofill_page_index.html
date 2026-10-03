@@ -8,7 +8,7 @@
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     show-all$="[[shouldShowAll]]">
 
-  <settings-autofill-page slot="view" id="parent" prefs="{{prefs}}">
+  <settings-autofill-page slot="view" id="parent">
   </settings-autofill-page>
 
   <settings-contact-info-page slot="view" id="contactInfo"
@@ -41,8 +41,7 @@
 
   <template is="dom-if" if="[[showSuggestionsFromGeminiSettings_]]">
     <settings-suggestions-from-gemini-page slot="view"
-        id="suggestionsFromGemini" data-parent-view-id="parent"
-        prefs="{{prefs}}">
+        id="suggestionsFromGemini" data-parent-view-id="parent">
     </settings-suggestions-from-gemini-page>
   </template>
 
