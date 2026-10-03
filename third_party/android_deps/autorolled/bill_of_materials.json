@@ -1952,12 +1952,12 @@
     {
         "name": "checker-qual",
         "group": "org.checkerframework",
-        "version": "4.2.3"
+        "version": "4.3.0"
     },
     {
         "name": "checker-util",
         "group": "org.checkerframework",
-        "version": "4.2.3"
+        "version": "4.3.0"
     },
     {
         "name": "animal-sniffer-annotations",
