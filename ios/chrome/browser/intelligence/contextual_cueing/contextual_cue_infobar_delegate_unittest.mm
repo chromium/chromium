@@ -96,16 +96,14 @@ class ContextualCueInfobarDelegateTest : public PlatformTest {
   }
 
  protected:
-  void SetUpCue(const std::string& title,
-                const std::string& chip_label,
+  void SetUpCue(const std::string& message_text,
                 const std::string& action_button_label,
                 const std::string& prompt) {
     optimization_guide::proto::ContextualCue cue;
-    cue.set_suggested_cuj(title);
     auto* surface = cue.mutable_gemini_in_chrome_surface();
     surface->set_prompt(prompt);
     auto* message_cue = cue.mutable_anchored_message_cue();
-    message_cue->set_anchored_message_text(chip_label);
+    message_cue->set_anchored_message_text(message_text);
     if (!action_button_label.empty()) {
       message_cue->set_action_text(action_button_label);
     }
@@ -143,7 +141,7 @@ class ContextualCueInfobarDelegateTest : public PlatformTest {
 
 // Test that Create adds an infobar to the manager and Remove clears it.
 TEST_F(ContextualCueInfobarDelegateTest, TestCreateAndRemove) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   ASSERT_EQ(GetInfoBarManager()->infobars().size(), 0u);
   EXPECT_TRUE(ContextualCueInfobarDelegate::Create(web_state_.get(),
@@ -157,8 +155,7 @@ TEST_F(ContextualCueInfobarDelegateTest, TestCreateAndRemove) {
 
 // Test that delegate UI properties return the expected values.
 TEST_F(ContextualCueInfobarDelegateTest, TestDelegateUIProperties) {
-  SetUpCue("Summarize Page", "Summarize Chip", "Take Action",
-           "Summarize this page");
+  SetUpCue("Summarize Page", "Take Action", "Summarize this page");
 
   EXPECT_TRUE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                    mock_gemini_handler_));
@@ -168,7 +165,7 @@ TEST_F(ContextualCueInfobarDelegateTest, TestDelegateUIProperties) {
   EXPECT_EQ(delegate->GetIdentifier(),
             infobars::InfoBarDelegate::CONTEXTUAL_CUE_INFOBAR_DELEGATE_IOS);
   EXPECT_EQ(delegate->GetTitleText(), u"Summarize Page");
-  EXPECT_EQ(delegate->GetMessageText(), u"Summarize Chip");
+  EXPECT_TRUE(delegate->GetMessageText().empty());
   EXPECT_EQ(delegate->GetButtons(), ConfirmInfoBarDelegate::BUTTON_OK);
   EXPECT_EQ(delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK),
             u"Take Action");
@@ -181,26 +178,19 @@ TEST_F(ContextualCueInfobarDelegateTest, TestDelegateUIProperties) {
 TEST_F(ContextualCueInfobarDelegateTest,
        TestMissingFieldsRejectsInfobarCreation) {
   // Empty action_button_label.
-  SetUpCue("Explore Topic", "Explore message", /*action_button_label=*/"",
-           "Explore this topic");
+  SetUpCue("Explore message", /*action_button_label=*/"", "Explore this topic");
   EXPECT_FALSE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                     mock_gemini_handler_));
   EXPECT_EQ(GetInfoBarManager()->infobars().size(), 0u);
 
-  // Empty title.
-  SetUpCue(/*title=*/"", "Explore message", "Explore", "Explore this topic");
-  EXPECT_FALSE(ContextualCueInfobarDelegate::Create(web_state_.get(),
-                                                    mock_gemini_handler_));
-  EXPECT_EQ(GetInfoBarManager()->infobars().size(), 0u);
-
-  // Empty message.
-  SetUpCue("Explore Topic", /*chip_label=*/"", "Explore", "Explore this topic");
+  // Empty message_text (title).
+  SetUpCue(/*message_text=*/"", "Explore", "Explore this topic");
   EXPECT_FALSE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                     mock_gemini_handler_));
   EXPECT_EQ(GetInfoBarManager()->infobars().size(), 0u);
 
   // Empty prompt.
-  SetUpCue("Explore Topic", "Explore message", "Explore", /*prompt=*/"");
+  SetUpCue("Explore message", "Explore", /*prompt=*/"");
   EXPECT_FALSE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                     mock_gemini_handler_));
   EXPECT_EQ(GetInfoBarManager()->infobars().size(), 0u);
@@ -211,7 +201,7 @@ TEST_F(ContextualCueInfobarDelegateTest,
 // shouldAutoSubmit = YES, and the prompt.
 TEST_F(ContextualCueInfobarDelegateTest,
        TestAcceptDispatchesGeminiFlowWithAutoSubmit) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   EXPECT_TRUE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                    mock_gemini_handler_));
@@ -246,7 +236,7 @@ TEST_F(ContextualCueInfobarDelegateTest,
 
 // Test that dismissing the infobar dismisses the feature engagement tracker.
 TEST_F(ContextualCueInfobarDelegateTest, TestDismissRecordsMetric) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   EXPECT_TRUE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                    mock_gemini_handler_));
@@ -263,7 +253,7 @@ TEST_F(ContextualCueInfobarDelegateTest, TestDismissRecordsMetric) {
 
 // Test that accepting before dismissal prevents double dismissing tracker.
 TEST_F(ContextualCueInfobarDelegateTest, TestAcceptDoesNotRecordDismiss) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   EXPECT_TRUE(ContextualCueInfobarDelegate::Create(web_state_.get(),
                                                    mock_gemini_handler_));
@@ -288,7 +278,7 @@ TEST_F(ContextualCueInfobarDelegateTest, TestAcceptDoesNotRecordDismiss) {
 // infobar.
 TEST_F(ContextualCueInfobarDelegateTest,
        TestTabHelperShowContextualCueInfobar) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   ContextualCueingTabHelper* tab_helper =
       ContextualCueingTabHelper::FromWebState(web_state_.get());
@@ -301,7 +291,7 @@ TEST_F(ContextualCueInfobarDelegateTest,
 // Test that navigation or invalidation cleans up the infobar.
 TEST_F(ContextualCueInfobarDelegateTest,
        TestNavigationInvalidationRemovesInfobar) {
-  SetUpCue("Summarize Page", "Summarize", "Summarize", "Summarize this page");
+  SetUpCue("Summarize Page", "Summarize", "Summarize this page");
 
   ContextualCueingTabHelper* tab_helper =
       ContextualCueingTabHelper::FromWebState(web_state_.get());
