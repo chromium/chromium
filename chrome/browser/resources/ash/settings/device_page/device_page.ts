@@ -174,14 +174,17 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   declare private hasHapticTouchpad_: boolean;
   declare private inputMethodDisplayName_: string;
   declare private isExternalStorageEnabled_: boolean;
-  private pointingStickSettingsObserverReceiver:
-      PointingStickSettingsObserverReceiver;
-  private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
-  private touchpadSettingsObserverReceiver: TouchpadSettingsObserverReceiver;
-  private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface;
-  private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
-  private graphicsTabletSettingsObserverReceiver:
-      GraphicsTabletSettingsObserverReceiver;
+  private pointingStickSettingsObserverReceiver_ =
+      new PointingStickSettingsObserverReceiver(this);
+  private keyboardSettingsObserverReceiver_ =
+      new KeyboardSettingsObserverReceiver(this);
+  private touchpadSettingsObserverReceiver_ =
+      new TouchpadSettingsObserverReceiver(this);
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface;
+  private mouseSettingsObserverReceiver_ =
+      new MouseSettingsObserverReceiver(this);
+  private graphicsTabletSettingsObserverReceiver_ =
+      new GraphicsTabletSettingsObserverReceiver(this);
   declare private section_: Section;
 
   constructor() {
@@ -191,7 +194,7 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.route = routes.DEVICE;
 
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-    this.inputDeviceSettingsProvider = getInputDeviceSettingsProvider();
+    this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
     this.observePointingStickSettings();
     this.observeKeyboardSettings();
     this.observeTouchpadSettings();
@@ -238,17 +241,14 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private observePointingStickSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
+    if (this.inputDeviceSettingsProvider_ instanceof
         FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observePointingStickSettings(this);
+      this.inputDeviceSettingsProvider_.observePointingStickSettings(this);
       return;
     }
 
-    this.pointingStickSettingsObserverReceiver =
-        new PointingStickSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observePointingStickSettings(
-        this.pointingStickSettingsObserverReceiver.$
+    this.inputDeviceSettingsProvider_.observePointingStickSettings(
+        this.pointingStickSettingsObserverReceiver_.$
             .bindNewPipeAndPassRemote());
   }
 
@@ -257,17 +257,14 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private observeKeyboardSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
+    if (this.inputDeviceSettingsProvider_ instanceof
         FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeKeyboardSettings(this);
+      this.inputDeviceSettingsProvider_.observeKeyboardSettings(this);
       return;
     }
 
-    this.keyboardSettingsObserverReceiver =
-        new KeyboardSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeKeyboardSettings(
-        this.keyboardSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+    this.inputDeviceSettingsProvider_.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   onKeyboardListUpdated(keyboards: Keyboard[]): void {
@@ -279,17 +276,14 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private observeTouchpadSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
+    if (this.inputDeviceSettingsProvider_ instanceof
         FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeTouchpadSettings(this);
+      this.inputDeviceSettingsProvider_.observeTouchpadSettings(this);
       return;
     }
 
-    this.touchpadSettingsObserverReceiver =
-        new TouchpadSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeTouchpadSettings(
-        this.touchpadSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+    this.inputDeviceSettingsProvider_.observeTouchpadSettings(
+        this.touchpadSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   onTouchpadListUpdated(touchpads: Touchpad[]): void {
@@ -297,17 +291,14 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private observeMouseSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
+    if (this.inputDeviceSettingsProvider_ instanceof
         FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeMouseSettings(this);
+      this.inputDeviceSettingsProvider_.observeMouseSettings(this);
       return;
     }
 
-    this.mouseSettingsObserverReceiver =
-        new MouseSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeMouseSettings(
-        this.mouseSettingsObserverReceiver.$.bindNewPipeAndPassRemote());
+    this.inputDeviceSettingsProvider_.observeMouseSettings(
+        this.mouseSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
   }
 
   onMouseListUpdated(mice: Mouse[]): void {
@@ -319,17 +310,14 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private observeGraphicsTabletSettings(): void {
-    if (this.inputDeviceSettingsProvider instanceof
+    if (this.inputDeviceSettingsProvider_ instanceof
         FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider.observeGraphicsTabletSettings(this);
+      this.inputDeviceSettingsProvider_.observeGraphicsTabletSettings(this);
       return;
     }
 
-    this.graphicsTabletSettingsObserverReceiver =
-        new GraphicsTabletSettingsObserverReceiver(this);
-
-    this.inputDeviceSettingsProvider.observeGraphicsTabletSettings(
-        this.graphicsTabletSettingsObserverReceiver.$
+    this.inputDeviceSettingsProvider_.observeGraphicsTabletSettings(
+        this.graphicsTabletSettingsObserverReceiver_.$
             .bindNewPipeAndPassRemote());
   }
 

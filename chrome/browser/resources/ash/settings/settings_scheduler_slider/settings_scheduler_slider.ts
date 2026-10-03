@@ -155,7 +155,7 @@ export class SettingsSchedulerSliderElement extends
   declare private isReady_: boolean;
   declare private isRTL_: boolean;
   /* eslint-disable-next-line @typescript-eslint/naming-convention */
-  private _ripple: PaperRippleElement|null;
+  private _ripple: PaperRippleElement|null = null;
   declare private shouldUse24Hours_: boolean;
   private valueAtDragStart_?: number;
 

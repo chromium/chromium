@@ -62,8 +62,8 @@ export const MultiDeviceFeatureMixin = dedupingMixin(
         }
 
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        MultiDeviceFeature: MultiDeviceFeature;
-        pageContentData: MultiDevicePageContentData;
+        declare MultiDeviceFeature: MultiDeviceFeature;
+        declare pageContentData: MultiDevicePageContentData;
 
         /**
          * Whether the gatekeeper pref for the whole Better Together feature

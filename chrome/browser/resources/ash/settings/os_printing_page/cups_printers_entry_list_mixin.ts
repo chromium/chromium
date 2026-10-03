@@ -57,9 +57,9 @@ export const CupsPrintersEntryListMixin = dedupingMixin(
           };
         }
 
-        enterprisePrinters: PrinterListEntry[];
-        nearbyPrinters: PrinterListEntry[];
-        savedPrinters: PrinterListEntry[];
+        declare enterprisePrinters: PrinterListEntry[];
+        declare nearbyPrinters: PrinterListEntry[];
+        declare savedPrinters: PrinterListEntry[];
         private entryManager_: CupsPrintersEntryManager;
 
         constructor() {
@@ -129,8 +129,8 @@ export const CupsPrintersEntryListMixin = dedupingMixin(
               printerList);
         }
 
-        private onEnterprisePrintersChanged_(enterprisePrinters:
-                                                 PrinterListEntry[]): void {
+        private onEnterprisePrintersChanged_(
+            enterprisePrinters: PrinterListEntry[]): void {
           this.updateList(
               'enterprisePrinters', printer => printer.printerInfo.printerId,
               enterprisePrinters);

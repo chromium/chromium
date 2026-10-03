@@ -157,14 +157,14 @@ export const LockStateMixin = dedupingMixin(
           return ['onSelectedUnlockTypeChanged_(selectedUnlockType)'];
         }
 
-        selectedUnlockType: LockScreenUnlockType;
-        hasPinLogin: boolean|undefined;
-        quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
-        authFactorConfig: AuthFactorConfigInterface;
-        recoveryFactorEditor: RecoveryFactorEditorInterface;
-        pinFactorEditor: PinFactorEditorInterface;
-        prefs: PrefsState;
-        private unlockStatusLabel_: string;
+        declare selectedUnlockType: LockScreenUnlockType;
+        declare hasPinLogin: boolean|undefined;
+        declare quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
+        declare authFactorConfig: AuthFactorConfigInterface;
+        declare recoveryFactorEditor: RecoveryFactorEditorInterface;
+        declare pinFactorEditor: PinFactorEditorInterface;
+        declare prefs: PrefsState;
+        declare protected unlockStatusLabel_: string;
         private quickUnlockBrowserProxy_: QuickUnlockBrowserProxy;
         private fingerprintBrowserProxy_: FingerprintBrowserProxy;
 
