@@ -2246,7 +2246,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/jk-jeon/dragonbox.git' + '@' + 'beeeef91cf6fef89a4d4ba5e95d47ca64ccb3a44',
 
   'src/third_party/eigen3/src':
-    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '210e0a609ba8c160bb2f6e7c99c740a9cf1a00b5',
+    Var('chromium_git') + '/external/gitlab.com/libeigen/eigen.git' + '@' + '062290ffb9f9337c8e1eae7177a635f3feb6b617',
 
   'src/third_party/emoji-metadata/src': {
     'url': Var('chromium_git') + '/external/github.com/googlefonts/emoji-metadata' + '@' + '173b9b26e8fcbcbe64e1ecbf073a21a96b95c6b1',
