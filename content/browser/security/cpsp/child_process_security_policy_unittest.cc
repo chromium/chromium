@@ -514,6 +514,28 @@ TEST_P(ChildProcessSecurityPolicyTest, BlobSchemeTest) {
   p->Remove(kRendererProcess);
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, OpaqueBlobAndFileSystemSchemeTest) {
+  const GURL opaque_blob_url("blob:null/some-guid");
+  const GURL opaque_file_system_url(
+      "filesystem:chrome-error://chromewebdata/temporary/a.gif");
+  ASSERT_TRUE(opaque_blob_url.is_valid());
+  ASSERT_TRUE(opaque_file_system_url.is_valid());
+  ASSERT_TRUE(opaque_file_system_url.inner_url());
+  ASSERT_TRUE(url::Origin::Create(opaque_blob_url).opaque());
+  ASSERT_TRUE(url::Origin::Create(opaque_file_system_url).opaque());
+
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  p->AddForTesting(kRendererProcess, browser_context());
+
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, opaque_blob_url));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, opaque_blob_url));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, opaque_file_system_url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, opaque_file_system_url));
+
+  p->Remove(kRendererProcess);
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, AboutTest) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();

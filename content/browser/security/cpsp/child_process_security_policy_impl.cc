@@ -1837,7 +1837,13 @@ bool ChildProcessSecurityPolicyImpl::CanRequestURL(ChildProcessId child_id,
     }
 
     url::Origin origin = url::Origin::Create(url);
-    return origin.opaque() || CanRequestURL(child_id, GURL(origin.Serialize()));
+    if (origin.opaque()) {
+      // Blob URLs may be created by opaque-origin documents (e.g. sandboxed or
+      // data: frames), so allow them. Filesystem URLs can't be created for
+      // opaque origins, so reject them.
+      return url.SchemeIsBlob();
+    }
+    return CanRequestURL(child_id, GURL(origin.Serialize()));
   }
 
   if (IsWebSafeScheme(scheme)) {
@@ -1953,10 +1959,19 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
       return false;
     }
 
+    url::Origin origin = url::Origin::Create(url);
+    if (origin.opaque()) {
+      // As in CanRequestURL(), allow opaque blob URLs but reject opaque
+      // filesystem URLs.
+      if (url.SchemeIsBlob()) {
+        return true;
+      }
+      LogCanCommitUrlFailureReason("opaque_filesystem_url");
+      return false;
+    }
     // No need to log a failure reason here, because it will be logged in the
     // sole recursive call if that call returns false.
-    url::Origin origin = url::Origin::Create(url);
-    return origin.opaque() || CanCommitURL(child_id, GURL(origin.Serialize()));
+    return CanCommitURL(child_id, GURL(origin.Serialize()));
   }
 
   // Allow data URLs to commit in any process. Note that the precursor origin
