@@ -150,10 +150,9 @@ schema:
         type: object
     type: object
   type: array
-future_on:
-- ios
 supported_on:
 - chrome.*:84-
 - chrome_os:84-
+- ios:156-
 tags: []
 type: dict
