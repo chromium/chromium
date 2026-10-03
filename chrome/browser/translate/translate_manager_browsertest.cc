@@ -1546,42 +1546,65 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, NoAutoTranslateNoToast) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, IsReadingModeOpen) {
+// Tests the integration between ChromeTranslateClient and Reading Mode. These
+// tests only check whether Reading Mode is open or closed, not its content, so
+// Reading Mode is frozen to ignore distillation results. Otherwise, an empty
+// page could cause it to switch from the immersive overlay to the side panel,
+// making the tests flaky.
+class TranslateManagerReadingModeBrowserTest
+    : public TranslateManagerBrowserTest {
+ public:
+  void SetUp() override {
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(true);
+    TranslateManagerBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    ReadAnythingController::SetFreezeDistillationOnCreationForTesting(false);
+    TranslateManagerBrowserTest::TearDown();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       IsReadingModeOpen_SidePanel) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
 
-  // 1. Test Side Panel Mode
-  // Show reading mode side panel
-  SidePanelUI* side_panel_ui = SidePanelUI::From(browser());
-  ASSERT_TRUE(side_panel_ui);
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything);
+  auto* controller = ReadAnythingController::From(
+      browser()->tab_strip_model()->GetActiveTab());
+  ASSERT_TRUE(controller);
+
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
 
-  // Hide it
-  side_panel_ui->Close();
+  controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
+}
 
-  // 2. Test Immersive Mode
-  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
-  ASSERT_TRUE(tab);
-  auto* controller = ReadAnythingController::From(tab);
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
+                       IsReadingModeOpen_Immersive) {
+  ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
+  EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
+
+  auto* controller = ReadAnythingController::From(
+      browser()->tab_strip_model()->GetActiveTab());
   ASSERT_TRUE(controller);
 
-  // Show immersive Reading Mode UI
   controller->ShowImmersiveUI(
       ReadAnythingController::ReadAnythingOpenTrigger::kOmniboxChip);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return chrome_translate_client->IsReadingModeOpen(); }));
+  ASSERT_EQ(controller->GetPresentationState(),
+            ReadAnythingController::PresentationState::kInImmersiveOverlay);
 
-  // Close immersive Reading Mode UI
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
                        TriggerPdfTranslationOpensSidePanel) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
@@ -1592,7 +1615,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    TranslateManagerBrowserTest,
+    TranslateManagerReadingModeBrowserTest,
     RevertPdfTranslationClosesSidePanelIfOpenedByPdfTranslation) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
@@ -1606,7 +1629,7 @@ IN_PROC_BROWSER_TEST_F(
       [&]() -> bool { return !chrome_translate_client->IsReadingModeOpen(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
                        RevertPdfTranslationDoesNotCloseSidePanelIfAlreadyOpen) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
@@ -1644,7 +1667,7 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
   RevertTranslationClosesSidePanelViaTranslateManager
 #endif
 IN_PROC_BROWSER_TEST_F(
-    TranslateManagerBrowserTest,
+    TranslateManagerReadingModeBrowserTest,
     MAYBE_RevertTranslationClosesSidePanelViaTranslateManager) {
   ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
@@ -1672,7 +1695,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_ClosingSidePanelRevertsPdfTranslation \
   ClosingSidePanelRevertsPdfTranslation
 #endif
-IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
+IN_PROC_BROWSER_TEST_F(TranslateManagerReadingModeBrowserTest,
                        MAYBE_ClosingSidePanelRevertsPdfTranslation) {
   ChromeTranslateClient* chrome_translate_client = OpenFrenchPage();
   EXPECT_FALSE(chrome_translate_client->IsReadingModeOpen());
