@@ -280,7 +280,7 @@ public class AutofillUiUtilsTest {
                         /* underlineLinks= */ false,
                         /* onClickCallback= */ null);
 
-        Assert.assertEquals("line1\n\nline2", spannableString.toString());
+        Assert.assertEquals("line1\nline2", spannableString.toString());
     }
 
     @Test

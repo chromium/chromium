@@ -635,7 +635,7 @@ public class AutofillUiUtils {
             }
             spannableStringBuilder.append(text);
             if (i != legalMessageLines.size() - 1) {
-                spannableStringBuilder.append("\n\n");
+                spannableStringBuilder.append("\n");
             }
         }
         return spannableStringBuilder;
