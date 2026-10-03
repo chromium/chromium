@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_
 #define CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_
 
+#include <optional>
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -139,6 +142,10 @@ mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor);
 
 // Returns the Glic Platform.
 mojom::Platform GetGlicPlatform();
+
+// Returns the active onboarding arm for the profile, or std::nullopt if the
+// user has already completed onboarding or if `profile` is null.
+std::optional<std::string> GetOnboardingArm(Profile* profile);
 
 // Populates the WebClientInitialState fields that do not depend on the
 // page handler.

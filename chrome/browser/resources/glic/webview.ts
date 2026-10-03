@@ -133,6 +133,8 @@ export class WebviewController {
     this.glicRequestHeaderInjector = new GlicRequestHeaderInjector(
         this.webview, loadTimeData.getString('chromeVersion'),
         loadTimeData.getString('chromeChannel'),
+        loadTimeData.getBoolean('onboardingCompleted'),
+        loadTimeData.getString('onboardingArm'),
         loadTimeData.getString('glicHeaderRequestTypes'));
 
     this.webClientStateListenerId =

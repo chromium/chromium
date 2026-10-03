@@ -1185,6 +1185,8 @@ class ApiTests extends ApiTestFixtureBase {
     await Promise.all(rpcUrls.map(url => fetch(url)));
   }
 
+  async testRequestHeaderFreNotStarted() {}
+
   async testDialogResponseCallOrder() {
     assertDefined(this.host.uninterruptActorTask);
     assertDefined(this.host.createTask);

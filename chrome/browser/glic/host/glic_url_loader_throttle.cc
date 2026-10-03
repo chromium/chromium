@@ -4,10 +4,13 @@
 
 #include "chrome/browser/glic/host/glic_url_loader_throttle.h"
 
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cors_exempt_headers.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/version_info/version_info.h"
@@ -50,37 +53,60 @@ bool ShouldInjectGlicHeaders(content::RenderFrameHost* frame) {
                       frame->GetFrameTreeNodeId());
 }
 
+void SetOnboardingCompletedHeader(net::HttpRequestHeaders* headers,
+                                  Profile* profile) {
+  const bool onboarding_completed =
+      profile ? GlicEnabling::HasConsentedForProfile(profile) : false;
+  headers->SetHeader(kGlicOnboardingCompletedHeaderName,
+                     onboarding_completed ? "true" : "false");
+}
+
+void MaybeSetOnboardingArmHeader(net::HttpRequestHeaders* headers,
+                                 Profile* profile) {
+  if (std::optional<std::string> onboarding_arm = GetOnboardingArm(profile);
+      onboarding_arm.has_value()) {
+    headers->SetHeader(kGlicOnboardingArmHeaderName, *onboarding_arm);
+  }
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<GlicURLLoaderThrottle> GlicURLLoaderThrottle::MaybeCreate(
-    content::BrowserContext* browser_context,
+    Profile* profile,
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& request) {
+  CHECK(profile);
   content::WebContents* web_contents = wc_getter ? wc_getter.Run() : nullptr;
   if (!ShouldInjectGlicHeaders(web_contents, frame_tree_node_id)) {
     return nullptr;
   }
 
-  return std::make_unique<GlicURLLoaderThrottle>();
+  return std::make_unique<GlicURLLoaderThrottle>(profile->GetWeakPtr());
 }
 
 // static
-void GlicURLLoaderThrottle::SetHeaders(net::HttpRequestHeaders* headers) {
+void GlicURLLoaderThrottle::SetHeaders(net::HttpRequestHeaders* headers,
+                                       Profile* profile) {
   headers->SetHeader(kGlicHeaderName, kGlicHeaderValue);
   headers->SetHeader(kGlicVersionHeaderName, version_info::GetVersionNumber());
   headers->SetHeader(kGlicChannelHeaderName,
                      version_info::GetChannelString(chrome::GetChannel()));
+  SetOnboardingCompletedHeader(headers, profile);
+  MaybeSetOnboardingArmHeader(headers, profile);
 }
 
 GlicURLLoaderThrottle::GlicURLLoaderThrottle() = default;
+
+GlicURLLoaderThrottle::GlicURLLoaderThrottle(base::WeakPtr<Profile> profile)
+    : profile_(profile) {}
 
 GlicURLLoaderThrottle::~GlicURLLoaderThrottle() = default;
 
 void GlicURLLoaderThrottle::WillStartRequest(network::ResourceRequest* request,
                                              bool* defer) {
-  SetHeaders(&request->cors_exempt_headers);
+  SetHeaders(&request->cors_exempt_headers, profile_.get());
 }
 
 void GlicURLLoaderThrottle::WillRedirectRequest(
@@ -88,7 +114,8 @@ void GlicURLLoaderThrottle::WillRedirectRequest(
     const network::mojom::URLResponseHead& response_head,
     bool* defer,
     network::HttpRequestHeadersUpdateParams* headers_update_params) {
-  SetHeaders(&headers_update_params->modified_cors_exempt_headers);
+  SetHeaders(&headers_update_params->modified_cors_exempt_headers,
+             profile_.get());
 }
 
 GlicSubresourceProxyingURLLoaderFactory::
@@ -96,9 +123,11 @@ GlicSubresourceProxyingURLLoaderFactory::
         mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
         mojo::PendingRemote<network::mojom::URLLoaderFactory>
             target_factory_remote,
+        base::WeakPtr<Profile> profile,
         base::SelfDeletingPassKey pass_key)
     : network::SelfDeletingURLLoaderFactory(std::move(loader_receiver),
-                                            pass_key) {
+                                            pass_key),
+      profile_(profile) {
   target_factory_.Bind(std::move(target_factory_remote));
   target_factory_.set_disconnect_handler(base::BindOnce(
       &GlicSubresourceProxyingURLLoaderFactory::OnTargetFactoryError,
@@ -115,9 +144,14 @@ void GlicSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
   if (!ShouldInjectGlicHeaders(frame)) {
     return;
   }
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(frame);
+  CHECK(web_contents);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto [receiver, remote] = factory_builder.Append();
   base::MakeSelfDeleting<GlicSubresourceProxyingURLLoaderFactory>(
-      std::move(receiver), std::move(remote));
+      std::move(receiver), std::move(remote), profile->GetWeakPtr());
 }
 
 void GlicSubresourceProxyingURLLoaderFactory::CreateLoaderAndStart(
@@ -128,7 +162,8 @@ void GlicSubresourceProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   network::ResourceRequest modified_request = request;
-  GlicURLLoaderThrottle::SetHeaders(&modified_request.cors_exempt_headers);
+  GlicURLLoaderThrottle::SetHeaders(&modified_request.cors_exempt_headers,
+                                    profile_.get());
 
   target_factory_->CreateLoaderAndStart(std::move(loader_receiver), request_id,
                                         options, modified_request,

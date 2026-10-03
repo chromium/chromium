@@ -593,6 +593,32 @@ TEST_F(GuestUtilTest, IsGuestOriginAllowedCorpOrigins) {
       &profile_));
 }
 
+TEST_F(GuestUtilTest, GetOnboardingArm) {
+  EXPECT_EQ(GetOnboardingArm(nullptr), std::nullopt);
+
+  // By default, FRE has not been completed.
+  EXPECT_EQ(GetOnboardingArm(&profile_), "2");
+
+  // When FRE is completed, onboarding arm is nullopt.
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  EXPECT_EQ(GetOnboardingArm(&profile_), std::nullopt);
+}
+
+TEST_F(GuestUtilTest, PopulateGlobalClientInitialState_OnboardingArm2) {
+  auto state = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state.get(), &profile_);
+  EXPECT_THAT(state->host_capabilities,
+              Contains(mojom::HostCapability::kTrustFirstOnboardingArm2));
+
+  profile_.GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+  auto state_completed = mojom::WebClientInitialState::New();
+  PopulateGlobalClientInitialState(state_completed.get(), &profile_);
+  EXPECT_THAT(state_completed->host_capabilities,
+              Not(Contains(mojom::HostCapability::kTrustFirstOnboardingArm2)));
+}
+
 }  // namespace
 
 }  // namespace glic

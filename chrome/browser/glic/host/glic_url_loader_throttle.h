@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -16,8 +18,9 @@
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
+class Profile;
+
 namespace content {
-class BrowserContext;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -39,12 +42,13 @@ namespace glic {
 class GlicURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   static std::unique_ptr<GlicURLLoaderThrottle> MaybeCreate(
-      content::BrowserContext* browser_context,
+      Profile* profile,
       const base::RepeatingCallback<content::WebContents*()>& wc_getter,
       content::FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& request);
 
   GlicURLLoaderThrottle();
+  explicit GlicURLLoaderThrottle(base::WeakPtr<Profile> profile);
   ~GlicURLLoaderThrottle() override;
 
   GlicURLLoaderThrottle(const GlicURLLoaderThrottle&) = delete;
@@ -60,7 +64,10 @@ class GlicURLLoaderThrottle : public blink::URLLoaderThrottle {
       network::HttpRequestHeadersUpdateParams* headers_update_params) override;
 
   // Injects Glic custom request headers into `headers`.
-  static void SetHeaders(net::HttpRequestHeaders* headers);
+  static void SetHeaders(net::HttpRequestHeaders* headers, Profile* profile);
+
+ private:
+  base::WeakPtr<Profile> profile_;
 };
 
 // Proxying URLLoaderFactory that injects Glic custom HTTP request headers on
@@ -73,6 +80,7 @@ class GlicSubresourceProxyingURLLoaderFactory
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           target_factory_remote,
+      base::WeakPtr<Profile> profile,
       base::SelfDeletingPassKey pass_key);
 
   GlicSubresourceProxyingURLLoaderFactory(
@@ -99,6 +107,7 @@ class GlicSubresourceProxyingURLLoaderFactory
   void OnTargetFactoryError();
 
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
+  base::WeakPtr<Profile> profile_;
 };
 
 }  // namespace glic

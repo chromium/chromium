@@ -6256,7 +6256,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
   }
 
   if (auto glic_throttle = glic::GlicURLLoaderThrottle::MaybeCreate(
-          browser_context, wc_getter, frame_tree_node_id, request)) {
+          profile, wc_getter, frame_tree_node_id, request)) {
     result.push_back(std::move(glic_throttle));
   }
 

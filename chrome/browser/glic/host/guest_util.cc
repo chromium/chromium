@@ -819,6 +819,13 @@ mojom::Platform GetGlicPlatform() {
 #endif
 }
 
+std::optional<std::string> GetOnboardingArm(Profile* profile) {
+  if (!profile || GlicEnabling::HasConsentedForProfile(profile)) {
+    return std::nullopt;
+  }
+  return "2";
+}
+
 void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
                                       Profile* profile) {
   state->chrome_version = version_info::GetVersion();
@@ -905,7 +912,7 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(mojom::HostCapability::kInvoke);
   }
 
-  if (!GlicEnabling::HasConsentedForProfile(profile)) {
+  if (GetOnboardingArm(profile) == "2") {
     state->host_capabilities.push_back(
         mojom::HostCapability::kTrustFirstOnboardingArm2);
   }

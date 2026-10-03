@@ -3790,7 +3790,11 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
           testing::AnyOf("unknown", "canary", "dev", "beta", "stable"))),
       testing::Contains(
           testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
-                        version_info::GetVersionNumber())));
+                        version_info::GetVersionNumber())),
+      testing::Contains(testing::Pair(
+          testing::StrCaseEq("x-glic-onboarding-completed"), "true")),
+      testing::Not(testing::Contains(
+          testing::Key(testing::StrCaseEq("x-glic-onboarding-arm")))));
 
   const std::vector<net::test_server::HttpRequest> captured_requests =
       requests();
@@ -3814,6 +3818,41 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor, testRequestHeader) {
   auto* cross_origin_rpc_request = find_request("/fake-rpc/cors");
   ASSERT_TRUE(cross_origin_rpc_request);
   EXPECT_THAT(cross_origin_rpc_request->headers, request_header_matcher);
+}
+
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithRequestMonitor,
+                       testRequestHeaderFreNotStarted) {
+  service()->enabling().SetCompletedFre(prefs::FreStatus::kNotStarted);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  auto request_header_matcher = testing::AllOf(
+      testing::Contains(testing::Pair(testing::StrCaseEq("x-glic"), "1")),
+      testing::Contains(testing::Pair(
+          testing::StrCaseEq("x-glic-chrome-channel"),
+          testing::AnyOf("unknown", "canary", "dev", "beta", "stable"))),
+      testing::Contains(
+          testing::Pair(testing::StrCaseEq("x-glic-chrome-version"),
+                        version_info::GetVersionNumber())),
+      testing::Contains(testing::Pair(
+          testing::StrCaseEq("x-glic-onboarding-completed"), "false")),
+      testing::Contains(
+          testing::Pair(testing::StrCaseEq("x-glic-onboarding-arm"), "2")));
+
+  const std::vector<net::test_server::HttpRequest> captured_requests =
+      requests();
+  auto find_request = [&](std::string_view path) {
+    const auto it =
+        std::ranges::find_if(captured_requests, [&](const auto& request) {
+          return request.GetURL().GetPath() == path &&
+                 request.method == net::test_server::METHOD_GET;
+        });
+    return it == captured_requests.end() ? nullptr : &(*it);
+  };
+
+  auto* main_request = find_request(GetGuestURL().GetPath());
+  ASSERT_TRUE(main_request);
+  EXPECT_THAT(main_request->headers, request_header_matcher);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {

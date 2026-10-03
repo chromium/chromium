@@ -239,6 +239,14 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddString("chromeVersion", version_info::GetVersionNumber());
   source->AddString("chromeChannel",
                     version_info::GetChannelString(chrome::GetChannel()));
+  source->AddBoolean("onboardingCompleted",
+                     GlicEnabling::HasConsentedForProfile(profile));
+  if (std::optional<std::string> onboarding_arm = GetOnboardingArm(profile);
+      onboarding_arm.has_value()) {
+    source->AddString("onboardingArm", *onboarding_arm);
+  } else {
+    source->AddString("onboardingArm", "");
+  }
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   const bool is_glic_dev = command_line->HasSwitch(::switches::kGlicDev);
