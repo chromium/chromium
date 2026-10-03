@@ -1844,7 +1844,6 @@ if (!limit_android_deps) {
     enable_bytecode_checks = false
     deps = [
       ":androidx_annotation_annotation_java",
-      ":androidx_webkit_webkit_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jspecify_jspecify_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
