@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Geen geopende tabbladen</translation>
 <translation id="1469381646033328562">Je account wordt beheerd door je ouder.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">sinds je 'Een tabbladgroep maken' hebt afgerond</translation>
 <translation id="147982357559798527">Gewijzigd</translation>
 <translation id="1481450969185702334">Zoeken en invullen</translation>
 <translation id="1483493594462132177">Verzenden</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Een probleem melden</translation>
 <translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> heeft geen toegang tot je camera</translation>
 <translation id="2223461067862937305">Een QR-code maken</translation>
+<translation id="222798989929574238">Je hebt meer dan 20 foto's gebruikt om te zoeken</translation>
 <translation id="2230173723195178503">Webpagina geladen</translation>
 <translation id="2236949375853147973">Mijn activiteit</translation>
 <translation id="2237869114829007407">Krijg een overzicht en belangrijke inzichten voor elke pagina of elk onderwerp</translation>
@@ -1763,6 +1765,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6525550806864373485">Menu Bewerken</translation>
 <translation id="6527208859483186860">achtergrond {position} van {total}</translation>
 <translation id="6527303717912515753">Delen</translation>
+<translation id="6529706885792457023">Je hebt meer dan 15 tabbladen geordend</translation>
 <translation id="6532106788206463496">Wijzigingen opslaan</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> openen, groep van <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">voorbeeld.com</translation>
@@ -1808,6 +1811,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6642362222295953972">Overschakelen naar bestaand tabblad</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6645899968535965230">QR-code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Je hebt meer dan 25 wachtwoorden gecheckt</translation>
 <translation id="6657585470893396449">Wachtwoord</translation>
 <translation id="6659660757330712663">Je kunt over de werkbalk swipen om van tabblad te wisselen.</translation>
 <translation id="6663529247339810546">Kan afbeelding niet opslaan</translation>
@@ -1966,6 +1970,7 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7145337554745942724">Rijbewijs updaten</translation>
 <translation id="7146301801400584641">Agendabestand beschikbaar</translation>
 <translation id="7149893636342594995">Afgelopen 24 uur</translation>
+<translation id="7151361008641622036">{count,plural, =1{Je hebt één tabblad geordend}other{Je hebt # tabbladen geordend}}</translation>
 <translation id="7154417656353909837">Adressen verwijderen</translation>
 <translation id="7161230316646448869">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8481184073299279701">Tik op de knop Logboekregistratie starten om toekomstige logboeken van JavaScript-console en fouten van alle tabbladen te verzamelen. Er worden logboeken verzameld (en alleen opgeslagen in het geheugen) totdat de pagina wordt gesloten of op Logboekregistratie stoppen wordt getikt.</translation>
 <translation id="8487667956631253959">Aan</translation>
 <translation id="8487700953926739672">Offline beschikbaar</translation>
+<translation id="8488065047914929586">sinds je 'Een wachtwoord opslaan' hebt afgerond</translation>
 <translation id="8488923644885757471">Nieuw venster</translation>
 <translation id="8490629238792920282">Kan link niet maken</translation>
 <translation id="8501469528283376592">Downloads automatisch verwijderen</translation>
@@ -2543,6 +2549,7 @@ Je kunt op elk moment opnieuw beginnen.</translation>
 <translation id="8890516388109605451">Bronnen</translation>
 <translation id="8893208530912252670">Video's</translation>
 <translation id="8898822736010347272">Stuurt URL's van sommige pagina's die je bezoekt, beperkte systeeminformatie en bepaalde paginacontent naar Google om nieuwe dreigingen te ontdekken en iedereen op internet te beschermen.</translation>
+<translation id="890009681345348416">40+ wachtwoorden automatisch ingevuld</translation>
 <translation id="8900845556227858314">Browser-app</translation>
 <translation id="890565330728586731">Terug</translation>
 <translation id="8907722425137681851">Zoeken op pagina…</translation>

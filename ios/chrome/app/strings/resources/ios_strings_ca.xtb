@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">No hi ha pestanyes obertes</translation>
 <translation id="1469381646033328562">El teu pare o mare gestiona el teu compte.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">des que s'ha completat l'acció Crea un grup de pestanyes</translation>
 <translation id="147982357559798527">S'ha canviat</translation>
 <translation id="1481450969185702334">Cerca i emplena</translation>
 <translation id="1483493594462132177">Envia</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Informa d'un problema</translation>
 <translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> té bloquejat l'accés a la càmera</translation>
 <translation id="2223461067862937305">Crea un codi QR</translation>
+<translation id="222798989929574238">Has utilitzat més de 20 fotos per fer la cerca</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
 <translation id="2236949375853147973">La meva activitat</translation>
 <translation id="2237869114829007407">Obtén una visió general i informació clau de qualsevol pàgina o tema</translation>
@@ -1763,6 +1765,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6525550806864373485">Edita el menú</translation>
 <translation id="6527208859483186860">fons {position} de {total}</translation>
 <translation id="6527303717912515753">Comparteix</translation>
+<translation id="6529706885792457023">Has organitzat més de 15 pestanyes</translation>
 <translation id="6532106788206463496">Desa els canvis</translation>
 <translation id="6536759809440150308">Obre <ph name="GROUP_TITLE" />, grup de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">exemple.cat</translation>
@@ -1808,6 +1811,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6642362222295953972">Canvia a la pestanya existent</translation>
 <translation id="6643016212128521049">Esborra</translation>
 <translation id="6645899968535965230">Codi QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Has comprovat més de 25 contrasenyes</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="6659660757330712663">Pots fer lliscar la barra d'eines per canviar d'una pestanya a una altra.</translation>
 <translation id="6663529247339810546">No es pot desar la imatge</translation>
@@ -1966,6 +1970,7 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7145337554745942724">Actualitza el permís de conduir</translation>
 <translation id="7146301801400584641">Hi ha disponible un fitxer de calendari</translation>
 <translation id="7149893636342594995">24 darreres hores</translation>
+<translation id="7151361008641622036">{count,plural, =1{Has organitzat 1 pestanya}other{Has organitzat # pestanyes}}</translation>
 <translation id="7154417656353909837">Suprimeix les adreces</translation>
 <translation id="7161230316646448869">Sincronitza les adreces d'interès, l'historial i altres elements en tots els dispositius</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8481184073299279701">Toca el botó Inicia el registre per recollir els registres i errors futurs de la consola de JavaScript de totes les pestanyes. Els registres es recolliran (i s'emmagatzemaran només a la memòria) fins que es tanqui aquesta pàgina o es toqui Atura el registre.</translation>
 <translation id="8487667956631253959">Activada</translation>
 <translation id="8487700953926739672">Disponible sense connexió</translation>
+<translation id="8488065047914929586">des que s'ha completat l'acció Desa una contrasenya</translation>
 <translation id="8488923644885757471">Finestra nova</translation>
 <translation id="8490629238792920282">No es pot crear l'enllaç</translation>
 <translation id="8501469528283376592">Supressió automàtica de les baixades</translation>
@@ -2543,6 +2549,7 @@ Pots reiniciar Level Up en qualsevol moment.</translation>
 <translation id="8890516388109605451">Fonts</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
+<translation id="890009681345348416">S'han emplenat automàticament més de 40 contrasenyes</translation>
 <translation id="8900845556227858314">Aplicació de navegador</translation>
 <translation id="890565330728586731">Enrere</translation>
 <translation id="8907722425137681851">Cerca a la pàgina…</translation>

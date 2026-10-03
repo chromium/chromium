@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Nema otvorenih kartica</translation>
 <translation id="1469381646033328562">Tvojim računom upravlja roditelj.
 <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">od završavanja radnje "Kreirajte grupu kartica"</translation>
 <translation id="147982357559798527">Promijenjeno</translation>
 <translation id="1481450969185702334">Pronađite i popunite</translation>
 <translation id="1483493594462132177">Pošalji</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="2222149859067335623">Web lokaciji "<ph name="SITE_DOMAIN" />" je blokiran pristup kameri</translation>
 <translation id="2223461067862937305">Kreiraj QR kôd</translation>
+<translation id="222798989929574238">Upotrijebili ste više od 20 fotografija za pretraživanje</translation>
 <translation id="2230173723195178503">Web lokacija je učitana</translation>
 <translation id="2236949375853147973">Moja aktivnost</translation>
 <translation id="2237869114829007407">Dobijte pregled i ključne uvide za bilo koju stranicu ili temu</translation>
@@ -1763,6 +1765,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6525550806864373485">Uredite meni</translation>
 <translation id="6527208859483186860">pozadina {position} od {total}</translation>
 <translation id="6527303717912515753">Dijeli</translation>
+<translation id="6529706885792457023">Organizirali ste više od 15 kartica</translation>
 <translation id="6532106788206463496">Sačuvaj izmjene</translation>
 <translation id="6536759809440150308">Otvaranje grupe <ph name="GROUP_TITLE" />; grupa od: <ph name="NUMBER_OF_TABS" />; <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6642362222295953972">Prelazak na postojeću karticu</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6645899968535965230">QR kôd: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Provjerili ste više od 25 lozinki</translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="6659660757330712663">Možete prevlačiti preko alatne trake da se prebacujete između kartica.</translation>
 <translation id="6663529247339810546">Nije moguće sačuvati sliku</translation>
@@ -1966,6 +1970,7 @@ Da nastavite s računara, prebacite se na <ph name="OTHER_EMAIL" />. Dobijat će
 <translation id="7145337554745942724">Ažurirajte vozačku dozvolu</translation>
 <translation id="7146301801400584641">Fajl kalendara je dostupan</translation>
 <translation id="7149893636342594995">Posljednja 24 sata</translation>
+<translation id="7151361008641622036">{count,plural, =1{Organizirali ste 1 karticu}one{Organizirali ste # karticu}few{Organizirali ste # kartice}other{Organizirali ste # kartica}}</translation>
 <translation id="7154417656353909837">Ukloni adrese</translation>
 <translation id="7161230316646448869">Sinhronizirajte oznake, historiju i drugo na svim uređajima</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="8481184073299279701">Dodirnite dugme "Pokreni zapisivanje" da prikupljate buduće zapisnike i greške Konzole za JavaScript sa svih kartica. Zapisnici će se prikupljati (i čuvati samo u memoriji) dok se ova stranica ne zatvori ili dok ne dodirnete "Zaustavi zapisivanje".</translation>
 <translation id="8487667956631253959">Uključeno</translation>
 <translation id="8487700953926739672">Dostupno van mreže</translation>
+<translation id="8488065047914929586">od završavanja radnje "Sačuvajte lozinku"</translation>
 <translation id="8488923644885757471">Novi prozor</translation>
 <translation id="8490629238792920282">Nije moguće kreirati link</translation>
 <translation id="8501469528283376592">Automatski brišite preuzimanja</translation>
@@ -2543,6 +2549,7 @@ Možete ponovo pokrenuti bilo kada.</translation>
 <translation id="8890516388109605451">Izvori</translation>
 <translation id="8893208530912252670">Videozapisi</translation>
 <translation id="8898822736010347272">Šalje Googleu URL-ove nekih stranica koje posjetite, ograničene informacije sistema i sadržaj nekih stranica radi lakšeg otkrivanja novih prijetnji te zaštite svakoga na webu.</translation>
+<translation id="890009681345348416">Automatski je popunjeno više od 40 lozinki</translation>
 <translation id="8900845556227858314">Aplikacija preglednika</translation>
 <translation id="890565330728586731">Nazad</translation>
 <translation id="8907722425137681851">Pronalaženje na stranici…</translation>

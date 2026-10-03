@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Няма адкрытых укладак</translation>
 <translation id="1469381646033328562">Вашым уліковым запісам кіруюць бацькі.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">пасля таго, як вы завяршылі задачу "Стварэнне групы ўкладак"</translation>
 <translation id="147982357559798527">Зменена</translation>
 <translation id="1481450969185702334">Пошук і запаўненне</translation>
 <translation id="1483493594462132177">Адправіць</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Паведаміць аб праблеме</translation>
 <translation id="2222149859067335623">Сайту <ph name="SITE_DOMAIN" /> заблакіраваны доступ да камеры</translation>
 <translation id="2223461067862937305">Стварыць QR-код</translation>
+<translation id="222798989929574238">Вы выкарысталі больш за 20 фота для пошуку</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
 <translation id="2236949375853147973">Мае дзеянні</translation>
 <translation id="2237869114829007407">Атрымлівайце агляд і асноўныя статыстычныя паказчыкі для любой старонкі або тэмы</translation>
@@ -1763,6 +1765,7 @@
 <translation id="6525550806864373485">Змяніць меню</translation>
 <translation id="6527208859483186860">фон {position} з {total}</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
+<translation id="6529706885792457023">Вы ўпарадкавалі больш за 15 укладак</translation>
 <translation id="6532106788206463496">Захаваць змены</translation>
 <translation id="6536759809440150308">Адкрыць групу "<ph name="GROUP_TITLE" />", групу з колькасцю ўкладак: <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@
 <translation id="6642362222295953972">Пераключыцца на існуючую ўкладку</translation>
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Вы праверылі больш за 25 пароляў</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659660757330712663">Каб пераключацца паміж укладкамі, гартайце панэль інструментаў.</translation>
 <translation id="6663529247339810546">Не ўдалося захаваць відарыс</translation>
@@ -1966,6 +1970,7 @@
 <translation id="7145337554745942724">Змяніце даныя вадзіцельскага пасведчання</translation>
 <translation id="7146301801400584641">Даступны файл календара</translation>
 <translation id="7149893636342594995">За апошнія 24 гадзіны</translation>
+<translation id="7151361008641622036">{count,plural, =1{Вы ўпарадкавалі 1 укладку}one{Вы ўпарадкавалі # укладку}few{Вы ўпарадкавалі # укладкі}many{Вы ўпарадкавалі # укладак}other{Вы ўпарадкавалі # укладкі}}</translation>
 <translation id="7154417656353909837">Выдаліць адрасы</translation>
 <translation id="7161230316646448869">Сінхранізуйце закладкі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
 <translation id="7165323152084385463">Нумар VIN</translation>
@@ -2396,6 +2401,7 @@
 <translation id="8481184073299279701">Каб пачаць збор журналаў кансолі JavaScript і памылак з усіх укладак, націсніце кнопку "Пачаць вядзенне журнала". Журналы будуць збірацца (і захоўвацца толькі ў памяці), пакуль гэта старонка не будзе закрыта або пакуль вы не націснеце "Спыніць вядзенне журнала".</translation>
 <translation id="8487667956631253959">Уключаны</translation>
 <translation id="8487700953926739672">Даступна па-за сеткай</translation>
+<translation id="8488065047914929586">пасля таго, як вы завяршылі задачу "Захаванне пароля"</translation>
 <translation id="8488923644885757471">Новае акно</translation>
 <translation id="8490629238792920282">Не ўдалося стварыць спасылку</translation>
 <translation id="8501469528283376592">Аўтавыдаленне спамповак</translation>
@@ -2543,6 +2549,7 @@
 <translation id="8890516388109605451">Крыніцы</translation>
 <translation id="8893208530912252670">Відэа</translation>
 <translation id="8898822736010347272">Адпраўляе URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і фрагменты змесціва старонак у сэрвісы Google, каб дапамагаць выяўляць новыя кіберпагрозы і абараняць усіх у інтэрнэце.</translation>
+<translation id="890009681345348416">Аўтаматычна запоўнена больш за 40 пароляў</translation>
 <translation id="8900845556227858314">Праграма "Браўзер"</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Пошук на старонцы…</translation>

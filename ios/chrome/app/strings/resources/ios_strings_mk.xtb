@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Нема отворени картички</translation>
 <translation id="1469381646033328562">Твојот родител управува со твојата сметка.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">откако ја завршивте задачата „Создајте група картички“</translation>
 <translation id="147982357559798527">Променето</translation>
 <translation id="1481450969185702334">Наоѓајте и пополнувајте</translation>
 <translation id="1483493594462132177">Испрати</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Пријави проблем</translation>
 <translation id="2222149859067335623">Пристапот на „<ph name="SITE_DOMAIN" />“ до камерата е блокиран</translation>
 <translation id="2223461067862937305">Создајте QR-код</translation>
+<translation id="222798989929574238">Искористивте над 20 фотографии за пребарување</translation>
 <translation id="2230173723195178503">Веб-страницата е вчитана</translation>
 <translation id="2236949375853147973">Моја активност</translation>
 <translation id="2237869114829007407">Добијте преглед и клучни согледувања за која било страница или тема</translation>
@@ -1763,6 +1765,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6525550806864373485">Изменете го менито</translation>
 <translation id="6527208859483186860">заднина {position} од {total}</translation>
 <translation id="6527303717912515753">Сподели</translation>
+<translation id="6529706885792457023">Организиравте над 15 картички</translation>
 <translation id="6532106788206463496">Зачувај ги промените</translation>
 <translation id="6536759809440150308">Отворено: <ph name="GROUP_TITLE" />, група од <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6642362222295953972">Префрлете се на постојната картичка</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Проверивте над 25 лозинки</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659660757330712663">Може да го повлечете алатникот за да ги смените картичките.</translation>
 <translation id="6663529247339810546">Сликата не може да се зачува</translation>
@@ -1966,6 +1970,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7145337554745942724">Ажурирајте ја возачката дозвола</translation>
 <translation id="7146301801400584641">Достапна е датотека од календарот</translation>
 <translation id="7149893636342594995">Минатите 24 часа</translation>
+<translation id="7151361008641622036">{count,plural, =1{Организиравте 1 картичка}one{Организиравте # картичка}other{Организиравте # картички}}</translation>
 <translation id="7154417656353909837">Отстрани ги адресите</translation>
 <translation id="7161230316646448869">Синхронизација на обележувачите, историјата и друго на сите уреди</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8481184073299279701">Допрете го копчето „Започни со евидентирање“ за да се прибираат идната евиденција и грешките од сите картички во JavaScript конзолата. Евиденцијата ќе се прибира (и складира само во меморијата) сѐ додека не ја затворите страницава или не допрете „Сопри со евидентирање“.</translation>
 <translation id="8487667956631253959">Вклучено</translation>
 <translation id="8487700953926739672">Достапно е исклучено од линија</translation>
+<translation id="8488065047914929586">откако ја завршивте задачата „Зачувајте лозинка“</translation>
 <translation id="8488923644885757471">Нов прозорец</translation>
 <translation id="8490629238792920282">Линкот не можеше да се создаде</translation>
 <translation id="8501469528283376592">Автоматско бришење на преземањата</translation>
@@ -2543,6 +2549,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="8890516388109605451">Извори</translation>
 <translation id="8893208530912252670">Видеа</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
+<translation id="890009681345348416">Над 40 лозинки се пополнети автоматски</translation>
 <translation id="8900845556227858314">Browser App</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Најди на страницата…</translation>

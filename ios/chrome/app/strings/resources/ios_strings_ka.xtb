@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">გახსნილი ჩანართები არ არის</translation>
 <translation id="1469381646033328562">თქვენს ანგარიშს მართავს თქვენი მშობელი.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">„ჩანართების ჯგუფის შექმნის“ დასრულების შემდეგ</translation>
 <translation id="147982357559798527">შეიცვალა</translation>
 <translation id="1481450969185702334">პოვნა და შევსება</translation>
 <translation id="1483493594462132177">გაგზავნა</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">შეტყობინება პრობლემის შესახებ</translation>
 <translation id="2222149859067335623">„<ph name="SITE_DOMAIN" />“-ს დაბლოკილი აქვს თქვენს კამერაზე წვდომა</translation>
 <translation id="2223461067862937305">QR კოდის შექმნა</translation>
+<translation id="222798989929574238">თქვენ ძიებისთვის გამოიყენეთ 20-ზე მეტი ფოტო</translation>
 <translation id="2230173723195178503">ვებგვერდი ჩაიტვირთა</translation>
 <translation id="2236949375853147973">ჩემი აქტივობა</translation>
 <translation id="2237869114829007407">მიიღეთ მიმოხილვა და ძირითადი ანალიზი ნებისმიერი გვერდის ან თემისთვის</translation>
@@ -1763,6 +1765,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6525550806864373485">მენიუს რედაქტირება</translation>
 <translation id="6527208859483186860">ფონი {position} / {total}-დან</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
+<translation id="6529706885792457023">თქვენ მოაწესრიგეთ 15-ზე მეტი ჩანართი</translation>
 <translation id="6532106788206463496">ცვლილებების შენახვა</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" />-ის გახსნა, ჯგუფი <ph name="NUMBER_OF_TABS" />-ით, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6642362222295953972">არსებულ ჩანართზე გადართვა</translation>
 <translation id="6643016212128521049">გასუფთავება</translation>
 <translation id="6645899968535965230">QR კოდი: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">თქვენ შეამოწმეთ 25-ზე მეტი პაროლი</translation>
 <translation id="6657585470893396449">პაროლი</translation>
 <translation id="6659660757330712663">ჩანართებს შორის გადასართველად შეგიძლიათ გადაფურცლოთ ხელსაწყოთა ზოლზე.</translation>
 <translation id="6663529247339810546">გამოსახულების შენახვა შეუძლებელია</translation>
@@ -1966,6 +1970,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7145337554745942724">მართვის მოწმობის განახლება</translation>
 <translation id="7146301801400584641">ხელმისაწვდომია კალენდრის ფაილი</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
+<translation id="7151361008641622036">{count,plural, =1{თქვენ მოაწესრიგეთ 1 ჩანართი}other{თქვენ მოაწესრიგეთ # ჩანართი}}</translation>
 <translation id="7154417656353909837">მისამართების ამოშლა</translation>
 <translation id="7161230316646448869">შეასრულეთ თქვენი სანიშნეების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობას შორის</translation>
 <translation id="7165323152084385463">VIN კოდი</translation>
@@ -2396,6 +2401,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8481184073299279701">შემდგომი JavaScript-ის კონსოლის ჟურნალების და ყველა ჩანართის შეცდომების შესაგროვებლად შეეხეთ „ჟურნალის წარმოების დაწყების“ ღილაკს. ჟურნალების შეგროვება (და მხოლოდ მეხსიერებაში შენახვა) გაგრძელდება ამ გვერდის დახურვამდე ან „ჟურნალის წარმოების შეწყვეტის“ ღილაკზე შეხებამდე.</translation>
 <translation id="8487667956631253959">ჩართულია</translation>
 <translation id="8487700953926739672">ოფლაინში ხელმისაწვდომი</translation>
+<translation id="8488065047914929586">„პაროლის შენახვის“ დასრულებიდან</translation>
 <translation id="8488923644885757471">ახალი ფანჯარა</translation>
 <translation id="8490629238792920282">ბმულის შექმნა ვერ მოხერხდა</translation>
 <translation id="8501469528283376592">ჩამოტვირთვების ავტომატური წაშლა</translation>
@@ -2543,6 +2549,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8890516388109605451">წყაროები</translation>
 <translation id="8893208530912252670">ვიდეოები</translation>
 <translation id="8898822736010347272">Google-ს გაუგზავნის თქვენ მიერ მონახულებული ზოგიერთი გვერდის URL-ებს, სისტემის შეზღუდულ ინფორმაციასა და გვერდების გარკვეულ კონტენტს ვების ყველა მომხმარებლისთვის ახალი საფრთხეების აღმოსაჩენად და დასაბლოკად.</translation>
+<translation id="890009681345348416">40-ზე მეტი პაროლი ავტომატურად შეივსო</translation>
 <translation id="8900845556227858314">ბრაუზერის აპი</translation>
 <translation id="890565330728586731">უკან</translation>
 <translation id="8907722425137681851">გვერდზე პოვნა…</translation>

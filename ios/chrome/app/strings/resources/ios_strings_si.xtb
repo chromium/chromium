@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">විවෘත පටිති නැත</translation>
 <translation id="1469381646033328562">ඔබේ ගිණුම ඔබේ මාපියවරු විසින් කළමනා කරනු ලැබේ.
 <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ටැබ සමූහයක් තනන්න" සම්පූර්ණ කළ දා සිට</translation>
 <translation id="147982357559798527">වෙනස් කළා</translation>
 <translation id="1481450969185702334">සොයා පුරවන්න</translation>
 <translation id="1483493594462132177">යවන්න</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">ගැටළුවක් වාර්තා කරන්න...</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ඔබේ කැමරාවට ප්‍රවේශ වීමෙන් අවහිර කර ඇත</translation>
 <translation id="2223461067862937305">QR කේතයක් සාදන්න</translation>
+<translation id="222798989929574238">ඔබ සෙවීමට ඡායාරූප 20+ක් භාවිතා කර ඇත</translation>
 <translation id="2230173723195178503">වෙබ් පිටුව පූරණය කරන ලදී</translation>
 <translation id="2236949375853147973">මගේ ක්‍රියාකාරකම්</translation>
 <translation id="2237869114829007407">ඕනෑම පිටුවක් හෝ මාතෘකාවක් සඳහා දළ විශ්ලේෂණයක් සහ ප්‍රධාන ඇතුළාන්තයන් ලබා ගන්න</translation>
@@ -1763,6 +1765,7 @@
 <translation id="6525550806864373485">සංස්කරණ මෙනුව</translation>
 <translation id="6527208859483186860">පසුබිම {total}න් {position}</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
+<translation id="6529706885792457023">ඔබ පටිති 15+ සංවිධානය කළා</translation>
 <translation id="6532106788206463496">වෙනස්කම් සුරකින්න</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" />, සමූහයේ <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /> විවෘත කරන්න</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@
 <translation id="6642362222295953972">පවතින පටිත්තට මාරු වන්න</translation>
 <translation id="6643016212128521049">මකන්න</translation>
 <translation id="6645899968535965230">QR කේතය: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">ඔබ මුරපද 25+ක් පරීක්ෂා කළා</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6659660757330712663">පටිති අතර මාරු වීමට ඔබට මෙවලම් තීරුව ස්වයිප් කළ හැක.</translation>
 <translation id="6663529247339810546">රූපය සුරැකිය නොහැක</translation>
@@ -1966,6 +1970,7 @@
 <translation id="7145337554745942724">රියදුරු බලපත්‍රය යාවත්කාලීන කරන්න</translation>
 <translation id="7146301801400584641">දින දර්ශන ගොනුව ලබා ගත හැක</translation>
 <translation id="7149893636342594995">පසුගිය පැය 24</translation>
+<translation id="7151361008641622036">{count,plural, =1{ඔබ 1 පටිත්තක් සංවිධානය කළා}one{ඔබ පටිති # ක් සංවිධානය කළා}other{ඔබ පටිති # ක් සංවිධානය කළා}}</translation>
 <translation id="7154417656353909837">ලිපින ඉවත් කරන්න</translation>
 <translation id="7161230316646448869">සියලු උපාංගවල ඔබේ පිටුසන්, ඉතිහාසය සහ තවත් දේ සමමුහුර්ත කරන්න</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@
 <translation id="8481184073299279701">සියලුම පටිතිවලින් අනාගත ජාවාස්ක්‍රිප්ට් කොන්සෝල ලොග සහ දෝෂ එකතු කිරීමට "ලොග් කිරීම පටන් ගන්න" බොත්තමට තට්ටු කරන්න. මෙම පිටුව වසන තෙක් හෝ "ලොග් කිරීම නවත්වන්න" තට්ටු කරන තෙක් ලොග් කිරීම් රැස් කරනු ලැබේ (සහ මතකය තුළ පමණක් ගබඩා කරනු ලැබේ).</translation>
 <translation id="8487667956631253959">ක්‍රියාත්මකයි</translation>
 <translation id="8487700953926739672">නොබැඳිව ලද  හැක</translation>
+<translation id="8488065047914929586">"මුරපදයක් සුරකින්න" සම්පූර්ණ කළ දා සිට</translation>
 <translation id="8488923644885757471">නව කවුළුව</translation>
 <translation id="8490629238792920282">සබැඳිය තැනීමට නොහැකි වේ</translation>
 <translation id="8501469528283376592">බාගැනීම් ස්වයංව මකන්න</translation>
@@ -2543,6 +2549,7 @@
 <translation id="8890516388109605451">මූලාශ්‍ර</translation>
 <translation id="8893208530912252670">වීඩියෝ</translation>
 <translation id="8898822736010347272">වෙබය මත නව තර්ජන සොයා ගෙන සියලු දෙනා ආරක්ෂා කිරීමට උදවු කිරීමට Google වෙත ඔබ පැමිණෙන සමහර පිටුවල URL, සීමිත පද්ධති තොරතුරු, සහ යම් පිටු අන්තර්ගතය යවයි.</translation>
+<translation id="890009681345348416">මුරපද 40+ ස්වයංව පුරවා ඇත</translation>
 <translation id="8900845556227858314">බ්‍රව්සර යෙදුම</translation>
 <translation id="890565330728586731">ආපසු</translation>
 <translation id="8907722425137681851">පිටුව තුළ සොයා ගන්න…</translation>

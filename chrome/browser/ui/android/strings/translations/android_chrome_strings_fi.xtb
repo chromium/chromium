@@ -775,6 +775,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, monivalittu kiinnitetty välilehti, jolla tallennetaan mediaa</translation>
 <translation id="4137746084635924146">Laitteen kieli</translation>
 <translation id="414128724510021958">Oletusarvoiset tietokonesivustot</translation>
+<translation id="4150837143272125910">Päivitys on ladattu</translation>
 <translation id="4162867837470729563">Jakamisvaihtoehtojen lista koko näytön kokoisena.</translation>
 <translation id="4164642020717536140">Nopeaa ja turvallista selaamista</translation>
 <translation id="4165077084524712774">Lisää työkaluja</translation>
@@ -1199,6 +1200,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5848257610304005265">Avataanko PDF sovelluksella <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Lopetetaanko jakaminen?</translation>
 <translation id="5853623416121554550">keskeytetty</translation>
+<translation id="5855375823365231964">Tietoa tästä profiilista</translation>
 <translation id="5855546874025048181">Tarkenna: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, monivalittu incognito-välilehti, jolla tallennetaan mediaa</translation>
 <translation id="5857447844686706637">Jotain meni pieleen. Hinnan seurantaa ei voitu päivittää.</translation>
@@ -1400,6 +1402,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6565959834589222080">Wi-Fi-yhteyttä käytetään, kun se on saatavilla</translation>
 <translation id="657177046675873214">Jos haluat käyttää kirjanmerkkejäsi kaikilla laitteilla, laita "Kirjanmerkit" päälle asetuksista</translation>
 <translation id="6573096386450695060">Salli aina</translation>
+<translation id="657480975869429144">Uusi Chrome-versio on saatavilla.</translation>
 <translation id="658099107946526506">Suojaa yksityistä selaamista PIN-koodilla, jotta muut eivät pääse siihen</translation>
 <translation id="6583199322650523874">Lisää nykyinen sivu kirjanmerkkeihin</translation>
 <translation id="6588043302623806746">Käytä suojattua DNS:ää</translation>

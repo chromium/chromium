@@ -975,6 +975,21 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1635748761015837179">Izinkan penulisan ke perangkat penyimpanan eksternal</translation>
 <translation id="1639468541408865385">Aktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
+<translation id="1640646094704433064">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs yang tidak diizinkan untuk menjalankan JavaScript dengan compiler JIT (Just In Time) yang diaktifkan.
+
+          Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin merender konten web dengan lebih lambat, serta mungkin menonaktifkan bagian JavaScript termasuk WebAssembly. Jika JIT JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin merender konten web dalam konfigurasi yang lebih aman.
+
+          Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat https://chromeenterprise.google/policies/url-patterns. Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+          Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs. Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com akan berlaku pada subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di tab yang ada hingga situs tersebut dibuka di tab baru. Pada perangkat <ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default JIT JavaScript pada profil tersebut.
+
+          Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" /> mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di <ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+          Catatan: Di versi 155 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel pada site.com agar dapat berlaku ke site.com dan subdomain.site.com.
+
+          Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin tingkat teratas. Jadi, misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> tetapi site-one.com memuat frame berisi site-two.com, maka JIT JavaScript akan dinonaktifkan di site-one.com, sedangkan site-two.com akan mengikuti kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan JIT JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan, yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+          Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau JIT JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="1640824698339859203">Aktifkan SSO Mengambang dan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="1643642938972654829">Mengizinkan akses ke halaman pengujian kebijakan</translation>
 <translation id="1645793986494086629">Skema:</translation>
@@ -8292,6 +8307,47 @@ Jika kebijakan ini tidak disetel, pembekuan tab latar belakang akan diaktifkan s
 <translation id="608788685013546076">Menetapkan ambang batas pergeseran puncak daya baterai dalam persen</translation>
 <translation id="6089679180657323464">Mengontrol setelan pengontrol diagnostik dan telemetri wilco.</translation>
 <translation id="6091233616732024397">Paksa pengguna login untuk menggunakan browser</translation>
+<translation id="6091279561320899147">Memungkinkan Anda menetapkan daftar pola URL situs yang menentukan situs
+dengan pengoptimalan JavaScript lanjutan yang dinonaktifkan.
+
+Jika pengoptimalan JavaScript dinonaktifkan, <ph name="PRODUCT_NAME" /> mungkin akan merender konten web dengan lebih lambat.
+
+Untuk mengetahui informasi selengkapnya tentang pola URL yang valid, lihat
+https://chromeenterprise.google/policies/url-patterns.
+Karakter pengganti, <ph name="WILDCARD_VALUE" />, diizinkan.
+
+Pengecualian kebijakan dapat disetel untuk subdomain tertentu maupun seluruh situs.
+Misalnya, kebijakan yang disetel khusus untuk subdomain.site.com berlaku untuk
+subdomain.site.com tanpa memengaruhi site.com. Dalam beberapa kasus saat
+subdomain tidak dapat diisolasi dari situs induknya, subdomain tersebut mungkin mewarisi kebijakan
+yang disetel di site.com. Pengecualian juga mungkin tidak berlaku untuk frame yang dimuat di
+tab yang ada hingga situs dibuka di tab baru. Pada perangkat
+<ph name="ANDROID_NAME" /> dengan memori rendah, pengecualian khusus situs mungkin
+tidak diterapkan. Sebagai gantinya, situs akan menggunakan kebijakan dari
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />,
+jika disetel, atau mengikuti setelan default pengoptimalan JavaScript pada profil tersebut.
+
+Untuk menerapkan pengecualian, <ph name="PRODUCT_NAME" />
+mungkin menempatkan situs atau subdomain yang setelannya berbeda dari setelan default ke dalam
+proses khusus. Hal ini dapat meningkatkan penggunaan memori, terutama di
+<ph name="ANDROID_NAME" /> atau saat pola karakter pengganti cocok dengan banyak
+subdomain, karena setiap origin yang cocok mungkin akan diisolasi secara terpisah. Subdomain
+yang diisolasi juga tidak dapat menggunakan document.domain untuk mengakses situs induknya.
+
+Catatan: Di versi 138 dan yang lebih lama, pengecualian kebijakan hanya diterapkan pada
+perincian situs (eTLD+1). Kebijakan yang disetel khusus untuk subdomain.site.com tidak akan
+berjalan, termasuk pada subdomain.site.com; kebijakan tersebut harus disetel di site.com agar
+dapat berlaku ke site.com dan subdomain.site.com.
+
+Kebijakan ini diterapkan pada setiap frame dan bukan hanya berdasarkan URL origin
+tingkat teratas, jadi misalnya jika site-one.com tercantum dalam kebijakan <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, tetapi site-one.com memuat frame
+berisi site-two.com, pengoptimalan JavaScript akan dinonaktifkan
+untuk site-one.com, sedangkan site-two.com akan menggunakan kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, jika disetel, atau mengikuti setelan default dengan pengoptimalan
+JavaScript aktif. Entri daftar yang tidak diizinkan memiliki prioritas lebih tinggi daripada entri daftar yang diizinkan,
+yang berarti bahwa entri daftar yang tidak diizinkan juga memiliki prioritas lebih tinggi daripada nilai default yang dikonfigurasi.
+
+Jika kebijakan ini tidak disetel untuk suatu situs, kebijakan dari <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> akan berlaku untuk situs tersebut, jika disetel, atau
+pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
 <translation id="6092073071805297119">Izinkan penggunaan Filter Performa Aksesibilitas.</translation>
 <translation id="6093156968240188330">Memungkinkan pengguna jarak jauh untuk berinteraksi dengan jendela yang berada jauh di sesi bantuan jarak jauh</translation>
 <translation id="6093551397728373988">Menerapkan semua metode input yang diizinkan untuk diaktifkan dalam sesi pengguna</translation>
@@ -12288,6 +12344,13 @@ Informasi selengkapnya tentang <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" /> d
 <translation id="8489169564515126823">Dinonaktifkan: Scroller tidak dapat difokuskan secara default.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Menonaktifkan penyimpanan histori browser</translation>
+<translation id="8494605948258449467">Kebijakan ini mengatur apakah koneksi WebSocket yang aktif akan diputus saat halaman masuk ke back-forward cache. Sebelumnya, koneksi WebSocket yang aktif mencegah halaman disimpan dalam back-forward cache, tetapi <ph name="PRODUCT_NAME" /> kini mengubah perilaku ini dengan memutuskan koneksi WebSocket, sehingga memungkinkan halaman untuk tetap di-cache dan dipulihkan dalam kondisi terputus.
+
+Jika kebijakan ini disetel ke Aktif atau tidak dikonfigurasi, koneksi WebSocket akan diputus saat halaman masuk ke back-forward cache.
+
+Jika kebijakan ini disetel ke Nonaktif, WebSocket tidak akan diputus saat halaman masuk ke back-forward cache. Karena back-forward cache tidak mendukung WebSocket aktif, halaman dengan WebSocket aktif tidak akan di-cache.
+
+Kebijakan ini tidak digunakan lagi di <ph name="PRODUCT_NAME" /> versi 157 dan akan dihapus di versi 167.</translation>
 <translation id="8499172469244085141">Setelan Default (pengguna dapat menggantinya)</translation>
 <translation id="8499359456965625209">Kebijakan ini tidak digunakan lagi.
 
@@ -13384,6 +13447,25 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="9204863016826119209">Kunci perusahaan dapat digunakan oleh aplikasi Android yang diinstal dan dicantumkan dalam kebijakan ini.</translation>
 <translation id="9206364386317031168">Mengizinkan situs membuat permintaan jaringan ke perangkat lokal.</translation>
 <translation id="9206472508136116830">Jangan izinkan deteksi berbagi file NetBIOS</translation>
+<translation id="9207289612253941907">Kebijakan ini mengonfigurasi <ph name="PRODUCT_NAME" /> untuk mengurutkan algoritma perjanjian kunci pilihannya (grup yang didukung) di TLS 1.3 agar sesuai dengan algoritma yang telah disetujui berdasarkan skema kepatuhan tertentu.
+
+Menyetel kebijakan ini tidak menjamin bahwa algoritma tertentu akan digunakan.
+
+Kebijakan ini dibuat bagi operator server, yang ingin mendukung klien dengan maupun tanpa persyaratan kepatuhan, agar dapat membedakan kedua klien tersebut. Kebijakan ini hanya menggunakan algoritma non-default tertentu dengan peningkatan kekuatan kriptografi untuk klien yang secara eksplisit dikonfigurasi agar memilih algoritma.
+
+Menyetel kebijakan ke '<ph name="CNSA2_NAME" />' akan mengonfigurasi <ph name="PRODUCT_NAME" /> untuk memilih metode pertukaran kunci yang diperlukan agar sesuai dengan Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Jika kebijakan ini tidak disetel, atau disetel ke '<ph name="DEFAULT_NAME" />', <ph name="PRODUCT_NAME" /> akan dikonfigurasi untuk menggunakan metode pertukaran kunci defaultnya.
+
+Menyetel kebijakan ini tidak diperlukan untuk keamanan. Kriptografi default yang digunakan oleh <ph name="PRODUCT_NAME" /> sudah cukup kuat untuk menahan serangan brute force bahkan dengan daya sebesar Matahari.
+
+Jika kebijakan ini disetel, <ph name="PRODUCT_NAME" /> akan menjadi lebih lambat saat mengakses situs.
+
+Kebijakan ini hanya memengaruhi TLS 1.3 dan QUIC; kebijakan ini tidak memengaruhi TLS versi sebelumnya.
+
+Kebijakan ini dapat disetel untuk perangkat dan pengguna. Jika disetel untuk pengguna, kebijakan ini hanya memengaruhi permintaan jaringan yang dipicu oleh profil pengguna, dan mungkin tidak memengaruhi permintaan jaringan yang dibuat oleh <ph name="PRODUCT_NAME" /> untuk menjalankan tugas latar belakang di seluruh browser; hal tersebut dikontrol oleh nilai di tingkat perangkat. Jika kebijakan ini disetel di tingkat perangkat dan tingkat pengguna, nilai di tingkat perangkat akan berlaku, kecuali jika urutan prioritas kebijakan telah diubah oleh kebijakan <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Untuk versi 156 dan yang lebih lama, kebijakan ini hanya berlaku di seluruh perangkat.</translation>
 <translation id="9207596996305971030">Jangan laporkan peristiwa login/logout</translation>
 <translation id="9208328979373108724">Izinkan origin Aplikasi Web Terisolasi menambahkan Sub Apps, tetapi tetap memerlukan konfirmasi dari pengguna</translation>
 <translation id="9210647066889383361">Izinkan pengguna login ke perangkat dengan Smart Lock</translation>

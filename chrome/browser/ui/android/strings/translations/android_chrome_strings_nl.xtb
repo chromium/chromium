@@ -775,6 +775,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, meervoudig geselecteerd vastgezet tabblad voor opname</translation>
 <translation id="4137746084635924146">Huidige apparaattaal</translation>
 <translation id="414128724510021958">Desktopsites standaard aangevraagd</translation>
+<translation id="4150837143272125910">Er is een update gedownload</translation>
 <translation id="4162867837470729563">Lijst met deelopties op volledige hoogte.</translation>
 <translation id="4164642020717536140">Browse snel en beveiligd op internet</translation>
 <translation id="4165077084524712774">Meer tools</translation>
@@ -1199,6 +1200,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5848257610304005265">Pdf openen met <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Delen stoppen?</translation>
 <translation id="5853623416121554550">onderbroken</translation>
+<translation id="5855375823365231964">Over dit profiel</translation>
 <translation id="5855546874025048181">Verfijnen: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, meervoudig geselecteerd incognitotabblad voor opname</translation>
 <translation id="5857447844686706637">Er is iets misgegaan. Kan Prijs volgen niet updaten.</translation>
@@ -1240,6 +1242,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="6039379616847168523">Naar het volgende tabblad gaan</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="604124094241169006">Automatisch</translation>
+<translation id="6041959688070413372">De koppeling tussen Zoeken-services en Google Workspace-apps, zoals Google Drive, beheren</translation>
 <translation id="6042308850641462728">Meer</translation>
 <translation id="6047066316630165190">Open de rastertabbladschakelaar</translation>
 <translation id="604996488070107836">Download van <ph name="FILE_NAME" /> mislukt vanwege een onbekende fout.</translation>
@@ -1247,7 +1250,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="606985262342505139">Tabblad onderaan op volledige hoogte</translation>
 <translation id="6070608977567243308">Afbeelding shoppen met Google Lens</translation>
 <translation id="6071995715087444295">Log in op je Google-account om te checken op gehackte wachtwoorden</translation>
-<translation id="6078323886959318429">Snelkoppeling toevoegen</translation>
+<translation id="6078323886959318429">Voeg snelkoppeling toe</translation>
 <translation id="6085886413119427067">Bepaalt hoe verbinding wordt gemaakt met websites via een beveiligde verbinding</translation>
 <translation id="6087286598828478206">Blokkeren en groep verlaten?</translation>
 <translation id="6091464625487374759">Gemini staat nu op je werkbalk. Als je je vastgezette tool wilt wijzigen, houd je je vinger op het icoon.</translation>
@@ -1400,6 +1403,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6565959834589222080">Wifi wordt gebruikt als dat beschikbaar is</translation>
 <translation id="657177046675873214">Als je al je bookmarks op al je apparaten wilt gebruiken, zet je in de instellingen de optie Bookmarks aan</translation>
 <translation id="6573096386450695060">Altijd toestaan</translation>
+<translation id="657480975869429144">Er is een nieuwe versie van Chrome beschikbaar</translation>
 <translation id="658099107946526506">Bescherm je privé browsen met een pincode om ongewenste toegang te voorkomen</translation>
 <translation id="6583199322650523874">Een bookmark toevoegen voor de huidige pagina</translation>
 <translation id="6588043302623806746">Beveiligde DNS gebruiken</translation>

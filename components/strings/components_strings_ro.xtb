@@ -867,6 +867,7 @@ Poți elimina această sugestie din Chrome. Sursa inițială nu va fi ștearsă.
 <translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Cardul nu a putut fi salvat în Contul Google. A fost salvat în Chrome pe acest dispozitiv.</translation>
 <translation id="2438874542388153331">Perforare cvadruplă în dreapta</translation>
+<translation id="2442033148418774391">Notificarea privind completarea automată mai inteligentă, menținută privată, a fost închisă</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nu va salva<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />istoricul de navigare,
@@ -879,6 +880,7 @@ Poți elimina această sugestie din Chrome. Sursa inițială nu va fi ștearsă.
 <translation id="2451607499823206582">Urmărire</translation>
 <translation id="2452837234288608067">Nu te-am putut ajuta. Încearcă din nou.</translation>
 <translation id="2453045048779611513">Organizația ta limitează ce poți salva</translation>
+<translation id="2456490423293803882">Notificarea privind completarea automată mai inteligentă, menținută privată, s-a deschis la înălțimea completă</translation>
 <translation id="2459882793359532780">politicile privind browserul aplicate (politicile pentru dispozitive și profiluri),</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core îți oferă un instrument centralizat pentru configurarea politicilor browserului din cloud</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1108,6 +1110,7 @@ Poți elimina această sugestie din Chrome. Sursa inițială nu va fi ștearsă.
 <translation id="2878197950673342043">Îndoire de tip afiș</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">folosește blocarea ecranului pentru completarea parolelor</translation>
+<translation id="2880119244122776372">Creează și scrie cod</translation>
 <translation id="2881276955470682203">Salvezi cardul?</translation>
 <translation id="2882280148032777436">Șterge numărul de călător cunoscut</translation>
 <translation id="2882949212241984732">Îndoire tip fereastră dublă</translation>
@@ -3914,6 +3917,7 @@ Detalii suplimentare:
 <translation id="753713322968419914">Elimini adresa de acasă din completarea automată din Chrome?</translation>
 <translation id="753714465667062283">Conectează-te ca să-ți salvezi fotografia</translation>
 <translation id="7537536606612762813">Obligatorie</translation>
+<translation id="7540924742308928499">Caută idei și rezumă</translation>
 <translation id="7543525346216957623">Roagă-ți părintele</translation>
 <translation id="7546409722674205727">Începe <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Remediază erorile de conexiune</translation>

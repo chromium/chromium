@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">ਕੋਈ ਖੁੱਲ੍ਹੀ ਟੈਬ ਨਹੀਂ</translation>
 <translation id="1469381646033328562">ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।
 <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ਟੈਬ ਗਰੁੱਪ ਬਣਾਓ" ਨੂੰ ਪੂਰਾ ਕਰਨ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="147982357559798527">ਬਦਲੀ ਗਈ</translation>
 <translation id="1481450969185702334">ਲੱਭੋ ਅਤੇ ਭਰੋ</translation>
 <translation id="1483493594462132177">ਭੇਜੋ</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">ਇੱਕ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" ਨੂੰ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਤੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2223461067862937305">QR ਕੋਡ ਬਣਾਓ</translation>
+<translation id="222798989929574238">ਤੁਸੀਂ ਖੋਜਣ ਲਈ 20+ ਫ਼ੋਟੋਆਂ ਦੀ ਵਰਤੋਂ ਕੀਤੀ</translation>
 <translation id="2230173723195178503">ਵੈੱਬਪੰਨਾ ਲੋਡ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="2237869114829007407">ਕਿਸੇ ਵੀ ਪੰਨੇ ਜਾਂ ਵਿਸ਼ੇ ਲਈ ਰੂਪ-ਰੇਖਾ ਅਤੇ ਮੁੱਖ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
@@ -1763,6 +1765,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6525550806864373485">ਮੀਨੂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="6527208859483186860">{total} ਵਿੱਚੋਂ {position} ਬੈਕਗ੍ਰਾਊਂਡ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
+<translation id="6529706885792457023">ਤੁਸੀਂ 15+ ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕੀਤਾ</translation>
 <translation id="6532106788206463496">ਬਦਲਾਅ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> ਨੂੰ ਖੋਲ੍ਹੋ, <ph name="NUMBER_OF_TABS" /> ਦਾ ਗਰੁੱਪ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="6642362222295953972">ਮੌਜੂਦਾ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="6643016212128521049">ਹਟਾਓ</translation>
 <translation id="6645899968535965230">QR ਕੋਡ: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">ਤੁਸੀਂ 25+ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ</translation>
 <translation id="6657585470893396449">ਪਾਸਵਰਡ</translation>
 <translation id="6659660757330712663">ਤੁਸੀਂ ਟੈਬਾਂ ਵਿਚਾਲੇ ਸਵਿੱਚ ਕਰਨ ਲਈ ਟੂਲਬਾਰ ਨੂੰ ਸਵਾਈਪ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="6663529247339810546">ਚਿੱਤਰ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
@@ -1966,6 +1970,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="7145337554745942724">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="7146301801400584641">ਕੈਲੰਡਰ ਫ਼ਾਈਲ ਉਪਲਬਧ ਹੈ</translation>
 <translation id="7149893636342594995">ਪਿਛਲੇ 24 ਘੰਟੇ</translation>
+<translation id="7151361008641622036">{count,plural, =1{ਤੁਸੀਂ 1 ਟੈਬ ਨੂੰ ਵਿਵਸਥਿਤ ਕੀਤਾ}one{ਤੁਸੀਂ # ਟੈਬ ਨੂੰ ਵਿਵਸਥਿਤ ਕੀਤਾ}other{ਤੁਸੀਂ # ਟੈਬਾਂ ਨੂੰ ਵਿਵਸਥਿਤ ਕੀਤਾ}}</translation>
 <translation id="7154417656353909837">ਪਤੇ ਹਟਾਓ</translation>
 <translation id="7161230316646448869">ਆਪਣੇ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8481184073299279701">ਭਵਿੱਖ ਵਿੱਚ ਸਾਰੀਆਂ ਟੈਬਾਂ ਤੋਂ JavaScript ਕੰਸੋਲ ਲੌਗਾਂ ਅਤੇ ਗੜਬੜਾਂ ਨੂੰ ਇਕੱਤਰ ਕਰਨ ਲਈ "ਲੌਗ ਕਰਨਾ ਸ਼ੁਰੂ ਕਰੋ" ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ। ਲੌਗ ਇਕੱਤਰ ਕੀਤੇ ਜਾਣਗੇ (ਅਤੇ ਸਿਰਫ਼ ਮੈਮੋਰੀ ਵਿੱਚ ਹੀ ਸਟੋਰ ਕੀਤੇ ਜਾਣਗੇ) ਜਦੋਂ ਤੱਕ ਇਹ ਪੰਨਾ ਬੰਦ ਨਹੀਂ ਕਰ ਦਿੱਤਾ ਜਾਂਦਾ ਜਾਂ "ਲੌਗ ਕਰਨਾ ਰੋਕੋ" 'ਤੇ ਟੈਪ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ।</translation>
 <translation id="8487667956631253959">ਚਾਲੂ</translation>
 <translation id="8487700953926739672">ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ</translation>
+<translation id="8488065047914929586">"ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ" ਨੂੰ ਪੂਰਾ ਕਰਨ ਤੋਂ ਬਾਅਦ</translation>
 <translation id="8488923644885757471">ਨਵੀਂ ਵਿੰਡੋ</translation>
 <translation id="8490629238792920282">ਲਿੰਕ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
 <translation id="8501469528283376592">ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਓ</translation>
@@ -2543,6 +2549,7 @@ Handoff ਨੂੰ ਵੀ ਸੈਟਿੰਗਾਂ ਦੇ 'ਆਮ' ਸੈਕਸ਼�
 <translation id="8890516388109605451">ਸਰੋਤ</translation>
 <translation id="8893208530912252670">ਵੀਡੀਓ</translation>
 <translation id="8898822736010347272">ਵੈੱਬ 'ਤੇ ਨਵੇਂ ਖਤਰਿਆਂ ਨੂੰ ਲੱਭ ਕੇ ਹਰੇਕ ਦੀ ਸੁਰੱਖਿਆ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਕੁਝ ਪੰਨਿਆਂ ਦੇ URL, ਸੀਮਤ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਅਤੇ ਕੁਝ ਨਵੀਂ ਪੰਨਾ ਸਮੱਗਰੀ Google ਨੂੰ ਭੇਜੇ ਜਾਂਦੇ ਹਨ।</translation>
+<translation id="890009681345348416">40+ ਪਾਸਵਰਡ ਆਟੋਫਿਲ ਕੀਤੇ ਗਏ</translation>
 <translation id="8900845556227858314">ਬ੍ਰਾਊਜ਼ਰ ਐਪ</translation>
 <translation id="890565330728586731">ਪਿੱਛੇ</translation>
 <translation id="8907722425137681851">ਪੰਨੇ ਵਿੱਚ ਲੱਭੋ…</translation>

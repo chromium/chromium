@@ -6146,7 +6146,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5695184138696833495">Linux Android uygulaması ADB'si</translation>
 <translation id="5696143504434933566">"<ph name="EXTENSION_NAME" />" uzantısının kötüye kullanımını bildir</translation>
 <translation id="5696679855467848181">Kullanımda olan mevcut PPD dosyası: <ph name="PPD_NAME" /></translation>
-<translation id="5697664819730124632">Resim ekleyip yeniden tasarlayın</translation>
+<translation id="5697664819730124632">Resim ekleyip dönüştürün</translation>
 <translation id="5697832193891326782">Emoji Seçici</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> verilerinizi silmek üzeresiniz</translation>
 <translation id="5698815246352480266">Sekme değiştirmeden AI Modu ile sohbet etmeye devam edebilirsiniz. Başlamak için kimliğinizi doğrulayın. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
@@ -8610,7 +8610,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7602079150116086782">Diğer cihazlardan sekme yok</translation>
 <translation id="7602173054665172958">Yazdırma yönetimi</translation>
 <translation id="7602805861133750578">Artık sekme gruplarınızı, Gemini ile etkileşimlerinizi ve AI Modu ileti dizilerinizi tek bir yerden yönetebilirsiniz. Dilediğiniz zaman bunun sabitlemesini kaldırabilirsiniz.</translation>
-<translation id="7602868996817972616">Google'a bu sayfa hakkında soru sor</translation>
+<translation id="7602868996817972616">Google'a bu sayfa hakkında soru sorun</translation>
 <translation id="7603583710244190070">Kuruluşunuz bu sekmenin ekran paylaşımını engelliyor</translation>
 <translation id="7603785829538808504">Aşağıdaki siteler özel bir ayar kullanır</translation>
 <translation id="7604543761927773395">{NUM_PASSWORDS,plural, =1{1 şifre içe aktarılamadı}other{{NUM_PASSWORDS} şifre içe aktarılamadı}}</translation>

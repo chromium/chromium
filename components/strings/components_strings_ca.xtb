@@ -867,6 +867,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2436186046335138073">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Aquesta targeta no s'ha pogut desar al teu Compte de Google. S'ha desat a Chrome en aquest dispositiu.</translation>
 <translation id="2438874542388153331">Encunyació quàdruple a la dreta</translation>
+<translation id="2442033148418774391">L'avís Emplenament automàtic més intel·ligent mantenint la privadesa s'ha tancat</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />no desarà<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />El teu historial de navegació
@@ -879,6 +880,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2451607499823206582">Seguiment</translation>
 <translation id="2452837234288608067">No hem pogut ajudar-te. Torna-ho a provar.</translation>
 <translation id="2453045048779611513">La teva organització limita el que pots desar</translation>
+<translation id="2456490423293803882">L'avís Emplenament automàtic més intel·ligent mantenint la privadesa s'ha obert a alçada completa</translation>
 <translation id="2459882793359532780">Polítiques del navegador aplicades (polítiques del dispositiu i del perfil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core et proporciona una eina centralitzada per configurar polítiques del navegador des del núvol</translation>
 <translation id="2461822463642141190">Actual</translation>
@@ -1108,6 +1110,7 @@ Pots suprimir aquest suggeriment perquè no aparegui a Chrome. La font original 
 <translation id="2878197950673342043">Plegat en pòster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">utilitzar el bloqueig de pantalla per emplenar contrasenyes</translation>
+<translation id="2880119244122776372">Crea i programa</translation>
 <translation id="2881276955470682203">Vols desar la targeta?</translation>
 <translation id="2882280148032777436">Suprimeix el número de viatger conegut</translation>
 <translation id="2882949212241984732">Plegat en finestra doble</translation>
@@ -3914,6 +3917,7 @@ Detalls addicionals:
 <translation id="753713322968419914">Vols suprimir l'adreça de casa de l'emplenament automàtic de Chrome?</translation>
 <translation id="753714465667062283">Inicia la sessió per desar la foto</translation>
 <translation id="7537536606612762813">Obligatòria</translation>
+<translation id="7540924742308928499">Fes pluges d'idees i resums</translation>
 <translation id="7543525346216957623">Demana-ho al teu pare o a la teva mare</translation>
 <translation id="7546409722674205727">S'està iniciant <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errors de connexió</translation>

@@ -862,6 +862,7 @@
 <translation id="2436186046335138073">అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="243815215670139125">ఈ కార్డ్‌ను మీ Google ఖాతాలో సేవ్ చేయడం సాధ్యం కాలేదు. బదులుగా ఇది ఈ డివైజ్‌లోని Chromeలో సేవ్ అయింది.</translation>
 <translation id="2438874542388153331">కుడివైపు నాలుగు రంధ్రాలు</translation>
+<translation id="2442033148418774391">స్మార్ట్ ఆటోఫిల్, ప్రైవేట్‌గా ఉంచిన నోటీసు క్లోజ్ అయింది</translation>
 <translation id="2442865686365739754">Chrome ఈ కింది సమాచారాన్ని <ph name="BEGIN_EMPHASIS" />సేవ్ చేయదు<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />మీ బ్రౌజింగ్ హిస్టరీ
@@ -874,6 +875,7 @@
 <translation id="2451607499823206582">ట్రాకింగ్</translation>
 <translation id="2452837234288608067">దానితో సహాయం చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2453045048779611513">మీరు సేవ్ చేయగల వాటిని మీ సంస్థ పరిమితం చేస్తుంది</translation>
+<translation id="2456490423293803882">స్మార్ట్ ఆటోఫిల్, ప్రైవేట్‌గా ఉంచే విధానం' నోటీసు ఫుల్ స్క్రీన్‌లో ఓపెన్ అయింది</translation>
 <translation id="2459882793359532780">వర్తింపజేసిన బ్రౌజర్ పాలసీలు (మెషిన్, ప్రొఫైల్ పాలసీలు)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, క్లౌడ్ నుండి బ్రౌజర్ పాలసీలను కాన్ఫిగర్ చేయడానికి మీకు కేంద్రీకృత టూల్‌ను అందిస్తుంది</translation>
 <translation id="2461822463642141190">ప్రస్తుత</translation>
@@ -1103,6 +1105,7 @@
 <translation id="2878197950673342043">పోస్టర్ ఫోల్డ్</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">పాస్‌వర్డ్‌లను పూరించడానికి మీ స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
+<translation id="2880119244122776372">బిల్డ్ చేయండి, కోడ్ చేయండి</translation>
 <translation id="2881276955470682203">కార్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="2882280148032777436">తెలిసిన ప్రయాణీకుల నంబర్‌ను తొలగించండి</translation>
 <translation id="2882949212241984732">డబుల్-గేట్ ఫోల్డ్</translation>
@@ -3909,6 +3912,7 @@
 <translation id="753713322968419914">Chrome ఆటోఫిల్ నుండి ఇంటి అడ్రస్‌ను తీసివేయాలా?</translation>
 <translation id="753714465667062283">మీ ఫోటోను సేవ్ చేయడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="7537536606612762813">తప్పనిసరి</translation>
+<translation id="7540924742308928499">ఐడియాలను చర్చించి, సారాంశాన్ని పొందండి</translation>
 <translation id="7543525346216957623">మీ తల్లి/తండ్రిని అడగండి</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ప్రారంభమవుతోంది</translation>
 <translation id="7548892272833184391">కనెక్షన్ ఎర్రర్‌లను పరిష్కరించండి</translation>

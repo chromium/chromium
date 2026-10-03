@@ -4,7 +4,7 @@
 <translation id="1012241361789814178">Ladiaci nástroj je pozastavený na inej karte, kliknutím prepnete na danú kartu.</translation>
 <translation id="1171774979989969504">Zadajte e-mailovú adresu.</translation>
 <translation id="1178581264944972037">Pozastaviť</translation>
-<translation id="1254779809141342904">Toto upozornenie CAP používa technológiu s názvom XSLT. Táto funkcia <ph name="REMOVAL_LINK" />. Keď sa to stane, toto upozornenie sa zobrazí ako nespracované údaje XML. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať si ho ďalej.</translation>
+<translation id="1254779809141342904">Táto výstraha vo formáte CAP využíva technológiu s názvom XSLT, ktorá bude <ph name="REMOVAL_LINK" />. Až sa to stane, táto výstraha sa bude zobrazovať ako nespracované údaje XML. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať ju ďalej.</translation>
 <translation id="1306460908038601864">vypnuté</translation>
 <translation id="1311894908970423688">Hodnota musí byť <ph name="VALUE_DATE_OR_TIME" />.</translation>
 <translation id="1588438908519853928">Normálny</translation>
@@ -95,7 +95,7 @@
 <translation id="8117451130807776954">Tento týždeň</translation>
 <translation id="8131955114056917397">0,25</translation>
 <translation id="8199524924445686405">rrrr</translation>
-<translation id="8243989288843872594">Toto upozornenie už nikdy nezobrazovať</translation>
+<translation id="8243989288843872594">Túto výstrahu už nikdy nezobrazovať</translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="835897206747267392">Neplatná hodnota.</translation>
 <translation id="839593075537728968">Hodnota musí byť v rozsahu od <ph name="MINIMUM_TIME" /> do <ph name="MAXIMUM_TIME" />.</translation>
@@ -104,7 +104,7 @@
 <translation id="8637593834423658414">1,75</translation>
 <translation id="8668988909814782445">Zalomiť riadok</translation>
 <translation id="8750798805984357768">Vyberte jednu z týchto možností.</translation>
-<translation id="8753001114009816390">Tento web používa XSLT. Táto funkcia <ph name="REMOVAL_LINK" />. Keď sa to stane, táto stránka sa už pravdepodobne nebude zobrazovať správne. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať si ju ďalej. V opačnom prípade by ste mali kontaktovať správcu webu a požiadať ho o ďalšie informácie.</translation>
+<translation id="8753001114009816390">Tento web používa technológiu XSLT, ktorá bude <ph name="REMOVAL_LINK" />. Až sa to stane, táto stránka sa už pravdepodobne nebude zobrazovať správne. Možno si budete môcť <ph name="EXTENSION_LINK" />, ktoré vám umožní pozerať ju ďalej. V opačnom prípade by ste mali kontaktovať správcu webu a požiadať ho o ďalšie informácie.</translation>
 <translation id="8845239796550121995">Prenáša sa do televízora</translation>
 <translation id="8875657656876809964">Chyba prehrávania videa</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>

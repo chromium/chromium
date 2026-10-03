@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">برگه بازی وجود ندارد</translation>
 <translation id="1469381646033328562">حساب شما را ولی‌تان مدیریت می‌کند.
 <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">از زمان تکمیل «ایجاد گروه زبانه‌ها»</translation>
 <translation id="147982357559798527">تغییر کرده است</translation>
 <translation id="1481450969185702334">پیدا کردن و پر کردن</translation>
 <translation id="1483493594462132177">ارسال</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">گزارش یک مشکل</translation>
 <translation id="2222149859067335623">دست‌یابی «<ph name="SITE_DOMAIN" />» به دوربین مسدود شده است</translation>
 <translation id="2223461067862937305">ایجاد رمزینه پاسخ‌سریع</translation>
+<translation id="222798989929574238">از بیش‌از ۲۰ عکس برای جستجو استفاده کردید</translation>
 <translation id="2230173723195178503">صفحه وب بار شد</translation>
 <translation id="2236949375853147973">فعالیت‌هایم</translation>
 <translation id="2237869114829007407">نمای کلی و اطلاعات آماری کلیدی هر صفحه یا موضوعی را دریافت کنید</translation>
@@ -1763,6 +1765,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6525550806864373485">منو ویرایش</translation>
 <translation id="6527208859483186860">‏پس‌زمینه {position} از {total}</translation>
 <translation id="6527303717912515753">هم‌رسانی</translation>
+<translation id="6529706885792457023">بیش‌از ۱۵ زبانه را سازمان‌دهی کردید</translation>
 <translation id="6532106788206463496">ذخیره تغییرات</translation>
 <translation id="6536759809440150308">باز کردن «<ph name="GROUP_TITLE" />»، گروه <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6642362222295953972">رفتن به برگه موجود</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
 <translation id="6645899968535965230">رمزینه پاسخ‌سریع: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">بیش‌از ۲۵ گذرواژه را بررسی کردید</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659660757330712663">برای جابه‌جایی بین زبانه‌ها، می‌توانید روی نوارابزار تند بکشید.</translation>
 <translation id="6663529247339810546">تصویر ذخیره نشد</translation>
@@ -1966,6 +1970,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7145337554745942724">به‌روز کردن گواهینامه رانندگی</translation>
 <translation id="7146301801400584641">فایل تقویم دردسترس است</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
+<translation id="7151361008641622036">{count,plural, =1{‫۱ زبانه را سازمان‌دهی کردید}one{‫ # زبانه را سازمان‌دهی کردید}other{‫ # زبانه را سازمان‌دهی کردید}}</translation>
 <translation id="7154417656353909837">برداشتن نشانی‌ها</translation>
 <translation id="7161230316646448869">همگام‌سازی نشانک‌ها، سابقه، و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="7165323152084385463">شماره شناسایی خودرو</translation>
@@ -1979,7 +1984,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7203496777391039568">داده‌های سازمانتان ایمن و خصوصی است</translation>
 <translation id="720399613139435155">ترجمه نشد</translation>
 <translation id="7204922488054642675">خبرهای شخصی‌سازی‌شده</translation>
-<translation id="7206979415662233817">شرایط خدمات</translation>
+<translation id="7206979415662233817">شروط خدمات</translation>
 <translation id="721218676460477064">این مقاله را خلاصه کن</translation>
 <translation id="7215621211572884440">بالاپر مجاز است</translation>
 <translation id="7218491361283758048">کد پستی</translation>
@@ -2396,6 +2401,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8481184073299279701">برای جمع‌آوری گزارش‌ها و خطاهای آتی کنسول جاوا اسکریپت از همه زبانه‌ها، روی دکمه «شروع گزارش‌گیری» تک‌ضرب بزنید. تا زمان بسته شدن این صفحه یا ضربه زدن روی «توقف گزارش‌گیری» گزارش جمع‌آوری می‌شود (و فقط در حافظه ذخیره می‌شود).</translation>
 <translation id="8487667956631253959">فعال</translation>
 <translation id="8487700953926739672">دردسترس در حالت آفلاین</translation>
+<translation id="8488065047914929586">از زمان تکمیل «ذخیره گذرواژه»</translation>
 <translation id="8488923644885757471">پنجره جدید</translation>
 <translation id="8490629238792920282">پیوند ایجاد نشد</translation>
 <translation id="8501469528283376592">حذف خودکار بارگیری‌ها</translation>
@@ -2543,6 +2549,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8890516388109605451">منابع</translation>
 <translation id="8893208530912252670">ویدیو</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
+<translation id="890009681345348416">بیش‌از ۴۰ گذرواژه به‌طور خودکار تکمیل شدند</translation>
 <translation id="8900845556227858314">برنامه مرورگر</translation>
 <translation id="890565330728586731">برگشتن</translation>
 <translation id="8907722425137681851">پیدا کردن در صفحه…</translation>

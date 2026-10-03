@@ -1199,6 +1199,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5848257610304005265">Deschizi fișierul PDF cu <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Nu mai permiți accesul?</translation>
 <translation id="5853623416121554550">întreruptă</translation>
+<translation id="5855375823365231964">Despre acest profil</translation>
 <translation id="5855546874025048181">Rafinează: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, filă incognito de înregistrare cu selectare multiplă</translation>
 <translation id="5857447844686706637">A apărut o eroare. Nu s-a putut actualiza Urmărește prețul.</translation>
@@ -1240,6 +1241,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="6039379616847168523">Accesează fila următoare</translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="604124094241169006">Automat</translation>
+<translation id="6041959688070413372">Gestionează conexiunea dintre serviciile de căutare și aplicațiile Google Workspace, cum ar fi Google Drive</translation>
 <translation id="6042308850641462728">Mai multe</translation>
 <translation id="6047066316630165190">Deschide comutatorul de file tip grilă</translation>
 <translation id="604996488070107836">Fișierul <ph name="FILE_NAME" /> nu a fost descărcat din cauza unei erori necunoscute.</translation>

@@ -775,6 +775,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, separador a gravar fixado multisselecionado</translation>
 <translation id="4137746084635924146">Idioma do dispositivo atual</translation>
 <translation id="414128724510021958">Sites para computador pedidos por predefinição</translation>
+<translation id="4150837143272125910">Foi transferida uma atualização</translation>
 <translation id="4162867837470729563">Lista de opções de partilha à altura total.</translation>
 <translation id="4164642020717536140">Navegação na Web rápida e segura</translation>
 <translation id="4165077084524712774">Mais ferramentas</translation>
@@ -852,7 +853,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4404568932422911380">Sem marcadores</translation>
 <translation id="4405224443901389797">Mover para…</translation>
 <translation id="4405636711880428279">Remover o seu cartão virtual?</translation>
-<translation id="4408965460206576430">Este ficheiro contém software malicioso ou é proveniente de um site suspeito</translation>
+<translation id="4408965460206576430">Este ficheiro contém malware ou é proveniente de um site suspeito</translation>
 <translation id="4409014848144759297"><ph name="WEBSITE_TITLE" /> e mais <ph name="TAB_COUNT" /> separadores</translation>
 <translation id="441100617989818073">Separ./grupos não usados/duplic.</translation>
 <translation id="4412123112245770507">Reduzir secção</translation>
@@ -1199,6 +1200,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5848257610304005265">Abrir o PDF com a app <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Parar a partilha?</translation>
 <translation id="5853623416121554550">em pausa</translation>
+<translation id="5855375823365231964">Acerca deste perfil</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar multisselecionado</translation>
 <translation id="5857447844686706637">Algo correu mal. Não foi possível atualizar a opção Monitorizar preço.</translation>
@@ -1240,6 +1242,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="6039379616847168523">Ir para o próximo separador</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>
+<translation id="6041959688070413372">Faça a gestão da associação entre os serviços de pesquisa e as apps do Google Workspace, como o Google Drive</translation>
 <translation id="6042308850641462728">Mais</translation>
 <translation id="6047066316630165190">Abra o Switcher de separadores em grelha</translation>
 <translation id="604996488070107836">A transferência de <ph name="FILE_NAME" /> falhou devido a um erro desconhecido.</translation>
@@ -1400,6 +1403,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6565959834589222080">O Wi-Fi é utilizado quando estiver disponível.</translation>
 <translation id="657177046675873214">Para ver os seus marcadores em todos os dispositivos, ative os "Marcadores" nas definições</translation>
 <translation id="6573096386450695060">Permitir sempre</translation>
+<translation id="657480975869429144">Está disponível uma nova versão do Chrome</translation>
 <translation id="658099107946526506">Proteja a sua navegação anónima com um PIN para evitar o acesso indesejado</translation>
 <translation id="6583199322650523874">Adicionar a página atual aos marcadores</translation>
 <translation id="6588043302623806746">Usar o DNS seguro</translation>

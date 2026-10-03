@@ -1199,6 +1199,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5848257610304005265">Želite odpreti PDF z aplikacijo <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite ustaviti deljenje?</translation>
 <translation id="5853623416121554550">začasno ustavljeno</translation>
+<translation id="5855375823365231964">O tem profilu</translation>
 <translation id="5855546874025048181">Spremeni: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, večkrat izbrani anonimni zavihek za snemanje</translation>
 <translation id="5857447844686706637">Prišlo je do napake. Spremljanja cene ni bilo mogoče posodobiti.</translation>
@@ -1240,6 +1241,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="6039379616847168523">Premik na naslednji zavihek</translation>
 <translation id="6040143037577758943">Zapri</translation>
 <translation id="604124094241169006">Samodejno</translation>
+<translation id="6041959688070413372">Upravljanje povezave med storitvami iskanja in aplikacijami storitve Google Workspace, kot je Google Drive</translation>
 <translation id="6042308850641462728">Več</translation>
 <translation id="6047066316630165190">Odprite preklopnik zavihkov v mreži</translation>
 <translation id="604996488070107836">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi neznane napake.</translation>

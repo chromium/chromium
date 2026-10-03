@@ -145,14 +145,14 @@
 <translation id="2301513536169703857">Para aceder às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chrome</translation>
 <translation id="2307973900865360088">Manter na Dock</translation>
 <translation id="2309047409763057870">Esta é uma instalação secundária do Google Chrome, pelo que não pode tornar-se o navegador predefinido.</translation>
-<translation id="2345992953227471816">O Chrome encontrou software malicioso nestas extensões:</translation>
+<translation id="2345992953227471816">O Chrome encontrou malware nestas extensões:</translation>
 <translation id="2358140144860869442">Para aceder à sua Lista de leitura e muito mais em todos os seus dispositivos, inicie sessão no Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chrome estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chrome estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chrome estão a aceder a # dispositivos HID}}</translation>
 <translation id="2424440923901031101">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
-<translation id="2472092250898121027">Esta extensão contém software malicioso e não é segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="2472092250898121027">Esta extensão contém malware e não é segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2482846200327569645"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso aos seus marcadores e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
 <translation id="2513154137948333830">Reinício necessário: <ph name="INSTALL_SUCCESS" /></translation>
@@ -230,7 +230,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="310459126943037700">Falha ao terminar as tarefas.</translation>
 <translation id="3104828284009500087">Pesquise qualquer conteúdo na página</translation>
 <translation id="3112458742631356345">O Chrome bloqueou esta transferência porque o ficheiro não é habitualmente transferido e pode ser perigoso</translation>
-<translation id="3119573284443908657">O Chrome bloqueou esta transferência porque o ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
+<translation id="3119573284443908657">O Chrome bloqueou esta transferência porque o ficheiro de arquivo inclui outros ficheiros que podem ocultar malware</translation>
 <translation id="3124332159330678621">Personalize o Chrome para dar um novo aspeto ao seu navegador</translation>
 <translation id="3125851611828811913">Pesquisar e fazer perguntas em qualquer lugar, mesmo que o Chrome esteja minimizado. Permite que o Chrome seja executado em segundo plano.</translation>
 <translation id="3130333203120345554">Nova pesquisa</translation>
@@ -285,7 +285,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="3635073343384702370">O Chrome consegue verificar as suas palavras-passe quando as guarda</translation>
 <translation id="3636970668267555808">Defina o Chrome como o seu navegador predefinido para ter acesso fácil às funcionalidades que conhece, adora e em que confia.</translation>
 <translation id="3667616615096815454">Não é possível instalar. O servidor não reconhece a aplicação.</translation>
-<translation id="3673813398384385993">O Chrome encontrou software malicioso na extensão "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="3673813398384385993">O Chrome encontrou malware na extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>
 <translation id="3703994572283698466">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
@@ -362,7 +362,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="4381814455597163081">Está a ajudar a melhorar o Chrome enviando estatísticas de utilização e relatórios de falhas para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4389991535395284064">Ao navegar no Modo de navegação anónima, o Chrome envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
 <translation id="4400772909124543403">Nenhuma atualização disponível</translation>
-<translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
+<translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o malware.</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Partilhe este documento com o Gemini no Chrome para obter uma vista geral rápida e fazer perguntas de seguimento</translation>
 <translation id="4450664632294415862">Chrome – Início de sessão na rede – <ph name="PAGE_TITLE" /></translation>

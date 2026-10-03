@@ -867,6 +867,7 @@ Možete ukloniti ovaj prijedlog iz Chromea. Originalni izvor se neće izbrisati.
 <translation id="2436186046335138073">Dozvoliti da <ph name="HANDLER_HOSTNAME" /> otvori sve linkove za protokol <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Pohranjivanje kartice na Google računu nije uspjelo. Umjesto toga je sačuvana u Chromeu na ovom uređaju.</translation>
 <translation id="2438874542388153331">Četverostruko bušenje na desnoj strani</translation>
+<translation id="2442033148418774391">Obavještenje o pametnijem automatskom popunjavanju koje ostaje privatno je zatvoreno</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />neće pohranjivati<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />historiju pregledanja
@@ -879,6 +880,7 @@ Možete ukloniti ovaj prijedlog iz Chromea. Originalni izvor se neće izbrisati.
 <translation id="2451607499823206582">Pratite</translation>
 <translation id="2452837234288608067">Pružanje pomoći nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="2453045048779611513">Vaša organizacija ograničava šta možete pohranjivati</translation>
+<translation id="2456490423293803882">Obavještenje o pametnijem automatskom popunjavanju koje ostaje privatno otvoreno je u punoj visini</translation>
 <translation id="2459882793359532780">primijenjena pravila preglednika (pravila uređaja i profila)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vam pruža centraliziran alat za konfiguriranje pravila preglednika iz oblaka</translation>
 <translation id="2461822463642141190">Trenutno</translation>
@@ -1108,6 +1110,7 @@ Možete ukloniti ovaj prijedlog iz Chromea. Originalni izvor se neće izbrisati.
 <translation id="2878197950673342043">Presavijanje postera</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">koristiti zaključavanje ekrana za popunjavanje lozinki</translation>
+<translation id="2880119244122776372">Izrada i kodiranje</translation>
 <translation id="2881276955470682203">Sačuvati karticu?</translation>
 <translation id="2882280148032777436">Izbrišite broj poznatog putnika</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje</translation>
@@ -2336,7 +2339,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4887435305021446590">Otvori Gmail</translation>
 <translation id="4887785555357166111">Sačuvaj kadar videozapisa</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da izbrišete historiju pregledanja, kolačiće, keš memoriju i drugi sadržaj u postavkama Chromea</translation>
-<translation id="4892391379033030113">Otvaranje novog izoliranog prozora aktiviranjem dugmeta Otvori izolirani prozor radi privatnog pregledanja</translation>
+<translation id="4892391379033030113">Otvaranje novog izoliranog prozora aktiviranjem dugmeta Otvori izolirani prozor, radi privatnog pregledanja</translation>
 <translation id="4892518386797173871">Zadnji dio</translation>
 <translation id="4894390983254799375">kao što su ID uređaja, naziv, verzija OS-a i korisničko ime za OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3914,6 +3917,7 @@ Dodatni detalji:
 <translation id="753713322968419914">Ukloniti kućnu adresu iz automatskog popunjavanja u Chromeu?</translation>
 <translation id="753714465667062283">Prijavite se da sačuvate fotografiju</translation>
 <translation id="7537536606612762813">Obavezno</translation>
+<translation id="7540924742308928499">Generirajte ideje i sažmite</translation>
 <translation id="7543525346216957623">Pitaj roditelja</translation>
 <translation id="7546409722674205727">Pokretanje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ispravite greške s povezivanjem</translation>

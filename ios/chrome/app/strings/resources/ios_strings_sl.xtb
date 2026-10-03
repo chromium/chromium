@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Ni odprtih zavihkov</translation>
 <translation id="1469381646033328562">Tvoj račun upravlja starš.
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">od dokončanja opravila »Ustvarjanje skupine zavihkov«</translation>
 <translation id="147982357559798527">Spremenjeno</translation>
 <translation id="1481450969185702334">Iskanje in izpolnjevanje</translation>
 <translation id="1483493594462132177">Pošlji</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Prijavite težavo</translation>
 <translation id="2222149859067335623">Spletno mesto »<ph name="SITE_DOMAIN" />« ima blokiran dostop do fotoaparata</translation>
 <translation id="2223461067862937305">Ustvari kodo QR</translation>
+<translation id="222798989929574238">Za iskanje ste uporabili več kot 20 fotografij</translation>
 <translation id="2230173723195178503">Spletna stran je naložena</translation>
 <translation id="2236949375853147973">Moja dejavnost</translation>
 <translation id="2237869114829007407">Pridobite pregled in ključne vpoglede za katero koli stran ali temo</translation>
@@ -1763,6 +1765,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6525550806864373485">Urejanje menija</translation>
 <translation id="6527208859483186860">ozadje {position} od {total}</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
+<translation id="6529706885792457023">Organizirali ste več kot 15 zavihkov</translation>
 <translation id="6532106788206463496">Shrani spremembe</translation>
 <translation id="6536759809440150308">Odpiranje skupine <ph name="GROUP_TITLE" />, skupina <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6642362222295953972">Preklop na obstoječi zavihek</translation>
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6645899968535965230">Koda QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Preverili ste več kot 25 gesel</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659660757330712663">Če želite preklapljati med zavihki, lahko s prstom povlečete po orodni vrstici.</translation>
 <translation id="6663529247339810546">Slike ni mogoče shraniti</translation>
@@ -1966,6 +1970,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7145337554745942724">Posodobite vozniško dovoljenje</translation>
 <translation id="7146301801400584641">Na voljo je datoteka koledarja</translation>
 <translation id="7149893636342594995">Zadnjih 24 ur</translation>
+<translation id="7151361008641622036">{count,plural, =1{Organizirali ste 1 zavihek}one{Organizirali ste # zavihek}two{Organizirali ste # zavihka}few{Organizirali ste # zavihke}other{Organizirali ste # zavihkov}}</translation>
 <translation id="7154417656353909837">Odstrani naslove</translation>
 <translation id="7161230316646448869">Sinhronizirajte zaznamke, zgodovino in drugo v vseh napravah</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8481184073299279701">Dotaknite se gumba »Začni zapisovanje dnevnikov«, če želite zbirati prihodnje dnevnike konzole JavaScript in napake z vseh zavihkov. Dnevniki se bodo zbirali (in shranjevali samo v pomnilniku), dokler ta stran ne bo zaprta ali dokler se ne dotaknete »Ustavi zapisovanje dnevnikov«.</translation>
 <translation id="8487667956631253959">Vklop</translation>
 <translation id="8487700953926739672">Na voljo brez povezave</translation>
+<translation id="8488065047914929586">od dokončanja opravila »Shranjevanje gesla«</translation>
 <translation id="8488923644885757471">Novo okno</translation>
 <translation id="8490629238792920282">Povezave ni mogoče ustvariti</translation>
 <translation id="8501469528283376592">Samodejni izbris prenosov</translation>
@@ -2543,6 +2549,7 @@ Kadar koli lahko znova začnete.</translation>
 <translation id="8890516388109605451">Viri</translation>
 <translation id="8893208530912252670">Videoposnetki</translation>
 <translation id="8898822736010347272">Pošilja URL-je nekaterih strani, ki jih obiščete, omejene podatke o sistemu in nekatere vsebine strani Googlu zaradi pomoči pri odkrivanju novih groženj in zaščiti vseh uporabnikov v spletu.</translation>
+<translation id="890009681345348416">Več kot 40 gesel je bilo samodejno izpolnjenih</translation>
 <translation id="8900845556227858314">Brskalnik</translation>
 <translation id="890565330728586731">Nazaj</translation>
 <translation id="8907722425137681851">Najdi na strani …</translation>

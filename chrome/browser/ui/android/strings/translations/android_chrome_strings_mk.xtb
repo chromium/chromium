@@ -1199,6 +1199,7 @@
 <translation id="5848257610304005265">Да се отвори PDF-датотеката со <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Да се сопре споделувањето?</translation>
 <translation id="5853623416121554550">паузирано</translation>
+<translation id="5855375823365231964">За профилов</translation>
 <translation id="5855546874025048181">Рафинирајте: „<ph name="REFINE_TEXT" />“</translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, повеќекратно избрана картичка „Инкогнито“ за снимање</translation>
 <translation id="5857447844686706637">Нешто тргна наопаку. Не може да се ажурира „Следете ја цената“.</translation>
@@ -1240,6 +1241,7 @@
 <translation id="6039379616847168523">Скокнете на следната картичка</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="604124094241169006">Автоматски</translation>
+<translation id="6041959688070413372">Управувајте со врската меѓу пребарувачките услуги и апликациите Google Workspace, како Google Drive</translation>
 <translation id="6042308850641462728">Повеќе</translation>
 <translation id="6047066316630165190">Отворете го менувачот на картички во мрежа</translation>
 <translation id="604996488070107836">Преземањето на <ph name="FILE_NAME" /> не успеа поради непозната грешка.</translation>

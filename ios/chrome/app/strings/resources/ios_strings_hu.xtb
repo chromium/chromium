@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Nincs megnyitott lap</translation>
 <translation id="1469381646033328562">A fiókodat az egyik szülőd kezeli.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">a „Lapcsoport létrehozása” elvégzése óta</translation>
 <translation id="147982357559798527">Módosítva</translation>
 <translation id="1481450969185702334">Keresés és kitöltés</translation>
 <translation id="1483493594462132177">Küldés</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Probléma bejelentése</translation>
 <translation id="2222149859067335623">A(z) „<ph name="SITE_DOMAIN" />” nem férhet hozzá az Ön kamerájához</translation>
 <translation id="2223461067862937305">QR-kód létrehozása</translation>
+<translation id="222798989929574238">Több mint 20 fotót használt a kereséshez</translation>
 <translation id="2230173723195178503">A weboldal betöltött</translation>
 <translation id="2236949375853147973">Saját tevékenységek</translation>
 <translation id="2237869114829007407">Áttekintést és fontos statisztikákat kaphat bármilyen oldallal vagy témával kapcsolatban</translation>
@@ -1763,6 +1765,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6525550806864373485">Szerkesztés menü</translation>
 <translation id="6527208859483186860">{total}/{position}. háttér</translation>
 <translation id="6527303717912515753">Megosztás</translation>
+<translation id="6529706885792457023">Ön több mint 15 lapot rendszerezett</translation>
 <translation id="6532106788206463496">Módosítások mentése</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> megnyitása, <ph name="NUMBER_OF_TABS" /> tartalmú csoport, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6642362222295953972">Váltás a meglévő lapra</translation>
 <translation id="6643016212128521049">Törlés</translation>
 <translation id="6645899968535965230">QR-kód: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Több mint 25 jelszót ellenőrzött</translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="6659660757330712663">A lapok közötti váltáshoz csúsztasson az eszköztáron.</translation>
 <translation id="6663529247339810546">A kép nem menthető</translation>
@@ -1966,6 +1970,7 @@ Ha a számítógépén szeretné folytatni, váltson a következőre: <ph name="
 <translation id="7145337554745942724">Vezetői engedély frissítése</translation>
 <translation id="7146301801400584641">Rendelkezésre áll egy naptárfájl</translation>
 <translation id="7149893636342594995">Az elmúlt 24 órából</translation>
+<translation id="7151361008641622036">{count,plural, =1{Ön 1 lapot rendszerezett}other{Ön # lapot rendszerezett}}</translation>
 <translation id="7154417656353909837">Címek eltávolítása</translation>
 <translation id="7161230316646448869">Könyvjelzők, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="7165323152084385463">Járműazonosító szám</translation>
@@ -2396,6 +2401,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8481184073299279701">A „Naplózás indítása” gombra koppintva kezdheti meg a jövőbeli JavaScript-konzolnaplók és -hibák gyűjtését az összes lapról. A böngésző addig gyűjti (és tárolja kizárólag a memóriában) a naplókat, amíg Ön be nem zárja az oldalt, vagy rá nem koppint a „Naplózás leállítása” gombra.</translation>
 <translation id="8487667956631253959">Bekapcsolva</translation>
 <translation id="8487700953926739672">Offline elérhető</translation>
+<translation id="8488065047914929586">a „Jelszó mentése” elvégzése óta</translation>
 <translation id="8488923644885757471">Új ablak</translation>
 <translation id="8490629238792920282">Nem sikerült a link létrehozása</translation>
 <translation id="8501469528283376592">Letöltések automatikus törlése</translation>
@@ -2543,6 +2549,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8890516388109605451">Források</translation>
 <translation id="8893208530912252670">Videók</translation>
 <translation id="8898822736010347272">Egyes felkeresett oldalak URL-jeit, korlátozott rendszer-információkat és bizonyos oldaltartalmakat küld el a Google-nak, hogy könnyebben felfedezhetők legyenek az internetezőkre leselkedő új veszélyek, és meg lehessen védeni a felhasználókat.</translation>
+<translation id="890009681345348416">Több mint 40 jelszó automatikusan kitöltve</translation>
 <translation id="8900845556227858314">Böngészőalkalmazás</translation>
 <translation id="890565330728586731">Vissza</translation>
 <translation id="8907722425137681851">Keresés az oldalon…</translation>

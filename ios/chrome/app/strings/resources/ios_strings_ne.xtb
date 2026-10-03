@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">कुनै पनि खुला ट्याब छैन</translation>
 <translation id="1469381646033328562">तपाईंका अभिभावक तपाईंको खाता व्यवस्थापन गर्नुहुन्छ।
 <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ट्याब समूह बनाउनुहोस्" कार्य सम्पन्न गरेदेखि</translation>
 <translation id="147982357559798527">परिवर्तन गरिएको</translation>
 <translation id="1481450969185702334">भेट्टाउनुहोस् र भर्नुहोस्</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">मुद्दा उजुरी गर्नुहोस्</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" लाई तपाईंको क्यामेरा एक्सेस गर्न रोक लगाइएको छ</translation>
 <translation id="2223461067862937305">QR कोड बनाउनुहोस्</translation>
+<translation id="222798989929574238">तपाईंले खोज्नका निम्ति २० वटाभन्दा बढी फोटो प्रयोग गर्नुभएको छ</translation>
 <translation id="2230173723195178503">वेबपृष्ठ लोड गरियो</translation>
 <translation id="2236949375853147973">मेरो गतिविधि</translation>
 <translation id="2237869114829007407">कुनै पनि पेज वा विषयको संक्षिप्त जानकारी र मुख्य विश्लेषणात्मक डेटा प्राप्त गर्नुहोस्</translation>
@@ -1405,7 +1407,7 @@
 <translation id="5443636120437209490">स्वतः अझ राम्रो ब्राउजिङ</translation>
 <translation id="5444892875087332195">बुकमार्कहरू</translation>
 <translation id="5447973833955560753">रिकभरी पासवर्ड</translation>
-<translation id="5448623529214315261"><ph name="INDEX" /> फोटो सेभ गरिएको छ</translation>
+<translation id="5448623529214315261">फोटो <ph name="INDEX" /> सेभ गरिएको छ</translation>
 <translation id="5452354193031718372">भरपर्दो पासवर्ड प्रयोग गर्नुहोस्:</translation>
 <translation id="5453088693079603292">के कस्ता गतिविधि सङ्कलन गरिन्छन्</translation>
 <translation id="5454211924362324495">अरूलाई आफ्नो पासवर्ड प्रयोग गर्न नदिन <ph name="BEGIN_LINK" /><ph name="WEBSITE" /> मा गई पासवर्ड बदल्नुहोस्<ph name="END_LINK" /></translation>
@@ -1763,6 +1765,7 @@
 <translation id="6525550806864373485">मेनु सम्पादन गर्नुहोस्</translation>
 <translation id="6527208859483186860">{total} वटामध्ये {position} औँ ब्याकग्राउन्ड</translation>
 <translation id="6527303717912515753">साझा गर्नुहोस्</translation>
+<translation id="6529706885792457023">तपाईंले १५ वटाभन्दा बढी ट्याबहरू व्यवस्थित गर्नुभएको छ</translation>
 <translation id="6532106788206463496">परिवर्तनहरू सुरक्षित गर्ने</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> खोल्नुहोस्, <ph name="NUMBER_OF_TABS" /> वटा ट्याब भएको समूह, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@
 <translation id="6642362222295953972">विद्यमान ट्याबमा जानुहोस्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645899968535965230">QR कोड: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">तपाईंले २५ वटाभन्दा बढी पासवर्ड जाँच्नुभएको छ</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659660757330712663">तपाईं एउटा ट्याबबाट अर्को ट्याबमा जान टुलबार स्वाइप गर्न सक्नुहुन्छ।</translation>
 <translation id="6663529247339810546">फोटो सेभ गर्न सकिएन</translation>
@@ -1966,6 +1970,7 @@
 <translation id="7145337554745942724">चालक अनुमतिपत्रसम्बन्धी जानकारी अपडेट गर्नुहोस्</translation>
 <translation id="7146301801400584641">पात्रोको फाइल उपलब्ध छ</translation>
 <translation id="7149893636342594995">पछिल्ला २४ घन्टा</translation>
+<translation id="7151361008641622036">{count,plural, =1{तपाईंले एउटा ट्याब व्यवस्थित गर्नुभएको छ}other{तपाईंले # वटा ट्याब व्यवस्थित गर्नुभएको छ}}</translation>
 <translation id="7154417656353909837">ठेगानाहरू हटाउनुहोस्</translation>
 <translation id="7161230316646448869">सबै डिभाइसहरूमा आफ्ना बुकमार्क, हिस्ट्री तथा थप कुराहरू सिंक गर्नुहोस्</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@
 <translation id="8481184073299279701">सबै ट्याबहरूबाट JavaScript कन्सोलका भावी लग तथा त्रुटिहरू सङ्कलन गर्न "लग गर्न सुरु गर्नुहोस्" मा ट्याप गर्नुहोस्। यो पेज बन्द नगरेसम्म वा "लग गर्न छाड्नुहोस्" बटन ट्याप नगरेसम्म लगहरू सङ्कलन गरिने छ (र मेमोरीमा मात्र भण्डारण गरिने छ)।</translation>
 <translation id="8487667956631253959">अन छ</translation>
 <translation id="8487700953926739672">अफलाईन उपलब्ध</translation>
+<translation id="8488065047914929586">"पासवर्ड सेभ गर्नुहोस्" कार्य सम्पन्न गरेदेखि</translation>
 <translation id="8488923644885757471">नयाँ विन्डो</translation>
 <translation id="8490629238792920282">लिंक बनाउन सकिएन</translation>
 <translation id="8501469528283376592">डाउनलोड गरिएका सामग्री स्वतः मेटाउनुहोस्</translation>
@@ -2543,6 +2549,7 @@
 <translation id="8890516388109605451">स्रोतहरू</translation>
 <translation id="8893208530912252670">भिडियोहरू</translation>
 <translation id="8898822736010347272">नयाँ खतराहरू पत्ता लगाउन र वेब प्रयोग गर्ने सम्पूर्ण प्रयोगकर्ताहरूलाई सुरक्षित राख्न Google लाई तपाईंले हेर्ने केही पृष्ठका URL, प्रणालीसम्बन्धी निश्चित जानकारी र पृष्ठका केही सामग्रीहरू पठाउँछ।</translation>
+<translation id="890009681345348416">४० भन्दा बढी पासवर्ड अटोफिल गरिएका छन्</translation>
 <translation id="8900845556227858314">ब्राउजर एप</translation>
 <translation id="890565330728586731">पछाडि</translation>
 <translation id="8907722425137681851">पेजमा खोज्नुहोस्…</translation>

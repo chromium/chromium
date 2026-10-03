@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">কোনো খোলা টেব নাই</translation>
 <translation id="1469381646033328562">আপোনাৰ অভিভাৱকে আপোনাৰ একাউণ্টটো পৰিচালনা কৰে।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"টেবৰ গোট সৃষ্টি কৰক" কাৰ্যটো সম্পূৰ্ণ কৰাৰ পৰা</translation>
 <translation id="147982357559798527">সলনি কৰা হৈছে</translation>
 <translation id="1481450969185702334">বিচাৰক আৰু পূৰ কৰক</translation>
 <translation id="1483493594462132177">পঠিয়াওক</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">কোনো সমস্যাৰ অভিযোগ দিয়ক</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />"ক আপোনাৰ কেমেৰা এক্সেছ কৰাৰ পৰা অৱৰোধ কৰা হৈছে</translation>
 <translation id="2223461067862937305">এটা কিউআৰ ক’ড সৃষ্টি কৰক</translation>
+<translation id="222798989929574238">আপুনি সন্ধান কৰিবলৈ ২০+ খন ফট’ ব্যৱহাৰ কৰিছে</translation>
 <translation id="2230173723195178503">ৱেবপৃষ্ঠা ল’ড হ’ল</translation>
 <translation id="2236949375853147973">মোৰ কাৰ্যকলাপ</translation>
 <translation id="2237869114829007407">যিকোনো পৃষ্ঠা বা বিষয়বস্তুৰ বাবে এটা ৰূপৰেখা আৰু গুৰুত্বপূৰ্ণ অন্তৰ্দৃষ্টি লাভ কৰক</translation>
@@ -1763,6 +1765,7 @@
 <translation id="6525550806864373485">মেনু সম্পাদনা কৰক</translation>
 <translation id="6527208859483186860">{total} টা পৃষ্ঠভূমিৰ ভিতৰত {position} নম্বৰটো</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
+<translation id="6529706885792457023">আপুনি ১৫ টাতকৈও অধিক টেব শৃংখলাবদ্ধ কৰিছে</translation>
 <translation id="6532106788206463496">সালসলনিবোৰ ছেভ কৰক</translation>
 <translation id="6536759809440150308"><ph name="NUMBER_OF_TABS" /> টা টেবৰ গোট, <ph name="GROUP_TITLE" /> খোলক, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@
 <translation id="6642362222295953972">ইতিমধ্যে থকা টেবলৈ যাওক</translation>
 <translation id="6643016212128521049">মচক</translation>
 <translation id="6645899968535965230">QR ক’ড: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">আপুনি ২৫ টাতকৈও অধিক পাছৱৰ্ড পৰীক্ষা কৰিছে</translation>
 <translation id="6657585470893396449">পাছৱৰ্ড</translation>
 <translation id="6659660757330712663">আপুনি টেবসমূহৰ মাজত সালসলনি কৰিবলৈ টুলবাৰ ছোৱাইপ কৰিব পাৰে।</translation>
 <translation id="6663529247339810546">প্ৰতিচ্ছবি ছেভ কৰিব নোৱাৰি</translation>
@@ -1966,6 +1970,7 @@
 <translation id="7145337554745942724">চালকৰ অনুজ্ঞাপত্ৰ আপডে’ট কৰক</translation>
 <translation id="7146301801400584641">কেলেণ্ডাৰৰ ফাইল উপলব্ধ</translation>
 <translation id="7149893636342594995">যোৱা ২৪ ঘণ্টাত</translation>
+<translation id="7151361008641622036">{count,plural, =1{আপুনি ১ টা টেব শৃংখলাবদ্ধ কৰিছে}one{আপুনি # টা টেব শৃংখলাবদ্ধ কৰিছে}other{আপুনি # টা টেব শৃংখলাবদ্ধ কৰিছে}}</translation>
 <translation id="7154417656353909837">ঠিকনা আঁতৰাওক</translation>
 <translation id="7161230316646448869">আটাইবোৰ ডিভাইচত আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু অধিক ছিংক কৰক</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2402,6 +2407,7 @@
 <translation id="8481184073299279701">আটাইবোৰ টেবৰ পৰা ভৱিষ্যতৰ JavaScriptৰ কনছ’লৰ লগ আৰু আসোঁৱাহ সংগ্ৰহ কৰিবলৈ "লগ কৰা আৰম্ভ কৰক" বুটামটো টিপক। এই পৃষ্ঠাখন বন্ধ নকৰা বা "লগ কৰা বন্ধ কৰক" বুটামটো নিটিপা পৰ্যন্ত লগ সংগ্ৰহ কৰা হ’ব (আৰু কেৱল মেম’ৰীত ষ্ট’ৰ কৰা হ’ব)।</translation>
 <translation id="8487667956631253959">অন আছে</translation>
 <translation id="8487700953926739672">অফলাইনত উপলব্ধ</translation>
+<translation id="8488065047914929586">"এটা পাছৱৰ্ড ছেভ কৰক" সম্পূৰ্ণ কৰাৰ পৰা</translation>
 <translation id="8488923644885757471">নতুন ৱিণ্ড’</translation>
 <translation id="8490629238792920282">লিংক সৃষ্টি কৰিব পৰা নগ’ল</translation>
 <translation id="8501469528283376592">ডাউনল’ডসমূহ স্বয়ংক্ৰিয়ভাৱে মচা</translation>
@@ -2549,6 +2555,7 @@
 <translation id="8890516388109605451">উৎস</translation>
 <translation id="8893208530912252670">ভিডিঅ’</translation>
 <translation id="8898822736010347272">নতুন ভাবুকিবোৰ বিচাৰি পোৱাত আৰু ৱেবত থকা সকলোকে সুৰক্ষিত কৰাত সহায় কৰিবলৈ আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ, সীমিত ছিষ্টেমৰ তথ্য আৰু কিছুমান পৃষ্ঠাৰ সমল Googleলৈ পঠিয়ায়।</translation>
+<translation id="890009681345348416">৪০+ পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ কৰা হৈছে</translation>
 <translation id="8900845556227858314">ব্ৰাউজাৰ এপ্‌</translation>
 <translation id="890565330728586731">উভতি যাওক</translation>
 <translation id="8907722425137681851">পৃষ্ঠাখনত বিচাৰক…</translation>

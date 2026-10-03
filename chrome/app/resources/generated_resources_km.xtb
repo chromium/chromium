@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">ដក​សិទ្ធិចូល​ប្រើប្រាស់​ចេញ</translation>
 <translation id="1791662854739702043">បាន​ដំឡើង</translation>
 <translation id="1792619191750875668">អេក្រង់បន្ថែម</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">លាក់​ពាក្យសម្ងាត់​សម្រាប់ <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">ផ្ញើមតិស្ថាបនាដើម្បីជួយឲ្យយើងដោះស្រាយបញ្ហានេះ។</translation>
 <translation id="1795214765651529549">ប្រើបែបធម្មតា</translation>
@@ -2952,6 +2953,7 @@
 <translation id="323262942975422760">ជម្រើស​ច្រើនទៀត​ក្នុងការកែ ឬ​លុប <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">កម្មវិធីបណ្តាញ</translation>
 <translation id="3233271424239923319">បម្រុងទុក​កម្មវិធី និង​ឯកសារ Linux</translation>
+<translation id="3233577317461669428">រកមិនឃើញ​ឧបករណ៍​ផ្សេងទៀត​ទេ</translation>
 <translation id="3234251228180563751">ឈ្មោះអ្នកប្រើប្រាស់​មានតួអក្សរច្រើនជាង 1000 តួ</translation>
 <translation id="3234978181857588512">រក្សាទុក​ទៅ​ក្នុង​ឧបករណ៍</translation>
 <translation id="3237871032310650497">លុប​ទិន្នន័យ​គេហទំព័រ​សម្រាប់ <ph name="SITE_NAME" /> ដែលបានបែងចែក​នៅលើ <ph name="PARTITION_SITE_NAME" /> ឬ?</translation>
@@ -7003,6 +7005,7 @@
 <translation id="6356893102071098867">ពិនិត្យមើលថា​អ្នកបាន​ជ្រើសរើស​គណនី​ដែលត្រឹមត្រូវ</translation>
 <translation id="6357305427698525450">តំណដែលអាចប្រើបាន​មួយចំនួននឹងនៅ​តែបើកនៅក្នុង <ph name="APP_NAME" /> ឬ <ph name="APP_NAME_2" /> ដដែល។</translation>
 <translation id="6357750620525943720">លេខកូដសម្គាល់​ផ្សេងទៀត​ដែលមានស្ថិរភាព (ឧ. កូដតំណាង ឬ UUID)</translation>
+<translation id="6357830294871526418">ផ្ទាំង​នៅលើ​ឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="6358884629796491903">នាគ</translation>
 <translation id="6359640073754977254">រំកិលទៅ​ផ្ទាំង​ចុងក្រោយ</translation>
 <translation id="6361850914223837199">ព័ត៌មានលំអិតកំហុសឆ្គង៖</translation>

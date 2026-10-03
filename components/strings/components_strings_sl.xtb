@@ -867,6 +867,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2436186046335138073">Dovoli gostitelju <ph name="HANDLER_HOSTNAME" /> odpreti vse povezave za <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Te kartice ni bilo mogoče shraniti v računu Google. Namesto tega je shranjena v Chromu v tej napravi.</translation>
 <translation id="2438874542388153331">Četverno luknjanje na desni</translation>
+<translation id="2442033148418774391">Obvestilo o pametnejšem samodejnem izpolnjevanju, ki ostane zasebno, je zaprto</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ne bo shranjeval<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Zgodovine brskanja
@@ -879,6 +880,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2451607499823206582">Spremljanje</translation>
 <translation id="2452837234288608067">Pri tem vam nismo mogli pomagati. Poskusite znova.</translation>
 <translation id="2453045048779611513">Vaša organizacija omejuje, kaj je mogoče shraniti</translation>
+<translation id="2456490423293803882">Obvestilo o pametnejšem samodejnem izpolnjevanju, ki ostane zasebno, je odprto pri polni višini</translation>
 <translation id="2459882793359532780">Uporabljeni pravilniki brskalnika (pravilniki za računalnik in profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vam omogoča centralizirano orodje za konfiguriranje pravilnikov brskalnika v oblaku</translation>
 <translation id="2461822463642141190">Trenutno</translation>
@@ -1108,6 +1110,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2878197950673342043">Prepogibanje v obliki plakata</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">uporabiti zaklepanje zaslona za izpolnjevanje gesel.</translation>
+<translation id="2880119244122776372">Gradnja in kodiranje</translation>
 <translation id="2881276955470682203">Želite shraniti kartico?</translation>
 <translation id="2882280148032777436">Brisanje številke rednega potnika</translation>
 <translation id="2882949212241984732">Dvojno prepogibanje v obliki okna</translation>
@@ -3914,6 +3917,7 @@ Dodatne podrobnosti:
 <translation id="753713322968419914">Želite domači naslov odstraniti iz Chromovega samodejnega izpolnjevanja?</translation>
 <translation id="753714465667062283">Prijavite se, če želite shraniti fotografijo</translation>
 <translation id="7537536606612762813">Obvezen</translation>
+<translation id="7540924742308928499">Pridobivanje zamisli in povzemanje</translation>
 <translation id="7543525346216957623">Prosi starša</translation>
 <translation id="7546409722674205727">Zagon aplikacije <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Odpravljanje napak s povezavo</translation>

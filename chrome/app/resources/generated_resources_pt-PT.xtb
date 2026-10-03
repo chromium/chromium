@@ -100,7 +100,7 @@
 <translation id="1062407476771304334">Substituir</translation>
 <translation id="1064236804542808595">Restaurar atalhos da organização</translation>
 <translation id="1065369186007547872">O Chrome considera que não quer receber notificações deste site. Por isso, os pedidos são ocultados para reduzir as interrupções.</translation>
-<translation id="1066964438793906105">Analisar quanto à existência de software malicioso</translation>
+<translation id="1066964438793906105">Analisar quanto à existência de malware</translation>
 <translation id="1067661089446014701">Para maior segurança, pode encriptar as palavras-passe no seu dispositivo antes de serem guardadas na sua Conta Google</translation>
 <translation id="1067922213147265141">Outros serviços Google</translation>
 <translation id="106855837688344862">Eventos de toque</translation>
@@ -758,7 +758,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1576594961618857597">Avatar branco predefinido</translation>
 <translation id="1576729678809834061">Denunciar este resultado da pesquisa</translation>
 <translation id="1578488449637163638">Escuro</translation>
-<translation id="157931050206866263">Saiba mais acerca das análises de software malicioso</translation>
+<translation id="157931050206866263">Saiba mais acerca das análises de malware</translation>
 <translation id="1581962803218266616">Mostrar no Finder</translation>
 <translation id="1582955169539260415">eliminar [<ph name="FINGERPRINT_NAME" />]</translation>
 <translation id="1583127975413389276">O <ph name="LANGUAGE" /> é processado localmente e funciona offline</translation>
@@ -892,7 +892,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1674945585974615438">Desativar automaticamente os otimizadores do JavaScript em sites desconhecidos</translation>
 <translation id="1675964862374196038">Inscreva-se com <ph name="IDP_NAME" /></translation>
 <translation id="1677306805708094828">Não é possível adicionar <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
-<translation id="1678849866171627536">Falha ao analisar. Este ficheiro pode ser um vírus ou software malicioso.</translation>
+<translation id="1678849866171627536">Falha ao analisar. Este ficheiro pode ser um vírus ou malware.</translation>
 <translation id="1679068421605151609">Ferramentas para programadores</translation>
 <translation id="1679810534535368772">Tem a certeza de que quer sair?</translation>
 <translation id="167997285881077031">Definições de voz para a conversão de texto em voz</translation>
@@ -1372,7 +1372,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2046702855113914483">Ramen</translation>
 <translation id="2047279909708154872">{NUM_TABS,plural, =1{Pause o separador que está a abrandar o navegador}other{Pause os separadores que estão a abrandar o navegador}}</translation>
 <translation id="2048182445208425546">Aceder ao tráfego da sua rede</translation>
-<translation id="2048254245884707305">A verificar a existência de software malicioso…</translation>
+<translation id="2048254245884707305">A verificar a existência de malware…</translation>
 <translation id="204914487372604757">Criar atalho</translation>
 <translation id="2050339315714019657">Vertical</translation>
 <translation id="2051555741181591333">Desativar zona Wi-Fi automaticamente</translation>
@@ -1488,7 +1488,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2146263598007866206">Os sites podem transferir automaticamente ficheiros relacionados em simultâneo para poupar tempo.</translation>
 <translation id="2147218225094845757">Oculte o painel lateral</translation>
 <translation id="2147282432401652483">command</translation>
-<translation id="2147402320887035428">Este ficheiro pode ser software malicioso.<ph name="LINE_BREAK" />A Navegação Segura do Google está a verificar se este ficheiro não é seguro. Normalmente, uma análise demora alguns segundos.</translation>
+<translation id="2147402320887035428">Este ficheiro pode ser malware.<ph name="LINE_BREAK" />A Navegação Segura do Google está a verificar se este ficheiro não é seguro. Normalmente, uma análise demora alguns segundos.</translation>
 <translation id="2147584561902725329">Última execução da tarefa periódica:</translation>
 <translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Erro ao montar a partilha. A partilha especificada não foi encontrada na rede.</translation>
@@ -1716,6 +1716,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2322622365472107569">Hora de fim: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Redes Wi-Fi guardadas</translation>
 <translation id="2323685460575935191">Ocultar botões de deslocamento</translation>
+<translation id="2325004050205455346">Histórico recente</translation>
 <translation id="2325444234681128157">Memorizar palavra-passe</translation>
 <translation id="2326188115274135041">Confirme o PIN para ativar o desbloqueio automático.</translation>
 <translation id="2326583548923775947">Esta não é uma Conta Google. Os itens que guardar no Chrome não vão estar disponíveis noutros dispositivos.</translation>
@@ -2404,7 +2405,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> libertados</translation>
 <translation id="2828851448902426206">Para ver os separadores dos seus outros dispositivos, inicie sessão e sincronize o histórico. Também tem acesso às suas informações guardadas e muito mais em todos os seus dispositivos. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="2833144527504272627">Navegar com o cursor de texto</translation>
-<translation id="2833727845850279275">Este ficheiro contém software malicioso ou é proveniente de um site suspeito.</translation>
+<translation id="2833727845850279275">Este ficheiro contém malware ou é proveniente de um site suspeito.</translation>
 <translation id="2835177225987815960">A sua configuração de análise atual será reposta, incluindo quaisquer interruptores atribuídos e preferências de velocidade de análise automática.</translation>
 <translation id="2835547721736623118">Serviço de reconhecimento de voz</translation>
 <translation id="2835761321523638096">Ler e alterar entradas na Lista de leitura</translation>
@@ -2566,7 +2567,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2957987442574819977">Resultados inesperados do Gemini</translation>
 <translation id="2958721676848865875">Aviso de extensão do pacote</translation>
 <translation id="2959127025785722291">Ocorreu um erro. Não foi possível concluir a procura. Tente novamente.</translation>
-<translation id="2959474507964749987">Este ficheiro encriptado pode ser um vírus ou software malicioso.<ph name="LINE_BREAK" />Para verificar se não é seguro, pode enviar o ficheiro e a palavra-passe para a Navegação Segura do Google. Normalmente, as análises demoram alguns segundos.<ph name="LINE_BREAK" />Para fazer a análise, adicione a palavra-passe do ficheiro.</translation>
+<translation id="2959474507964749987">Este ficheiro encriptado pode ser um vírus ou malware.<ph name="LINE_BREAK" />Para verificar se não é seguro, pode enviar o ficheiro e a palavra-passe para a Navegação Segura do Google. Normalmente, as análises demoram alguns segundos.<ph name="LINE_BREAK" />Para fazer a análise, adicione a palavra-passe do ficheiro.</translation>
 <translation id="2960942820860729477">Taxa de atualização</translation>
 <translation id="2960950037335552881">Leia este código com o seu telemóvel para ter acesso aos seus marcadores, palavras-passe e muito mais em qualquer lugar</translation>
 <translation id="2961040541145689181">Novo chat</translation>
@@ -2736,7 +2737,7 @@ Quer pará-lo?</translation>
 <translation id="3067198360141518313">Executar este plugin</translation>
 <translation id="3071624960923923138">Pode clicar aqui para abrir um novo separador</translation>
 <translation id="3074499504015191586">Traduzir página inteira</translation>
-<translation id="3075740753681485522">Desativada • Esta extensão contém software malicioso</translation>
+<translation id="3075740753681485522">Desativada • Esta extensão contém malware</translation>
 <translation id="3076909148546628648"><ph name="DOWNLOAD_RECEIVED" />/<ph name="DOWNLOAD_TOTAL" /></translation>
 <translation id="3076966043108928831">Guardar apenas neste dispositivo</translation>
 <translation id="3076977359333237641">Os seus dados de início de sessão foram eliminados.</translation>
@@ -3307,7 +3308,7 @@ Quer pará-lo?</translation>
 <translation id="3513019849832307207">Aderir e abrir</translation>
 <translation id="3513563267917474897">Controlador de deslize da tonalidade de <ph name="MIN_VALUE" /> a <ph name="MAX_VALUE" /></translation>
 <translation id="3514647716686280777">Vai obter a proteção de segurança padrão. Para obter mais proteção contra Websites, transferências e extensões perigosos, ative a Navegação segura melhorada nas definições do Chrome.</translation>
-<translation id="3514681096978190000">Este ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
+<translation id="3514681096978190000">Este ficheiro de arquivo inclui outros ficheiros que podem ocultar malware</translation>
 <translation id="3515783508789430906">Está disponível uma nova versão (<ph name="VERSION" />). Reinicie a app para aplicar a atualização. Pode perder os dados não guardados.</translation>
 <translation id="3515983984924808886">Toque novamente na chave de segurança para confirmar a reposição. Todas as informações armazenadas na chave de segurança, incluindo o respetivo PIN, serão eliminadas.</translation>
 <translation id="3518866566087677312">Adicione itens aos marcadores para acedê-los mais tarde</translation>
@@ -5019,7 +5020,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4814114628197290459">Elimine o IBAN</translation>
 <translation id="4814378367953456825">Introduza um nome para esta impressão digital.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 marcador eliminado}other{{COUNT} marcadores eliminados}}</translation>
-<translation id="481689174647911539">Este ficheiro pode ser um vírus ou software malicioso.<ph name="LINE_BREAK" />Pode enviá-lo para a Navegação Segura do Google para verificar se não é seguro. Normalmente, as análises demoram alguns segundos.</translation>
+<translation id="481689174647911539">Este ficheiro pode ser um vírus ou malware.<ph name="LINE_BREAK" />Pode enviá-lo para a Navegação Segura do Google para verificar se não é seguro. Normalmente, as análises demoram alguns segundos.</translation>
 <translation id="4818449958253566215">A adicionar ao menu Iniciar</translation>
 <translation id="481852950686014162">Continue a partir do ponto onde ficou no Gemini e no Modo IA</translation>
 <translation id="4819323978093861656">{0,plural, =0{A fechar agora.}=1{A fechar dentro de: 1 segundo}other{A fechar dentro de: # segundos}}</translation>
@@ -5259,7 +5260,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4977942889532008999">Confirmar acesso</translation>
 <translation id="4979263087381759787">Opções de programador</translation>
 <translation id="4979510648199782334">Configuração do Microsoft 365 concluída</translation>
-<translation id="4980805016576257426">Esta extensão contém um software malicioso.</translation>
+<translation id="4980805016576257426">Esta extensão contém um malware.</translation>
 <translation id="4983159853748980742">A sua palavra-passe não foi partilhada. Verifique a ligação à Internet e certifique-se de que tem sessão iniciada no Chrome. Em seguida, tente novamente.</translation>
 <translation id="498624032394115435">Qualquer pessoa com o link pode editar todos os separadores.</translation>
 <translation id="4986706507552097681">Pode sempre escolher o que quer sincronizar nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
@@ -5613,7 +5614,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5258992782919386492">Instalar neste dispositivo</translation>
 <translation id="5260334392110301220">Aspas inteligentes</translation>
 <translation id="5261683757250193089">Abrir na Web Store</translation>
-<translation id="5261799091118902550">Este ficheiro pode ser um vírus ou software malicioso. Pode enviá-lo para a Google para verificar se é inseguro.</translation>
+<translation id="5261799091118902550">Este ficheiro pode ser um vírus ou malware. Pode enviá-lo para a Google para verificar se é inseguro.</translation>
 <translation id="5261929928981501666">Mostrar sempre as barras de deslocamento</translation>
 <translation id="5262334727506665688">Continue a guardar palavras-passe na sua Conta Google</translation>
 <translation id="5262784498883614021">Ligar automaticamente à rede</translation>
@@ -5681,7 +5682,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5307030433605830021">Origem não suportada</translation>
 <translation id="5307386115243749078">Sincronizar switch Bluetooth</translation>
 <translation id="5308380583665731573">Ligar</translation>
-<translation id="5308989548591363504">Verificar a existência de software malicioso</translation>
+<translation id="5308989548591363504">Verificar a existência de malware</translation>
 <translation id="5309641450810523897">ID do registo de apoio ao cliente</translation>
 <translation id="5311304534597152726">A iniciar sessão como…</translation>
 <translation id="5312746996236433535">espelhamento do ecrã</translation>
@@ -6476,7 +6477,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5949795028157144515">Modo de programador desativado. Algumas extensões foram desativadas.</translation>
 <translation id="594993197557058302">Prima 1 a 4 teclas de modificação (Ctrl, Alt, Shift, pesquisa ou Launcher) e mais 1 tecla. Também pode selecionar uma única tecla.</translation>
 <translation id="5950318713575418497">Traduza PDFs</translation>
-<translation id="5950762317146173294">Este ficheiro pode ser um vírus ou software malicioso</translation>
+<translation id="5950762317146173294">Este ficheiro pode ser um vírus ou malware</translation>
 <translation id="5951303645598168883"><ph name="ORIGIN" /> quer utilizar tipos de letra locais</translation>
 <translation id="5951624318208955736">Monitor</translation>
 <translation id="5952020381407136867">touchpad</translation>
@@ -7324,7 +7325,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6611432349566876829"><ph name="NUM" /> separador</translation>
 <translation id="661266467055912436">Melhora a segurança para si e todas as pessoas na Web.</translation>
 <translation id="6613231539539868591">Dados persistentes</translation>
-<translation id="6613267708691765962">A verificar a existência de software malicioso…</translation>
+<translation id="6613267708691765962">A verificar a existência de malware…</translation>
 <translation id="6615455863669487791">Mostrar</translation>
 <translation id="6616000047939888167">Disponibilizar o Google Tradutor para Websites e PDFs noutros idiomas</translation>
 <translation id="6618013221808317456">Não permitir que os sites usem a otimização do JavaScript</translation>

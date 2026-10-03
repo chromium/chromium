@@ -745,7 +745,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2233745931693710080">Kompaktný disk</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2239100178324503013">Odoslať</translation>
-<translation id="223921069122391343">Uložená ponuka bude k dispozícii pri platbe pomocou automatického dopĺňania. <ph name="BEGIN_LINK" />Zobraziť zmluvné podmienky<ph name="END_LINK" /></translation>
+<translation id="223921069122391343">Uložená ponuka bude vďaka automatickému dopĺňaniu k dispozícii pri platbe. <ph name="BEGIN_LINK" />Zobraziť zmluvné podmienky<ph name="END_LINK" /></translation>
 <translation id="224130779555573777">Pridanie čísla Redress</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
 <translation id="2242389809734574253">Okno uloženie čísla IBAN bolo zavreté.</translation>
@@ -3557,7 +3557,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="6957153644870901611">Zapnite vylepšené automatické dopĺňanie, aby sa automaticky vypĺňali ďalšie polia</translation>
 <translation id="6957887021205513506">Zdá sa, že certifikát servera je falošný.</translation>
 <translation id="6958564499836457428">Spravujte nastavenia ochrany súkromia Google vo svojom účte Google</translation>
-<translation id="6961161369573226336">Správca hesiel Google môže pre vás tieto kódy získať z vášho Gmailu <ph name="EMAIL" />. Môžete si to rozmyslieť a <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
+<translation id="6961161369573226336">Správca hesiel Google môže pre vás tieto kódy získavať z vášho Gmailu (<ph name="EMAIL" />). Môžete si to rozmyslieť a <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" />.</translation>
 <translation id="6961844873822989059">Môže žiadať o povolenie používať písma nainštalované v zariadení</translation>
 <translation id="6962858948849099922">Vypršal časový limit prenosu</translation>
 <translation id="6963520811470373926">Nahradené</translation>

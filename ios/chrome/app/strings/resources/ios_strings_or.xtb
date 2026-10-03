@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">ଖୋଲାଯାଇଥିବା କୌଣସି ଟାବ ନାହିଁ</translation>
 <translation id="1469381646033328562">ତୁମର ଆକାଉଣ୍ଟ ତୁମ ବାପାମାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।
 <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣ<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ଏକ ଟାବ ଗ୍ରୁପ ତିଆରି କରନ୍ତୁ" ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପରଠାରୁ</translation>
 <translation id="147982357559798527">ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="1481450969185702334">ଖୋଜି ପୂରଣ କରନ୍ତୁ</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">କୌଣସି ଏକ ତ୍ରୁଟିର ରିପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2222149859067335623">ଆପଣଙ୍କ କେମେରାକୁ ଆକ୍ସେସ କରିବାରୁ "<ph name="SITE_DOMAIN" />"କୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="2223461067862937305">ଏକ QR କୋଡ ତିଆରି କରନ୍ତୁ</translation>
+<translation id="222798989929574238">ଆପଣ ସର୍ଚ୍ଚ କରିବାକୁ 20+ ଫଟୋ ବ୍ୟବହାର କରିଛନ୍ତି</translation>
 <translation id="2230173723195178503">ୱେବ୍‌ପୃଷ୍ଠା ଲୋଡ୍ କରାଗଲା</translation>
 <translation id="2236949375853147973">ମୋ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="2237869114829007407">ଯେ କୌଣସି ପୃଷ୍ଠା କିମ୍ବା ବିଷୟ ପାଇଁ ଏକ ଓଭରଭ୍ୟୁ ଏବଂ ମୁଖ୍ୟ ଇନସାଇଟ୍ସ ପାଆନ୍ତୁ</translation>
@@ -1763,6 +1765,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="6525550806864373485">ମେନୁକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="6527208859483186860">{total}ରୁ {position} ବେକଗ୍ରାଉଣ୍ଡ</translation>
 <translation id="6527303717912515753">ସେୟାର୍ କରନ୍ତୁ</translation>
+<translation id="6529706885792457023">ଆପଣ 15+ ଟାବକୁ ବ୍ୟବସ୍ଥିତ କରିଛନ୍ତି</translation>
 <translation id="6532106788206463496">ପରିବର୍ତ୍ତନଗୁଡିକୁ ସେଭ୍ କରନ୍ତୁ</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> ଖୋଲନ୍ତୁ, <ph name="NUMBER_OF_TABS" />ର ଗ୍ରୁପ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="6642362222295953972">ବିଦ୍ୟମାନ ଥିବା ଟାବ୍‌କୁ ସ୍ୱିଚ୍‌ କରନ୍ତୁ</translation>
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6645899968535965230">QR କୋଡ୍: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">ଆପଣ 25+ ପାସୱାର୍ଡ ଯାଞ୍ଚ କରିଛନ୍ତି</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659660757330712663">ଟାବଗୁଡ଼ିକ ମଧ୍ୟରେ ସୁଇଚ କରିବାକୁ ଆପଣ ଟୁଲବାରକୁ ସ୍ୱାଇପ କରିପାରିବେ।</translation>
 <translation id="6663529247339810546">ଇମେଜକୁ ସେଭ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1966,6 +1970,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="7145337554745942724">ଡ୍ରାଇଭର ଲାଇସେନ୍ସ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="7146301801400584641">କେଲେଣ୍ଡର ଫାଇଲ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7149893636342594995">ଶେଷ 24 ଘଣ୍ଟା</translation>
+<translation id="7151361008641622036">{count,plural, =1{ଆପଣ 1 ଟାବକୁ ବ୍ୟବସ୍ଥିତ କରିଛନ୍ତି}other{ଆପଣ # ଟାବକୁ ବ୍ୟବସ୍ଥିତ କରିଛନ୍ତି}}</translation>
 <translation id="7154417656353909837">ଠିକଣାଗୁଡ଼ିକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7161230316646448869">ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କ ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ସିଙ୍କ କରନ୍ତୁ</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8481184073299279701">ସମସ୍ତ ଟାବରୁ ଭବିଷ୍ୟତର JavaScript କନସୋଲ ଲଗ ଏବଂ ତ୍ରୁଟିଗୁଡ଼ିକୁ ସଂଗ୍ରହ କରିବା ପାଇଁ "ଲଗ କରିବା ଆରମ୍ଭ କରନ୍ତୁ" ବଟନରେ ଟାପ କରନ୍ତୁ। ଏହି ପୃଷ୍ଠାକୁ ବନ୍ଦ ନକରିବା କିମ୍ବା "ଲଗ କରିବା ବନ୍ଦ କରନ୍ତୁ"କୁ ଟାପ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଲଗଗୁଡ଼ିକୁ ସଂଗ୍ରହ କରାଯିବ (ଏବଂ କେବଳ ମେମୋରୀରେ ଷ୍ଟୋର କରାଯିବ)।</translation>
 <translation id="8487667956631253959">ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8487700953926739672">ଅଫ୍‍ଲାଇନ୍‌ରେ ଉପଲବ୍ଧ</translation>
+<translation id="8488065047914929586">"ଏକ ପାସୱାର୍ଡ ସେଭ କରନ୍ତୁ" ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପରଠାରୁ</translation>
 <translation id="8488923644885757471">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="8490629238792920282">ଲିଙ୍କ ତିଆରି କରିବାରେ ଅସମର୍ଥ</translation>
 <translation id="8501469528283376592">ଡାଉନଲୋଡଗୁଡ଼ିକୁ ଅଟୋ ଡିଲିଟ କରନ୍ତୁ</translation>
@@ -2543,6 +2549,7 @@ Handoff, ନିଶ୍ଚିତ ରୂପେ ସେଟିଂସ୍‍ର ସା�
 <translation id="8890516388109605451">ସୋର୍ସ</translation>
 <translation id="8893208530912252670">ଭିଡିଓ</translation>
 <translation id="8898822736010347272">ନୂଆ ବିପଦଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାରେ ଏବଂ ୱେବରେ ସମସ୍ତଙ୍କୁ ସୁରକ୍ଷା ଦେବାରେ ସାହାଯ୍ୟ କରିବାକୁ, ଆପଣ ଭିଜିଟ୍ କରୁଥିବା କିଛି ୱେବପୃଷ୍ଠାର URLଗୁଡ଼ିକ, ସୀମିତ ସିଷ୍ଟମ୍ ସୂଚନା ଏବଂ କିଛି ୱେବପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଏ।</translation>
+<translation id="890009681345348416">40+ ପାସୱାର୍ଡ ଅଟୋଫିଲ କରାଯାଇଛି</translation>
 <translation id="8900845556227858314">ବ୍ରାଉଜର ଆପ</translation>
 <translation id="890565330728586731">ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="8907722425137681851">ପୃଷ୍ଠାରେ ଖୋଜନ୍ତୁ…</translation>

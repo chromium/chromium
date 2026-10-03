@@ -867,6 +867,7 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2436186046335138073">Engedélyezi az összes <ph name="PROTOCOL" /> link megnyitását a(z) <ph name="HANDLER_HOSTNAME" /> számára?</translation>
 <translation id="243815215670139125">Nem sikerült elmenteni a kártyát a Google-fiókjába. Csak az eszköz Chrome alkalmazásába mentette a rendszer.</translation>
 <translation id="2438874542388153331">Négy lyuk a jobb oldalon</translation>
+<translation id="2442033148418774391">Az „Okosabb automatikus kitöltés, privát módon” értesítés bezárva</translation>
 <translation id="2442865686365739754">A Chrome <ph name="BEGIN_EMPHASIS" />nem menti<ph name="END_EMPHASIS" /> a következőket:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Böngészési előzmények
@@ -879,6 +880,7 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2451607499823206582">Nyomon követés</translation>
 <translation id="2452837234288608067">Ebben nem tudunk segíteni. Próbálkozzon újra.</translation>
 <translation id="2453045048779611513">Szervezete korlátozza, hogy mit lehet menteni</translation>
+<translation id="2456490423293803882">Az „Okosabb automatikus kitöltés, privát módon” értesítés teljes magasságban megnyitva</translation>
 <translation id="2459882793359532780">Alkalmazott böngészőházirendek (számítógépre és profilra vonatkozó házirendek)</translation>
 <translation id="2461385121573678775">A Chrome Enterprise Core egy központi eszközt biztosít a böngészőházirendek felhőből történő konfigurálásához</translation>
 <translation id="2461822463642141190">Jelenlegi</translation>
@@ -1108,6 +1110,7 @@ Ezt a javaslatot eltávolíthatja a Chrome-ból. Az eredeti forrás nem fog tör
 <translation id="2878197950673342043">Kereszthajtás</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">a képernyőzárat használni jelszavak kitöltéséhez</translation>
+<translation id="2880119244122776372">Létrehozás és kódolás</translation>
 <translation id="2881276955470682203">Menti a kártyát?</translation>
 <translation id="2882280148032777436">Ismert utazói szám (known traveler number, KTN) törlése</translation>
 <translation id="2882949212241984732">Oltárhajtás</translation>
@@ -3911,6 +3914,7 @@ További részletek:
 <translation id="753713322968419914">Eltávolítja az otthoni címet a Chrome automatikus kitöltés funkciójából?</translation>
 <translation id="753714465667062283">Jelentkezzen be a fotó mentéséhez</translation>
 <translation id="7537536606612762813">Kötelező</translation>
+<translation id="7540924742308928499">Ötletelés és összegzés</translation>
 <translation id="7543525346216957623">Kérd a szülőd segítségét</translation>
 <translation id="7546409722674205727">A(z) <ph name="APP_NAME" /> elindul…</translation>
 <translation id="7548892272833184391">A kapcsolódási hibák elhárítása</translation>

@@ -775,6 +775,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, flere valgte festede opptaksfaner</translation>
 <translation id="4137746084635924146">Nåværende enhetsspråk</translation>
 <translation id="414128724510021958">Nettsteder for datamaskiner blir forespurt som standard</translation>
+<translation id="4150837143272125910">En oppdatering er lastet ned</translation>
 <translation id="4162867837470729563">Listen over delingsalternativer er åpnet i full høyde.</translation>
 <translation id="4164642020717536140">Rask og sikker nettlesing</translation>
 <translation id="4165077084524712774">Flere verktøy</translation>
@@ -1199,6 +1200,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5848257610304005265">Vil du åpne PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vil du slutte å dele?</translation>
 <translation id="5853623416121554550">på pause</translation>
+<translation id="5855375823365231964">Om denne profilen</translation>
 <translation id="5855546874025048181">Juster: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, flere inkognitofaner for opptak er valgt</translation>
 <translation id="5857447844686706637">Noe gikk galt. Kunne ikke oppdatere Spor pris.</translation>
@@ -1400,6 +1402,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6565959834589222080">Wifi brukes når det er tilgjengelig</translation>
 <translation id="657177046675873214">For å få bokmerkene dine på alle enhetene dine, slå på «Bokmerker» i innstillingene</translation>
 <translation id="6573096386450695060">Tillat alltid</translation>
+<translation id="657480975869429144">En ny versjon av Google Chrome er tilgjengelig</translation>
 <translation id="658099107946526506">Beskytt privat surfing med en PIN-kode for å forhindre uønsket tilgang</translation>
 <translation id="6583199322650523874">Sett den aktive siden som bokmerke</translation>
 <translation id="6588043302623806746">Bruk sikker DNS</translation>

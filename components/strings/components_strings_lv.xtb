@@ -867,6 +867,7 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="243815215670139125">Šo karti nevarēja saglabāt jūsu Google kontā. Taču tā tika saglabāta pārlūkā Chrome šajā ierīcē.</translation>
 <translation id="2438874542388153331">Četri caurumi labajā pusē</translation>
+<translation id="2442033148418774391">Paziņojums par viedāku automātisko aizpildi, saglabājot jūsu datu konfidencialitāti, ir aizvērts</translation>
 <translation id="2442865686365739754">Pārlūkā Chrome <ph name="BEGIN_EMPHASIS" />netiks saglabāta<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />jūsu pārlūkošanas vēsture;
@@ -879,6 +880,7 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2451607499823206582">Izsekošana</translation>
 <translation id="2452837234288608067">Pieprasījumu nevarēja izpildīt. Mēģiniet vēlreiz.</translation>
 <translation id="2453045048779611513">Jūsu organizācija ierobežo to, kādu saturu varat saglabāt</translation>
+<translation id="2456490423293803882">Paziņojums par viedāku automātisko aizpildi, saglabājot jūsu datu konfidencialitāti, ir atvērts pilnā augstumā</translation>
 <translation id="2459882793359532780">Lietotās pārlūka politikas (ierīces un profila politikas)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core nodrošina centralizētu rīku pārlūka politiku konfigurēšanai mākonī</translation>
 <translation id="2461822463642141190">Šobrīd</translation>
@@ -1108,6 +1110,7 @@ Varat noņemt šo ieteikumu no pārlūka Chrome. Sākotnējais avots netiks dzē
 <translation id="2878197950673342043">Plakāta locījums</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">izmantot ekrāna bloķēšanu, lai aizpildītu paroles.</translation>
+<translation id="2880119244122776372">Izveidojiet un kodējiet</translation>
 <translation id="2881276955470682203">Vai saglabāt karti?</translation>
 <translation id="2882280148032777436">Zināmā ceļotāja numura dzēšana</translation>
 <translation id="2882949212241984732">Dubults abpusējs locījums</translation>
@@ -3912,6 +3915,7 @@ Papildu informācija:
 <translation id="753713322968419914">Vai noņemt mājas adresi no Chrome automātiskās aizpildes?</translation>
 <translation id="753714465667062283">Pierakstieties, lai saglabātu fotoattēlu</translation>
 <translation id="7537536606612762813">Obligāti</translation>
+<translation id="7540924742308928499">Ģenerējiet idejas un apkopojiet informāciju</translation>
 <translation id="7543525346216957623">Lūdziet kādam no vecākiem</translation>
 <translation id="7546409722674205727">Notiek lietotnes <ph name="APP_NAME" /> palaišana</translation>
 <translation id="7548892272833184391">Savienojuma kļūdu novēršana</translation>

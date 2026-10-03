@@ -866,6 +866,7 @@
 <translation id="2436186046335138073"><ph name="PROTOCOL" /> ಎಲ್ಲಾ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="HANDLER_HOSTNAME" /> ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="243815215670139125">ಈ ಕಾರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ಅದನ್ನು ಈ ಸಾಧನದಲ್ಲಿನ Chrome ನಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2438874542388153331">ಬಲಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
+<translation id="2442033148418774391">ಸ್ಮಾರ್ಟ್ ಆಟೋಫಿಲ್, ಖಾಸಗಿಯಾಗಿ ಇರಿಸಲಾಗಿದೆ ಎಂಬ ಸೂಚನೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="2442865686365739754">ಈ ಕೆಳಗಿನ ಮಾಹಿತಿಯನ್ನು Chrome <ph name="BEGIN_EMPHASIS" />ಸೇವ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ
@@ -878,6 +879,7 @@
 <translation id="2451607499823206582">ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2452837234288608067">ಈ ಕುರಿತು ಸಹಾಯ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="2453045048779611513">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀವು ಸೇವ್ ಮಾಡಬಹುದಾದದ್ದನ್ನು ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
+<translation id="2456490423293803882">ಸ್ಮಾರ್ಟ್ ಆಟೋಫಿಲ್, ಖಾಸಗಿಯಾಗಿ ಇರಿಸಲಾಗಿದೆ ಎಂಬ ಸೂಚನೆಯನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="2459882793359532780">ಅನ್ವಯಿಸಲಾದ ಬ್ರೌಸರ್ ನೀತಿಗಳು (ಮಷಿನ್ ಮತ್ತು ಪ್ರೊಫೈಲ್ ನೀತಿಗಳು)</translation>
 <translation id="2461385121573678775">ಕ್ಲೌಡ್‌ನಿಂದ ಬ್ರೌಸರ್‌ ನೀತಿಗಳನ್ನು ಕಾನ್ಫಿಗರ್‌ ಮಾಡಲು Chrome Enterprise Core ನಿಮಗೆ ಕೇಂದ್ರೀಕೃತ ಟೂಲ್‌ ಅನ್ನು ನೀಡುತ್ತದೆ</translation>
 <translation id="2461822463642141190">ಪ್ರಸ್ತುತ</translation>
@@ -1107,6 +1109,7 @@
 <translation id="2878197950673342043">ಪೋಸ್ಟರ್ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಭರ್ತಿ ಮಾಡಲು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಅನ್ನು ಬಳಸಿ</translation>
+<translation id="2880119244122776372">ಬಿಲ್ಡ್ ಮತ್ತು ಕೋಡ್</translation>
 <translation id="2881276955470682203">ಕಾರ್ಡ್‌ ಉಳಿಸುವುದೇ?</translation>
 <translation id="2882280148032777436">ಪರಿಚಿತ ಪ್ರಯಾಣಿಕರ ಸಂಖ್ಯೆಯನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2882949212241984732">ಡಬಲ್-ಗೇಟ್ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
@@ -3909,6 +3912,7 @@
 <translation id="753713322968419914">Chrome ಆಟೋಫಿಲ್‌ನಿಂದ ಮನೆ ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="753714465667062283">ನಿಮ್ಮ ಫೋಟೋವನ್ನು ಸೇವ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7537536606612762813">ಕಡ್ಡಾಯ</translation>
+<translation id="7540924742308928499">ಬ್ರೈನ್‌ಸ್ಟಾರ್ಮ್ ಮಾಡಿ ಮತ್ತು ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="7543525346216957623">ನಿಮ್ಮ ಪೋಷಕರಿಗೆ ಕೇಳಿ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ಪ್ರಾರಂಭವಾಗುತ್ತಿದೆ</translation>
 <translation id="7548892272833184391">ಸಂಪರ್ಕ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸಿ</translation>

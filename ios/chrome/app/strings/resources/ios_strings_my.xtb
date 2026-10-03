@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">ဖွင့်ထားသည့် တဘ် မရှိပါ</translation>
 <translation id="1469381646033328562">သင့်မိဘက သင့်အကောင့်ကို စီမံခန့်ခွဲနေသည်။
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">“တဘ်အုပ်စု ပြုလုပ်ခြင်း” ကို လုပ်ဆောင်ပြီးနောက်</translation>
 <translation id="147982357559798527">ပြောင်းထားသည်</translation>
 <translation id="1481450969185702334">ရှာပြီး ဖြည့်ရန်</translation>
 <translation id="1483493594462132177">ပို့ရန်</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">ပြဿနာ အစီရင်ခံရန်</translation>
 <translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />” ကို သင့်ကင်မရာသုံးခွင့် ပိတ်ထားသည်</translation>
 <translation id="2223461067862937305">QR ကုဒ် ပြုလုပ်ရန်</translation>
+<translation id="222798989929574238">ရှာဖွေရန် ဓာတ်ပုံ ၂၀+ ပုံ သုံးထားသည်</translation>
 <translation id="2230173723195178503">ဝဘ်စာမျက်နှာကို ဖွင့်ပြီးပါပြီ</translation>
 <translation id="2236949375853147973">ကျွန်ုပ်၏လုပ်ဆောင်ချက်</translation>
 <translation id="2237869114829007407">စာမျက်နှာ (သို့) အကြောင်းအရာတိုင်းအတွက် အနှစ်ချုပ်နှင့် အဓိကသိကောင်းစရာများ ရယူနိုင်သည်</translation>
@@ -1762,6 +1764,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6525550806864373485">မီနူးပြင်ရန်</translation>
 <translation id="6527208859483186860">{total} အနက် နောက်ခံ {position}</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
+<translation id="6529706885792457023">တဘ် ၁၅+ ခုကို စီစဉ်ထားသည်</translation>
 <translation id="6532106788206463496">ပြင်ဆင်မှုများကို သိမ်းရန်</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> ဖွင့်ရန်။ <ph name="NUMBER_OF_TABS" /> အုပ်စု။ <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1807,6 +1810,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6642362222295953972">ရှိပြီးသား တဘ်သို့ ပြောင်းမည်</translation>
 <translation id="6643016212128521049">ရှင်းရန်</translation>
 <translation id="6645899968535965230">QR ကုဒ်- <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">စကားဝှက် ၂၅+ ခုကို စစ်ဆေးထားသည်</translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="6659660757330712663">တဘ်များအကြား ပြောင်းရန် ကိရိယာဘားကို ပွတ်ဆွဲနိုင်သည်။</translation>
 <translation id="6663529247339810546">ရုပ်ပုံကို သိမ်း၍မရပါ</translation>
@@ -1965,6 +1969,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7145337554745942724">ယာဉ်မောင်းလိုင်စင် အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="7146301801400584641">ပြက္ခဒိန်ဖိုင် ရရှိနိုင်သည်</translation>
 <translation id="7149893636342594995">ပြီးခဲ့သည့် ၂၄ နာရီ</translation>
+<translation id="7151361008641622036">{count,plural, =1{တဘ် ၁ ခုကို စီစဉ်ထားသည်}other{တဘ် # ခုကို စီစဉ်ထားသည်}}</translation>
 <translation id="7154417656353909837">လိပ်စာများ ဖယ်ရှားရန်</translation>
 <translation id="7161230316646448869">စက်ပစ္စည်းအားလုံးတွင် သင်၏လိပ်စာ၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်နိုင်သည်</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2395,6 +2400,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8481184073299279701">တဘ်အားလုံးမှ နောင်လာမည့် JavaScript ခလုတ်ခုံမှတ်တမ်းနှင့် အမှားများကို စုဆောင်းရန်အတွက် “မှတ်တမ်းတင်ခြင်း စတင်ရန်” ခလုတ်ကို တို့ပါ။ ဤစာမျက်နှာ ပိတ်သွားသည်အထိ သို့မဟုတ် “မှတ်တမ်းတင်ခြင်း ရပ်ရန်” ကို တို့လိုက်သည်အထိ မှတ်တမ်းများကို စုဆောင်းပါမည် (ထို့နောက် မှတ်ဉာဏ်အတွင်းတွင်သာ သိမ်းပါမည်)။</translation>
 <translation id="8487667956631253959">ဖွင့်ရန်</translation>
 <translation id="8487700953926739672">Offline ရနိုင်</translation>
+<translation id="8488065047914929586">“စကားဝှက် သိမ်းခြင်း” ကို လုပ်ဆောင်ပြီးနောက်</translation>
 <translation id="8488923644885757471">ဝင်ဒိုးအသစ်</translation>
 <translation id="8490629238792920282">လင့်ခ်ကို ပြုလုပ်၍မရပါ</translation>
 <translation id="8501469528283376592">ဒေါင်းလုဒ်များ အလိုအလျောက်ဖျက်ခြင်း</translation>
@@ -2542,6 +2548,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="8890516388109605451">အရင်းအမြစ်များ</translation>
 <translation id="8893208530912252670">ဗီဒီယိုများ</translation>
 <translation id="8898822736010347272">အန္တရာယ်အသစ်များ ရှာဖွေရာ၌ အထောက်အကူဖြစ်စေရန်နှင့် ဝဘ်ပေါ်ရှိလူတိုင်းကို ကာကွယ်ရန် သင်ဝင်ကြည့်သည့် အချို့ဝဘ်ဆိုက်များ၏ URL များ၊ ကန့်သတ်ထားသည့် စနစ်အချက်အလက်များနှင့် အချို့သော ဝဘ်ဆိုက်ပါအကြောင်းအရာတို့ကို Google သို့ ပို့သည်။</translation>
+<translation id="890009681345348416">စကားဝှက် ၄၀+ ခုကို အော်တိုဖြည့်ထားသည်</translation>
 <translation id="8900845556227858314">ဘရောင်ဇာအက်ပ်</translation>
 <translation id="890565330728586731">နောက်သို့</translation>
 <translation id="8907722425137681851">စာမျက်နှာတွင် ရှာရန်…</translation>

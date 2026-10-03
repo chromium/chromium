@@ -168,7 +168,7 @@
 <translation id="2738871930057338499">Não é possível ligar à Internet. HTTP 403 proibido. Verifique a sua configuração de proxy.</translation>
 <translation id="2753623023919742414">Clique para pesquisar</translation>
 <translation id="2768103863314748511">Defina o Chromium como o seu visualizador de PDFs predefinido</translation>
-<translation id="2785438272836277133">Esta extensão contém software malicioso e não é segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
+<translation id="2785438272836277133">Esta extensão contém malware e não é segura. Remova-a do Chromium para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2799223571221894425">Reiniciar</translation>
 <translation id="2803971713792056305">O seu Chromium</translation>
 <translation id="2816462166102338036">Pesquise este vídeo com a pesquisa de imagens</translation>
@@ -324,7 +324,7 @@
 <translation id="4415566066719264597">Permitir que o Chromium seja executado em segundo plano</translation>
 <translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{O Chromium recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}other{O Chromium recomenda que as remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">Personalizar e controlar o Chromium</translation>
-<translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o software malicioso.</translation>
+<translation id="4427306783828095590">A proteção melhorada vai mais além para bloquear o phishing e o malware.</translation>
 <translation id="4434353761996769206">Erro do instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4438870983368648614">A <ph name="MANAGER" /> gere o Chromium</translation>
 <translation id="444069871276811466">Adicionar perfil do Chromium</translation>
@@ -447,7 +447,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5862307444128926510">Damos-lhe as boas-vindas ao Chromium</translation>
 <translation id="5867606647614813312">Ativa funcionalidades adicionais para oferecer as proteções mais avançadas do Chromium</translation>
 <translation id="5871205389137001634">Clique para sair da pesquisa de imagens</translation>
-<translation id="5883558403894052917">O Chromium encontrou software malicioso nestes itens:</translation>
+<translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
 <translation id="5889361821821684993">O Chromium verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5896077214220653386">Gemini Enterprise no Chromium</translation>
@@ -560,7 +560,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6859580922007887573">Toque para continuar</translation>
 <translation id="6862030660799253820">Pesquise esta imagem com a pesquisa de imagens</translation>
 <translation id="6869568587896659271">Acesso fácil a Websites abaixo da barra de endereço</translation>
-<translation id="6873893289264747459">O Chromium encontrou software malicioso na extensão "<ph name="EXTENSION_NAME" />"</translation>
+<translation id="6873893289264747459">O Chromium encontrou malware na extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6877155553248388166">canto inferior direito da área de pesquisa: direita <ph name="RIGHT" />%, parte inferior <ph name="BOTTOM" />%</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6898028264630240901">Pode fixar as Tarefas contextuais para fazer perguntas enquanto navega</translation>
@@ -796,7 +796,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="9019929317751753759">Para tornar o Chromium mais seguro, desativámos a seguinte extensão, que não está listada na <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />, e é possível que tenha sido adicionada sem o seu conhecimento.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
 <translation id="9035791714111278917">Mostrar a pesquisa com o Chromium na barra de menu do Mac e ativar o atalho de teclado</translation>
-<translation id="904366664621834601">O Chromium bloqueou esta transferência porque o ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
+<translation id="904366664621834601">O Chromium bloqueou esta transferência porque o ficheiro de arquivo inclui outros ficheiros que podem ocultar malware</translation>
 <translation id="9053882453960391422">Mantenha as suas palavras-passe, marcadores e histórico perfeitamente sincronizados entre dispositivos. Atualize o navegador predefinido para o Chromium e aceda facilmente às funcionalidades que conhece e adora. O Chromium vai ser afixado à barra de tarefas para um acesso rápido.</translation>
 <translation id="9056398481763999048">Use as melhores ferramentas de IA da Google com a app Chromium no telemóvel</translation>
 <translation id="9057625473949801035">Para aceder às suas palavras-passe e muito mais do <ph name="DEVICE" />, inicie sessão no Chromium</translation>

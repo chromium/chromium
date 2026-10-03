@@ -775,6 +775,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, jedna z kilku wybranych przypiętych kart nagrywania</translation>
 <translation id="4137746084635924146">Aktualny język urządzenia</translation>
 <translation id="414128724510021958">Domyślnie żądanie stron w wersji na komputery</translation>
+<translation id="4150837143272125910">Aktualizacja została pobrana</translation>
 <translation id="4162867837470729563">Lista opcji udostępniania jest otwarta na całą wysokość.</translation>
 <translation id="4164642020717536140">Szybkie i bezpieczne przeglądanie internetu</translation>
 <translation id="4165077084524712774">Więcej narzędzi</translation>
@@ -1199,6 +1200,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5848257610304005265">Chcesz otwierać pliki PDF w aplikacji <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Zatrzymać udostępnianie?</translation>
 <translation id="5853623416121554550">Wstrzymano</translation>
+<translation id="5855375823365231964">Informacje o tym profilu</translation>
 <translation id="5855546874025048181">Sprecyzuj: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, jedna z kilku wybranych kart incognito nagrywania</translation>
 <translation id="5857447844686706637">Coś poszło nie tak. Nie udało się zaktualizować monitorowanej ceny.</translation>
@@ -1400,6 +1402,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="6565959834589222080">Sieć Wi-Fi jest używana, gdy jest dostępna</translation>
 <translation id="657177046675873214">Aby korzystać ze swoich zakładek na wszystkich urządzeniach, w ustawieniach włącz „Zakładki”</translation>
 <translation id="6573096386450695060">Zawsze zezwalaj</translation>
+<translation id="657480975869429144">Jest dostępna nowa wersja Chrome.</translation>
 <translation id="658099107946526506">Chroń tryb przeglądania prywatnego za pomocą kodu PIN, aby zapobiec niepożądanemu dostępowi</translation>
 <translation id="6583199322650523874">Dodaj bieżącą stronę do zakładek</translation>
 <translation id="6588043302623806746">Użyj bezpiecznego serwera DNS</translation>

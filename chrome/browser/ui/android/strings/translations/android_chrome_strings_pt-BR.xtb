@@ -1200,6 +1200,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5848257610304005265">Abrir PDF com o <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Parar de compartilhar?</translation>
 <translation id="5853623416121554550">pausado</translation>
+<translation id="5855375823365231964">Sobre este perfil</translation>
 <translation id="5855546874025048181">Refinar: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, guia anônima com gravação de seleção múltipla</translation>
 <translation id="5857447844686706637">Algo deu errado. Não foi possível atualizar o recurso Monitorar preço.</translation>
@@ -2038,7 +2039,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8969796057708736017">O download será concluído se o arquivo atender às políticas da sua organização</translation>
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8972098258593396643">Fazer o download para a pasta padrão?</translation>
-<translation id="8987736167266086032">Recomece de onde você parou</translation>
+<translation id="8987736167266086032">Continue de onde você parou</translation>
 <translation id="8992769679401294069">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8995521496079646922">Os apps escolhidos serão usados por padrão. Os que não estiverem no dispositivo serão baixados em breve.</translation>
@@ -2096,7 +2097,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="916607977885256133">Picture-in-picture</translation>
 <translation id="9168847423516963845">Mover a barra de endereço para baixo</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
-<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome, então vai receber as senhas, os favoritos e outros itens desta conta.</translation>
+<translation id="9183563643084679152">Você fez login no Chrome usando um QR code. Por isso, vai receber as senhas, os favoritos e outros itens dessa conta.</translation>
 <translation id="9189607089796819144">Quer baixar "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="9190276265094487094">Seu histórico vai ser mostrado em todos os dispositivos sincronizados para que você possa continuar o que estava fazendo</translation>
 <translation id="9190355771000652811">Na barra de endereço, use os atalhos no teclado para mecanismos de pesquisa e pesquisas em sites</translation>

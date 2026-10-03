@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Nu există file deschise</translation>
 <translation id="1469381646033328562">Contul tău este gestionat de un părinte.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">de la finalizarea activității „Creează un grup de file”</translation>
 <translation id="147982357559798527">Modificată</translation>
 <translation id="1481450969185702334">Găsește și completează</translation>
 <translation id="1483493594462132177">Trimite</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="2222149859067335623"><ph name="SITE_DOMAIN" /> nu are permisiunea de a-ți accesa camera foto</translation>
 <translation id="2223461067862937305">Creează un cod QR</translation>
+<translation id="222798989929574238">Ai folosit peste 20 de fotografii pentru a căuta</translation>
 <translation id="2230173723195178503">Pagina web s-a încărcat</translation>
 <translation id="2236949375853147973">Activitatea mea</translation>
 <translation id="2237869114829007407">Primește o prezentare generală și informații esențiale pentru orice pagină sau subiect</translation>
@@ -1763,6 +1765,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6525550806864373485">Meniul Editează</translation>
 <translation id="6527208859483186860">fundalul {position} din {total}</translation>
 <translation id="6527303717912515753">Trimite</translation>
+<translation id="6529706885792457023">Ai organizat peste 15 file</translation>
 <translation id="6532106788206463496">Salvează modificările</translation>
 <translation id="6536759809440150308">Deschide <ph name="GROUP_TITLE" />, grup de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6642362222295953972">Comută la o filă existentă</translation>
 <translation id="6643016212128521049">Șterge</translation>
 <translation id="6645899968535965230">Cod QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Ai verificat peste 25 de parole</translation>
 <translation id="6657585470893396449">Parolă</translation>
 <translation id="6659660757330712663">Glisează bara de instrumente pentru a trece de la o filă la alta.</translation>
 <translation id="6663529247339810546">Imaginea nu s-a salvat</translation>
@@ -1966,6 +1970,7 @@ Pentru a continua de pe computer, treci la <ph name="OTHER_EMAIL" />. Vei accesa
 <translation id="7145337554745942724">Actualizează permisul de conducere</translation>
 <translation id="7146301801400584641">Este disponibil un fișier pentru calendar</translation>
 <translation id="7149893636342594995">Ultimele 24 de ore</translation>
+<translation id="7151361008641622036">{count,plural, =1{Ai organizat o filă}few{Ai organizat # file}other{Ai organizat # de file}}</translation>
 <translation id="7154417656353909837">Elimină adrese</translation>
 <translation id="7161230316646448869">Sincronizează marcajele, istoricul și alte date, pe toate dispozitivele</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Poți reporni oricând.</translation>
 <translation id="8481184073299279701">Atinge butonul Activează înregistrarea în jurnal pentru a colecta jurnale și erori viitoare ale consolei JavaScript din toate filele. Jurnalele vor fi colectate (și stocate doar în memorie) până când această pagină este închisă sau se atinge Dezactivează înregistrarea în jurnal.</translation>
 <translation id="8487667956631253959">Aprinsă</translation>
 <translation id="8487700953926739672">Disponibil offline</translation>
+<translation id="8488065047914929586">de la finalizarea activității „Salvează o parolă”</translation>
 <translation id="8488923644885757471">Fereastră nouă</translation>
 <translation id="8490629238792920282">Nu s-a putut crea linkul</translation>
 <translation id="8501469528283376592">Șterge automat descărcările</translation>
@@ -2543,6 +2549,7 @@ Poți reporni oricând.</translation>
 <translation id="8890516388109605451">Surse</translation>
 <translation id="8893208530912252670">Videoclipuri</translation>
 <translation id="8898822736010347272">Trimite la Google adrese URL ale unor pagini pe care le accesezi, informații despre sistem limitate și o parte din conținutul paginii pentru a identifica amenințările noi și a proteja toți utilizatorii de pe web.</translation>
+<translation id="890009681345348416">Peste 40 de parole completate automat</translation>
 <translation id="8900845556227858314">Aplicația browser</translation>
 <translation id="890565330728586731">Înapoi</translation>
 <translation id="8907722425137681851">Găsește în pagină…</translation>

@@ -1199,6 +1199,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5848257610304005265">Otvoriti PDF putem aplikacije <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Zaustaviti dijeljenje?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
+<translation id="5855375823365231964">O ovom profilu</translation>
 <translation id="5855546874025048181">Preciziranje: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, višestruko odabrana anonimna kartica za snimanje</translation>
 <translation id="5857447844686706637">Nešto nije uredu. Ažuriranje postavke Prati cijenu nije uspjelo.</translation>
@@ -1240,6 +1241,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="6039379616847168523">Pređite na sljedeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
+<translation id="6041959688070413372">Upravljajte vezom između usluga pretraživanja i aplikacija Google Workspacea, kao što je Google Disk</translation>
 <translation id="6042308850641462728">Više</translation>
 <translation id="6047066316630165190">Otvorite prebacivač kartica u vidu mreže</translation>
 <translation id="604996488070107836">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog nepoznate greške.</translation>

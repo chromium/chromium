@@ -2191,7 +2191,7 @@
 <translation id="7857520352710212030">网站已固定</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7863211248337747225">下载应用</translation>
-<translation id="7863990181930071932">位置信息使用权已停用</translation>
+<translation id="7863990181930071932">未授予位置信息使用权</translation>
 <translation id="7865127013871431856">翻译选项</translation>
 <translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7874107544081154809">使用<ph name="CELL_ACCESSIBILITY_LABEL" />自动填充表单</translation>
@@ -2507,7 +2507,7 @@
 <translation id="8786100550345425552">修改权限</translation>
 <translation id="878871978861915380">隐藏“价格跟踪”</translation>
 <translation id="8792626944327216835">麦克风</translation>
-<translation id="8795809107245894196">使用密码安全检查功能，确保密码安全</translation>
+<translation id="8795809107245894196">进行密码安全检查，确保密码安全</translation>
 <translation id="8796634520835503150">阅读模式可用</translation>
 <translation id="8803526663383843427">开启时</translation>
 <translation id="8803639129939845298">安全</translation>

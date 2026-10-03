@@ -867,6 +867,7 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрлийг олгох уу?</translation>
 <translation id="243815215670139125">Энэ картыг таны Google Бүртгэлд хадгалж чадсангүй. Оронд нь тус картыг энэ төхөөрөмж дээр Chrome-д хадгалсан.</translation>
 <translation id="2438874542388153331">Баруун ирмэг дагуу дөрвөн нүх цоолох</translation>
+<translation id="2442033148418774391">Илүү ухаалаг, нууцлалтай автоматаар бөглөх мэдэгдлийг хаасан</translation>
 <translation id="2442865686365739754">Chrome дараахыг <ph name="BEGIN_EMPHASIS" />хадгалахгүй<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Таны хөтчийн түүх
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">Хянаж байна</translation>
 <translation id="2452837234288608067">Үүнд туслах боломжгүй. Дахин оролдоно уу.</translation>
 <translation id="2453045048779611513">Танай байгууллага таны юу хадгалж болохыг хязгаарлана</translation>
+<translation id="2456490423293803882">Илүү ухаалаг, нууцлалтай автоматаар бөглөх мэдэгдлийг бүтэн өндрөөр нээсэн</translation>
 <translation id="2459882793359532780">Хэрэгжүүлсэн хөтчийн бодлого (машин, профайлын бодлого)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core танд үүлнээс хөтчийн бодлогыг тохируулах төвлөрсөн хэрэгслийг өгдөг</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">Постерын нугалаа</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">нууц үг бөглөхөд таны дэлгэцийг түгжээг ашиглахаар оролдож байна</translation>
+<translation id="2880119244122776372">Бүтээж, код бичих</translation>
 <translation id="2881276955470682203">Картыг хадгалах уу?</translation>
 <translation id="2882280148032777436">Бүртгэлтэй аялагчийн дугаарыг устгах</translation>
 <translation id="2882949212241984732">Давхар хаалган нугалаа</translation>
@@ -3913,6 +3916,7 @@
 <translation id="753713322968419914">Гэрийн хаягийг Chrome-н автоматаар бөглөх онцлогоос хасах уу?</translation>
 <translation id="753714465667062283">Зургаа хадгалахын тулд нэвтэрнэ үү</translation>
 <translation id="7537536606612762813">Заавал</translation>
+<translation id="7540924742308928499">Санаа уралдуулж, хураангуйлах</translation>
 <translation id="7543525346216957623">Эцэг эхээсээ асууна уу</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" />-г эхлүүлж байна</translation>
 <translation id="7548892272833184391">Холболтын алдааг засах</translation>

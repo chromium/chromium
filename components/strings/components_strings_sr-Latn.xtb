@@ -867,6 +867,7 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2436186046335138073">Želite li da dozvolite da <ph name="HANDLER_HOSTNAME" /> otvara sve <ph name="PROTOCOL" /> linkove?</translation>
 <translation id="243815215670139125">Čuvanje ove kartice na Google nalogu nije uspelo. Umesto toga, sačuvana je u Chrome-u na ovom uređaju.</translation>
 <translation id="2438874542388153331">Četvorostruko bušenje na desnoj strani</translation>
+<translation id="2442033148418774391">Zatvoreno je obaveštenje o pametnijem automatskom popunjavanju uz zagarantovanu privatnost</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />ne čuva<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />istoriju pregledanja
@@ -879,6 +880,7 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2451607499823206582">Prati se</translation>
 <translation id="2452837234288608067">Nismo uspeli da vam pomognemo s time. Probajte ponovo.</translation>
 <translation id="2453045048779611513">Vaša organizacija ograničava sadržaj koji možete da čuvate</translation>
+<translation id="2456490423293803882">Obaveštenje o pametnijem automatskom popunjavanju uz zagarantovanu privatnost otvoreno je na celom ekranu</translation>
 <translation id="2459882793359532780">Primenjene smernice za pregledač (smernice za uređaj i profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core vam pruža centralizovanu alatku za konfigurisanje smernica pregledača iz klauda</translation>
 <translation id="2461822463642141190">Aktuelno</translation>
@@ -1108,6 +1110,7 @@ Možete da uklonite ovaj predlog iz Chrome-a. Originalni izvor neće biti izbri
 <translation id="2878197950673342043">Presavijanje u obliku postera</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">da koristi otključavanje ekrana za popunjavanje lozinki</translation>
+<translation id="2880119244122776372">Pravite i kodirajte</translation>
 <translation id="2881276955470682203">Želite li da sačuvate karticu?</translation>
 <translation id="2882280148032777436">Izbrišite broj registrovanog putnika</translation>
 <translation id="2882949212241984732">Dvostruko presavijanje u obliku prozora</translation>
@@ -3913,6 +3916,7 @@ Dodatni detalji:
 <translation id="753713322968419914">Želite da uklonite kućnu adresu iz Chrome automatskog popunjavanja?</translation>
 <translation id="753714465667062283">Prijavite se da biste sačuvali sliku</translation>
 <translation id="7537536606612762813">Obavezno</translation>
+<translation id="7540924742308928499">Smišljajte ideje i rezimirajte</translation>
 <translation id="7543525346216957623">Pitaj roditelja</translation>
 <translation id="7546409722674205727">Pokreće se <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Otklonite greške pri povezivanju</translation>

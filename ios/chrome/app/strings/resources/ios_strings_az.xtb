@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Açıq tab yoxdur</translation>
 <translation id="1469381646033328562">Hesabı valideyn idarə edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"Tab qrupu yaradın" tamamlandıqdan sonra</translation>
 <translation id="147982357559798527">Dəyişdirildi</translation>
 <translation id="1481450969185702334">Tapın və doldurun</translation>
 <translation id="1483493594462132177">Göndərin</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Problemi xəbər verin</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" saytının kameranıza daxil olması bloklanıb</translation>
 <translation id="2223461067862937305">QR kodu yaradın</translation>
+<translation id="222798989929574238">Axtarış üçün 20+ foto istifadə etdiniz</translation>
 <translation id="2230173723195178503">Veb səhifə yükləndi</translation>
 <translation id="2236949375853147973">Fəaliyyətim</translation>
 <translation id="2237869114829007407">İstənilən səhifə və ya mövzu üçün icmal və statistik məlumatlar əldə edin</translation>
@@ -1763,6 +1765,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6525550806864373485">Menyunu redaktə edin</translation>
 <translation id="6527208859483186860">{position}/{total} fon</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
+<translation id="6529706885792457023">15+ tabı nizamladınız</translation>
 <translation id="6532106788206463496">Dəyişiklikləri yadda saxlayın</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> qrupunu açın. <ph name="NUMBER_OF_TABS" /> tabdan ibarətdir. <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6642362222295953972">Mövcud taba keçin</translation>
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6645899968535965230">QR Kodu: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">25+ parolu yoxladınız</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659660757330712663">Alətlər panelini çəkərək tablar arasında keçid edə bilərsiniz.</translation>
 <translation id="6663529247339810546">Şəkli yadda saxlamaq mümkün deyil</translation>
@@ -1966,6 +1970,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7145337554745942724">Sürücülük vəsiqəsini güncəlləyin</translation>
 <translation id="7146301801400584641">Təqvim faylı əlçatandır</translation>
 <translation id="7149893636342594995">Son 24 saat</translation>
+<translation id="7151361008641622036">{count,plural, =1{1 tabı nizamladınız}other{# tabı nizamladınız}}</translation>
 <translation id="7154417656353909837">Ünvanları silin</translation>
 <translation id="7161230316646448869">Əlfəcin, tarixçə və s. məlumatları bütün cihazlarda sinxronlaşdırın</translation>
 <translation id="7165323152084385463">Avtomobilin identifikasiya nömrəsi</translation>
@@ -2396,6 +2401,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8481184073299279701">Gələcək JavaScript konsolunun qeyd və xətalarını bütün tablardan toplamaq üçün "Qeydlərə başlayın" düyməsinə toxunun. Qeydlər bu səhifə bağlanana və ya "Qeydləri dayandırın" seçimi edilənədək toplanacaq (və yalnız yaddaşda saxlanacaq).</translation>
 <translation id="8487667956631253959">Aktiv</translation>
 <translation id="8487700953926739672">Oflayn olaraq əlçatan</translation>
+<translation id="8488065047914929586">"Parolu yadda saxlayın" tamamlandıqdan sonra</translation>
 <translation id="8488923644885757471">Yeni Pəncərə</translation>
 <translation id="8490629238792920282">Link yaratmaq alınmadı</translation>
 <translation id="8501469528283376592">Endirmələri avtomatik silin</translation>
@@ -2543,6 +2549,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="8890516388109605451">Mənbələr</translation>
 <translation id="8893208530912252670">Videolar</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>
+<translation id="890009681345348416">40+ parol avtomatik dolduruldu</translation>
 <translation id="8900845556227858314">Brauzer tətbiqi</translation>
 <translation id="890565330728586731">Geri</translation>
 <translation id="8907722425137681851">Səhifədə tapın…</translation>

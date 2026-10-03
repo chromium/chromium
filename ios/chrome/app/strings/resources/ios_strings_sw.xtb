@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Hakuna vichupo vilivyofunguliwa</translation>
 <translation id="1469381646033328562">Akaunti yako inadhibitiwa na mzazi wako.
 <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">tangu ukamilishe "Kuanzisha kikundi cha vichupo"</translation>
 <translation id="147982357559798527">Kimebadilishwa</translation>
 <translation id="1481450969185702334">Tafuta na ujaze</translation>
 <translation id="1483493594462132177">Tuma</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Ripoti tatizo</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" imezuiwa kufikia kamera yako</translation>
 <translation id="2223461067862937305">Buni Msimbo wa QR</translation>
+<translation id="222798989929574238">Umetumia zaidi ya picha 20 kutafuta</translation>
 <translation id="2230173723195178503">Ukurasa wa Wavuti umepakiwa</translation>
 <translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="2237869114829007407">Pata muhtasari na maarifa muhimu kuhusu ukurasa au mada yoyote</translation>
@@ -1763,6 +1765,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6525550806864373485">Hariri Menyu</translation>
 <translation id="6527208859483186860">mandharinyuma ya {position} kati ya {total}</translation>
 <translation id="6527303717912515753">Shiriki</translation>
+<translation id="6529706885792457023">Umepanga zaidi ya vichupo 15</translation>
 <translation id="6532106788206463496">Hifadhi mabadiliko</translation>
 <translation id="6536759809440150308">Fungua <ph name="GROUP_TITLE" />, kikundi cha <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6642362222295953972">Badilisha utumie kichupo kilichopo</translation>
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6645899968535965230">Msimbo wa QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Umekagua zaidi ya manenosiri 25</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6659660757330712663">Unaweza kutelezesha kidole kwenye upau wa vidhibiti ili ubadili kati ya vichupo.</translation>
 <translation id="6663529247339810546">Imeshindwa kuhifadhjii picha</translation>
@@ -1966,6 +1970,7 @@ Ili uendelee kwenye kompyuta yako, badilisha utumie <ph name="OTHER_EMAIL" />. U
 <translation id="7145337554745942724">Sasisha maelezo ya leseni ya udereva</translation>
 <translation id="7146301801400584641">Faili ya kalenda inapatikana</translation>
 <translation id="7149893636342594995">Saa 24 zilizopita</translation>
+<translation id="7151361008641622036">{count,plural, =1{Umepanga kichupo 1}other{Umepanga vichupo #}}</translation>
 <translation id="7154417656353909837">Ondoa anwani</translation>
 <translation id="7161230316646448869">Sawazisha alamisho, historia na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8481184073299279701">Gusa kitufe cha "Anza kuweka kumbukumbu" ili ukusanye data ya siku zijazo ya kumbukumbu na hitilafu za kidhibiti cha JavaScript kwenye vichupo vyote. Data ya kumbukumbu itakusanywa (na kuhifadhiwa katika hifadhi pekee) hadi wakati ukurasa huu utafungwa au kitufe cha "Acha kuweka kumbukumbu" kinapoguswa.</translation>
 <translation id="8487667956631253959">Imewashwa</translation>
 <translation id="8487700953926739672">Kinapatikana nje ya mtandao</translation>
+<translation id="8488065047914929586">tangu ukamilishe "Kuhifadhi nenosiri"</translation>
 <translation id="8488923644885757471">Dirisha Jipya</translation>
 <translation id="8490629238792920282">Imeshindwa kubuni kiungo</translation>
 <translation id="8501469528283376592">Futa vipakuliwa kiotomatiki</translation>
@@ -2543,6 +2549,7 @@ Unaweza kuanzisha upya wakati wowote.</translation>
 <translation id="8890516388109605451">Vyanzo</translation>
 <translation id="8893208530912252670">Video</translation>
 <translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
+<translation id="890009681345348416">Zaidi ya manenosiri 40 yamejazwa kiotomatiki</translation>
 <translation id="8900845556227858314">Programu ya Kivinjari</translation>
 <translation id="890565330728586731">Nyuma</translation>
 <translation id="8907722425137681851">Tafuta katika ukurasa…</translation>

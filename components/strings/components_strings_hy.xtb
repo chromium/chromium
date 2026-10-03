@@ -867,6 +867,7 @@
 <translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="243815215670139125">Չհաջողվեց պահել քարտը ձեր Google հաշվում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
+<translation id="2442033148418774391">«Ավելի խելացի ինքնալրացում՝ անձնական տվյալների պաշտպանությամբ» ծանուցումը փակվեց</translation>
 <translation id="2442865686365739754">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">Հետագծում</translation>
 <translation id="2452837234288608067">Չհաջողվեց կատարել այս հարցումը։ Նորից փորձեք։</translation>
 <translation id="2453045048779611513">Ձեր կազմակերպությունը թույլատրել է պահել ոչ բոլոր տվյալները</translation>
+<translation id="2456490423293803882">«Ավելի խելացի ինքնալրացում՝ անձնական տվյալների պաշտպանությամբ» ծանուցումը բացված է ամբողջությամբ</translation>
 <translation id="2459882793359532780">Դիտարկիչի գործող կանոններ (սարքին և պրոֆիլին վերաբերող կանոններ)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core-ը ձեզ տրամադրում է կենտրոնացված գործիք՝ ամպային սերվերից դիտարկիչի վերաբերյալ կանոնները կազմաձևելու համար</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">Կրկնակի ուղղաձիգ ծալում</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">oգտագործել էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
+<translation id="2880119244122776372">Ստեղծեք և ծրագրավորեք</translation>
 <translation id="2881276955470682203">Պահե՞լ քարտը</translation>
 <translation id="2882280148032777436">Ուղևորի անձնական համարի ջնջում</translation>
 <translation id="2882949212241984732">Եռափեղկ ծալում</translation>
@@ -3912,6 +3915,7 @@
 <translation id="753713322968419914">Հեռացնե՞լ ձեր տան հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="753714465667062283">Մուտք գործեք՝ ձեր լուսանկարը պահելու համար</translation>
 <translation id="7537536606612762813">Պարտադիր</translation>
+<translation id="7540924742308928499">Գեներացրեք գաղափարներ և ամփոփեք</translation>
 <translation id="7543525346216957623">Հարցրեք ձեր ծնողին</translation>
 <translation id="7546409722674205727">«<ph name="APP_NAME" />» հավելվածը գործարկվում է</translation>
 <translation id="7548892272833184391">Ինչպես շտկել կապի սխալները</translation>

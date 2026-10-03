@@ -1199,6 +1199,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5848257610304005265">Želite da otvorite PDF pomoću aplikacije <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Želite da zaustavite deljenje?</translation>
 <translation id="5853623416121554550">pauzirano</translation>
+<translation id="5855375823365231964">O ovom profilu</translation>
 <translation id="5855546874025048181">Preciziraj: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, višestruko izabrana kartica bez arhiviranja za snimanje</translation>
 <translation id="5857447844686706637">Došlo je do greške. Ažuriranje praćenja cene nije uspelo.</translation>
@@ -1240,6 +1241,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="6039379616847168523">Prelazak na sledeću karticu</translation>
 <translation id="6040143037577758943">Zatvori</translation>
 <translation id="604124094241169006">Automatski</translation>
+<translation id="6041959688070413372">Upravljajte vezom između usluga pretrage i Google Workspace aplikacija, kao što je Google disk</translation>
 <translation id="6042308850641462728">Još</translation>
 <translation id="6047066316630165190">Otvorite prebacivač kartica u mreži</translation>
 <translation id="604996488070107836">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog nepoznate greške.</translation>

@@ -867,6 +867,7 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />ক সকলো <ph name="PROTOCOL" />ৰ লিংক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="243815215670139125">এই কাৰ্ডখন আপোনাৰ Google একাউণ্টত ছেভ কৰিব পৰা নগ’ল। তাৰ পৰিৱৰ্তে সেইখন এই ডিভাইচটোৰ Chromeত ছেভ কৰা হৈছে।</translation>
 <translation id="2438874542388153331">সোঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
+<translation id="2442033148418774391">স্মাৰ্ট স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা, ব্যক্তিগত জাননী বন্ধ কৰি ৰাখিছে</translation>
 <translation id="2442865686365739754">Chromeএ <ph name="BEGIN_EMPHASIS" />এই তথ্যসমূহ ছেভ নকৰিব<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">ট্ৰেক কৰা</translation>
 <translation id="2452837234288608067">সেই ক্ষেত্ৰত সহায় কৰিব পৰা নগ’ল। পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2453045048779611513">আপুনি কি ছেভ কৰিব পাৰে সেয়া আপোনাৰ প্ৰতিষ্ঠানে সীমিত কৰে</translation>
+<translation id="2456490423293803882">স্মাৰ্ট স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা, ব্যক্তিগত জাননী পূৰ্ণ উচ্চতাত খুলি ৰাখিছে</translation>
 <translation id="2459882793359532780">প্ৰযোজ্য ব্ৰাউজাৰৰ নীতি (মেচিন আৰু প্ৰ’ফাইলৰ নীতি)</translation>
 <translation id="2461385121573678775">ক্লাউডৰ পৰা ব্ৰাউজাৰৰ নীতিসমূহ কনফিগাৰ কৰাৰ বাবে Chrome Enterprise Coreএ আপোনাক এটা কেন্দ্ৰীভূত সঁজুলি প্ৰদান কৰে</translation>
 <translation id="2461822463642141190">বৰ্তমান</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">প'ষ্টাৰ ফ'ল্ড</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">পাছৱৰ্ড পূৰ কৰিবলৈ আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰক</translation>
+<translation id="2880119244122776372">বিল্ড আৰু ক’ড</translation>
 <translation id="2881276955470682203">এই কার্ডখন ছেভ কৰিবনে?</translation>
 <translation id="2882280148032777436">জ্ঞাত ভ্ৰমণকাৰীৰ নম্বৰ মচক</translation>
 <translation id="2882949212241984732">দুবাৰ গে'ট ফ'ল্ড কৰক</translation>
@@ -3908,6 +3911,7 @@
 <translation id="753713322968419914">Chromeৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ পৰা আপোনাৰ ঘৰৰ ঠিকনা আঁতৰাবনে?</translation>
 <translation id="753714465667062283">আপোনাৰ ফট’ ছেভ কৰিবলৈ ছাইন ইন কৰক</translation>
 <translation id="7537536606612762813">বাধ্যতামূলক</translation>
+<translation id="7540924742308928499">ধাৰণা ভাবি উলিয়াওক আৰু সাৰাংশ প্ৰস্তুত কৰক</translation>
 <translation id="7543525346216957623">আপোনাৰ অভিভাৱকক সোধক</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> ষ্টাৰ্ট কৰি থকা হৈছে</translation>
 <translation id="7548892272833184391">সংযোগ সম্পর্কীয় সমস্যাৰ সমাধান কৰক</translation>

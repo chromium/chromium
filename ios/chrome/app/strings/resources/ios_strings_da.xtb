@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Ingen åbne faner</translation>
 <translation id="1469381646033328562">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">siden du gennemførte "Opret en fanegruppe"</translation>
 <translation id="147982357559798527">Ændret</translation>
 <translation id="1481450969185702334">Find og udfyld</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Rapportér et problem</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" har ikke adgang til dit kamera</translation>
 <translation id="2223461067862937305">Opret en QR-kode</translation>
+<translation id="222798989929574238">Du brugte mere end 20 billeder til at søge</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="2237869114829007407">Få en oversigt og vigtig indsigt for en hvilken som helst side eller et hvilket som helst emne</translation>
@@ -1763,6 +1765,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6525550806864373485">Menuen Rediger</translation>
 <translation id="6527208859483186860">baggrund {position} af {total}</translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6529706885792457023">Du har organiseret mere end 15 faner</translation>
 <translation id="6532106788206463496">Gem ændringer</translation>
 <translation id="6536759809440150308">Åbn <ph name="GROUP_TITLE" />, gruppe med <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">eksempel.dk</translation>
@@ -1808,6 +1811,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6642362222295953972">Skift til den eksisterende fane</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6645899968535965230">QR-kode: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Du har tjekket mere end 25 adgangskoder</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6659660757330712663">Du kan stryge på værktøjslinjen for at skifte mellem faner.</translation>
 <translation id="6663529247339810546">Billedet kan ikke gemmes</translation>
@@ -1966,6 +1970,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7145337554745942724">Opdater kørekort</translation>
 <translation id="7146301801400584641">Tilgængelig kalenderfil</translation>
 <translation id="7149893636342594995">De seneste 24 timer</translation>
+<translation id="7151361008641622036">{count,plural, =1{Du har organiseret 1 fane}one{Du har organiseret # fane}other{Du har organiseret # faner}}</translation>
 <translation id="7154417656353909837">Fjern adresser</translation>
 <translation id="7161230316646448869">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="7165323152084385463">Stelnummer</translation>
@@ -2396,6 +2401,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8481184073299279701">Tryk på knappen "Start logføring" for at indsamle fremtidige JavaScript-konsollogs og -fejl fra alle faner. Logs indsamles (og gemmes kun i hukommelsen), indtil denne side lukkes, eller der trykkes på "Stop logføring".</translation>
 <translation id="8487667956631253959">Til</translation>
 <translation id="8487700953926739672">Tilgængelig offline</translation>
+<translation id="8488065047914929586">siden du gennemførte "Gem en adgangskode"</translation>
 <translation id="8488923644885757471">Nyt vindue</translation>
 <translation id="8490629238792920282">Der kunne ikke oprettes et link</translation>
 <translation id="8501469528283376592">Automatisk sletning af downloads</translation>
@@ -2543,6 +2549,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="8890516388109605451">Kilder</translation>
 <translation id="8893208530912252670">Videoer</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
+<translation id="890009681345348416">Over 40 adgangskoder er udfyldt automatisk</translation>
 <translation id="8900845556227858314">Browserapp</translation>
 <translation id="890565330728586731">Tilbage</translation>
 <translation id="8907722425137681851">Find på siden…</translation>

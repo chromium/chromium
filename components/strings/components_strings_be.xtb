@@ -867,6 +867,7 @@
 <translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="243815215670139125">Не ўдалося захаваць гэту картку ў вашым Уліковым запісе Google. Яна захавана ў Chrome на гэтай прыладзе.</translation>
 <translation id="2438874542388153331">Чатыры дзіркі справа</translation>
+<translation id="2442033148418774391">Паведамленне "Больш разумнае аўтазапаўненне, з поўнай прыватнасцю" закрыта</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не будзе захоўваць<ph name="END_EMPHASIS" />:
 <ph name="BEGIN_LIST" />
 <ph name="LIST_ITEM" />вашу гісторыю прагляду сайтаў;
@@ -880,6 +881,7 @@
 <translation id="2451607499823206582">Адсочванне</translation>
 <translation id="2452837234288608067">Не ўдалося дапамагчы з гэтым запытам. Паўтарыце спробу.</translation>
 <translation id="2453045048779611513">Тыпы даных для захоўвання вызначаюцца вашай арганізацыяй</translation>
+<translation id="2456490423293803882">Апавяшчэнне "Больш разумнае аўтазапаўненне, з поўнай прыватнасцю" адкрыта на ўсю вышыню</translation>
 <translation id="2459882793359532780">Дзеючыя палітыкі браўзера (палітыкі прылады і профілю).</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core – гэта цэнтралізаваны інструмент для наладжвання палітык браўзера з воблака</translation>
 <translation id="2461822463642141190">Цяпер</translation>
@@ -1109,6 +1111,7 @@
 <translation id="2878197950673342043">Плакатны згіб</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">выкарыстоўваць блакіроўку экрана для ўводу пароляў</translation>
+<translation id="2880119244122776372">Стварайце і праграмуйце</translation>
 <translation id="2881276955470682203">Захаваць картку?</translation>
 <translation id="2882280148032777436">Выдаленне нумара вядомага падарожніка</translation>
 <translation id="2882949212241984732">Згіб "двайныя вароты"</translation>
@@ -3913,6 +3916,7 @@
 <translation id="753713322968419914">Выдаліць хатні адрас з прапаноў аўтазапаўнення Chrome?</translation>
 <translation id="753714465667062283">Каб захаваць фота, увайдзіце ва ўліковы запіс</translation>
 <translation id="7537536606612762813">Абавязкова</translation>
+<translation id="7540924742308928499">Генерыруйце ідэі і падсумоўвайце</translation>
 <translation id="7543525346216957623">Папрасі дазволу ў бацькоў</translation>
 <translation id="7546409722674205727">Ідзе запуск праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="7548892272833184391">Выпраўленне памылак падключэння</translation>

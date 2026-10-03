@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Nav atvērtu ciļņu</translation>
 <translation id="1469381646033328562">Jūsu kontu pārvalda viens no vecākiem.
 <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">kopš darbības “Izveidot ciļņu grupu” pabeigšanas</translation>
 <translation id="147982357559798527">Mainīta</translation>
 <translation id="1481450969185702334">Atrašana un aizpildīšana</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Ziņot par problēmu</translation>
 <translation id="2222149859067335623">Vietnei <ph name="SITE_DOMAIN" /> ir bloķēta piekļuve jūsu kamerai</translation>
 <translation id="2223461067862937305">Izveidot kvadrātkodu</translation>
+<translation id="222798989929574238">Jūs meklēšanai izmantojāt vairāk nekā 20 fotoattēlus</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
 <translation id="2236949375853147973">Manas darbības</translation>
 <translation id="2237869114829007407">Iegūstiet kopsavilkumu un galvenos ieskatus par jebkuru lapu vai tēmu.</translation>
@@ -1763,6 +1765,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6525550806864373485">Rediģēt izvēlni</translation>
 <translation id="6527208859483186860">{position}. fons no {total}</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
+<translation id="6529706885792457023">Jūs sakārtojāt vairāk nekā 15 cilnes</translation>
 <translation id="6532106788206463496">Saglabāt izmaiņas</translation>
 <translation id="6536759809440150308">Atvērt grupu “<ph name="GROUP_TITLE" />” ar šādu ciļņu skaitu: <ph name="NUMBER_OF_TABS" />; <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6642362222295953972">Pāriet uz esošo cilni</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6645899968535965230">Kvadrātkods: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Jūs pārbaudījāt vairāk nekā 25 paroles</translation>
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6659660757330712663">Varat vilkt rīkjoslu, lai pārslēgtu cilnes.</translation>
 <translation id="6663529247339810546">Attēlu nevar saglabāt</translation>
@@ -1966,6 +1970,7 @@ Lai turpinātu datorā, pārslēdzieties uz kontu <ph name="OTHER_EMAIL" />. Jū
 <translation id="7145337554745942724">Autovadītāja apliecības informācijas atjaunināšana</translation>
 <translation id="7146301801400584641">Pieejams kalendāra fails</translation>
 <translation id="7149893636342594995">Pēdējās 24 stundas</translation>
+<translation id="7151361008641622036">{count,plural, =1{Jūs sakārtojāt 1 cilni}zero{Jūs sakārtojāt # cilnes}one{Jūs sakārtojāt # cilni}other{Jūs sakārtojāt # cilnes}}</translation>
 <translation id="7154417656353909837">Noņemt adreses</translation>
 <translation id="7161230316646448869">Sinhronizējiet grāmatzīmes, vēsturi un citu informāciju visās savās ierīcēs</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8481184073299279701">Pieskarieties pogai “Sākt reģistrēšanu”, lai vāktu turpmākus JavaScript konsoles žurnālus un kļūdas no visām cilnēm. Žurnāli tiks vākti (un uzglabāti tikai atmiņā), līdz tiks aizvērta šī lapa vai līdz pieskarsieties pogai “Pārtraukt reģistrēšanu”.</translation>
 <translation id="8487667956631253959">Ieslēgts</translation>
 <translation id="8487700953926739672">Pieejams bezsaistē</translation>
+<translation id="8488065047914929586">kopš darbības “Paroles saglabāšana” pabeigšanas</translation>
 <translation id="8488923644885757471">Jauns logs</translation>
 <translation id="8490629238792920282">Nevarēja izveidot saiti</translation>
 <translation id="8501469528283376592">Lejupielāžu automātiska dzēšana</translation>
@@ -2543,6 +2549,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8890516388109605451">Avoti</translation>
 <translation id="8893208530912252670">Videoklipi</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
+<translation id="890009681345348416">Vairāk nekā 40 automātiski aizpildītu paroļu</translation>
 <translation id="8900845556227858314">Pārlūka lietotne</translation>
 <translation id="890565330728586731">Atpakaļ</translation>
 <translation id="8907722425137681851">Atrast lapā…</translation>

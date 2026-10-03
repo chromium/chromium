@@ -868,6 +868,7 @@
 <translation id="2436186046335138073">လင့် <ph name="PROTOCOL" /> အားလုံးကို <ph name="HANDLER_HOSTNAME" />အား ဖွင့်ခွင့် ပြုမလား?</translation>
 <translation id="243815215670139125">ဤကတ်ကို သင်၏ Google Account တွင် သိမ်း၍မရလိုက်ပါ။ ယင်းအစား ဤစက်ပေါ်ရှိ Chrome တွင် ၎င်းကို သိမ်းပြီးပြီ။</translation>
 <translation id="2438874542388153331">ညာဘက်တွင် လေးချက်ဖောက်ရန်</translation>
+<translation id="2442033148418774391">ပိုမိုစမတ်ကျပြီး သီးသန့်ထားရှိသော အော်တိုဖြည့် သတိပေးချက်ကို ပိတ်လိုက်သည်</translation>
 <translation id="2442865686365739754">Chrome သည် အောက်ပါတို့ကို <ph name="BEGIN_EMPHASIS" />သိမ်းမည်မဟုတ်ပါ<ph name="END_EMPHASIS" />-
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />သင့်ကြည့်ရှုမှုမှတ်တမ်း
@@ -880,6 +881,7 @@
 <translation id="2451607499823206582">စောင့်ကြည့်ခြင်း</translation>
 <translation id="2452837234288608067">၎င်းကို လုပ်ဆောင်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2453045048779611513">သိမ်းနိုင်သည်များကို သင့်အဖွဲ့အစည်းက ကန့်သတ်ထားသည်</translation>
+<translation id="2456490423293803882">ပိုမိုစမတ်ကျပြီး သီးသန့်ထားရှိသော အော်တိုဖြည့် သတိပေးချက်ကို မြင်ကွင်းအပြည့် ဖွင့်လိုက်သည်</translation>
 <translation id="2459882793359532780">ဘရောင်ဇာမူဝါဒများ သုံးထားသည် (စက်နှင့် ပရိုဖိုင်မူဝါဒများ)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core သည် cloud မှ ဘရောင်ဇာမူဝါဒများကို စီစဉ်သတ်မှတ်ရန်အတွက် ဗဟိုပြုတူးလ်ကို ပေးသည်</translation>
 <translation id="2461822463642141190">လက်ရှိ</translation>
@@ -1113,6 +1115,7 @@
 <translation id="2878197950673342043">ပိုစတာပုံ ခေါက်ရန်</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">စကားဝှက်ဖြည့်ရန်အတွက် ဖန်သားပြင်လော့ခ် သုံးလိုသည်</translation>
+<translation id="2880119244122776372">တည်ဆောက်ပြီး ကုဒ်ရေးရန်</translation>
 <translation id="2881276955470682203">ကတ်ကို သိမ်းလိုပါသလား။</translation>
 <translation id="2882280148032777436">သိသော ခရီးသည်နံပါတ်ကို ဖျက်ပါ</translation>
 <translation id="2882949212241984732">တံခါးနှစ်ရွက်ပုံစံ ခေါက်ရန်</translation>
@@ -3914,6 +3917,7 @@
 <translation id="753713322968419914">အိမ်လိပ်စာကို Chrome အော်တိုဖြည့်မှ ဖယ်ရှားမလား။</translation>
 <translation id="753714465667062283">သင့်ဓာတ်ပုံသိမ်းရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="7537536606612762813">မလုပ်မနေရ</translation>
+<translation id="7540924742308928499">စုစည်းအကြံပြုပြီး အနှစ်ချုပ်ပါ</translation>
 <translation id="7543525346216957623">သင့်မိဘကို မေးပါ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> စတင်နေသည်</translation>
 <translation id="7548892272833184391">ချိတ်ဆက်မှု အမှားများကို ပြုပြင်ရန်</translation>

@@ -5862,7 +5862,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5452716108542782563">A extensão "<ph name="NAME" />" está controlando esta configuração. Para mudar o mecanismo de pesquisa padrão, <ph name="BEGIN_LINK_DISABLE" />desative a extensão<ph name="END_LINK_DISABLE" /> ou <ph name="BEGIN_LINK_MANAGE" />gerencie as configurações<ph name="END_LINK_MANAGE" />.</translation>
 <translation id="5452976525201205853"><ph name="LANGUAGE" /> (funciona off-line)</translation>
 <translation id="5454166040603940656">com <ph name="PROVIDER" /></translation>
-<translation id="5457082343331641453">Adicione à pesquisa</translation>
+<translation id="5457082343331641453">Adicionar à pesquisa</translation>
 <translation id="5457459357461771897">Ler e excluir fotos, músicas e outras mídias do seu computador</translation>
 <translation id="5457795687441958389">Continuar sem fazer login</translation>
 <translation id="5458214261780477893">Dvorak</translation>
@@ -10461,7 +10461,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
 <translation id="8987321822984361516">Navegador gerenciado por uma organização, perfil gerenciado por <ph name="PROFILE_DOMAIN" /></translation>
-<translation id="8987736167266086032">Recomece de onde você parou</translation>
+<translation id="8987736167266086032">Continue de onde você parou</translation>
 <translation id="8987927404178983737">Mês</translation>
 <translation id="8989359959810288806">Atualizar status do tethering</translation>
 <translation id="8989779557457435460">Compartilhar a guia atual por padrão</translation>

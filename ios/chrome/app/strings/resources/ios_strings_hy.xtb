@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Բաց ներդիրներ չկան</translation>
 <translation id="1469381646033328562">Ձեր հաշիվը կառավարում է ձեր ծնողը։
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">«Ստեղծեք ներդիրների խումբ» գործողությունն ավարտելուց հետո</translation>
 <translation id="147982357559798527">Փոխվել է</translation>
 <translation id="1481450969185702334">Գտնել և լրացնել</translation>
 <translation id="1483493594462132177">Ուղարկել</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Հաղորդել խնդրի մասին</translation>
 <translation id="2222149859067335623">«<ph name="SITE_DOMAIN" />» կայքին արգելված է օգտագործել ձեր տեսախցիկը</translation>
 <translation id="2223461067862937305">Ստեղծել QR կոդ</translation>
+<translation id="222798989929574238">Դուք 20-ից ավելի լուսանկարներ եք օգտագործել որոնման համար</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
 <translation id="2236949375853147973">Իմ գործողությունները</translation>
 <translation id="2237869114829007407">Ստացեք ցանկացած էջի կամ թեմայի մասին ընդհանուր տեղեկություններ և հիմնական վիճակագրական տվյալներ</translation>
@@ -1763,6 +1765,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6525550806864373485">Փոփոխել ընտրացանկը</translation>
 <translation id="6527208859483186860">ֆոն {position}՝ {total}-ից</translation>
 <translation id="6527303717912515753">Կիսվել</translation>
+<translation id="6529706885792457023">Դուք 15-ից ավելի ներդիրներ եք դասավորել</translation>
 <translation id="6532106788206463496">Պահել փոփոխությունները</translation>
 <translation id="6536759809440150308">Բացել <ph name="GROUP_TITLE" /> խումբը, պարունակում է <ph name="NUMBER_OF_TABS" /> ներդիր, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6642362222295953972">Անցնել մինչ այդ բացած ներդիր</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
 <translation id="6645899968535965230">QR կոդ՝ <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Դուք 25-ից ավելի գաղտնաբառեր եք ստուգել</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
 <translation id="6659660757330712663">Մեկ ներդիրից մյուսն անցնելու համար կարող եք թերթել գործիքագոտին։</translation>
 <translation id="6663529247339810546">Չհաջողվեց պահել պատկերը</translation>
@@ -1966,6 +1970,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7145337554745942724">Թարմացնել վարորդական վկայականը</translation>
 <translation id="7146301801400584641">Հասանելի է օրացույցի ֆայլ</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
+<translation id="7151361008641622036">{count,plural, =1{Դուք դասավորել եք 1 ներդիր}one{Դուք դասավորել եք # ներդիր}other{Դուք դասավորել եք # ներդիր}}</translation>
 <translation id="7154417656353909837">Հեռացնել հասցեները</translation>
 <translation id="7161230316646448869">Համաժամացրեք ձեր էջանիշները, պատմությունն ու մյուս կարգավորումները բոլոր սարքերում</translation>
 <translation id="7165323152084385463">VIN համարը</translation>
@@ -2396,6 +2401,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8481184073299279701">Հպեք «Սկսել գրանցումը մատյանում» կոճակը՝ հետագայում բոլոր ներդիրներից JavaScript վահանակի մատյաններն ու սխալները հավաքելու համար։ Մատյանները կհավաքվեն (և կպահվեն միայն հիշողության մեջ), քանի դեռ այս էջը չի փակվել, կամ չեք սեղմել «Դադարեցնել գրանցումը մատյանում» կոճակը։</translation>
 <translation id="8487667956631253959">Միացված է</translation>
 <translation id="8487700953926739672">Մատչելի է անցանց ռեժիմում</translation>
+<translation id="8488065047914929586">«Պահել գաղտնաբառ» առաջադրանքն ավարտելուց հետո</translation>
 <translation id="8488923644885757471">Նոր պատուհան</translation>
 <translation id="8490629238792920282">Չհաջողվեց ստեղծել հղում</translation>
 <translation id="8501469528283376592">Ներբեռնումների ավտոմատ ջնջում</translation>
@@ -2543,6 +2549,7 @@ Level Up-ը ցանկացած պահի կարող եք նորից միացնել�
 <translation id="8890516388109605451">Աղբյուրներ</translation>
 <translation id="8893208530912252670">Տեսանյութեր</translation>
 <translation id="8898822736010347272">Ուղարկում է Google-ին ձեր այցելած որոշ էջերի URL-ներն ու դրանց բովանդակությունը և համակարգի մասին որոշակի տեղեկություններ, որոնք օգնում են հայտնաբերել համացանցում օգտատերերին սպառնացող նոր վտանգներ։</translation>
+<translation id="890009681345348416">40+ գաղտնաբառ ավտոմատ լրացվել է</translation>
 <translation id="8900845556227858314">Դիտարկիչի հավելված</translation>
 <translation id="890565330728586731">Հետ</translation>
 <translation id="8907722425137681851">Գտնել էջում…</translation>

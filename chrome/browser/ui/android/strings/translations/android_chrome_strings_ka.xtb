@@ -775,6 +775,7 @@
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ჩამაგრებული ჩანართი, რომლებშიც მიმდინარეობს ჩაწერა</translation>
 <translation id="4137746084635924146">მოწყობილობის ამჟამინდელი ენა</translation>
 <translation id="414128724510021958">ნაგულისხმევად მოთხოვნილია დესკტოპის საიტები</translation>
+<translation id="4150837143272125910">განახლება ჩამოიტვირთა</translation>
 <translation id="4162867837470729563">გაზიარების ვარიანტების სია სრულ სიმაღლეზეა.</translation>
 <translation id="4164642020717536140">ვების სწრაფი და უსაფრთხო დათვალიერება</translation>
 <translation id="4165077084524712774">სხვა ხელსაწყოები</translation>
@@ -1199,6 +1200,7 @@
 <translation id="5848257610304005265">გსურთ, PDF გახსნათ <ph name="APP_NAME" />-ით?</translation>
 <translation id="5849288995120328556">გსურთ, შეწყვიტოთ გაზიარება?</translation>
 <translation id="5853623416121554550">დაპაუზებულია</translation>
+<translation id="5855375823365231964">ამ პროფილის შესახებ</translation>
 <translation id="5855546874025048181">დახვეწა: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, არჩეულია რამდენიმე ინკოგნიტო ჩანართი, რომლებშიც მიმდინარეობს ჩაწერა</translation>
 <translation id="5857447844686706637">რაღაც შეცდომა მოხდა. ფასისთვის თვალის მიდევნება ვერ მოხერხდა.</translation>
@@ -1240,6 +1242,7 @@
 <translation id="6039379616847168523">შემდეგ ჩანართზე გადასვლა</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="604124094241169006">ავტომატური</translation>
+<translation id="6041959688070413372">მართეთ კავშირი Search-ის სერვისებსა და Google Workspace აპებს, მაგალითად, Google Drive-ს, შორის</translation>
 <translation id="6042308850641462728">სხვა</translation>
 <translation id="6047066316630165190">ბადის ჩანართების გადამრთველის გახსნა</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა უცნობი შეცდომის გამო.</translation>
@@ -1400,6 +1403,7 @@
 <translation id="6565959834589222080">ხელმისაწვდომობის მიხედვით გამოიყენება Wi-Fi</translation>
 <translation id="657177046675873214">თქვენს სანიშნეებზე თქვენი ყველა მოწყობილობიდან წვდომისთვის პარამეტრებიდან ჩართეთ „სანიშნეები“</translation>
 <translation id="6573096386450695060">ყოველთვის დაშვება</translation>
+<translation id="657480975869429144">ხელმისაწვდომია Chrome-ის ახალი ვერსია</translation>
 <translation id="658099107946526506">დაიცავით თქვენი კონფიდენციალური დათვალიერება PIN-კოდით, რათა თავიდან აიცილოთ მასზე არასასურველი წვდომა</translation>
 <translation id="6583199322650523874">მიმდინარე გვერდის სანიშნეებში დამატება</translation>
 <translation id="6588043302623806746">დაცული DNS-ის გამოყენება</translation>

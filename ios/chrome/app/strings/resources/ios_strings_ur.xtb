@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">کوئی کھلے ٹیبز نہیں ہیں</translation>
 <translation id="1469381646033328562">آپ کا اکاؤنٹ آپ کے والد/والدہ کے زیر انتظام ہے۔
 <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ٹیب گروپ تخلیق کریں" کو مکمل کرنے کے بعد سے</translation>
 <translation id="147982357559798527">تبدیل کر دیا گیا</translation>
 <translation id="1481450969185702334">تلاش کریں اور پُر کریں</translation>
 <translation id="1483493594462132177">بھیجیں</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">ایک مسئلے کی اطلاع دیں</translation>
 <translation id="2222149859067335623">‫"<ph name="SITE_DOMAIN" />" کو آپ کے کیمرے تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے</translation>
 <translation id="2223461067862937305">‏‫QR کوڈ تخلیق کریں</translation>
+<translation id="222798989929574238">‏آپ نے تلاش کرنے کے لیے ‎20+‎ تصاویر استعمال کیں</translation>
 <translation id="2230173723195178503">ویب صفحہ لوڈ کر دیا گیا ہے</translation>
 <translation id="2236949375853147973">میری سرگرمی</translation>
 <translation id="2237869114829007407">کسی بھی صفحہ یا موضوع کے لیے ایک مجموعی جائزہ اور اہم بصیرتیں حاصل کریں</translation>
@@ -1763,6 +1765,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6525550806864373485">ایڈٹ مینو</translation>
 <translation id="6527208859483186860">‏‫{total} میں سے {position} پس منظر</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
+<translation id="6529706885792457023">آپ نے 15 سے زائد ٹیبز کو منظم کیا</translation>
 <translation id="6532106788206463496">تبدیلیاں محفوظ کریں</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> گروپ کھولیں، جس میں <ph name="NUMBER_OF_TABS" />، <ph name="CREATION_TEXT" /> ہیں</translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6642362222295953972">موجودہ ٹیب پر سوئچ کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6645899968535965230">‏QR کوڈ: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">آپ نے 25 سے زیادہ پاس ورڈز چیک کیے</translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="6659660757330712663">آپ ٹیبز کے درمیان سوئچ کرنے کے لیے ٹول بار کو سوائپ کر سکتے ہیں۔</translation>
 <translation id="6663529247339810546">تصویر کو محفوظ نہیں کر سکتے ہیں</translation>
@@ -1966,6 +1970,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7145337554745942724">ڈرائیونگ لائسنس کی معلومات اپ ڈیٹ کریں</translation>
 <translation id="7146301801400584641">کیلنڈر فائل دستیاب ہے</translation>
 <translation id="7149893636342594995">آخری 72 گھنٹے</translation>
+<translation id="7151361008641622036">{count,plural, =1{آپ نے 1 ٹیب کو منظم کیا}other{آپ نے # ٹیبز کو منظم کیا}}</translation>
 <translation id="7154417656353909837">پتے ہٹا دیں</translation>
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8481184073299279701">‏تمام ٹیبز سے مستقبل کے JavaScript کونسول لاگز اور خرابیاں جمع کرنے کیلئے، "لاگنگ شروع کریں" بٹن پر تھپتھپائیں۔ لاگز اس وقت تک جمع (اور صرف میموری میں اسٹور) کئے جائیں گے جب تک یہ صفحہ بند نہ ہو جائے یا "لاگنگ بند کریں" پر نہ تھپتھپایا جائے۔</translation>
 <translation id="8487667956631253959">آن ہے</translation>
 <translation id="8487700953926739672">آف لائن دستیاب ہے</translation>
+<translation id="8488065047914929586">"پاس ورڈ محفوظ کریں" مکمل کرنے کے بعد سے</translation>
 <translation id="8488923644885757471">نئی ونڈو</translation>
 <translation id="8490629238792920282">لنک تخلیق کرنے سے قاصر</translation>
 <translation id="8501469528283376592">ڈاؤن لوڈز کو خودکار طور پر حذف کریں</translation>
@@ -2543,6 +2549,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8890516388109605451">مآخذ</translation>
 <translation id="8893208530912252670">ویڈیوز</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
+<translation id="890009681345348416">‫40 سے زیادہ پاس ورڈز آٹو فل ہو گئے</translation>
 <translation id="8900845556227858314">براؤزر ایپ</translation>
 <translation id="890565330728586731">پیچھے</translation>
 <translation id="8907722425137681851">صفحہ میں تلاش کریں…</translation>

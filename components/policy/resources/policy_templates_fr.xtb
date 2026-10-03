@@ -950,6 +950,20 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1635748761015837179">Autoriser l'écriture sur des périphériques de stockage externes</translation>
 <translation id="1639468541408865385">Activer le cache d'authentification HTTP à portée globale</translation>
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
+<translation id="1640646094704433064">Permet d'établir une liste de formats d'URL indiquant quels sites ne sont pas autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
+
+          Si le JIT pour JavaScript est désactivé, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement et aussi désactiver des parties de JavaScript, y compris WebAssembly. Cette désactivation peut également permettre à <ph name="PRODUCT_NAME" /> d'afficher le contenu Web dans une configuration plus sûre.
+
+          Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+          Des exceptions à la règle peuvent être définies pour certains sous-domaines, ainsi que pour des sites entiers. Par exemple, une règle configurée uniquement pour sous-domaine.site.com s'applique à sous-domaine.site.com sans affecter site.com. Dans certains cas où un sous-domaine ne peut pas être isolé de son site parent, il peut hériter de la règle configurée sur site.com. Il est également possible que les exceptions ne prennent pas effet pour les frames chargés dans un onglet existant tant que le site n'a pas été ouvert dans un nouvel onglet. Sur les appareils <ph name="ANDROID_NAME" /> disposant de peu de mémoire, il est possible que les exceptions propres à un site ne soient pas appliquées. Les sites utiliseront alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est définie) ou, par défaut, le paramètre JIT pour JavaScript du profil.
+
+          Pour appliquer des exceptions, <ph name="PRODUCT_NAME" /> peut placer les sites ou sous-domaines dont le paramètre diffère de celui par défaut dans des processus dédiés. Cela peut augmenter l'utilisation de mémoire, en particulier sur <ph name="ANDROID_NAME" /> ou lorsqu'un format de caractères génériques correspond à de nombreux sous-domaines, car chaque origine correspondante peut être isolée séparément. Les sous-domaines isolés ne peuvent pas non plus utiliser document.domain pour accéder à leur site parent.
+
+          Remarque : Dans les versions 155 et antérieures, les exceptions aux règles n'étaient appliquées qu'au niveau des sites (eTLD+1). Une règle définie uniquement pour sous-domaine.site.com ne prenait pas effet, même pour sous-domaine.site.com. Elle devait être définie sur site.com pour s'appliquer à la fois à site.com et à sous-domaine.site.com.
+Cette règle s'applique frame par frame et pas uniquement en fonction de l'URL d'origine de premier niveau. Par exemple, si site-1.com est répertorié dans la règle <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mais que site-1.com charge un frame contenant site-2.com, le JIT pour JavaScript est désactivé pour site-1.com, mais site-2.com utilise la règle de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est définie) ou active le JIT pour JavaScript par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
+
+          Si cette règle n'est pas configurée pour un site, la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="1643642938972654829">Autoriser l'accès à la page de test des règles</translation>
 <translation id="1645793986494086629">Schéma :</translation>
@@ -8015,6 +8029,21 @@ Si cette règle n'est pas configurée, le figement des onglets en arrière-plan 
 <translation id="608788685013546076">Définir le niveau de batterie minimal autorisé avec l'alimentation alternée en heures pleines</translation>
 <translation id="6089679180657323464">Contrôle les paramètres du dispositif de contrôle de diagnostic et de télémétrie de Wilco.</translation>
 <translation id="6091233616732024397">Obliger les utilisateurs à se connecter pour se servir du navigateur</translation>
+<translation id="6091279561320899147">Permet d'établir une liste de formats d'URL indiquant les sites pour lesquels les optimisations JavaScript avancées sont désactivées.
+
+Si les optimisations JavaScript sont désactivées, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns.
+Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
+
+Des exceptions à la règle peuvent être définies pour certains sous-domaines, ainsi que pour des sites entiers.
+Par exemple, une règle configurée uniquement pour sous-domaine.site.com s'applique à sous-domaine.site.com sans affecter site.com. Dans certains cas où un sous-domaine ne peut pas être isolé de son site parent, il peut hériter de la règle configurée sur site.com. Il est également possible que les exceptions ne prennent pas effet pour les frames chargés dans un onglet existant tant que le site n'a pas été ouvert dans un nouvel onglet. Sur les appareils <ph name="ANDROID_NAME" /> disposant de peu de mémoire, il est possible que les exceptions propres à un site ne soient pas appliquées. Les sites utiliseront alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est définie) ou, par défaut, le paramètre d'optimisation JavaScript du profil.
+
+Pour appliquer des exceptions, <ph name="PRODUCT_NAME" /> peut placer les sites ou sous-domaines dont le paramètre diffère de celui par défaut dans des processus dédiés. Cela peut augmenter l'utilisation de mémoire, en particulier sur <ph name="ANDROID_NAME" /> ou lorsqu'un format de caractères génériques correspond à de nombreux sous-domaines, car chaque origine correspondante peut être isolée séparément. Les sous-domaines isolés ne peuvent pas non plus utiliser document.domain pour accéder à leur site parent.
+
+Remarque : Dans les versions 138 et antérieures, les exceptions aux règles n'étaient appliquées qu'au niveau des sites (eTLD+1). Une règle définie uniquement pour sous-domaine.site.com ne prenait pas effet, même pour sous-domaine.site.com. Elle devait être définie sur site.com pour s'appliquer à la fois à site.com et à sous-domaine.site.com. Cette règle s'applique frame par frame et pas uniquement en fonction de l'URL d'origine de premier niveau. Par exemple, si site-1.com est répertorié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mais que site-1.com charge un frame contenant site-2.com, les optimisations JavaScript sont désactivées pour site-1.com, mais site-2.com utilise la règle de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est définie) ou active les optimisations JavaScript par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
+
+Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
 <translation id="6093156968240188330">Permettre aux utilisateurs distants d'interagir avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="6093551397728373988">Exiger l'activation de tous les modes de saisie autorisés dans une session utilisateur</translation>
@@ -11825,6 +11854,13 @@ Pour en savoir plus sur <ph name="DOWNLOAD_RESTRICTIONS_POLICY_NAME" />, consult
 <translation id="8489169564515126823">Désactivé : les barres de défilement ne sont pas sélectionnables par défaut.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Désactiver l'enregistrement de l'historique du navigateur</translation>
+<translation id="8494605948258449467">Cette règle détermine si les connexions WebSocket actives sont déconnectées lorsqu'une page est stockée dans le cache back/forward. Auparavant, les connexions WebSocket actives empêchaient une page d'être stockée dans le cache back/forward. Toutefois, <ph name="PRODUCT_NAME" /> se comporte différemment et déconnecte les connexions WebSocket à la place, ce qui permet de mettre la page en cache et de la restaurer dans un état déconnecté.
+
+Si cette règle est activée ou n'est pas configurée, les connexions WebSocket sont déconnectées lorsqu'une page est stockée dans le cache back/forward.
+
+Si cette règle est désactivée, les connexions WebSocket ne sont pas déconnectées lorsqu'une page est stockée dans le cache back/forward. Comme le cache back/forward n'est pas compatible avec les connexions WebSocket actives, les pages contenant des connexions de ce type actives ne seront pas mises en cache.
+
+Cette règle est obsolète depuis la version 157 de <ph name="PRODUCT_NAME" /> et sera supprimée dans la version 167.</translation>
 <translation id="8499172469244085141">Paramètres par défaut (les utilisateurs peuvent les contourner)</translation>
 <translation id="8499359456965625209">Cette règle est obsolète.
 
@@ -12878,6 +12914,25 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="9204863016826119209">Des clés d'entreprise peuvent être utilisées par les applications Android installées et identifiées dans cette règle.</translation>
 <translation id="9206364386317031168">Autoriser les sites à adresser des requêtes réseau à l'appareil local.</translation>
 <translation id="9206472508136116830">Ne pas autoriser la découverte des partages NetBIOS</translation>
+<translation id="9207289612253941907">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
+
+Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
+
+Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
+
+Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
+
+Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses méthodes d'échange de clés par défaut.
+
+La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
+
+Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
+
+Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.
+
+Cette règle peut être définie pour l'appareil et pour l'utilisateur. Si elle est définie pour l'utilisateur, cette règle n'affectera que les requêtes réseau initiées par le profil utilisateur et n'affectera peut-être pas les requêtes réseau effectuées par <ph name="PRODUCT_NAME" /> pour exécuter des tâches en arrière-plan à l'échelle du navigateur. Ces tâches étant, en effet, contrôlées par la valeur définie au niveau de l'appareil. Si cette règle est définie à la fois au niveau de l'appareil et de l'utilisateur, la valeur au niveau de l'appareil s'applique, sauf si l'ordre de priorité des règles a été modifié par la règle <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Pour les versions 156 et antérieures, cette règle ne s'applique qu'au niveau de l'appareil.</translation>
 <translation id="9207596996305971030">Ne pas signaler les événements de connexion/déconnexion</translation>
 <translation id="9208328979373108724">Autoriser les origines d'applications Web isolées à ajouter des sous-applis, mais exiger une invite à l'utilisateur</translation>
 <translation id="9210647066889383361">Autoriser les utilisateurs à se connecter à leur appareil avec Smart Lock</translation>

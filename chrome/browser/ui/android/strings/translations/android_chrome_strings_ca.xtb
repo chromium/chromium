@@ -1199,6 +1199,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5848257610304005265">Vols obrir el PDF amb <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vols deixar de compartir?</translation>
 <translation id="5853623416121554550">en pausa</translation>
+<translation id="5855375823365231964">Sobre aquest perfil</translation>
 <translation id="5855546874025048181">Refina: "<ph name="REFINE_TEXT" />"</translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, pestanya d'incògnit de gravació multiseleccionada</translation>
 <translation id="5857447844686706637">S'ha produït un error. No s'ha pogut actualitzar el seguiment del preu.</translation>
@@ -1240,6 +1241,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="604124094241169006">Automàtic</translation>
+<translation id="6041959688070413372">Gestiona la connexió entre els serveis de la Cerca i les aplicacions de Google Workspace, com ara Google Drive</translation>
 <translation id="6042308850641462728">Més</translation>
 <translation id="6047066316630165190">Obre el selector de pestanyes de la quadrícula</translation>
 <translation id="604996488070107836">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa d'un error desconegut.</translation>

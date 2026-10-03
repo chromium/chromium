@@ -75,7 +75,7 @@
 <translation id="1046521327593783388">{NUM_PASSWORDS,plural, =1{Do služby <ph name="BRAND" /> v tomto zariadení bolo importované 1 heslo}few{Do služby <ph name="BRAND" /> v tomto zariadení boli importované {NUM_PASSWORDS} heslá}many{{NUM_PASSWORDS} passwords imported to <ph name="BRAND" /> on this device}other{Do služby <ph name="BRAND" /> v tomto zariadení bolo importovaných {NUM_PASSWORDS} hesiel}}</translation>
 <translation id="1046572983040892965">Okno bolo presunuté nahor a doľava</translation>
 <translation id="1047431265488717055">Kopírovať te&amp;xt odkazu</translation>
-<translation id="104751728059674265">Spätná väzba nie je pre tvoj účet k dispozícii. Dospelý môže pomocou svojho zariadenia alebo profilu problém nahlásiť za teba.</translation>
+<translation id="104751728059674265">Spätná väzba nie je pre tvoj účet k dispozícii. Dospelý môže zo svojho zariadenia alebo profilu problém nahlásiť za teba.</translation>
 <translation id="1048986595386481879">Dynamicky priradené</translation>
 <translation id="1049324577536766607">{COUNT,plural, =1{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}few{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}many{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}other{Prijímajú sa prílohy (<ph name="ATTACHMENTS" />) zo zariadenia <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049743911850919806">Inkognito</translation>
@@ -10297,7 +10297,7 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="8874341931345877644">Prenášajte do zariadenia:</translation>
 <translation id="8874647982044395866">Bio</translation>
 <translation id="8874790741333031443">Vyskúšajte dočasne povoliť súbory cookie tretích strán, čo znamená nižšiu ochranu pri prehliadaní, ale funkcie webu budú s väčšou pravdepodobnosťou fungovať podľa očakávaní.</translation>
-<translation id="8874864294955002500">Spätná väzba nie je pre váš účet k dispozícii. Správca podniku môže nahlásiť problém za vás pomocou svojho zariadenia alebo profilu.</translation>
+<translation id="8874864294955002500">Spätná väzba nie je pre váš účet k dispozícii. Správca podniku môže nahlásiť problém za vás zo svojho zariadenia alebo profilu.</translation>
 <translation id="8875736897340638404">Vyberte svoju viditeľnosť</translation>
 <translation id="8876307312329369159">Toto nastavenie sa nedá zmeniť v relácii ukážky.</translation>
 <translation id="8876965259056847565"><ph name="FEATURE_NAME" /> nájde zariadenia v okolí vyhľadávaním zariadení Bluetooth.</translation>

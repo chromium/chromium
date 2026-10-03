@@ -1199,6 +1199,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5848257610304005265">Megnyitja a PDF-et a következővel: <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Leállítja a megosztást?</translation>
 <translation id="5853623416121554550">szüneteltetve</translation>
+<translation id="5855375823365231964">Erről a profilról</translation>
 <translation id="5855546874025048181">Pontosítás: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, több kiválasztott, felvételt készítő inkognitó lap</translation>
 <translation id="5857447844686706637">Hiba történt. Nem sikerült frissíteni a nyomon követett árat.</translation>
@@ -1240,6 +1241,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
 <translation id="604124094241169006">Automatikus</translation>
+<translation id="6041959688070413372">A keresési szolgáltatások és a Google Workspace-alkalmazások (például a Google Drive) közötti kapcsolat kezelése</translation>
 <translation id="6042308850641462728">Továbbiak</translation>
 <translation id="6047066316630165190">Nyissa meg a rácsos lapváltót</translation>
 <translation id="604996488070107836">A következő fájl letöltése ismeretlen hiba miatt nem sikerült: <ph name="FILE_NAME" />.</translation>

@@ -867,6 +867,7 @@ Unaweza kuondoa pendekezo hili kwenye Chrome. Chanzo chako halisi hakitafutwa. <
 <translation id="2436186046335138073">Ungependa kuruhusu <ph name="HANDLER_HOSTNAME" /> kufungua viungo vyote vya <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Kadi hii haikuweza kuhifadhiwa katika Akaunti yako ya Google. Imehifadhiwa kwenye Chrome katika kifaa hiki badala yake.</translation>
 <translation id="2438874542388153331">Toboa mara nne kulia</translation>
+<translation id="2442033148418774391">Umefunga ilani ya kipengele mahiri zaidi cha kujaza kiotomatiki, cha faragha</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />haitahifadhi<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Historia yako ya kuvinjari
@@ -879,6 +880,7 @@ Unaweza kuondoa pendekezo hili kwenye Chrome. Chanzo chako halisi hakitafutwa. <
 <translation id="2451607499823206582">Ufuatiliaji</translation>
 <translation id="2452837234288608067">Imeshindwa kukusaidia kutekeleza ombi hilo. Jaribu tena.</translation>
 <translation id="2453045048779611513">Shirika lako linadhibiti maudhui unayoweza kuhifadhi</translation>
+<translation id="2456490423293803882">Umefungua ilani ya kipengele mahiri zaidi cha kujaza kiotomatiki, cha faragha katika skrini nzima</translation>
 <translation id="2459882793359532780">Sera za kivinjari zinazotumika (sera za mashine na wasifu)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core hukupa zana inayokuwezesha kuweka mipangilio ya sera za kivinjari kutoka kwenye wingu katika eneo moja</translation>
 <translation id="2461822463642141190">Ya sasa</translation>
@@ -1108,6 +1110,7 @@ Unaweza kuondoa pendekezo hili kwenye Chrome. Chanzo chako halisi hakitafutwa. <
 <translation id="2878197950673342043">Mkunjo wa bango</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">tumia mbinu ya kufunga skrini yako ili kujaza manenosiri</translation>
+<translation id="2880119244122776372">Buni na usimbe</translation>
 <translation id="2881276955470682203">Ungependa kuhifadhi kadi?</translation>
 <translation id="2882280148032777436">Futa Namba ya Msafiri Inayojulikana</translation>
 <translation id="2882949212241984732">Mikunjo miwili sambamba</translation>
@@ -3912,6 +3915,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="753713322968419914">Ungependa kuondoa anwani ya nyumbani kwenye kipengele cha kujaza kiotomatiki kwenye Chrome?</translation>
 <translation id="753714465667062283">Ingia katika akaunti ili uhifadhi picha yako</translation>
 <translation id="7537536606612762813">Lazima</translation>
+<translation id="7540924742308928499">Changia mawazo na uandae muhtasari</translation>
 <translation id="7543525346216957623">Muulize mzazi wako</translation>
 <translation id="7546409722674205727">Inafungua <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Rekebisha hitilafu za muunganisho</translation>

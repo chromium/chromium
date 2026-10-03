@@ -949,6 +949,21 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
+<translation id="1640646094704433064">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript niet mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
+
+          Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen en kunnen ook delen van JavaScript (waaronder WebAssembly) worden uitgezet. Als je de JavaScript JIT-compiler uitzet, kan <ph name="PRODUCT_NAME" /> webcontent renderen in een meer beveiligde configuratie.
+
+          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+          Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites. Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. Sites gebruiken dan het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, als dit is ingesteld, of de standaard JavaScript JIT-instelling van het profiel.
+
+          <ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+          Opmerking: In versie 155 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, wordt JavaScript JIT uitgezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt JavaScript JIT standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1643642938972654829">Toegang geven tot de testpagina voor beleid</translation>
 <translation id="1645793986494086629">Schema:</translation>
@@ -1206,6 +1221,21 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 
       Als je het beleid niet instelt, kunnen gebruikers de hele lijst met voorkeurstalen aanpassen.</translation>
 <translation id="1803646570632580723">Lijst met vastgezette apps om in het opstartprogramma te tonen</translation>
+<translation id="180432221123109556">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn aangezet.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen.
+Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites.
+Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. In plaats daarvan gebruiken sites het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (als dit is ingesteld) of de standaardinstelling voor JavaScript-optimalisatie van het profiel.
+
+<ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+Opmerking: In versie 138 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, worden JavaScript-optimalisaties aangezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, indien ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="1807539058116290184">Knijpen om te zoomen uitzetten in de kioskmodus</translation>
 <translation id="1808715480127969042">Cookies blokkeren op deze sites</translation>
 <translation id="1810261428246410396">Het gebruik van instant tethering toestaan</translation>
@@ -2262,6 +2292,7 @@ Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt verwijd
 <translation id="2479760962196319822">Met dit beleid wordt bepaald of <ph name="PRODUCT_OS_NAME" />-gebruikers gegevens wel of niet lokaal kunnen opslaan.
       Als je dit beleid instelt op Onwaar, wordt lokale opslag in <ph name="PRODUCT_OS_NAME" /> geblokkeerd. Gebruikers kunnen gegevens niet lokaal opslaan en hebben geen toegang tot lokale directory's.
       Als je dit beleid instelt op Waar of niet instelt, is lokale opslag in <ph name="PRODUCT_OS_NAME" /> toegestaan. Er gelden geen beperkingen voor waar gebruikers gegevens kunnen opslaan of tot welke directory's ze toegang hebben.</translation>
+<translation id="2481931731272002134">Sta generatieve AI-functies in Automatisch invullen toe en verbeter AI-modellen.</translation>
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
 <translation id="2487495476672607707">Met de bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /> worden <ph name="GOOGLE_DRIVE_NAME" />-bestanden in de Mijn Drive van een gebruiker automatisch offline beschikbaar gemaakt (als er genoeg ruimte is) op ondersteunde <ph name="CHROMEBOOK_PLUS_NAME" />-apparaten.
@@ -2954,6 +2985,25 @@ Dit beleid kan alleen worden ingesteld als cloudgebruikersbeleid.</translation>
 <translation id="2890645751406497668">Automatisch rechten verlenen aan deze sites om verbinding te maken met USB-apparaten met de opgegeven leveranciers- en product-ID's.</translation>
 <translation id="2893546967669465276">Systeemlogboeken naar de beheerserver verzenden</translation>
 <translation id="2893660462311365527">Snelheid voor verzameling van netwerktelemetrie in milliseconden.</translation>
+<translation id="2894720693512285641">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursversleutelingsalgoritmen in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA_NAME" />, wordt <ph name="PRODUCT_NAME" /> zo ingesteld dat het de voorkeur geeft aan versleutelingen die nodig zijn voor naleving van de Commercial National Security Algorithm Suite versie 1.0 en 2.0 (CNSA 1.0 en 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_NAME" /> ingesteld om de standaardcijfers te gebruiken.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_NAME" /> trager als je websites opent.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
+
+Dit beleid kan worden ingesteld voor de machine en voor de gebruiker. Als dit beleid is ingesteld voor de gebruiker, heeft het alleen invloed op netwerkverzoeken die worden gestart door het gebruikersprofiel en misschien niet op netwerkverzoeken die door <ph name="PRODUCT_NAME" /> worden gedaan om browserbrede achtergrondtaken uit te voeren. Deze worden beheerd door de waarde op machineniveau. Als dit beleid is ingesteld op zowel apparaat- als gebruikersniveau, is de waarde op apparaatniveau van toepassing, tenzij de volgorde van beleidsvoorrang is gewijzigd door het beleid <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Voor versie 156 en lager geldt dit beleid alleen voor het hele apparaat.</translation>
 <translation id="2894914342151915910">Waarschuwingen onderdrukken als Chrome wordt uitgevoerd op een niet-ondersteund systeem</translation>
 <translation id="2895444724612647239">Automatisch rechten aan sites geven om verbinding te maken met elk HID-apparaat.</translation>
 <translation id="2896434627453256512">Stel het beleid in om de functie voor ghostvenster aan te zetten.
@@ -4694,6 +4744,7 @@ Overwegingen:
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
 <translation id="4032740546145417900">Sta Praten om te typen niet toe.</translation>
+<translation id="4035252407064087455">Sta generatieve AI-functies in Automatisch invullen toe zonder AI-modellen te verbeteren.</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="4047633048700722778">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
 
@@ -5873,6 +5924,7 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
       <ph name="PAGE_SIZE_NAME" /> moet een van de vermelde indelingen bevatten of 'custom' als het vereiste papierformaat niet in de lijst staat. Als de waarde 'custom' is opgegeven, moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> worden gespecificeerd. Dit beschrijft de gewenste hoogte en breedte in micrometers. Anders moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> niet worden gespecificeerd. Beleid dat deze regels schendt, wordt genegeerd.
 
       Als het paginaformaat niet beschikbaar is op de printer die de gebruiker heeft gekozen, wordt dit beleid genegeerd.</translation>
+<translation id="4787894429283141328">Functies voor generatieve AI in Automatisch invullen niet toestaan.</translation>
 <translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
 <translation id="4790391579868456557">Essentiële en niet-essentiële cookies gebruiken voor zoeken.</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
@@ -6427,6 +6479,7 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
       </translation>
 <translation id="5118635822783657217">Updates uitzetten voor niet-kritieke componenten</translation>
 <translation id="5120168808610189805">Import van homepage bij eerste uitvoering aanzetten</translation>
+<translation id="5124321040285474825">Instellingen voor generatieve AI-functies in Automatisch invullen</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
 <translation id="5124652340668722849">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
 
@@ -7975,6 +8028,23 @@ Als je het beleid niet instelt, staat het vastzetten van tabbladen op de achterg
 <translation id="608788685013546076">Drempel voor stroompiekverschuiving van batterij instellen in procenten</translation>
 <translation id="6089679180657323464">Hiermee beheer je de instellingen voor wilco DTC.</translation>
 <translation id="6091233616732024397">Gebruikers dwingen in te loggen om de browser te gebruiken</translation>
+<translation id="6091279561320899147">Hiermee kun je een lijst met URL-patronen instellen voor sites waarvoor geavanceerde JavaScript-optimalisaties zijn uitgezet.
+
+Als je JavaScript-optimalisaties uitzet, kan <ph name="PRODUCT_NAME" /> er langer over doen om webcontent te renderen.
+
+Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
+Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites.
+Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. In plaats daarvan gebruiken sites het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (als dit is ingesteld) of de standaardinstelling voor JavaScript-optimalisatie van het profiel.
+
+<ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+Opmerking: In versie 138 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, worden JavaScript-optimalisaties uitgezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />, als dit is ingesteld, of worden JavaScript-optimalisaties standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> van toepassing op de site, als dit is ingesteld. Anders staat JavaScript-optimalisatie aan voor de site.</translation>
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
 <translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6093551397728373988">Afdwingen dat alle toegestane invoermethoden worden aangezet in een gebruikerssessie</translation>
@@ -8706,6 +8776,27 @@ De screensaver bestaat uit de afbeeldingen waarnaar wordt verwezen door het bele
 De time-out voor inactiviteit waarna de screensaver wordt gestart en het interval waarmee een afbeelding wordt getoond, kunnen worden aangepast met het beleid <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> en <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Als een van deze beleidsregels niet is ingesteld, worden de standaardwaarden van het beleid gebruikt.</translation>
 <translation id="651248769129998376">Geen installatieverzoeken voor extensies maken of uploaden naar de Beheerdersconsole</translation>
 <translation id="6513453889192806240">HTTPS-latentie</translation>
+<translation id="6514006253468048943">Deze functies in <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om gebruikers te helpen formulieren op internet in te vullen. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens verzamelen zoals de structuur van de formulieren waarmee een gebruiker interactie heeft en, voor Zoeken en invullen met Gemini, de vrije-tekstquery's die een gebruiker invoert om gekoppelde Gemini-apps te doorzoeken, en deze gegevens naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd.
+
+Als je het beleid instelt op 0 (Functies voor generatieve AI toestaan in Automatisch invullen en AI-modellen verbeteren), kunnen de functies worden gebruikt en kan Google relevante gegevens gebruiken om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+Als je het beleid instelt op 1 (Functies voor generatieve AI in Automatisch invullen toestaan zonder AI-modellen te verbeteren), kunnen de functies worden gebruikt, maar kan Google geen modellen verbeteren met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Als je het beleid instelt op 2 (Functies voor generatieve AI niet toestaan in Automatisch invullen), worden de functies niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Functies voor generatieve AI in Automatisch invullen zijn onder andere:
+
+- Slimmer formulieren invullen: Gebruikt AI om de velden van een formulier te herkennen en te classificeren, zodat er meer kunnen worden ingevuld.
+
+- Zoeken en invullen met Gemini: Vindt informatie uit de apps die een gebruiker aan Gemini heeft gekoppeld en biedt deze aan om in te vullen, als proactieve suggesties op een formulier of als reactie op een vraag die de gebruiker schrijft.
+
+Dit beleid vervangt het beleid <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, dat nog steeds van toepassing is als dit beleid niet is ingesteld. Voor de functie Zoeken en invullen met Gemini mag het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ook niet uitstaan.
+
+Dit beleid beheert geen functies voor automatisch invullen die geen generatieve AI gebruiken.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6515520014183265350">Geef een lijst aan met oorsprongen die in een eigen proces worden uitgevoerd.
 
@@ -10567,6 +10658,19 @@ Als je dit beleid niet toepast, gebruikt de pdf-viewer het huidige AGG-weergavep
 
 Als je dit beleid niet instelt, wordt het pdf-weergaveprogramma gekozen door de browser.</translation>
 <translation id="7704244074621846004">Uitgebreide levensduur voor SharedWorkers aanzetten</translation>
+<translation id="7706986409083477132">Hiermee kun je een lijst met URL-patronen instellen van sites die JavaScript mogen uitvoeren met de JIT-compiler (Just In Time) aangezet.
+
+          Ga naar https://chromeenterprise.google/policies/url-patterns voor gedetailleerde informatie over geldige site-URL-patronen. Jokertekens (<ph name="WILDCARD_VALUE" />) zijn toegestaan.
+
+          Uitzonderingen op het beleid kunnen worden ingesteld voor specifieke subdomeinen en hele sites. Een beleid dat alleen voor subdomein.site.com is ingesteld, is bijvoorbeeld van toepassing op subdomein.site.com zonder dat dit van invloed is op site.com. In sommige gevallen waarin een subdomein niet kan worden geïsoleerd van de bovenliggende site, kan het beleid worden overgenomen dat is ingesteld op site.com. Uitzonderingen worden misschien ook pas van kracht voor frames die in een bestaand tabblad zijn geladen als de site wordt geopend in een nieuw tabblad. Op <ph name="ANDROID_NAME" />-apparaten met weinig geheugen worden sitespecifieke uitzonderingen misschien niet afgedwongen. Sites gebruiken dan het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, als dit is ingesteld, of de standaard JavaScript JIT-instelling van het profiel.
+
+          <ph name="PRODUCT_NAME" /> kan sites of subdomeinen waarvan de instelling afwijkt van de standaardinstelling in speciale processen plaatsen om uitzonderingen af te dwingen. Dit kan het geheugengebruik verhogen, vooral op <ph name="ANDROID_NAME" /> of als een jokertekenpatroon overeenkomt met veel subdomeinen, omdat elke overeenkomende oorsprong afzonderlijk kan worden geïsoleerd. Geïsoleerde subdomeinen kunnen ook geen document.domain gebruiken om toegang te krijgen tot hun bovenliggende site.
+
+          Opmerking: In versie 155 en lager werden beleidsuitzonderingen alleen afgedwongen op site-detailniveau (eTLD+1). Een beleid dat alleen voor subdomein.site.com is ingesteld, werd niet van kracht, zelfs niet voor subdomein.site.com. Het moest worden ingesteld op site.com om van toepassing te zijn op zowel site.com als subdomein.site.com.
+
+Dit beleid wordt frame voor frame toegepast en niet alleen op basis van de URL van de oorsprong op het hoogste niveau. Als site-one.com bijvoorbeeld wordt vermeld in het beleid <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, maar site-one.com een frame laadt dat site-two.com bevat, wordt JavaScript JIT aangezet voor site-one.com, maar gebruikt site-two.com het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />, indien ingesteld, of wordt JavaScript JIT standaard aangezet. Vermeldingen op de blokkeerlijst hebben een hogere prioriteit dan vermeldingen op de toelatingslijst, die op hun beurt een hogere prioriteit hebben dan de ingestelde standaardwaarde.
+
+          Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> van toepassing op de site, indien ingesteld, anders staat JavaScript JIT aan voor de site.</translation>
 <translation id="7707869387893611318">De functie voor oplaadgeluiden aanzetten.
 
           Deze functie is verantwoordelijk voor het afspelen van de oplaadgeluiden.
@@ -11777,6 +11881,13 @@ Ga naar https://chromeenterprise.google/policies/?policy=DownloadRestrictions vo
 <translation id="8489169564515126823">Uitgezet: Scrollers zijn standaard niet focusbaar.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Opslag van browsegeschiedenis aanzetten</translation>
+<translation id="8494605948258449467">Met dit beleid bepaal je of actieve WebSocket-verbindingen worden verbroken als een pagina gebruikmaakt van Back-Forward Cache. Actieve WebSocket-verbindingen voorkwamen eerder dat een pagina werd opgeslagen in Back-Forward Cache, maar <ph name="PRODUCT_NAME" /> heeft dit gedrag gewijzigd om de WebSockets te ontkoppelen. Hierdoor kan de pagina worden opgeslagen in het cachegeheugen en worden hersteld in een ontkoppelde status.
+
+Als je dit beleid instelt op Aangezet of niet instelt, worden WebSockets verbroken als een pagina in Back-Forward Cache komt.
+
+Als je dit beleid instelt op Uitgezet, worden WebSockets niet verbroken als een pagina gebruikmaakt van Back-Forward Cache. Omdat Back-Forward Cache geen actieve WebSockets ondersteunt, worden pagina's met actieve WebSockets niet in het cachegeheugen opgeslagen.
+
+Dit beleid is beëindigd in <ph name="PRODUCT_NAME" /> versie 157 en wordt verwijderd in versie 167.</translation>
 <translation id="8499172469244085141">Standaardinstellingen (gebruikers kunnen overschrijven)</translation>
 <translation id="8499359456965625209">Dit beleid is beëindigd.
 
@@ -12830,6 +12941,25 @@ De standaardinstelling is RollbackDisabled.</translation>
 <translation id="9204863016826119209">Zakelijke sleutels kunnen worden gebruikt door Android-apps die zijn geïnstalleerd en in dit beleid worden vermeld.</translation>
 <translation id="9206364386317031168">Toestaan dat sites netwerkverzoeken naar het lokale apparaat sturen.</translation>
 <translation id="9206472508136116830">Share-discovery voor NetBIOS niet toestaan</translation>
+<translation id="9207289612253941907">Met dit beleid stel je <ph name="PRODUCT_NAME" /> in om de voorkeursalgoritmen voor sleutelovereenkomst (ondersteunde groepen) in TLS 1.3 te ordenen op basis van een voorkeur voor algoritmen die zijn goedgekeurd door een specifiek nalevingsregime.
+
+Als je dit beleid instelt, garandeert dit niet dat er specifieke algoritmen worden onderhandeld.
+
+Dit beleid is bedoeld om serverbeheerders die clients met en zonder nalevingsvereisten willen ondersteunen, onderscheid te laten maken tussen deze clients en alleen bepaalde niet-standaard algoritmen met verhoogde cryptografische sterkte te laten gebruiken voor clients die expliciet zijn ingesteld om deze te gebruiken.
+
+Als je het beleid instelt op <ph name="CNSA2_NAME" />, wordt <ph name="PRODUCT_NAME" /> zo ingesteld dat het de voorkeur geeft aan sleuteluitwisselingsmethoden die nodig zijn voor naleving van de Commercial National Security Algorithm Suite 2.0 (CNSA 2.0).
+
+Als je het beleid niet instelt of instelt op <ph name="DEFAULT_NAME" />, wordt <ph name="PRODUCT_NAME" /> ingesteld om de standaardmethoden voor sleuteluitwisseling te gebruiken.
+
+Het is niet nodig om dit beleid in te stellen voor de beveiliging. De standaardversleuteling die <ph name="PRODUCT_NAME" /> gebruikt, is sterk genoeg om een brute-force-aanval te weerstaan met de hele kracht van de zon.
+
+Als je dit beleid instelt, wordt <ph name="PRODUCT_NAME" /> trager als je websites opent.
+
+Dit beleid heeft alleen invloed op TLS 1.3 en QUIC. Het heeft geen invloed op eerdere versies van TLS.
+
+Dit beleid kan worden ingesteld voor de machine en voor de gebruiker. Als dit beleid is ingesteld voor de gebruiker, heeft het alleen invloed op netwerkverzoeken die worden gestart door het gebruikersprofiel en misschien niet op netwerkverzoeken die door <ph name="PRODUCT_NAME" /> worden gedaan om browserbrede achtergrondtaken uit te voeren. Deze worden beheerd door de waarde op machineniveau. Als dit beleid is ingesteld op zowel apparaat- als gebruikersniveau, is de waarde op apparaatniveau van toepassing, tenzij de volgorde van beleidsvoorrang is gewijzigd door het beleid <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" />.
+
+Voor versie 156 en lager geldt dit beleid alleen voor het hele apparaat.</translation>
 <translation id="9207596996305971030">Inlog-/uitloggebeurtenissen niet rapporteren</translation>
 <translation id="9208328979373108724">Toestaan dat geïsoleerde web-app-oorsprongen sub-apps toevoegen, maar een gebruikersprompt vereisen</translation>
 <translation id="9210647066889383361">Toestaan dat gebruikers inloggen op hun apparaat met Smart Lock</translation>

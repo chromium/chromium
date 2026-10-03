@@ -867,6 +867,7 @@
 <translation id="2436186046335138073">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове?</translation>
 <translation id="243815215670139125">Чување ове картице на Google налогу није успело. Уместо тога, сачувана је у Chrome-у на овом уређају.</translation>
 <translation id="2438874542388153331">Четвороструко бушење на десној страни</translation>
+<translation id="2442033148418774391">Затворено је обавештење о паметнијем аутоматском попуњавању уз загарантовану приватност</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />не чува<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />историју прегледања
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">Прати се</translation>
 <translation id="2452837234288608067">Нисмо успели да вам помогнемо с тиме. Пробајте поново.</translation>
 <translation id="2453045048779611513">Ваша организација ограничава садржај који можете да чувате</translation>
+<translation id="2456490423293803882">Обавештење о паметнијем аутоматском попуњавању уз загарантовану приватност отворено је на целом екрану</translation>
 <translation id="2459882793359532780">Примењене смернице за прегледач (смернице за уређај и профил)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core вам пружа централизовану алатку за конфигурисање смерница прегледача из клауда</translation>
 <translation id="2461822463642141190">Актуелно</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">Пресавијање у облику постера</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">да користи откључавање екрана за попуњавање лозинки</translation>
+<translation id="2880119244122776372">Правите и кодирајте</translation>
 <translation id="2881276955470682203">Желите ли да сачувате картицу?</translation>
 <translation id="2882280148032777436">Избришите број регистрованог путника</translation>
 <translation id="2882949212241984732">Двоструко пресавијање у облику прозора</translation>
@@ -3913,6 +3916,7 @@
 <translation id="753713322968419914">Желите да уклоните кућну адресу из Chrome аутоматског попуњавања?</translation>
 <translation id="753714465667062283">Пријавите се да бисте сачували слику</translation>
 <translation id="7537536606612762813">Обавезно</translation>
+<translation id="7540924742308928499">Смишљајте идеје и резимирајте</translation>
 <translation id="7543525346216957623">Питај родитеља</translation>
 <translation id="7546409722674205727">Покреће се <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Отклоните грешке при повезивању</translation>

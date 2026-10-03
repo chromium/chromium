@@ -867,6 +867,7 @@ Bu təklifi Chrome-dan silə bilərsiniz. Orijinal mənbə silinməyəcək. <ph 
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> hostuna bütün <ph name="PROTOCOL" /> linklərini açmaq icazəsi verirsiniz?</translation>
 <translation id="243815215670139125">Bu kartı Google Hesabınızda saxlamaq mümkün olmadı. Bu cihazda Chrome-da yadda saxlanılıb.</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
+<translation id="2442033148418774391">Daha ağıllı avtodoldurma, məxfi saxlanılan məlumat bildirişi bağlandı</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />yadda saxlamayacaq<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Brauzer tarixçəsi
@@ -879,6 +880,7 @@ Bu təklifi Chrome-dan silə bilərsiniz. Orijinal mənbə silinməyəcək. <ph 
 <translation id="2451607499823206582">İzləmə</translation>
 <translation id="2452837234288608067">Kömək etmək alınmadı. Yenidən cəhd edin.</translation>
 <translation id="2453045048779611513">Təşkilatınız yadda saxlaya biləcəklərinizi məhdudlaşdırır</translation>
+<translation id="2456490423293803882">Daha ağıllı avtodoldurma, məxfi saxlanılan məlumat bildirişi tam hündürlükdə açıldı</translation>
 <translation id="2459882793359532780">Tətbiq olunan brauzer siyasətləri (cihaz və profil siyasətləri)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core buluddan brauzer siyasətlərini konfiqurasiya etmək üçün mərkəzləşdirilmiş alət təqdim edir</translation>
 <translation id="2461822463642141190">Cari</translation>
@@ -1108,6 +1110,7 @@ Bu təklifi Chrome-dan silə bilərsiniz. Orijinal mənbə silinməyəcək. <ph 
 <translation id="2878197950673342043">Poster formasında qatlayın</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">parolları daxil etmək üçün ekran kilidindən istifadə edin</translation>
+<translation id="2880119244122776372">Yaratmaq və kodlaşdırmaq</translation>
 <translation id="2881276955470682203">Kart yadda saxlansın?</translation>
 <translation id="2882280148032777436">Məlum səyahətçi nömrəsini silin</translation>
 <translation id="2882949212241984732">Cüt qatlayın</translation>
@@ -3909,6 +3912,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="753713322968419914">Ev ünvanı Chrome avto-doldurmadan silinsin?</translation>
 <translation id="753714465667062283">Fotonu yadda saxlamaq üçün daxil olun</translation>
 <translation id="7537536606612762813">Məcburi</translation>
+<translation id="7540924742308928499">Fikir mübadiləsi aparın və ümumiləşdirin</translation>
 <translation id="7543525346216957623">Valideyninizdən soruşun</translation>
 <translation id="7546409722674205727">Başlayır: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Bağlantı xətalarını həll edin</translation>

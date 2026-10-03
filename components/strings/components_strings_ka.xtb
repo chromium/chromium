@@ -867,6 +867,7 @@
 <translation id="2436186046335138073">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული?</translation>
 <translation id="243815215670139125">შეუძლებელია ამ ბარათის თქვენს Google ანგარიშში შენახვა. სანაცვლოდ ის შენახულია Chrome-ში, ამ მოწყობილობაზე.</translation>
 <translation id="2438874542388153331">ოთხმაგად გახვრეტა მარჯვნივ</translation>
+<translation id="2442033148418774391">უფრო გონიერი ავტომატური შევსება, კონფიდენციალურობის დაცვით — შეტყობინება დაიხურა</translation>
 <translation id="2442865686365739754">Chrome-ის მიერ <ph name="BEGIN_EMPHASIS" />არ შეინახება<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />ვების დათვალიერების ისტორია
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">მიმდინარეობს თვალის მიდევნება</translation>
 <translation id="2452837234288608067">ამ კუთხით ვერ დაგეხმარებით. ცადეთ ხელახლა.</translation>
 <translation id="2453045048779611513">თქვენი ორგანიზაცია ზღუდავს, რის შენახვა შეგიძლიათ</translation>
+<translation id="2456490423293803882">უფრო გონიერი ავტომატური შევსება, კონფიდენციალურობის დაცვით — შეტყობინება გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="2459882793359532780">ბრაუზერში მოქმედი წესები (მოწყობილობისა და პროფილის წესები)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core უზრუნველგყოფთ ბრაუზერის წესების ღრუბლიდან კონფიგურირების ცენტრალიზებული ხელსაწყოთი</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">დაკეცვა პოსტერის ფორმით</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">პაროლების შევსებისთვის თქვენი ეკრანის დაბლოკვის მეთოდის გამოყენება</translation>
+<translation id="2880119244122776372">აგება და კოდირება</translation>
 <translation id="2881276955470682203">გსურთ ბარათის შენახვა?</translation>
 <translation id="2882280148032777436">აღიარებული მგზავრის ნომრის წაშლა</translation>
 <translation id="2882949212241984732">დაკეცვა ორმაგი ჭიშკრის ფორმით</translation>
@@ -3913,6 +3916,7 @@
 <translation id="753713322968419914">ამოიშალოს თქვენი სახლის მისამართი Chrome-ის ავტომატური შევსებიდან?</translation>
 <translation id="753714465667062283">თქვენი ფოტოს შესანახად გაიარეთ ავტორიზაცია</translation>
 <translation id="7537536606612762813">სავალდებულო</translation>
+<translation id="7540924742308928499">ბრეინშტორმინგი და შეჯამება</translation>
 <translation id="7543525346216957623">სთხოვეთ მშობელს</translation>
 <translation id="7546409722674205727">მიმდინარეობს <ph name="APP_NAME" />-ის გაშვება</translation>
 <translation id="7548892272833184391">კავშირის შეცდომების აღმოფხვრა</translation>

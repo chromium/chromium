@@ -867,6 +867,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Não foi possível guardar este cartão na sua Conta Google. Em alternativa, foi guardado no Chrome neste dispositivo.</translation>
 <translation id="2438874542388153331">Perfuração quádrupla à direita</translation>
+<translation id="2442033148418774391">Aviso de preenchimento automático mais inteligente, mantido em privado, fechado</translation>
 <translation id="2442865686365739754">O Chrome <ph name="BEGIN_EMPHASIS" />não irá guardar<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />O seu histórico de navegação
@@ -879,6 +880,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2451607499823206582">Monitorizar</translation>
 <translation id="2452837234288608067">Não foi possível ajudar nessa questão. Tente novamente.</translation>
 <translation id="2453045048779611513">A sua organização limita o que pode guardar</translation>
+<translation id="2456490423293803882">Aviso de preenchimento automático mais inteligente, mantido em privado, aberto à altura total</translation>
 <translation id="2459882793359532780">Políticas do navegador aplicadas (políticas do computador e do perfil)</translation>
 <translation id="2461385121573678775">O Chrome Enterprise Core oferece-lhe uma ferramenta centralizada para configurar políticas do navegador a partir da nuvem</translation>
 <translation id="2461822463642141190">Atual</translation>
@@ -1108,6 +1110,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="2878197950673342043">Dobra cruzada</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">usar o bloqueio de ecrã para preencher palavras-passe</translation>
+<translation id="2880119244122776372">Crie e programe</translation>
 <translation id="2881276955470682203">Guardar o cartão?</translation>
 <translation id="2882280148032777436">Elimine o número de viajante conhecido</translation>
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
@@ -1196,7 +1199,7 @@ Pode remover esta sugestão do Chrome. A sua fonte original não vai ser elimina
 <translation id="3019738915977809060">Guarde o cartão de embarque na Carteira</translation>
 <translation id="3022959067768579802">Continue a escrever</translation>
 <translation id="3024663005179499861">Tipo de política incorreto</translation>
-<translation id="3027857899292697441">O Chrome detetou detalhes que são comuns em sites associados a phishing, software malicioso ou fraudes. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="3027857899292697441">O Chrome detetou detalhes que são comuns em sites associados a phishing, malware ou fraudes. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Estas sinalizações evitam ou revertem uma alteração interruptiva e estão disponíveis apenas por tempo limitado.</translation>
 <translation id="3033200136993730761">A sua morada de casa pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
@@ -1259,7 +1262,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Mostrar resultados dos últimos 30 dias</translation>
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
-<translation id="3131746543143948171">Este site parece semelhante a outros sites associados a phishing, software malicioso e fraudes. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="3131746543143948171">Este site parece semelhante a outros sites associados a phishing, malware e fraudes. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Guarde o número de correção</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> é agora o seu motor de pesquisa predefinido</translation>
 <translation id="3134859781443140237">Rede local</translation>
@@ -1438,7 +1441,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3428151540071562330">Um ou mais URIs de modelos do servidor DnsOverHttpsTemplates são inválidos e não serão utilizados.</translation>
 <translation id="3432601291244612633">Fechar página</translation>
 <translation id="3434025015623587566">O Gestor de Palavras-passe da Google precisa de mais acesso</translation>
-<translation id="343474037147570563">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
+<translation id="343474037147570563">Os ficheiros que carrega ou anexa são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou malware, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="3435267628744367511">Prima Ctrl duas vezes em qualquer formulário para encontrar e preencher informações sem mudar de separador</translation>
 <translation id="3435557549311968410">Contínuo (curto)</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -3223,7 +3226,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6357546827188504216">Os grupos de separadores "<ph name="GROUP_TITLE_1" />" e "<ph name="GROUP_TITLE_2" />" já não estão disponíveis</translation>
 <translation id="6358088212770985041">editar os métodos de pagamento</translation>
 <translation id="6358450015545214790">O que significam?</translation>
-<translation id="6360213755783740931">Saiba mais sobre a proteção contra software malicioso</translation>
+<translation id="6360213755783740931">Saiba mais sobre a proteção contra malware</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">Veja registos</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e do DNS seguro<ph name="END_LINK" /></translation>
@@ -3745,7 +3748,7 @@ Detalhes adicionais:
 <translation id="7268742523336093718">Adicione um passaporte em segurança à Carteira do Google</translation>
 <translation id="7269151392155523061">O atalho não pode ser igual à palavra-chave do agregador de pesquisa definida por <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY" />: <ph name="SHORTCUT_NAME" /></translation>
 <translation id="7271135282910524932">Algo correu mal com as proteções ou as políticas definidas pela sua organização. Tente novamente mais tarde ou contacte o seu administrador.</translation>
-<translation id="7273111226200291353">Os ficheiros que transfere são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
+<translation id="7273111226200291353">Os ficheiros que transfere são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou malware, ser armazenados com base nas políticas da empresa e ficar visíveis para o seu administrador.</translation>
 <translation id="7275334191706090484">Marcadores Geridos</translation>
 <translation id="7278933725460302617">Já está no modo isolado</translation>
 <translation id="7282894295403887199">Não pode visitar esta página no Modo de navegação anónima</translation>
@@ -3913,6 +3916,7 @@ Detalhes adicionais:
 <translation id="753713322968419914">Remover a morada de casa do preenchimento automático do Chrome?</translation>
 <translation id="753714465667062283">Inicie sessão para guardar a sua foto</translation>
 <translation id="7537536606612762813">Obrigatório</translation>
+<translation id="7540924742308928499">Debata ideias e resuma</translation>
 <translation id="7543525346216957623">Pede aos teus pais</translation>
 <translation id="7546409722674205727">A iniciar a app <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Corrigir erros de ligação</translation>
@@ -4027,7 +4031,7 @@ Detalhes adicionais:
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Prosseguir para <ph name="SITE" /> (não seguro)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Ajuda-me a escrever</translation>
 <translation id="7705992072972338699">Disco ótico (alto brilho)</translation>
-<translation id="7706689436519265630">Os ficheiros que copiar ou mover são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou software malicioso e podem ser armazenados com base nas políticas da empresa.</translation>
+<translation id="7706689436519265630">Os ficheiros que copiar ou mover são enviados para o Google Cloud ou terceiros para análise. Por exemplo, podem ser analisados quanto a dados confidenciais ou malware e podem ser armazenados com base nas políticas da empresa.</translation>
 <translation id="7709934467582922028">Pedido de validação de email fechado</translation>
 <translation id="7714351089363296478">Visitou agora mesmo</translation>
 <translation id="7714404809393719981">Foto (semibrilho)</translation>
@@ -4276,7 +4280,7 @@ Detalhes adicionais:
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador não recomenda a transferência deste ficheiro para <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda a transferência destes ficheiros para <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="8155253549374198915">Últimos separadores abertos</translation>
-<translation id="815805690561372740">O Chrome tem funcionalidades de segurança integradas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente software malicioso<ph name="END_LINK" /> no site que tentou visitar.</translation>
+<translation id="815805690561372740">O Chrome tem funcionalidades de segurança integradas para proteger o utilizador enquanto navega, como a Navegação Segura do Google, que <ph name="BEGIN_LINK" />encontrou recentemente malware<ph name="END_LINK" /> no site que tentou visitar.</translation>
 <translation id="8161095570253161196">Retomar navegação</translation>
 <translation id="8163468049564974856">Ative o preenchimento automático para fazer pagamentos online em segurança. As informações do cartão são encriptadas na Carteira do Google.</translation>
 <translation id="8163866351304776260">Perfuração quádrupla à esquerda</translation>

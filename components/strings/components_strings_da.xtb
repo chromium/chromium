@@ -867,6 +867,7 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2436186046335138073">Vil du tillade, at <ph name="HANDLER_HOSTNAME" /> åbner alle <ph name="PROTOCOL" />-links?</translation>
 <translation id="243815215670139125">Dette kort kunne ikke gemmes på din Google-konto. Det er gemt i Chrome på denne enhed i stedet.</translation>
 <translation id="2438874542388153331">Fire huller i højre side</translation>
+<translation id="2442033148418774391">Meddelelsen om smartere autofyld, der holdes privat, er lukket</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />gemmer ikke<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Din browserhistorik
@@ -879,6 +880,7 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2451607499823206582">Overvågning</translation>
 <translation id="2452837234288608067">Det kunne vi ikke hjælpe med. Prøv igen.</translation>
 <translation id="2453045048779611513">Din organisation begrænser, hvad du kan gemme</translation>
+<translation id="2456490423293803882">Meddelelsen om smartere autofyld, der holdes privat, er åbnet i fuld højde</translation>
 <translation id="2459882793359532780">Anvendte browserpolitikker (maskin- og profilpolitikker)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core giver dig et centraliseret værktøj til konfiguration af browserpolitikker i skyen</translation>
 <translation id="2461822463642141190">Aktuel</translation>
@@ -1108,6 +1110,7 @@ Du kan fjerne dette forslag fra Chrome. Din oprindelige kilde slettes ikke. <ph 
 <translation id="2878197950673342043">Plakatfals</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">bruge din skærmlås til at udfylde adgangskoder</translation>
+<translation id="2880119244122776372">Byg og kod</translation>
 <translation id="2881276955470682203">Vil du gemme kortet?</translation>
 <translation id="2882280148032777436">Slet Known Traveler-nummer</translation>
 <translation id="2882949212241984732">Dobbelt portfals</translation>
@@ -3914,6 +3917,7 @@ Yderligere oplysninger:
 <translation id="753713322968419914">Vil du fjerne hjemmeadressen fra autofyld i Chrome?</translation>
 <translation id="753714465667062283">Log ind for at gemme dit billede</translation>
 <translation id="7537536606612762813">Obligatorisk</translation>
+<translation id="7540924742308928499">Brainstorm og opsummer</translation>
 <translation id="7543525346216957623">Spørg en af dine forældre</translation>
 <translation id="7546409722674205727">Starter <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ret forbindelsesfejl</translation>

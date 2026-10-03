@@ -868,6 +868,7 @@
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="243815215670139125">‏این کارت را نمی‌توان در «حساب Google» شما ذخیره کرد. درعوض، در Chrome در این دستگاه ذخیره شد.</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
+<translation id="2442033148418774391">اعلان «تکمیل خودکار هوشمندتر، با حفظ حریم خصوصی» بسته شد</translation>
 <translation id="2442865686365739754">‏Chrome <ph name="BEGIN_EMPHASIS" />این‌ها را ذخیره نخواهد کرد<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />سابقه مرور
@@ -880,6 +881,7 @@
 <translation id="2451607499823206582">پیگیری</translation>
 <translation id="2452837234288608067">در این مورد نمی‌توانم کمک کنم. دوباره امتحان کنید.</translation>
 <translation id="2453045048779611513">سازمانتان مواردی را که می‌توانید ذخیره کنید محدود می‌کند</translation>
+<translation id="2456490423293803882">اعلان «تکمیل خودکار هوشمندتر، با حفظ حریم خصوصی» در نمای کامل باز شد</translation>
 <translation id="2459882793359532780">خط‌مشی‌های مرورگر اعمال‌شده (خط‌مشی‌های ماشین و نمایه)</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core ابزاری مرکزی برای پیکربندی خط‌مشی‌های مرورگر از فضای ابری دراختیارتان قرار می‌دهد</translation>
 <translation id="2461822463642141190">فعلی</translation>
@@ -1109,6 +1111,7 @@
 <translation id="2878197950673342043">تاخوردگی پوسترمانند</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">از قفل صفحه برای تکمیل گذرواژه‌ها استفاده کند</translation>
+<translation id="2880119244122776372">ساختن و کدنویسی</translation>
 <translation id="2881276955470682203">کارت ذخیره شود؟</translation>
 <translation id="2882280148032777436">حذف کردن شناسه مسافر شناخته‌شده</translation>
 <translation id="2882949212241984732">تاخوردگی دروازه‌ای دوتایی</translation>
@@ -3915,6 +3918,7 @@
 <translation id="753713322968419914">‏نشانی خانه از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="753714465667062283">برای ذخیره کردن عکس، به سیستم وارد شوید</translation>
 <translation id="7537536606612762813">اجباری</translation>
+<translation id="7540924742308928499">بارش فکری و خلاصه کردن</translation>
 <translation id="7543525346216957623">از والدینتان بخواهید این کار را انجام دهد</translation>
 <translation id="7546409722674205727">درحال راه‌اندازی <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">رفع خطاهای اتصال</translation>

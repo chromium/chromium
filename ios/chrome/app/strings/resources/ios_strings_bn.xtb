@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">কোন খোলা ট্যাব নেই</translation>
 <translation id="1469381646033328562">তোমার অ্যাকাউন্ট তোমার অভিভাবক ম্যানেজ করেন।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"ট্যাব গ্রুপ তৈরি করুন" টাস্ক সম্পূর্ণ করার পর থেকে</translation>
 <translation id="147982357559798527">পরিবর্তন করা হয়েছে</translation>
 <translation id="1481450969185702334">খুঁজুন ও পূরণ করুন</translation>
 <translation id="1483493594462132177">পাঠান</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">কোনো সমস্যার অভিযোগ করুন</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" আপনার ক্যামেরা অ্যাক্সেস করতে পারবে না</translation>
 <translation id="2223461067862937305">একটি QR কোড তৈরি করুন</translation>
+<translation id="222798989929574238">সার্চ করার জন্য আপনি ২০টির বেশি ফটো ব্যবহার করেছেন</translation>
 <translation id="2230173723195178503">Webpage loaded</translation>
 <translation id="2236949375853147973">আমার অ্যাক্টিভিটি</translation>
 <translation id="2237869114829007407">যেকোনও পৃষ্ঠা বা বিষয়ের ওভারভিউ ও মূল ইনসাইট পান</translation>
@@ -1764,6 +1766,7 @@
 <translation id="6525550806864373485">এডিট মেনু</translation>
 <translation id="6527208859483186860">{total}টির মধ্যে ব্যাকগ্রাউন্ড {position}</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
+<translation id="6529706885792457023">আপনি ১৫টির বেশি ট্যাব সাজিয়েছেন</translation>
 <translation id="6532106788206463496">পরিবর্তন সেভ করুন</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> খুলুন, <ph name="NUMBER_OF_TABS" />-এর গ্রুপ, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1809,6 +1812,7 @@
 <translation id="6642362222295953972">আগে থেকে থাকা ট্যাবে পাল্টান</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6645899968535965230">QR কোড: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">আপনি ২৫টির বেশি পাসওয়ার্ড চেক করেছেন</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659660757330712663">টুলবার সোয়াইপ করে আপনি একটি ট্যাব থেকে আরেকটি ট্যাবে পরিবর্তন করে নিতে পারবেন।</translation>
 <translation id="6663529247339810546">ছবি সেভ করা যাচ্ছে না</translation>
@@ -1967,6 +1971,7 @@
 <translation id="7145337554745942724">ড্রাইভিং লাইসেন্স সম্পর্কিত তথ্য আপডেট করা</translation>
 <translation id="7146301801400584641">ক্যালেন্ডার ফাইল উপলভ্য</translation>
 <translation id="7149893636342594995">গত ২৪ ঘণ্টা</translation>
+<translation id="7151361008641622036">{count,plural, =1{আপনি ১টি ট্যাব সাজিয়েছেন}one{আপনি #টি ট্যাব সাজিয়েছেন}other{আপনি #টি ট্যাব সাজিয়েছেন}}</translation>
 <translation id="7154417656353909837">ঠিকানাগুলি সরান</translation>
 <translation id="7161230316646448869">সমস্ত ডিভাইসে আপনার বুকমার্ক, ইতিহাস ও আরও অনেক কিছু সিঙ্ক করুন</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2397,6 +2402,7 @@
 <translation id="8481184073299279701">সব ট্যাব থেকে ভবিষ্যতে JavaScript কনসোল লগ ও সমস্যা সংগ্রহ করতে, "লগ করা শুরু করুন" বোতামে ট্যাপ করুন। এই পৃষ্ঠা বন্ধ করা বা "লগ করা বন্ধ করুন" বোতামে ট্যাপ না করা পর্যন্ত লগ সংগ্রহ করা হবে এবং শুধুমাত্র মেমরিতে স্টোর করা থাকবে।</translation>
 <translation id="8487667956631253959">চালু করা আছে</translation>
 <translation id="8487700953926739672">অফলাইনে উপলব্ধ</translation>
+<translation id="8488065047914929586">"পাসওয়ার্ড সেভ করুন" ফিচার ব্যবহার করার পর থেকে</translation>
 <translation id="8488923644885757471">নতুন উইন্ডো</translation>
 <translation id="8490629238792920282">লিঙ্ক তৈরি করা যাচ্ছে না</translation>
 <translation id="8501469528283376592">ডাউনলোড করা আইটেম অটোমেটিক মুছে দিন</translation>
@@ -2544,6 +2550,7 @@
 <translation id="8890516388109605451">উৎস</translation>
 <translation id="8893208530912252670">ভিডিও</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
+<translation id="890009681345348416">৪০টির বেশি পাসওয়ার্ড অটোফিল করা হয়েছে</translation>
 <translation id="8900845556227858314">ব্রাউজার অ্যাপ</translation>
 <translation id="890565330728586731">ফিরে যান</translation>
 <translation id="8907722425137681851">পৃষ্ঠাতে খুঁজুন…</translation>

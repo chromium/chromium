@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Ochiq varaqlar topilmadi</translation>
 <translation id="1469381646033328562">Hisobingiz ota-onangiz boshqaruvida.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">“Varaqlar guruhini yaratish” bajarilganidan beri</translation>
 <translation id="147982357559798527">Oʻzgardi</translation>
 <translation id="1481450969185702334">Topish va kiritish</translation>
 <translation id="1483493594462132177">Yuborish</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="2222149859067335623">“<ph name="SITE_DOMAIN" />” saytiga kameradan foydalanish taqiqlangan</translation>
 <translation id="2223461067862937305">QR kod yaratish</translation>
+<translation id="222798989929574238">Qidirish uchun 20+ ta surat ishlatdingiz</translation>
 <translation id="2230173723195178503">Veb-sahifa yuklandi</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="2237869114829007407">Har qanday sahifa yoki mavzu uchun umumiy maʼlumot va asosiy statistikalarni oling</translation>
@@ -1763,6 +1765,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6525550806864373485">Menyuni tahrirlash</translation>
 <translation id="6527208859483186860">fon: {position} / {total}</translation>
 <translation id="6527303717912515753">Ulashish</translation>
+<translation id="6529706885792457023">15+ ta varaqni tartibga soldingiz</translation>
 <translation id="6532106788206463496">Oʻzgarishlarni saqlash</translation>
 <translation id="6536759809440150308">Ochish: <ph name="GROUP_TITLE" />, <ph name="NUMBER_OF_TABS" /> ta varaq guruhi, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6642362222295953972">Oldin ochilgan varaqqa oʻtish</translation>
 <translation id="6643016212128521049">Tozalash</translation>
 <translation id="6645899968535965230">QR-kod: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">25+ ta parol tekshirildi</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659660757330712663">Varaqlarni almashtirish uchun asboblar panelini yonga suring.</translation>
 <translation id="6663529247339810546">Rasm saqlanmadi</translation>
@@ -1966,6 +1970,7 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7145337554745942724">Haydovchilik guvohnomasini yangilash</translation>
 <translation id="7146301801400584641">Taqvim fayli mavjud</translation>
 <translation id="7149893636342594995">Oxirgi 24 soat</translation>
+<translation id="7151361008641622036">{count,plural, =1{1 ta varaqni tartibga soldingiz}other{# ta varaqni tartibga soldingiz}}</translation>
 <translation id="7154417656353909837">Manzillarni olib tashlash</translation>
 <translation id="7161230316646448869">Bukmarklar, tarix va boshqa sozlamalaringizni barcha qurilmalaringizda sinxronlang</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8481184073299279701">Barcha varaqlardagi JavaScript konsoli jurnali va xatolari yigʻilishi uchun "Jurnalga yozishni boshlash" bandini bosing. Jurnallar sahifa yopilmaguncha yoki "Jurnalga yozishni toʻxtatish" bosilmaguncha yigʻiladi (va faqat xotirada saqlanadi).</translation>
 <translation id="8487667956631253959">Yoniq</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
+<translation id="8488065047914929586">“Parolni saqlash” bajarilganidan beri</translation>
 <translation id="8488923644885757471">Yangi oyna</translation>
 <translation id="8490629238792920282">Havola yaratilmadi</translation>
 <translation id="8501469528283376592">Yuklanmalarni avtomatik oʻchirish</translation>
@@ -2543,6 +2549,7 @@ Istalgan vaqtda qayta ishga tushirishingiz mumkin.</translation>
 <translation id="8890516388109605451">Manbalar</translation>
 <translation id="8893208530912252670">Videolar</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
+<translation id="890009681345348416">40+ ta parol avtomatik kiritildi</translation>
 <translation id="8900845556227858314">Brauzer ilovasi</translation>
 <translation id="890565330728586731">Orqaga</translation>
 <translation id="8907722425137681851">Sahifa ichidan qidirish…</translation>

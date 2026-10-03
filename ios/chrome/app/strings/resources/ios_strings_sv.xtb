@@ -780,6 +780,7 @@
 <translation id="3459644598174926977">Använd Gemini Live för att ställa frågor om en sida, brainstorma högt och diskutera fram och tillbaka.</translation>
 <translation id="3462768334899086950">Det innebär att du förlorar din osparade fil och dina aktuella flikar</translation>
 <translation id="3464194322481586217">Det gick inte att bevaka priset.</translation>
+<translation id="3468009081835548033">Tillåts en gång</translation>
 <translation id="3469117812148449995">Alternativ för att spara lösenord</translation>
 <translation id="3472469028191701821">Öppnas i en ny flik</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{för {COUNT} webbplats eller app}other{för {COUNT} webbplatser och appar}}</translation>
@@ -1310,6 +1311,7 @@
 <translation id="512533434554095351">Du har flera problem med lösenord.</translation>
 <translation id="5128788795241319992">Utforska den nya menyn</translation>
 <translation id="5132942445612118989">Synkronisera lösenord, historik med mera på alla dina enheter</translation>
+<translation id="5137568953923142260">Tillåt en gång</translation>
 <translation id="5141363746588976328">Dölj kortet Sänkta priser på dina flikar</translation>
 <translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Stäng Flikbyte</translation>
@@ -1989,6 +1991,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="722339453342442311">Kontrollera nu</translation>
 <translation id="7227235818314667565">Hantera delning</translation>
 <translation id="7233006041370588369">Välj ett lösenord att fylla i.</translation>
+<translation id="7238074332967840767">Säkerhet</translation>
 <translation id="723874023660911012">Byt profil</translation>
 <translation id="7241135764990439166">Inkognitoläget är inte tillgängligt</translation>
 <translation id="7245288034498365666">Få ordning och spara tid</translation>

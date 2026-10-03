@@ -1405,7 +1405,7 @@
 <translation id="5443636120437209490">Predvolené lepšie prehliadanie</translation>
 <translation id="5444892875087332195">Záložky</translation>
 <translation id="5447973833955560753">Heslo na obnovenie</translation>
-<translation id="5448623529214315261">Uložená fotka <ph name="INDEX" /></translation>
+<translation id="5448623529214315261"><ph name="INDEX" />. uložená fotka</translation>
 <translation id="5452354193031718372">Použite silné heslo:</translation>
 <translation id="5453088693079603292">Aká aktivita sa zhromažďuje</translation>
 <translation id="5454211924362324495">Ak nechcete, aby ostatní používali vaše heslo, <ph name="BEGIN_LINK" />zmeňte si ho na <ph name="WEBSITE" /><ph name="END_LINK" /></translation>
@@ -2587,7 +2587,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="9038526468059454274">Zhrňte to pomocou</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
 <translation id="9042893549633094279">Ochrana súkromia a zabezpečenie</translation>
-<translation id="9044703854323320868">Správa v Gmaile <ph name="INDEX" /></translation>
+<translation id="9044703854323320868"><ph name="INDEX" />. správa v Gmaile</translation>
 <translation id="9055291197094969722">Vytvorte skupinu kariet, aby ste si karty mohli usporiadať a zachovať si produktivitu</translation>
 <translation id="9055580485132823283">Chystáte sa odstrániť niekoľko hesiel ({password_count}) a prístupových kódov ({passkey_count}), ale aj zoznam webov a aplikácií, pre ktoré ste nastavili, aby nikdy neukladali prihlasovacie údaje. Účty, ktoré ste vytvorili pre weby a aplikácie, odstránené nebudú.</translation>
 <translation id="9057030985451135243">Ďalšie informácie o zdieľaných skupinách kariet</translation>

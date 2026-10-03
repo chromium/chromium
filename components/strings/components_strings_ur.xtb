@@ -867,6 +867,7 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> کو سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="243815215670139125">‏یہ کارڈ آپ کے Google اکاؤنٹ میں محفوظ نہیں ہو سکا۔ اس کی بجائے اسے اس آلہ پر Chrome میں محفوظ کر دیا گیا ہے۔</translation>
 <translation id="2438874542388153331">دائیں طرف مستطیل سوراخ</translation>
+<translation id="2442033148418774391">اسمارٹ آٹو فل، نجی رکھا گیا نوٹس بند کر دیا گیا</translation>
 <translation id="2442865686365739754">‏Chrome درج ذیل معلومات کو <ph name="BEGIN_EMPHASIS" />محفوظ نہیں کرے گا<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />آپ کی براؤزنگ کی سرگزشت
@@ -879,6 +880,7 @@
 <translation id="2451607499823206582">ٹریکنگ</translation>
 <translation id="2452837234288608067">اس میں مدد نہیں کر سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="2453045048779611513">آپ جو محفوظ کر سکتے ہیں آپ کی تنظیم اسے محدود کرتی ہے</translation>
+<translation id="2456490423293803882">اسمارٹ آٹو فل، نجی رکھا گیا نوٹس مکمل اونچائی پر کھلا ہوا ہے</translation>
 <translation id="2459882793359532780">براؤزر پر لاگو کردہ پالیسیاں (مشین اور پروفائل کی پالیسیاں)</translation>
 <translation id="2461385121573678775">‏‫Chrome Enterprise Core آپ کو کلاؤڈ سے براؤزر کی پالیسیاں کنفیگر کرنے کے لیے ایک مرکزی ٹول فراہم کرتا ہے</translation>
 <translation id="2461822463642141190">حالیہ</translation>
@@ -1108,6 +1110,7 @@
 <translation id="2878197950673342043">پوسٹر جیسے فولڈ</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">پاس ورڈز درج کرنے کے لیے اپنا اسکرین لاک استعمال کریں</translation>
+<translation id="2880119244122776372">تیار کریں اور کوڈ کریں</translation>
 <translation id="2881276955470682203">کارڈ محفوظ کریں؟</translation>
 <translation id="2882280148032777436">معلوم مسافر نمبر کو حذف کریں</translation>
 <translation id="2882949212241984732">ڈبل گیٹ فولڈ</translation>
@@ -3915,6 +3918,7 @@
 <translation id="753713322968419914">‏‫Chrome آٹو فل سے گھر کا پتہ ہٹائیں؟</translation>
 <translation id="753714465667062283">اپنی تصویر محفوظ کرنے کیلئے سائن ان کریں</translation>
 <translation id="7537536606612762813">لازمی</translation>
+<translation id="7540924742308928499">سوچ بچار اور خلاصہ کریں</translation>
 <translation id="7543525346216957623">اپنے والدین سے پوچھیں</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> کی شروعات</translation>
 <translation id="7548892272833184391">کنکشن کی خرابیاں ٹھیک کریں</translation>

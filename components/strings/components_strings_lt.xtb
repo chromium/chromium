@@ -867,6 +867,7 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2436186046335138073">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas?</translation>
 <translation id="243815215670139125">Šios kortelės nepavyko išsaugoti jūsų „Google“ paskyroje. Vietoje to ji išsaugota naršyklėje „Chrome“ šiame įrenginyje.</translation>
 <translation id="2438874542388153331">Keturios skylės dešinėje</translation>
+<translation id="2442033148418774391">Privataus išmanesnio automatinio pildymo pranešimas uždarytas</translation>
 <translation id="2442865686365739754">„Chrome“ <ph name="BEGIN_EMPHASIS" />nesaugos<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />naršymo istorijos;
@@ -879,6 +880,7 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2451607499823206582">Stebėjimas</translation>
 <translation id="2452837234288608067">Nepavyko padėti. Bandykite dar kartą.</translation>
 <translation id="2453045048779611513">Jūsų organizacija riboja, ką galite išsaugoti</translation>
+<translation id="2456490423293803882">Privataus išmanesnio automatinio pildymo pranešimas atidarytas per visą ekrano aukštį</translation>
 <translation id="2459882793359532780">Taikoma naršyklės politika (įrenginio ir profilio politika)</translation>
 <translation id="2461385121573678775">„Chrome Enterprise Core“ suteikia centralizuotą įrankį, skirtą naršyklės politikai konfigūruoti iš debesies</translation>
 <translation id="2461822463642141190">Dabartinė</translation>
@@ -1108,6 +1110,7 @@ Galite pašalinti šį pasiūlymą iš „Chrome“. Pradinis šaltinis nebus i�
 <translation id="2878197950673342043">Perlenkimas į keturias dalis</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">naudoti ekrano užraktą slaptažodžiams užpildyti</translation>
+<translation id="2880119244122776372">Kurkite ir programuokite</translation>
 <translation id="2881276955470682203">Išsaugoti kortelę?</translation>
 <translation id="2882280148032777436">Žinomo keliautojo numerio ištrynimas</translation>
 <translation id="2882949212241984732">Perlenkimas viduryje su dviem atvartais</translation>
@@ -3915,6 +3918,7 @@ Papildoma išsami informacija:
 <translation id="753713322968419914">Pašalinti namų adresą iš „Chrome“ automatinio pildymo?</translation>
 <translation id="753714465667062283">Prisijunkite, kad išsaugotumėte nuotrauką</translation>
 <translation id="7537536606612762813">Privaloma</translation>
+<translation id="7540924742308928499">Generuokite ir apibendrinkite idėjas</translation>
 <translation id="7543525346216957623">Paprašykite vieno iš tėvų</translation>
 <translation id="7546409722674205727">Paleidžiama „<ph name="APP_NAME" />“</translation>
 <translation id="7548892272833184391">Ryšio klaidų taisymas</translation>

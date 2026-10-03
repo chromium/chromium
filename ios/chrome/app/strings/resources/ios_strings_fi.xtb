@@ -780,6 +780,7 @@
 <translation id="3459644598174926977">Gemini Liven avulla voit kysyä sivusta, ideoida ääneen ja keskustella.</translation>
 <translation id="3462768334899086950">Tämä tarkoittaa, että menetät tallentamattoman tiedoston ja nykyiset välilehdet</translation>
 <translation id="3464194322481586217">Hintaa ei voitu seurata.</translation>
+<translation id="3468009081835548033">Sallittu kerran</translation>
 <translation id="3469117812148449995">Salasanan tallentamisen vaihtoehdot</translation>
 <translation id="3472469028191701821">Avautuu uudelle välilehdelle</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} sivustolta tai sovelluksesta}other{{COUNT} sivustolta tai sovelluksesta}}</translation>
@@ -1310,6 +1311,7 @@
 <translation id="512533434554095351">Sinulla on useita salasanaongelmia.</translation>
 <translation id="5128788795241319992">Tutustu uuteen valikkoon</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
+<translation id="5137568953923142260">Salli kerran</translation>
 <translation id="5141363746588976328">Piilota "Hinnanlaskut avoimilla välilehdillä" ‑kortti</translation>
 <translation id="514154868070499296">Fontti: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sulje välilehden vaihtaja</translation>
@@ -1989,6 +1991,7 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="722339453342442311">Tarkista nyt</translation>
 <translation id="7227235818314667565">Hallitse jakamista</translation>
 <translation id="7233006041370588369">Valitse täytettävä salasana.</translation>
+<translation id="7238074332967840767">Turvallisuus</translation>
 <translation id="723874023660911012">Vaihda profiilia</translation>
 <translation id="7241135764990439166">Incognito-tila ei ole käytettävissä</translation>
 <translation id="7245288034498365666">Pidä asiat järjestyksessä ja säästä aikaa</translation>

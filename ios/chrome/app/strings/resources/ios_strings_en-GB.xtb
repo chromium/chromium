@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">No open tabs</translation>
 <translation id="1469381646033328562">Your account is managed by your parent.
 <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">since completing 'Create a tab group'</translation>
 <translation id="147982357559798527">Changed</translation>
 <translation id="1481450969185702334">Find and fill</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Report an issue</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" is blocked from accessing your camera</translation>
 <translation id="2223461067862937305">Create a QR code</translation>
+<translation id="222798989929574238">You used 20+ photos to search</translation>
 <translation id="2230173723195178503">Web page loaded</translation>
 <translation id="2236949375853147973">My Activity</translation>
 <translation id="2237869114829007407">Get an overview and key insights for any page or topic</translation>
@@ -1763,6 +1765,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6525550806864373485">Edit menu</translation>
 <translation id="6527208859483186860">background {position} of {total}</translation>
 <translation id="6527303717912515753">Share</translation>
+<translation id="6529706885792457023">You organised 15+ tabs</translation>
 <translation id="6532106788206463496">Save changes</translation>
 <translation id="6536759809440150308">Open <ph name="GROUP_TITLE" />, group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6642362222295953972">Switch to existing tab</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">You checked 25+ passwords</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659660757330712663">You can swipe the toolbar to switch between tabs.</translation>
 <translation id="6663529247339810546">Cannot save image</translation>
@@ -1966,6 +1970,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7145337554745942724">Update driving licence</translation>
 <translation id="7146301801400584641">Calendar file available</translation>
 <translation id="7149893636342594995">Last 24 hours</translation>
+<translation id="7151361008641622036">{count,plural, =1{You organised 1 tab}other{You organised # tabs}}</translation>
 <translation id="7154417656353909837">Remove addresses</translation>
 <translation id="7161230316646448869">Sync your bookmarks, history and more on all devices</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ You can restart at any time.</translation>
 <translation id="8481184073299279701">Tap the 'Start logging' button to collect future JavaScript console logs and errors from all tabs. Logs will be collected (and stored only in memory) until this page is closed or 'Stop logging' is tapped.</translation>
 <translation id="8487667956631253959">On</translation>
 <translation id="8487700953926739672">Available offline</translation>
+<translation id="8488065047914929586">since completing 'Save a password'</translation>
 <translation id="8488923644885757471">New window</translation>
 <translation id="8490629238792920282">Unable to create link</translation>
 <translation id="8501469528283376592">Auto-delete downloads</translation>
@@ -2543,6 +2549,7 @@ You can restart at any time.</translation>
 <translation id="8890516388109605451">Sources</translation>
 <translation id="8893208530912252670">Videos</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
+<translation id="890009681345348416">40+ passwords autofilled</translation>
 <translation id="8900845556227858314">Browser app</translation>
 <translation id="890565330728586731">Back</translation>
 <translation id="8907722425137681851">Find in page…</translation>

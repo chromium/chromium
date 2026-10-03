@@ -866,6 +866,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> saytiga “<ph name="PROTOCOL" />” kabi havolalarga ishlov berishga ruxsat berilsinmi?</translation>
 <translation id="243815215670139125">Bu kartani Google hisobingizga saqlash imkonsiz. Ammo u bu qurilmadagi Chrome xotirasiga saqlandi.</translation>
 <translation id="2438874542388153331">Oʻngdan 4 ta teshik ochish</translation>
+<translation id="2442033148418774391">Aqlliroq avtomatik kiritish: maxfiylik haqidagi bildirishnoma yopildi</translation>
 <translation id="2442865686365739754">Chrome quyidagi maʼlumotlarni <ph name="BEGIN_EMPHASIS" />saqlamaydi<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
           <ph name="LIST_ITEM" />Brauzer tarixi
@@ -878,6 +879,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2451607499823206582">Kuzatuvda</translation>
 <translation id="2452837234288608067">Xatolik yuz berdi. Qayta urining.</translation>
 <translation id="2453045048779611513">Tashkilotingiz faqat muayyan maʼlumotlarni saqlashga ruxsat bergan</translation>
+<translation id="2456490423293803882">Aqlliroq avtomatik kiritish: maxfiylik haqidagi bildirishnoma toʻliq ochildi</translation>
 <translation id="2459882793359532780">Tatbiq etilgan brauzer siyosatlari (kompyuter va profil siyosatlari)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core brauzer qoidalarini bulut orqali sozlash uchun markazlashtirilgan vositasini taklif qiladi</translation>
 <translation id="2461822463642141190">Ayni vaqtda</translation>
@@ -1107,6 +1109,7 @@ Bu taklifni Chromedan olib tashlash mumkin. Asl manba oʻchirilmaydi. <ph name="
 <translation id="2878197950673342043">Poster shaklida taxlash</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">parollarni kiritish uchun ekran qulfidan foydalanmoqchi</translation>
+<translation id="2880119244122776372">Loyiha yaratish va kod yozish</translation>
 <translation id="2881276955470682203">Karta eslab qolinsinmi?</translation>
 <translation id="2882280148032777436">Tanish sayohatchi raqamini (KTN) oʻchirish</translation>
 <translation id="2882949212241984732">Darvozasimon shaklida taxlash</translation>
@@ -3907,6 +3910,7 @@ Batafsil axborot:
 <translation id="753713322968419914">Uy manzili Chrome avtomatik kiritish vositasidan olib tashlansinmi?</translation>
 <translation id="753714465667062283">Suratni saqlash uchun hisobga kiring</translation>
 <translation id="7537536606612762813">Majburiy</translation>
+<translation id="7540924742308928499">Gʻoyalar oʻylab topish va xulosalash</translation>
 <translation id="7543525346216957623">Ota-onangizdan so‘rang</translation>
 <translation id="7546409722674205727">Boshlanishi: <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Ulanish xatoliklarini hal qilish</translation>

@@ -776,6 +776,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, fäst flik som spelas in och som har valts tillsammans med andra</translation>
 <translation id="4137746084635924146">Aktuellt enhetsspråk</translation>
 <translation id="414128724510021958">Webbplatser för dator begärs som standard</translation>
+<translation id="4150837143272125910">En uppdatering har laddats ned</translation>
 <translation id="4162867837470729563">Lista över delningsalternativ har öppnats över hela skärmen.</translation>
 <translation id="4164642020717536140">Snabb och säker webbsökning</translation>
 <translation id="4165077084524712774">Fler verktyg</translation>
@@ -1200,6 +1201,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5848257610304005265">Vill du öppna PDF-filen med <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Vill du sluta dela?</translation>
 <translation id="5853623416121554550">pausad</translation>
+<translation id="5855375823365231964">Om den här profilen</translation>
 <translation id="5855546874025048181">Finjustera: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, inkognitoflik som har valts tillsammans med andra och som spelas in</translation>
 <translation id="5857447844686706637">Något gick fel. Det gick inte att uppdatera Bevaka pris.</translation>
@@ -1401,6 +1403,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6565959834589222080">wifi används när det är tillgängligt</translation>
 <translation id="657177046675873214">Aktivera Bokmärken i inställningarna om du vill få tillgång till dina bokmärken på alla dina enheter</translation>
 <translation id="6573096386450695060">Tillåt alltid</translation>
+<translation id="657480975869429144">Det finns en ny version av Chrome</translation>
 <translation id="658099107946526506">Skydda din privata surfning med en pinkod för att förhindra oönskad åtkomst</translation>
 <translation id="6583199322650523874">Infoga ett bokmärke för den aktuella sidan</translation>
 <translation id="6588043302623806746">Använd säker DNS</translation>

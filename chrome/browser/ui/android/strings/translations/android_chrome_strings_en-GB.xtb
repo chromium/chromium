@@ -775,6 +775,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4136632885151622181"><ph name="TAB_TITLE" />, multi-selected pinned recording tab</translation>
 <translation id="4137746084635924146">Current device language</translation>
 <translation id="414128724510021958">Desktop sites requested by default</translation>
+<translation id="4150837143272125910">An update has been downloaded</translation>
 <translation id="4162867837470729563">List of sharing options at full height.</translation>
 <translation id="4164642020717536140">Fast and secure web browsing</translation>
 <translation id="4165077084524712774">More tools</translation>
@@ -1199,6 +1200,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5848257610304005265">Open PDF with <ph name="APP_NAME" />?</translation>
 <translation id="5849288995120328556">Stop sharing?</translation>
 <translation id="5853623416121554550">paused</translation>
+<translation id="5855375823365231964">About this profile</translation>
 <translation id="5855546874025048181">Refine: <ph name="REFINE_TEXT" /></translation>
 <translation id="585617462962753911"><ph name="TAB_TITLE" />, multi-selected recording Incognito tab</translation>
 <translation id="5857447844686706637">Something went wrong. Couldn’t update track price.</translation>
@@ -1240,6 +1242,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6039379616847168523">Jump to the next tab</translation>
 <translation id="6040143037577758943">Close</translation>
 <translation id="604124094241169006">Automatic</translation>
+<translation id="6041959688070413372">Manage the connection between search services and Google Workspace apps, like Google Drive</translation>
 <translation id="6042308850641462728">More</translation>
 <translation id="6047066316630165190">Open the grid Tab Switcher</translation>
 <translation id="604996488070107836"><ph name="FILE_NAME" /> download failed due to an unknown error.</translation>
@@ -1400,6 +1403,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6565959834589222080">Wi-Fi is used when available</translation>
 <translation id="657177046675873214">To get your bookmarks on all your devices, turn on 'Bookmarks' in Settings.</translation>
 <translation id="6573096386450695060">Always allow</translation>
+<translation id="657480975869429144">A new version of Chrome is available</translation>
 <translation id="658099107946526506">Protect your private browsing with a PIN to prevent unwanted access</translation>
 <translation id="6583199322650523874">Bookmark the current page</translation>
 <translation id="6588043302623806746">Use secure DNS</translation>

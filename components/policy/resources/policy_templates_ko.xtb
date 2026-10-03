@@ -957,6 +957,21 @@ URL은 http://example.com 또는 https://example.com과 같은 표준 스킴이�
 <translation id="1635748761015837179">외부 저장소 기기에 쓰기 허용</translation>
 <translation id="1639468541408865385">전역적으로 범위가 지정된 HTTP 인증 캐시 사용 설정</translation>
 <translation id="1639673466479276550">로그인 화면에서 화면 보호기를 사용 설정합니다.</translation>
+<translation id="1640646094704433064">적시(JIT, Just-in-Time) 컴파일러가 사용 설정된 JavaScript를 실행할 수 없는 사이트를 지정하는 사이트 URL 패턴 목록을 설정할 수 있습니다.
+
+          JavaScript 적시(JIT)를 사용 중지하면 <ph name="PRODUCT_NAME" />의 웹 콘텐츠 렌더링 속도가 느려질 수 있으며 WebAssembly를 비롯해 JavaScript의 일부가 사용 중지될 수 있습니다. JavaScript 적시(JIT)를 사용 중지하면 <ph name="PRODUCT_NAME" />이 더 안전한 구성으로 웹 콘텐츠를 렌더링할 수 있습니다.
+
+          유효한 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요. 와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.
+
+          전체 사이트뿐만 아니라 특정 하위 도메인에 대해서도 정책 예외를 설정할 수 있습니다. 예를 들어 subdomain.site.com에 대해서만 설정된 정책은 site.com에 영향을 주지 않고 subdomain.site.com에 적용됩니다. 하위 도메인을 상위 사이트에서 격리할 수 없는 경우 site.com에 설정된 정책을 상속받을 수 있습니다. 또한 사이트가 새 탭에서 열릴 때까지 기존 탭에 로드된 프레임에는 예외가 적용되지 않을 수 있습니다. 메모리가 부족한 <ph name="ANDROID_NAME" /> 기기에서는 사이트별 예외가 적용되지 않을 수 있으며, 사이트에서 대신 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 프로필의 JavaScript 적시(JIT) 설정으로 기본값이 설정됩니다.
+
+          예외를 적용하기 위해 <ph name="PRODUCT_NAME" />에서 설정이 기본값과 다른 사이트 또는 하위 도메인을 전용 프로세스에 배치할 수 있습니다. 이로 인해 특히 <ph name="ANDROID_NAME" />에서 또는 와일드 카드 패턴이 여러 하위 도메인과 일치하는 경우 메모리 사용량이 증가할 수 있습니다. 일치하는 각 출처가 별도로 격리될 수 있기 때문입니다. 또한 격리된 하위 도메인은 document.domain을 사용하여 상위 사이트에 액세스할 수 없습니다.
+
+          참고: 버전 155 이하에서는 정책 예외가 사이트 세부사항(eTLD+1)에서만 시행되었습니다. subdomain.site.com에 대해서만 설정된 정책은 적용되지 않았으며 이는 subdomain.site.com에도 해당되었습니다. site.com과 subdomain.site.com에 모두 적용하려면 정책을 site.com에 설정해야 했습니다.
+
+          이 정책은 최상위 출처 URL만을 기준으로 하지 않고 프레임별로 적용됩니다. 예를 들어 site-one.com이 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 정책에 나열되어 있지만 site-one.com에서 site-two.com이 포함된 프레임을 로드하는 경우 site-one.com에서는 JavaScript 적시(JIT)가 사용 중지되지만 site-two.com에서는 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 기본적으로 JavaScript 적시(JIT)가 사용 설정됩니다. 차단 목록 항목은 허용 목록 항목보다 우선순위가 높으며, 허용 목록 항목은 구성된 기본값보다 우선순위가 높습니다.
+
+          어떤 사이트에 이 정책이 설정되지 않으면 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />의 정책이 사이트에 적용되며(정책이 설정되어 있는 경우), 그렇지 않으면 사이트에 JavaScript 적시(JIT)가 사용 설정됩니다.</translation>
 <translation id="1640824698339859203">플로팅 SSO를 사용 설정하고 사용자의 웹 서비스 인증을 새 기기로 이동</translation>
 <translation id="1643642938972654829">정책 테스트 페이지에 대한 액세스 허용</translation>
 <translation id="1645793986494086629">스키마:</translation>
@@ -8137,6 +8152,30 @@ false로 설정되면 기능에 액세스할 수 없습니다.</translation>
 <translation id="608788685013546076">전력 피크 시프트 배터리 임계값을 퍼센트로 설정</translation>
 <translation id="6089679180657323464">Wilco 진단 및 텔레메트리 컨트롤러 설정을 제어합니다.</translation>
 <translation id="6091233616732024397">사용자가 브라우저를 사용하려면 로그인하도록 강제</translation>
+<translation id="6091279561320899147">고급 JavaScript 최적화가 사용 중지된 사이트를 지정하는 사이트 URL 패턴 목록을 설정할 수 있습니다.
+
+JavaScript 최적화를 사용 중지하면 <ph name="PRODUCT_NAME" />의 웹 콘텐츠 렌더링 속도가 느려질 수 있습니다.
+
+유효한 URL 패턴에 관해 자세히 알아보려면 https://chromeenterprise.google/policies/url-patterns를 참고하세요.
+와일드 카드(<ph name="WILDCARD_VALUE" />)를 사용할 수 있습니다.
+
+전체 사이트뿐만 아니라 특정 하위 도메인에 대해서도 정책 예외를 설정할 수 있습니다.
+예를 들어 subdomain.site.com에 대해서만 설정된 정책은 site.com에 영향을 주지 않고 subdomain.site.com에 적용됩니다. 하위 도메인을 상위 사이트에서 격리할 수 없는 경우 site.com에 설정된 정책을 상속받을 수 있습니다. 또한 사이트가 새 탭에서 열릴 때까지 기존 탭에 로드된 프레임에는 예외가 적용되지 않을 수 있습니다. 메모리가 부족한 <ph name="ANDROID_NAME" /> 기기에서는 사이트별 예외가 적용되지 않을 수 있으며, 사이트에서 대신 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나 프로필의 JavaScript 최적화 설정을 기본값으로 사용합니다.
+
+예외를 적용하기 위해 <ph name="PRODUCT_NAME" />에서 설정이 기본값과 다른 사이트 또는 하위 도메인을 전용 프로세스에 배치할 수 있습니다. 이로 인해 특히 <ph name="ANDROID_NAME" />에서 또는 와일드 카드 패턴이 여러 하위 도메인과 일치하는 경우 메모리 사용량이 증가할 수 있습니다. 일치하는 각 출처가 별도로 격리될 수 있기 때문입니다. 또한 격리된 하위 도메인은 document.domain을 사용하여 상위 사이트에 액세스할 수 없습니다.
+
+참고: 버전 138 이하에서는 정책 예외가 사이트 세부사항(eTLD+1)에서만 시행되었습니다. subdomain.site.com에 대해서만 설정된 정책은 적용되지 않았으며
+이는 subdomain.site.com에도 해당되었습니다. site.com과 subdomain.site.com에
+모두 적용하려면 정책을 site.com에 설정해야 했습니다.
+
+이 정책은 최상위 출처 URL만을 기준으로 하지 않고 프레임별로 적용됩니다.
+예를 들어 site-one.com이 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 정책에 나열되어 있지만
+site-one.com에서 site-two.com이 포함된 프레임을 로드하는 경우
+site-one.com에서는 JavaScript 최적화가 사용 중지되지만 site-two.com에서는 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />의 정책(설정된 경우)을 사용하거나
+기본적으로 JavaScript 최적화가 사용 설정됩니다. 차단 목록 항목은 허용 목록 항목보다 우선순위가 높으며, 허용 목록 항목은 구성된 기본값보다 우선순위가 높습니다.
+
+어떤 사이트에 이 정책이 설정되지 않으면 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />의 정책이 사이트에 적용되며(정책이 설정되어 있는 경우), 그렇지 않으면
+사이트에 JavaScript 최적화가 사용 설정됩니다.</translation>
 <translation id="6092073071805297119">접근성 성능 필터링 사용을 허용합니다.</translation>
 <translation id="6093156968240188330">원격 사용자가 원격 지원 세션에서 관리자 창과 상호 작용하도록 허용합니다.</translation>
 <translation id="6093551397728373988">사용자 세션에서 허용된 모든 입력 방법을 사용 설정하도록 시행</translation>
@@ -12023,6 +12062,13 @@ Windows에서는 GPO를 통해 정책을 설정하는 것이 좋습니다. 하�
 <translation id="8489169564515126823">사용 중지됨: 기본적으로 스크롤러가 포커스 가능하지 않습니다.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">브라우저 기록 저장 사용 중지</translation>
+<translation id="8494605948258449467">이 정책은 페이지가 뒤로-앞으로 캐시에 저장될 때 활성 WebSocket 연결을 해제할지 제어합니다. 이전에는 활성 WebSocket 연결로 인해 페이지가 뒤로-앞으로 캐시에 저장되지 않았지만 <ph name="PRODUCT_NAME" />에서 이 동작을 변경하여 대신 WebSocket 연결을 해제하므로, 페이지를 캐시하고 연결이 해제된 상태로 복원할 수 있습니다.
+
+이 정책을 사용 설정됨으로 설정하거나 미설정 상태로 남겨 두면 페이지가 뒤로-앞으로 캐시에 저장될 때 WebSocket이 연결 해제됩니다.
+
+이 정책을 사용 안함으로 설정하면 페이지가 뒤로-앞으로 캐시에 저장될 때 WebSocket 연결이 해제되지 않습니다. 뒤로-앞으로 캐시는 활성 WebSocket을 지원하지 않으므로 활성 WebSocket이 있는 페이지는 캐시되지 않습니다.
+
+이 정책은 <ph name="PRODUCT_NAME" /> 버전 157에서 지원 중단되며 버전 167에서 삭제될 예정입니다.</translation>
 <translation id="8499172469244085141">기본 설정(사용자가 변경할 수 있음)</translation>
 <translation id="8499359456965625209">지원 중단된 정책입니다.
 
@@ -13093,6 +13139,25 @@ https://chromeenterprise.google/policies/url-patterns 페이지를 참고하세�
 <translation id="9204863016826119209">회사 키가 설치되고 이 정책 목록에 포함된 Android 애플리케이션에서 사용할 수 있습니다.</translation>
 <translation id="9206364386317031168">사이트에서 로컬 기기로 네트워크 요청을 보낼 수 있도록 허용합니다.</translation>
 <translation id="9206472508136116830">NetBIOS 공유 검색 허용 안함</translation>
+<translation id="9207289612253941907">이 정책은 특정 규정 준수 체계에서 승인한 알고리즘에 대한 선호도를 반영하기 위해 <ph name="PRODUCT_NAME" />이 TLS 1.3에서 선호하는 키 계약 알고리즘(지원되는 그룹)을 우선하도록 설정합니다.
+
+이 정책을 설정한다고 해서 특정 알고리즘이 협상된다는 보장은 없습니다.
+
+이 정책은 클라이언트의 규정 준수 요구사항 유무에 따라 클라이언트를 구분해 지원하려는 서버 운영자가 기본값이 아니라 암호화 강도가 강화된 특정 알고리즘을 선호하도록 명시적으로 설정한 클라이언트에 대해서만 해당 알고리즘을 사용하도록 허용하기 위해 존재합니다.
+
+정책을 '<ph name="CNSA2_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 상업용 국가 보안 알고리즘 모음 2.0(CNSA 2.0) 규정 준수에 요구되는 키 교환 방식을 선호하도록 구성됩니다.
+
+정책을 설정하지 않거나 '<ph name="DEFAULT_NAME" />'로 설정하면 <ph name="PRODUCT_NAME" />에서 기본 키 교환 방식을 사용하도록 구성됩니다.
+
+보안을 위해 이 정책을 설정할 필요는 없습니다. <ph name="PRODUCT_NAME" />에서 사용하는 기본 암호화 방식은 엄청난 연산량이 들어간 무차별 대입 공격을 견딜 수 있을 만큼 강력합니다.
+
+이 정책을 설정하면 웹사이트 액세스 시 <ph name="PRODUCT_NAME" />의 속도가 느려집니다.
+
+이 정책은 TLS 1.3 및 QUIC에만 영향을 미치며 TLS 이전 버전에는 영향을 미치지 않습니다.
+
+이 정책은 머신 및 사용자에 대해 설정할 수 있습니다. 사용자에게 설정된 경우 이 정책은 사용자 프로필에서 시작된 네트워크 요청에만 영향을 미치며, 브라우저 전체 백그라운드 작업을 실행하기 위해 <ph name="PRODUCT_NAME" />에서 수행하는 네트워크 요청에는 영향을 미치지 않을 수 있습니다. 이러한 요청은 머신 수준 값으로 제어됩니다. 이 정책이 머신 수준과 사용자 수준에서 모두 설정된 경우 <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> 정책에 의해 정책 우선순위가 변경되지 않는 한 머신 수준 값이 적용됩니다.
+
+버전 156 이하의 경우 이 정책은 머신 전체에만 적용됩니다.</translation>
 <translation id="9207596996305971030">로그인/로그아웃 이벤트 보고하지 않음</translation>
 <translation id="9208328979373108724">분리형 웹 앱 출처에서 하위 앱을 추가하도록 허용하지만 사용자 프롬프트가 필요함</translation>
 <translation id="9210647066889383361">사용자가 Smart Lock으로 기기에 로그인하도록 허용</translation>
