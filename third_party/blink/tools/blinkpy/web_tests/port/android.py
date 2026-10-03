@@ -26,7 +26,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from blinkpy.common.path_finder import get_blink_dir
 from blinkpy.web_tests.port import linux
 
 
@@ -38,29 +37,6 @@ class AndroidPort(linux.LinuxPort):
     FALLBACK_PATHS['android'] = [
         'android'
     ] + linux.LinuxPort.latest_platform_fallback_path()
-
-    def default_expectations_files(self):
-        """Returns a list of paths to expectations files that apply by default.
-
-        There are other "test expectations" files that may be applied if
-        the --additional-expectations flag is passed; those aren't included
-        here.
-        """
-        return list(
-            filter(
-                None,
-                [
-                    self.path_to_generic_test_expectations_file(),
-                    self._filesystem.join(
-                        self.web_tests_dir(), 'NeverFixTests'
-                    ),
-                    self._filesystem.join(
-                        self.web_tests_dir(), 'StaleTestExpectations'
-                    ),
-                    self._filesystem.join(self.web_tests_dir(), 'SlowTests'),
-                ],
-            )
-        )
 
     def default_child_processes(self):
         # Test against a single device by default to avoid timeouts
