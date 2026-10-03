@@ -10,6 +10,7 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 export type ComposeboxUnionElement = ComposeboxElement|NtpComposeboxElement;
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -176,8 +177,10 @@ export async function waitForAddFileCallCount(
 export function getInputForFileType(
     composeboxElement: ComposeboxElement, fileType: string): HTMLInputElement {
   return fileType === 'application/pdf' ?
-      composeboxElement.$.fileInputs.$.fileInput :
-      composeboxElement.$.fileInputs.$.imageInput;
+      composeboxElement.$.fileInputs.shadowRoot.querySelector<HTMLInputElement>(
+          '#fileInput')! :
+      composeboxElement.$.fileInputs.shadowRoot.querySelector<HTMLInputElement>(
+          '#imageInput')!;
 }
 
 export function getMockFileChangeEventForType(
@@ -189,7 +192,8 @@ export function getMockFileChangeEventForType(
   const mockFileChange = new Event('change', {bubbles: true});
   Object.defineProperty(mockFileChange, 'target', {
     writable: false,
-    value: composeboxElement.$.fileInputs.$.imageInput,
+    value: composeboxElement.$.fileInputs.shadowRoot
+               .querySelector<HTMLInputElement>('#imageInput')!,
   });
   return mockFileChange;
 }
@@ -232,7 +236,9 @@ export async function uploadFileAndVerify(
 export async function verifyFileUpload(
     testProxy: ComposeboxTestElement, file: File) {
   // Assert one file.
-  const files = testProxy.element.$.carousel.files;
+  const files =
+      testProxy.element.shadowRoot
+          .querySelector<ComposeboxFileCarouselElement>('#carousel')!.files;
   assertEquals(files.length, 1);
 
   assertEquals(files[0]!.type, file.type);
@@ -270,7 +276,9 @@ export async function addTab(
 
   await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
   await microtasksFinished();
-  const files = testProxy.element.$.carousel.files;
+  const files =
+      testProxy.element.shadowRoot
+          .querySelector<ComposeboxFileCarouselElement>('#carousel')!.files;
   assertEquals(files.length, 1);
   assertEquals(files[0]!.type, 'tab');
   assertEquals(files[0]!.name, sampleTabTitle);

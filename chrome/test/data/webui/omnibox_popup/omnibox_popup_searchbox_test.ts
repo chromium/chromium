@@ -2823,13 +2823,14 @@ suite('OmniboxPopupSearchboxTest', function() {
        localSearchbox.multiLineEnabled = true;
        const inputElement = localSearchbox.getInputElement();
        inputElement.multiLineEnabled = true;
+       await microtasksFinished();
        localSearchbox.result = createAutocompleteResultForTesting({
          input: 'hello world',
          matches: [],
        });
        Object.defineProperty(
-           inputElement.$.input, 'scrollHeight',
-           {value: 60, configurable: true});
+           inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+           'scrollHeight', {value: 60, configurable: true});
        testProxy.page.updateAimPopupEligibility(true);
        testProxy.page.updateLensSearchEligibility(true);
        await microtasksFinished();

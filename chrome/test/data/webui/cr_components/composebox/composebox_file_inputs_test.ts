@@ -21,16 +21,20 @@ suite('ComposeboxFileInputsTest', () => {
   });
 
   test('open image event clicks image input', async () => {
-    const imageUploadClickEventPromise =
-        eventToPromise('click', fileInputsElement.$.imageInput);
+    const imageUploadClickEventPromise = eventToPromise(
+        'click',
+        fileInputsElement.shadowRoot.querySelector<HTMLInputElement>(
+            '#imageInput')!);
     fileUploadSlot.dispatchEvent(
         new CustomEvent('open-image-upload', {bubbles: true, composed: true}));
     await imageUploadClickEventPromise;
   });
 
   test('open file event clicks file input', async () => {
-    const imageFileClickEventPromise =
-        eventToPromise('click', fileInputsElement.$.fileInput);
+    const imageFileClickEventPromise = eventToPromise(
+        'click',
+        fileInputsElement.shadowRoot.querySelector<HTMLInputElement>(
+            '#fileInput')!);
     fileUploadSlot.dispatchEvent(
         new CustomEvent('open-file-upload', {bubbles: true, composed: true}));
     await imageFileClickEventPromise;
@@ -48,18 +52,21 @@ suite('ComposeboxFileInputsTest', () => {
     const whenFileChange = eventToPromise<CustomEvent<{files: FileList}>>(
         'file-change', fileInputsElement);
     const mockFileChange = new Event('change', {bubbles: true});
+    const fileInput =
+        fileInputsElement.shadowRoot.querySelector<HTMLInputElement>(
+            '#fileInput')!;
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,
-      value: fileInputsElement.$.fileInput,
+      value: fileInput,
     });
-    fileInputsElement.$.fileInput.files = dataTransfer.files;
-    fileInputsElement.$.fileInput.dispatchEvent(mockFileChange);
+    fileInput.files = dataTransfer.files;
+    fileInput.dispatchEvent(mockFileChange);
 
     // Assert
     const event = await whenFileChange;
     assertTrue(!!event);
     assertEquals(event.detail.files, dataTransfer.files);
-    assertEquals(fileInputsElement.$.fileInput.value, '');
+    assertEquals(fileInput.value, '');
   });
 
   test('picker methods are no-ops when file inputs are disabled', async () => {

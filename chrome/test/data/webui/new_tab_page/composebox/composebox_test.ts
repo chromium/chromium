@@ -8,6 +8,7 @@ import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/co
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxToolChipElement} from 'chrome://resources/cr_components/composebox/composebox_tool_chip.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {WindowProxy as CrWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -46,10 +47,10 @@ suite('NewTabPageComposeboxTest', () => {
     testProxy.element.searchboxLayoutMode = 'Compact';
     await microtasksFinished();
 
-    (testProxy.element.getInputElement().$.input as HTMLTextAreaElement).value =
-        'test';
-    testProxy.element.getInputElement().$.input.dispatchEvent(
-        new Event('input'));
+    const input = testProxy.element.getInputElement()
+                      .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
     await microtasksFinished();
 
     const submitIcon = getSubmitIcon(testProxy);
@@ -64,10 +65,10 @@ suite('NewTabPageComposeboxTest', () => {
     testProxy.element.searchboxLayoutMode = 'Compact';
     await microtasksFinished();
 
-    (testProxy.element.getInputElement().$.input as HTMLTextAreaElement).value =
-        'test';
-    testProxy.element.getInputElement().$.input.dispatchEvent(
-        new Event('input'));
+    const input = testProxy.element.getInputElement()
+                      .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
     await microtasksFinished();
 
     const submitIcon = getSubmitIcon(testProxy);
@@ -114,21 +115,27 @@ suite('NewTabPageComposeboxTest', () => {
             'cr-composebox-submit'));
 
         // Add input and files.
-        (testProxy.element.getInputElement().$.input as HTMLTextAreaElement)
-            .value = 'test';
-        testProxy.element.getInputElement().$.input.dispatchEvent(
-            new Event('input'));
+        const input =
+            testProxy.element.getInputElement()
+                .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+        input.value = 'test';
+        input.dispatchEvent(new Event('input'));
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(
             new File(['foo1'], 'foo1.pdf', {type: 'application/pdf'}));
-        testProxy.element.$.fileInputs.$.fileInput.files = dataTransfer.files;
-        testProxy.element.$.fileInputs.$.fileInput.dispatchEvent(
-            new Event('change'));
+        const fileInput = testProxy.element.$.fileInputs.shadowRoot
+                              .querySelector<HTMLInputElement>('#fileInput')!;
+        fileInput.files = dataTransfer.files;
+        fileInput.dispatchEvent(new Event('change'));
 
         await testProxy.searchboxHandler.whenCalled(ADD_FILE_CONTEXT_FN);
         await microtasksFinished();
 
-        assertEquals(testProxy.element.$.carousel.files.length, 1);
+        assertEquals(
+            testProxy.element.shadowRoot
+                .querySelector<ComposeboxFileCarouselElement>(
+                    '#carousel')!.files.length,
+            1);
 
         // Clear input.
         $$<HTMLElement>(
@@ -231,10 +238,11 @@ suite('NewTabPageComposeboxTest', () => {
           searchboxNextEnabled: true,
         });
         testProxy.element.searchboxLayoutMode = 'Compact';
-        (testProxy.element.getInputElement().$.input as HTMLTextAreaElement)
-            .value = 'test';
-        testProxy.element.getInputElement().$.input.dispatchEvent(
-            new Event('input'));
+        const input =
+            testProxy.element.getInputElement()
+                .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+        input.value = 'test';
+        input.dispatchEvent(new Event('input'));
         await microtasksFinished();
 
         const composeboxSubmit =
@@ -250,10 +258,11 @@ suite('NewTabPageComposeboxTest', () => {
           searchboxNextEnabled: true,
         });
         testProxy.element.searchboxLayoutMode = 'Compact';
-        (testProxy.element.getInputElement().$.input as HTMLTextAreaElement)
-            .value = '';
-        testProxy.element.getInputElement().$.input.dispatchEvent(
-            new Event('input'));
+        const input =
+            testProxy.element.getInputElement()
+                .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
         await microtasksFinished();
 
         const composeboxSubmit =
@@ -273,10 +282,10 @@ suite('NewTabPageComposeboxTest', () => {
         testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
 
     // Arrange.
-    (testProxy.element.getInputElement().$.input as HTMLTextAreaElement).value =
-        'test';
-    testProxy.element.getInputElement().$.input.dispatchEvent(
-        new Event('input'));
+    const input = testProxy.element.getInputElement()
+                      .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
     const matches =
         [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
@@ -306,10 +315,10 @@ suite('NewTabPageComposeboxTest', () => {
         testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'), 0);
 
     // Arrange.
-    (testProxy.element.getInputElement().$.input as HTMLTextAreaElement).value =
-        'test';
-    testProxy.element.getInputElement().$.input.dispatchEvent(
-        new Event('input'));
+    const input = testProxy.element.getInputElement()
+                      .shadowRoot.querySelector<HTMLTextAreaElement>('#input')!;
+    input.value = 'test';
+    input.dispatchEvent(new Event('input'));
     const matches =
         [createSearchMatchForTesting({allowedToBeDefaultMatch: true})];
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
@@ -327,7 +336,7 @@ suite('NewTabPageComposeboxTest', () => {
       cancelable: true,
       composed: true,
     });
-    testProxy.element.getInputElement().$.input.dispatchEvent(shiftEnterEvent);
+    input.dispatchEvent(shiftEnterEvent);
     await microtasksFinished();
 
     // Assert.
@@ -340,7 +349,7 @@ suite('NewTabPageComposeboxTest', () => {
       cancelable: true,
       composed: true,
     });
-    testProxy.element.getInputElement().$.input.dispatchEvent(enterEvent);
+    input.dispatchEvent(enterEvent);
     await microtasksFinished();
 
     // Assert call occurs.
@@ -1156,7 +1165,9 @@ suite('NewTabPageComposeboxTest', () => {
         await microtasksFinished();
         await composebox.updateComplete;
         await composebox.getInputElement().updateComplete;
-        const input = composebox.getInputElement().$.input;
+        const input =
+            composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+                '#input')!;
 
         await composebox.handleFuseboxAction({
           suggestion: 'chip hint',

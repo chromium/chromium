@@ -4,6 +4,7 @@
 
 import {ComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -134,8 +135,11 @@ suite('CrComposeboxAutocompleteContextTest', () => {
         await microtasksFinished();
 
         // Delete the uploaded file.
-        const deletedId = testProxy.element.$.carousel.files[1]!.uuid;
-        testProxy.element.$.carousel.fire('delete-file', {
+        const carousel =
+            testProxy.element.shadowRoot
+                .querySelector<ComposeboxFileCarouselElement>('#carousel')!;
+        const deletedId = carousel.files[1]!.uuid;
+        carousel.fire('delete-file', {
           uuid: deletedId,
         });
 
@@ -258,9 +262,10 @@ suite('CrComposeboxAutocompleteContextTest', () => {
         // Should only have one file added to carousel with the updated title.
         assertEquals(
             1, testProxy.searchboxHandler.getCallCount(ADD_TAB_CONTEXT_FN));
-        assertEquals(1, testProxy.element.$.carousel.files.length);
-        assertEquals(
-            'Tab 1 Updated Unique XYZ',
-            testProxy.element.$.carousel.files[0]!.name);
+        const carousel =
+            testProxy.element.shadowRoot
+                .querySelector<ComposeboxFileCarouselElement>('#carousel')!;
+        assertEquals(1, carousel.files.length);
+        assertEquals('Tab 1 Updated Unique XYZ', carousel.files[0]!.name);
       });
 });

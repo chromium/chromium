@@ -18,7 +18,6 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import type {SearchAnimatedGlowElement} from '//resources/cr_components/search/animated_glow.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -41,7 +40,6 @@ import type {ContextUploadErrorType} from './composebox_query.mojom-webui.js';
 import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_button.js';
-import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export {SubmitButtonIconType, VoiceSearchAction};
@@ -60,11 +58,8 @@ export interface ComposeboxElement {
   $: {
     composeboxInput: ComposeboxInputElement,
     composebox: HTMLElement,
-    carousel: ComposeboxFileCarouselElement,
     fileInputs: ComposeboxFileInputsElement,
     matches: ComposeboxDropdownElement,
-    errorScrim: ErrorScrimElement,
-    animatedSearchElement: SearchAnimatedGlowElement,
   };
 }
 

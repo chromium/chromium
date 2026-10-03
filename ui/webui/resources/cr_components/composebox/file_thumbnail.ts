@@ -21,14 +21,6 @@ import {getHtml} from './file_thumbnail.html.js';
 const SUPPORTED_VIDEO_EXTENSIONS =
     new Set(['mp4', 'webm', 'ogg', 'mov', 'm4v']);
 
-export interface ComposeboxFileThumbnailElement {
-  $: {
-    removeImgButton: HTMLElement,
-    removeDocumentButton: HTMLElement,
-    removeTabButton: HTMLElement,
-  };
-}
-
 export class ComposeboxFileThumbnailElement extends CrLitElement {
   static get is() {
     return 'cr-composebox-file-thumbnail';

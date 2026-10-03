@@ -111,7 +111,6 @@ export interface ContextualTasksAppElement {
     composeboxHeaderWrapper: HTMLElement,
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
-    nameShimmer: HTMLElement,
     // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
     composebox: ContextualTasksComposeboxElement,
     // </if>

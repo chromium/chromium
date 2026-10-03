@@ -5,6 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerListSectionItemElement, StackedFaviconsElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -127,7 +128,8 @@ suite('OrganizerListSectionItemTest', () => {
     assertTrue(!!crUrlListItem);
     assertTrue(crUrlListItem.hasAttribute('always-show-suffix'));
 
-    const trailingIcon = listItem.$.trailingIcon;
+    const trailingIcon =
+        listItem.shadowRoot.querySelector<CrIconElement>('#trailingIcon')!;
     assertTrue(!!trailingIcon);
     assertEquals('cr:star', trailingIcon.icon);
     assertFalse(trailingIcon.classList.contains('has-action-button'));
@@ -158,7 +160,8 @@ suite('OrganizerListSectionItemTest', () => {
     const trailingIcon = crUrlListItem.querySelector('#trailingIcon');
     assertEquals(null, trailingIcon);
 
-    const actionButton = listItem.$.actionButton;
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
     assertTrue(!!actionButton);
     assertEquals('cr:close', actionButton.getAttribute('iron-icon'));
     assertEquals('Close tab', actionButton.getAttribute('aria-label'));
@@ -185,11 +188,13 @@ suite('OrganizerListSectionItemTest', () => {
     const crUrlListItem = listItem.$.crUrlListItem;
     assertTrue(!!crUrlListItem);
 
-    const trailingIcon = listItem.$.trailingIcon;
+    const trailingIcon =
+        listItem.shadowRoot.querySelector<CrIconElement>('#trailingIcon')!;
     assertTrue(!!trailingIcon);
     assertTrue(trailingIcon.classList.contains('has-action-button'));
 
-    const actionButton = listItem.$.actionButton;
+    const actionButton =
+        listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
     assertTrue(!!actionButton);
 
     // Initially, trailing icon is visible and action button is hidden.
@@ -221,7 +226,8 @@ suite('OrganizerListSectionItemTest', () => {
         listItem.item = item;
         await microtasksFinished();
 
-        const actionButton = listItem.$.actionButton;
+        const actionButton =
+            listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
         assertTrue(!!actionButton);
 
         let itemClicked = false;
@@ -282,7 +288,8 @@ suite('OrganizerListSectionItemTest', () => {
         };
         await microtasksFinished();
 
-        const actionButton = listItem.$.actionButton;
+        const actionButton =
+            listItem.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
         listItem.classList.add('hovered');
         listItem.$.crUrlListItem.classList.add('hovered');
         actionButton.focus();

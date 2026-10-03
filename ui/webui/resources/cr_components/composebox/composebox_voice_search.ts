@@ -142,13 +142,6 @@ function toError(webkitError: string): VoiceSearchError {
   }
 }
 
-export interface ComposeboxVoiceSearchElement {
-  $: {
-    input: HTMLInputElement,
-    closeButton: HTMLElement,
-  };
-}
-
 const ComposeboxVoiceSearchElementBase = I18nMixinLit(CrLitElement);
 
 export class ComposeboxVoiceSearchElement extends

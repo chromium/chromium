@@ -139,7 +139,8 @@ suite('ComposeboxSmartComposeSubmitTest', () => {
     });
     await microtasksFinished();
 
-    const inputElement = testProxy.element.getInputElement().$.input;
+    const inputElement = testProxy.element.getInputElement()
+                             .shadowRoot.querySelector<HTMLElement>('#input')!;
 
     testProxy.element.smartComposeStats = {
       enabled: true,

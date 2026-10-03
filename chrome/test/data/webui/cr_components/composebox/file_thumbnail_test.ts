@@ -169,7 +169,8 @@ suite('ComposeboxFileThumbnailTest', () => {
         !!fileThumbnailElement.shadowRoot.querySelector('#imgChipLeadingSlot'));
     assertEquals(
         'imgChipStateLayer',
-        fileThumbnailElement.$.removeImgButton.parentElement!.id);
+        fileThumbnailElement.shadowRoot
+            .querySelector<HTMLElement>('#removeImgButton')!.parentElement!.id);
     assertEquals(
         null, fileThumbnailElement.shadowRoot.querySelector('.img-overlay'));
 
@@ -183,7 +184,9 @@ suite('ComposeboxFileThumbnailTest', () => {
     assertFalse(documentThumbnail.hasAttribute('part'));
     assertEquals(
         'documentChipContent',
-        fileThumbnailElement.$.removeDocumentButton.parentElement!.id);
+        fileThumbnailElement.shadowRoot
+            .querySelector<HTMLElement>(
+                '#removeDocumentButton')!.parentElement!.id);
     const documentTitle =
         fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
     assertTrue(!!documentTitle);
@@ -198,7 +201,8 @@ suite('ComposeboxFileThumbnailTest', () => {
     assertEquals(null, fileThumbnailElement.shadowRoot.querySelector('.url'));
     assertEquals(
         'tabChipContent',
-        fileThumbnailElement.$.removeTabButton.parentElement!.id);
+        fileThumbnailElement.shadowRoot
+            .querySelector<HTMLElement>('#removeTabButton')!.parentElement!.id);
   });
 
   test('shows animation for entering attachment', async () => {
@@ -242,7 +246,8 @@ suite('ComposeboxFileThumbnailTest', () => {
       eventFired = true;
     });
 
-    fileThumbnailElement.$.removeImgButton.click();
+    fileThumbnailElement.shadowRoot
+        .querySelector<HTMLElement>('#removeImgButton')!.click();
 
     assertTrue(fileThumbnailElement.classList.contains('exiting'));
     assertFalse(eventFired);
@@ -273,11 +278,13 @@ suite('ComposeboxFileThumbnailTest', () => {
     });
 
     // First click initiates exiting animation.
-    fileThumbnailElement.$.removeImgButton.click();
+    fileThumbnailElement.shadowRoot
+        .querySelector<HTMLElement>('#removeImgButton')!.click();
     assertTrue(fileThumbnailElement.classList.contains('exiting'));
 
     // Second click should be ignored by the early return.
-    fileThumbnailElement.$.removeImgButton.click();
+    fileThumbnailElement.shadowRoot
+        .querySelector<HTMLElement>('#removeImgButton')!.click();
 
     // Complete the animation.
     animation.finish();
@@ -444,8 +451,11 @@ function createThumbnailElement(isAndroid: boolean):
       // Act.
       const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
           'delete-file', fileThumbnailElement);
-      assertTrue(!!fileThumbnailElement.$.removeImgButton);
-      fileThumbnailElement.$.removeImgButton.click();
+      const removeImgButton =
+          fileThumbnailElement.shadowRoot.querySelector<HTMLElement>(
+              '#removeImgButton');
+      assertTrue(!!removeImgButton);
+      removeImgButton.click();
 
       // Assert.
       const deleteEvent = await deleteEventPromise;
@@ -479,8 +489,11 @@ function createThumbnailElement(isAndroid: boolean):
       // Act.
       const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
           'delete-file', fileThumbnailElement);
-      assertTrue(!!fileThumbnailElement.$.removeImgButton);
-      fileThumbnailElement.$.removeImgButton.click();
+      const removeImgButton =
+          fileThumbnailElement.shadowRoot.querySelector<HTMLElement>(
+              '#removeImgButton');
+      assertTrue(!!removeImgButton);
+      removeImgButton.click();
 
       // Assert.
       const deleteEvent = await deleteEventPromise;
@@ -548,8 +561,11 @@ function createThumbnailElement(isAndroid: boolean):
       // Act.
       const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
           'delete-file', fileThumbnailElement);
-      assertTrue(!!fileThumbnailElement.$.removeDocumentButton);
-      fileThumbnailElement.$.removeDocumentButton.click();
+      const removeDocumentButton =
+          fileThumbnailElement.shadowRoot.querySelector<HTMLElement>(
+              '#removeDocumentButton');
+      assertTrue(!!removeDocumentButton);
+      removeDocumentButton.click();
 
       // Assert.
       const deleteEvent = await deleteEventPromise;
@@ -578,8 +594,11 @@ function createThumbnailElement(isAndroid: boolean):
       // Act.
       const deleteEventPromise = eventToPromise<CustomEvent<{uuid: string}>>(
           'delete-file', fileThumbnailElement);
-      assertTrue(!!fileThumbnailElement.$.removeTabButton);
-      fileThumbnailElement.$.removeTabButton.click();
+      const removeTabButton =
+          fileThumbnailElement.shadowRoot.querySelector<HTMLElement>(
+              '#removeTabButton');
+      assertTrue(!!removeTabButton);
+      removeTabButton.click();
 
       // Assert.
       const deleteEvent = await deleteEventPromise;

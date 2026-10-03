@@ -76,7 +76,6 @@ export interface ComposeboxChip {
 export interface ComposeboxInputElement {
   $: {
     cancelIcon: CrIconButtonElement,
-    input: HTMLElement,
   };
 }
 
@@ -141,7 +140,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   private isRtl_: boolean = false;
 
   get inputElement(): HTMLElement {
-    return this.$.input;
+    return this.shadowRoot.querySelector<HTMLElement>('#input')!;
   }
 
   override connectedCallback() {
@@ -174,18 +173,20 @@ export class ComposeboxInputElement extends I18nMixinLit
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
+    const inputEl = this.shadowRoot.querySelector<HTMLElement>('#input')!;
+
     if (changedProperties.has('input')) {
       if (this.composeboxSkillsEnabled) {
         const text = (this.input || '').replaceAll(NON_BREAKING_SPACE, ' ');
-        const plainText = getPlainText(this.$.input);
+        const plainText = getPlainText(inputEl);
         if (text !== plainText && text.trim() !== plainText.trim()) {
           if (text === '') {
-            this.$.input.replaceChildren();
+            inputEl.replaceChildren();
           } else {
-            this.$.input.innerText = text;
+            inputEl.innerText = text;
           }
-          if (this.shadowRoot?.activeElement === this.$.input) {
-            setCaretToEnd(this.$.input, this.shadowRoot);
+          if (this.shadowRoot?.activeElement === inputEl) {
+            setCaretToEnd(inputEl, this.shadowRoot);
           }
         }
       }
@@ -214,7 +215,7 @@ export class ComposeboxInputElement extends I18nMixinLit
           cancelAnimationFrame(this.smartComposeHeightUpdateFrame_);
           this.smartComposeHeightUpdateFrame_ = null;
         }
-        this.$.input.style.minHeight = '';
+        inputEl.style.minHeight = '';
         if (this.smartComposeInlineHint) {
           this.dispatchEvent(new CustomEvent('clear-smart-compose'));
         }
@@ -250,7 +251,7 @@ export class ComposeboxInputElement extends I18nMixinLit
     if (!smartCompose) {
       return;
     }
-    const input = this.$.input;
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
 
     // Convergence guard: short-circuit when the currently set inline
     // min-height already matches the rendered #smartCompose height.
@@ -315,7 +316,8 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   protected onInputInput_(e: Event) {
     if (this.composeboxSkillsEnabled) {
-      this.input = getPlainText(this.$.input);
+      this.input =
+          getPlainText(this.shadowRoot.querySelector<HTMLElement>('#input')!);
     } else {
       this.input = (e.target as HTMLTextAreaElement).value;
     }
@@ -418,7 +420,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       }
       const ctx = this.measurementContext_;
       if (ctx) {
-        const input = this.$.input;
+        const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
         // Cache the padding and width. Padding never changes and the width
         // don't change often. Calling calling `getComputedStyle` and
         // `clientWidth` can be expensive. This makes it so we are performing
@@ -526,12 +528,13 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   private focusAndEnsureSelection_() {
-    this.$.input.focus();
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
+    input.focus();
     const sel = this.shadowRoot.getSelection();
     const isSelectionInside =
-        !!sel && sel.rangeCount > 0 && this.$.input.contains(sel.anchorNode);
+        !!sel && sel.rangeCount > 0 && input.contains(sel.anchorNode);
     if (!isSelectionInside) {
-      setCaretToEnd(this.$.input, this.shadowRoot);
+      setCaretToEnd(input, this.shadowRoot);
     }
   }
 
@@ -542,13 +545,14 @@ export class ComposeboxInputElement extends I18nMixinLit
       trustedHtml = chipPolicy!.createHTML(rawHtml);
     }
     this.focusAndEnsureSelection_();
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
     // Temporarily switch to 'true' so that Blink does not strip HTML tags
     // (such as .aim-chip spans) during execCommand('insertHTML'), while still
     // preserving the native undo/redo stack. Revert immediately to
     // 'plaintext-only' to keep user input and paste operations unformatted.
-    this.$.input.contentEditable = 'true';
+    input.contentEditable = 'true';
     document.execCommand('insertHTML', false, trustedHtml);
-    this.$.input.contentEditable = 'plaintext-only';
+    input.contentEditable = 'plaintext-only';
   }
 
   private updateMirrorAndCaret_() {
@@ -576,7 +580,8 @@ export class ComposeboxInputElement extends I18nMixinLit
         return;
       }
 
-      for (const node of this.$.input.childNodes) {
+      const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
+      for (const node of input.childNodes) {
         if (node.nodeType === Node.TEXT_NODE) {
           const text = node.textContent || '';
           for (const char of text) {
@@ -621,7 +626,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   private updateCaret_() {
     const caret = this.shadowRoot.getElementById('caret');
-    const input = this.$.input;
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
     const mirror = this.shadowRoot.getElementById('mirror');
 
     if (!caret || !input || !mirror) {
@@ -689,7 +694,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   resetHeight() {
     this.heightLockGeneration_++;
     this.lockedMinHeight_ = 0;
-    this.$.input.style.minHeight = '';
+    this.shadowRoot.querySelector<HTMLElement>('#input')!.style.minHeight = '';
     const inputWrapper = this.shadowRoot.querySelector<HTMLElement>('#inputWrapper');
     if (inputWrapper) {
       inputWrapper.style.minHeight = '';
@@ -697,22 +702,24 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   getSelectionEnd(): number {
-    const isFocused = this.shadowRoot?.activeElement === this.$.input;
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
+    const isFocused = this.shadowRoot?.activeElement === input;
     if (!isFocused) {
       return this.input ? this.input.length : 0;
     }
     if (this.composeboxSkillsEnabled) {
-      return getCaretCharacterOffsetWithin(this.$.input, this.shadowRoot);
+      return getCaretCharacterOffsetWithin(input, this.shadowRoot);
     }
-    return (this.$.input as HTMLTextAreaElement).selectionEnd ??
+    return (input as HTMLTextAreaElement).selectionEnd ??
         (this.input ? this.input.length : 0);
   }
 
   selectAll() {
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input')!;
     if (this.composeboxSkillsEnabled) {
-      selectContents(this.$.input, this.shadowRoot);
+      selectContents(input, this.shadowRoot);
     } else {
-      (this.$.input as HTMLTextAreaElement).select();
+      (input as HTMLTextAreaElement).select();
     }
     if (!this.disableCaretColorAnimation) {
       this.updateCaret_();

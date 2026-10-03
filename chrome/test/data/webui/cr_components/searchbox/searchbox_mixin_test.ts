@@ -3130,10 +3130,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         });
         element.dropdownIsVisible = true;
 
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          value: 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              value: 64,
+              configurable: true,
+            });
 
         element.updateDropdownVisibility();
         assertFalse(element.dropdownIsVisible);
@@ -3154,10 +3156,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         });
         element.dropdownIsVisible = true;
 
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          value: 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              value: 64,
+              configurable: true,
+            });
 
         element.updateDropdownVisibility();
         assertFalse(element.dropdownIsVisible);
@@ -3189,10 +3193,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         // When single-line on inline autocomplete is active, isMultiline() is
         // suppressed and the dropdown remains visible even if the input
         // content would otherwise exceed the multiline height threshold.
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          get: () => 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              get: () => 64,
+              configurable: true,
+            });
 
         element.updateDropdownVisibility();
         assertTrue(element.dropdownIsVisible);
@@ -3218,10 +3224,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         });
         element.dropdownIsVisible = true;
 
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          get: () => 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              get: () => 64,
+              configurable: true,
+            });
 
         element.updateDropdownVisibility();
         assertFalse(element.dropdownIsVisible);
@@ -3273,10 +3281,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         // Even if the long preview text would exceed the multiline threshold,
         // force-single-line ensures single-line mode is preserved and the
         // dropdown stays visible.
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          get: () => 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              get: () => 64,
+              configurable: true,
+            });
 
         assertEquals(1, element.selection.line);
         assertTrue(inputElement.hasAttribute('force-single-line'));
@@ -3294,10 +3304,12 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         await microtasksFinished();
         element.dropdownIsVisible = false;
 
-        Object.defineProperty(inputElement.$.input, 'scrollHeight', {
-          value: 64,
-          configurable: true,
-        });
+        Object.defineProperty(
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!,
+            'scrollHeight', {
+              value: 64,
+              configurable: true,
+            });
 
         const upEvent = createKeyboardEvent('ArrowUp');
         inputElement.inputElement.dispatchEvent(upEvent);

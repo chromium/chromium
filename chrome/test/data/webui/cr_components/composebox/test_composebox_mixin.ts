@@ -20,7 +20,6 @@ import type {ComposeboxInputElement} from 'chrome://resources/cr_components/comp
 import {ComposeboxEmbedderMixin} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
-import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import type {SearchAnimatedGlowElement} from 'chrome://resources/cr_components/search/animated_glow.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -40,7 +39,6 @@ export interface TestComposeboxMixinElement {
     inputWrapper: HTMLElement,
     matches: ComposeboxDropdownElement,
     submit: ComposeboxSubmitElement,
-    voiceSearch: ComposeboxVoiceSearchElement,
   };
 }
 

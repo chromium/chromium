@@ -510,7 +510,8 @@ suite('ComposeboxVoiceSearchMetrics', () => {
     // once the new metrics are fully validated and approved.
     mockVoiceSearch.metricSource = 'NTP_REALBOX';
 
-    voiceSearchElement.$.closeButton.click();
+    voiceSearchElement.shadowRoot.querySelector<HTMLElement>(
+                                     '#closeButton')!.click();
     await microtasksFinished();
 
     // Verify: The legacy NewTabPage.VoiceActions metric records

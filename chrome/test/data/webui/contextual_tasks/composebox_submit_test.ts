@@ -1102,7 +1102,9 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     const TEST_QUERY = 'test query';
     const {app, innerComposebox} = parts;
 
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     assertTrue(
         isVisible(inputElement), 'Composebox input element should be visible');
 
@@ -1131,7 +1133,9 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     const TEST_QUERY = 'test query';
     const {app, innerComposebox} = parts;
 
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     assertTrue(
         isVisible(inputElement), 'Composebox input element should be visible');
 
@@ -1270,7 +1274,9 @@ suite('ContextualTasksComposeboxForkSubmitTest', () => {
     // computed styles below read their end values.
     disableAnimationsRecursively(app);
     const inputComponent = innerComposebox.getInputElement();
-    simulateUserInput(inputComponent.$.input, 'test query');
+    simulateUserInput(
+        inputComponent.shadowRoot.querySelector<HTMLElement>('#input')!,
+        'test query');
     await microtasksFinished();
     await innerComposebox.updateComplete;
     await inputComponent.updateComplete;
@@ -1483,7 +1489,9 @@ suite('ContextualTasksComposeboxForkInjectInputTest', () => {
     // Verify input is set.
     assertEquals(TEST_QUERY, innerComposebox.input);
     assertEquals(
-        TEST_QUERY, getInputValue(innerComposebox.getInputElement().$.input));
+        TEST_QUERY,
+        getInputValue(innerComposebox.getInputElement()
+                          .shadowRoot.querySelector<HTMLElement>('#input')!));
 
     // Verify `submitQuery` was not called.
     assertEquals(

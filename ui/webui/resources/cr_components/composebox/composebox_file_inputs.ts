@@ -7,13 +7,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './composebox_file_inputs.html.js';
 
-export interface ComposeboxFileInputsElement {
-  $: {
-    imageInput: HTMLInputElement,
-    fileInput: HTMLInputElement,
-  };
-}
-
 export class ComposeboxFileInputsElement extends CrLitElement {
   static get is() {
     return 'cr-composebox-file-inputs';

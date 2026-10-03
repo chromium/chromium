@@ -342,7 +342,8 @@ suite('ComposeboxVoiceSearchRecognition', () => {
     mockSpeechRecognition.onresult!(result);
     await microtasksFinished();
 
-    const voiceSearchInput = voiceSearchElement.$.input;
+    const voiceSearchInput =
+        voiceSearchElement.shadowRoot.querySelector<HTMLElement>('#input')!;
 
     assertEquals('helloworld', voiceSearchInput.textContent?.trim());
 

@@ -12,7 +12,6 @@ import './profile_icon.js';
 
 import {recordContextAdditionMethod} from '//resources/cr_components/composebox/common.js';
 import type {ComposeboxState, ContextualUpload} from '//resources/cr_components/composebox/common.js';
-import type {ComposeboxFileInputsElement} from '//resources/cr_components/composebox/composebox_file_inputs.js';
 import {HelpBubbleMixinLit} from '//resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
@@ -45,7 +44,6 @@ export interface OmniboxEverywhereOmniboxElement {
     input: SearchboxInputElement,
     inputWrapper: HTMLElement,
     matches: SearchboxDropdownElement,
-    fileInputs: ComposeboxFileInputsElement,
   };
 }
 

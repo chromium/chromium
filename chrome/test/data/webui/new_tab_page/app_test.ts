@@ -1441,7 +1441,9 @@ suite('NewTabPageAppTest', () => {
           app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
       assertTrue(!!composebox);
       // 1. Setup: Simulate input content.
-      const input = composebox.getInputElement().$.input;
+      const input =
+          composebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+              '#input')!;
       if ('value' in input) {
         (input as HTMLTextAreaElement).value = 'test input';
       }
@@ -2925,14 +2927,16 @@ suite('NewTabPageAppTest', () => {
           const composebox =
               app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
           assertTrue(!!composebox);
-          composebox.getInputElement().$.input.dispatchEvent(
-              new FocusEvent('focus'));
+          composebox.getInputElement()
+              .shadowRoot.querySelector<HTMLElement>('#input')!.dispatchEvent(
+                  new FocusEvent('focus'));
           await microtasksFinished();
 
           assertFalse(scrim.hidden);
 
-          composebox.getInputElement().$.input.dispatchEvent(
-              new FocusEvent('focusout', {relatedTarget: scrim}));
+          composebox.getInputElement()
+              .shadowRoot.querySelector<HTMLElement>('#input')!.dispatchEvent(
+                  new FocusEvent('focusout', {relatedTarget: scrim}));
           await microtasksFinished();
           scrim.click();
           await microtasksFinished();

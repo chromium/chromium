@@ -171,7 +171,8 @@ suite('OrganizerListSectionTest', () => {
         listSection.shadowRoot.querySelectorAll('organizer-list-section-item');
     assertEquals(2, listItems.length);
 
-    const actionButton = listItems[1]!.$.actionButton;
+    const actionButton =
+        listItems[1]!.shadowRoot.querySelector<HTMLElement>('#actionButton')!;
     assertTrue(!!actionButton);
 
     actionButton.click();

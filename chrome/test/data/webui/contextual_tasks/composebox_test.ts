@@ -8,6 +8,7 @@ import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ComposeboxFile, GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {ComposeboxDropdownElement} from 'chrome://resources/cr_components/composebox/composebox_dropdown.js';
 import {SubmitButtonIconType} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -632,7 +633,9 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('typing clears suggestInventory', async () => {
     const innerComposebox = contextualTasksApp.$.composebox.$.composebox;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
 
     // Set some non-default suggest inventory.
     innerComposebox.suggestInventory = SuggestInventory.kTravel;
@@ -676,7 +679,9 @@ suite('ContextualTasksComposeboxTest', () => {
   // Test that the Tab key correctly synchronizes the selected index.
   test('TabFocusSyncsSelectedIndex', async () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
-    const dropdown = contextualComposebox.$.contextualTasksSuggestionsContainer;
+    const dropdown = contextualComposebox.shadowRoot
+                         .querySelector<ComposeboxDropdownElement>(
+                             '#contextualTasksSuggestionsContainer')!;
 
     // Simulate focus moving to the first match (index 0) via Tab key.
     dropdown.fire('match-focusin', {index: 0});
@@ -690,7 +695,9 @@ suite('ContextualTasksComposeboxTest', () => {
 
   test('TabFocusPopulatesTextAndEnterSubmits', async () => {
     const contextualComposebox = contextualTasksApp.$.composebox;
-    const dropdown = contextualComposebox.$.contextualTasksSuggestionsContainer;
+    const dropdown = contextualComposebox.shadowRoot
+                         .querySelector<ComposeboxDropdownElement>(
+                             '#contextualTasksSuggestionsContainer')!;
     const innerComposebox = contextualComposebox.$.composebox;
 
     // Setup mock zero-state results.
@@ -1509,7 +1516,9 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
 
   test('EnterKeyOnEmptyInputDoesNotAddNewLineOrSubmit', async () => {
     const {innerComposebox} = parts;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     const keydownDiv =
         innerComposebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(keydownDiv !== null);
@@ -1528,7 +1537,9 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
 
   test('cancel button click clears input without submitting', async () => {
     const {innerComposebox} = parts;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     const cancelIcon = innerComposebox.getInputElement().$.cancelIcon;
 
     // Type text so the composebox has content; with content present,
@@ -1555,7 +1566,9 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
 
   test('lens overlay showing updates placeholder', async () => {
     const {wrapper, innerComposebox} = parts;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
 
     // Initially false, placeholder override should be empty.
     assertFalse(wrapper.isOverlayOpenForAimVisualSearch);
@@ -1638,7 +1651,10 @@ suite('ContextualTasksComposeboxForkBasicInputTest', () => {
     let queryAutocompleteCallCount = 0;
 
     wrapper.isZeroState = true;
-    simulateUserInput(innerComposebox.getInputElement().$.input, '');
+    simulateUserInput(
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!,
+        '');
 
     innerComposebox.clearAutocompleteMatches = () => {
       clearAutocompleteMatchesCallCount++;
@@ -1804,7 +1820,9 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
   test('fires result-changed for an accepted autocomplete result', async () => {
     mockTimer.install();
     const {innerComposebox} = parts;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     const testQuery = 'test';
 
     simulateUserInput(inputElement, testQuery);
@@ -1832,7 +1850,9 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
       async () => {
         mockTimer.install();
         const {innerComposebox} = parts;
-        const inputElement = innerComposebox.getInputElement().$.input;
+        const inputElement =
+            innerComposebox.getInputElement()
+                .shadowRoot.querySelector<HTMLElement>('#input')!;
 
         simulateUserInput(inputElement, 'test');
         mockTimer.tick(300);
@@ -1929,7 +1949,9 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
   test('selecting a match populates the composebox', async () => {
     mockTimer.install();
     const {innerComposebox} = parts;
-    const inputElement = innerComposebox.getInputElement().$.input;
+    const inputElement =
+        innerComposebox.getInputElement().shadowRoot.querySelector<HTMLElement>(
+            '#input')!;
     const testQuery = 'test';
 
     simulateUserInput(inputElement, testQuery);
@@ -1965,7 +1987,9 @@ suite('ContextualTasksComposeboxForkDropdownTest', () => {
         mockTimer.install();
         const TEST_QUERY = 'test query';
         const {app, innerComposebox} = parts;
-        const inputElement = innerComposebox.getInputElement().$.input;
+        const inputElement =
+            innerComposebox.getInputElement()
+                .shadowRoot.querySelector<HTMLElement>('#input')!;
         assertTrue(isVisible(inputElement));
 
         simulateUserInput(inputElement, TEST_QUERY);

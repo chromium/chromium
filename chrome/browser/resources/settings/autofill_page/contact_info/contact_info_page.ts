@@ -85,8 +85,6 @@ export interface SettingsContactInfoPageElement {
     autofillOtpFillingToggle: SettingsToggleButtonElement,
     autofillProfileToggle: SettingsToggleButtonElement,
     emailSharedMenu: CrActionMenuElement,
-    menuEditAddress: HTMLElement,
-    menuRemoveAddress: HTMLElement,
     menuRemoveEmail: HTMLElement,
     noAddressesLabel: HTMLElement,
     otpFillingLoadingRow: HTMLElement,

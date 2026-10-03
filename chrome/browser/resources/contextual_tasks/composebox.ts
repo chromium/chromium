@@ -9,7 +9,6 @@ import '//resources/cr_components/localized_link/localized_link.js';
 import {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import {LensOverlayDismissalSource} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
-import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import {ComposeboxProxyImpl, createAutocompleteMatch} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {GlowAnimationState, VoiceSearchState} from '//resources/cr_components/search/constants.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
@@ -67,7 +66,6 @@ export interface ContextualTasksComposeboxElement {
   $: {
     composebox: ContextualTasksInnerComposeboxElement,
     composeboxContainer: HTMLElement,
-    contextualTasksSuggestionsContainer: ComposeboxDropdownElement,
   };
 }
 

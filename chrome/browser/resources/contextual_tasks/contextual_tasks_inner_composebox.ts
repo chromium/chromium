@@ -24,7 +24,6 @@ import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/comp
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
 import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
 import type {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
@@ -99,8 +98,6 @@ export interface ContextualTasksInnerComposeboxElement {
     composebox: HTMLElement,
     matches: ComposeboxDropdownElement,
     fileInputs: ComposeboxFileInputsElement,
-    carousel: ComposeboxFileCarouselElement,
-    errorScrim: ErrorScrimElement,
   };
 }
 

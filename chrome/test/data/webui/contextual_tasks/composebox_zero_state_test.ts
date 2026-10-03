@@ -209,10 +209,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await microtasksFinished();
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ true);
-        const firstMatch: any =
-            contextualTasksApp.$.composebox.$
-                .contextualTasksSuggestionsContainer.shadowRoot.querySelector(
-                    '#match0');
+        const firstMatch: any = contextualTasksApp.$.composebox.shadowRoot
+                                    .querySelector<HTMLElement>(
+                                        '#contextualTasksSuggestionsContainer')!
+                                    .shadowRoot!.querySelector('#match0');
         assertTrue(
             !!firstMatch.$.textContainer,
             'First suggestion match should exist');
@@ -238,8 +238,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await microtasksFinished();
 
         assertTrue(
-            contextualTasksApp.$.composebox.$
-                .contextualTasksSuggestionsContainer.hidden,
+            contextualTasksApp.$.composebox.shadowRoot
+                .querySelector<HTMLElement>(
+                    '#contextualTasksSuggestionsContainer')!.hidden,
             'Dropdown should be hidden when NOT in zero state',
         );
       });
@@ -279,10 +280,10 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await microtasksFinished();
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ true);
-        const firstMatch: any =
-            contextualTasksApp.$.composebox.$
-                .contextualTasksSuggestionsContainer.shadowRoot.querySelector(
-                    '#match0');
+        const firstMatch: any = contextualTasksApp.$.composebox.shadowRoot
+                                    .querySelector<HTMLElement>(
+                                        '#contextualTasksSuggestionsContainer')!
+                                    .shadowRoot!.querySelector('#match0');
         assertTrue(
             !!firstMatch.$.textContainer,
             'First suggestion match should exist');
@@ -308,8 +309,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await microtasksFinished();
 
         assertTrue(
-            contextualTasksApp.$.composebox.$
-                .contextualTasksSuggestionsContainer.hidden,
+            contextualTasksApp.$.composebox.shadowRoot
+                .querySelector<HTMLElement>(
+                    '#contextualTasksSuggestionsContainer')!.hidden,
             'Dropdown should be hidden when NOT in zero state',
         );
       });
@@ -335,8 +337,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await microtasksFinished();
 
     assertTrue(
-        contextualTasksApp.$.composebox.$.contextualTasksSuggestionsContainer
-            .hidden,
+        contextualTasksApp.$.composebox.shadowRoot
+            .querySelector<HTMLElement>(
+                '#contextualTasksSuggestionsContainer')!.hidden,
         'Dropdown should be hidden when in NLM mode',
     );
   });
@@ -516,7 +519,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await composebox.updateComplete;
 
     const suggestionsContainer =
-        contextualComposebox.$.contextualTasksSuggestionsContainer;
+        contextualComposebox.shadowRoot.querySelector<HTMLElement>(
+            '#contextualTasksSuggestionsContainer')!;
     assertTrue(!!suggestionsContainer, 'Suggestions container should exist');
 
     // Initial state: No matches yet, so show-dropdown should be false.
@@ -550,7 +554,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         'Suggestions should be visible when dropdown is shown');
 
     // Simulate typing.
-    const inputElement = composebox.getInputElement().$.input;
+    const inputElement =
+        composebox.getInputElement().shadowRoot.querySelector('#input')!;
     simulateUserInput(inputElement, 'test');
 
     // Provide typed matches.
@@ -908,7 +913,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about these',
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder'));
   });
 
   test('Single tab file updates zero state placeholder', async () => {
@@ -926,7 +933,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this tab',
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder'));
   });
 
   test('Single image file updates zero state placeholder', async () => {
@@ -944,7 +953,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this image',
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder'));
   });
 
   test('Single pdf file updates zero state placeholder', async () => {
@@ -962,7 +973,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
     assertEquals(
         'Ask about this doc',
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder'));
   });
 
   test('Single unknown file updates zero state placeholder', async () => {
@@ -979,7 +992,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await innerComposebox.updateComplete;
 
     const placeholder =
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder') ||
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder') ||
         '';
     assertFalse(placeholder.includes('Ask about'));
   });
@@ -1005,7 +1020,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     // File hint should take precedence over overlay hint.
     assertEquals(
         'Ask about this image',
-        innerComposebox.getInputElement().$.input.getAttribute('placeholder'));
+        innerComposebox.getInputElement()
+            .shadowRoot.querySelector<HTMLElement>('#input')!.getAttribute(
+                'placeholder'));
   });
 
   test('Arrow in zero state is ignored in full tab', async () => {

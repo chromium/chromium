@@ -47,7 +47,6 @@ const SearchboxInputElementBase = I18nMixinLit(CrLitElement);
 
 export interface SearchboxInputElement {
   $: {
-    input: HTMLInputElement|HTMLTextAreaElement,
     icon: SearchboxIconElement,
     selectionAnnouncement: HTMLElement,
   };
@@ -164,41 +163,62 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
         this.updateEllipsisState_();
       });
     }
-    if (this.$.input) {
-      this.resizeObserver_.observe(this.$.input);
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    if (input) {
+      this.resizeObserver_.observe(input);
     }
   }
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
-    assert(this.$.input);
-    return this.$.input;
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    return input;
   }
 
   override focus() {
-    assert(this.$.input);
-    this.$.input.focus();
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    input.focus();
   }
 
   override blur() {
-    assert(this.$.input);
-    this.$.input.blur();
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    input.blur();
   }
 
   select() {
-    assert(this.$.input);
-    this.$.input.select();
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    input.select();
   }
 
   setSelectionRange(
       start: number|null, end: number|null,
       direction?: 'forward'|'backward'|'none') {
-    assert(this.$.input);
-    this.$.input.setSelectionRange(start, end, direction);
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    input.setSelectionRange(start, end, direction);
   }
 
   getInputValue(): string {
-    assert(this.$.input);
-    return this.$.input.value;
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    assert(input);
+    return input.value;
   }
 
   setInputText(text: string) {
@@ -230,24 +250,29 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
    */
   setSelectionA11yLabel(label: string) {
     this.$.selectionAnnouncement.textContent = label;
-    this.$.input.ariaActiveDescendantElement =
+    this.shadowRoot.querySelector<HTMLElement>(
+                       '#input')!.ariaActiveDescendantElement =
         label ? this.$.selectionAnnouncement : null;
   }
 
   isMultiline(): boolean {
-    if (!this.$.input) {
+    const input = this.shadowRoot.querySelector<HTMLElement>('#input');
+    if (!input) {
       return false;
     }
     if (this.forceSingleLine_) {
       return false;
     }
     return this.multiLineEnabled &&
-        this.$.input.scrollHeight > MULTILINE_INPUT_HEIGHT_THRESHOLD;
+        input.scrollHeight > MULTILINE_INPUT_HEIGHT_THRESHOLD;
   }
 
   preventInlineAutocomplete(input: string) {
+    const inputEl =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
     const caretNotAtEnd =
-        this.$.input ? this.$.input.selectionStart !== input.length : false;
+        inputEl ? inputEl.selectionStart !== input.length : false;
     return this.isDeletingInput_ || this.pastedInInput_ || caretNotAtEnd;
   }
 
@@ -281,10 +306,12 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   private onInputCutCopy_(e: ClipboardEvent) {
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input')!;
     // Only handle cut/copy when input has content and it's all selected.
-    if (!this.$.input.value || this.$.input.selectionStart !== 0 ||
-        this.$.input.selectionEnd !== this.$.input.value.length ||
-        !this.inputHasMatches) {
+    if (!input.value || input.selectionStart !== 0 ||
+        input.selectionEnd !== input.value.length || !this.inputHasMatches) {
       return;
     }
 
@@ -303,7 +330,10 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
   }
 
   protected onInputInput_(e: InputEvent) {
-    const inputValue = this.$.input.value;
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input')!;
+    const inputValue = input.value;
     const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
     if (lastInputValue === inputValue) {
       return;
@@ -359,9 +389,12 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       return;
     }
 
-    const inputValue = this.$.input.value;
-    const inputSelection = inputValue.substring(
-        this.$.input.selectionStart!, this.$.input.selectionEnd!);
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input')!;
+    const inputValue = input.value;
+    const inputSelection =
+        inputValue.substring(input.selectionStart!, input.selectionEnd!);
     const lastInputValue = this.lastInput_.text + this.lastInput_.inline;
     // If the current input state (its value and selection) matches its last
     // state (text and inline autocompletion) and the user types the next
@@ -408,10 +441,12 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       return;
     }
 
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input')!;
     // User is tabbing into the input element.
     this.fire(
-        'input-focus-changed',
-        {value: this.$.input.value, isOnFocus: !this.$.input.value});
+        'input-focus-changed', {value: input.value, isOnFocus: !input.value});
   }
 
   protected onInputMousedown_(e: MouseEvent|null) {
@@ -419,11 +454,13 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (e && e.button !== 0) {
       return;
     }
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input')!;
     // The user is placing the caret, so narrate the input itself.
     this.setSelectionA11yLabel('');
     this.fire(
-        'input-focus-changed',
-        {value: this.$.input.value, isOnFocus: !this.$.input.value});
+        'input-focus-changed', {value: input.value, isOnFocus: !input.value});
   }
 
   protected onInputPaste_(e: ClipboardEvent) {
@@ -466,21 +503,24 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
         !inlineDiffers && !update.moveCursorToEnd && !isMatchPreview;
     let needsSelectionUpdate = !preserveSelection;
 
-    const oldSelectionStart = this.$.input?.selectionStart || null;
-    const oldSelectionEnd = this.$.input?.selectionEnd || null;
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
+    const oldSelectionStart = input?.selectionStart || null;
+    const oldSelectionEnd = input?.selectionEnd || null;
 
-    if (this.$.input && newInputValue !== this.$.input.value) {
-      this.$.input.value = newInputValue;
+    if (input && newInputValue !== input.value) {
+      input.value = newInputValue;
       needsSelectionUpdate = true;  // Setting .value blows away selection.
     }
 
-    if (this.$.input && newInputValue.trim() && needsSelectionUpdate) {
+    if (input && newInputValue.trim() && needsSelectionUpdate) {
       // If the cursor is to be moved to the end (implies selection should not
       // be preserved), set the selection start to same as the selection end.
-      this.$.input.selectionStart = preserveSelection ? oldSelectionStart :
-          (update.moveCursorToEnd || isMatchPreview)  ? newInputValue.length :
-                                                        newInput.text.length;
-      this.$.input.selectionEnd =
+      input.selectionStart = preserveSelection       ? oldSelectionStart :
+          (update.moveCursorToEnd || isMatchPreview) ? newInputValue.length :
+                                                       newInput.text.length;
+      input.selectionEnd =
           preserveSelection ? oldSelectionEnd : newInputValue.length;
     }
 
@@ -497,8 +537,11 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       return;
     }
 
+    const input =
+        this.shadowRoot.querySelector<HTMLInputElement|HTMLTextAreaElement>(
+            '#input');
     // Abort early if the searchbox input does not have focus or is missing.
-    if (this.shadowRoot?.activeElement !== this.$.input || !this.$.input) {
+    if (this.shadowRoot?.activeElement !== input || !input) {
       this.showEllipsis_ = false;
       return;
     }
@@ -508,27 +551,27 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     // (from the end of user-typed text to the end of input), confirming
     // the user hasn't moved the cursor or edited the selection.
     const hasInlineSelection =
-        this.$.input.selectionStart === this.lastInput_.text.length &&
-        this.$.input.selectionEnd === this.$.input.value.length &&
-        this.$.input.selectionStart !== this.$.input.selectionEnd;
+        input.selectionStart === this.lastInput_.text.length &&
+        input.selectionEnd === input.value.length &&
+        input.selectionStart !== input.selectionEnd;
 
     if (hasInlineAutocomplete && !hasInlineSelection) {
-      this.lastInput_ = {text: this.$.input.value, inline: ''};
+      this.lastInput_ = {text: input.value, inline: ''};
       this.forceSingleLine_ = false;
     } else if (
         // If the user clicks into or moves the cursor within preview text,
         // exit forced single-line mode so they can edit normally.
         !hasInlineAutocomplete && this.forceSingleLine_ &&
-        (this.$.input.selectionStart !== this.lastInput_.text.length ||
-         this.$.input.selectionEnd !== this.lastInput_.text.length)) {
+        (input.selectionStart !== this.lastInput_.text.length ||
+         input.selectionEnd !== this.lastInput_.text.length)) {
       this.forceSingleLine_ = false;
     }
 
     this.hasInlineSelection_ = hasInlineSelection;
     // Only force a reflow if the preconditions for showing the ellipsis are
     // met.
-    this.showEllipsis_ = this.forceSingleLine_ &&
-        this.$.input.scrollWidth > this.$.input.clientWidth;
+    this.showEllipsis_ =
+        this.forceSingleLine_ && input.scrollWidth > input.clientWidth;
   }
 
   protected computePlaceholderText_(): string {

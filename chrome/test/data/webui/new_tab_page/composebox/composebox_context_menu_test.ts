@@ -5,6 +5,8 @@
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadErrorType, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import type {ErrorScrimElement} from 'chrome://resources/cr_components/composebox/error_scrim.js';
+import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
@@ -72,7 +74,9 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
       await microtasksFinished();
-      const files = testProxy.element.$.carousel.files;
+      const files =
+          testProxy.element.shadowRoot
+              .querySelector<ComposeboxFileCarouselElement>('#carousel')!.files;
       assertEquals(files.length, 1);
       assertEquals(files[0]!.type, 'tab');
       assertEquals(files[0]!.name, sampleTabTitle);
@@ -111,7 +115,8 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
 
       assertEquals(
           loadTimeData.getString('composeboxFileUploadFailed'),
-          testProxy.element.$.errorScrim.errorMessage);
+          testProxy.element.shadowRoot
+              .querySelector<ErrorScrimElement>('#errorScrim')!.errorMessage);
     });
 
     test('tab changes calls getRecentTabs', async () => {
