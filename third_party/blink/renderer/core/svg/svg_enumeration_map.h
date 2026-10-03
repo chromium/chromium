@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -45,7 +46,8 @@ class CORE_EXPORT SVGEnumerationMap {
   }
 
  private:
-  const base::span<const char* const> entries_;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const base::span<const char* const> entries_;
   const size_t max_exposed_value_;
 };
 

@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
@@ -116,6 +117,9 @@ base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
 
 // Used to collect the points of each path segment for discrete calcMode.
 struct PointCollector {
+  STACK_ALLOCATED();
+
+ public:
   Vector<gfx::PointF>& points;
   gfx::PointF subpath_start;
 

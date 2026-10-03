@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -85,7 +86,8 @@ AnimatedPropertyType AnimatedPropertyTypeForCSSAttribute(
   if (css_property_map.empty()) {
     // Fill the map for the first use.
     struct AttrToTypeEntry {
-      const QualifiedName& attr = g_null_name;
+      // RAW_PTR_EXCLUSION: Stack-scoped.
+      RAW_PTR_EXCLUSION const QualifiedName& attr = g_null_name;
       const AnimatedPropertyType prop_type;
     };
     const auto attr_to_types = std::to_array<const AttrToTypeEntry>({

@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_STRING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_STRING_SOURCE_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -53,8 +54,10 @@ class CORE_EXPORT SVGPathStringSource {
   bool is_8bit_source_;
 
   union {
-    base::span<const LChar> span8_{};
-    base::span<const UChar> span16_;
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION base::span<const LChar> span8_{};
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION base::span<const UChar> span16_;
   } remaining_;
 
   SVGPathSegType previous_command_;
