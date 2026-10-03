@@ -138,6 +138,9 @@ class PLATFORM_EXPORT ScriptData {
   // The second return value is the set of inherited and not-common
   // characters (see inherited_not_common_chars_ for description).
   struct RunExtensionLookups {
+    STACK_ALLOCATED();
+
+   public:
     const ScriptData::UnicodeBitSet* can_remain_in_script;
     const ScriptData::UnicodeBitSet* inherited_not_common_chars;
   };

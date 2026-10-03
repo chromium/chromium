@@ -40,6 +40,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
@@ -580,9 +581,11 @@ class HarfBuzzSkiaFontFuncs final {
     return funcs;
   }
 
-  hb_font_funcs_t* const hb_font_funcs_skia_advances_;
+  const raw_ptr<hb_font_funcs_t, UnprotectedInRelease | DanglingUntriaged>
+      hb_font_funcs_skia_advances_;
 #if BUILDFLAG(IS_APPLE)
-  hb_font_funcs_t* const hb_font_funcs_harfbuzz_advances_;
+  const raw_ptr<hb_font_funcs_t, UnprotectedInRelease | DanglingUntriaged>
+      hb_font_funcs_harfbuzz_advances_;
 #endif
 };
 

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
@@ -157,6 +158,9 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
 }  // namespace
 
 struct CharacterRangeContext {
+  STACK_ALLOCATED();
+
+ public:
   const StringView& text;
   const bool is_rtl;
   int from;

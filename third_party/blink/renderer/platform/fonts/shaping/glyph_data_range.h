@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_data.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -28,6 +29,9 @@ class PLATFORM_EXPORT GlyphDataRange {
   const ShapeResultRun* GetRun() const { return run_.Get(); }
 
   struct NonCompactGlyphPointerRange {
+    STACK_ALLOCATED();
+
+   public:
     const HarfBuzzRunGlyphData* begin;
     const HarfBuzzRunGlyphData* end;
   };

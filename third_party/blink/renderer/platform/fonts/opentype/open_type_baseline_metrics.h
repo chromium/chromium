@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 
 namespace blink {
@@ -31,7 +32,7 @@ class PLATFORM_EXPORT OpenTypeBaselineMetrics {
  private:
   // TODO(crbug.com/1489080): When this member was briefly given
   // MiraclePtr protection, it was found to be dangling.
-  hb_font_t* font_;
+  raw_ptr<hb_font_t, UnprotectedInRelease | DanglingUntriaged> font_;
   hb_direction_t hb_dir_;
 };
 
