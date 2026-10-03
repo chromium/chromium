@@ -97,6 +97,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/android/glic_helper_android.h"
 #include "chrome/browser/glic/android/glic_keyed_service_android.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
@@ -583,6 +584,18 @@ void GlicKeyedService::OnExperimentalTriggeringStateChanged() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+MicPermissionUi& GlicKeyedService::GetMicPermissionUi() {
+  if (!mic_permission_ui_) {
+    mic_permission_ui_ = std::make_unique<MicPermissionUi>();
+  }
+  return *mic_permission_ui_;
+}
+
+void GlicKeyedService::SetMicPermissionUiForTesting(
+    std::unique_ptr<MicPermissionUi> mic_permission_ui) {
+  mic_permission_ui_ = std::move(mic_permission_ui);
+}
+
 // TODO(crbug.com/484037810): Once a window features object (similar to tab
 // features) is supported on Android, move ownership of the nudge controller to
 // it (accessed via unowned user data and ::From methods), matching Desktop,

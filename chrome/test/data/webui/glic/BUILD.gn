@@ -38,6 +38,7 @@ ts_library("build_extra_ts") {
     "browser_tests/glic_web_drag_and_drop_browsertest.ts",
     "browser_tests/glic_focus_browsertest.ts",
     "browser_tests/glic_android_browsertest.ts",
+    "browser_tests/glic_mic_permission_android_browsertest.ts",
     "browser_tests/glic_browser_test_android.ts",
     "browser_tests/minimal_client.ts",
     "api_boot.ts",

@@ -49,6 +49,7 @@ struct NativeWebKeyboardEvent;
 namespace glic {
 
 class GlicInstanceMetrics;
+class MicPermissionUi;
 class PanelVisibilityDependentHotkeyManager;
 class PanelFocusDependentHotkeyManager;
 
@@ -162,19 +163,34 @@ class GlicSidePanelUi
       SuppressedDeactivationDeliveredAfterSystemPromptCompletes);
   FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
                            NoDeactivationWhenWindowRegainsFocusAfterPrompt);
+  FRIEND_TEST_ALL_PREFIXES(GlicSidePanelUiAndroidTest,
+                           MicOsPermissionResultRejectsWhenWebContentsGone);
 
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
-  // Called with the user's answer to Chrome's microphone pre-prompt. Continues
-  // to the OS permission flow when `allowed`, otherwise fails the request.
+  // Called with the user's answer to Chrome's microphone pre-prompt. Requests
+  // the Android RECORD_AUDIO permission when `allowed`, otherwise fails the
+  // request.
   void OnMicPermissionDialogResult(
       base::WeakPtr<content::WebContents> web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback,
       bool allowed);
 
-  // Forwards `request` to MediaCaptureDevicesDispatcher, which triggers the OS
-  // permission prompt if needed.
+  // Called with the result of the Android RECORD_AUDIO permission request.
+  // Continues the request when `granted`, otherwise shows the "microphone
+  // disabled" snackbar and fails the request.
+  void OnMicOsPermissionResult(base::WeakPtr<content::WebContents> web_contents,
+                               const content::MediaStreamRequest& request,
+                               content::MediaResponseCallback callback,
+                               bool granted);
+
+  // Returns the GlicKeyedService's microphone permission UI, or null if there
+  // is no service.
+  MicPermissionUi* GetMicPermissionUi();
+
+  // Forwards `request` to MediaCaptureDevicesDispatcher. For the mic, the OS
+  // permission is requested beforehand (see OnMicPermissionDialogResult()).
   void RequestSystemMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,

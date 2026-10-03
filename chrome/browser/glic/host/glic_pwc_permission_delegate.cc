@@ -43,7 +43,11 @@ GlicPwcPermissionDelegate::GetPermissionStatus(
 
   switch (type) {
     case ContentSettingsType::MEDIASTREAM_MIC:
-      return PermissionFromPref(prefs, prefs::kGlicMicrophoneEnabled);
+      // Matches the webview (webview.ts), which always allows mic requests on
+      // all platforms.
+      // TODO(b/568819844): Gate on prefs::kGlicMicrophoneEnabled in both
+      // modes.
+      return PermissionResult(PermissionStatus::GRANTED);
 
     case ContentSettingsType::GEOLOCATION:
     case ContentSettingsType::GEOLOCATION_WITH_OPTIONS:

@@ -1149,6 +1149,7 @@ source_set("browser_tests") {
   if (is_android) {
     sources += [
       "android/glic_android_browsertest.cc",
+      "android/glic_mic_permission_android_browsertest.cc",
       "android/glic_tab_picker_bridge_browsertest.cc",
       "browser_ui/glic_nudge_controller_android_browsertest.cc",
     ]

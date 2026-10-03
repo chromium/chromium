@@ -482,4 +482,24 @@ TEST_F(GlicSidePanelUiAndroidTest,
   EXPECT_TRUE(delegate().activation_changes().empty());
 }
 
+// If the panel went away while the OS prompt was up, the request fails without
+// being forwarded.
+TEST_F(GlicSidePanelUiAndroidTest,
+       MicOsPermissionResultRejectsWhenWebContentsGone) {
+  GlicSidePanelUi side_panel_ui(profile(), base::WeakPtr<tabs::TabInterface>(),
+                                delegate(), instance_metrics());
+  side_panel_ui.is_requesting_media_permission_ = true;
+
+  MediaResponseRecorder recorder;
+  side_panel_ui.OnMicOsPermissionResult(
+      /*web_contents=*/nullptr, MakeAudioRequest(), recorder.GetCallback(),
+      /*granted=*/true);
+
+  EXPECT_TRUE(recorder.responded());
+  EXPECT_EQ(
+      blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN_OTHER,
+      recorder.result());
+  EXPECT_FALSE(side_panel_ui.is_requesting_media_permission_);
+}
+
 }  // namespace glic

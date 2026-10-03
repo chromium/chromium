@@ -32,26 +32,17 @@ class GlicPwcPermissionDelegateTest : public testing::Test {
   GlicPwcPermissionDelegate delegate_;
 };
 
-TEST_F(GlicPwcPermissionDelegateTest, MediaStreamMic_GrantedWhenPrefEnabled) {
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, true);
+TEST_F(GlicPwcPermissionDelegateTest, MediaStreamMic_GrantedAlways) {
+  for (bool enabled : {true, false}) {
+    profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, enabled);
 
-  std::optional<content::PermissionResult> result =
-      delegate()->GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                      ContentSettingsType::MEDIASTREAM_MIC);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(PermissionStatus::GRANTED, result->status);
-  EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result->source);
-}
-
-TEST_F(GlicPwcPermissionDelegateTest, MediaStreamMic_DeniedWhenPrefDisabled) {
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
-
-  std::optional<content::PermissionResult> result =
-      delegate()->GetPermissionStatus(/*render_frame_host=*/nullptr,
-                                      ContentSettingsType::MEDIASTREAM_MIC);
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(PermissionStatus::DENIED, result->status);
-  EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result->source);
+    std::optional<content::PermissionResult> result =
+        delegate()->GetPermissionStatus(/*render_frame_host=*/nullptr,
+                                        ContentSettingsType::MEDIASTREAM_MIC);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(PermissionStatus::GRANTED, result->status);
+    EXPECT_EQ(PermissionStatusSource::UNSPECIFIED, result->source);
+  }
 }
 
 TEST_F(GlicPwcPermissionDelegateTest, Geolocation_GrantedWhenPrefEnabled) {
@@ -138,7 +129,7 @@ TEST_F(GlicPwcPermissionDelegateTest,
       null_delegate.GetPermissionStatus(/*render_frame_host=*/nullptr,
                                         ContentSettingsType::MEDIASTREAM_MIC);
   ASSERT_TRUE(mic.has_value());
-  EXPECT_EQ(PermissionStatus::DENIED, mic->status);
+  EXPECT_EQ(PermissionStatus::GRANTED, mic->status);
 
   std::optional<content::PermissionResult> geo =
       null_delegate.GetPermissionStatus(/*render_frame_host=*/nullptr,

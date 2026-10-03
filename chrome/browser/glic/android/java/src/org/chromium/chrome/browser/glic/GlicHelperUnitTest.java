@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
@@ -18,6 +20,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 
@@ -31,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -47,8 +51,11 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.PermissionCallback;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link GlicHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -305,5 +312,96 @@ public class GlicHelperUnitTest {
         assertEquals(Uri.parse("package:org.chromium.chrome"), intent.getData());
         assertEquals(
                 Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK);
+    }
+
+    @Test
+    public void testRequestMicOsPermission_AlreadyGranted() {
+        when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(true);
+        List<Boolean> results = new ArrayList<>();
+
+        GlicHelper.requestMicOsPermission(mWindowAndroidMock, results::add);
+
+        assertEquals(List.of(true), results);
+        verify(mWindowAndroidMock, never()).requestPermissions(any(), any());
+    }
+
+    @Test
+    public void testRequestMicOsPermission_NoActivity() {
+        when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(null));
+        List<Boolean> results = new ArrayList<>();
+
+        GlicHelper.requestMicOsPermission(mWindowAndroidMock, results::add);
+
+        assertEquals(List.of(false), results);
+        verify(mWindowAndroidMock, never()).requestPermissions(any(), any());
+    }
+
+    @Test
+    public void testRequestMicOsPermission_Granted() {
+        assertEquals(
+                List.of(true),
+                requestMicOsPermissionWithResult(new int[] {PackageManager.PERMISSION_GRANTED}));
+    }
+
+    @Test
+    public void testRequestMicOsPermission_Denied() {
+        assertEquals(
+                List.of(false),
+                requestMicOsPermissionWithResult(new int[] {PackageManager.PERMISSION_DENIED}));
+    }
+
+    @Test
+    public void testRequestMicOsPermission_Cancelled() {
+        assertEquals(List.of(false), requestMicOsPermissionWithResult(new int[0]));
+    }
+
+    @Test
+    public void testRequestMicOsPermission_ActivityDestroyed() {
+        ActivityController<Activity> controller = Robolectric.buildActivity(Activity.class).setup();
+        when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
+        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(controller.get()));
+        List<Boolean> results = new ArrayList<>();
+
+        GlicHelper.requestMicOsPermission(mWindowAndroidMock, results::add);
+        ArgumentCaptor<PermissionCallback> callbackCaptor =
+                ArgumentCaptor.forClass(PermissionCallback.class);
+        verify(mWindowAndroidMock).requestPermissions(any(), callbackCaptor.capture());
+        assertTrue(results.isEmpty());
+
+        controller.pause().stop().destroy();
+        assertEquals(List.of(false), results);
+
+        // A late result is ignored.
+        callbackCaptor
+                .getValue()
+                .onRequestPermissionsResult(
+                        new String[] {Manifest.permission.RECORD_AUDIO},
+                        new int[] {PackageManager.PERMISSION_GRANTED});
+        assertEquals(List.of(false), results);
+    }
+
+    private List<Boolean> requestMicOsPermissionWithResult(int[] grantResults) {
+        when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
+        when(mWindowAndroidMock.getActivity())
+                .thenReturn(
+                        new WeakReference<>(
+                                Robolectric.buildActivity(Activity.class).setup().get()));
+        List<Boolean> results = new ArrayList<>();
+
+        GlicHelper.requestMicOsPermission(mWindowAndroidMock, results::add);
+
+        ArgumentCaptor<PermissionCallback> callbackCaptor =
+                ArgumentCaptor.forClass(PermissionCallback.class);
+        verify(mWindowAndroidMock)
+                .requestPermissions(
+                        aryEq(new String[] {Manifest.permission.RECORD_AUDIO}),
+                        callbackCaptor.capture());
+        assertTrue(results.isEmpty());
+        callbackCaptor
+                .getValue()
+                .onRequestPermissionsResult(
+                        new String[] {Manifest.permission.RECORD_AUDIO}, grantResults);
+        return results;
     }
 }

@@ -63,6 +63,9 @@ class GlicTabFaviconObserver;
 class GlicInstanceCoordinator;
 class GlicExperimentalOptInController;
 class GlicExperimentalTriggeringTransportHandlerFactory;
+#if BUILDFLAG(IS_ANDROID)
+class MicPermissionUi;
+#endif
 
 enum class GlicPrewarmingChecksResult;
 
@@ -95,6 +98,11 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   class GlicNudgeController* GetOrCreateNudgeController(
       BrowserWindowInterface* browser);
+
+  // Returns the microphone permission UI used by Glic panels.
+  MicPermissionUi& GetMicPermissionUi();
+  void SetMicPermissionUiForTesting(
+      std::unique_ptr<MicPermissionUi> mic_permission_ui);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Convenience method, may return nullptr.
@@ -324,6 +332,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
       button_controllers_;
   base::flat_map<BrowserWindowInterface*, base::CallbackListSubscription>
       window_close_subscriptions_;
+  std::unique_ptr<MicPermissionUi> mic_permission_ui_;
 #endif
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};

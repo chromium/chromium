@@ -13,18 +13,32 @@ class WindowAndroid;
 
 namespace glic {
 
-// Shows a snackbar indicating that microphone permission is disabled.
-void ShowMicDisabledSnackbar(ui::WindowAndroid* window_android);
+// Android microphone permission UI for Glic. Owned by GlicKeyedService, and
+// can be overridden in tests. Callbacks may run after the caller is gone, so
+// bind them to a WeakPtr.
+class MicPermissionUi {
+ public:
+  MicPermissionUi() = default;
+  MicPermissionUi(const MicPermissionUi&) = delete;
+  MicPermissionUi& operator=(const MicPermissionUi&) = delete;
+  virtual ~MicPermissionUi() = default;
 
-// Shows a dialog asking the user to grant microphone permission for Gemini.
-// The callback is invoked exactly once: with true if the user clicks "Allow",
-// or false if the user clicks "No thanks" or dismisses the dialog.
-// The dialog is owned by Java and can outlive the caller (it is dismissed, and
-// therefore the callback is run, when the activity goes away). Callers must
-// bind `callback` to a base::WeakPtr (or otherwise guarantee the bound state
-// outlives the dialog) to avoid use-after-free.
-void ShowMicPermissionDialog(ui::WindowAndroid* window_android,
-                             base::OnceCallback<void(bool)> callback);
+  // Shows Chrome's dialog asking to let Gemini use the microphone. Runs
+  // `callback` with whether the user allowed it.
+  virtual void ShowMicPermissionDialog(ui::WindowAndroid* window_android,
+                                       base::OnceCallback<void(bool)> callback);
+
+  // Returns whether the Android RECORD_AUDIO permission is granted.
+  virtual bool HasMicOsPermission(ui::WindowAndroid* window_android);
+
+  // Requests the Android RECORD_AUDIO permission. Runs `callback` with whether
+  // it was granted.
+  virtual void RequestMicOsPermission(ui::WindowAndroid* window_android,
+                                      base::OnceCallback<void(bool)> callback);
+
+  // Shows a snackbar saying the microphone permission is disabled.
+  virtual void ShowMicDisabledSnackbar(ui::WindowAndroid* window_android);
+};
 
 }  // namespace glic
 

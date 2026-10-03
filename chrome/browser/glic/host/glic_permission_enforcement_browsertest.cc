@@ -13,6 +13,12 @@
 #include "content/public/test/browser_test.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/android/glic_helper_android.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#endif
+
 namespace glic {
 
 class GlicPermissionEnforcementBrowserTest
@@ -42,6 +48,23 @@ class GlicPermissionEnforcementBrowserTest
     command_line->RemoveSwitch(switches::kUseFakeUIForMediaStream);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetUpOnMainThread() override {
+    GlicApiBrowserTest::SetUpOnMainThread();
+    // Report the Android mic permission as granted, so that no real Android
+    // dialogs are shown.
+    class GrantedMicPermissionUi : public MicPermissionUi {
+     public:
+      bool HasMicOsPermission(ui::WindowAndroid* window_android) override {
+        return true;
+      }
+    };
+    GlicKeyedServiceFactory::GetGlicKeyedService(GetProfile())
+        ->SetMicPermissionUiForTesting(
+            std::make_unique<GrantedMicPermissionUi>());
+  }
+#endif
+
   bool IsNoWebview() const { return GetParam(); }
   bool IsWebview() const { return !IsNoWebview(); }
 
@@ -52,14 +75,9 @@ class GlicPermissionEnforcementBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(b/568819844): Enable once the microphone setting gates mic access.
 IN_PROC_BROWSER_TEST_P(GlicPermissionEnforcementBrowserTest,
-                       testMicrophonePermissionTestDeny) {
-  if (IsWebview()) {
-    // TODO(crbug.com/409118577): Microphone permissions are not actually gated
-    // by the microphone permission in WebView mode yet.
-    GTEST_SKIP() << "crbug.com/409118577: Microphone permissions are not gated "
-                    "in WebView mode";
-  }
+                       DISABLED_testMicrophonePermissionTestDeny) {
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicMicrophoneEnabled, false);
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
