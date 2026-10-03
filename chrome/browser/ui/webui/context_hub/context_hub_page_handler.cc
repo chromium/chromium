@@ -1014,33 +1014,45 @@ void ContextHubPageHandler::OpenGlicPanel(
 
   glic::GlicInvokeOptions options(
       glic::Target(*tab), glic::mojom::InvocationSource::kContextHubTopics);
-  // The topic page offers three suggestion chips; clamp defensively since the
-  // list comes from the renderer.
+  // The topic page offers up to three suggested prompts; clamp defensively
+  // since the list comes from the renderer.
   constexpr size_t kMaxPrompts = 3;
   base::span<const std::string> capped_prompts =
       base::span(prompts).first(std::min(prompts.size(), kMaxPrompts));
   options.prompts.assign(capped_prompts.begin(), capped_prompts.end());
-  // The page supplies its own topic-specific suggestions, so suppress the
-  // generic Zero State Suggestions to avoid two competing suggestion UIs. If
-  // the page had none to offer (e.g. a topic with no title), fall back to ZSS
-  // rather than showing a panel with no suggestions at all.
+  // The page supplies its own topic-specific prompts, so ask the web client to
+  // suppress the generic Zero State Suggestions in favor of them. If the page
+  // had none to offer (e.g. a topic with no title), fall back to ZSS rather
+  // than asking for a panel with no suggestions at all.
+  //
+  // TODO(crbug.com/567878517): The web client doesn't support this yet. It
+  // ignores `disable_zss`, and with more than one prompt it shows the generic
+  // ZSS rather than these prompts.
   options.disable_zss = !options.prompts.empty();
 
   if (already_showing) {
-    // The invoke is still delivered to the web client, which replaces the
-    // suggestion chips with this topic's. Since the user is already looking
-    // at the panel, refreshing it should not steal focus from the topic page,
-    // and should not fail if another invocation happens to be in flight.
+    // The invoke is still delivered to the web client, so it can replace its
+    // suggestions with this topic's once supported (see TODO above). Since the
+    // user is already looking at the panel, refreshing it should not steal
+    // focus from the topic page, and should not fail if another invocation
+    // happens to be in flight.
     options.focus_on_show = false;
     options.supersede_if_in_progress = true;
+  } else {
+    // The invoke is sent on page load, while the side panel is still sliding
+    // open. Delivering (and focusing) it before the panel and the tab have
+    // settled at their final size leaves the web client laid out for the
+    // in-progress size, which shows up as shifted content once the panel is
+    // re-laid out (e.g. after a navigation or tab switch).
+    options.wait_for_panel_open = true;
   }
 
   // The FRE is rendered inside the panel, so the panel opens either way. But
   // until the user consents, delivery of `prompts` is blocked on FRE
   // completion, and the invocation's default watchdog is only one minute;
   // far too short to read and accept a consent screen. Without a longer
-  // timeout the invocation is abandoned and the topic suggestions never
-  // arrive, even though the user did eventually consent.
+  // timeout the invocation is abandoned and `prompts` are never delivered,
+  // even though the user did eventually consent.
   //
   // TODO(crbug.com/564810188): This only narrows the window. If the user
   // abandons the FRE the invocation still fails silently, because the page has

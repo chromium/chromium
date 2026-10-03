@@ -40,10 +40,12 @@ export type TopicDetailsLoadState = 'loading'|'loaded'|'not-found';
 // are added.
 export const TOPIC_DETAILS_TABS: readonly string[] = ['Summary'];
 
-// Builds the suggestion chips offered when the Glic side panel opens, using
-// the continuation queries the backend generated for `topic`. Returning an
-// empty list is fine: `PageHandler::OpenGlicPanel()` leaves Zero State
-// Suggestions enabled when the page has nothing topic-specific to offer.
+// Builds the suggested prompts sent when the Glic side panel opens, using the
+// continuation queries the backend generated for `topic`. Returning an empty
+// list is fine: `PageHandler::OpenGlicPanel()` leaves Zero State Suggestions
+// enabled when the page has nothing topic-specific to offer.
+// TODO(crbug.com/567878517): The Glic web client doesn't show these as
+// suggestions yet.
 export function getSuggestedPrompts(topic: TopicItem): string[] {
   return topic.continuationQueries
       .map(query => query.title.trim() || query.prompt.trim())
@@ -126,7 +128,7 @@ export class TopicDetailsElement extends CrLitElement {
     this.loadState_ = 'loaded';
 
     this.updateDocumentTitle_();
-    // Only once the topic has loaded, so the panel gets its suggestion chips.
+    // Only once the topic has loaded, so the panel gets its suggested prompts.
     this.maybeOpenGlicPanel_();
   }
 
@@ -148,13 +150,13 @@ export class TopicDetailsElement extends CrLitElement {
     }
   }
 
-  // Opens the Glic side panel bound to this tab, seeded with topic-specific
-  // suggestion chips. Only runs when the page was opened from the "jump back
+  // Opens the Glic side panel bound to this tab, sending topic-specific
+  // suggested prompts. Only runs when the page was opened from the "jump back
   // in" entry point, which sets the `open_glic` query parameter.
   //
   // The parameter is deliberately left in the URL so this runs on every load.
-  // That way the panel comes back if the user closed it, and its suggestion
-  // chips are refreshed to match this topic if it was already open.
+  // That way the panel comes back if the user closed it, and it is sent this
+  // topic's prompts again if it was already open.
   private maybeOpenGlicPanel_() {
     const params = new URLSearchParams(window.location.search);
     if (!this.topic || params.get('open_glic') !== '1' || !isTopicsEnabled()) {
