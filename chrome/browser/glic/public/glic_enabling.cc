@@ -98,7 +98,7 @@ namespace glic {
 // filtering is enabled.
 
 #if BUILDFLAG(IS_ANDROID)
-constexpr char kDefaultEnabledCountries[] = "us";
+constexpr char kDefaultEnabledCountries[] = "us,in";
 #else
 constexpr char kDefaultEnabledCountries[] =
     // Phase 1
@@ -134,7 +134,7 @@ constexpr char kDefaultEnabledCountries[] =
 // filtering is enabled.
 constexpr char kDefaultEnabledLocales[] =
 #if BUILDFLAG(IS_ANDROID)
-    "en-US"
+    "en-GB,en-US"
 #else
     "af,am,bg,bn,ca,cs,da,de,el,es,es-419,et,fi,fil,fr,gu,hi,hr,hu,id,it,ja,kn,"
     "ko,lt,lv,ml,mr,ms,nl,no,pl,pt-BR,pt-PT,ro,ru,sk,sl,sr,sv,sw,ta,te,th,tr,"
