@@ -28,8 +28,6 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
-
 class PromiseAppAlmanacConnectorTest : public testing::Test {
  public:
   PromiseAppAlmanacConnector* connector() { return connector_.get(); }
@@ -48,6 +46,9 @@ class PromiseAppAlmanacConnectorTest : public testing::Test {
   network::TestURLLoaderFactory* url_loader_factory() {
     return url_loader_factory_.get();
   }
+
+ protected:
+  const PackageId test_package_id_{PackageType::kArc, "test.package.name"};
 
  private:
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
@@ -76,7 +77,7 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {
       PromiseAppAlmanacConnector::GetServerUrl().spec(), /*content=*/"");
 
   base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
-  connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
+  connector()->GetPromiseAppInfo(test_package_id_, test_callback.GetCallback());
   EXPECT_TRUE(test_callback.Wait());
 
   EXPECT_EQ(method, "POST");
@@ -90,17 +91,17 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoRequest) {
 
 TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoSuccessResponse) {
   proto::PromiseAppResponse response;
-  response.set_package_id(kTestPackageId.ToString());
+  response.set_package_id(test_package_id_.ToString());
 
   url_loader_factory()->AddResponse(
       PromiseAppAlmanacConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
   base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
-  connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
+  connector()->GetPromiseAppInfo(test_package_id_, test_callback.GetCallback());
   auto promise_app_info = test_callback.Get();
 
-  EXPECT_EQ(promise_app_info->GetPackageId(), kTestPackageId);
+  EXPECT_EQ(promise_app_info->GetPackageId(), test_package_id_);
 }
 
 TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoErrorResponse) {
@@ -109,7 +110,7 @@ TEST_F(PromiseAppAlmanacConnectorTest, GetPromiseAppInfoErrorResponse) {
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<std::optional<PromiseAppWrapper>> test_callback;
-  connector()->GetPromiseAppInfo(kTestPackageId, test_callback.GetCallback());
+  connector()->GetPromiseAppInfo(test_package_id_, test_callback.GetCallback());
   auto promise_app_info = test_callback.Get();
 
   EXPECT_FALSE(promise_app_info.has_value());

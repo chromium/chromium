@@ -44,8 +44,6 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
-
 class PromiseAppServiceTest : public testing::Test,
                               public PromiseAppRegistryCache::Observer {
  public:
@@ -150,6 +148,9 @@ class PromiseAppServiceTest : public testing::Test,
     obs_.Reset();
   }
 
+ protected:
+  const PackageId test_package_id_{PackageType::kArc, "test.package.name"};
+
  private:
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   content::BrowserTaskEnvironment task_environment_;
@@ -172,7 +173,7 @@ class PromiseAppServiceTest : public testing::Test,
 
 TEST_F(PromiseAppServiceTest, AlmanacResponseUpdatesPromiseAppName) {
   proto::PromiseAppResponse response;
-  response.set_package_id(kTestPackageId.ToString());
+  response.set_package_id(test_package_id_.ToString());
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url("www.image");
@@ -188,12 +189,13 @@ TEST_F(PromiseAppServiceTest, AlmanacResponseUpdatesPromiseAppName) {
   ExpectNumUpdates(/*num_updates=*/2);
 
   // Add promise app to the cache, which will trigger an Almanac API call.
-  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(test_package_id_));
 
   // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
-  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseApp(test_package_id_);
   EXPECT_TRUE(promise_app_result->name.has_value());
   EXPECT_EQ(promise_app_result->name.value(), "Name");
 }
@@ -205,7 +207,7 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
   std::string url_other = "http://image.test/second-test.png";
 
   proto::PromiseAppResponse response;
-  response.set_package_id(kTestPackageId.ToString());
+  response.set_package_id(test_package_id_.ToString());
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url(url);
@@ -222,7 +224,7 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
   url_loader_factory()->AddResponse(url_other, CreateImageString(1024));
 
   // Confirm there aren't any icons for the package yet.
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
 
   // We expect 3 Promise App Registry Cache updates in this test:
   // The first update is when we initially register the promise app in the
@@ -231,15 +233,15 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
   // after we finish downloading all the icons for the promise app and mark the
   // promise app as ready to be shown to the user.
   ExpectNumUpdates(/*num_updates=*/3);
-  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(test_package_id_));
 
   // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
   // Verify that there are 2 icons now saved in cache.
-  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
   std::vector<PromiseAppIcon*> icons =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons.size(), 2u);
   EXPECT_EQ(icons[0]->width_in_pixels, 512);
   EXPECT_TRUE(
@@ -253,7 +255,8 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
                                        PromiseAppIconType::kRealIcon, 1);
 
   // Verify that the promise app is allowed to be visible now.
-  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseApp(test_package_id_);
   EXPECT_TRUE(promise_app_result->should_show);
 }
 
@@ -261,7 +264,7 @@ TEST_F(PromiseAppServiceTest, AlmanacIconsGetDownloadedThenAddedToIconCache) {
 // updating the icon cache.
 TEST_F(PromiseAppServiceTest, FailedIconDownloadsDoNotUpdateIconCache) {
   proto::PromiseAppResponse response;
-  response.set_package_id(kTestPackageId.ToString());
+  response.set_package_id(test_package_id_.ToString());
   response.set_name("Name");
   response.add_icons();
   response.mutable_icons(0)->set_url("broken-url");
@@ -275,7 +278,7 @@ TEST_F(PromiseAppServiceTest, FailedIconDownloadsDoNotUpdateIconCache) {
   url_loader_factory()->AddResponse("broken-url", "invalid icon");
 
   // Confirm there aren't any icons for the package yet.
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
 
   // We expect 3 Promise App Registry Cache updates in this test:
   // The first update is when we initially register the promise app in the
@@ -284,13 +287,13 @@ TEST_F(PromiseAppServiceTest, FailedIconDownloadsDoNotUpdateIconCache) {
   // after we attempt to download the icons for the promise app (but fail) and
   // mark the promise app as ready to be shown to the user.
   ExpectNumUpdates(/*num_updates=*/3);
-  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(test_package_id_));
 
   // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
 
   // Icon cache should still be empty.
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
   histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
                                        PromiseAppIconType::kPlaceholderIcon, 1);
   histogram_tester().ExpectBucketCount(kPromiseAppIconTypeHistogram,
@@ -310,7 +313,7 @@ TEST_F(PromiseAppServiceTest, ShowPromiseAppDespiteErrorAlmanacResponse) {
   ExpectNumUpdates(2);
 
   // Add promise app to the cache, which will trigger an Almanac API call.
-  service()->OnPromiseApp(std::make_unique<PromiseApp>(kTestPackageId));
+  service()->OnPromiseApp(std::make_unique<PromiseApp>(test_package_id_));
 
   // Wait for all the updates to trigger.
   WaitForPromiseAppUpdates();
@@ -318,9 +321,10 @@ TEST_F(PromiseAppServiceTest, ShowPromiseAppDespiteErrorAlmanacResponse) {
   // Confirm that we have no icons in the icon cache but that the promise app is
   // visible anyway.
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 0u);
-  const PromiseApp* promise_app_result = cache()->GetPromiseApp(kTestPackageId);
+  const PromiseApp* promise_app_result =
+      cache()->GetPromiseApp(test_package_id_);
   EXPECT_TRUE(promise_app_result->should_show);
 }
 

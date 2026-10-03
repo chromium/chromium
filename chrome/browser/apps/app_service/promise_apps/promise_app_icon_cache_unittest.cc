@@ -21,8 +21,6 @@
 
 namespace apps {
 
-const PackageId kTestPackageId(PackageType::kArc, "test.package.name");
-
 SkColor kRed = SkColorSetRGB(255, 0, 0);
 SkColor kGreen = SkColorSetRGB(0, 255, 0);
 SkColor kBlue = SkColorSetRGB(0, 0, 255);
@@ -64,6 +62,9 @@ class PromiseAppIconCacheTest : public testing::Test {
     return *image_with_effects.Get()->uncompressed.bitmap();
   }
 
+ protected:
+  const PackageId test_package_id_{PackageType::kArc, "test.package.name"};
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PromiseAppIconCache> cache_;
@@ -71,12 +72,12 @@ class PromiseAppIconCacheTest : public testing::Test {
 
 TEST_F(PromiseAppIconCacheTest, SaveIcon) {
   PromiseAppIconPtr icon = CreatePromiseAppIcon(/*width=*/50, kRed);
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
 
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
-  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon));
+  EXPECT_TRUE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 1u);
   EXPECT_EQ(icons_saved[0]->width_in_pixels, 50);
   EXPECT_TRUE(gfx::BitmapsAreEqual(icons_saved[0]->icon,
@@ -88,19 +89,19 @@ TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
   PromiseAppIconPtr icon_large = CreatePromiseAppIcon(/*width=*/1024, kGreen);
   PromiseAppIconPtr icon_smallest = CreatePromiseAppIcon(/*width=*/128, kBlue);
 
-  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(kTestPackageId));
+  EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(test_package_id_));
 
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 1u);
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small));
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(test_package_id_).size(), 1u);
 
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_large));
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 2u);
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_large));
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(test_package_id_).size(), 2u);
 
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_smallest));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_smallest));
 
   // We should have 3 icons for the same package ID in ascending order.
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 3u);
   EXPECT_EQ(icons_saved[0]->width_in_pixels, 128);
   EXPECT_TRUE(gfx::BitmapsAreEqual(
@@ -117,16 +118,16 @@ TEST_F(PromiseAppIconCacheTest, SaveMultipleIcons) {
 
 TEST_F(PromiseAppIconCacheTest, GetIconWithEffects) {
   PromiseAppIconPtr icon = CreatePromiseAppIcon(512, kRed);
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon));
 
   // Confirm that we have an icon in the icon cache.
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 1u);
 
   // Attempt to load icon for test package.
   base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128,
+  icon_cache()->GetIconAndApplyEffects(test_package_id_, 128,
                                        IconEffects::kCrOsStandardMask,
                                        test_callback.GetCallback());
 
@@ -148,12 +149,12 @@ TEST_F(PromiseAppIconCacheTest, GetIconWithEffects) {
 TEST_F(PromiseAppIconCacheTest, GetPlaceholderIconWhenNoIconsAvailable) {
   // Confirm that we have no icons in the icon cache.
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 0u);
 
   // Load icon for test package.
   base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 96,
+  icon_cache()->GetIconAndApplyEffects(test_package_id_, 96,
                                        IconEffects::kCrOsStandardMask,
                                        test_callback.GetCallback());
 
@@ -175,19 +176,19 @@ TEST_F(PromiseAppIconCacheTest, GetLargestIconIfAllIconsTooSmall) {
   PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/10, kRed);
   PromiseAppIconPtr icon_small_2 = CreatePromiseAppIcon(/*width=*/30, kGreen);
   PromiseAppIconPtr icon_small_3 = CreatePromiseAppIcon(/*width=*/50, kBlue);
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small_2));
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small_3));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small_2));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small_3));
 
   std::vector<PromiseAppIcon*> icons_saved =
-      icon_cache()->GetIconsForTesting(kTestPackageId);
+      icon_cache()->GetIconsForTesting(test_package_id_);
   EXPECT_EQ(icons_saved.size(), 3u);
 
   // All icons returned should be the largest icon resized for our requested
   // scales.
   base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128, IconEffects::kNone,
-                                       test_callback.GetCallback());
+  icon_cache()->GetIconAndApplyEffects(
+      test_package_id_, 128, IconEffects::kNone, test_callback.GetCallback());
   IconValue* icon_value = test_callback.Get().get();
   gfx::ImageSkia icon = icon_value->uncompressed;
   EXPECT_FALSE(icon.isNull());
@@ -205,15 +206,15 @@ TEST_F(PromiseAppIconCacheTest, GetLargestIconIfAllIconsTooSmall) {
 
 TEST_F(PromiseAppIconCacheTest, GetCorrectIconRepresentationsForScaleFactors) {
   PromiseAppIconPtr icon_small = CreatePromiseAppIcon(/*width=*/128, kRed);
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small));
   PromiseAppIconPtr icon_large = CreatePromiseAppIcon(/*width=*/512, kGreen);
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_large));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_large));
 
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 2u);
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(test_package_id_).size(), 2u);
 
   base::test::TestFuture<std::unique_ptr<apps::IconValue>> test_callback;
-  icon_cache()->GetIconAndApplyEffects(kTestPackageId, 128, IconEffects::kNone,
-                                       test_callback.GetCallback());
+  icon_cache()->GetIconAndApplyEffects(
+      test_package_id_, 128, IconEffects::kNone, test_callback.GetCallback());
   IconValue* icon_value = test_callback.Get().get();
   gfx::ImageSkia icon = icon_value->uncompressed;
   EXPECT_FALSE(icon.isNull());
@@ -240,18 +241,18 @@ TEST_F(PromiseAppIconCacheTest, RemoveIconsForPackageId) {
   PromiseAppIconPtr icon_med = CreatePromiseAppIcon(/*width=*/200);
   PromiseAppIconPtr icon_large = CreatePromiseAppIcon(/*width=*/300);
 
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_small));
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_med));
-  icon_cache()->SaveIcon(kTestPackageId, std::move(icon_large));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_small));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_med));
+  icon_cache()->SaveIcon(test_package_id_, std::move(icon_large));
 
   // Confirm we have 3 icons.
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 3u);
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(test_package_id_).size(), 3u);
 
   // Remove all icons for package ID.
-  icon_cache()->RemoveIconsForPackageId(kTestPackageId);
+  icon_cache()->RemoveIconsForPackageId(test_package_id_);
 
   // Confirm we have no icons.
-  EXPECT_EQ(icon_cache()->GetIconsForTesting(kTestPackageId).size(), 0u);
+  EXPECT_EQ(icon_cache()->GetIconsForTesting(test_package_id_).size(), 0u);
 }
 
 }  // namespace apps
