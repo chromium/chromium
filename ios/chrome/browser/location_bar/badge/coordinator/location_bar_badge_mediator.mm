@@ -372,6 +372,9 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
           startGeminiEntryFlowWithStartupState:state];
       if (tabHelper) {
         tabHelper->RecordCueClicked();
+      } else {
+        _tracker->NotifyEvent(
+            feature_engagement::events::kIOSGeminiContextualCueChipUsed);
       }
 
       // Ensure badge is hidden after the user interacts with it.
@@ -398,6 +401,14 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (void)handleBadgeContainerCollapse:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kGeminiContextualCueChip: {
+      auto* tabHelper =
+          _activeWebState
+              ? contextual_cueing::ContextualCueingTabHelper::FromWebState(
+                    _activeWebState)
+              : nullptr;
+      if (tabHelper) {
+        tabHelper->RecordCueDismissed();
+      }
       [self ensureFETFeatureIsDismissed];
       [self preventContextualPanelEntryPoint:NO];
       break;
@@ -608,12 +619,24 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 // default, returns YES as badges should show given no other criteria.
 - (BOOL)shouldShowBadge:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
-    case LocationBarBadgeType::kGeminiContextualCueChip:
+    case LocationBarBadgeType::kGeminiContextualCueChip: {
+      contextual_cueing::ContextualCueingTabHelper* tabHelper =
+          _activeWebState
+              ? contextual_cueing::ContextualCueingTabHelper::FromWebState(
+                    _activeWebState)
+              : nullptr;
+      if (tabHelper &&
+          tabHelper->GetContextualCueUiType() ==
+              contextual_cueing::ContextualCueUiType::kOmniboxChip) {
+        [self preventContextualPanelEntryPoint:YES];
+        return YES;
+      }
       if ([self shouldShowGeminiContextualBadge]) {
         [self preventContextualPanelEntryPoint:YES];
         return YES;
       }
       return NO;
+    }
     case LocationBarBadgeType::kNone:
       return NO;
     default:

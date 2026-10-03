@@ -106,17 +106,17 @@ bool ContextualCueInfobarDelegate::Create(web::WebState* web_state,
     return false;
   }
 
+  infobars::InfoBarManager* infobar_manager =
+      InfoBarManagerImpl::FromWebState(web_state);
+  if (!infobar_manager) {
+    return false;
+  }
+
   // TODO(crbug.com/559227915): Move FET presentation gating out of delegate
   // creation into ContextualCueingTabHelper.
   // Atomically check Feature Engagement Tracker triggering conditions and
   // rate limits. If FET rejects the promo, do not display the banner.
   if (!tab_helper->RecordCueShown()) {
-    return false;
-  }
-
-  infobars::InfoBarManager* infobar_manager =
-      InfoBarManagerImpl::FromWebState(web_state);
-  if (!infobar_manager) {
     return false;
   }
 

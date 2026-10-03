@@ -499,6 +499,30 @@ TEST_F(LocationBarBadgeMediatorTest, TestGeminiChipNotShownIfFloatyInvoked) {
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
+// Tests that collapsing the Gemini contextual cue chip records cue dismissal.
+TEST_F(LocationBarBadgeMediatorTest,
+       TestGeminiContextualCueChipCollapsedDismissed) {
+  auto* tab_helper = contextual_cueing::ContextualCueingTabHelper::FromWebState(
+      web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(tab_helper);
+  optimization_guide::proto::ContextualCue cue;
+  cue.mutable_gemini_in_chrome_surface()->set_prompt("Summarize this page");
+  tab_helper->SetContextualCueForTesting(std::move(cue));
+
+  EXPECT_CALL(*tracker_,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)))
+      .WillOnce(testing::Return(true));
+  ASSERT_TRUE(tab_helper->RecordCueShown());
+
+  EXPECT_CALL(*tracker_,
+              Dismissed(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiContextualCueChip)));
+
+  [mediator_ handleBadgeContainerCollapse:LocationBarBadgeType::
+                                              kGeminiContextualCueChip];
+}
+
 #pragma mark - Contextual Panel Tests
 
 // Tests that tapping the entrypoint opens the panel if it's closed and vice

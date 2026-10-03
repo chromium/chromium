@@ -293,6 +293,8 @@
   if (contextualCueingTabHelper) {
     contextualCueingTabHelper->SetLocationBarBadgeCommandsHandler(
         id<LocationBarBadgeCommands>(_commandDispatcher));
+    contextualCueingTabHelper->SetGeminiHandler(
+        HandlerForProtocol(_commandDispatcher, GeminiCommands));
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
@@ -443,6 +445,7 @@
       contextual_cueing::ContextualCueingTabHelper::FromWebState(webState);
   if (contextualCueingTabHelper) {
     contextualCueingTabHelper->SetLocationBarBadgeCommandsHandler(nil);
+    contextualCueingTabHelper->SetGeminiHandler(nil);
   }
 
   FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
