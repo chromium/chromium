@@ -10,6 +10,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -33,7 +34,7 @@ constexpr std::string_view kPlatformName = "tvOS";
 #endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
 
 const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
-  static std::map<std::string, std::string> annotations = []() -> auto {
+  auto build_annotations = []() {
     std::map<std::string, std::string> process_annotations;
     @autoreleasepool {
       NSBundle* outer_bundle = base::apple::OuterBundle();
@@ -66,9 +67,10 @@ const std::map<std::string, std::string>& GetProcessSimpleAnnotations() {
       process_annotations["plat"] = kPlatformName;
     }  // @autoreleasepool
     return process_annotations;
-  }
-  ();
-  return annotations;
+  };
+  static const base::NoDestructor<std::map<std::string, std::string>>
+      annotations(build_annotations());
+  return *annotations;
 }
 
 }  // namespace

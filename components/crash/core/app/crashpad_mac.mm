@@ -19,6 +19,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -36,7 +37,7 @@ namespace crash_reporter {
 namespace {
 
 std::map<std::string, std::string> GetProcessSimpleAnnotations() {
-  static std::map<std::string, std::string> annotations = []() -> auto {
+  auto build_annotations = []() {
     std::map<std::string, std::string> process_annotations;
     @autoreleasepool {
       NSBundle* outer_bundle = base::apple::OuterBundle();
@@ -91,8 +92,10 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
       process_annotations.insert_or_assign(key, std::move(value));
     }
     return process_annotations;
-  }();
-  return annotations;
+  };
+  static const base::NoDestructor<std::map<std::string, std::string>>
+      annotations(build_annotations());
+  return *annotations;
 }
 
 }  // namespace

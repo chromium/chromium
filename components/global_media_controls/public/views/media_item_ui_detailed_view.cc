@@ -84,10 +84,6 @@ constexpr char kMediaDisplayPageHistogram[] = "Media.Notification.DisplayPage";
 constexpr int kProgressRowHeight = 20;
 constexpr gfx::Insets kButtonRowInsets = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr char16_t kTimestampDelimiter[] = u" / ";
-const gfx::FontList kTimestampFont({"Google Sans"},
-                                   gfx::Font::NORMAL,
-                                   13,
-                                   gfx::Font::Weight::MEDIUM);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MediaLabelButton : public views::Button {
@@ -897,6 +893,8 @@ views::View* MediaItemUIDetailedView::CreateControlsRow() {
     return nullptr;
   }
 
+  const gfx::FontList timestamp_font({"Google Sans"}, gfx::Font::NORMAL, 13,
+                                     gfx::Font::Weight::MEDIUM);
   views::View* button_container;
   AddChildView(
       views::Builder<views::BoxLayoutView>()
@@ -912,14 +910,14 @@ views::View* MediaItemUIDetailedView::CreateControlsRow() {
                           .CopyAddressTo(&current_timestamp_view_)
                           .SetText(
                               GetFormattedDuration(position_.GetPosition()))
-                          .SetFontList(kTimestampFont)
+                          .SetFontList(timestamp_font)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                           .SetEnabledColor(theme_.primary_foreground_color_id),
                       views::Builder<views::Label>()
                           .CopyAddressTo(&total_duration_view_)
                           .SetText(kTimestampDelimiter +
                                    GetFormattedDuration(position_.duration()))
-                          .SetFontList(kTimestampFont)
+                          .SetFontList(timestamp_font)
                           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                           .SetEnabledColor(theme_.primary_foreground_color_id)))
           .AddChildren(
