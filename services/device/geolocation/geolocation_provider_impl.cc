@@ -291,12 +291,32 @@ void GeolocationProviderImpl::OnClientsChanged() {
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     // Handle system permission states:
     // - kAllowed: Start providers (allows re-entry for accuracy updates).
-    // - kDenied: Use previously generated error result (no action here).
-    // - kUndetermined: Wait for OnSystemPermissionUpdated() to handle changes
-    // (no action here).
-    if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
-        system_permission_status_ != LocationSystemPermissionStatus::kAllowed) {
-      return;
+    // - kDenied: Generate and cache a permission denied error result and do not
+    //   start providers. Only cache the error result here without calling
+    //   `NotifyClients()`, because `AddLocationUpdateCallback()` synchronously
+    //   invokes the newly registered callback with the cached result after
+    //   `OnClientsChanged()` returns (calling `NotifyClients()` here would
+    //   invoke the new callback twice and re-notify existing callbacks).
+    // - kNotDetermined: Wait for `OnSystemPermissionUpdated()` to handle
+    //   changes (no action here).
+    if (features::IsOsLevelGeolocationPermissionSupportEnabled()) {
+      if (system_permission_status_ ==
+          LocationSystemPermissionStatus::kDenied) {
+        // Once desktop platform support for approximate geolocation
+        // (`kApproximateGeolocationPermission`) is ready,
+        // `high_accuracy_result_` and `low_accuracy_result_` should also be
+        // updated here.
+        result_ =
+            mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+                mojom::GeopositionErrorCode::kPermissionDenied,
+                kSystemPermissionDeniedErrorMessage,
+                kSystemPermissionDeniedErrorTechnical));
+        return;
+      }
+      if (system_permission_status_ !=
+          LocationSystemPermissionStatus::kAllowed) {
+        return;
+      }
     }
 #endif
     // When the `kApproximateGeolocationPermission` feature is enabled, we
@@ -583,6 +603,10 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
       // If the system permission was previously denied and is now granted,
       // clear the cached `result_`. This prevents a stale error result from
       // being delivered to the first new callback registered after the grant.
+      // Once desktop platform support for approximate geolocation
+      // (`kApproximateGeolocationPermission`) is ready,
+      // `high_accuracy_result_` and `low_accuracy_result_` should also be
+      // cleared here.
       result_.reset();
     }
   } else if (new_status == LocationSystemPermissionStatus::kDenied) {
