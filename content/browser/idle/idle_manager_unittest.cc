@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
+#include "content/public/browser/permission_status_subscription.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
@@ -76,6 +77,30 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
   MOCK_METHOD(bool, CheckIdleStateIsLocked, ());
 };
 
+class TestPermissionManager : public MockPermissionManager {
+ public:
+  TestPermissionManager() = default;
+  ~TestPermissionManager() override = default;
+
+  // Runs the callback of every `permission` subscription, as the embedder does
+  // when the user changes the setting.
+  void NotifyPermissionChange(blink::PermissionType permission,
+                              blink::mojom::PermissionStatus status) {
+    if (!subscriptions()) {
+      return;
+    }
+    for (PermissionController::SubscriptionsMap::iterator iter(subscriptions());
+         !iter.IsAtEnd(); iter.Advance()) {
+      PermissionResultSubscription* subscription = iter.GetCurrentValue();
+      if (blink::PermissionDescriptorToPermissionType(
+              subscription->permission_descriptor) == permission) {
+        subscription->callback.Run(PermissionResult(status),
+                                   /*ignore_status_override=*/false);
+      }
+    }
+  }
+};
+
 class IdleManagerTest : public RenderViewHostTestHarness {
  public:
   IdleManagerTest(const IdleManagerTest&) = delete;
@@ -92,7 +117,7 @@ class IdleManagerTest : public RenderViewHostTestHarness {
 
     NavigateAndCommit(url_);
 
-    permission_manager_ = new NiceMock<MockPermissionManager>();
+    permission_manager_ = new NiceMock<TestPermissionManager>();
     auto* test_browser_context =
         static_cast<TestBrowserContext*>(browser_context());
     test_browser_context->SetPermissionControllerDelegate(
@@ -177,12 +202,23 @@ class IdleManagerTest : public RenderViewHostTestHarness {
     return idle_time_provider_;
   }
 
+  void SetMonitorDisconnectHandler(base::OnceClosure handler) {
+    monitor_receiver_.set_disconnect_handler(std::move(handler));
+  }
+
+  void NotifyPermissionStatusChange(
+      blink::mojom::PermissionStatus permission_status) {
+    SetPermissionStatus(permission_status);
+    permission_manager_->NotifyPermissionChange(
+        blink::PermissionType::IDLE_DETECTION, permission_status);
+  }
+
  protected:
   mojo::Remote<blink::mojom::IdleManager> service_remote_;
 
  private:
   std::unique_ptr<IdleManagerImpl> idle_manager_;
-  raw_ptr<MockPermissionManager> permission_manager_;
+  raw_ptr<TestPermissionManager> permission_manager_;
   raw_ptr<MockIdleTimeProvider> idle_time_provider_;
   std::unique_ptr<ui::test::ScopedIdleProviderForTest>
       scoped_idle_time_provider_;
@@ -380,6 +416,36 @@ TEST_F(IdleManagerTest, PermissionDenied) {
             loop.Quit();
           }));
   loop.Run();
+}
+
+TEST_F(IdleManagerTest, PermissionRevokedDisconnectsMonitors) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+  AddMonitorRequest();
+  EXPECT_TRUE(ui::IdlePollingService::GetInstance()->IsPollingForTest());
+
+  base::test::TestFuture<void> disconnected;
+  SetMonitorDisconnectHandler(disconnected.GetCallback());
+
+  NotifyPermissionStatusChange(blink::mojom::PermissionStatus::DENIED);
+
+  EXPECT_TRUE(disconnected.Wait());
+  EXPECT_FALSE(ui::IdlePollingService::GetInstance()->IsPollingForTest());
+}
+
+TEST_F(IdleManagerTest, PermissionRegrantedKeepsMonitors) {
+  SetPermissionStatus(blink::mojom::PermissionStatus::GRANTED);
+  AddMonitorRequest();
+
+  NotifyPermissionStatusChange(blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_TRUE(ui::IdlePollingService::GetInstance()->IsPollingForTest());
+
+  // The monitor still receives updates.
+  EXPECT_CALL(*idle_time_provider(), CalculateIdleTime())
+      .WillOnce(Return(base::Seconds(60)));
+  EXPECT_CALL(*idle_time_provider(), CheckIdleStateIsLocked())
+      .WillOnce(Return(true));
+  EXPECT_EQ(std::make_tuple(UserIdleState::kIdle, ScreenIdleState::kLocked),
+            GetIdleStatus(/*expect_override=*/false));
 }
 
 TEST_F(IdleManagerTest, SetAndClearOverrides) {

@@ -5,12 +5,16 @@
 #ifndef CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_IDLE_IDLE_MANAGER_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -46,6 +50,16 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
   // enabled for this frame.
   bool HasPermission();
 
+  // Subscribes to IDLE_DETECTION permission changes for the current document.
+  void SubscribeToPermissionChanges();
+
+  // Disconnects every monitor when the IDLE_DETECTION permission is lost.
+  void OnPermissionStatusChanged(PermissionResult result);
+
+  // Disconnects every monitor in |monitors_|, stops polling and drops
+  // |permission_subscription_|.
+  void CloseAllMonitors();
+
   // When a monitor's pipe closes and it has been removed from |monitors_|.
   void OnMonitorDisconnected(mojo::RemoteSetElementId id);
 
@@ -73,6 +87,10 @@ class CONTENT_EXPORT IdleManagerImpl : public blink::mojom::IdleManager,
 
   // Registered IdleMonitor instances, added when clients call AddMonitor().
   mojo::RemoteSet<blink::mojom::IdleMonitor> monitors_;
+
+  // Observes IDLE_DETECTION permission changes while |monitors_| is non-empty.
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<IdleManagerImpl> weak_factory_{this};
