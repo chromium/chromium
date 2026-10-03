@@ -98,6 +98,18 @@ void IdleManagerImpl::AddMonitor(
 }
 
 bool IdleManagerImpl::HasPermission() {
+  // Opaque origins cannot be granted or hold IDLE_DETECTION permissions.
+  // Furthermore, if any ancestor frame in the tree has an opaque origin,
+  // subframes must not be granted access because the embedding origin
+  // calculation would fall back to the visible URL. Returning false directly
+  // avoids consulting the permission controller's visible URL fallback logic.
+  for (RenderFrameHost* rfh = render_frame_host_; rfh;
+       rfh = rfh->GetParentOrOuterDocument()) {
+    if (rfh->GetLastCommittedOrigin().opaque()) {
+      return false;
+    }
+  }
+
   PermissionController* permission_controller =
       render_frame_host_->GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller, base::NotFatalUntil::M159);

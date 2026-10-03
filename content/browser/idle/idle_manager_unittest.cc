@@ -22,6 +22,7 @@
 #include "content/public/browser/permission_status_subscription.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -124,10 +125,15 @@ class IdleManagerTest : public RenderViewHostTestHarness {
         base::WrapUnique(permission_manager_.get()));
 
     idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
-    idle_manager_ = std::make_unique<IdleManagerImpl>(main_rfh());
     scoped_idle_time_provider_ =
         std::make_unique<ui::test::ScopedIdleProviderForTest>(
             base::WrapUnique(idle_time_provider_.get()));
+    InitIdleManager(main_rfh());
+  }
+
+  void InitIdleManager(RenderFrameHost* rfh) {
+    service_remote_.reset();
+    idle_manager_ = std::make_unique<IdleManagerImpl>(rfh);
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver());
   }
 
@@ -142,11 +148,17 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   IdleManagerImpl* GetIdleManager() { return idle_manager_.get(); }
 
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_,
-            GetPermissionResultForCurrentDocument(
-                PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION),
-                main_rfh(),
-                /*should_include_device_status*/ false))
+    SetPermissionStatusForFrame(main_rfh(), permission_status);
+  }
+
+  void SetPermissionStatusForFrame(
+      RenderFrameHost* rfh,
+      blink::mojom::PermissionStatus permission_status) {
+    ON_CALL(
+        *permission_manager_,
+        GetPermissionResultForCurrentDocument(
+            PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION), rfh,
+            /*should_include_device_status*/ false))
         .WillByDefault(Return(PermissionResult(permission_status)));
   }
 
@@ -465,6 +477,127 @@ TEST_F(IdleManagerTest, SetAndClearOverrides) {
   impl->ClearIdleOverride();
   EXPECT_EQ(std::make_tuple(UserIdleState::kActive, ScreenIdleState::kUnlocked),
             GetIdleStatus(/*expect_override=*/false));
+}
+
+TEST_F(IdleManagerTest, OpaqueOriginPermissionDenied) {
+  // Navigate to an opaque origin (data: URL).
+  NavigateAndCommit(GURL("data:text/html,<html></html>"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedOrigin().opaque());
+
+  // Re-initialize the IdleManager for the new main_rfh() to avoid dangling
+  // pointers from the destroyed initial RenderFrameHost.
+  InitIdleManager(main_rfh());
+
+  // Explicitly set the mock permission status to GRANTED for the new RFH.
+  // The opaque origin check in HasPermission() should reject the request
+  // regardless of the permission manager returning GRANTED.
+  SetPermissionStatusForFrame(main_rfh(),
+                              blink::mojom::PermissionStatus::GRANTED);
+
+  MockIdleMonitor monitor;
+  mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver(&monitor);
+
+  base::test::TestFuture<IdleManagerError, IdleStatePtr> future;
+  service_remote_->AddMonitor(monitor_receiver.BindNewPipeAndPassRemote(),
+                              future.GetCallback());
+  EXPECT_EQ(IdleManagerError::kPermissionDisabled, future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
+}
+
+TEST_F(IdleManagerTest, SubframeInOpaqueOriginMainFramePermissionDenied) {
+  // Navigate top-level frame to an opaque origin (data: URL).
+  NavigateAndCommit(GURL("data:text/html,<html></html>"));
+  ASSERT_TRUE(main_rfh()->GetLastCommittedOrigin().opaque());
+
+  // Create a child subframe with a non-opaque origin.
+  RenderFrameHost* subframe =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("child_subframe");
+  subframe = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com/"), subframe);
+  ASSERT_FALSE(subframe->GetLastCommittedOrigin().opaque());
+  ASSERT_TRUE(
+      subframe->GetOutermostMainFrame()->GetLastCommittedOrigin().opaque());
+
+  InitIdleManager(subframe);
+
+  // Explicitly set the mock permission status to GRANTED for the subframe.
+  // The ancestor opaque origin check in HasPermission() should reject the
+  // request to prevent visible URL fallback.
+  SetPermissionStatusForFrame(subframe,
+                              blink::mojom::PermissionStatus::GRANTED);
+
+  MockIdleMonitor monitor;
+  mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver(&monitor);
+
+  base::test::TestFuture<IdleManagerError, IdleStatePtr> future;
+  service_remote_->AddMonitor(monitor_receiver.BindNewPipeAndPassRemote(),
+                              future.GetCallback());
+  EXPECT_EQ(IdleManagerError::kPermissionDisabled, future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
+}
+
+TEST_F(IdleManagerTest, OpaqueSubframeInNormalMainFramePermissionDenied) {
+  // Top-level main frame is normal/non-opaque (kTestUrl).
+  ASSERT_FALSE(main_rfh()->GetLastCommittedOrigin().opaque());
+
+  // Create an opaque child subframe (data: URL).
+  RenderFrameHost* subframe =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("opaque_subframe");
+  subframe = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("data:text/html,<html></html>"), subframe);
+  ASSERT_TRUE(subframe->GetLastCommittedOrigin().opaque());
+  ASSERT_FALSE(
+      subframe->GetOutermostMainFrame()->GetLastCommittedOrigin().opaque());
+
+  InitIdleManager(subframe);
+  SetPermissionStatusForFrame(subframe,
+                              blink::mojom::PermissionStatus::GRANTED);
+
+  MockIdleMonitor monitor;
+  mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver(&monitor);
+
+  base::test::TestFuture<IdleManagerError, IdleStatePtr> future;
+  service_remote_->AddMonitor(monitor_receiver.BindNewPipeAndPassRemote(),
+                              future.GetCallback());
+  EXPECT_EQ(IdleManagerError::kPermissionDisabled, future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
+}
+
+TEST_F(IdleManagerTest, NestedSubframeUnderOpaqueAncestorPermissionDenied) {
+  // Top-level main frame is normal/non-opaque (kTestUrl).
+  ASSERT_FALSE(main_rfh()->GetLastCommittedOrigin().opaque());
+
+  // Create an intermediate opaque child frame (data: URL).
+  RenderFrameHost* opaque_intermediate =
+      RenderFrameHostTester::For(main_rfh())->AppendChild("intermediate_frame");
+  opaque_intermediate = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("data:text/html,<html></html>"), opaque_intermediate);
+  ASSERT_TRUE(opaque_intermediate->GetLastCommittedOrigin().opaque());
+
+  // Create a non-opaque grandchild subframe inside the opaque intermediate
+  // frame.
+  RenderFrameHost* non_opaque_child =
+      RenderFrameHostTester::For(opaque_intermediate)
+          ->AppendChild("child_frame");
+  non_opaque_child = NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com/"), non_opaque_child);
+  ASSERT_FALSE(non_opaque_child->GetLastCommittedOrigin().opaque());
+  ASSERT_FALSE(non_opaque_child->GetOutermostMainFrame()
+                   ->GetLastCommittedOrigin()
+                   .opaque());
+
+  InitIdleManager(non_opaque_child);
+  SetPermissionStatusForFrame(non_opaque_child,
+                              blink::mojom::PermissionStatus::GRANTED);
+
+  MockIdleMonitor monitor;
+  mojo::Receiver<blink::mojom::IdleMonitor> monitor_receiver(&monitor);
+
+  base::test::TestFuture<IdleManagerError, IdleStatePtr> future;
+  service_remote_->AddMonitor(monitor_receiver.BindNewPipeAndPassRemote(),
+                              future.GetCallback());
+  EXPECT_EQ(IdleManagerError::kPermissionDisabled, future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
 }
 
 }  // namespace content
