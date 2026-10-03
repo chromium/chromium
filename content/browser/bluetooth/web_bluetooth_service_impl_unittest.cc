@@ -254,13 +254,23 @@ class FakeWebBluetoothServerClient
 
   bool disconnected() const { return disconnected_; }
 
+  void SetDisconnectedCallback(base::OnceClosure callback) {
+    disconnected_callback_ = std::move(callback);
+  }
+
  private:
   // blink::mojom::WebBluetoothServerClient:
-  void GATTServerDisconnected() override { disconnected_ = true; }
+  void GATTServerDisconnected() override {
+    disconnected_ = true;
+    if (disconnected_callback_) {
+      std::move(disconnected_callback_).Run();
+    }
+  }
 
   mojo::AssociatedReceiver<blink::mojom::WebBluetoothServerClient> receiver_{
       this};
   bool disconnected_ = false;
+  base::OnceClosure disconnected_callback_;
 };
 
 class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
@@ -859,7 +869,7 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     return result;
   }
 
-  void RegisterTestCharacteristic() {
+  blink::WebBluetoothDeviceId RegisterTestCharacteristic() {
     const auto battery_device_id = AddTestDevice(battery_device_bundle());
 
     auto& device = battery_device_bundle_->device();
@@ -900,6 +910,8 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
               }));
       run_loop.Run();
     }
+
+    return battery_device_id;
   }
 
   FakeBluetoothDeviceBundle& battery_device_bundle() const {
@@ -990,6 +1002,21 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
   std::string GetAllowedDeviceAddress(
       const blink::WebBluetoothDeviceId& device_id) {
     return service_ptr_->allowed_devices().GetDeviceAddress(device_id);
+  }
+
+  // Flushes the posted notification task along with the Mojo delivery task that
+  // it posts in turn.
+  void FlushNotificationDelivery() {
+    base::test::TestFuture<void> flush_future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::OnceClosure closure) {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE, std::move(closure));
+            },
+            flush_future.GetCallback()));
+    EXPECT_TRUE(flush_future.Wait());
   }
 
   bool HasScanningDiscoverySession() {
@@ -2147,21 +2174,6 @@ class WebBluetoothServiceImplPermissionRevocationTest
         contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
-  // Flushes the posted notification task along with the Mojo delivery task that
-  // it posts in turn.
-  void FlushNotificationDelivery() {
-    base::test::TestFuture<void> flush_future;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](base::OnceClosure closure) {
-              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                  FROM_HERE, std::move(closure));
-            },
-            flush_future.GetCallback()));
-    EXPECT_TRUE(flush_future.Wait());
-  }
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -2423,6 +2435,131 @@ TEST_F(WebBluetoothServiceImplTest, ForgetDevice_NotAllowed) {
   // The device should STILL be in allowed devices because ForgetDevice should
   // return early.
   EXPECT_FALSE(GetAllowedDeviceAddress(device_id).empty());
+}
+
+TEST_F(WebBluetoothServiceImplTest, ForgetDevice_CleansUpNotifySessions) {
+  const blink::WebBluetoothDeviceId device_id = RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::SUCCESS);
+
+  base::test::TestFuture<void> value_future;
+  client.SetValueChangeCallback(value_future.GetRepeatingCallback());
+  const std::vector<uint8_t> initial_value = {1, 2, 3};
+  GattCharacteristicValueChanged(adapter_.get(), &test_characteristic,
+                                 initial_value);
+  EXPECT_TRUE(value_future.Wait());
+  EXPECT_EQ(client.received_values().size(), 1u);
+  EXPECT_EQ(client.received_values()[0], initial_value);
+
+  EXPECT_FALSE(GetAllowedDeviceAddress(device_id).empty());
+  EXPECT_TRUE(HasNotifySession(test_characteristic.GetIdentifier()));
+
+  base::test::TestFuture<void> forget_future;
+  ForgetDevice(device_id, forget_future.GetCallback());
+  EXPECT_TRUE(forget_future.Wait());
+
+  EXPECT_TRUE(GetAllowedDeviceAddress(device_id).empty());
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+
+  const std::vector<uint8_t> post_forget_value = {4, 5, 6};
+  GattCharacteristicValueChanged(adapter_.get(), &test_characteristic,
+                                 post_forget_value);
+  FlushNotificationDelivery();
+
+  EXPECT_EQ(client.received_values().size(), 1u);
+}
+
+TEST_F(WebBluetoothServiceImplTest, ForgetDevice_ClosesGattConnection) {
+  const blink::WebBluetoothDeviceId device_id =
+      AddTestDevice(battery_device_bundle());
+
+  EXPECT_CALL(battery_device_bundle().device(), CreateGattConnection)
+      .WillOnce([&](BluetoothDevice::GattConnectionCallback callback,
+                    std::optional<BluetoothUUID> service_uuid) {
+        std::move(callback).Run(
+            std::make_unique<NiceMock<device::MockBluetoothGattConnection>>(
+                adapter_, battery_device_bundle().device().GetAddress()),
+            /*error_code=*/std::nullopt);
+      });
+
+  FakeWebBluetoothServerClient server_client;
+  base::test::TestFuture<WebBluetoothResult> connect_future;
+  RemoteServerConnect(device_id, server_client.BindNewEndpointAndPassRemote(),
+                      connect_future.GetCallback());
+  EXPECT_EQ(connect_future.Get(), WebBluetoothResult::SUCCESS);
+
+  base::test::TestFuture<void> disconnected_future;
+  server_client.SetDisconnectedCallback(disconnected_future.GetCallback());
+
+  base::test::TestFuture<void> forget_future;
+  ForgetDevice(device_id, forget_future.GetCallback());
+  EXPECT_TRUE(forget_future.Wait());
+
+  EXPECT_TRUE(disconnected_future.Wait());
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       ForgetDevice_FailsInFlightStartNotification) {
+  const blink::WebBluetoothDeviceId device_id = RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(/*error_code=*/std::nullopt);
+
+  RecordingWebBluetoothCharacteristicClient client;
+  base::test::TestFuture<WebBluetoothResult> start_future;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client.BindNewEndpointClientAndPassRemote(), start_future.GetCallback());
+
+  base::test::TestFuture<void> forget_future;
+  ForgetDevice(device_id, forget_future.GetCallback());
+  EXPECT_TRUE(forget_future.Wait());
+
+  EXPECT_EQ(start_future.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+
+  // The adapter finishes acquiring the session after the device was forgotten.
+  test_characteristic.ResumeDeferredStartNotification();
+  FlushNotificationDelivery();
+
+  EXPECT_FALSE(HasNotifySession(test_characteristic.GetIdentifier()));
+}
+
+TEST_F(WebBluetoothServiceImplTest,
+       ForgetDevice_FailsDeferredStartNotifications) {
+  const blink::WebBluetoothDeviceId device_id = RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+  test_characteristic.DeferNextStartNotification(/*error_code=*/std::nullopt);
+
+  // The first request goes in flight; the second is queued behind it.
+  RecordingWebBluetoothCharacteristicClient client1;
+  base::test::TestFuture<WebBluetoothResult> start_future1;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client1.BindNewEndpointClientAndPassRemote(),
+      start_future1.GetCallback());
+
+  RecordingWebBluetoothCharacteristicClient client2;
+  base::test::TestFuture<WebBluetoothResult> start_future2;
+  RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      client2.BindNewEndpointClientAndPassRemote(),
+      start_future2.GetCallback());
+
+  base::test::TestFuture<void> forget_future;
+  ForgetDevice(device_id, forget_future.GetCallback());
+  EXPECT_TRUE(forget_future.Wait());
+
+  EXPECT_EQ(start_future1.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  EXPECT_EQ(start_future2.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
 }
 
 }  // namespace content

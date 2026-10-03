@@ -937,6 +937,7 @@ void WebBluetoothServiceImpl::ForgetDevice(
     if (!device_address.empty()) {
       allowed_devices().RemoveDevice(device_address);
     }
+    CleanupDeviceState(device_id);
     std::move(callback).Run();
     return;
   }
@@ -2694,6 +2695,54 @@ void WebBluetoothServiceImpl::ClearAdvertisementClients() {
 
   allowed_scan_filters_.clear();
   accept_all_advertisements_ = false;
+}
+
+void WebBluetoothServiceImpl::CleanupDeviceState(
+    const blink::WebBluetoothDeviceId& device_id) {
+  connected_devices_->CloseConnectionToDeviceWithId(device_id);
+
+  pending_connection_device_ids_.erase(device_id);
+
+  std::erase_if(watch_advertisements_clients_,
+                [&](const std::unique_ptr<WatchAdvertisementsClient>& client) {
+                  return client->device_id() == device_id;
+                });
+
+  std::vector<RemoteCharacteristicStartNotificationsCallback> callbacks_to_fail;
+
+  for (auto& [characteristic_id, session_data] :
+       characteristic_id_to_notify_session_) {
+    if (session_data->device_id == device_id &&
+        session_data->start_notifications_callback) {
+      callbacks_to_fail.push_back(
+          std::move(session_data->start_notifications_callback));
+    }
+  }
+  std::erase_if(characteristic_id_to_notify_session_, [&](const auto& pair) {
+    return pair.second->device_id == device_id;
+  });
+
+  for (auto& [characteristic_id, deferred_queue] :
+       characteristic_id_to_deferred_start_) {
+    if (!deferred_queue.empty() &&
+        deferred_queue.front()->device_id == device_id) {
+      while (!deferred_queue.empty()) {
+        CHECK_EQ(deferred_queue.front()->device_id, device_id);
+        callbacks_to_fail.push_back(
+            std::move(deferred_queue.front()->callback));
+        deferred_queue.pop();
+      }
+    }
+  }
+  std::erase_if(characteristic_id_to_deferred_start_,
+                [](const auto& pair) { return pair.second.empty(); });
+
+  MaybeStopDiscovery();
+
+  for (auto& callback : callbacks_to_fail) {
+    std::move(callback).Run(
+        blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED);
+  }
 }
 
 bool WebBluetoothServiceImpl::IsAllowedToAccessAtLeastOneService(
