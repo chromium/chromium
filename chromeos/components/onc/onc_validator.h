@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "chromeos/components/onc/onc_mapper.h"
 #include "components/onc/onc_constants.h"
@@ -219,14 +220,14 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
       const std::string& guid_to_remove);
 
   bool IsValidValue(const std::string& field_value,
-                    const std::vector<const char*>& valid_values);
+                    base::span<const std::string_view> valid_values);
 
   bool IsInDevicePolicy(base::DictValue* result, std::string_view field_name);
 
   bool FieldExistsAndHasNoValidValue(
       const base::DictValue& object,
       const std::string& field_name,
-      const std::vector<const char*>& valid_values);
+      base::span<const std::string_view> valid_values);
 
   bool FieldExistsAndIsNotInRange(const base::DictValue& object,
                                   const std::string& field_name,
@@ -254,7 +255,7 @@ class COMPONENT_EXPORT(CHROMEOS_ONC) Validator : public Mapper {
   bool ListFieldContainsValidValues(
       const base::DictValue& object,
       const std::string& field_name,
-      const std::vector<const char*>& valid_values);
+      base::span<const std::string_view> valid_values);
 
   bool ValidateSSIDAndHexSSID(base::DictValue* object);
 

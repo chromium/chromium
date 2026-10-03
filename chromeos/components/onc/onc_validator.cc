@@ -8,15 +8,17 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -36,205 +38,205 @@ namespace {
 const int kMaximumSSIDLengthInBytes = 32;
 
 // Valid top-level configuration types
-const std::vector<const char*>& GetValidToplevelConfigurationTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidToplevelConfigurationTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::toplevel_config::kUnencryptedConfiguration,
        ::onc::toplevel_config::kEncryptedConfiguration});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid network types
-const std::vector<const char*>& GetValidNetworkTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidNetworkTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::network_type::kEthernet, ::onc::network_type::kVPN,
        ::onc::network_type::kWiFi, ::onc::network_type::kCellular,
        ::onc::network_type::kTether});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid cellular IP configuration types
-const std::vector<const char*>& GetValidIPConfigTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidIPConfigTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::network_config::kIPConfigTypeDHCP,
        ::onc::network_config::kIPConfigTypeStatic});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid check captive portal values
-const std::vector<const char*>& GetValidCheckCaptivePortalValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidCheckCaptivePortalValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::check_captive_portal::kTrue, ::onc::check_captive_portal::kFalse,
        ::onc::check_captive_portal::kHTTPOnly});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid cellular APN IP types
-const std::vector<const char*>& GetValidAPNIpTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidAPNIpTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::cellular_apn::kIpTypeAutomatic, ::onc::cellular_apn::kIpTypeIpv4,
        ::onc::cellular_apn::kIpTypeIpv6, ::onc::cellular_apn::kIpTypeIpv4Ipv6});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid APN types
-const std::vector<const char*>& GetValidApnTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
-      {::onc::cellular_apn::kApnTypeDefault,
-       ::onc::cellular_apn::kApnTypeAttach,
-       ::onc::cellular_apn::kApnTypeTether});
-  return *valid_values;
+base::span<const std::string_view> GetValidApnTypes() {
+  static constexpr auto kValidValues =
+      std::to_array<std::string_view>({::onc::cellular_apn::kApnTypeDefault,
+                                       ::onc::cellular_apn::kApnTypeAttach,
+                                       ::onc::cellular_apn::kApnTypeTether});
+  return kValidValues;
 }
 
 // Valid ethernet authentications
-const std::vector<const char*>& GetValidEthernetAuthentications() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidEthernetAuthentications() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::ethernet::kAuthenticationNone, ::onc::ethernet::k8021X});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid network IP config types
-const std::vector<const char*>& GetValidNetworkIPConfigTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidNetworkIPConfigTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::ipconfig::kIPv4, ::onc::ipconfig::kIPv6});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid Wi-Fi securities
-const std::vector<const char*>& GetValidWiFiSecurities() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidWiFiSecurities() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::wifi::kSecurityNone, ::onc::wifi::kWEP_PSK,
        ::onc::wifi::kWEP_8021X, ::onc::wifi::kWPA_PSK, ::onc::wifi::kWPA_EAP});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid IPSec authentications
-const std::vector<const char*>& GetValidIPsecAuthentications() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidIPsecAuthentications() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::ipsec::kPSK, ::onc::ipsec::kCert, ::onc::ipsec::kEAP});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid OpenVPN auth retry values
-const std::vector<const char*>& GetValidVPNAuthRetryValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidVPNAuthRetryValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::openvpn::kNone, ::onc::openvpn::kInteract,
        ::onc::openvpn::kNoInteract});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid OpenVPN cert TLS values
-const std::vector<const char*>& GetValidVPNCertTlsValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidVPNCertTlsValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::openvpn::kNone, ::onc::openvpn::kServer});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid OpenVPN compression algorithm values
-const std::vector<const char*>& GetValidVPNCompressionAlgorithmValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidVPNCompressionAlgorithmValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::openvpn_compression_algorithm::kFramingOnly,
        ::onc::openvpn_compression_algorithm::kLz4,
        ::onc::openvpn_compression_algorithm::kLz4V2,
        ::onc::openvpn_compression_algorithm::kLzo,
        ::onc::openvpn_compression_algorithm::kNone});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid OpenVPN user auth types
-const std::vector<const char*>& GetValidVPNUserAuthTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidVPNUserAuthTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::openvpn_user_auth_type::kNone,
        ::onc::openvpn_user_auth_type::kOTP,
        ::onc::openvpn_user_auth_type::kPassword,
        ::onc::openvpn_user_auth_type::kPasswordAndOTP});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid X.509 types
-const std::vector<const char*>& GetValidX509Types() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidX509Types() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::verify_x509::types::kName, ::onc::verify_x509::types::kNamePrefix,
        ::onc::verify_x509::types::kSubject});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid allow text messages types
-const std::vector<const char*>& GetValidAllowTextMessagesTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
-      {::onc::cellular::kTextMessagesAllow,
-       ::onc::cellular::kTextMessagesSuppress,
-       ::onc::cellular::kTextMessagesUnset});
-  return *valid_values;
+base::span<const std::string_view> GetValidAllowTextMessagesTypes() {
+  static constexpr auto kValidValues =
+      std::to_array<std::string_view>({::onc::cellular::kTextMessagesAllow,
+                                       ::onc::cellular::kTextMessagesSuppress,
+                                       ::onc::cellular::kTextMessagesUnset});
+  return kValidValues;
 }
 
 // Valid proxy settings types
-const std::vector<const char*>& GetValidProxySettingsTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidProxySettingsTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::proxy::kDirect, ::onc::proxy::kManual, ::onc::proxy::kPAC,
        ::onc::proxy::kWPAD});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid EAP inner values
-const std::vector<const char*>& GetValidEAPInnerValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidEAPInnerValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::eap::kAutomatic, ::onc::eap::kGTC, ::onc::eap::kMD5,
        ::onc::eap::kMSCHAPv2, ::onc::eap::kPAP});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid EAP outer values
-const std::vector<const char*>& GetValidEAPOuterValues() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidEAPOuterValues() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::eap::kPEAP, ::onc::eap::kEAP_TLS, ::onc::eap::kEAP_TTLS,
        ::onc::eap::kLEAP, ::onc::eap::kEAP_SIM, ::onc::eap::kEAP_FAST,
        ::onc::eap::kEAP_AKA});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid EAP Subject Alternative Name match types
-const std::vector<const char*>& GetValidEAPSubjectAlternativeNameMatchTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view>
+GetValidEAPSubjectAlternativeNameMatchTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::eap_subject_alternative_name_match::kEMAIL,
        ::onc::eap_subject_alternative_name_match::kDNS,
        ::onc::eap_subject_alternative_name_match::kURI});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid certificate types
-const std::vector<const char*>& GetValidCertificateTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidCertificateTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::certificate::kClient, ::onc::certificate::kServer,
        ::onc::certificate::kAuthority});
-  return *valid_values;
+  return kValidValues;
 }
 
 // Valid scope types
-const std::vector<const char*>& GetValidScopeTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetValidScopeTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::scope::kDefault, ::onc::scope::kExtension});
-  return *valid_values;
+  return kValidValues;
 }
 
 // All valid EAP types
-const std::vector<const char*>& GetAllValidVPNTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values(
+base::span<const std::string_view> GetAllValidVPNTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>(
       {::onc::vpn::kIPsec, ::onc::vpn::kTypeL2TP_IPsec, ::onc::vpn::kOpenVPN,
-       ::onc::vpn::kWireGuard, ::onc::vpn::kThirdPartyVpn, ::onc::vpn::kArcVpn
-
-      });
-  return *valid_values;
+       ::onc::vpn::kWireGuard, ::onc::vpn::kThirdPartyVpn,
+       ::onc::vpn::kArcVpn});
+  return kValidValues;
 }
 
 // Valid managed EAP types
-const std::vector<const char*>& GetValidManagedVPNTypes() {
-  static const base::NoDestructor<std::vector<const char*>> valid_values({
+base::span<const std::string_view> GetValidManagedVPNTypes() {
+  static constexpr auto kValidValues = std::to_array<std::string_view>({
       ::onc::vpn::kIPsec,
       ::onc::vpn::kTypeL2TP_IPsec,
       ::onc::vpn::kOpenVPN,
       ::onc::vpn::kWireGuard,
   });
-  return *valid_values;
+  return kValidValues;
 }
 
 void AddKeyToList(const char* key, base::ListValue* list) {
@@ -576,7 +578,7 @@ bool Validator::ValidateRecommendedField(
 
 bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
                                          base::DictValue* result) {
-  std::vector<const char*> valid_cert_types = {
+  std::vector<std::string_view> valid_cert_types = {
       ::onc::client_cert::kRef, ::onc::client_cert::kPattern,
       ::onc::client_cert::kProvisioningProfileId,
       ::onc::client_cert::kPKCS11Id};
@@ -612,16 +614,6 @@ bool Validator::ValidateClientCertFields(bool allow_cert_type_none,
   return !error_on_missing_field_ || all_required_exist;
 }
 
-namespace {
-
-std::string JoinStringRange(const std::vector<const char*>& strings,
-                            const std::string& separator) {
-  std::vector<std::string_view> string_vector(strings.begin(), strings.end());
-  return base::JoinString(string_vector, separator);
-}
-
-}  // namespace
-
 bool Validator::IsInDevicePolicy(base::DictValue* result,
                                  std::string_view field_name) {
   if (result->contains(field_name)) {
@@ -636,15 +628,14 @@ bool Validator::IsInDevicePolicy(base::DictValue* result,
 }
 
 bool Validator::IsValidValue(const std::string& field_value,
-                             const std::vector<const char*>& valid_values) {
-  for (const char* it : valid_values) {
-    if (field_value == it)
-      return true;
+                             base::span<const std::string_view> valid_values) {
+  if (std::ranges::contains(valid_values, field_value)) {
+    return true;
   }
 
   std::ostringstream msg;
   msg << "Found value '" << field_value << "', but expected one of the values ["
-      << JoinStringRange(valid_values, ", ") << "]";
+      << base::JoinString(valid_values, ", ") << "]";
   AddValidationIssue(true /* is_error */, msg.str());
   return false;
 }
@@ -652,7 +643,7 @@ bool Validator::IsValidValue(const std::string& field_value,
 bool Validator::FieldExistsAndHasNoValidValue(
     const base::DictValue& object,
     const std::string& field_name,
-    const std::vector<const char*>& valid_values) {
+    base::span<const std::string_view> valid_values) {
   const std::string* actual_value = object.FindString(field_name);
   if (!actual_value)
     return false;
@@ -740,7 +731,7 @@ bool Validator::OnlyOneFieldSet(const base::DictValue& object,
 bool Validator::ListFieldContainsValidValues(
     const base::DictValue& object,
     const std::string& field_name,
-    const std::vector<const char*>& valid_values) {
+    base::span<const std::string_view> valid_values) {
   const base::ListValue* list = object.FindList(field_name);
   if (!list)
     return true;
@@ -1391,7 +1382,8 @@ bool Validator::ValidateGlobalNetworkConfiguration(base::DictValue* result) {
     }
   }
 
-  std::vector<const char*> valid_network_types = GetValidNetworkTypes();
+  std::vector<std::string_view> valid_network_types =
+      base::ToVector(GetValidNetworkTypes());
   valid_network_types.push_back(::onc::network_config::kWimaxDeprecated);
 
   // Ensure the list contains only legitimate network type identifiers.
@@ -1459,11 +1451,15 @@ bool Validator::ValidateEAP(base::DictValue* result) {
 
   // If this EAP dict is in a IPsec dict (i.e., IPsec is the second-to-last
   // element in its path), the only valid method is MSCHAPv2.
-  std::vector<const char*> valid_outer_values = GetValidEAPOuterValues();
+  base::span<const std::string_view> valid_outer_values =
+      GetValidEAPOuterValues();
   if (path_.size() >= 2) {
     auto it = std::next(path_.rbegin());
-    if (*it == ::onc::vpn::kIPsec)
-      valid_outer_values = {::onc::eap::kMSCHAPv2};
+    if (*it == ::onc::vpn::kIPsec) {
+      static constexpr auto kIPsecOuterValues =
+          std::to_array<std::string_view>({::onc::eap::kMSCHAPv2});
+      valid_outer_values = kIPsecOuterValues;
+    }
   }
 
   if (FieldExistsAndHasNoValidValue(*result, ::onc::eap::kInner,
