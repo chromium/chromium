@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_
 #define CHROME_BROWSER_CONTEXT_HUB_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/time/time.h"
 
@@ -69,6 +71,12 @@ BASE_DECLARE_FEATURE(kContextHubTabContextSyncStorage);
 // Overrides the timeout of the Context Memory Service FetchContext call for
 // smart search.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSmartSearchTimeout);
+
+// Whether the fishfood feedback UI and export flow are enabled for Topics.
+BASE_DECLARE_FEATURE_PARAM(bool, kTopicsFishfoodFeedback);
+
+// URL of the Google Form where raters upload exported Topics feedback JSON.
+BASE_DECLARE_FEATURE_PARAM(std::string, kTopicsFeedbackFormUrl);
 
 }  // namespace context_hub::features
 

@@ -65,6 +65,12 @@ ContextHubUI::ContextHubUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(browser::context_hub::mojom::kSmartSearch));
   source->AddBoolean("kTopics", base::FeatureList::IsEnabled(
                                     browser::context_hub::mojom::kTopics));
+  source->AddBoolean(
+      "kTopicsFishfoodFeedback",
+      base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
+          context_hub::features::kTopicsFishfoodFeedback.Get());
+  source->AddString("kTopicsFeedbackFormUrl",
+                    context_hub::features::kTopicsFeedbackFormUrl.Get());
   source->AddInteger("kMaxTabGroupChatHistoryTurns",
                      context_hub::features::kMaxTabGroupChatHistoryTurns.Get());
   source->AddInteger(

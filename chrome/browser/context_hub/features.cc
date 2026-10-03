@@ -94,4 +94,18 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "smart_search_timeout",
                    base::Seconds(15));
 
+BASE_FEATURE_PARAM(bool,
+                   kTopicsFishfoodFeedback,
+                   &browser::context_hub::mojom::kTopics,
+                   "fishfood_feedback",
+                   false);
+
+// TODO(crbug.com/568424538): Update the default URL once the fishfood feedback
+// Google Form is created.
+BASE_FEATURE_PARAM(std::string,
+                   kTopicsFeedbackFormUrl,
+                   &browser::context_hub::mojom::kTopics,
+                   "feedback_form_url",
+                   "https://goto.google.com/jbi-fishfood-feedback-form");
+
 }  // namespace context_hub::features
