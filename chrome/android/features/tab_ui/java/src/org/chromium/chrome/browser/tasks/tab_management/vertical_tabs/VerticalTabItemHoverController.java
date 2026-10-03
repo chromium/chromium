@@ -36,11 +36,12 @@ import org.chromium.chrome.tab_ui.R;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-/** Controller for tab and tab group hover operations in vertical tabs. */
-// TODO(crbug.com/542280452): Rename to VerticalTabItemHoverController, as it handles the hover
-// state of individual rail items, as opposed to VerticalTabRailHoverController.
+/**
+ * Controller for tab and tab group hover operations in vertical tabs. Handles the hover state of
+ * individual rail items, as opposed to {@link VerticalTabRailHoverController}.
+ */
 @NullMarked
-public class VerticalTabHoverController {
+public class VerticalTabItemHoverController {
     private static final int SHOW_HOVER_CARD_WITHOUT_DELAY_TIME_BUFFER_MS = 300;
     private static final long INVALID_TIME = -1L;
 
@@ -116,12 +117,12 @@ public class VerticalTabHoverController {
 
                 @Override
                 public boolean isContextMenuShowing() {
-                    return VerticalTabHoverController.this.isContextMenuShowing();
+                    return VerticalTabItemHoverController.this.isContextMenuShowing();
                 }
 
                 @Override
                 public boolean isScrolling() {
-                    return VerticalTabHoverController.this.isScrolling();
+                    return VerticalTabItemHoverController.this.isScrolling();
                 }
             };
     private final @Nullable ViewStub mTabHoverCardViewStub;
@@ -136,7 +137,7 @@ public class VerticalTabHoverController {
     private @Nullable Runnable mPendingHoverCardRunnable;
 
     /**
-     * Constructs a {@link VerticalTabHoverController}.
+     * Constructs a {@link VerticalTabItemHoverController}.
      *
      * @param containerView The vertical tab rail container view.
      * @param tabHoverCardViewStub The view stub for inflating the tab hover card.
@@ -145,7 +146,7 @@ public class VerticalTabHoverController {
      * @param tabContentManagerSupplier Supplier of the manager providing tab thumbnail snapshots.
      * @param isContextMenuShowingSupplier Supplier returning whether any context menu is open.
      */
-    VerticalTabHoverController(
+    VerticalTabItemHoverController(
             VerticalTabRailLayout containerView,
             @Nullable ViewStub tabHoverCardViewStub,
             @Nullable ViewStub tabGroupHoverCardViewStub,

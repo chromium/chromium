@@ -11,7 +11,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabUnderlineManager
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 
 /**

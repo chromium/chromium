@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupHoverCardView;
 import org.chromium.chrome.browser.tasks.tab_management.TabHoverCardView;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 
@@ -63,10 +63,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-/** Unit tests for {@link VerticalTabHoverController}. */
+/** Unit tests for {@link VerticalTabItemHoverController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
-public class VerticalTabHoverControllerUnitTest {
+public class VerticalTabItemHoverControllerUnitTest {
 
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
@@ -110,7 +110,7 @@ public class VerticalTabHoverControllerUnitTest {
     @Mock private Tab mTab2;
     @Mock private Tab mPinnedTab;
 
-    private VerticalTabHoverController mController;
+    private VerticalTabItemHoverController mController;
 
     private float mCardShadowOffset;
     private float mBackgroundInset;
@@ -216,7 +216,7 @@ public class VerticalTabHoverControllerUnitTest {
         when(mTabModel.getTabGroupTitle(GROUP_ID_2)).thenReturn("Group 2");
 
         mController =
-                new VerticalTabHoverController(
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -267,8 +267,8 @@ public class VerticalTabHoverControllerUnitTest {
     @Test
     public void testContextMenuShowing_DoNotShowHoverCard() {
         when(mTabModelSelector.getCurrentTabId()).thenReturn(TAB_ID_3);
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -485,7 +485,7 @@ public class VerticalTabHoverControllerUnitTest {
         when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
@@ -504,7 +504,7 @@ public class VerticalTabHoverControllerUnitTest {
         when(mContainerView.getWidth()).thenReturn(EXPANDED_CONTAINER_WIDTH_PX);
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
@@ -534,7 +534,7 @@ public class VerticalTabHoverControllerUnitTest {
                 .getLocationOnScreen(any());
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
@@ -573,7 +573,7 @@ public class VerticalTabHoverControllerUnitTest {
                 .getLocationOnScreen(any());
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
@@ -596,7 +596,7 @@ public class VerticalTabHoverControllerUnitTest {
         when(mContainerView.getWidth()).thenReturn(COLLAPSED_CONTAINER_WIDTH_PX);
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mTabView1,
                         mContainerView,
                         mTabHoverCardView,
@@ -613,7 +613,7 @@ public class VerticalTabHoverControllerUnitTest {
     @Test
     public void testGetHoverCardPosition_PinnedTab_Expanded() {
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
@@ -645,7 +645,7 @@ public class VerticalTabHoverControllerUnitTest {
                 .getLocationOnScreen(any());
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
@@ -678,7 +678,7 @@ public class VerticalTabHoverControllerUnitTest {
                 .getLocationOnScreen(any());
 
         float[] position =
-                VerticalTabHoverController.getHoverCardPosition(
+                VerticalTabItemHoverController.getHoverCardPosition(
                         mPinnedTabView,
                         mContainerView,
                         mTabHoverCardView,
@@ -920,8 +920,8 @@ public class VerticalTabHoverControllerUnitTest {
 
     @Test
     public void testTabGroup_ContextMenuShowing_DoNotShow() {
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -1030,8 +1030,8 @@ public class VerticalTabHoverControllerUnitTest {
     @Test
     public void testContextMenuShowing_SuppressesHoverCard() {
         boolean[] isContextMenuShowing = new boolean[] {true};
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -1073,9 +1073,9 @@ public class VerticalTabHoverControllerUnitTest {
         boolean[] tab2Hovered = new boolean[] {false};
         TabHoverListener listener = mController.getTabHoverListener();
 
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 listener, TAB_ID_1, tabView1, /* actionButton= */ null, v -> tab1Hovered[0] = v);
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 listener, TAB_ID_2, tabView2, /* actionButton= */ null, v -> tab2Hovered[0] = v);
 
         // Hover enter on tab 1.
@@ -1132,8 +1132,8 @@ public class VerticalTabHoverControllerUnitTest {
 
         boolean[] tab1Hovered = new boolean[] {false};
         boolean[] isContextMenuShowing = new boolean[] {true};
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -1141,7 +1141,7 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabContentManagerSupplier,
                         () -> isContextMenuShowing[0]);
 
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 controller.getTabHoverListener(),
                 TAB_ID_1,
                 tabView1,
@@ -1182,8 +1182,8 @@ public class VerticalTabHoverControllerUnitTest {
         boolean[] tab1Hovered = new boolean[] {false};
         boolean[] tab2Hovered = new boolean[] {false};
         boolean[] isContextMenuShowing = new boolean[] {false};
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -1191,13 +1191,13 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabContentManagerSupplier,
                         () -> isContextMenuShowing[0]);
 
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 controller.getTabHoverListener(),
                 TAB_ID_1,
                 tabView1,
                 /* actionButton= */ null,
                 v -> tab1Hovered[0] = v);
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 controller.getTabHoverListener(),
                 TAB_ID_2,
                 tabView2,
@@ -1282,14 +1282,14 @@ public class VerticalTabHoverControllerUnitTest {
         boolean[] tab1Hovered = new boolean[] {false};
         TabHoverListener listener = mController.getTabHoverListener();
 
-        VerticalTabHoverController.setupTabGroupHeaderHover(
+        VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 listener,
                 GROUP_HEADER_TAB_ID_1,
                 GROUP_ID_1,
                 groupView1,
                 menuButton,
                 v -> group1Hovered[0] = v);
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 listener, TAB_ID_1, tabView1, /* actionButton= */ null, v -> tab1Hovered[0] = v);
 
         UserActionTester userActionTester = new UserActionTester();
@@ -1348,8 +1348,8 @@ public class VerticalTabHoverControllerUnitTest {
         boolean[] group1Hovered = new boolean[] {false};
         boolean[] group2Hovered = new boolean[] {false};
         boolean[] isContextMenuShowing = new boolean[] {false};
-        VerticalTabHoverController controller =
-                new VerticalTabHoverController(
+        VerticalTabItemHoverController controller =
+                new VerticalTabItemHoverController(
                         mContainerView,
                         mTabHoverCardViewStub,
                         mTabGroupHoverCardViewStub,
@@ -1357,14 +1357,14 @@ public class VerticalTabHoverControllerUnitTest {
                         mTabContentManagerSupplier,
                         () -> isContextMenuShowing[0]);
 
-        VerticalTabHoverController.setupTabGroupHeaderHover(
+        VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 controller.getTabHoverListener(),
                 GROUP_HEADER_TAB_ID_1,
                 GROUP_ID_1,
                 groupView1,
                 /* menuButton= */ null,
                 v -> group1Hovered[0] = v);
-        VerticalTabHoverController.setupTabGroupHeaderHover(
+        VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 controller.getTabHoverListener(),
                 GROUP_HEADER_TAB_ID_2,
                 GROUP_ID_2,
@@ -1449,7 +1449,7 @@ public class VerticalTabHoverControllerUnitTest {
                 };
         tabView1.layout(0, 0, 100, 48);
 
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 mController.getTabHoverListener(),
                 TAB_ID_1,
                 tabView1,
@@ -1481,7 +1481,7 @@ public class VerticalTabHoverControllerUnitTest {
                 };
         groupView1.layout(0, 0, 100, 48);
 
-        VerticalTabHoverController.setupTabGroupHeaderHover(
+        VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 mController.getTabHoverListener(),
                 GROUP_HEADER_TAB_ID_1,
                 GROUP_ID_1,
@@ -1510,7 +1510,7 @@ public class VerticalTabHoverControllerUnitTest {
         tabView1.layout(0, 0, 100, 48);
 
         boolean[] tab1Hovered = new boolean[] {false};
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 /* listener= */ null,
                 TAB_ID_1,
                 tabView1,
@@ -1559,7 +1559,7 @@ public class VerticalTabHoverControllerUnitTest {
         actionButton.layout(70, 8, 94, 32);
 
         boolean[] tab1Hovered = new boolean[] {false};
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 mController.getTabHoverListener(),
                 TAB_ID_1,
                 tabView1,
@@ -1641,7 +1641,7 @@ public class VerticalTabHoverControllerUnitTest {
         tabView1.setHovered(true);
 
         boolean[] tab1Hovered = new boolean[] {false};
-        VerticalTabHoverController.setupTabHover(
+        VerticalTabItemHoverController.setupTabHover(
                 mController.getTabHoverListener(),
                 TAB_ID_1,
                 tabView1,
@@ -1661,7 +1661,7 @@ public class VerticalTabHoverControllerUnitTest {
         groupView1.layout(0, 0, 100, 48);
 
         boolean[] group1Hovered = new boolean[] {false};
-        VerticalTabHoverController.setupTabGroupHeaderHover(
+        VerticalTabItemHoverController.setupTabGroupHeaderHover(
                 mController.getTabHoverListener(),
                 GROUP_HEADER_TAB_ID_1,
                 /* tabGroupId= */ null,

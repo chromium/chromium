@@ -136,7 +136,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionS
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherBackPressHandlerManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherDragHandler;
-import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabHoverController.TabHoverListener;
+import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabItemHoverController.TabHoverListener;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
