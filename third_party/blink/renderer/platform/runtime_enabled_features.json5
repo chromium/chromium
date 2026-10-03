@@ -391,6 +391,27 @@
       name: "AIPageContentIncludeSVGSubtree",
       status: "stable"
     },
+    // Add label sources in actionable APC.
+    {
+      name: "AIPageContentLabelExpandFallbackSources",
+      status: "stable",
+    },
+    // Remove labels that duplicate extracted text in any node in its subtree
+    // or its image caption. Remove SVG root text when extracted child nodes
+    // already contain it.
+    {
+      name: "AIPageContentLabelRemoveRedundant",
+    },
+    // Match labels to whole words or phrases in extracted text in any node in
+    // its subtree or its image caption, ignoring case. For example:
+    // - "Password" matches "Enter your password".
+    // - "lock" does not match "unlock".
+    // Exact matching still occurs when this is disabled, provided
+    // AIPageContentLabelRemoveRedundant is enabled.
+    {
+      name: "AIPageContentLabelRemoveRedundantWholeWordMatching",
+      depends_on: ["AIPageContentLabelRemoveRedundant"],
+    },
     // Use MapToVisualRectInAncestorSpace for outer bounding boxes, for
     // math consistent with visual bounding boxes.
     {

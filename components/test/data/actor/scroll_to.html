@@ -35,10 +35,11 @@
     </style>
   </head>
   <body>
-    <div id="in-viewport" aria-label="in-viewport">in-viewport</div>
+    <!-- Use labels that differ from visible text so APC keeps them for lookup. -->
+    <div id="in-viewport" aria-label="in-viewport">Viewport target</div>
     <div id="out-of-viewport">out-of-viewport</div>
-    <div id="fixed" aria-label="fixed">fixed</div>
+    <div id="fixed" aria-label="fixed">Stationary target</div>
     <div id="display-none">display-none</div>
-    <div id="offscreen-fixed" aria-label="offscreen-fixed">offscreen-fixed</div>
+    <div id="offscreen-fixed" aria-label="offscreen-fixed">Offscreen stationary target</div>
   </body>
 </html>

@@ -55,7 +55,10 @@ its content to be mapped to visual representations of the page like screenshots.
 * **Text (`TextInfo`):** The text content, along with styling information like
 size, emphasis, and color.
 * **Images (`ImageInfo`):** The image's alt text or caption, its URL, and
-security origin.
+  security origin. SVG image titles and descriptions supply captions. For HTML
+  images without an `alt` attribute, `title` supplies the caption. These caption
+  sources do not also supply fallback labels, even when redundant label removal
+  is disabled. Separate tooltips and ARIA labels can still supply labels.
 * **Links (`AnchorData`):** The destination URL and the link's `rel` attribute.
 * **Forms (`FormInfo`, `FormControlData`):** Includes the form's name/ID and
 data for individual controls like field name, value, and type. Password field

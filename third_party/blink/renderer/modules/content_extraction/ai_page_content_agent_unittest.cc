@@ -17,13 +17,16 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_log.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
@@ -33,12 +36,15 @@
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -50,6 +56,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -62,6 +69,7 @@
 #include "third_party/blink/renderer/platform/graphics/visual_rect_flags.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -5865,6 +5873,600 @@ TEST_F(AIPageContentAgentTest, AriaLabelledBy) {
   EXPECT_EQ(input.content_attributes->label, "on element and first and second");
 }
 
+TEST_F(AIPageContentAgentTest, RedundantLabelRemovalDisabledByDefault) {
+  EXPECT_FALSE(
+      RuntimeEnabledFeatures::AIPageContentLabelRemoveRedundantEnabled());
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<button id='duplicate' aria-label='Open'>Open</button>"
+      "<button id='fallback' title='Tooltip'>Other text</button>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  for (bool additional : {false, true}) {
+    SCOPED_TRACE(additional);
+    ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+        additional);
+    for (bool whole_word : {false, true}) {
+      SCOPED_TRACE(whole_word);
+      ScopedAIPageContentLabelRemoveRedundantWholeWordMatchingForTest matching(
+          whole_word);
+      for (bool remove : {false, true}) {
+        SCOPED_TRACE(remove);
+        ScopedAIPageContentLabelRemoveRedundantForTest removal(remove);
+        GetAIPageContentWithActionableElements();
+        const auto* duplicate = FindNodeBySelector("#duplicate");
+        ASSERT_TRUE(duplicate);
+        EXPECT_EQ(duplicate->content_attributes->label, remove ? "" : "Open");
+        const auto* fallback = FindNodeBySelector("#fallback");
+        ASSERT_TRUE(fallback);
+        EXPECT_EQ(fallback->content_attributes->label,
+                  additional ? "Tooltip" : "");
+      }
+    }
+  }
+}
+
+TEST_F(AIPageContentAgentTest, ImageFallbackLabelsDoNotRepeatCaptions) {
+  ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(true);
+  ScopedAIPageContentIncludeSVGSubtreeForTest include_svg_subtree(true);
+  struct TestCase {
+    const char* html;
+    const char* caption;
+    const char* label;
+  };
+  const TestCase cases[] = {
+      // A missing alt uses title as the caption; an empty alt is decorative.
+      {"<img id='target' src='IMAGE' title='Tooltip'>", "Tooltip", ""},
+      {"<img id='target' src='IMAGE' alt='' title='Tooltip'>", "", ""},
+      // A separate tooltip and ARIA text must still supply labels.
+      {"<img id='target' src='IMAGE' alt='Caption' title='Tooltip'>", "Caption",
+       "Tooltip"},
+      {"<img id='target' src='IMAGE' title='Tooltip' aria-label='ARIA'>",
+       "Tooltip", "ARIA"},
+      // SVG title and description are already captured in image_caption.
+      {"<svg><image id='target' width='20' height='20' href='IMAGE'>"
+       "<title>Caption</title></image></svg>",
+       "Caption", ""},
+      {"<svg><image id='target' width='20' height='20' href='IMAGE'>"
+       "<desc>Caption</desc></image></svg>",
+       "Caption", ""},
+      {"<svg><image id='target' width='20' height='20' href='IMAGE' "
+       "aria-label='ARIA'><title>Caption</title></image></svg>",
+       "Caption", "ARIA"},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.html);
+    String html(test_case.html);
+    html.Replace("IMAGE", kSmallImage);
+    frame_test_helpers::LoadHTMLString(
+        helper_.LocalMainFrame(), html.Utf8(),
+        url_test_helpers::ToKURL("http://foobar.com"));
+    // Avoid producing duplicate fallbacks even when the removal pass is off.
+    for (bool remove : {false, true}) {
+      SCOPED_TRACE(remove);
+      ScopedAIPageContentLabelRemoveRedundantForTest removal(remove);
+      GetAIPageContentWithActionableElements();
+      const auto* node = FindNodeBySelector("#target");
+      ASSERT_TRUE(node);
+      ASSERT_TRUE(node->content_attributes->image_info);
+      EXPECT_EQ(node->content_attributes->image_info->image_caption,
+                test_case.caption);
+      EXPECT_EQ(node->content_attributes->label, test_case.label);
+    }
+  }
+}
+
+TEST_F(AIPageContentAgentTest, AdditionalLabelFallbacks) {
+  class DefaultLabelsPlatform final : public TestingPlatformSupport {
+   public:
+    WebString QueryLocalizedString(int) override {
+      return WebString("Default label");
+    }
+  };
+  // Return nonempty default labels so the test detects them if they are used.
+  // The test platform normally has no translations and returns empty strings.
+  ScopedTestingPlatformSupport<DefaultLabelsPlatform> platform;
+  ScopedAIPageContentIncludeSVGSubtreeForTest include_svg_subtree(true);
+  struct TestCase {
+    const char* html;
+    const char* expected_label;
+    const char* baseline_label = "";
+    const char* svg_image_caption = nullptr;
+  };
+  const TestCase cases[] = {
+      {"<button id='target' title='Open settings'></button>", "Open settings"},
+      {"<button id='target' title='   '></button>", ""},
+      // Keep surrounding spaces when a label contains text.
+      {"<button id='target' title='  Open settings  '></button>",
+       "  Open settings  "},
+      // Skip whitespace-only labels and try the next source.
+      {"<input id='target' type='image' src='IMAGE' alt='  ' value='Send' "
+       "title='Tooltip'>",
+       "Send"},
+      {"<input id='target' type='image' src='IMAGE' alt='  ' value='  ' "
+       "title='Tooltip'>",
+       "Tooltip"},
+      {"<table id='target' summary='  ' title='Tooltip'>"
+       "<tr><td>2026</td></tr></table>",
+       "Tooltip"},
+      {"<img id='target' alt='Caption' title='Tooltip' "
+       "style='content: url(IMAGE) / \"  \"'>",
+       "Tooltip"},
+      {"<svg><a id='target' xmlns:xlink='http://www.w3.org/1999/xlink' "
+       "xlink:title='  ' href='/link'><title> </title><desc>Details</desc>"
+       "<rect width='20' height='20'/></a></svg>",
+       "Details"},
+      {"<button id='target' title='Open'>Open</button>", ""},
+      {"<button id='target' title='  Open  '>Open</button>", ""},
+      // By default, remove a label only if it matches an entire text node.
+      // Keep it if it matches only part of that text or is longer than it.
+      {"<button id='target' title='Open'>Please Open settings</button>",
+       "Open"},
+      {"<button id='target' title='  Open  '>Please Open settings</button>",
+       "  Open  "},
+      {"<button id='target' title='sett'>Open settings</button>", "sett"},
+      {"<button id='target' title='Open settings'>Open</button>",
+       "Open settings"},
+      {"<button id='target' aria-label='lock'>currently unlocked</button>",
+       "lock", "lock"},
+      {"<button id='target' title='Open'>open</button>", "Open"},
+      {"<img id='target' src='IMAGE' alt='caption' title='Caption'>",
+       "Caption"},
+      // Match against individual extracted text nodes without joining them.
+      {"<button id='target' aria-label='Open'><span>Open</span>"
+       "<span> settings</span></button>",
+       "", "Open"},
+      {"<button id='target' aria-label='Open settings'><span>Open</span>"
+       "<span> settings</span></button>",
+       "Open settings", "Open settings"},
+      // Text in an earlier sibling must not remove this element's label.
+      {"<button>Open</button><button id='target' title='Open'>Close</button>",
+       "Open"},
+      {R"(<button id='target' aria-label='Open'>
+            <iframe srcdoc="<span>Open</span>"></iframe></button>)",
+       "Open", "Open"},
+      {"<img id='target' alt='Caption' title='Tooltip' "
+       "style='content: url(IMAGE) / \"\"'>",
+       ""},
+      // ARIA labels use exact matching by default. Keep them when the flag is
+      // off. After removing a repeated label, do not try fallback label
+      // sources.
+      {"<button id='target' aria-label='Open'>Please Open settings</button>",
+       "Open", "Open"},
+      {"<button id='target' aria-label='Open' title='Tooltip'>Open</button>",
+       "", "Open"},
+      {"<button id='target' aria-label='  Open  '>Please Open "
+       "settings</button>",
+       "  Open  ", "  Open  "},
+      {"<button id='target' aria-label='Open settings'>Open</button>",
+       "Open settings", "Open settings"},
+      {"<span id='name' hidden>Open</span>"
+       "<button id='target' aria-labelledby='name'>Please Open "
+       "settings</button>",
+       "Open", "Open"},
+      {"<span id='name' hidden>Open</span>"
+       "<button id='target' aria-labeledby='name'>Please Open "
+       "settings</button>",
+       "Open", "Open"},
+      {"<button id='target' aria-label='ARIA' title='Tooltip'></button>",
+       "ARIA", "ARIA"},
+      {"<span id='name' hidden>Reference</span>"
+       "<button id='target' aria-labelledby='name' title='Tooltip'></button>",
+       "Reference", "Reference"},
+      {"<span id='name' hidden> </span>"
+       "<button id='target' aria-label=' ' aria-labelledby='name' "
+       "title='Tooltip'></button>",
+       "Tooltip"},
+      {"<button id='target' aria-labelledby='missing' "
+       "title='Tooltip'></button>",
+       "Tooltip"},
+      // Accept the older aria-labeledby spelling too.
+      // The standard spelling wins when both attributes are present.
+      {"<span id='name' hidden>Reference</span>"
+       "<button id='target' aria-labeledby='name' title='Tooltip'></button>",
+       "Reference", "Reference"},
+      {"<span id='name' hidden>Standard</span>"
+       "<span id='legacy' hidden>Legacy</span>"
+       "<button id='target' aria-labelledby='name' aria-labeledby='legacy' "
+       "title='Tooltip'></button>",
+       "Standard", "Standard"},
+      {"<span id='legacy' hidden>Legacy</span>"
+       "<button id='target' aria-labelledby='' aria-labeledby='legacy' "
+       "title='Tooltip'></button>",
+       "Tooltip"},
+      {"<input id='target' type='image' src='IMAGE' alt='Search' "
+       "title='Tooltip'>",
+       "Search"},
+      {"<input id='target' type='image' src='IMAGE' alt='' title='Search'>",
+       "Search"},
+      {"<input id='target' type='image' src='IMAGE' value='Send'>", "Send"},
+      // Leave image buttons unlabeled when the page provides no label text.
+      {"<input id='target' type='image' src='IMAGE'>", ""},
+      {"<input id='target' type='image' src='IMAGE' alt=' ' value=' ' "
+       "title=' '>",
+       ""},
+      {"<input id='target' type='image' src='IMAGE' aria-label='ARIA' "
+       "alt='Alt'>",
+       "ARIA", "ARIA"},
+      {"<table id='target' summary='Annual sales' title='Tooltip'>"
+       "<tr><td>2026</td></tr></table>",
+       "Annual sales"},
+      // Select the fallback label before checking for repeated text. If it
+      // repeats that text, remove it without trying another label source.
+      {"<table id='target' summary='Annual sales' title='Tooltip'>"
+       "<tr><td>Annual sales</td></tr></table>",
+       ""},
+      {"<svg id='target'><title>Chart</title><text y='20'>Chart</text></svg>",
+       ""},
+      {"<svg id='target'><title>Chart</title><text y='20'>Sales "
+       "Chart</text></svg>",
+       "Chart"},
+      {"<svg id='target'><title>Chart</title><text y='20'>Sales</text></svg>",
+       "Chart"},
+      {"<svg id='target'><title>Chart</title><desc>Annual sales</desc></svg>",
+       "Chart"},
+      {"<svg id='target'><title> </title><desc>Annual sales</desc></svg>",
+       "Annual sales"},
+      {"<svg id='target' aria-label='ARIA'><title>Chart</title></svg>", "ARIA",
+       "ARIA"},
+      {"<svg id='target'><g><title>Nested title</title></g></svg>", ""},
+      {"<svg><a id='target' xmlns:xlink='http://www.w3.org/1999/xlink' "
+       "xlink:title='SVG link' href='/link'><rect width='20' height='20'/>"
+       "</a></svg>",
+       "SVG link"},
+      {"<svg><image id='target' width='20' height='20' href='IMAGE'>"
+       "<title>SVG image</title></image></svg>",
+       "", "", "SVG image"},
+      {"<svg><image id='target' width='20' height='20' href='IMAGE' "
+       "aria-label='ARIA'><desc>SVG description</desc></image></svg>",
+       "ARIA", "ARIA", "SVG description"},
+      {"<img id='target' style='content: url(IMAGE) / \"CSS alternative\"'>",
+       "CSS alternative"},
+      // Compare fallback and ARIA labels with the image caption. By default,
+      // keep labels that differ from the caption or match only part of it.
+      {"<img id='target' alt='Caption' "
+       "style='content: url(IMAGE) / \"Caption\"'>",
+       ""},
+      {"<img id='target' alt='Caption' "
+       "style='content: url(IMAGE) / \"Different text\"'>",
+       "Different text"},
+      {"<img id='target' src='IMAGE' alt='Caption' title='Caption'>", ""},
+      {"<img id='target' src='IMAGE' alt='An Open settings icon' title='Open'>",
+       "Open"},
+      {"<img id='target' src='IMAGE' alt='An Open settings icon' title='  Open "
+       " '>",
+       "  Open  "},
+      {"<img id='target' src='IMAGE' alt='Open' title='Open settings'>",
+       "Open settings"},
+      {"<img id='target' src='IMAGE' alt='An Open settings icon' "
+       "aria-label='Open'>",
+       "Open", "Open"},
+      {"<span id='name' hidden>Open</span>"
+       "<img id='target' src='IMAGE' alt='An Open settings icon' "
+       "aria-labelledby='name'>",
+       "Open", "Open"},
+      {"<img id='target' src='IMAGE' alt='Caption' title='Different text'>",
+       "Different text"},
+      {"<img id='target' src='IMAGE' alt='Caption' aria-label='Caption'>", "",
+       "Caption"},
+      // This text already appears in image captions, form fields, or text
+      // nodes.
+      {"<img id='target' src='IMAGE' alt='Image caption'>", ""},
+      {"<img id='target' src='IMAGE' title='Image caption'>", ""},
+      {"<img id='target' src='IMAGE' alt='' title='Decorative image'>", ""},
+      {"<input id='target' placeholder='Placeholder'>", ""},
+      {"<input id='target' type='submit' value='Send'>", ""},
+      {"<label for='target'>Name</label><input id='target'>", ""},
+  };
+
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.html);
+    String html(test_case.html);
+    html.Replace("IMAGE", kSmallImage);
+    frame_test_helpers::LoadHTMLString(
+        helper_.LocalMainFrame(), html.Utf8(),
+        url_test_helpers::ToKURL("http://foobar.com"));
+    const DOMNodeId target_id = GetDomNodeIdForSelector("#target");
+
+    // Check new label sources with AIPageContentLabelExpandFallbackSources on
+    // and off. The disabled flag must preserve existing behavior.
+    for (bool enabled : {false, true}) {
+      SCOPED_TRACE(enabled);
+      auto options = GetAIPageContentOptionsForTest();
+      options->mode = mojom::blink::AIPageContentMode::kActionableElements;
+      ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+          enabled);
+      ScopedAIPageContentLabelRemoveRedundantForTest removal(enabled);
+      GetAIPageContent(std::move(options));
+      const auto* node = FindNodeByDomNodeId(target_id);
+      ASSERT_TRUE(node);
+      EXPECT_EQ(node->content_attributes->label,
+                String(enabled ? test_case.expected_label
+                               : test_case.baseline_label));
+      if (test_case.svg_image_caption) {
+        ASSERT_TRUE(node->content_attributes->image_info);
+        const String& caption =
+            node->content_attributes->image_info->image_caption;
+        if (enabled) {
+          EXPECT_EQ(caption, test_case.svg_image_caption);
+        } else {
+          EXPECT_TRUE(caption.empty());
+        }
+      }
+    }
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(AIPageContentAgentTest, PopupRedundantLabels) {
+  base::test::ScopedFeatureList popup_feature;
+  popup_feature.InitAndEnableFeature(
+      blink::features::kAIPageContentIncludePopupWindows);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<select id='opener'><option>Option</option></select>"
+      "<p>Main page text</p>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  auto* opener =
+      To<HTMLSelectElement>(document.getElementById(AtomicString("opener")));
+  auto* menu = MakeGarbageCollected<InternalPopupMenu>(
+      MakeGarbageCollected<EmptyChromeClient>(), *opener);
+  auto* web_view = document.GetPage()->GetChromeClient().GetWebView();
+  auto* popup = web_view->OpenPagePopup(menu);
+  ASSERT_TRUE(popup);
+  popup->DidShowPopup();
+  auto& popup_document = *popup->GetDocument().Unwrap<Document>();
+  popup_document.body()->SetInnerHTMLWithoutTrustedTypes(
+      "<button id='duplicate' aria-label='Same'>Same</button>"
+      "<button id='sibling' aria-label='Same'>Other text</button>"
+      "<button id='main-text' aria-label='Main page text'>Popup text</button>");
+  popup_document.View()->UpdateAllLifecyclePhasesForTest();
+  const DOMNodeId duplicate_id =
+      popup_document.getElementById(AtomicString("duplicate"))->GetDomNodeId();
+  const DOMNodeId sibling_id =
+      popup_document.getElementById(AtomicString("sibling"))->GetDomNodeId();
+  const DOMNodeId main_text_id =
+      popup_document.getElementById(AtomicString("main-text"))->GetDomNodeId();
+
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+    ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+        enabled);
+    ScopedAIPageContentLabelRemoveRedundantForTest removal(enabled);
+    GetAIPageContentWithActionableElements();
+    ASSERT_TRUE(Content()->frame_data->popup);
+    const auto& popup_root = *Content()->frame_data->popup->root_node;
+    const auto* duplicate = FindNodeByDomNodeId(popup_root, duplicate_id);
+    ASSERT_TRUE(duplicate);
+    EXPECT_EQ(duplicate->content_attributes->label, enabled ? "" : "Same");
+    const auto* sibling = FindNodeByDomNodeId(popup_root, sibling_id);
+    ASSERT_TRUE(sibling);
+    EXPECT_EQ(sibling->content_attributes->label, "Same");
+    const auto* main_text = FindNodeByDomNodeId(popup_root, main_text_id);
+    ASSERT_TRUE(main_text);
+    EXPECT_EQ(main_text->content_attributes->label, "Main page text");
+  }
+  popup->ClosePopup();
+}
+#endif
+
+TEST_F(AIPageContentAgentTest, LabelWholeWordMatching) {
+  ScopedAIPageContentLabelRemoveRedundantForTest remove_redundant_labels(true);
+  ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(true);
+  EXPECT_FALSE(RuntimeEnabledFeatures::
+                   AIPageContentLabelRemoveRedundantWholeWordMatchingEnabled());
+  struct TestCase {
+    const char* label;
+    const char* text;
+    bool remove_exact;
+    bool remove_whole_word;
+  };
+  const TestCase cases[] = {
+      {"Password", "Password", true, true},
+      {"Password", "Enter your password", false, true},
+      {"Password", "Password:", false, true},
+      {"United States", "The United States of America", false, true},
+      {"United States", "The United Stateside", false, false},
+      {"Open", "open", false, true},
+      {"lock", "currently unlocked", false, false},
+      {"lock", "Please lock the door", false, true},
+      {"lock", "unlocked; lock", false, true},
+      {"sett", "Open settings", false, false},
+      {"your password", "Enter your password here", false, true},
+      {"password", "Password, please", false, true},
+      {"Go", "Go ahead", false, true},
+      {"CAF&#201;", "Un caf&#233; chaud", false, true},
+      {"caf", "caf&#233;", false, false},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.label);
+    SCOPED_TRACE(test_case.text);
+    for (bool image : {false, true}) {
+      SCOPED_TRACE(image);
+      String html =
+          image ? String("<img id='target' src='IMAGE' aria-label='") +
+                      test_case.label + "' alt='" + test_case.text + "'>"
+                : String("<button id='target' aria-label='") + test_case.label +
+                      "'>" + test_case.text + "</button>";
+      html.Replace("IMAGE", kSmallImage);
+      frame_test_helpers::LoadHTMLString(
+          helper_.LocalMainFrame(), html.Utf8(),
+          url_test_helpers::ToKURL("http://foobar.com"));
+      for (bool enabled : {false, true}) {
+        SCOPED_TRACE(enabled);
+        ScopedAIPageContentLabelRemoveRedundantWholeWordMatchingForTest
+            matching(enabled);
+        GetAIPageContentWithActionableElements();
+        const auto* node = FindNodeBySelector("#target");
+        ASSERT_TRUE(node);
+        EXPECT_EQ(
+            node->content_attributes->label.empty(),
+            enabled ? test_case.remove_whole_word : test_case.remove_exact);
+      }
+    }
+  }
+
+  // Whole-word matching must not use text from a sibling or an embedded frame.
+  for (const char* html :
+       {"<button>Enter your password</button>"
+        "<button id='target' aria-label='Password'>Other text</button>",
+        R"(<button id='target' aria-label='Password'>
+                <iframe srcdoc="Enter your password"></iframe></button>)"}) {
+    SCOPED_TRACE(html);
+    frame_test_helpers::LoadHTMLString(
+        helper_.LocalMainFrame(), html,
+        url_test_helpers::ToKURL("http://foobar.com"));
+    ScopedAIPageContentLabelRemoveRedundantWholeWordMatchingForTest matching(
+        true);
+    GetAIPageContentWithActionableElements();
+    const auto* node = FindNodeBySelector("#target");
+    ASSERT_TRUE(node);
+    EXPECT_EQ(node->content_attributes->label, "Password");
+  }
+}
+
+TEST_F(AIPageContentAgentTest, SVGRedundantRootText) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<svg id='target'><text y='20'>Visible</text></svg>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  for (bool additional : {false, true}) {
+    SCOPED_TRACE(additional);
+    ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+        additional);
+    for (bool remove : {false, true}) {
+      SCOPED_TRACE(remove);
+      ScopedAIPageContentLabelRemoveRedundantForTest removal(remove);
+      for (bool include_subtree : {false, true}) {
+        SCOPED_TRACE(include_subtree);
+        ScopedAIPageContentIncludeSVGSubtreeForTest subtree(include_subtree);
+        for (bool actionable : {false, true}) {
+          SCOPED_TRACE(actionable);
+          auto options = GetAIPageContentOptionsForTest();
+          if (actionable) {
+            options->mode =
+                mojom::blink::AIPageContentMode::kActionableElements;
+          }
+          GetAIPageContent(std::move(options));
+          const auto* node = FindNodeBySelector("#target");
+          ASSERT_TRUE(node);
+          ASSERT_TRUE(node->content_attributes->svg_root_data);
+          if (actionable && remove && include_subtree) {
+            EXPECT_TRUE(
+                node->content_attributes->svg_root_data->inner_text.empty());
+          } else {
+            EXPECT_EQ(node->content_attributes->svg_root_data->inner_text,
+                      "Visible");
+          }
+          EXPECT_EQ(TreeContainsTextSubstring(*node, "Visible"),
+                    include_subtree);
+        }
+      }
+    }
+  }
+}
+
+TEST_F(AIPageContentAgentTest, AdditionalSVGTextFallbacks) {
+  ScopedAIPageContentLabelRemoveRedundantForTest removal(false);
+  struct TestCase {
+    const char* children;
+    const char* rendered_text = "";
+    const char* expected_label = "";
+  };
+  const TestCase cases[] = {
+      {"<title>Chart</title>", "", "Chart"},
+      {"<desc>Annual sales</desc>", "", "Annual sales"},
+      {"<desc>Annual sales</desc><title>Chart</title>", "", "Chart"},
+      {"<title> </title><desc>Annual sales</desc>", "", "Annual sales"},
+      {"<title>First</title><title>Second</title>", "", "First"},
+      {"<g><title>Nested</title><desc>Nested description</desc></g>"},
+      {"<text y='20'>Visible</text>", "Visible"},
+      // Keep visible text in the root when removal is disabled. The title
+      // supplies the fallback label.
+      {"<title>Chart</title><desc>Annual sales</desc><text "
+       "y='20'>Visible</text>",
+       "Visible", "Chart"},
+  };
+  for (const auto& test_case : cases) {
+    SCOPED_TRACE(test_case.children);
+    const String html =
+        String("<svg id='target'>") + test_case.children + "</svg>";
+    frame_test_helpers::LoadHTMLString(
+        helper_.LocalMainFrame(), html.Utf8(),
+        url_test_helpers::ToKURL("http://foobar.com"));
+    const DOMNodeId target_id = GetDomNodeIdForSelector("#target");
+    for (bool actionable : {false, true}) {
+      for (bool enabled : {false, true}) {
+        SCOPED_TRACE(actionable);
+        SCOPED_TRACE(enabled);
+        ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+            enabled);
+        for (bool include_subtree : {false, true}) {
+          SCOPED_TRACE(include_subtree);
+          ScopedAIPageContentIncludeSVGSubtreeForTest svg_subtree(
+              include_subtree);
+          auto options = GetAIPageContentOptionsForTest();
+          if (actionable) {
+            options->mode =
+                mojom::blink::AIPageContentMode::kActionableElements;
+          }
+          GetAIPageContent(std::move(options));
+          const auto* node = FindNodeByDomNodeId(target_id);
+          ASSERT_TRUE(node);
+          ASSERT_TRUE(node->content_attributes->svg_root_data);
+          const String expected_text = test_case.rendered_text;
+          const String& actual_text =
+              node->content_attributes->svg_root_data->inner_text;
+          if (expected_text.empty()) {
+            EXPECT_TRUE(actual_text.empty());
+          } else {
+            EXPECT_EQ(actual_text, expected_text);
+          }
+          const String expected_label =
+              actionable && enabled ? test_case.expected_label : "";
+          if (expected_label.empty()) {
+            EXPECT_TRUE(node->content_attributes->label.empty());
+          } else {
+            EXPECT_EQ(node->content_attributes->label, expected_label);
+          }
+
+          // Check that the child nodes contain the visible text when enabled.
+          // Otherwise, keep the text in the root.
+          if (!String(test_case.rendered_text).empty()) {
+            EXPECT_EQ(TreeContainsTextSubstring(*node, test_case.rendered_text),
+                      include_subtree);
+          }
+          if (!include_subtree) {
+            EXPECT_TRUE(node->children_nodes.empty());
+          }
+          if (!actionable) {
+            EXPECT_TRUE(node->content_attributes->label.empty());
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST_F(AIPageContentAgentTest, SVGDescriptionWithARIALabel) {
+  ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<svg id='target' aria-label='ARIA'><title>Chart</title>"
+      "<desc>Annual sales</desc></svg>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  for (bool include_subtree : {false, true}) {
+    SCOPED_TRACE(include_subtree);
+    ScopedAIPageContentIncludeSVGSubtreeForTest svg_subtree(include_subtree);
+    GetAIPageContentWithActionableElements();
+    const auto* node = FindNodeBySelector("#target");
+    ASSERT_TRUE(node);
+    EXPECT_EQ(node->content_attributes->label, "ARIA");
+    ASSERT_TRUE(node->content_attributes->svg_root_data);
+    EXPECT_TRUE(node->content_attributes->svg_root_data->inner_text.empty());
+  }
+}
+
 TEST_F(AIPageContentAgentTest, DisabledButton) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -9264,6 +9866,59 @@ TEST_F(AIPageContentAgentTest, GetImageBytes) {
       1);
 }
 
+TEST_F(AIPageContentAgentTest, GetSVGImageBytesCaption) {
+  ScopedAIPageContentIncludeSVGSubtreeForTest include_svg_subtree(true);
+  String html(
+      "<svg><image id='target' width='20' height='20' href='IMAGE'>"
+      "<title>SVG image</title></image></svg>");
+  html.Replace("IMAGE", kSmallImage);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), html.Utf8(),
+      url_test_helpers::ToKURL("http://foobar.com"));
+  auto& document = *helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  const DOMNodeId target_id = GetDomNodeIdForSelector("#target");
+
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+    ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(
+        enabled);
+    const String expected_caption = enabled ? String("SVG image") : String();
+    for (bool actionable : {false, true}) {
+      SCOPED_TRACE(actionable);
+      auto options = GetAIPageContentOptionsForTest();
+      if (actionable) {
+        options->mode = mojom::blink::AIPageContentMode::kActionableElements;
+      }
+      GetAIPageContent(std::move(options));
+      const auto* node = FindNodeByDomNodeId(target_id);
+      ASSERT_TRUE(node);
+      ASSERT_TRUE(node->content_attributes->image_info);
+      EXPECT_EQ(node->content_attributes->image_info->image_caption,
+                expected_caption);
+
+      auto* agent = AIPageContentAgent::From(document);
+      ASSERT_TRUE(agent);
+      base::RunLoop run_loop;
+      agent->GetImageBytes(
+          target_id,
+          base::BindLambdaForTesting(
+              [&](mojom::blink::AIPageContentImageBytesResultPtr result) {
+                EXPECT_TRUE(result);
+                if (result) {
+                  EXPECT_GT(result->image_bytes.size(), 0u);
+                  EXPECT_TRUE(result->image_info);
+                  if (result->image_info) {
+                    EXPECT_EQ(result->image_info->image_caption,
+                              expected_caption);
+                  }
+                }
+                run_loop.Quit();
+              }));
+      run_loop.Run();
+    }
+  }
+}
+
 TEST_F(AIPageContentAgentTest, GetImageBytesFailures) {
   base::HistogramTester histogram_tester;
   frame_test_helpers::LoadHTMLString(
@@ -9440,8 +10095,8 @@ TEST_F(AIPageContentAgentTestTextEncoding, ImageCaptionCorrected) {
 }
 
 TEST_F(AIPageContentAgentTestTextEncoding, SVGRootCorrected) {
-  ScopedAIPageContentIncludeSVGSubtreeForTest scoped_feature(
-      /*enabled=*/true);
+  ScopedAIPageContentLabelRemoveRedundantForTest removal(true);
+  ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(false);
 
   // Start with a basic valid UTF-16 string.
   frame_test_helpers::LoadHTMLString(
@@ -9467,19 +10122,24 @@ TEST_F(AIPageContentAgentTestTextEncoding, SVGRootCorrected) {
           .textContent = '      Hello\uD83D    '
       )"));
 
-  GetAIPageContentWithActionableElements();
+  for (bool include_subtree : {false, true}) {
+    SCOPED_TRACE(include_subtree);
+    ScopedAIPageContentIncludeSVGSubtreeForTest svg_subtree(include_subtree);
+    GetAIPageContentWithActionableElements();
 
-  const auto& svg = *ContentRootNode().children_nodes[0];
-  EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSvgRoot);
-  ASSERT_TRUE(svg.content_attributes->svg_root_data);
-  EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text, u"Hello\uFFFD");
-
-  const auto& text_child = *svg.children_nodes[0];
-  EXPECT_EQ(text_child.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kText);
-  // Note that whitespace is kept.
-  CheckTextNode(text_child, u"      Hello\uFFFD    ");
+    const auto& svg = *ContentRootNode().children_nodes[0];
+    ASSERT_TRUE(svg.content_attributes->svg_root_data);
+    if (include_subtree) {
+      EXPECT_TRUE(svg.content_attributes->svg_root_data->inner_text.empty());
+      ASSERT_EQ(svg.children_nodes.size(), 1u);
+      // The child keeps whitespace and replaces the unpaired Unicode surrogate.
+      CheckTextNode(*svg.children_nodes[0], u"      Hello\uFFFD    ");
+    } else {
+      EXPECT_EQ(svg.content_attributes->svg_root_data->inner_text,
+                u"Hello\uFFFD");
+      EXPECT_TRUE(svg.children_nodes.empty());
+    }
+  }
 }
 
 TEST_F(AIPageContentAgentTestTextEncoding, TableNameCorrected) {
@@ -9688,6 +10348,68 @@ TEST_F(AIPageContentAgentTestTextEncoding, MetadataCorrected) {
       Content()->frame_data->meta_data[0];
   EXPECT_EQ(meta->name, u"Hello\uFFFD");
   EXPECT_EQ(meta->content, u"World\uFFFD");
+}
+
+TEST_F(AIPageContentAgentTestTextEncoding, AdditionalLabelsCorrected) {
+  ScopedAIPageContentLabelRemoveRedundantForTest remove_redundant_labels(true);
+  ScopedAIPageContentLabelExpandFallbackSourcesForTest additional_labels(true);
+  ScopedAIPageContentIncludeSVGSubtreeForTest include_svg_subtree(true);
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<button id='button'></button>"
+      "<button id='duplicate'></button>"
+      "<input id='input' type='image'>"
+      "<svg id='svg'><title id='title'></title><desc id='desc'></desc>"
+      "<image id='svg-image' width='20' height='20'>"
+      "<title id='image-title'></title></image></svg>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  // DOM text can contain unpaired Unicode surrogates. Replace them in fallback
+  // labels and captions so Mojo can serialize the text, as it does for ARIA
+  // labels.
+  helper_.LocalMainFrame()->ExecuteScript(WebScriptSource(R"(
+    document.getElementById('button').title = 'Tooltip\uD83D';
+    document.getElementById('duplicate').title = 'Same\uD83D';
+    document.getElementById('duplicate').textContent = 'Same\uD83D';
+    document.getElementById('input').alt = 'Image\uD83D';
+    document.getElementById('title').textContent = 'Chart\uD83D';
+    document.getElementById('desc').textContent = 'Details\uD83D';
+    document.getElementById('image-title').textContent = 'Caption\uD83D';
+  )"));
+  GetAIPageContentWithActionableElements();
+
+  const auto* button = FindNodeBySelector("#button");
+  ASSERT_TRUE(button);
+  EXPECT_EQ(button->content_attributes->label, u"Tooltip\uFFFD");
+  const auto* duplicate = FindNodeBySelector("#duplicate");
+  ASSERT_TRUE(duplicate);
+  EXPECT_TRUE(duplicate->content_attributes->label.empty());
+  const auto* input = FindNodeBySelector("#input");
+  ASSERT_TRUE(input);
+  EXPECT_EQ(input->content_attributes->label, u"Image\uFFFD");
+  const auto* svg = FindNodeBySelector("#svg");
+  ASSERT_TRUE(svg);
+  EXPECT_EQ(svg->content_attributes->label, u"Chart\uFFFD");
+  ASSERT_TRUE(svg->content_attributes->svg_root_data);
+  EXPECT_TRUE(svg->content_attributes->svg_root_data->inner_text.empty());
+  const auto* image = FindNodeBySelector("#svg-image");
+  ASSERT_TRUE(image);
+  ASSERT_TRUE(image->content_attributes->image_info);
+  EXPECT_EQ(image->content_attributes->image_info->image_caption,
+            u"Caption\uFFFD");
+  // Compare after replacing unpaired surrogates. The caption already has a
+  // replacement character, while the DOM title still has the unpaired
+  // surrogate.
+  EXPECT_TRUE(image->content_attributes->label.empty());
+
+  // Without a title, the description supplies the fallback label.
+  helper_.LocalMainFrame()->ExecuteScript(
+      WebScriptSource("document.getElementById('title').remove();"));
+  GetAIPageContentWithActionableElements();
+  const auto* svg_with_description = FindNodeBySelector("#svg");
+  ASSERT_TRUE(svg_with_description);
+  EXPECT_EQ(svg_with_description->content_attributes->label, u"Details\uFFFD");
+  EXPECT_TRUE(svg_with_description->content_attributes->svg_root_data
+                  ->inner_text.empty());
 }
 
 TEST_F(AIPageContentAgentTestTextEncoding, AriaLabelCorrected) {
