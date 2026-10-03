@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.appearance.settings;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment.PREF_BOOKMARK_BAR;
@@ -36,12 +37,15 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.bookmarks.BookmarkBarVisibilityState;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 import org.chromium.components.prefs.PrefChangeRegistrarJni;
@@ -68,6 +72,7 @@ public class BookmarkBarSettingsFragmentTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private PrefService mPrefService;
     @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
     @Mock private UserPrefs.Natives mUserPrefsJni;
 
     private Set<PrefObserver> mBookmarkBarSettingObserverCache;
@@ -80,6 +85,7 @@ public class BookmarkBarSettingsFragmentTest {
         // Set up mocks.
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
+        TrackerFactory.setTrackerForTests(mTracker);
 
         // Set up natives.
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
@@ -115,6 +121,7 @@ public class BookmarkBarSettingsFragmentTest {
         PrefChangeRegistrarJni.setInstanceForTesting(null);
         UserPrefsJni.setInstanceForTesting(null);
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(null);
+        TrackerFactory.setTrackerForTests(null);
     }
 
     @Test
@@ -122,6 +129,7 @@ public class BookmarkBarSettingsFragmentTest {
     public void testBookmarkBarPreferenceIsPresent() {
         launchSettings();
         assertRadioButtonGroupExists(PREF_BOOKMARK_BAR);
+        verify(mTracker).notifyEvent(EventConstants.SETTINGS_APPEARANCE_OPENED);
     }
 
     @Test
