@@ -475,7 +475,8 @@ public class NtpSyncedThemeManagerUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true,
                         attributionLine1,
-                        attributionLine2);
+                        attributionLine2,
+                        JUnitTestGURLs.URL_2);
         int primaryColor = 0xFF112233;
         NtpBackgroundDataThemeCollection themeData =
                 new NtpBackgroundDataThemeCollection(
@@ -493,6 +494,7 @@ public class NtpSyncedThemeManagerUnitTest {
                         eq(TEST_COLLECTION_ID),
                         eq(attributionLine1),
                         eq(attributionLine2),
+                        eq(JUnitTestGURLs.URL_2),
                         eq(primaryColor),
                         /* isDailyRefresh= */ eq(true));
     }

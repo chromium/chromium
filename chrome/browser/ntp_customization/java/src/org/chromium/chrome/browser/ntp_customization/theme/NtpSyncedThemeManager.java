@@ -213,6 +213,7 @@ public class NtpSyncedThemeManager
                     info.collectionId,
                     info.attributionLine1,
                     info.attributionLine2,
+                    info.attributionActionUrl,
                     collectionData.getPrimaryColor(),
                     info.isDailyRefreshEnabled);
             return;

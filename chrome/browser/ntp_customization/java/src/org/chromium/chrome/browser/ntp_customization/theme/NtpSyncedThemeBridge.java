@@ -119,6 +119,7 @@ public class NtpSyncedThemeBridge {
      * @param collectionId The ID of the theme collection.
      * @param attributionLine1 The first attribution line of the background image.
      * @param attributionLine2 The second attribution line of the background image.
+     * @param attributionActionUrl The URL the attribution links to, or an empty GURL.
      * @param primaryColor The primary color extracted from the theme collection image.
      * @param isDailyRefresh Whether daily refresh is enabled for this theme.
      */
@@ -127,6 +128,7 @@ public class NtpSyncedThemeBridge {
             String collectionId,
             @Nullable String attributionLine1,
             @Nullable String attributionLine2,
+            GURL attributionActionUrl,
             @Nullable @ColorInt Integer primaryColor,
             boolean isDailyRefresh) {
         if (mNativeNtpSyncedThemeBridge == 0) return;
@@ -139,6 +141,7 @@ public class NtpSyncedThemeBridge {
                         collectionId,
                         attributionLine1,
                         attributionLine2,
+                        attributionActionUrl,
                         color,
                         isDailyRefresh);
     }
@@ -199,6 +202,7 @@ public class NtpSyncedThemeBridge {
      *     collection.
      * @param attributionLine1 The first attribution line of the background image.
      * @param attributionLine2 The second attribution line of the background image.
+     * @param attributionActionUrl The URL the attribution links to, or an empty GURL.
      * @param mainColor The main color stored with the background in prefs (for a sync update,
      *     copied from {@code NtpCustomBackground.main_color}). It becomes the primary (seed) color
      *     of the theme. It is 0 only in the edge case where no color is set, e.g. the sending
@@ -213,6 +217,7 @@ public class NtpSyncedThemeBridge {
             boolean isDailyRefreshEnabled,
             @JniType("std::string") String attributionLine1,
             @JniType("std::string") String attributionLine2,
+            @JniType("GURL") GURL attributionActionUrl,
             @ColorInt int mainColor) {
         CustomBackgroundInfo info =
                 new CustomBackgroundInfo(
@@ -221,7 +226,8 @@ public class NtpSyncedThemeBridge {
                         isUploadedImage,
                         isDailyRefreshEnabled,
                         attributionLine1,
-                        attributionLine2);
+                        attributionLine2,
+                        attributionActionUrl);
         return new SyncedBackgroundInfo(info, mainColor != 0 ? mainColor : null);
     }
 
@@ -249,6 +255,7 @@ public class NtpSyncedThemeBridge {
                 @JniType("std::string") String collectionId,
                 @JniType("std::string") @Nullable String attributionLine1,
                 @JniType("std::string") @Nullable String attributionLine2,
+                @JniType("GURL") GURL attributionActionUrl,
                 int primaryColor,
                 boolean isDailyRefresh);
     }

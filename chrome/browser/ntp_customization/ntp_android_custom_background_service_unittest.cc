@@ -680,7 +680,8 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), kTestColor,
+      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
+      kTestColor,
       /*is_daily_refresh=*/false);
 
   const base::Value* pref = profile_->GetPrefs()->GetUserPrefValue(
@@ -716,7 +717,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(),
+      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
       /*color=*/0, /*is_daily_refresh=*/false);
 
   // The 0 is stored in the local pref as is.
@@ -760,7 +761,8 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service_->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), kTestColor,
+      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
+      kTestColor,
       /*is_daily_refresh=*/false);
 
   service_->RemoveObserver(&observer);
@@ -991,7 +993,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), SK_ColorBLUE,
+      /*attribution_line_2=*/std::string(), GURL(kTestActionUrl), SK_ColorBLUE,
       /*is_daily_refresh=*/false);
 
   EXPECT_TRUE(
@@ -1005,11 +1007,14 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   EXPECT_EQ(bg->collection_id, kTestCollectionId);
   EXPECT_FALSE(bg->daily_refresh_enabled);
   EXPECT_EQ(SK_ColorBLUE, bg->custom_background_main_color);
+  EXPECT_EQ(GURL(kTestActionUrl), bg->custom_background_attribution_action_url);
 
   const sync_pb::ThemeAndroidSpecifics specifics = ReadSyncedTheme();
   EXPECT_TRUE(specifics.has_ntp_background());
   EXPECT_EQ(kTestValidUrl, specifics.ntp_background().url());
   EXPECT_EQ(kTestCollectionId, specifics.ntp_background().collection_id());
+  EXPECT_EQ(kTestActionUrl,
+            specifics.ntp_background().attribution_action_url());
   EXPECT_EQ(SK_ColorBLUE, specifics.ntp_background().main_color());
   EXPECT_TRUE(specifics.has_user_color_theme());
   EXPECT_EQ(SK_ColorBLUE, specifics.user_color_theme().color());
@@ -1020,7 +1025,7 @@ TEST_F(
     UpdateThemeCollectionPrefsWithColor_HistoryFlow_WritesAttributionAndRefreshKeys) {
   service_->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId, kTestAttribution1,
-      kTestAttribution2, SK_ColorBLUE,
+      kTestAttribution2, GURL(kTestActionUrl), SK_ColorBLUE,
       /*is_daily_refresh=*/false);
 
   const base::DictValue& dict = GetCustomBackgroundDict();
@@ -1032,6 +1037,8 @@ TEST_F(
             *dict.FindString(kNtpCustomBackgroundAttributionLine1));
   EXPECT_EQ(kTestAttribution2,
             *dict.FindString(kNtpCustomBackgroundAttributionLine2));
+  EXPECT_EQ(kTestActionUrl,
+            *dict.FindString(kNtpCustomBackgroundAttributionActionURL));
 
   // RefreshBackgroundIfNeeded() dereferences these two without a null check,
   // so they must always be present.
@@ -1056,7 +1063,8 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), SK_ColorGREEN,
+      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
+      SK_ColorGREEN,
       /*is_daily_refresh=*/false);
 
   // The empty attribution must patch in the color instead of replacing what
@@ -1100,7 +1108,8 @@ TEST_F(
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestValidUrl), kTestCollectionId,
       /*attribution_line_1=*/std::string(),
-      /*attribution_line_2=*/std::string(), SK_ColorBLUE,
+      /*attribution_line_2=*/std::string(), /*attribution_action_url=*/GURL(),
+      SK_ColorBLUE,
       /*is_daily_refresh=*/false);
 
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
@@ -1125,7 +1134,7 @@ TEST_F(NtpAndroidCustomBackgroundServiceTest,
 
   service->UpdateThemeCollectionPrefsWithColor(
       GURL(kTestInvalidUrl), kTestCollectionId, kTestAttribution1,
-      kTestAttribution2, SK_ColorBLUE,
+      kTestAttribution2, GURL(kTestActionUrl), SK_ColorBLUE,
       /*is_daily_refresh=*/false);
 
   // Neither the preferences nor sync were touched.

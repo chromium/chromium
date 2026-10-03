@@ -87,6 +87,7 @@ class NtpAndroidCustomBackgroundService
       const std::string& collection_id,
       const std::string& attribution_line_1,
       const std::string& attribution_line_2,
+      const GURL& attribution_action_url,
       SkColor color,
       bool is_daily_refresh);
 

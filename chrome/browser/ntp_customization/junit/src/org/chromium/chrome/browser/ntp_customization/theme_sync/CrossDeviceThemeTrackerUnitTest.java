@@ -203,7 +203,10 @@ public class CrossDeviceThemeTrackerUnitTest {
     @Test
     public void testCreateThemeCollectionData() {
         testCreateThemeCollectionDataImpl(
-                "Attribution 1", "Attribution 2", "Attribution 1, Attribution 2");
+                "Attribution 1",
+                "Attribution 2",
+                "https://www.example.com/photographer",
+                "Attribution 1, Attribution 2");
     }
 
     @Test
@@ -211,11 +214,15 @@ public class CrossDeviceThemeTrackerUnitTest {
         testCreateThemeCollectionDataImpl(
                 /* attributionLine1= */ "",
                 /* attributionLine2= */ "",
+                /* attributionActionUrl= */ "",
                 /* expectedContentDescription= */ "");
     }
 
     private void testCreateThemeCollectionDataImpl(
-            String attributionLine1, String attributionLine2, String expectedContentDescription) {
+            String attributionLine1,
+            String attributionLine2,
+            String attributionActionUrl,
+            String expectedContentDescription) {
         String testUrl = "https://www.example.com/image.png";
         String collectionId = "test_collection";
         NtpBackgroundDataThemeCollection data =
@@ -227,6 +234,7 @@ public class CrossDeviceThemeTrackerUnitTest {
                         /* isDailyRefresh= */ false,
                         attributionLine1,
                         attributionLine2,
+                        attributionActionUrl,
                         /* hasChromeColor= */ false,
                         /* chromeColorId= */ 0,
                         /* hasUserColor= */ false,
@@ -240,6 +248,7 @@ public class CrossDeviceThemeTrackerUnitTest {
         assertFalse(bgInfo.isDailyRefreshEnabled);
         assertEquals(attributionLine1, bgInfo.attributionLine1);
         assertEquals(attributionLine2, bgInfo.attributionLine2);
+        assertEquals(attributionActionUrl, bgInfo.attributionActionUrl.getSpec());
         assertEquals(expectedContentDescription, data.getContentDescription());
     }
 }

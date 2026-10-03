@@ -40,6 +40,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     private static final String TEST_OTHER_COLLECTION_ID = "other_id";
     private static final String TEST_ATTRIBUTION_LINE_1 = "attribution line 1";
     private static final String TEST_ATTRIBUTION_LINE_2 = "attribution line 2";
+    private static final GURL TEST_ATTRIBUTION_ACTION_URL = JUnitTestGURLs.URL_3;
     private static final String TEST_FILE_ID_HASH = "file_id_hash";
 
     @Test
@@ -88,7 +89,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
         NtpBackgroundDataThemeCollection data4 =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
@@ -207,19 +209,28 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     @Test
     public void testToJsonAndFromJson() throws JSONException {
         testToJsonAndFromJsonImpl(
-                /* fileIdHash= */ null, /* attributionLine1= */ null, /* attributionLine2= */ null);
+                /* fileIdHash= */ null,
+                /* attributionLine1= */ null,
+                /* attributionLine2= */ null,
+                GURL.emptyGURL());
     }
 
     @Test
     public void testToJsonAndFromJson_withFileIdHash() throws JSONException {
         testToJsonAndFromJsonImpl(
-                "test_hash", /* attributionLine1= */ null, /* attributionLine2= */ null);
+                "test_hash",
+                /* attributionLine1= */ null,
+                /* attributionLine2= */ null,
+                GURL.emptyGURL());
     }
 
     @Test
     public void testToJsonAndFromJson_withAttribution() throws JSONException {
         testToJsonAndFromJsonImpl(
-                /* fileIdHash= */ null, TEST_ATTRIBUTION_LINE_1, TEST_ATTRIBUTION_LINE_2);
+                /* fileIdHash= */ null,
+                TEST_ATTRIBUTION_LINE_1,
+                TEST_ATTRIBUTION_LINE_2,
+                TEST_ATTRIBUTION_ACTION_URL);
     }
 
     @Test
@@ -295,7 +306,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
     private void testToJsonAndFromJsonImpl(
             @Nullable String fileIdHash,
             @Nullable String attributionLine1,
-            @Nullable String attributionLine2)
+            @Nullable String attributionLine2,
+            GURL attributionActionUrl)
             throws JSONException {
         @PlatformType int platformType = PlatformType.ANDROID;
         @NtpBackgroundType int backgroundType = NtpBackgroundType.THEME_COLLECTION;
@@ -311,7 +323,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         isDailyRefreshEnabled,
                         attributionLine1,
-                        attributionLine2);
+                        attributionLine2,
+                        attributionActionUrl);
         Matrix portraitMatrix = new Matrix();
         portraitMatrix.setValues(new float[] {1, 0, 0, 0, 1, 0, 0, 0, 1});
         portraitMatrix.setTranslate(10f, 20f);
@@ -332,6 +345,11 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         fileIdHash);
 
         JSONObject json = data.toJson();
+        // An empty attribution action URL is not written, and a missing one is read back as empty.
+        assertEquals(
+                !attributionActionUrl.isEmpty(),
+                json.getJSONObject(NtpBackgroundDataThemeCollection.CUSTOM_BACKGROUND_INFO_KEY)
+                        .has(NtpBackgroundDataThemeCollection.ATTRIBUTION_ACTION_URL_KEY));
         NtpBackgroundDataThemeCollection restored = NtpBackgroundDataThemeCollection.fromJson(json);
 
         assertEquals(platformType, restored.getPlatformType());
@@ -345,6 +363,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertEquals(data.isBitmapSaved(), restored.isBitmapSaved());
         assertEquals(attributionLine1, restored.getCustomBackgroundInfo().attributionLine1);
         assertEquals(attributionLine2, restored.getCustomBackgroundInfo().attributionLine2);
+        assertEquals(attributionActionUrl, restored.getCustomBackgroundInfo().attributionActionUrl);
         assertEquals(data.getContentDescription(), restored.getContentDescription());
 
         assertNotNull(restored.getBackgroundImageInfo());
@@ -441,7 +460,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         attributionLine1,
-                        attributionLine2);
+                        attributionLine2,
+                        GURL.emptyGURL());
         NtpBackgroundDataThemeCollection data =
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
@@ -468,9 +488,11 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
-                        List.of(attribution1, attribution2));
+                        List.of(attribution1, attribution2),
+                        TEST_ATTRIBUTION_ACTION_URL);
         assertEquals(attribution1, info.attributionLine1);
         assertEquals(attribution2, info.attributionLine2);
+        assertEquals(TEST_ATTRIBUTION_ACTION_URL, info.attributionActionUrl);
 
         CustomBackgroundInfo infoNoAttributions =
                 CustomBackgroundInfo.createCustomBackgroundInfo(
@@ -478,7 +500,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         TEST_COLLECTION_ID,
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
-                        List.of());
+                        List.of(),
+                        GURL.emptyGURL());
         assertNull(infoNoAttributions.attributionLine1);
         assertNull(infoNoAttributions.attributionLine2);
     }
@@ -492,7 +515,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
         CustomBackgroundInfo info2 =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -500,11 +524,12 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
         // The backdrop server localizes the attribution to the UI language of the device that
         // requested it, so the same image reaches this device with a different attribution, or
-        // with none at all, depending on where it was selected. Those still describe one and the
-        // same image.
+        // with no attribution or attribution link at all, depending on where it was selected.
+        // Those still describe one and the same image.
         CustomBackgroundInfo infoNullAttribution =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -512,7 +537,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         /* attributionLine1= */ null,
-                        /* attributionLine2= */ null);
+                        /* attributionLine2= */ null,
+                        GURL.emptyGURL());
         CustomBackgroundInfo infoDifferentAttribution =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -520,7 +546,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         "Different attribution line 1",
-                        "Different attribution line 2");
+                        "Different attribution line 2",
+                        TEST_ATTRIBUTION_ACTION_URL);
         CustomBackgroundInfo infoDifferentUrl =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_2,
@@ -528,7 +555,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
         CustomBackgroundInfo infoDifferentCollectionId =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -536,7 +564,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
         CustomBackgroundInfo infoDailyRefreshEnabled =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -544,7 +573,8 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ true,
                         TEST_ATTRIBUTION_LINE_1,
-                        TEST_ATTRIBUTION_LINE_2);
+                        TEST_ATTRIBUTION_LINE_2,
+                        TEST_ATTRIBUTION_ACTION_URL);
 
         assertEquals(info1, info2);
         assertEquals(info1.hashCode(), info2.hashCode());

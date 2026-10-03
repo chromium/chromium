@@ -83,6 +83,7 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
   bool is_bg_daily_refresh = false;
   std::string bg_attribution_line_1;
   std::string bg_attribution_line_2;
+  std::string bg_attribution_action_url;
   if (has_background) {
     const sync_pb::NtpCustomBackground& bg = specifics.ntp_background();
     bg_url = bg.url();
@@ -91,6 +92,7 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
                           bg.refresh_timestamp_unix_epoch_seconds() != 0;
     bg_attribution_line_1 = bg.attribution_line_1();
     bg_attribution_line_2 = bg.attribution_line_2();
+    bg_attribution_action_url = bg.attribution_action_url();
   }
 
   // 2. Extract color data if present.
@@ -161,8 +163,8 @@ CrossDeviceThemeTrackerAndroid::CreateJavaTheme(
     return CrossDeviceThemeTrackerJni::createThemeCollectionData(
         env, jcontext, platform_type, bg_url, bg_collection_id,
         is_bg_daily_refresh, bg_attribution_line_1, bg_attribution_line_2,
-        has_chrome_color, chrome_color_id, has_user_color,
-        static_cast<int32_t>(primary_light));
+        bg_attribution_action_url, has_chrome_color, chrome_color_id,
+        has_user_color, static_cast<int32_t>(primary_light));
   } else if (has_chrome_color) {
     return CrossDeviceThemeTrackerJni::createColorData(
         env, jcontext, platform_type, chrome_color_id, is_color_daily_refresh);

@@ -594,13 +594,14 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                         TEST_COLLECTION_LABEL,
                         GURL.emptyGURL(),
                         TEST_COLLECTION_ORDER);
+        GURL attributionUrl1 = new GURL("https://attribution1.com/");
         CollectionImage image1 =
                 new CollectionImage(
                         TEST_COLLECTION_ID,
                         new GURL(TEST_IMAGE_URL_1),
                         new GURL(TEST_PREVIEW_URL_1),
                         Arrays.asList(TEST_ATTRIBUTE_1),
-                        GURL.emptyGURL());
+                        attributionUrl1);
         CollectionImage image2 =
                 new CollectionImage(
                         TEST_COLLECTION_ID,
@@ -654,11 +655,13 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 (NtpBackgroundDataThemeCollection) dataList.get(3);
         assertEquals(TEST_COLLECTION_ID, theme1.getCustomBackgroundInfo().collectionId);
         assertEquals(TEST_IMAGE_URL_1, theme1.getCustomBackgroundInfo().backgroundUrl.getSpec());
+        assertEquals(attributionUrl1, theme1.getCustomBackgroundInfo().attributionActionUrl);
 
         NtpBackgroundDataThemeCollection theme2 =
                 (NtpBackgroundDataThemeCollection) dataList.get(4);
         assertEquals(TEST_COLLECTION_ID, theme2.getCustomBackgroundInfo().collectionId);
         assertEquals(TEST_IMAGE_URL_2, theme2.getCustomBackgroundInfo().backgroundUrl.getSpec());
+        assertTrue(theme2.getCustomBackgroundInfo().attributionActionUrl.isEmpty());
     }
 
     @Test

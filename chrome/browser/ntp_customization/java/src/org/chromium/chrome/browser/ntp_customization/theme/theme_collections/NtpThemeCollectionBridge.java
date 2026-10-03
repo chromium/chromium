@@ -220,6 +220,7 @@ public class NtpThemeCollectionBridge {
      *     collection.
      * @param attributionLine1 The first attribution line of the background image.
      * @param attributionLine2 The second attribution line of the background image.
+     * @param attributionActionUrl The URL the attribution links to, or an empty GURL.
      */
     @CalledByNative
     @VisibleForTesting
@@ -229,14 +230,16 @@ public class NtpThemeCollectionBridge {
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
             @JniType("std::string") String attributionLine1,
-            @JniType("std::string") String attributionLine2) {
+            @JniType("std::string") String attributionLine2,
+            @JniType("GURL") GURL attributionActionUrl) {
         return new CustomBackgroundInfo(
                 backgroundUrl,
                 collectionId,
                 isUploadedImage,
                 isDailyRefreshEnabled,
                 attributionLine1,
-                attributionLine2);
+                attributionLine2,
+                attributionActionUrl);
     }
 
     @NativeMethods

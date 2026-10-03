@@ -215,6 +215,7 @@ public class CrossDeviceThemeTracker {
             boolean isDailyRefresh,
             @JniType("std::string") String attributionLine1,
             @JniType("std::string") String attributionLine2,
+            @JniType("std::string") String attributionActionUrl,
             boolean hasChromeColor,
             int chromeColorId,
             boolean hasUserColor,
@@ -227,7 +228,8 @@ public class CrossDeviceThemeTracker {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ isDailyRefresh,
                         attributionLine1,
-                        attributionLine2);
+                        attributionLine2,
+                        new GURL(attributionActionUrl));
 
         Integer primaryColor = null;
         if (hasChromeColor) {

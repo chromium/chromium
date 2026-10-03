@@ -35,6 +35,15 @@ public class CustomBackgroundInfo {
     public final @Nullable String attributionLine2;
 
     /**
+     * The URL the attribution links to, as read from and written to the synced background. It is
+     * {@link GURL#emptyGURL()} when the image has no such link.
+     *
+     * <p>Like the attribution lines, it describes the image rather than identifies it, so it is
+     * deliberately not part of {@link #equals} either.
+     */
+    public final GURL attributionActionUrl;
+
+    /**
      * TODO(https://crbug.com/488439751): Cleans up this method.
      *
      * @param backgroundUrl The URL of the currently set background image.
@@ -55,7 +64,8 @@ public class CustomBackgroundInfo {
                 isUploadedImage,
                 isDailyRefreshEnabled,
                 /* attributionLine1= */ null,
-                /* attributionLine2= */ null);
+                /* attributionLine2= */ null,
+                GURL.emptyGURL());
     }
 
     /**
@@ -66,6 +76,7 @@ public class CustomBackgroundInfo {
      *     collection.
      * @param attributionLine1 The first attribution line of the background image.
      * @param attributionLine2 The second attribution line of the background image.
+     * @param attributionActionUrl The URL the attribution links to, or {@link GURL#emptyGURL()}.
      */
     public CustomBackgroundInfo(
             GURL backgroundUrl,
@@ -73,13 +84,15 @@ public class CustomBackgroundInfo {
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
             @Nullable String attributionLine1,
-            @Nullable String attributionLine2) {
+            @Nullable String attributionLine2,
+            GURL attributionActionUrl) {
         this.backgroundUrl = backgroundUrl;
         this.collectionId = collectionId;
         this.isUploadedImage = isUploadedImage;
         this.isDailyRefreshEnabled = isDailyRefreshEnabled;
         this.attributionLine1 = attributionLine1;
         this.attributionLine2 = attributionLine2;
+        this.attributionActionUrl = attributionActionUrl;
     }
 
     /**
@@ -92,25 +105,29 @@ public class CustomBackgroundInfo {
      *     collection.
      * @param attributions A list of attributions of the background image. Only the first two lines
      *     are used, as Chrome theme storage and sync only support two attribution lines.
+     * @param attributionActionUrl The URL the attribution links to, or {@link GURL#emptyGURL()}.
      */
     public static CustomBackgroundInfo createCustomBackgroundInfo(
             GURL backgroundUrl,
             String collectionId,
             boolean isUploadedImage,
             boolean isDailyRefreshEnabled,
-            List<String> attributions) {
+            List<String> attributions,
+            GURL attributionActionUrl) {
         return new CustomBackgroundInfo(
                 backgroundUrl,
                 collectionId,
                 isUploadedImage,
                 isDailyRefreshEnabled,
                 attributions != null && attributions.size() > 0 ? attributions.get(0) : null,
-                attributions != null && attributions.size() > 1 ? attributions.get(1) : null);
+                attributions != null && attributions.size() > 1 ? attributions.get(1) : null,
+                attributionActionUrl);
     }
 
     /**
-     * Compares the fields that identify the image itself. The attribution lines are deliberately
-     * left out, see {@link #attributionLine1}.
+     * Compares the fields that identify the image itself. The attribution lines and the attribution
+     * action URL are deliberately left out, see {@link #attributionLine1} and {@link
+     * #attributionActionUrl}.
      */
     @Override
     public boolean equals(@Nullable Object obj) {

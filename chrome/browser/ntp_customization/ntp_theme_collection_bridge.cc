@@ -170,7 +170,8 @@ ScopedJavaLocalRef<jobject> NtpThemeCollectionBridge::GetCustomBackgroundInfo(
       env, background->custom_background_url, background->collection_id,
       background->is_uploaded_image, background->daily_refresh_enabled,
       background->custom_background_attribution_line_1,
-      background->custom_background_attribution_line_2);
+      background->custom_background_attribution_line_2,
+      background->custom_background_attribution_action_url);
 }
 
 void NtpThemeCollectionBridge::OnCustomBackgroundImageUpdated() {

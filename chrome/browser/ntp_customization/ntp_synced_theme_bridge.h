@@ -57,12 +57,14 @@ class NtpSyncedThemeBridge : public NtpCustomBackgroundServiceObserver {
   void SelectLocalBackgroundImage(JNIEnv* env);
 
   // Updates the theme collection background with collection ID, attributions,
-  // primary color, and daily refresh state, and notifies the sync bridge.
+  // attribution action URL, primary color, and daily refresh state, and
+  // notifies the sync bridge.
   void UpdateCustomBackgroundPrefsWithColor(
       const GURL& url,
       const std::string& collection_id,
       const std::string& attribution_line_1,
       const std::string& attribution_line_2,
+      const GURL& attribution_action_url,
       int32_t primary_color,
       bool is_daily_refresh);
 

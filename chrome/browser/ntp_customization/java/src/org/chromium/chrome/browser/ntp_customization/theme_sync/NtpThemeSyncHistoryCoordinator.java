@@ -194,7 +194,8 @@ public class NtpThemeSyncHistoryCoordinator {
                             image.collectionId,
                             /* isUploadedImage= */ false,
                             /* isDailyRefreshEnabled= */ false,
-                            image.attribution);
+                            image.attribution,
+                            image.attributionUrl);
             if (mImageFetcher == null) {
                 mImageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
             }
