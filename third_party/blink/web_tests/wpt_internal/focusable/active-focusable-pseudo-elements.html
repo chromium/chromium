@@ -41,6 +41,30 @@
     height: 20px;
     display: inline-block;
   }
+  #multicol {
+    overflow: hidden;
+    columns: 2;
+    column-fill: auto;
+    column-gap: 0;
+    width: 200px;
+    height: 50px;
+    scroll-marker-group: before;
+  }
+  #multicol::scroll-marker-group {
+    display: flex;
+    height: 20px;
+  }
+  #multicol::column::scroll-marker {
+    content: "";
+    width: 20px;
+    height: 20px;
+  }
+  #multicol > div {
+    height: 50px;
+  }
+  #multicol.one-column > div:last-child {
+    display: none;
+  }
 </style>
 
 <div id="scroller">
@@ -57,6 +81,11 @@
     </style>
     <div id="inner-scroller"><div id="inner-item"></div></div>
   </template>
+</div>
+<button id="before-multicol">Before multicol</button>
+<div id="multicol">
+  <div>Column 1</div>
+  <div>Column 2</div>
 </div>
 <button id="reset">Reset</button>
 
@@ -244,4 +273,17 @@ test((t) => {
   assert_focusable(sr.activeFocusable, { target: innerItem, pseudoElement: innerMarker });
   assert_focusable(documentFocusable, { shadowHost });
 }, "activeFocusable does not leak pseudoElement across shadow boundary");
+
+test((t) => {
+  const multicol = document.getElementById("multicol");
+  t.add_cleanup(() => multicol.classList.remove("one-column"));
+
+  // ::column::scroll-marker is exposed through its ultimate originating element
+  // (the multicol container, not the ::column), even after it's destroyed.
+  const marker2 = document.getElementById("before-multicol").nextFocusable().nextFocusable();
+  assert_focusable(marker2, { target: multicol });
+  multicol.classList.add("one-column");
+  multicol.getBoundingClientRect();
+  assert_focusable(marker2, { target: multicol });
+}, "Focusable for ::column::scroll-marker");
 </script>

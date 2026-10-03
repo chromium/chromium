@@ -104,7 +104,11 @@ Focusable* Focusable::FindAdjacentFocusable(Element& start,
 Focusable::Focusable(base::PassKey<Focusable>,
                      Element* shadow_host,
                      Element& element)
-    : shadow_host_(shadow_host), element_(&element) {}
+    : shadow_host_(shadow_host), element_(&element) {
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    originating_element_ = &pseudo_element->UltimateOriginatingElement();
+  }
+}
 
 Focusable::Focusable(base::PassKey<Focusable>,
                      Element* shadow_host,
@@ -118,12 +122,8 @@ Element* Focusable::target() const {
   if (pseudo_element_) {
     return pseudo_element_->element();
   }
-  if (auto* pseudo_element = DynamicTo<PseudoElement>(element_.Get())) {
-    // A destroyed PseudoElement is disconnected, and no longer knows its
-    // originating element (see `PseudoElement::Dispose()`).
-    return pseudo_element->isConnected()
-               ? &pseudo_element->UltimateOriginatingElement()
-               : nullptr;
+  if (originating_element_) {
+    return originating_element_.Get();
   }
   return element_.Get();
 }
@@ -187,6 +187,7 @@ void Focusable::Trace(Visitor* visitor) const {
   visitor->Trace(shadow_host_);
   visitor->Trace(element_);
   visitor->Trace(pseudo_element_);
+  visitor->Trace(originating_element_);
   ScriptWrappable::Trace(visitor);
 }
 
