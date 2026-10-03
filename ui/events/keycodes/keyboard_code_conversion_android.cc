@@ -180,6 +180,8 @@ DomKey GetDomKeyFromAndroidKeycode(int keycode) {
       return DomKey::INSERT;
     case AKEYCODE_FORWARD:
       return DomKey::BROWSER_FORWARD;
+    case AKEYCODE_REFRESH:
+      return DomKey::BROWSER_REFRESH;
     case AKEYCODE_MEDIA_PLAY:
       return DomKey::MEDIA_PLAY;
     case AKEYCODE_MEDIA_PAUSE:
@@ -556,6 +558,12 @@ KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode) {
       return VKEY_BROWSER_BACK;
     case AKEYCODE_FORWARD:
       return VKEY_BROWSER_FORWARD;
+    case AKEYCODE_REFRESH:
+      return VKEY_BROWSER_REFRESH;
+    case AKEYCODE_SEARCH:
+      return VKEY_BROWSER_SEARCH;
+    case AKEYCODE_BOOKMARK:
+      return VKEY_BROWSER_FAVORITES;
     case AKEYCODE_SPACE:
       return VKEY_SPACE;
     case AKEYCODE_MOVE_HOME:
@@ -660,6 +668,7 @@ KeyboardCode KeyboardCodeFromAndroidKeyCode(int keycode) {
     case AKEYCODE_MINUS:
       return VKEY_OEM_MINUS;
     case AKEYCODE_EQUALS:
+    case AKEYCODE_PLUS:
       return VKEY_OEM_PLUS;
     case AKEYCODE_PERIOD:
       return VKEY_OEM_PERIOD;
@@ -798,6 +807,12 @@ int AndroidKeyCodeFromKeyboardCode(KeyboardCode key_code) {
       return AKEYCODE_BACK;
     case VKEY_BROWSER_FORWARD:
       return AKEYCODE_FORWARD;
+    case VKEY_BROWSER_REFRESH:
+      return AKEYCODE_REFRESH;
+    case VKEY_BROWSER_SEARCH:
+      return AKEYCODE_SEARCH;
+    case VKEY_BROWSER_FAVORITES:
+      return AKEYCODE_BOOKMARK;
     case VKEY_SPACE:
       return AKEYCODE_SPACE;
     case VKEY_HOME:
@@ -930,9 +945,9 @@ int AndroidKeyCodeFromKeyboardCode(KeyboardCode key_code) {
     case VKEY_OEM_104:
       return AKEYCODE_MEDIA_FAST_FORWARD;
     case VKEY_PRIOR:
-      return AKEYCODE_CHANNEL_UP;
+      return AKEYCODE_PAGE_UP;
     case VKEY_NEXT:
-      return AKEYCODE_CHANNEL_DOWN;
+      return AKEYCODE_PAGE_DOWN;
     case VKEY_DELETE:
       return AKEYCODE_FORWARD_DEL;
     case VKEY_LCONTROL:

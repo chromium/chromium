@@ -26,13 +26,16 @@ struct AndroidKeyCodeToKeyboardCode {
   KeyboardCode keyboard_code;
 };
 
-constexpr std::array<AndroidKeyCodeToKeyboardCode, 23>
+constexpr std::array<AndroidKeyCodeToKeyboardCode, 31>
     kAndroidKeyCodeToKeyboardCodeMap = {
         {// Spot-check several key codes
          {AKEYCODE_DEL, KeyboardCode::VKEY_BACK},
          {AKEYCODE_SHIFT_LEFT, KeyboardCode::VKEY_LSHIFT},
          {AKEYCODE_ALT_RIGHT, KeyboardCode::VKEY_ALTGR},
          {AKEYCODE_BACK, KeyboardCode::VKEY_BROWSER_BACK},
+         {AKEYCODE_REFRESH, KeyboardCode::VKEY_BROWSER_REFRESH},
+         {AKEYCODE_SEARCH, KeyboardCode::VKEY_BROWSER_SEARCH},
+         {AKEYCODE_BOOKMARK, KeyboardCode::VKEY_BROWSER_FAVORITES},
          {AKEYCODE_DPAD_LEFT, KeyboardCode::VKEY_LEFT},
          {AKEYCODE_0, KeyboardCode::VKEY_0},
          {AKEYCODE_Z, KeyboardCode::VKEY_Z},
@@ -43,15 +46,20 @@ constexpr std::array<AndroidKeyCodeToKeyboardCode, 23>
          {AKEYCODE_F5, KeyboardCode::VKEY_F5},
          {AKEYCODE_NUMPAD_0, KeyboardCode::VKEY_NUMPAD0},
          {AKEYCODE_NUMPAD_DOT, KeyboardCode::VKEY_DECIMAL},
-         {AKEYCODE_CHANNEL_DOWN, KeyboardCode::VKEY_NEXT},
          // Android keycodes mapped to the same key code.
          {AKEYCODE_DPAD_CENTER, KeyboardCode::VKEY_RETURN},
          {AKEYCODE_ENTER, KeyboardCode::VKEY_RETURN},
          {AKEYCODE_NUMPAD_ENTER, KeyboardCode::VKEY_RETURN},
+         {AKEYCODE_EQUALS, KeyboardCode::VKEY_OEM_PLUS},
+         {AKEYCODE_PLUS, KeyboardCode::VKEY_OEM_PLUS},
          {AKEYCODE_MUTE, KeyboardCode::VKEY_VOLUME_MUTE},
          {AKEYCODE_VOLUME_MUTE, KeyboardCode::VKEY_VOLUME_MUTE},
          {AKEYCODE_MEDIA_PLAY, KeyboardCode::VKEY_MEDIA_PLAY_PAUSE},
          {AKEYCODE_MEDIA_PLAY_PAUSE, KeyboardCode::VKEY_MEDIA_PLAY_PAUSE},
+         {AKEYCODE_PAGE_UP, KeyboardCode::VKEY_PRIOR},
+         {AKEYCODE_CHANNEL_UP, KeyboardCode::VKEY_PRIOR},
+         {AKEYCODE_PAGE_DOWN, KeyboardCode::VKEY_NEXT},
+         {AKEYCODE_CHANNEL_DOWN, KeyboardCode::VKEY_NEXT},
          // Unknown
          {AKEYCODE_UNKNOWN, KeyboardCode::VKEY_UNKNOWN}}};
 
@@ -60,13 +68,16 @@ struct KeyboardCodeToAndroidKeyCode {
   int android_key_code;
 };
 
-constexpr std::array<KeyboardCodeToAndroidKeyCode, 19>
+constexpr std::array<KeyboardCodeToAndroidKeyCode, 24>
     kKeyboardCodeToAndroidKeyCodeMap = {
         {// Spot-check several key codes
          {KeyboardCode::VKEY_BACK, AKEYCODE_DEL},
          {KeyboardCode::VKEY_LSHIFT, AKEYCODE_SHIFT_LEFT},
          {KeyboardCode::VKEY_ALTGR, AKEYCODE_ALT_RIGHT},
          {KeyboardCode::VKEY_BROWSER_BACK, AKEYCODE_BACK},
+         {KeyboardCode::VKEY_BROWSER_REFRESH, AKEYCODE_REFRESH},
+         {KeyboardCode::VKEY_BROWSER_SEARCH, AKEYCODE_SEARCH},
+         {KeyboardCode::VKEY_BROWSER_FAVORITES, AKEYCODE_BOOKMARK},
          {KeyboardCode::VKEY_LEFT, AKEYCODE_DPAD_LEFT},
          {KeyboardCode::VKEY_0, AKEYCODE_0},
          {KeyboardCode::VKEY_Z, AKEYCODE_Z},
@@ -77,11 +88,13 @@ constexpr std::array<KeyboardCodeToAndroidKeyCode, 19>
          {KeyboardCode::VKEY_F5, AKEYCODE_F5},
          {KeyboardCode::VKEY_NUMPAD0, AKEYCODE_NUMPAD_0},
          {KeyboardCode::VKEY_DECIMAL, AKEYCODE_NUMPAD_DOT},
-         {KeyboardCode::VKEY_NEXT, AKEYCODE_CHANNEL_DOWN},
          // Android keycodes mapped to the same key code.
          {KeyboardCode::VKEY_RETURN, AKEYCODE_ENTER},
+         {KeyboardCode::VKEY_OEM_PLUS, AKEYCODE_EQUALS},
          {KeyboardCode::VKEY_VOLUME_MUTE, AKEYCODE_VOLUME_MUTE},
          {KeyboardCode::VKEY_MEDIA_PLAY_PAUSE, AKEYCODE_MEDIA_PLAY_PAUSE},
+         {KeyboardCode::VKEY_PRIOR, AKEYCODE_PAGE_UP},
+         {KeyboardCode::VKEY_NEXT, AKEYCODE_PAGE_DOWN},
          // Unknown
          {KeyboardCode::VKEY_UNKNOWN, AKEYCODE_UNKNOWN}}};
 
