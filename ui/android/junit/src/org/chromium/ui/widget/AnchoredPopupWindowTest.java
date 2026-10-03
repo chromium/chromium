@@ -5,6 +5,9 @@
 package org.chromium.ui.widget;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -17,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
@@ -39,9 +43,13 @@ import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.R;
+import org.chromium.ui.theme.FillInContextThemeWrapper;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.AnchoredPopupWindow.SpecCalculator;
 import org.chromium.ui.widget.AnchoredPopupWindow.VerticalOrientation;
+
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for {@link AnchoredPopupWindow}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -357,6 +365,54 @@ public final class AnchoredPopupWindowTest {
     private void setContentViewSize(int width, int height) {
         mContentView.setMinimumWidth(width);
         mContentView.setMinimumHeight(height);
+    }
+
+    @Test
+    public void testViewBuilderReceivesThemeWrapperContext() {
+        RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 100, 100));
+        AtomicReference<Context> receivedContext = new AtomicReference<>();
+        AnchoredPopupWindow popup =
+                new AnchoredPopupWindow.Builder(
+                                mActivity,
+                                mView,
+                                mDrawable,
+                                (context) -> {
+                                    receivedContext.set(context);
+                                    return mContentView;
+                                },
+                                anchorRectProvider)
+                        .build();
+
+        popup.show();
+        assertNotNull(receivedContext.get());
+        assertTrue(receivedContext.get() instanceof FillInContextThemeWrapper);
+    }
+
+    @Test
+    public void testContentViewRebuiltOnShowAfterDismiss() {
+        RectProvider anchorRectProvider = new RectProvider(new Rect(0, 0, 100, 100));
+        AtomicInteger buildCount = new AtomicInteger();
+        AnchoredPopupWindow popup =
+                new AnchoredPopupWindow.Builder(
+                                mActivity,
+                                mView,
+                                mDrawable,
+                                (context) -> {
+                                    buildCount.incrementAndGet();
+                                    return new FrameLayout(context);
+                                },
+                                anchorRectProvider)
+                        .build();
+
+        popup.show();
+        assertEquals(1, buildCount.get());
+
+        popup.dismiss();
+        assertNull(popup.getContentView());
+
+        popup.show();
+        assertEquals(2, buildCount.get());
+        assertNotNull(popup.getContentView());
     }
 
     private AnchoredPopupWindow createAnchorPopupWindow() {

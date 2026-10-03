@@ -165,7 +165,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     /** Provides the {@link Rect} to anchor the popup to in screen space. */
     private final RectProvider mRectProvider;
 
-    private final Supplier<View> mContentViewCreator;
+    private final ViewBuilder mViewBuilder;
 
     private final Runnable mDismissRunnable =
             new Runnable() {
@@ -194,6 +194,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
                     mRectProvider.stopObserving();
                     mViewportRectProvider.stopObserving();
+                    mContentView = null;
                 }
             };
 
@@ -256,11 +257,32 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     private boolean mDismissOnScreenSizeChange;
     private @Nullable WindowBoundsChangeDetector mWindowBoundsChangeDetector;
 
+    /**
+     * Functional interface to build a content view on demand with the given themed context.
+     *
+     * <p>Implementations should return a freshly inflated or constructed view using the supplied
+     * context. This ensures the view reads the latest color palette, theme styling, and resource
+     * qualifiers from the popup window's current context across re-displays.
+     */
+    @FunctionalInterface
+    public interface ViewBuilder {
+        /**
+         * Builds the content view.
+         *
+         * <p>Construct a fresh view instance using the provided themed {@code context} so theme
+         * styling, colors, and configuration updates apply properly.
+         *
+         * @param context The themed context associated with the popup window.
+         * @return The newly built content view.
+         */
+        View build(Context context);
+    }
+
     /** A builder for {@link AnchoredPopupWindow} instances. */
     public static class Builder {
         private final Context mContext;
         private final View mRootView;
-        private final Supplier<View> mContentViewCreator;
+        private final ViewBuilder mViewBuilder;
         private final RectProvider mAnchorRectProvider;
         private final Drawable mBackground;
 
@@ -309,8 +331,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
          * @param context Context to draw resources from.
          * @param rootView The {@link View} to use for size calculations and for display.
          * @param background The background {@link Drawable} to use for the popup.
-         * @param contentViewCreator The supplier for the content view to set on the popup. The view
-         *     is expected to be a {@link ViewGroup}.
+         * @param viewBuilder The {@link ViewBuilder} to construct the content view with the themed
+         *     context. The view is expected to be a {@link ViewGroup}.
          * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect}
          *     this popup attaches and orients to. The coordinates in the {@link Rect} are expected
          *     to be screen coordinates.
@@ -319,13 +341,34 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 Context context,
                 View rootView,
                 Drawable background,
-                Supplier<View> contentViewCreator,
+                ViewBuilder viewBuilder,
                 RectProvider anchorRectProvider) {
             mContext = context;
             mRootView = rootView;
             mBackground = background;
-            mContentViewCreator = contentViewCreator;
+            mViewBuilder = viewBuilder;
             mAnchorRectProvider = anchorRectProvider;
+        }
+
+        /**
+         * Constructs an {@link AnchoredPopupWindow} instance using a legacy {@link Supplier}.
+         *
+         * @deprecated Use {@link #Builder(Context, View, Drawable, ViewBuilder, RectProvider)}
+         *     instead to allow on-demand building with the themed context.
+         */
+        @Deprecated
+        public Builder(
+                Context context,
+                View rootView,
+                Drawable background,
+                Supplier<View> contentViewCreator,
+                RectProvider anchorRectProvider) {
+            this(
+                    context,
+                    rootView,
+                    background,
+                    (ViewBuilder) (unused) -> contentViewCreator.get(),
+                    anchorRectProvider);
         }
 
         /**
@@ -591,7 +634,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                 new FillInContextThemeWrapper(
                         builder.mContext, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults);
         mRootView = builder.mRootView.getRootView();
-        mContentViewCreator = builder.mContentViewCreator;
+        mViewBuilder = builder.mViewBuilder;
         mViewportRectProvider =
                 builder.mViewportRectProvider != null
                         ? builder.mViewportRectProvider
@@ -683,6 +726,9 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             mWindowBoundsChangeDetector = null;
         }
         mPopupWindow.dismiss();
+        if (!mIgnoreDismissal) {
+            mContentView = null;
+        }
     }
 
     /** Used for testing only. Explicitly trigger dismiss listeners. */
@@ -1179,7 +1225,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
 
     private View getOrCreateContentView() {
         if (mContentView == null) {
-            mContentView = mContentViewCreator.get();
+            mContentView = mViewBuilder.build(mContext);
         }
         return mContentView;
     }
