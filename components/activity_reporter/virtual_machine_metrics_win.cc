@@ -13,9 +13,7 @@
 
 namespace activity_reporter {
 
-// TODO(crbug.com/563548288): Enable by default in a follow-up CL once the
-// histograms have landed.
-BASE_FEATURE(kVmDetectionExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVmDetectionExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
 
 VmDetectionResult DetectVirtualMachine() {
   return VmDetectionResult{
