@@ -358,4 +358,99 @@ TEST_F(TextInputManagerTest, PopupActiveStateDependsOnCreatorFrameFocus) {
   EXPECT_EQ(popup_widget.get(), manager->GetActiveWidget());
 }
 
+class SelectionBoundsCountingObserver : public TextInputManager::Observer {
+ public:
+  void OnSelectionBoundsChanged(
+      TextInputManager* text_input_manager,
+      RenderWidgetHostViewBase* updated_view) override {
+    ++selection_bounds_changed_count_;
+    last_updated_view_ = updated_view;
+  }
+
+  int selection_bounds_changed_count_ = 0;
+  raw_ptr<RenderWidgetHostViewBase> last_updated_view_ = nullptr;
+};
+
+// Test that GetSelectionRegion() returns a SelectionRegion constructed from the
+// active view's EditContext selection bounds when non-empty, notifies
+// OnSelectionBoundsChanged when they change, and preserves the underlying DOM
+// selection region when EditContext bounds are empty or cleared.
+TEST_F(TextInputManagerTest, SelectionRegionUsesEditContextSelectionBounds) {
+  RenderWidgetHostViewBase* view =
+      static_cast<RenderWidgetHostViewBase*>(rvh()->GetWidget()->GetView());
+  ASSERT_TRUE(view);
+  view->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  TextInputManager* manager = view->GetTextInputManager();
+  ASSERT_TRUE(manager);
+
+  SelectionBoundsCountingObserver observer;
+  manager->AddObserver(&observer);
+
+  // Set initial DOM selection bounds.
+  const gfx::Rect dom_caret(10, 20, 0, 18);
+  manager->SelectionBoundsChanged(view, dom_caret, base::i18n::LEFT_TO_RIGHT,
+                                  dom_caret, base::i18n::LEFT_TO_RIGHT,
+                                  dom_caret, /*is_anchor_first=*/true);
+  EXPECT_EQ(observer.selection_bounds_changed_count_, 1);
+
+  // Activate the view with an empty EditContext selection rect (as when
+  // updateSelectionBounds() has not yet been called). GetSelectionRegion()
+  // should continue to return the DOM selection.
+  ui::mojom::TextInputState state;
+  state.type = ui::TEXT_INPUT_TYPE_TEXT;
+  state.edit_context_selection_bounds = gfx::Rect();
+  manager->UpdateTextInputState(view, state);
+
+  const TextInputManager::SelectionRegion* region =
+      manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, dom_caret);
+  const int count_before_edit_context =
+      observer.selection_bounds_changed_count_;
+
+  // Providing non-empty EditContext selection bounds updates
+  // GetSelectionRegion() and notifies OnSelectionBoundsChanged.
+  const gfx::Rect edit_context_bounds(300, 200, 2, 19);
+  state.edit_context_selection_bounds = edit_context_bounds;
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.selection_bounds_changed_count_,
+            count_before_edit_context + 1);
+  EXPECT_EQ(observer.last_updated_view_, view);
+
+  region = manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->anchor.edge_start(), gfx::PointF(300, 200));
+  EXPECT_EQ(region->anchor.edge_end(), gfx::PointF(300, 219));
+  EXPECT_EQ(region->anchor.type(), gfx::SelectionBound::CENTER);
+  EXPECT_EQ(region->focus.edge_start(), gfx::PointF(302, 200));
+  EXPECT_EQ(region->focus.edge_end(), gfx::PointF(302, 219));
+  EXPECT_EQ(region->focus.type(), gfx::SelectionBound::CENTER);
+  EXPECT_EQ(region->bounding_box, edit_context_bounds);
+  EXPECT_EQ(region->caret_rect, edit_context_bounds);
+  EXPECT_EQ(region->first_selection_rect, edit_context_bounds);
+
+  // A subsequent DOM SelectionBoundsChanged updates the underlying DOM
+  // selection without overwriting the active EditContext SelectionRegion.
+  const gfx::Rect new_dom_caret(15, 25, 0, 18);
+  manager->SelectionBoundsChanged(
+      view, new_dom_caret, base::i18n::LEFT_TO_RIGHT, new_dom_caret,
+      base::i18n::LEFT_TO_RIGHT, new_dom_caret, /*is_anchor_first=*/true);
+  region = manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, edit_context_bounds);
+
+  // Clearing EditContext selection bounds falls back to the latest DOM
+  // selection and notifies OnSelectionBoundsChanged.
+  const int count_before_clear = observer.selection_bounds_changed_count_;
+  state.edit_context_selection_bounds.reset();
+  manager->UpdateTextInputState(view, state);
+  EXPECT_EQ(observer.selection_bounds_changed_count_, count_before_clear + 1);
+  region = manager->GetSelectionRegion(view);
+  ASSERT_TRUE(region);
+  EXPECT_EQ(region->bounding_box, new_dom_caret);
+
+  manager->RemoveObserver(&observer);
+}
+
 }  // namespace content

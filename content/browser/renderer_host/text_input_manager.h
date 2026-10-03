@@ -76,6 +76,7 @@ class CONTENT_EXPORT TextInputManager {
     SelectionRegion();
     SelectionRegion(const SelectionRegion& other);
     SelectionRegion& operator=(const SelectionRegion& other);
+    bool operator==(const SelectionRegion& other) const = default;
 
     // The begining of the selection region.
     gfx::SelectionBound anchor;
@@ -174,7 +175,9 @@ class CONTENT_EXPORT TextInputManager {
 
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
-  // if there are no active views.
+  // if there are no active views. If |view| has non-empty EditContext selection
+  // bounds, a SelectionRegion constructed from those bounds is returned instead
+  // of the DOM selection.
   const SelectionRegion* GetSelectionRegion(
       RenderWidgetHostViewBase* view = nullptr) const;
 
@@ -325,6 +328,7 @@ class CONTENT_EXPORT TextInputManager {
   // Unregister methods, respectively.
   ViewMap<ui::mojom::TextInputStatePtr> text_input_state_map_;
   ViewMap<SelectionRegion> selection_region_map_;
+  ViewMap<std::optional<SelectionRegion>> edit_context_selection_region_map_;
   ViewMap<CompositionRangeInfo> composition_range_info_map_;
   ViewMap<TextSelection> text_selection_map_;
 #if BUILDFLAG(IS_WIN)

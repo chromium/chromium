@@ -166,7 +166,14 @@ const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
   DCHECK(!view || IsRegistered(view));
   if (!view)
     view = active_view_;
-  return view ? &selection_region_map_.at(view) : nullptr;
+  if (!view) {
+    return nullptr;
+  }
+  if (const auto& edit_context_region =
+          edit_context_selection_region_map_.at(view)) {
+    return &*edit_context_region;
+  }
+  return &selection_region_map_.at(view);
 }
 
 const TextInputManager::CompositionRangeInfo*
@@ -278,6 +285,29 @@ void TextInputManager::UpdateTextInputState(
     }
   }
 
+  std::optional<SelectionRegion> new_edit_context_region;
+  if (text_input_state.edit_context_selection_bounds &&
+      *text_input_state.edit_context_selection_bounds != gfx::Rect()) {
+    gfx::Rect selection_bounds =
+        *text_input_state.edit_context_selection_bounds;
+    selection_bounds.set_origin(
+        view->TransformPointToRootCoordSpace(selection_bounds.origin()));
+    selection_bounds.AdjustToFit(viewport_rect);
+    SelectionRegion& region = new_edit_context_region.emplace();
+    region.anchor.SetEdge(gfx::PointF(selection_bounds.origin()),
+                          gfx::PointF(selection_bounds.bottom_left()));
+    region.anchor.set_type(gfx::SelectionBound::CENTER);
+    region.focus.SetEdge(gfx::PointF(selection_bounds.top_right()),
+                         gfx::PointF(selection_bounds.bottom_right()));
+    region.focus.set_type(gfx::SelectionBound::CENTER);
+    region.bounding_box = selection_bounds;
+    region.caret_rect = selection_bounds;
+    region.first_selection_rect = selection_bounds;
+  }
+  const bool edit_context_bounds_changed =
+      new_edit_context_region != edit_context_selection_region_map_[view];
+  edit_context_selection_region_map_[view] = std::move(new_edit_context_region);
+
   // If |view| is different from |active_view| and its |TextInputState.type| is
   // not NONE, |active_view_| should change to |view| only if |view| has focus.
   if (text_input_state.type != ui::TEXT_INPUT_TYPE_NONE &&
@@ -291,6 +321,7 @@ void TextInputManager::UpdateTextInputState(
       // make the IME behavior identical to the non-OOPIF case, we have to
       // manually reset the state for |active_view_|.
       text_input_state_map_[active_view_]->type = ui::TEXT_INPUT_TYPE_NONE;
+      edit_context_selection_region_map_[active_view_].reset();
       RenderWidgetHostViewBase* active_view = active_view_;
       active_view_ = nullptr;
       NotifyObserversAboutInputStateUpdate(active_view, true);
@@ -306,7 +337,11 @@ void TextInputManager::UpdateTextInputState(
     active_view_ = nullptr;
   }
 
+  base::WeakPtr<RenderWidgetHostViewBase> weak_view = view->GetWeakPtr();
   NotifyObserversAboutInputStateUpdate(view, changed);
+  if (edit_context_bounds_changed && weak_view && active_view_ == view) {
+    NotifySelectionBoundsChanged(view);
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -471,6 +506,7 @@ void TextInputManager::Register(RenderWidgetHostViewBase* view) {
   CHECK(!IsRegistered(view), base::NotFatalUntil::M153);
   text_input_state_map_[view] = ui::mojom::TextInputState::New();
   selection_region_map_[view] = SelectionRegion();
+  edit_context_selection_region_map_[view] = std::nullopt;
   composition_range_info_map_[view] = CompositionRangeInfo();
   text_selection_map_[view] = TextSelection();
 }
@@ -492,6 +528,7 @@ void TextInputManager::Unregister(RenderWidgetHostViewBase* view) {
 
   text_input_state_map_.erase(view);
   selection_region_map_.erase(view);
+  edit_context_selection_region_map_.erase(view);
   composition_range_info_map_.erase(view);
   text_selection_map_.erase(view);
 #if BUILDFLAG(IS_WIN)
