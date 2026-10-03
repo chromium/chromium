@@ -2727,6 +2727,7 @@ crbug.com/492281018 virtual/generic-sensor-extra-classes/external/wpt/magnetomet
 crbug.com/492281018 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-enabled-by-permissions-policy-attribute.https.html [ Failure ]
 crbug.com/492281018 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-enabled-by-permissions-policy.https.html [ Failure ]
 crbug.com/492281018 virtual/generic-sensor-extra-classes/external/wpt/magnetometer/Magnetometer-enabled-on-self-origin-by-permissions-policy.https.html [ Failure ]
+crbug.com/491743369 external/wpt/domparsing/tentative/positional-methods-with-parser-options.html [ Failure ]
 crbug.com/491527969 [ Win ] external/wpt/WebCryptoAPI/encrypt_decrypt/aes_gcm.https.any.worker.html [ Pass Timeout ]
 crbug.com/491084379 [ Win ] external/wpt/dom/nodes/DOMImplementation-createDocument.html [ Pass Timeout ]
 crbug.com/491070386 external/wpt/svg/painting/inner-outer-svg-overflow-auto.html [ Failure ]
