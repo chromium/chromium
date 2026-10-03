@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_emulation_agent.h"
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -339,7 +340,8 @@ class MutatingBodyLoader : public WebNavigationBodyLoader {
  private:
   Persistent<InspectorEmulationAgent> agent_;
   Persistent<LocalFrame> frame_;
-  Persistent<DocumentLoader>* loader2_;
+  raw_ptr<Persistent<DocumentLoader>, UnprotectedInRelease | DanglingUntriaged>
+      loader2_;
   bool mutated_ = false;
   bool test_ready_ = false;
 };

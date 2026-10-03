@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_IO_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_IO_AGENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/io.h"
@@ -31,7 +32,7 @@ class CORE_EXPORT InspectorIOAgent final
   protocol::Response resolveBlob(const String& object_id,
                                  String* uuid) override;
 
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_;
 };
 
 }  // namespace blink

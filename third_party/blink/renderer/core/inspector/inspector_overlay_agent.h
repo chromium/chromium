@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
@@ -123,7 +124,8 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
 
  protected:
   Member<InspectorOverlayAgent> overlay_;
-  OverlayFrontend* frontend_ = nullptr;
+  raw_ptr<OverlayFrontend, UnprotectedInRelease | DanglingUntriaged> frontend_ =
+      nullptr;
 };
 
 class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {

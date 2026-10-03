@@ -34,6 +34,7 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
@@ -444,7 +445,8 @@ class CORE_EXPORT InspectorDOMAgent final
   bool isNodeScrollable(Node*);
   bool AffectedByStartingStyles(Node*);
 
-  v8::Isolate* isolate_;  // null after Dispose().
+  raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged>
+      isolate_;  // null after Dispose().
   Member<InspectedFrames> inspected_frames_;
   HeapHashSet<Member<DOMListener>> dom_listeners_;
   Member<NodeToIdMap> document_node_to_id_map_;
