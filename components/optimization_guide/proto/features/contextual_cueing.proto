@@ -103,14 +103,26 @@ message ContextualCue {
 
   oneof fulfillment_surface {
     GeminiInChromeSurface gemini_in_chrome_surface = 3;
+
+    ContextualSearchSurface contextual_search_surface = 4;
   }
 
   // The suggested user journey to show the cue for.
   string suggested_cuj = 1 [features = { field_presence: EXPLICIT }];
 }
 
+message ContextualSearchSurface {
+  // The query to use for the contextual search surface.
+  string query = 1 [features = { field_presence: EXPLICIT }];
+
+  // The tabs that should be shared with the contextual search surface on click.
+  repeated Tab tabs_to_share = 2;
+}
+
 enum ContextualCueingSurface {
   CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED = 0;
 
   CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME = 1;
+
+  CONTEXTUAL_CUEING_SURFACE_CONTEXTUAL_SEARCH = 2;
 }
