@@ -38,18 +38,15 @@ constexpr char kSocketMsg[] = "socket-handle";
 // Helper class for sending the socket descriptors to the audio output service.
 class AudioSocketBroker::SocketFdConnection {
  public:
-  SocketFdConnection(AudioSocketBroker* socket_broker,
-                     base::ScopedFD connect_socket_fd,
+  SocketFdConnection(base::ScopedFD connect_socket_fd,
                      base::ScopedFD pending_socket_fd,
                      const std::string& audio_output_service_path,
                      const std::string& session_id,
                      base::OnceCallback<void(base::ScopedFD)> connect_callback)
-      : socket_broker_(socket_broker),
-        socket_fd_(std::move(connect_socket_fd)),
+      : socket_fd_(std::move(connect_socket_fd)),
         pending_socket_fd_(std::move(pending_socket_fd)),
         session_id_(session_id),
         connect_callback_(std::move(connect_callback)) {
-    DCHECK(socket_broker_);
     DCHECK(socket_fd_.is_valid());
     DCHECK(pending_socket_fd_.is_valid());
     DCHECK(connect_callback_);
@@ -91,7 +88,6 @@ class AudioSocketBroker::SocketFdConnection {
     OnConnected(net::ERR_TIMED_OUT);
   }
 
-  AudioSocketBroker* const socket_broker_;
   base::ScopedFD socket_fd_;
   base::ScopedFD pending_socket_fd_;
   std::string session_id_;
@@ -163,7 +159,7 @@ void AudioSocketBroker::GetSocketDescriptor(
   // other to the client in the renderer.
   int sock_fd1 = socket_fd1.get();
   auto socket_fd_connection = base::SequenceBound<SocketFdConnection>(
-      AudioIoThread::Get()->task_runner(), this, std::move(socket_fd2),
+      AudioIoThread::Get()->task_runner(), std::move(socket_fd2),
       std::move(socket_fd1), audio_output_service_path_, session_id,
       base::BindPostTask(
           main_task_runner_,
