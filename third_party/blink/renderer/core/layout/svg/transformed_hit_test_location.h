@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 
@@ -52,11 +53,12 @@ class CORE_EXPORT TransformedHitTestLocation {
     DCHECK(location_);
     return *location_;
   }
-  explicit operator bool() const { return location_; }
+  explicit operator bool() const { return static_cast<bool>(location_); }
 
  private:
   std::optional<HitTestLocation> storage_;
-  const HitTestLocation* location_;
+  raw_ptr<const HitTestLocation, UnprotectedInRelease | DanglingUntriaged>
+      location_;
 };
 
 }  // namespace blink

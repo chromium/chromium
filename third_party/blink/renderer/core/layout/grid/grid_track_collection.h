@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -148,7 +149,8 @@ class CORE_EXPORT GridRangeBuilder {
         : grid_line(grid_line),
           grid_item_range_index_to_cache(grid_item_range_index_to_cache) {}
     wtf_size_t grid_line;
-    wtf_size_t* grid_item_range_index_to_cache;
+    raw_ptr<wtf_size_t, UnprotectedInRelease | DanglingUntriaged>
+        grid_item_range_index_to_cache;
   };
 
   GridRangeBuilder(const GridTrackList& explicit_tracks,

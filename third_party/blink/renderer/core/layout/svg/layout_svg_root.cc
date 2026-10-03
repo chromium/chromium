@@ -148,8 +148,9 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
-  base::AutoReset<const PhysicalSize*> reset(&new_content_size_,
-                                             &content_rect.size, nullptr);
+  base::AutoReset<
+      raw_ptr<const PhysicalSize, UnprotectedInRelease | DanglingUntriaged>>
+      reset(&new_content_size_, &content_rect.size, nullptr);
 
   const PhysicalSize old_content_size = PhysicalContentBoxRect().size;
 

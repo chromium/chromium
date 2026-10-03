@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_ROOT_H_
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
@@ -234,7 +235,8 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // The new content size for SVG roots. This is set during layout, and cleared
   // afterwards. Always nullptr when this object isn't in the process of being
   // laid out.
-  const PhysicalSize* new_content_size_ = nullptr;
+  raw_ptr<const PhysicalSize, UnprotectedInRelease | DanglingUntriaged>
+      new_content_size_ = nullptr;
 
   // True if the local transform of this object is not up-to-date.
   bool needs_transform_update_ : 1 = true;
