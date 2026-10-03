@@ -117,13 +117,13 @@ export class PrintPreviewPreviewAreaElement extends
       },
 
       printerSetupInfoMessageTypeEnum_: {
-        type: Number,
+        type: Object,
         value: PrinterSetupInfoMessageType,
         readOnly: true,
       },
 
       printerSetupInfoInitiatorEnum_: {
-        type: Number,
+        type: Object,
         value: PrinterSetupInfoInitiator,
         readOnly: true,
       },
@@ -155,8 +155,11 @@ export class PrintPreviewPreviewAreaElement extends
   declare private pluginLoadComplete_: boolean;
   declare private documentReady_: boolean;
   declare private previewLoaded_: boolean;
+  declare private printerSetupInfoMessageTypeEnum_:
+      typeof PrinterSetupInfoMessageType;
+  declare private printerSetupInfoInitiatorEnum_:
+      typeof PrinterSetupInfoInitiator;
   declare private showCrosPrinterSetupInfo_: boolean;
-  declare inDarkMode: boolean;
   private nativeLayer_: NativeLayer|null = null;
   private lastTicket_: PreviewTicket|null = null;
   private inFlightRequestId_: number = -1;
@@ -171,8 +174,9 @@ export class PrintPreviewPreviewAreaElement extends
         'page-preview-ready', this.onPagePreviewReady_.bind(this));
   }
 
-  private computePreviewLoaded_(): boolean {
-    return this.documentReady_ && this.pluginLoadComplete_;
+  private computePreviewLoaded_(
+      documentReady: boolean, pluginLoadComplete: boolean): boolean {
+    return documentReady && pluginLoadComplete;
   }
 
   getLastTicketForTest(): PreviewTicket|null {
@@ -219,8 +223,9 @@ export class PrintPreviewPreviewAreaElement extends
     marginControlContainer.setInvisible(true);
   }
 
-  private pluginOrDocumentStatusChanged_() {
-    if (!this.pluginLoadComplete_ || !this.documentReady_ ||
+  private pluginOrDocumentStatusChanged_(
+      pluginLoadComplete: boolean, documentReady: boolean) {
+    if (!pluginLoadComplete || !documentReady ||
         this.previewState === PreviewAreaState.ERROR) {
       return;
     }
@@ -417,9 +422,9 @@ export class PrintPreviewPreviewAreaElement extends
     }
   }
 
-  private onDarkModeChanged_() {
+  private onDarkModeChanged_(inDarkMode: boolean) {
     if (this.pluginProxy_.pluginReady()) {
-      this.pluginProxy_.darkModeChanged(this.inDarkMode);
+      this.pluginProxy_.darkModeChanged(inDarkMode);
     }
 
     if (this.previewState === PreviewAreaState.DISPLAY_PREVIEW) {
@@ -783,16 +788,16 @@ export class PrintPreviewPreviewAreaElement extends
     return this.nativeLayer_!.getPreview(JSON.stringify(ticket));
   }
 
-  private onStateOrErrorChange_() {
-    if ((this.state === State.ERROR || this.state === State.FATAL_ERROR) &&
-        this.getErrorMessage_().toString() !== '') {
+  private onStateOrErrorChange_(state: State, error: Error) {
+    if ((state === State.ERROR || state === State.FATAL_ERROR) &&
+        this.getErrorMessage_(error).toString() !== '') {
       this.previewState = PreviewAreaState.ERROR;
     }
   }
 
   /** @return The error message to display in the preview area. */
-  private getErrorMessage_(): TrustedHTML {
-    switch (this.error) {
+  private getErrorMessage_(error: Error = this.error): TrustedHTML {
+    switch (error) {
       case Error.INVALID_PRINTER:
         return this.i18nAdvanced('invalidPrinterSettings', {
           substitutions: [],
@@ -813,8 +818,9 @@ export class PrintPreviewPreviewAreaElement extends
    * `INVALID_PRINTER` error has occurred. All other platforms
    * `computeShowCrosPrinterSetupInfo` will return false.
    */
-  private computeShowCrosPrinterSetupInfo(): boolean {
-    return shouldShowCrosPrinterSetupError(this.state, this.error);
+  private computeShowCrosPrinterSetupInfo(
+      state: State, error: Error): boolean {
+    return shouldShowCrosPrinterSetupError(state, error);
   }
 }
 

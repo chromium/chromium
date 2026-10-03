@@ -11,6 +11,7 @@ assert(enable_print_preview, "enable_print_preview check failed")
 
 build_webui("build") {
   grd_prefix = "print_preview"
+  ts_tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
 
   static_files = [ "print_preview.html" ]
 
