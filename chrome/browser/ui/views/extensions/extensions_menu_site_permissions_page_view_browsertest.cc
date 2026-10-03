@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "build/build_config.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -165,17 +164,8 @@ void ExtensionsSitePermissionsPageViewBrowserTest::TearDownOnMainThread() {
   ExtensionsToolbarBrowserTest::TearDownOnMainThread();
 }
 
-// TODO(crbug.com/565744038): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AddAndRemoveExtensionWhenSitePermissionsPageIsOpen \
-  DISABLED_AddAndRemoveExtensionWhenSitePermissionsPageIsOpen
-#else
-#define MAYBE_AddAndRemoveExtensionWhenSitePermissionsPageIsOpen \
-  AddAndRemoveExtensionWhenSitePermissionsPageIsOpen
-#endif
-IN_PROC_BROWSER_TEST_F(
-    ExtensionsSitePermissionsPageViewBrowserTest,
-    MAYBE_AddAndRemoveExtensionWhenSitePermissionsPageIsOpen) {
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       AddAndRemoveExtensionWhenSitePermissionsPageIsOpen) {
   auto extensionA =
       InstallExtensionWithHostPermissions("A Extension", {"<all_urls>"});
 
