@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CatalogAttributesRowElement} from './catalog_attributes_row.js';
 
 export function getHtml(this: CatalogAttributesRowElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.priceInsightsInfo ? html`
 <div id="attributesRow">
@@ -22,5 +21,4 @@ ${this.priceInsightsInfo ? html`
   </a>
 </div>` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

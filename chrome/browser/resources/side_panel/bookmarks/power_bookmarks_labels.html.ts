@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarksLabelsElement} from './power_bookmarks_labels.js';
 
 export function getHtml(this: PowerBookmarksLabelsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.labels.map((item, index) => html`
   <cr-chip data-index="${index}" ?selected="${item.active}"
@@ -17,5 +16,4 @@ ${this.labels.map((item, index) => html`
   </cr-chip>
 `)}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

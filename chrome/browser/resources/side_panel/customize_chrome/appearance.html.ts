@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppearanceElement} from './appearance.js';
 
 export function getHtml(this: AppearanceElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <customize-chrome-theme-snapshot id="themeSnapshot"
     role="button" tabindex="0"
@@ -85,5 +84,4 @@ ${this.showManagedDialog_ ? html`
   </managed-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

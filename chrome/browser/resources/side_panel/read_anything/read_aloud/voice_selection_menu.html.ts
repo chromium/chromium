@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
 export function getHtml(this: VoiceSelectionMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-lazy-render-lit
   id="voiceSelectionMenu"
@@ -98,5 +97,4 @@ ${this.showLanguageMenuDialog_
   : ''
 }
 <!--_html_template_end_-->`;
-  // clang-format on
 }

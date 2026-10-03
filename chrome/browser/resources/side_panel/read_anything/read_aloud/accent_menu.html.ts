@@ -7,12 +7,11 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AccentMenuElement} from './accent_menu.js';
 
 export function getHtml(this: AccentMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-    <cr-dialog id="accentMenu" @close="${this.onClose_}"
-      @keydown="${this.onKeydown_}"
-      close-text="$i18n{accentMenuClose}"
-      show-close-button show-on-attach ignore-popstate>
+<cr-dialog id="accentMenu" @close="${this.onClose_}"
+    @keydown="${this.onKeydown_}"
+    close-text="$i18n{accentMenuClose}"
+    show-close-button show-on-attach ignore-popstate>
   <div slot="title" class="accent-menu-title-bar">
     <div class="accent-menu-title">$i18n{accentMenuLabel}</div>
   </div>
@@ -67,5 +66,4 @@ export function getHtml(this: AccentMenuElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

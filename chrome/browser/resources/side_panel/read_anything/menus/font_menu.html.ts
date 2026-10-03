@@ -8,7 +8,6 @@ import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {FontMenuElement} from './font_menu.js';
 
 export function getHtml(this: FontMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <simple-action-menu
     id="menu"
@@ -19,6 +18,5 @@ export function getHtml(this: FontMenuElement) {
     current-selected-index="${this.currentFontIndex_()}"
     @font-change="${this.onFontChange_}">
 </simple-action-menu>
-  <!--_html_template_end_-->`;
-  // clang-format on
+<!--_html_template_end_-->`;
 }

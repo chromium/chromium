@@ -9,7 +9,6 @@ import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {HighlightMenuElement} from './highlight_menu.js';
 
 export function getHtml(this: HighlightMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <simple-action-menu
     id="menu"
@@ -21,5 +20,4 @@ export function getHtml(this: HighlightMenuElement) {
     @highlight-change="${this.onHighlightChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-page-selector id="container"
     class="sp-scroller sp-scroller-top-of-page sp-scroller-bottom-of-page"
@@ -123,5 +122,4 @@ export function getHtml(this: AppElement) {
   ` : ''}
 </cr-page-selector>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

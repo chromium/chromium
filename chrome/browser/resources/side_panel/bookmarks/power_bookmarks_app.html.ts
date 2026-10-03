@@ -9,7 +9,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarksAppElement} from './power_bookmarks_app.js';
 
 export function getHtml(this: PowerBookmarksAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="column" id="powerBookmarksContainer">
   <cr-toolbar-search-field id="searchField" label="$i18n{searchBookmarks}"
@@ -133,5 +132,4 @@ export function getHtml(this: PowerBookmarksAppElement) {
 `}">
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

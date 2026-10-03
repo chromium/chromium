@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarksListHeaderElement} from './power_bookmarks_list_header.js';
 
 export function getHtml(this: PowerBookmarksListHeaderElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="header-container">
   <div id="navigation-container" class="${this.getTitleContainerClass_()}">
@@ -72,5 +71,4 @@ export function getHtml(this: PowerBookmarksListHeaderElement) {
   `)}
 </cr-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

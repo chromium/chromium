@@ -10,7 +10,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {VoiceSelectionDialogElement} from './voice_selection_dialog.js';
 
 export function getHtml(this: VoiceSelectionDialogElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-dialog id="voiceSelectionDialog"
     @close="${this.onDialogClose_}"
@@ -113,5 +112,4 @@ export function getHtml(this: VoiceSelectionDialogElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

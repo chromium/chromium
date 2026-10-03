@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CategoriesElement} from './categories.js';
 
 export function getHtml(this: CategoriesElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div class="sp-card">
   <sp-heading id="heading" @back-button-click="${this.onBackButtonClick_}"
@@ -85,5 +84,4 @@ export function getHtml(this: CategoriesElement) {
   </cr-grid>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ShoppingInsightsAppElement} from './app.js';
 
 export function getHtml(this: ShoppingInsightsAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="insightsContainer">
   ${this.productInfo && this.priceInsightsInfo ? html`
@@ -57,5 +56,4 @@ export function getHtml(this: ShoppingInsightsAppElement) {
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

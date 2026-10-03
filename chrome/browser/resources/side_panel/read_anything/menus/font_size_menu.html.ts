@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FontSizeMenuElement} from './font_size_menu.js';
 
 export function getHtml(this: FontSizeMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
   <cr-action-menu @keydown="${this.onKeydown_}"
@@ -43,5 +42,4 @@ export function getHtml(this: FontSizeMenuElement) {
 `}'>
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

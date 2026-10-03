@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 
 export function getHtml(this: ReadAnythingToolbarElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="toolbarContainer"
     role="toolbar" aria-label="$i18n{readingModeReadAloudToolbarLabel}"
@@ -230,5 +229,4 @@ export function getHtml(this: ReadAnythingToolbarElement) {
   </voice-selection-menu>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

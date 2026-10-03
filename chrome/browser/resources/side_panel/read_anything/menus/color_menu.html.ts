@@ -9,7 +9,6 @@ import {ToolbarEvent} from '../content/read_anything_types.js';
 import type {ColorMenuElement} from './color_menu.js';
 
 export function getHtml(this: ColorMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <simple-action-menu
     id="menu"
@@ -21,5 +20,4 @@ export function getHtml(this: ColorMenuElement) {
     @theme-change="${this.onThemeChange_}">
 </simple-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

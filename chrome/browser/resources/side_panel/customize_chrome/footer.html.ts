@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {FooterElement} from './footer.js';
 
 export function getHtml(this: FooterElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="showToggleContainer" class="sp-card-content"
     @click="${this.onShowToggleClick_}">
@@ -21,5 +20,4 @@ export function getHtml(this: FooterElement) {
   </cr-toggle>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

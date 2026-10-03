@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarksContextMenuElement} from './power_bookmarks_context_menu.js';
 
 export function getHtml(this: PowerBookmarksContextMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-action-menu id="menu" auto-close-on-focusout
     @mousedown="${this.onMousedown_}">
@@ -24,5 +23,4 @@ export function getHtml(this: PowerBookmarksContextMenuElement) {
   `)}
 </cr-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

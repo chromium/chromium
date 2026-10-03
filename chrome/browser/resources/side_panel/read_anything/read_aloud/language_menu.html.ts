@@ -7,10 +7,9 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LanguageMenuElement} from './language_menu.js';
 
 export function getHtml(this: LanguageMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
-    <cr-dialog id="languageMenu" @close="${this.onClose_}"
-      @keydown="${this.onKeydown_}"
+<cr-dialog id="languageMenu" @close="${this.onClose_}"
+    @keydown="${this.onKeydown_}"
     close-text="$i18n{readingModeLanguageMenuClose}"
     show-close-button show-on-attach ignore-popstate>
   <div slot="title" class="language-menu-title-bar">
@@ -61,5 +60,4 @@ export function getHtml(this: LanguageMenuElement) {
   </div>
 </cr-dialog>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

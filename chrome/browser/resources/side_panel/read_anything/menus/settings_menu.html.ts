@@ -8,7 +8,6 @@ import {SettingsItemType} from './menu_util.js';
 import type {SettingsMenuElement} from './settings_menu.js';
 
 export function getHtml(this: SettingsMenuElement) {
-  // clang-format off
   return html`
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
   <cr-action-menu id="settings-menu-dialog" @close="${this.onClose_}" non-modal>
@@ -59,5 +58,4 @@ export function getHtml(this: SettingsMenuElement) {
 `}'>
 </cr-lazy-render-lit>
 `;
-  // clang-format on
 }

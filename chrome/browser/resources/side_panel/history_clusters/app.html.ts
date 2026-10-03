@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {HistoryClustersAppElement} from './app.js';
 
 export function getHtml(this: HistoryClustersAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toolbar-search-field id="searchbox"
     @search-changed="${this.onSearchChanged_}"
@@ -55,5 +54,4 @@ ${this.enableHistoryEmbeddings_ ? html`
   </history-clusters>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

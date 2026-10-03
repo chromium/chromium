@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
 
 export function getHtml(this: PowerBookmarkRowElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.rowHeading ? html`
   <sp-heading hide-back-button>
@@ -36,5 +35,4 @@ ${this.rowHeading ? html`
     .hasActiveDrag="${this.hasActiveDrag}">
 </power-bookmark-row-item>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

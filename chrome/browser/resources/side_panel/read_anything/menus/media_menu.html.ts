@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MediaMenuElement} from './media_menu.js';
 
 export function getHtml(this: MediaMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-lazy-render-lit id="lazyMenu" .template='${() => html`
   <cr-action-menu id="media-menu-dialog" ?non-modal="${this.nonModal}">
@@ -38,5 +37,4 @@ export function getHtml(this: MediaMenuElement) {
 `}'>
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

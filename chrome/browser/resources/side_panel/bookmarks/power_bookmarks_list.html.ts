@@ -13,7 +13,6 @@ export interface TemplatizedDomNodes {
 }
 
 export function getHtml(this: PowerBookmarksListElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="scroller" class="sp-scroller" scrollable role="list">
   <div class="sp-card">
@@ -149,5 +148,4 @@ export function getHtml(this: PowerBookmarksListElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

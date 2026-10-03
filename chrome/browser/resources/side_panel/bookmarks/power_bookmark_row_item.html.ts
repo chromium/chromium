@@ -7,7 +7,6 @@ import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PowerBookmarkRowItemElement} from './power_bookmark_row_item.ts';
 
 export function getHtml(this: PowerBookmarkRowItemElement) {
-  // clang-format off
 return html`<!--_html_template_start_-->
 <cr-url-list-item id="crUrlListItem"
     role="treeitem"
@@ -94,5 +93,4 @@ return html`<!--_html_template_start_-->
 </cr-url-list-item>
 <!--_html_template_end_-->`;
 }
-// clang-format off
 

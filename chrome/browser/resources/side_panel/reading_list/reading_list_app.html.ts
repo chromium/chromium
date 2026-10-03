@@ -13,7 +13,6 @@ export interface TemplatizedDomNodes {
 }
 
 export function getHtml(this: ReadingListAppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="content" ?hidden="${this.loadingContent_}">
   <div class="sp-scroller sp-scroller-top-of-page"
@@ -75,5 +74,4 @@ export function getHtml(this: ReadingListAppElement) {
   </sp-footer>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

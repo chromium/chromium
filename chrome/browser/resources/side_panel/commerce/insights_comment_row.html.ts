@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InsightsCommentRowElement} from './insights_comment_row.js';
 
 export function getHtml(this: InsightsCommentRowElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="commentRow">
   <span id="comment">$i18n{historyDescription}</span>
@@ -15,5 +14,4 @@ export function getHtml(this: InsightsCommentRowElement) {
       @click="${this.onFeedbackClick_}" class="link">$i18n{feedback}</a>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

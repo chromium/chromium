@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SimpleActionMenuElement} from './simple_action_menu.js';
 
 export function getHtml(this: SimpleActionMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-lazy-render-lit  id="lazyMenu" .template='${() => html`
   <cr-action-menu
@@ -40,5 +39,4 @@ export function getHtml(this: SimpleActionMenuElement) {
 `}'>
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

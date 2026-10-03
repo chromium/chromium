@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CardsElement} from './cards.js';
 
 export function getHtml(this: CardsElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="showToggleContainer" @click="${this.onShowToggleClick_}">
   <div id="showToggleTitle">$i18n{showCardsToggleTitle}</div>
@@ -37,5 +36,4 @@ export function getHtml(this: CardsElement) {
   </cr-collapse>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

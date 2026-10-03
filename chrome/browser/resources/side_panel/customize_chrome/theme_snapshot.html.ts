@@ -8,7 +8,6 @@ import type {ThemeSnapshotElement} from './theme_snapshot.js';
 import {CustomizeThemeType} from './theme_snapshot.js';
 
 export function getHtml(this: ThemeSnapshotElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.themeType_ === CustomizeThemeType.CUSTOM_THEME ? html`
   <div class="snapshot-container"
@@ -58,5 +57,4 @@ ${this.themeType_ === CustomizeThemeType.UPLOADED_IMAGE ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

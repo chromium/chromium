@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppElement} from './app.js';
 
 export function getHtml(this: AppElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="appFlexParent"
     class="${this.getImmersiveClass_()} ${
@@ -100,5 +99,4 @@ export function getHtml(this: AppElement) {
     .numAvailableVoices="${this.availableVoices_.length}">
 </language-toast>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

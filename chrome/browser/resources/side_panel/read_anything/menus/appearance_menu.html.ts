@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AppearanceMenuElement} from './appearance_menu.js';
 
 export function getHtml(this: AppearanceMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <grouped-action-menu
     id="menu"
@@ -19,5 +18,4 @@ export function getHtml(this: AppearanceMenuElement) {
     @presentation-change="${this.onPresentationChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

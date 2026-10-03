@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LineFocusMenuElement} from './line_focus_menu.js';
 
 export function getHtml(this: LineFocusMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <grouped-action-menu
     id="menu"
@@ -20,5 +19,4 @@ export function getHtml(this: LineFocusMenuElement) {
     @line-focus-movement-change="${this.onLineFocusMovementChange_}">
 </grouped-action-menu>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

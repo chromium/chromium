@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LanguageToastElement} from './language_toast.js';
 
 export function getHtml(this: LanguageToastElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-toast id="toast" duration="${this.toastDuration_}">
   <div id="toastDiv">
@@ -19,5 +18,4 @@ export function getHtml(this: LanguageToastElement) {
   </div>
 </cr-toast>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

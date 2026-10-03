@@ -8,7 +8,6 @@ import type {GroupedActionMenuElement} from './grouped_action_menu.js';
 import {SettingsItemType} from './menu_util.js';
 
 export function getHtml(this: GroupedActionMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <cr-lazy-render-lit  id="lazyMenu" .template='${() => html`
   <cr-action-menu
@@ -62,5 +61,4 @@ export function getHtml(this: GroupedActionMenuElement) {
 `}'>
 </cr-lazy-render-lit>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

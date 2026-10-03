@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ShoppingListElement} from './shopping_list.js';
 
 export function getHtml(this: ShoppingListElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container" role="treeitem" aria-expanded="${this.open_}">
   <button class="row" title="$i18n{shoppingListFolderTitle}"
@@ -74,5 +73,4 @@ export function getHtml(this: ShoppingListElement) {
   </cr-toast>
 </div>
 <!--_html_template_end_-->`;
-  // clang-format on
 }

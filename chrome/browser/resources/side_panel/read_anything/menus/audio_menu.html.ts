@@ -7,7 +7,6 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AudioMenuElement} from './audio_menu.js';
 
 export function getHtml(this: AudioMenuElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <grouped-action-menu
     id="menu"
@@ -42,5 +41,4 @@ ${this.showAccentMenuDialog_ ? html`
   </accent-menu>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }
