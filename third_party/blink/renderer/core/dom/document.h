@@ -38,6 +38,7 @@
 #include "base/containers/hashing_lru_cache.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/time/time.h"
@@ -2995,21 +2996,26 @@ class CORE_EXPORT Document : public ContainerNode,
   // is acceptable not to trace it -- should a conservative GC occur,
   // the cache object's references will be traced by a stack walk.
   STACK_ALLOCATED_IGNORE("https://crbug.com/461878")
-  NthIndexCache* nth_index_cache_ = nullptr;
+  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class.
+  RAW_PTR_EXCLUSION NthIndexCache* nth_index_cache_ = nullptr;
 
   // This is an untraced pointer to the cache-scoped object that is first
   // allocated on the stack. It is set upon the first object being allocated
   // on the stack, and cleared upon leaving its allocated scope. The object's
   // references will be traced by a stack walk.
   STACK_ALLOCATED_IGNORE("https://crbug.com/669058")
-  CheckPseudoHasCacheScope* check_pseudo_has_cache_scope_ = nullptr;
+  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class.
+  RAW_PTR_EXCLUSION CheckPseudoHasCacheScope* check_pseudo_has_cache_scope_ =
+      nullptr;
 
   // This is an untraced pointer to the first stack-allocated scoping object
   // that defers invalidation of the node list caches. It is set upon the first
   // object being allocated on the stack, and cleared upon leaving its
   // allocated scope. The object's references will be traced by a stack walk.
   STACK_ALLOCATED_IGNORE("https://crbug.com/40874584")
-  InvalidateNodeListCachesScope* invalidate_node_list_caches_scope_ = nullptr;
+  // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class.
+  RAW_PTR_EXCLUSION InvalidateNodeListCachesScope*
+      invalidate_node_list_caches_scope_ = nullptr;
 
   bool in_pseudo_has_checking_ = false;
 

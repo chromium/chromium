@@ -35,6 +35,7 @@
 #include <optional>
 
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
@@ -192,7 +193,8 @@ void CountFiringEventListeners(const Event& event,
   }
 
   struct CountedEvent {
-    const AtomicString& event_type;
+    // RAW_PTR_EXCLUSION: #global-scope
+    RAW_PTR_EXCLUSION const AtomicString& event_type;
     const WebFeature feature;
   };
   static const CountedEvent counted_events[] = {
