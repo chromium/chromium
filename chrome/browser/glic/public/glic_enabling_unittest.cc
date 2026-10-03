@@ -2948,5 +2948,72 @@ TEST_F(GlicEnablingProfileEligibilityTest, IsAnyEntryPointEnabled) {
   profile()->GetPrefs()->SetBoolean(prefs::kGlicPinnedToTabstrip, true);
   EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST(GlicAndroidFormFactorTest, PhoneAndDesktopAllowedWithoutTabletFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_PHONE, /*is_foldable=*/false));
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_DESKTOP, /*is_foldable=*/false));
+}
+
+TEST(GlicAndroidFormFactorTest, TabletRequiresTabletFlag) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+    EXPECT_FALSE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+        ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/false));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(features::kGlicAndroidTablet);
+    EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+        ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/false));
+  }
+}
+
+// An unfolded foldable reports DEVICE_FORM_FACTOR_TABLET, but should be allowed
+// without the tablet flag.
+TEST(GlicAndroidFormFactorTest, UnfoldedFoldableAllowedWithoutTabletFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_TABLET, /*is_foldable=*/true));
+}
+
+TEST(GlicAndroidFormFactorTest, FoldedFoldableAllowedWithoutTabletFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_PHONE, /*is_foldable=*/true));
+}
+
+TEST(GlicAndroidFormFactorTest, FoldableFormFactorAllowedWithoutTabletFlag) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_TRUE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_FOLDABLE, /*is_foldable=*/false));
+}
+
+// TV, automotive, and XR are not supported, even with the tablet flag enabled.
+TEST(GlicAndroidFormFactorTest, UnsupportedFormFactorsNotAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicAndroidTablet);
+
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_TV, /*is_foldable=*/false));
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_AUTOMOTIVE, /*is_foldable=*/false));
+  EXPECT_FALSE(GlicGlobalEnabling::IsAndroidFormFactorAllowed(
+      ui::DEVICE_FORM_FACTOR_XR, /*is_foldable=*/false));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 }  // namespace glic

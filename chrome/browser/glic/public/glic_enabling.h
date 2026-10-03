@@ -18,6 +18,7 @@
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -29,6 +30,10 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync_device_info/device_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/base/device_form_factor.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class AccountCapabilities;
 class Profile;
@@ -112,6 +117,13 @@ class GlicGlobalEnabling {
   bool IsEnabledByGlobalCriteria() const;
   bool IsSystemRequirementMet() const;
   static bool IsOsVersionSupported();
+#if BUILDFLAG(IS_ANDROID)
+  // Returns whether Glic supports the given Android form factor. Foldables
+  // (`is_foldable`) are allowed in either posture without kGlicAndroidTablet,
+  // since ui::GetDeviceFormFactor() reports an unfolded foldable as a tablet.
+  static bool IsAndroidFormFactorAllowed(ui::DeviceFormFactor form_factor,
+                                         bool is_foldable);
+#endif  // BUILDFLAG(IS_ANDROID)
   bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
   // Note that country checks are executed along profile-level checks because
   // country information may not be ready at startup and can change.
