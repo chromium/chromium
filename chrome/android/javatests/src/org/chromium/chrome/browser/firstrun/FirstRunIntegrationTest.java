@@ -259,8 +259,13 @@ public class FirstRunIntegrationTest {
 
     private FirstRunActivity launchFirstRunActivityAndWaitForNativeInitialization() {
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        // Each test method cold-starts native in a fresh process (@DoNotBatch), which can exceed
+        // the default poll timeout on loaded emulators.
         CriteriaHelper.pollUiThread(
-                () -> firstRunActivity.getNativeInitializationPromise().isFulfilled());
+                () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
+                "FirstRunActivity native initialization did not complete",
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL_LONG,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return firstRunActivity;
     }
 
