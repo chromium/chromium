@@ -71,6 +71,17 @@ void MediaDrmBridgeFactory::Create(
   const bool is_clearkey = media::IsExternalClearKey(cdm_config.key_system);
   auto storage = std::make_unique<MediaDrmStorageBridge>();
 
+  // Request the origin ID from the browser process before constructing
+  // MediaDrm synchronously, so that the Storage Mojo IPC transit overlaps
+  // with MediaDrm HAL construction. The reply is posted to this thread, so it
+  // always runs after `media_drm_bridge_` is set.
+  if (!is_clearkey) {
+    storage->Initialize(
+        create_storage_cb_,
+        base::BindOnce(&MediaDrmBridgeFactory::OnStorageInitialized,
+                       weak_factory_.GetWeakPtr()));
+  }
+
   auto result = MediaDrmBridge::CreateInternal(
       scheme_uuid_, "", security_level_, "User",
       /*requires_media_crypto=*/is_clearkey, std::move(storage),
@@ -78,6 +89,7 @@ void MediaDrmBridgeFactory::Create(
       session_keys_change_cb_, session_expiration_update_cb_);
 
   if (!result.has_value()) {
+    weak_factory_.InvalidateWeakPtrs();
     std::move(cdm_created_cb_).Run(nullptr, std::move(result).code());
     return;
   }
@@ -86,11 +98,6 @@ void MediaDrmBridgeFactory::Create(
   if (is_clearkey) {
     media_drm_bridge_->SetMediaCryptoReadyCB(
         base::BindOnce(&MediaDrmBridgeFactory::OnMediaCryptoReady,
-                       weak_factory_.GetWeakPtr()));
-  } else {
-    media_drm_bridge_->storage()->Initialize(
-        create_storage_cb_,
-        base::BindOnce(&MediaDrmBridgeFactory::OnStorageInitialized,
                        weak_factory_.GetWeakPtr()));
   }
 }
