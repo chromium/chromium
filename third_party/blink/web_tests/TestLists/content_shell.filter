@@ -59,10 +59,6 @@ external/wpt/css/css-pseudo/first-letter-001.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-cascade-008.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-properties-001.html
 external/wpt/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-properties-002.html
-external/wpt/css/css-ruby/block-ruby-003.html
-external/wpt/css/css-ruby/ruby-inlinize-recursive-simple.html
-external/wpt/css/css-ruby/ruby-text-combine-upright-001a.html
-external/wpt/css/css-ruby/ruby-text-combine-upright-001b.html
 external/wpt/css/css-scroll-anchoring/fullscreen-crash.html
 # Known to be very flaky: https://crbug.com/375047154
 external/wpt/css/css-scrollbars/*

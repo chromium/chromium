@@ -1971,6 +1971,7 @@ crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-001.html [ Fail
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-002.html [ Failure ]
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-004.html [ Failure ]
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-005.html [ Failure ]
+crbug.com/1223955 [ Mac ] external/wpt/css/css-ruby/ruby-inlinize-recursive-simple.html [ Failure ]
 
 crbug.com/1333451 external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
 
