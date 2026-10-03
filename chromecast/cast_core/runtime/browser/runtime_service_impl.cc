@@ -121,10 +121,12 @@ cast_receiver::Status RuntimeServiceImpl::Start(
               task_runner_,
               base::BindRepeating(&RuntimeServiceImpl::HandleStopApplication,
                                   weak_factory_.GetWeakPtr())));
-  grpc_server_->SetHandler<cast::runtime::RuntimeServiceHandler::Heartbeat>(
-      base::BindPostTask(task_runner_, base::BindRepeating(
-                                           &RuntimeServiceImpl::HandleHeartbeat,
-                                           weak_factory_.GetWeakPtr())));
+  grpc_server_
+      ->SetThreadSafeHandler<cast::runtime::RuntimeServiceHandler::Heartbeat>(
+          base::BindPostTask(
+              task_runner_,
+              base::BindRepeating(&RuntimeServiceImpl::HandleHeartbeat,
+                                  weak_factory_.GetWeakPtr())));
   grpc_server_
       ->SetHandler<cast::runtime::RuntimeServiceHandler::StartMetricsRecorder>(
           base::BindPostTask(
@@ -324,14 +326,20 @@ void RuntimeServiceImpl::HandleStopApplication(
 
 void RuntimeServiceImpl::HandleHeartbeat(
     cast::runtime::HeartbeatRequest request,
-    cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* reactor) {
+    scoped_refptr<cast::utils::ThreadSafeReactorHandle<
+        cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor>> reactor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!grpc_server_) {
     // gRPC server has been shut down and all reactors have been cancelled.
     return;
   }
 
-  DCHECK(!heartbeat_reactor_);
+  if (heartbeat_reactor_) {
+    LOG(WARNING) << "Heartbeats are requested with active heartbeat reactor";
+    heartbeat_reactor_->SetWritesAvailableCallback(base::DoNothing());
+    heartbeat_reactor_->Write(
+        grpc::Status(grpc::StatusCode::ABORTED, "Duplicate heartbeat aborted"));
+  }
 
   if (!request.has_heartbeat_period() ||
       request.heartbeat_period().seconds() <= 0) {
@@ -341,22 +349,13 @@ void RuntimeServiceImpl::HandleHeartbeat(
     return;
   }
 
-  if (heartbeat_reactor_) {
-    LOG(WARNING)
-        << "Heartbeats are requested with active heartbeat reactor: reactor="
-        << heartbeat_reactor_;
-    heartbeat_reactor_->Write(
-        grpc::Status(grpc::StatusCode::ABORTED, "Duplicate heartbeat aborted"));
-  }
-
   heartbeat_period_ = base::Seconds(request.heartbeat_period().seconds());
-  heartbeat_reactor_ = reactor;
+  heartbeat_reactor_ = std::move(reactor);
   // Set the write callback once for all future calls from gRPC framework.
   heartbeat_reactor_->SetWritesAvailableCallback(base::BindPostTask(
       task_runner_, base::BindRepeating(&RuntimeServiceImpl::OnHeartbeatSent,
                                         weak_factory_.GetWeakPtr())));
-  LOG(INFO) << "Starting heartbeat: reactor=" << heartbeat_reactor_
-            << ", period=" << heartbeat_period_;
+  LOG(INFO) << "Starting heartbeat: period=" << heartbeat_period_;
 
   SendHeartbeat();
 }
@@ -503,7 +502,10 @@ void RuntimeServiceImpl::OnHeartbeatSent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There might be duplicate SendHeartbeat requests from Cast Core. The ones
   // that are not associated with |heartbeat_reactor_| must be ignored.
-  if (reactor != heartbeat_reactor_) {
+  // Note that GrpcServerStreamingHandler passes |reactor| = nullptr when
+  // !status.ok().
+  if (!heartbeat_reactor_ ||
+      (reactor && !heartbeat_reactor_->Compare(reactor))) {
     // The |reactor| was cancelled as the heartbeat response was scheduled
     // for send.
     LOG(WARNING) << "Ignoring heartbeat from previous request";

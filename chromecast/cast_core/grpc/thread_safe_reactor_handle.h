@@ -44,12 +44,28 @@ class ThreadSafeReactorHandle
     {
       base::AutoLock lock(lock_);
       reactor = reactor_;
-      reactor_ = nullptr;
     }
 
     if (reactor) {
       reactor->Write(std::move(response));
     }
+  }
+
+  template <typename TCallback>
+  void SetWritesAvailableCallback(TCallback callback) {
+    TReactor* reactor = nullptr;
+    {
+      base::AutoLock lock(lock_);
+      reactor = reactor_;
+    }
+    if (reactor) {
+      reactor->SetWritesAvailableCallback(std::move(callback));
+    }
+  }
+
+  bool Compare(const TReactor* reactor) {
+    base::AutoLock lock(lock_);
+    return reactor_ != nullptr && reactor_ == reactor;
   }
 
   // Resets the reactor pointer to nullptr. This should be called when the

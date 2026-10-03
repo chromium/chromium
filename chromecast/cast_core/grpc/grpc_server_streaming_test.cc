@@ -285,6 +285,81 @@ TEST_F(GrpcServerStreamingTest,
   test::StopGrpcServer(server, kServerStopTimeout);
 }
 
+TEST_F(GrpcServerStreamingTest,
+       ThreadSafeServerStreamingCallIsCancelledByClient) {
+  base::WaitableEvent server_aborted_event;
+  scoped_refptr<ThreadSafeReactorHandle<
+      ServerStreamingServiceHandler::StreamingCall::Reactor>>
+      retained_handle;
+  auto writes_available_callback = base::BindLambdaForTesting(
+      [&](grpc::Status status,
+          ServerStreamingServiceHandler::StreamingCall::Reactor* reactor) {
+        if (!retained_handle ||
+            (reactor && !retained_handle->Compare(reactor))) {
+          return;
+        }
+        if (status.ok()) {
+          return;
+        }
+        ASSERT_THAT(status, StatusIs(grpc::StatusCode::ABORTED));
+        ASSERT_THAT(reactor, IsNull());
+        server_aborted_event.Signal();
+      });
+  auto call_handler = base::BindLambdaForTesting(
+      [&](TestRequest request,
+          scoped_refptr<ThreadSafeReactorHandle<
+              ServerStreamingServiceHandler::StreamingCall::Reactor>> reactor) {
+        EXPECT_EQ(request.foo(), "test_foo");
+        retained_handle = std::move(reactor);
+        retained_handle->SetWritesAvailableCallback(
+            std::move(writes_available_callback));
+        TestResponse response;
+        response.set_bar("test_bar");
+        retained_handle->Write(std::move(response));
+      });
+
+  GrpcServer server;
+  server.SetThreadSafeHandler<ServerStreamingServiceHandler::StreamingCall>(
+      std::move(call_handler));
+  ASSERT_THAT(server.Start(endpoint_), StatusIs(grpc::StatusCode::OK));
+
+  size_t response_count = 0;
+  base::WaitableEvent response_received_event{
+      base::WaitableEvent::ResetPolicy::AUTOMATIC};
+  ServerStreamingServiceStub stub(endpoint_);
+  auto call = stub.CreateCall<ServerStreamingServiceStub::StreamingCall>();
+  call.request().set_foo("test_foo");
+  auto context = std::move(call).InvokeAsync(base::BindLambdaForTesting(
+      [&](GrpcStatusOr<TestResponse> response, bool done) {
+        ++response_count;
+        if (response_count == 1) {
+          CU_CHECK_OK(response);
+          EXPECT_EQ(response->bar(), "test_bar");
+          response_received_event.Signal();
+        } else {
+          EXPECT_EQ(response_count, 2u);
+          ASSERT_THAT(response, StatusIs(grpc::StatusCode::CANCELLED));
+          response_received_event.Signal();
+        }
+      }));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+
+  // Cancel the client call and verify the !status.ok() branch is reached.
+  context.Cancel();
+  ASSERT_TRUE(server_aborted_event.TimedWait(kEventTimeout));
+  ASSERT_TRUE(response_received_event.TimedWait(kEventTimeout));
+  task_environment_.RunUntilIdle();
+
+  test::StopGrpcServer(server, kServerStopTimeout);
+  task_environment_.RunUntilIdle();
+
+  // Calling Write(TestResponse()) on the retained handle after client
+  // cancellation and reactor destruction must be a safe no-op and not UAF.
+  ASSERT_TRUE(retained_handle);
+  EXPECT_FALSE(retained_handle->Compare(nullptr));
+  retained_handle->Write(TestResponse());
+}
+
 }  // namespace
 }  // namespace utils
 }  // namespace cast

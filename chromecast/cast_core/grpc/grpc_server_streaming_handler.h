@@ -37,6 +37,9 @@ template <typename TService,
           const char* MethodName>
 class GrpcServerStreamingHandler : public GrpcHandler {
  public:
+  using Request = TRequest;
+  using Response = TResponse;
+
   using ReactorBase = GrpcServerReactor<TRequest, TResponse>;
 
   // Reactor implementation of server streaming handler.
@@ -56,10 +59,27 @@ class GrpcServerStreamingHandler : public GrpcHandler {
       ReadRequest();
     }
 
+    ~Reactor() override {
+      if (on_destroy_callback_) {
+        std::move(on_destroy_callback_).Run();
+      }
+    }
+
+    void OnDone() override {
+      if (on_destroy_callback_) {
+        std::move(on_destroy_callback_).Run();
+      }
+      ReactorBase::OnDone();
+    }
+
     // Sets the callback that is called when writes are available.
     void SetWritesAvailableCallback(
         WritesAvailableCallback writes_available_callback) {
       writes_available_callback_ = std::move(writes_available_callback);
+    }
+
+    void SetOnDestroyCallback(base::OnceClosure on_destroy_callback) {
+      on_destroy_callback_ = std::move(on_destroy_callback);
     }
 
     // Writes a packet and sets the writes availability callback.
@@ -111,6 +131,7 @@ class GrpcServerStreamingHandler : public GrpcHandler {
 
     OnRequestCallback on_request_callback_;
     WritesAvailableCallback writes_available_callback_;
+    base::OnceClosure on_destroy_callback_;
   };
 
   using OnRequestCallback = typename Reactor::OnRequestCallback;

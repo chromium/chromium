@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
+#include "chromecast/cast_core/grpc/thread_safe_reactor_handle.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_action_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder.h"
 #include "chromecast/cast_core/runtime/browser/cast_runtime_metrics_recorder_service.h"
@@ -66,7 +67,8 @@ class RuntimeServiceImpl final
       cast::runtime::RuntimeServiceHandler::StopApplication::Reactor* reactor);
   void HandleHeartbeat(
       cast::runtime::HeartbeatRequest request,
-      cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* reactor);
+      scoped_refptr<cast::utils::ThreadSafeReactorHandle<
+          cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor>> reactor);
   void HandleStartMetricsRecorder(
       cast::runtime::StartMetricsRecorderRequest request,
       cast::runtime::RuntimeServiceHandler::StartMetricsRecorder::Reactor*
@@ -141,8 +143,9 @@ class RuntimeServiceImpl final
   base::OneShotTimer heartbeat_timer_;
 
   // Server streaming reactor used to send the heartbeats to Cast Core.
-  cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor* heartbeat_reactor_ =
-      nullptr;
+  scoped_refptr<cast::utils::ThreadSafeReactorHandle<
+      cast::runtime::RuntimeServiceHandler::Heartbeat::Reactor>>
+      heartbeat_reactor_;
 
   base::WeakPtrFactory<RuntimeServiceImpl> weak_factory_{this};
 };
