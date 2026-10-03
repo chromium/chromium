@@ -76,6 +76,7 @@ void KeyboardLockController::HandleUserHeldEscape() {
   // on the next Esc key event (an auto-repeat keydown or the keyup), which may
   // not arrive before the OS acts on the held key, e.g. Android may terminate
   // an app that captures the keyboard while Esc is held.
+  // Guarded by the kKeyboardLockHeldEscExitsTabFullscreen kill switch.
   //
   // Skip this when the browser window itself is fullscreen (e.g. F11), with or
   // without tab fullscreen on top of it. In that case the same held Esc key is
@@ -84,10 +85,13 @@ void KeyboardLockController::HandleUserHeldEscape() {
   // fullscreen). Calling HandleUserPressedEscape() as well would start a
   // second exit while the first may still be in progress.
   // If the behavior in fullscreen_controller changes this will silently break.
-  FullscreenController* const fullscreen_controller =
-      exclusive_access_manager()->fullscreen_controller();
-  if (!fullscreen_controller->IsFullscreenForBrowser()) {
-    fullscreen_controller->HandleUserPressedEscape();
+  if (base::FeatureList::IsEnabled(
+          features::kKeyboardLockHeldEscExitsTabFullscreen)) {
+    FullscreenController* const fullscreen_controller =
+        exclusive_access_manager()->fullscreen_controller();
+    if (!fullscreen_controller->IsFullscreenForBrowser()) {
+      fullscreen_controller->HandleUserPressedEscape();
+    }
   }
 }
 

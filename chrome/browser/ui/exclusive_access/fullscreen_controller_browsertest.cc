@@ -729,3 +729,49 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                    ->keyboard_lock_controller()
                    ->IsKeyboardLockActive());
 }
+
+// Same as FullscreenControllerPressAndHoldEscTest, but with the kill switch
+// `features::kKeyboardLockHeldEscExitsTabFullscreen` disabled.
+class FullscreenControllerPressAndHoldEscKillSwitchTest
+    : public FullscreenControllerPressAndHoldEscTest {
+ public:
+  FullscreenControllerPressAndHoldEscKillSwitchTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kKeyboardLockHeldEscExitsTabFullscreen);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscKillSwitchTest,
+                       HeldEscOnlyUnlocksKeyboardInTabFullscreen) {
+  // Enter tab fullscreen only. Then request keyboard lock with Esc locked.
+  GetFullscreenController()->EnterFullscreenModeForTab(
+      browser()
+          ->GetTabStripModel()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      {});
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/false,
+                               /*tab_fullscreen=*/true);
+  ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
+
+  // With the feature disabled, the hold timer only unlocks the keyboard and
+  // leaves tab fullscreen as is.
+  {
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
+    SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+    task_runner()->FastForwardBy(base::Seconds(2));
+  }
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->keyboard_lock_controller()
+                   ->IsKeyboardLockActive());
+  EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
+  EXPECT_FALSE(IsFullscreenForBrowser());
+
+  // Tab fullscreen is exited by the next Esc key event instead.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/false,
+                               /*tab_fullscreen=*/false);
+}
