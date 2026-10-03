@@ -4,15 +4,28 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.clearInvocations;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.AccessibilityDelegate;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
+import android.view.accessibility.AccessibilityNodeInfo;
+import android.widget.FrameLayout;
+
+import androidx.core.view.ViewCompat;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,195 +34,150 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.GlowSpec;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.TouchHandler;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link BottomSheetViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private @Mock BottomSheetView mView;
     private @Mock TouchHandler mTouchHandler;
     private @Mock OnClickListener mClickListener;
     private @Mock Runnable mCallback;
+    private @Mock AccessibilityDelegate mAccessibilityDelegate;
+    private Context mContext;
     private PropertyModel mModel;
+    private BottomSheetView mView;
 
     @Before
     public void setUp() {
-        mModel = new PropertyModel.Builder(BottomSheetProperties.ALL_KEYS).build();
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContext = activity;
+        FrameLayout container = new FrameLayout(mContext);
+        mView =
+                (BottomSheetView)
+                        LayoutInflater.from(mContext)
+                                .inflate(R.layout.bottom_sheet_desktop, container, false);
+        container.addView(mView);
+        activity.setContentView(container);
+        mModel = new PropertyModel(BottomSheetProperties.ALL_KEYS);
+
         PropertyModelChangeProcessor.create(mModel, mView, BottomSheetViewBinder::bind);
     }
 
     @Test
-    public void testSheetLayoutMode() {
-        mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, SheetLayoutMode.DESKTOP_POPUP);
-        verify(mView).setSheetLayoutMode(SheetLayoutMode.DESKTOP_POPUP);
-    }
-
-    @Test
-    public void testGlowSpec() {
+    public void testPropertyBinding() {
         GlowSpec spec = new GlowSpec(Color.RED, GlowSpec.ShadowSize.LONG);
         mModel.set(BottomSheetProperties.GLOW_SPEC, spec);
-        verify(mView).setGlowSpec(spec);
-    }
+        assertEquals(spec, mView.getGlowSpec());
 
-    @Test
-    public void testBackgroundColor() {
+        mModel.set(BottomSheetProperties.SHEET_LAYOUT_MODE, SheetLayoutMode.DESKTOP_POPUP);
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, mView.getSheetLayoutMode());
+
+        View background = mView.findViewById(R.id.background);
         mModel.set(BottomSheetProperties.BACKGROUND_COLOR, Color.GREEN);
-        verify(mView).setSheetBackgroundColor(Color.GREEN);
-    }
+        assertEquals(ColorStateList.valueOf(Color.GREEN), background.getBackgroundTintList());
 
-    @Test
-    public void testCloseButtonVisibility() {
+        View closeButton = mView.findViewById(R.id.bottom_sheet_close_button);
         mModel.set(BottomSheetProperties.CLOSE_BUTTON_VISIBILITY, true);
-        verify(mView).setCloseButtonVisible(true);
-    }
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
 
-    @Test
-    public void testCloseButtonClickListener() {
         OnClickListener listener = mock(OnClickListener.class);
         mModel.set(BottomSheetProperties.CLOSE_BUTTON_CLICK_LISTENER, listener);
-        verify(mView).setCloseButtonClickListener(listener);
-    }
+        closeButton.performClick();
+        verify(listener).onClick(any());
 
-    @Test
-    public void testContainerTouchEnabled() {
         mModel.set(BottomSheetProperties.CONTAINER_TOUCH_ENABLED, false);
-        verify(mView).setContainerTouchEnabled(false);
-    }
+        TouchRestrictingFrameLayout contentContainer =
+                mView.findViewById(R.id.bottom_sheet_content);
+        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        assertTrue(contentContainer.onInterceptTouchEvent(event));
 
-    @Test
-    public void testContentView() {
-        View contentView = mock(View.class);
+        View contentView = new View(mContext);
         mModel.set(BottomSheetProperties.CONTENT_VIEW, contentView);
-        verify(mView).setContentView(contentView);
-    }
+        assertEquals(1, contentContainer.getChildCount());
+        assertEquals(contentView, contentContainer.getChildAt(0));
 
-    @Test
-    public void testToolbarView() {
-        View toolbarView = mock(View.class);
+        View toolbarView = new View(mContext);
         mModel.set(BottomSheetProperties.TOOLBAR_VIEW, toolbarView);
-        verify(mView).setToolbarView(toolbarView);
-    }
+        ViewGroup toolbarContainer = mView.findViewById(R.id.bottom_sheet_toolbar_container);
+        assertEquals(1, toolbarContainer.getChildCount());
+        assertEquals(toolbarView, toolbarContainer.getChildAt(0));
 
-    @Test
-    public void testKeyboardCurtainHeight() {
         mModel.set(BottomSheetProperties.KEYBOARD_CURTAIN_HEIGHT, 200);
-        verify(mView).setKeyboardCurtainHeight(200);
-    }
+        assertEquals(200, mView.findViewById(R.id.keyboard_curtain).getLayoutParams().height);
 
-    @Test
-    public void testContainerHeight() {
         mModel.set(BottomSheetProperties.CONTAINER_HEIGHT, 400);
-        verify(mView).setContainerHeight(400);
-    }
+        assertEquals(400, contentContainer.getLayoutParams().height);
 
-    @Test
-    public void testSheetWidth() {
         mModel.set(BottomSheetProperties.SHEET_WIDTH_PX, 500);
-        verify(mView).setSheetWidth(500);
-    }
+        assertEquals(500, mView.getLayoutParams().width);
 
-    @Test
-    public void testAccessibilityPaneTitle() {
         mModel.set(BottomSheetProperties.ACCESSIBILITY_PANE_TITLE, "Sheet Title");
-        verify(mView).setSheetAccessibilityPaneTitle("Sheet Title");
-    }
+        assertEquals("Sheet Title", ViewCompat.getAccessibilityPaneTitle(mView));
 
-    @Test
-    public void testSheetTranslationY() {
         mModel.set(BottomSheetProperties.SHEET_TRANSLATION_Y, 150f);
-        verify(mView).setSheetTranslationY(150f);
-    }
+        assertEquals(150f, mView.getTranslationY(), 0f);
 
-    @Test
-    public void testSheetTranslationX() {
         mModel.set(BottomSheetProperties.SHEET_TRANSLATION_X, 75f);
-        verify(mView).setSheetTranslationX(75f);
-    }
+        assertEquals(75f, mView.getTranslationX(), 0f);
 
-    @Test
-    public void testHandlebarVisible() {
+        View handlebar = mView.findViewById(R.id.handlebar);
         mModel.set(BottomSheetProperties.HANDLEBAR_VISIBLE, true);
-        verify(mView).setHandlebarVisible(true);
-    }
+        assertEquals(View.VISIBLE, handlebar.getVisibility());
 
-    @Test
-    public void testContentTopMargin() {
         mModel.set(BottomSheetProperties.CONTENT_TOP_MARGIN, 32);
-        verify(mView).setContentTopMargin(32);
-    }
+        MarginLayoutParams params = (MarginLayoutParams) contentContainer.getLayoutParams();
+        assertEquals(32, params.topMargin);
 
-    @Test
-    public void testVisibleBackgroundHeight() {
         mModel.set(BottomSheetProperties.VISIBLE_BACKGROUND_HEIGHT, 500);
-        verify(mView).setVisibleBackgroundHeight(500);
-    }
+        assertEquals(500, background.getBottom());
 
-    @Test
-    public void testSheetFocusable() {
         mModel.set(BottomSheetProperties.SHEET_FOCUSABLE, true);
-        verify(mView).setSheetFocusable(true);
-    }
+        assertTrue(mView.isFocusable());
 
-    @Test
-    public void testContentBottomPadding() {
         mModel.set(BottomSheetProperties.CONTENT_BOTTOM_PADDING, 24);
-        verify(mView).setContentContainerPaddingBottom(24);
-    }
+        assertEquals(24, contentContainer.getPaddingBottom());
 
-    @Test
-    public void testBackgroundHeight() {
         mModel.set(BottomSheetProperties.BACKGROUND_HEIGHT, 600);
-        verify(mView).updateBackgroundHeight(600);
-    }
+        assertEquals(600, background.getLayoutParams().height);
 
-    @Test
-    public void testTouchHandler() {
         mModel.set(BottomSheetProperties.TOUCH_HANDLER, mTouchHandler);
-        verify(mView).setTouchHandler(mTouchHandler);
-    }
+        mView.onTouchEvent(event);
+        verify(mTouchHandler).onTouchEvent(event);
 
-    @Test
-    public void testHandlebarClickListener() {
         mModel.set(BottomSheetProperties.HANDLEBAR_CLICK_LISTENER, mClickListener);
-        verify(mView).setHandlebarClickListener(mClickListener);
-    }
+        handlebar.performClick();
+        verify(mClickListener).onClick(any());
 
-    @Test
-    public void testToolbarSizeChangedCallback() {
         mModel.set(BottomSheetProperties.TOOLBAR_SIZE_CHANGED_CALLBACK, mCallback);
-        verify(mView).setToolbarSizeChangedCallback(mCallback);
-    }
+        toolbarContainer.layout(0, 0, 100, 50);
+        verify(mCallback).run();
 
-    @Test
-    public void testCurrentSheetState() {
-        mModel.set(BottomSheetProperties.CURRENT_SHEET_STATE, SheetState.PEEK);
-        verify(mView).sendPaneChangeAccessibilityEvent(true);
+        mView.setAccessibilityDelegate(mAccessibilityDelegate);
 
         mModel.set(BottomSheetProperties.CURRENT_SHEET_STATE, SheetState.HIDDEN);
-        verify(mView).sendPaneChangeAccessibilityEvent(false);
-    }
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mAccessibilityDelegate, never())
+                .performAccessibilityAction(
+                        mView, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
 
-    @Test
-    public void testAllKeysAreBound() {
-        for (PropertyKey key : BottomSheetProperties.ALL_KEYS) {
-            clearInvocations(mView);
-            BottomSheetViewBinder.bind(mModel, mView, key);
-            assertFalse(
-                    "Every key in BottomSheetProperties.ALL_KEYS must be handled by"
-                            + " BottomSheetViewBinder: "
-                            + key,
-                    mockingDetails(mView).getInvocations().isEmpty());
-        }
+        mModel.set(BottomSheetProperties.CURRENT_SHEET_STATE, SheetState.PEEK);
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mAccessibilityDelegate)
+                .performAccessibilityAction(
+                        mView, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+
+        assertEquals(BottomSheetProperties.ALL_KEYS.length, mModel.getAllSetProperties().size());
     }
 }

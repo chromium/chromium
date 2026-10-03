@@ -31,7 +31,6 @@ import java.util.List;
 
 /** Unit tests for MessageBannerCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MessageBannerCoordinatorUnitTest {
     @Test
     public void testCreatePopupMenuShownListener() {
@@ -55,9 +54,10 @@ public class MessageBannerCoordinatorUnitTest {
 
     @Test
     public void testSendPaneChangeAccessibilityEvent() {
-        MessageBannerView view = mock(MessageBannerView.class);
+        Context context = ContextUtils.getApplicationContext();
+        MessageBannerView view = new MessageBannerView(context, null);
         PropertyModel model = new PropertyModel(MessageBannerProperties.ALL_KEYS);
-        View parentView = mock(View.class);
+        View parentView = new View(context);
         Resources resources = mock(Resources.class);
         when(resources.getDisplayMetrics()).thenReturn(new DisplayMetrics());
 
@@ -74,7 +74,6 @@ public class MessageBannerCoordinatorUnitTest {
                         /* autodismissDurationMs= */ () -> 0L,
                         /* onTimeUp= */ () -> {});
 
-        Context context = ContextUtils.getApplicationContext();
         AccessibilityManager manager =
                 (AccessibilityManager) context.getSystemService(Context.ACCESSIBILITY_SERVICE);
         ShadowAccessibilityManager shadowManager = shadowOf(manager);

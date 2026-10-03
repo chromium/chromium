@@ -5,18 +5,14 @@
 package org.chromium.chrome.browser.toolbar.home_button;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
-import android.view.LayoutInflater;
-import android.view.View;
+import android.view.ContextThemeWrapper;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,6 +27,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.HomeActionProperties;
@@ -40,13 +37,11 @@ import org.chromium.ui.util.ClickWithMetaStateCallback;
 
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HomeButtonCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mContext;
-    @Mock private HomeButton mHomeButton;
-    @Mock private Resources mResources;
+    private Context mContext;
+    private HomeButton mHomeButton;
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private ColorStateList mColorStateList;
@@ -60,10 +55,11 @@ public class HomeButtonCoordinatorTest {
 
     @Before
     public void setUp() {
-        when(mHomeButton.getRootView()).thenReturn(mock(View.class));
-        when(mHomeButton.getResources()).thenReturn(mResources);
-        when(mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                .thenReturn(LayoutInflater.from(ContextUtils.getApplicationContext()));
+        mContext =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mHomeButton = new HomeButton(mContext, null);
+        mHomeButton.setAttachedToWindowForTesting();
 
         mIsHomeButtonMenuDisabled = false;
         mActionRegistry = new ActionRegistry();
@@ -84,30 +80,29 @@ public class HomeButtonCoordinatorTest {
 
     @Test
     public void testListMenu() {
-        mHomeButtonCoordinator.onLongClickHomeButton(mHomeButton);
-
-        verify(mHomeButton).showMenu();
+        assertTrue(mHomeButtonCoordinator.onLongClickHomeButton(mHomeButton));
 
         var delegate = mPropertyModel.get(HomeActionProperties.LONG_PRESS_MENU_DELEGATE);
         assertNotNull(delegate);
         delegate.getListMenu();
 
+        assertNotNull(mHomeButtonCoordinator.getMenuForTesting());
         assertEquals(1, mHomeButtonCoordinator.getMenuForTesting().size());
     }
 
     @Test
     public void testListMenuDisabled() {
         mIsHomeButtonMenuDisabled = true;
-        mHomeButtonCoordinator.onLongClickHomeButton(mHomeButton);
+        assertFalse(mHomeButtonCoordinator.onLongClickHomeButton(mHomeButton));
 
-        verify(mHomeButton, never()).showMenu();
+        assertNull(mHomeButtonCoordinator.getMenuForTesting());
     }
 
     @Test
     public void testOnTintChanged() {
         mHomeButtonCoordinator.onTintChanged(
                 mColorStateList, mColorStateList, BrandedColorScheme.APP_DEFAULT);
-        verify(mHomeButton).setImageTintList(eq(mColorStateList));
+        assertEquals(mColorStateList, mHomeButton.getImageTintList());
     }
 
     @Test
