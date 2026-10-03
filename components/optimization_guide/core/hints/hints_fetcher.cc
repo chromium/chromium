@@ -499,30 +499,25 @@ void HintsFetcher::OnURLLoadComplete(bool skip_cache,
 std::vector<GURL> HintsFetcher::GetSizeLimitedURLsForFetching(
     const std::vector<GURL>& urls) const {
   std::vector<GURL> valid_urls;
-  for (size_t i = 0; i < urls.size(); i++) {
+  for (const GURL& url : urls) {
     if (valid_urls.size() >= kMaxUrls) {
-      base::UmaHistogramCounts100(
-          base::StrCat(
-              {"OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls.",
-               GetStringNameForRequestContext(request_context_)}),
-          urls.size() - i);
       OPTIMIZATION_GUIDE_LOG(
           optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding URL due to limit, context:",
                         GetStringNameForRequestContext(request_context_),
-                        " URL:", urls[i].possibly_invalid_spec()}));
+                        " URL:", url.possibly_invalid_spec()}));
       break;
     }
-    if (IsValidURLForURLKeyedHint(urls[i])) {
-      valid_urls.push_back(urls[i]);
+    if (IsValidURLForURLKeyedHint(url)) {
+      valid_urls.push_back(url);
     } else {
       OPTIMIZATION_GUIDE_LOG(
           optimization_guide_common::mojom::LogSource::HINTS,
           optimization_guide_logger_,
           base::StrCat({"Skipped adding invalid URL, context:",
                         GetStringNameForRequestContext(request_context_),
-                        " URL:", urls[i].possibly_invalid_spec()}));
+                        " URL:", url.possibly_invalid_spec()}));
     }
   }
   return valid_urls;
@@ -539,17 +534,11 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
   std::vector<std::string> target_hosts;
   target_hosts.reserve(hosts.size());
 
-  for (size_t i = 0; i < hosts.size(); i++) {
+  for (const std::string& host : hosts) {
     if (target_hosts.size() >= kMaxHosts) {
-      base::UmaHistogramCounts100(
-          base::StrCat(
-              {"OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts.",
-               GetStringNameForRequestContext(request_context_)}),
-          hosts.size() - i);
       break;
     }
 
-    std::string host = hosts[i];
     // Skip over localhosts, IP addresses, and invalid hosts.
     if (net::HostStringIsLocalhost(host)) {
       continue;

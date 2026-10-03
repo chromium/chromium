@@ -655,11 +655,10 @@ TEST_P(HintsFetcherTest, MaxHostsForOptimizationGuideServiceHintsFetch) {
         WasHostCoveredByFetch("host" + base::NumberToString(i) + ".com"));
   }
 
-  // extra1.com and extra2.com should have been considered "dropped".
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts."
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount."
       "BatchUpdateActiveTabs",
-      2, 1);
+      max_hosts_in_fetch_request, 1);
 }
 
 TEST_P(HintsFetcherTest, MaxUrlsForOptimizationGuideServiceHintsFetch) {
@@ -697,12 +696,6 @@ TEST_P(HintsFetcherTest, MaxUrlsForOptimizationGuideServiceHintsFetch) {
     EXPECT_EQ(last_request.urls(i).url(),
               "https://url" + base::NumberToString(i) + ".com/");
   }
-
-  // notfetched.com and notfetched-2.com should have been considered "dropped".
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls."
-      "BatchUpdateActiveTabs",
-      2, 1);
 }
 
 TEST_P(HintsFetcherTest, OnlyURLsToFetch) {
@@ -722,11 +715,6 @@ TEST_P(HintsFetcherTest, OnlyURLsToFetch) {
       "OptimizationGuide.HintsFetcher.GetHintsRequest.RequestStatus."
       "BatchUpdateActiveTabs",
       static_cast<int>(FetcherRequestStatus::kSuccess), 1);
-  // Nothing was dropped so this shouldn't be recorded.
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedHosts", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.HintsFetcher.GetHintsRequest.DroppedUrls", 0);
 }
 
 TEST_P(HintsFetcherTest, NoHostsOrURLsToFetch) {
