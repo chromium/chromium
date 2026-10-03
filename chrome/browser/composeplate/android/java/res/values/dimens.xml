@@ -8,6 +8,8 @@ found in the LICENSE file.
 
 <resources>
     <dimen name="composeplate_view_button_margin">8dp</dimen>
+    <dimen name="composeplate_view_optional_button_padding">32dp</dimen>
+    <dimen name="composeplate_view_optional_button_margin">4dp</dimen>
     <dimen name="composeplate_view_height">48dp</dimen>
     <dimen name="composeplate_view_icon_size">24dp</dimen>
     <dimen name="composeplate_view_legacy_height">44dp</dimen>

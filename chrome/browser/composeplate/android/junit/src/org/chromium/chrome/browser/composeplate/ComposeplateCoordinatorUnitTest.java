@@ -6,16 +6,21 @@ package org.chromium.chrome.browser.composeplate;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -33,6 +38,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,6 +55,8 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ComposeplateCoordinatorUnitTest {
+    private static final String LANDSCAPE_QUALIFIER = "+land";
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ViewGroup mParentView;
@@ -220,6 +228,87 @@ public class ComposeplateCoordinatorUnitTest {
         assertEquals(drawable, icon.drawable);
         assertFalse(icon.shouldTint);
         verify(mComposeplateView).setAiModeButtonIcon(eq(icon));
+    }
+
+    @Test
+    public void testSetOptionalButtonVisibility_visible() {
+        testSetOptionalButtonVisibilityImpl(/* visible= */ true);
+    }
+
+    @Test
+    public void testSetOptionalButtonVisibility_hidden() {
+        testSetOptionalButtonVisibilityImpl(/* visible= */ false);
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_optionalButtonVisible() {
+        Resources res = mContext.getResources();
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ true);
+        int portraitPadding =
+                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+        assertEquals(
+                portraitPadding,
+                mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING));
+
+        RuntimeEnvironment.setQualifiers(LANDSCAPE_QUALIFIER);
+        mCoordinator.onDisplayStyleChanged();
+
+        int landscapePadding =
+                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+        assertNotEquals(portraitPadding, landscapePadding);
+        verifyButtonSpacing(
+                landscapePadding,
+                res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin));
+        verify(mComposeplateView).setButtonLateralPadding(eq(landscapePadding));
+    }
+
+    @Test
+    public void testOnDisplayStyleChanged_optionalButtonHidden() {
+        mCoordinator.setOptionalButtonVisibility(/* visible= */ false);
+        clearInvocations(mComposeplateView);
+
+        RuntimeEnvironment.setQualifiers(LANDSCAPE_QUALIFIER);
+        mCoordinator.onDisplayStyleChanged();
+
+        int defaultSpacing =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
+        verifyButtonSpacing(defaultSpacing, defaultSpacing);
+        verify(mComposeplateView, never()).setButtonLateralPadding(anyInt());
+        verify(mComposeplateView, never()).setButtonMarginEnd(anyInt());
+    }
+
+    private void testSetOptionalButtonVisibilityImpl(boolean visible) {
+        mCoordinator.setOptionalButtonVisibility(visible);
+
+        assertEquals(
+                visible, mPropertyModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE));
+        verify(mComposeplateView).setOptionalButtonVisibility(eq(visible));
+
+        Resources res = mContext.getResources();
+        int defaultSpacing = res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
+        int expectedOptionalButtonPadding =
+                visible
+                        ? res.getDimensionPixelSize(
+                                R.dimen.composeplate_view_optional_button_padding)
+                        : defaultSpacing;
+        int expectedOptionalButtonMarginEnd =
+                visible
+                        ? res.getDimensionPixelSize(
+                                R.dimen.composeplate_view_optional_button_margin)
+                        : defaultSpacing;
+        verifyButtonSpacing(expectedOptionalButtonPadding, expectedOptionalButtonMarginEnd);
+        verify(mComposeplateView).setButtonLateralPadding(eq(expectedOptionalButtonPadding));
+        verify(mComposeplateView).setButtonMarginEnd(eq(expectedOptionalButtonMarginEnd));
+    }
+
+    private void verifyButtonSpacing(int optionalButtonPadding, int optionalButtonMarginEnd) {
+        assertEquals(
+                optionalButtonPadding,
+                mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING));
+        assertEquals(
+                optionalButtonMarginEnd,
+                mPropertyModel.get(ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END));
     }
 
     private void verifyComposeplateWidth(int lateralMargin) {

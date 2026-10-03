@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.StyleRes;
 
 import org.chromium.build.annotations.NullMarked;
@@ -168,6 +169,82 @@ public class ComposeplateCoordinator {
     public void destroy() {
         mModel.set(ComposeplateProperties.INCOGNITO_CLICK_LISTENER, null);
         mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER, null);
+    }
+
+    /**
+     * Sets the visibility of the optional button.
+     *
+     * @param visible Whether the optional button should be visible.
+     */
+    public void setOptionalButtonVisibility(boolean visible) {
+        mModel.set(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE, visible);
+        updateButtonSpacing(visible);
+    }
+
+    /**
+     * Called when the display style changes, e.g. on screen rotation. Re-applies the button
+     * spacing, since the dimensions may differ between configurations.
+     */
+    public void onDisplayStyleChanged() {
+        boolean isOptionalButtonVisible =
+                mModel.get(ComposeplateProperties.IS_OPTIONAL_BUTTON_VISIBLE);
+        if (!isOptionalButtonVisible) return;
+
+        updateButtonSpacing(isOptionalButtonVisible);
+    }
+
+    /**
+     * Updates the lateral paddings and end margins of the buttons based on whether the optional
+     * button is visible.
+     *
+     * @param isOptionalButtonVisible Whether the optional button is visible.
+     */
+    private void updateButtonSpacing(boolean isOptionalButtonVisible) {
+        // Always read the dimensions from the current resources instead of caching them, since
+        // the activity isn't recreated on screen rotation and the landscape mode has different
+        // values. This ensures fresh values are applied after the screen rotates.
+        Resources res = mView.getResources();
+        int defaultSpacing = res.getDimensionPixelSize(R.dimen.composeplate_view_button_margin);
+        int optionalButtonPadding = defaultSpacing;
+        int optionalButtonMarginEnd = defaultSpacing;
+        if (isOptionalButtonVisible) {
+            optionalButtonPadding =
+                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_padding);
+            optionalButtonMarginEnd =
+                    res.getDimensionPixelSize(R.dimen.composeplate_view_optional_button_margin);
+        }
+
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_LATERAL_PADDING, optionalButtonPadding);
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_MARGIN_END, optionalButtonMarginEnd);
+    }
+
+    /**
+     * Sets the icon of the optional button.
+     *
+     * @param iconResId The resource id of the icon drawable to show on the optional button.
+     */
+    public void setOptionalButtonIcon(@DrawableRes int iconResId) {
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_ICON_RES_ID, iconResId);
+    }
+
+    /**
+     * Sets the click listener for the optional button.
+     *
+     * @param optionalButtonClickListener The click listener for the optional button.
+     */
+    public void setOptionalButtonClickListener(View.OnClickListener optionalButtonClickListener) {
+        mModel.set(
+                ComposeplateProperties.OPTIONAL_BUTTON_CLICK_LISTENER, optionalButtonClickListener);
+    }
+
+    /**
+     * Sets the content description of the optional button.
+     *
+     * @param contentDescription The content description for the optional button.
+     */
+    public void setOptionalButtonContentDescription(@Nullable String contentDescription) {
+        mModel.set(ComposeplateProperties.OPTIONAL_BUTTON_CONTENT_DESCRIPTION, contentDescription);
     }
 
     public void applyWhiteBackground(boolean apply) {

@@ -13,6 +13,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
+    android:gravity="center_horizontal"
     android:clipChildren="false"
     android:clipToPadding="false">
 
@@ -47,6 +48,30 @@ found in the LICENSE file.
             android:text="@string/ai_mode_entrypoint_label"
             android:singleLine="true"
             android:textAppearance="@style/TextAppearance.ComposeplateTextMediumDarkOnSurface" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/optional_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginEnd="@dimen/composeplate_view_button_margin"
+        android:paddingStart="@dimen/composeplate_view_button_margin"
+        android:paddingEnd="@dimen/composeplate_view_button_margin"
+        style="@style/ComposeplateViewButton"
+        android:visibility="gone"
+        tools:ignore="UselessParent">
+
+        <ImageView
+            android:id="@+id/optional_button_icon"
+            android:layout_width="@dimen/composeplate_view_icon_size"
+            android:layout_height="@dimen/composeplate_view_icon_size"
+            android:src="@drawable/image_create_24dp"
+            android:tint="@macro/default_icon_color"
+            android:importantForAccessibility="no"/>
     </LinearLayout>
 
     <LinearLayout

@@ -1659,6 +1659,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             // Logo and Doodle have different top margin on landscape and portrait modes on phones,
             // update when the screen rotates.
             setLogoTopMargin();
+            setComposeplateButtonSpacing();
             return;
         }
 
@@ -1667,6 +1668,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // Request a layout pass to trigger onMeasure(), which acts as the single source of
         // truth to calculate and uniformly apply the bounded widths to all NTP elements.
         ViewUtils.requestLayout(mNewTabPageLayout, "NewTabPageCoordinator.onDisplayStyleChanged");
+    }
+
+    /**
+     * Updates the spacing of the composeplate buttons, which differs between landscape and portrait
+     * modes on phones.
+     */
+    private void setComposeplateButtonSpacing() {
+        if (mComposeplateCoordinator == null) return;
+
+        mComposeplateCoordinator.onDisplayStyleChanged();
     }
 
     private int getSideUiWidthDp() {

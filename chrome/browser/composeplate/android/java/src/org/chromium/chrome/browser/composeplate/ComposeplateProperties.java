@@ -60,6 +60,26 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<AiModeButtonIcon> AI_MODE_BUTTON_ICON =
             new WritableObjectPropertyKey<>();
 
+    /** Whether the optional button is visible. */
+    WritableBooleanPropertyKey IS_OPTIONAL_BUTTON_VISIBLE = new WritableBooleanPropertyKey();
+
+    /** The resource id of the optional button's icon drawable. */
+    WritableIntPropertyKey OPTIONAL_BUTTON_ICON_RES_ID = new WritableIntPropertyKey();
+
+    /** The click listener of the optional button. */
+    WritableObjectPropertyKey<View.@Nullable OnClickListener> OPTIONAL_BUTTON_CLICK_LISTENER =
+            new WritableObjectPropertyKey<>();
+
+    /** The content description of the optional button. */
+    WritableObjectPropertyKey<@Nullable String> OPTIONAL_BUTTON_CONTENT_DESCRIPTION =
+            new WritableObjectPropertyKey<>();
+
+    /** The lateral (start and end) padding of the optional and incognito buttons, in pixels. */
+    WritableIntPropertyKey OPTIONAL_BUTTON_LATERAL_PADDING = new WritableIntPropertyKey();
+
+    /** The end margin of the composeplate and optional buttons, in pixels. */
+    WritableIntPropertyKey OPTIONAL_BUTTON_MARGIN_END = new WritableIntPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
@@ -70,5 +90,11 @@ interface ComposeplateProperties {
                 TEXT_STYLE_RES_ID,
                 AI_MODE_BUTTON_UI_CONFIG,
                 AI_MODE_BUTTON_ICON,
+                IS_OPTIONAL_BUTTON_VISIBLE,
+                OPTIONAL_BUTTON_ICON_RES_ID,
+                OPTIONAL_BUTTON_CLICK_LISTENER,
+                OPTIONAL_BUTTON_CONTENT_DESCRIPTION,
+                OPTIONAL_BUTTON_LATERAL_PADDING,
+                OPTIONAL_BUTTON_MARGIN_END,
             };
 }

@@ -1486,6 +1486,7 @@ public class NewTabPageCoordinatorUnitTest {
         Resources resources = mActivity.getResources();
         int expectedTopMargin = LogoUtils.getTopMarginForLogo(resources);
         verify(mMockLogo).setTopMargin(eq(expectedTopMargin));
+        verify(mMockComposeplate).onDisplayStyleChanged();
     }
 
     @Test
@@ -1515,6 +1516,7 @@ public class NewTabPageCoordinatorUnitTest {
         Resources resources = mActivity.getResources();
         int expectedTopMargin = LogoUtils.getTopMarginForLogo(resources);
         verify(mMockLogo).setTopMargin(eq(expectedTopMargin));
+        verify(mMockComposeplate).onDisplayStyleChanged();
     }
 
     @Test
@@ -1528,6 +1530,7 @@ public class NewTabPageCoordinatorUnitTest {
         mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
 
         verify(mMockLogo).updateDoodleOnTablet(anyBoolean());
+        verify(mMockComposeplate, never()).onDisplayStyleChanged();
     }
 
     @Test
