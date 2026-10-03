@@ -96,6 +96,9 @@ declare_args() {
       # pipeline http://b/436082487.
       !enable_kythe_annotations && is_clang &&
       clang_modules_platform_supported && using_tested_sysroot &&
+      # Disabled when cross-compiling iOS on non-macOS hosts because the Xcode
+      # SDK modulemaps are not configured for cross-host builds.
+      !(current_os == "ios" && host_os != "mac") &&
       # reclient and icecc don't handle headers in modulemap config.
       !use_reclient && !is_cronet_for_aosp_build && cc_wrapper != "icecc" &&
       # Due to libc++ headers having different dependencies in different

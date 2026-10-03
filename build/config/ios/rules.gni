@@ -620,7 +620,7 @@ template("ios_app_bundle") {
         bundle_deps += [ ":$_metadata_bundledata" ]
       }
 
-      if (target_environment == "simulator") {
+      if (target_environment == "simulator" && host_os == "mac") {
         if (!defined(data_deps)) {
           data_deps = []
         }

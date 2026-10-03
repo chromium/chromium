@@ -17,7 +17,7 @@ declare_args() {
 
   # Control whether codesiging is enabled (ignored for simulator builds).
   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
-  ios_enable_code_signing = true
+  ios_enable_code_signing = host_os == "mac"
 
   # Explicitly select the identity to use for codesigning. If defined, must
   # be set to a non-empty string that will be passed to codesigning. Can be

@@ -100,7 +100,7 @@ if (host_os == "mac" || is_apple) {
   }
 
   assert(current_os != "ios" || use_system_xcode)
-  assert(host_os == "mac" || !use_system_xcode)
+  assert(host_os == "mac" || !use_system_xcode || current_os == "ios")
 }
 
 vpython_spec_files = [
