@@ -47,6 +47,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -319,9 +320,17 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       *active_tab(), task_id, std::nullopt, future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& result = future.Get();
+  ASSERT_TRUE(result.has_value());
+
+  // Crashing the main frame does not destroy the `WebContents`, so
+  // `PageContextFetcher` still returns a `FetchPageContextResult` rather than
+  // the error `FetchPageContextError::kWebContentsWentAway`. However, the APC
+  // extraction fails because the main frame is not live. So the page context
+  // fetch resolves to a different error.
   std::optional<std::string> error_message =
       ActorKeyedService::ExtractErrorMessageIfFailed(result);
-  ASSERT_TRUE(result.has_value());
+  ASSERT_TRUE(error_message.has_value());
+  EXPECT_THAT(error_message.value(), testing::HasSubstr("Main frame not live"));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
