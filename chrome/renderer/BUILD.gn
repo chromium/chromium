@@ -515,6 +515,96 @@ if (!is_android) {
   }
 }
 
+# Browser tests that run in both browser_tests and android_browsertests.
+source_set("platform_browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "chrome_content_renderer_client_browsertest.cc" ]
+  deps = [
+    ":renderer",
+    "//base",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_test",
+    "//chrome/test/base:chrome_test_utils",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//extensions/buildflags",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//ui/base",
+    "//url",
+  ]
+  if (enable_extensions_core) {
+    deps += [ "//extensions/common" ]
+  }
+}
+
+if (is_android) {
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "accessibility/read_anything/read_anything_test_utils.cc",
+      "accessibility/read_anything/read_anything_test_utils.h",
+      "autofill/fake_mojo_password_manager_driver.cc",
+      "autofill/fake_mojo_password_manager_driver.h",
+      "autofill/fake_password_generation_driver.cc",
+      "autofill/fake_password_generation_driver.h",
+      "autofill/password_autofill_agent_browsertest.cc",
+      "autofill/password_generation_agent_browsertest.cc",
+      "autofill/password_generation_test_utils.cc",
+      "autofill/password_generation_test_utils.h",
+      "commerce/commerce_web_extractor_browsertest.cc",
+      "wallet/boarding_pass_extractor_browsertest.cc",
+    ]
+    deps = [
+      ":renderer",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_test",
+      "//components/autofill/content/common/mojom",
+      "//components/autofill/content/renderer",
+      "//components/autofill/content/renderer:test_support",
+      "//components/autofill/core/common",
+      "//components/autofill/core/common:test_support",
+      "//components/commerce/content/renderer",
+      "//components/commerce/core:commerce_constants",
+      "//components/password_manager/core/common",
+      "//components/password_manager/core/common:features",
+      "//content/public/renderer",
+      "//content/test:test_support",
+      "//services/service_manager/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public:blink",
+      "//ui/accessibility",
+      "//ui/events:events_base",
+    ]
+
+    if (safe_browsing_mode != 0) {
+      sources += [
+        "safe_browsing/phishing_classifier_browsertest.cc",
+        "safe_browsing/phishing_dom_utils_browsertest.cc",
+      ]
+      deps += [
+        "//components/safe_browsing:buildflags",
+        "//components/safe_browsing/content/common:interfaces",
+        "//components/safe_browsing/content/renderer/phishing_classifier",
+        "//components/safe_browsing/core/common",
+        "//components/safe_browsing/core/common/fbs:client_model",
+        "//components/safe_browsing/core/common/phishing_classifier",
+        "//components/safe_browsing/core/common/proto:client_model_proto",
+        "//components/safe_browsing/core/common/proto:csd_proto",
+        "//crypto",
+      ]
+    }
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

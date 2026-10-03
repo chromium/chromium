@@ -92,14 +92,14 @@ TEST_F(ChromeContentRendererClientSearchBoxTest, RewriteThumbnailURL) {
 namespace {
 
 struct FlashEmbedsTestData {
-  std::string name;
-  std::string host;
-  std::string path;
-  std::string type;
-  std::string expected_url;
+  const char* name;
+  const char* host;
+  const char* path;
+  const char* type;
+  const char* expected_url;
 };
 
-const FlashEmbedsTestData kFlashEmbedsTestData[] = {
+constexpr FlashEmbedsTestData kFlashEmbedsTestData[] = {
     {"Valid URL, no parameters", "www.youtube.com", "/v/deadbeef",
      "application/x-shockwave-flash", "/embed/deadbeef"},
     {"Valid URL, no parameters, subdomain", "www.foo.youtube.com",
