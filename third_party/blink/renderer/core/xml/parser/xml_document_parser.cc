@@ -39,6 +39,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
@@ -163,8 +164,10 @@ static inline bool HasNoStyleInformation(Document* document) {
 }
 
 struct xmlSAX2Namespace {
-  xmlChar* prefix;
-  xmlChar* uri;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* prefix;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* uri;
 
   void CloneTo(xmlSAX2Namespace& to_ns) const {
     to_ns.prefix = xmlStrdup(prefix);
@@ -181,11 +184,16 @@ static_assert(std::is_trivial_v<xmlSAX2Namespace> &&
 static_assert(sizeof(xmlSAX2Namespace) == sizeof(xmlChar*) * 2);
 
 struct xmlSAX2Attributes {
-  xmlChar* localname;
-  xmlChar* prefix;
-  xmlChar* uri;
-  xmlChar* value;
-  xmlChar* end;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* localname;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* prefix;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* uri;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* value;
+  // RAW_PTR_EXCLUSION: #reinterpret-cast-trivial-type
+  RAW_PTR_EXCLUSION xmlChar* end;
 
   base::span<const xmlChar> ValueSpan() const {
     // SAFETY: ValueLength() returns the distance between `end` and

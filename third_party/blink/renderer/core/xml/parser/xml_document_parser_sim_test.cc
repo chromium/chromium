@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -43,7 +44,7 @@ class FinishResponseListener final : public NativeEventListener {
   bool WasInvoked() const { return was_invoked_; }
 
  private:
-  SimRequest* const response_;
+  const raw_ptr<SimRequest, UnprotectedInRelease | DanglingUntriaged> response_;
   const String final_data_;
   bool was_invoked_ = false;
 };
