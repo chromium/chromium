@@ -52,6 +52,13 @@ struct FormSuggestionMetadata {
   // routing in `AutofillAgent`. Must be preserved when copying or modifying
   // suggestions.
   base::WeakPtr<autofill::AutofillSuggestionDelegate> suggestion_delegate;
+
+  // The index of this suggestion within the original suggestions vector
+  // passed from `AutofillSuggestionDelegate::OnSuggestionsGenerated` /
+  // `BrowserAutofillManager`. Used to forward the correct BAM vector index to
+  // `AutofillSuggestionDelegate::DidAcceptSuggestion` even when suggestions
+  // are reordered or filtered in the iOS keyboard accessory or bottom sheet UI.
+  std::optional<size_t> popup_suggestion_index;
 };
 
 // Enum class used to determine the feature for in-product help for the

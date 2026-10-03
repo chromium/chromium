@@ -470,9 +470,12 @@ bool HasGuid(const Suggestion::Payload& payload) {
               : Suggestion::Payload();
 
       CHECK_GE(index, 0);
-      delegate->DidAcceptSuggestion(
-          autofill_suggestion, {.multi_index = {static_cast<size_t>(index)}},
-          form_id, field_id);
+      const size_t suggestion_index =
+          suggestion.metadata.popup_suggestion_index.value_or(
+              static_cast<size_t>(index));
+      delegate->DidAcceptSuggestion(autofill_suggestion,
+                                    {.multi_index = {suggestion_index}},
+                                    form_id, field_id);
     }
     return;
   }
@@ -619,7 +622,8 @@ bool HasGuid(const Suggestion::Payload& payload) {
 
   // Convert the suggestions into an NSArray for the keyboard.
   NSMutableArray<FormSuggestion*>* suggestions = [[NSMutableArray alloc] init];
-  for (const Suggestion& popup_suggestion : popup_suggestions) {
+  for (size_t index = 0; index < popup_suggestions.size(); ++index) {
+    const Suggestion& popup_suggestion = popup_suggestions[index];
     // Convert Autofill popup suggestions into keyboard accessory suggestions
     // (`FormSuggestion`). Only fillable or actionable types (e.g. address,
     // credit card, autocomplete, undo) are processed; non-fillable items like
@@ -775,6 +779,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
     metadata.suggestion_delegate = delegate;
     metadata.form_id = formId;
     metadata.field_id = fieldId;
+    metadata.popup_suggestion_index = index;
 
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value

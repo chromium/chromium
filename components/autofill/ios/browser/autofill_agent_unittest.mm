@@ -1805,8 +1805,9 @@ TEST_F(AutofillAgentTest, ShowAtMemorySuggestion_NotAppendedWhenEmpty) {
   EXPECT_EQ(0U, received_suggestions.count);
 }
 
-// Tests that form_id and field_id passed to showAutofillPopup: are stored in
-// FormSuggestionMetadata and forwarded to DidAcceptSuggestion.
+// Tests that form_id, field_id, and popup_suggestion_index passed to
+// showAutofillPopup: are stored in FormSuggestionMetadata and forwarded to
+// DidAcceptSuggestion.
 TEST_F(AutofillAgentTest, ShowAutofillPopup_AttachesFormAndFieldIdToMetadata) {
   std::vector<autofill::Suggestion> suggestions = {
       autofill::Suggestion(u"test", autofill::SuggestionType::kAddressEntry)};
@@ -1834,16 +1835,18 @@ TEST_F(AutofillAgentTest, ShowAutofillPopup_AttachesFormAndFieldIdToMetadata) {
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
 
-  ASSERT_THAT(
-      received_suggestions,
-      testing::ElementsAre(testing::ResultOf(
-          [](FormSuggestion* suggestion) { return suggestion.metadata; },
-          testing::AllOf(
-              testing::Field(&FormSuggestionMetadata::form_id, form_id),
-              testing::Field(&FormSuggestionMetadata::field_id, field_id)))));
+  ASSERT_EQ(1U, received_suggestions.size());
+  EXPECT_EQ(form_id, received_suggestions[0].metadata.form_id);
+  EXPECT_EQ(field_id, received_suggestions[0].metadata.field_id);
+  EXPECT_EQ(0U, received_suggestions[0].metadata.popup_suggestion_index);
 
-  EXPECT_CALL(mock_delegate,
-              DidAcceptSuggestion(testing::_, testing::_, form_id, field_id));
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(testing::_,
+                          testing::Field(&autofill::AutofillSuggestionDelegate::
+                                             SuggestionMetadata::multi_index,
+                                         testing::ElementsAre(0)),
+                          form_id, field_id));
   [autofill_agent_ didSelectSuggestion:received_suggestions[0]
                                atIndex:0
                                   form:@"form"
@@ -1855,8 +1858,91 @@ TEST_F(AutofillAgentTest, ShowAutofillPopup_AttachesFormAndFieldIdToMetadata) {
                      }];
 }
 
+// Tests that reordering suggestions (e.g. prepending Undo to index 0) preserves
+// each suggestion's original BrowserAutofillManager popup vector index in
+// FormSuggestionMetadata and forwards the correct index to DidAcceptSuggestion.
+TEST_F(AutofillAgentTest,
+       ShowAutofillPopup_ReorderedUndoSuggestionPreservesBAMIndex) {
+  std::vector<autofill::Suggestion> suggestions = {
+      autofill::Suggestion(u"Address", autofill::SuggestionType::kAddressEntry),
+      autofill::Suggestion(u"", u"", autofill::Suggestion::Icon::kUndo,
+                           autofill::SuggestionType::kUndo)};
+  autofill::FormGlobalId form_id(
+      autofill::LocalFrameToken(base::UnguessableToken::Create()),
+      autofill::FormRendererId(123));
+  autofill::FieldGlobalId field_id(
+      autofill::LocalFrameToken(base::UnguessableToken::Create()),
+      autofill::FieldRendererId(456));
+
+  __block std::vector<FormSuggestion*> received_suggestions;
+  auto completionHandler = ^(NSArray<FormSuggestion*>* form_suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    for (FormSuggestion* suggestion in form_suggestions) {
+      received_suggestions.push_back(suggestion);
+    }
+  };
+
+  testing::NiceMock<autofill::MockAutofillSuggestionDelegate> mock_delegate;
+  [autofill_agent_ showAutofillPopup:suggestions
+                  suggestionDelegate:mock_delegate.GetWeakPtr()
+                              formId:form_id
+                             fieldId:field_id];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+
+  // Undo is prepended to the UI list at index 0, while Address is at index 1.
+  ASSERT_EQ(2U, received_suggestions.size());
+  EXPECT_EQ(autofill::SuggestionType::kUndo, received_suggestions[0].type);
+  EXPECT_EQ(1U, received_suggestions[0].metadata.popup_suggestion_index);
+  EXPECT_EQ(autofill::SuggestionType::kAddressEntry,
+            received_suggestions[1].type);
+  EXPECT_EQ(0U, received_suggestions[1].metadata.popup_suggestion_index);
+
+  // Selecting Undo at UI index 0 must pass original BAM index 1 to
+  // DidAcceptSuggestion.
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(testing::Field(&autofill::Suggestion::type,
+                                         autofill::SuggestionType::kUndo),
+                          testing::Field(&autofill::AutofillSuggestionDelegate::
+                                             SuggestionMetadata::multi_index,
+                                         testing::ElementsAre(1)),
+                          form_id, field_id));
+  [autofill_agent_ didSelectSuggestion:received_suggestions[0]
+                               atIndex:0
+                                  form:@"form"
+                        formRendererID:FormRendererId(1)
+                       fieldIdentifier:@"field"
+                       fieldRendererID:FieldRendererId(2)
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
+                     completionHandler:^{
+                     }];
+
+  // Selecting Address at UI index 1 must pass original BAM index 0 to
+  // DidAcceptSuggestion.
+  EXPECT_CALL(mock_delegate,
+              DidAcceptSuggestion(
+                  testing::Field(&autofill::Suggestion::type,
+                                 autofill::SuggestionType::kAddressEntry),
+                  testing::Field(&autofill::AutofillSuggestionDelegate::
+                                     SuggestionMetadata::multi_index,
+                                 testing::ElementsAre(0)),
+                  form_id, field_id));
+  [autofill_agent_ didSelectSuggestion:received_suggestions[1]
+                               atIndex:1
+                                  form:@"form"
+                        formRendererID:FormRendererId(1)
+                       fieldIdentifier:@"field"
+                       fieldRendererID:FieldRendererId(2)
+                               frameID:base::SysUTF8ToNSString(kTestFrameId)
+                     completionHandler:^{
+                     }];
+}
+
 // Tests that selecting an unbound suggestion (e.g. from the bottom sheet or
-// manual fill) falls back to the last received delegate, form_id, and field_id.
+// manual fill) falls back to the last received delegate, form_id, and field_id,
+// and uses the UI array index when popup_suggestion_index is std::nullopt.
 TEST_F(AutofillAgentTest,
        DidSelectSuggestion_UnboundSuggestionFallsBackToLastReceivedIds) {
   std::vector<autofill::Suggestion> suggestions = {autofill::Suggestion(
@@ -1876,8 +1962,14 @@ TEST_F(AutofillAgentTest,
 
   FormSuggestion* unbound_suggestion =
       SimpleFormSuggestion(u"test", autofill::SuggestionType::kCreditCardEntry);
-  EXPECT_CALL(mock_delegate,
-              DidAcceptSuggestion(testing::_, testing::_, form_id, field_id));
+  EXPECT_FALSE(unbound_suggestion.metadata.popup_suggestion_index.has_value());
+  EXPECT_CALL(
+      mock_delegate,
+      DidAcceptSuggestion(testing::_,
+                          testing::Field(&autofill::AutofillSuggestionDelegate::
+                                             SuggestionMetadata::multi_index,
+                                         testing::ElementsAre(0)),
+                          form_id, field_id));
   [autofill_agent_ didSelectSuggestion:unbound_suggestion
                                atIndex:0
                                   form:@"form"
