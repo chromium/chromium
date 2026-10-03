@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -421,7 +422,8 @@ static bool ShouldNotInheritStyleFrom(const Node& node) {
 namespace {
 
 struct HtmlEquivalentTagDefinition {
-  const HTMLQualifiedName* tag;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const HTMLQualifiedName* tag;
   CSSPropertyID property;
   CSSValueID value_id;
 };

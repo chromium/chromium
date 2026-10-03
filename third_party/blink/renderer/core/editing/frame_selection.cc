@@ -104,6 +104,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/unicode_utilities.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 #define EDIT_DEBUG 0
@@ -113,6 +114,8 @@ namespace blink {
 namespace {
 
 class ScopedHandlingInputEvent {
+  STACK_ALLOCATED();
+
  public:
   explicit ScopedHandlingInputEvent(FrameWidget* widget) : widget_(widget) {
     if (widget_) {

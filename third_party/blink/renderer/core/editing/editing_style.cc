@@ -26,6 +26,8 @@
 
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/values_equivalent.h"
 #include "base/stl_util.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
@@ -184,6 +186,7 @@ class HtmlElementEquivalent : public GarbageCollected<HtmlElementEquivalent> {
   HtmlElementEquivalent(CSSPropertyID,
                         CSSValueID primitive_value,
                         const HTMLQualifiedName& tag_name);
+  virtual ~HtmlElementEquivalent() = default;
 
   virtual bool Matches(const Element* element) const {
     return !tag_name_ || element->HasTagName(*tag_name_);
@@ -203,7 +206,8 @@ class HtmlElementEquivalent : public GarbageCollected<HtmlElementEquivalent> {
   const CSSPropertyID property_id_;
   const Member<CSSIdentifierValue> identifier_value_;
   // We can store a pointer because HTML tag names are const global.
-  const HTMLQualifiedName* tag_name_;
+  raw_ptr<const HTMLQualifiedName, UnprotectedInRelease | DanglingUntriaged>
+      tag_name_;
 };
 
 HtmlElementEquivalent::HtmlElementEquivalent(CSSPropertyID id)
@@ -317,13 +321,13 @@ class HtmlAttributeEquivalent : public HtmlElementEquivalent {
 
   bool Matches(const Element* element) const override {
     return HtmlElementEquivalent::Matches(element) &&
-           element->hasAttribute(attr_name_);
+           element->hasAttribute(*attr_name_);
   }
   bool HasAttribute() const override { return true; }
   bool ValueIsPresentInStyle(HTMLElement*, CSSPropertyValueSet*) const override;
   void AddToStyle(Element*, EditingStyle*) const override;
   virtual const CSSValue* AttributeValueAsCSSValue(Element*) const;
-  inline const QualifiedName& AttributeName() const { return attr_name_; }
+  inline const QualifiedName& AttributeName() const { return *attr_name_; }
 
   void Trace(Visitor* visitor) const override {
     HtmlElementEquivalent::Trace(visitor);
@@ -331,7 +335,8 @@ class HtmlAttributeEquivalent : public HtmlElementEquivalent {
 
  protected:
   // We can store a reference because HTML attribute names are const global.
-  const QualifiedName& attr_name_;
+  const raw_ref<const QualifiedName, UnprotectedInRelease | DanglingUntriaged>
+      attr_name_;
 };
 
 HtmlAttributeEquivalent::HtmlAttributeEquivalent(
@@ -364,7 +369,7 @@ void HtmlAttributeEquivalent::AddToStyle(Element* element,
 const CSSValue* HtmlAttributeEquivalent::AttributeValueAsCSSValue(
     Element* element) const {
   DCHECK(element);
-  const AtomicString& value = element->getAttribute(attr_name_);
+  const AtomicString& value = element->getAttribute(*attr_name_);
   if (value.IsNull())
     return nullptr;
 
@@ -399,7 +404,7 @@ HtmlFontSizeEquivalent::HtmlFontSizeEquivalent()
 const CSSValue* HtmlFontSizeEquivalent::AttributeValueAsCSSValue(
     Element* element) const {
   DCHECK(element);
-  const AtomicString& value = element->getAttribute(attr_name_);
+  const AtomicString& value = element->getAttribute(*attr_name_);
   if (value.IsNull())
     return nullptr;
   std::optional<CSSValueID> size =

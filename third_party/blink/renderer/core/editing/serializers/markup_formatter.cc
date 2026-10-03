@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/dom/cdata_section.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -52,7 +53,8 @@ namespace {
 
 struct EntityDescription {
   UChar entity;
-  const std::string& reference;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const std::string& reference;
   EntityMask mask;
 };
 
