@@ -643,10 +643,10 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                         cachedWebStateIDs:attachments.cachedWebStateIDs];
 }
 
-- (void)removeSharedTabWithServerToken:
-    (const base::UnguessableToken&)serverToken {
+- (void)removeSharedTabWithInputItemIdentifier:
+    (const base::UnguessableToken&)inputItemIdentifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  ComposeboxInputItem* item = [_items itemForServerToken:serverToken];
+  ComposeboxInputItem* item = [_items itemForIdentifier:inputItemIdentifier];
   if (item) {
     [self removeItem:item];
   }

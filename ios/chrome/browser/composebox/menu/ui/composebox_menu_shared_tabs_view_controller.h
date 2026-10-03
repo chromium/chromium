@@ -24,11 +24,11 @@ class UnguessableToken;
             (ComposeboxMenuSharedTabsViewController*)viewController
                                      didTapURL:(const GURL&)url;
 
-// Called when the user removes a tab with the given server token.
+// Called when the user removes a tab with the given `inputItemIdentifier`.
 - (void)composeboxMenuSharedTabsViewController:
             (ComposeboxMenuSharedTabsViewController*)viewController
-                   didRemoveTabWithServerToken:
-                       (const base::UnguessableToken&)serverToken;
+           didRemoveTabWithInputItemIdentifier:
+               (const base::UnguessableToken&)inputItemIdentifier;
 
 @end
 

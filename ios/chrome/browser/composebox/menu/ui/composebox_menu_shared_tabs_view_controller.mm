@@ -367,8 +367,9 @@ UIButtonConfiguration* CreateHeaderButtonConfiguration(UIImage* image) {
   [snapshot deleteItemsWithIdentifiers:@[ tab ]];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
 
-  [self.delegate composeboxMenuSharedTabsViewController:self
-                            didRemoveTabWithServerToken:tab.serverToken];
+  [self.delegate
+      composeboxMenuSharedTabsViewController:self
+         didRemoveTabWithInputItemIdentifier:tab.inputItemIdentifier];
 }
 
 #pragma mark - User Actions

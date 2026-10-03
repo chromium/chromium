@@ -136,9 +136,9 @@ class ContextualSearchSessionHandle;
 // Unpacks and attaches all items within the selection wrapper.
 - (void)updateAttachments:(ComposeboxAttachmentSelection*)attachments;
 
-// Removes the shared tab with the given `serverToken`.
-- (void)removeSharedTabWithServerToken:
-    (const base::UnguessableToken&)serverToken;
+// Removes the shared tab with the given `inputItemIdentifier`.
+- (void)removeSharedTabWithInputItemIdentifier:
+    (const base::UnguessableToken&)inputItemIdentifier;
 
 // Applies the focus parameters to initialize the session state.
 - (void)applyFocusParams:(ComposeboxFocusParams*)params;

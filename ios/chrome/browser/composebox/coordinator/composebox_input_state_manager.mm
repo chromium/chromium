@@ -631,7 +631,7 @@ contextual_search::DriveConsentState ConsentStateFromDisclaimerStatus(
         ComposeboxMenuSharedTab* tab =
             [[ComposeboxMenuSharedTab alloc] initWithURL:item.tabURL
                                                    title:item.title
-                                             serverToken:item.serverToken
+                                     inputItemIdentifier:item.identifier
                                                  favicon:item.leadingIconImage];
         [sharedTabs addObject:tab];
       }

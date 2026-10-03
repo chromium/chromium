@@ -20,15 +20,15 @@ class UnguessableToken;
 @property(nonatomic, readonly) GURL URL;
 // The title of the tab.
 @property(nonatomic, readonly) NSString* title;
-// The server token for this tab.
-@property(nonatomic, readonly) base::UnguessableToken serverToken;
+// The unique identifier of the corresponding input item.
+@property(nonatomic, readonly) base::UnguessableToken inputItemIdentifier;
 
 // The favicon of the web page.
 @property(nonatomic, strong, readonly) UIImage* favicon;
 
 - (instancetype)initWithURL:(GURL)URL
                       title:(NSString*)title
-                serverToken:(base::UnguessableToken)serverToken
+        inputItemIdentifier:(base::UnguessableToken)inputItemIdentifier
                     favicon:(UIImage*)favicon NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -402,10 +402,10 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuSharedTabsViewController:
             (ComposeboxMenuSharedTabsViewController*)viewController
-                   didRemoveTabWithServerToken:
-                       (const base::UnguessableToken&)serverToken {
+           didRemoveTabWithInputItemIdentifier:
+               (const base::UnguessableToken&)inputItemIdentifier {
   [self.inputPlateDelegate composeboxMenuCoordinator:self
-                         didRemoveTabWithServerToken:serverToken];
+                 didRemoveTabWithInputItemIdentifier:inputItemIdentifier];
 
   ComposeboxUIInputState* newState =
       [self.inputPlateDelegate currentUIInputStateForMenuCoordinator:self];

@@ -45,10 +45,11 @@ class UnguessableToken;
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
              didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments;
 
-// Called when the user removes a tab with the given server token in assistant
-// aim composebox menu.
+// Called when the user removes a tab with the given `inputItemIdentifier` in
+// assistant aim composebox menu.
 - (void)composeboxMenuCoordinator:(ComposeboxMenuCoordinator*)coordinator
-      didRemoveTabWithServerToken:(const base::UnguessableToken&)serverToken;
+    didRemoveTabWithInputItemIdentifier:
+        (const base::UnguessableToken&)inputItemIdentifier;
 
 // Returns the current UI input state from the input plate context.
 - (ComposeboxUIInputState*)currentUIInputStateForMenuCoordinator:
