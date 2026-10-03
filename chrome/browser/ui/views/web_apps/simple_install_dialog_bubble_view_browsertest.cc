@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -10,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -117,6 +119,55 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       browser->GetTabStripModel()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker), base::DoNothing());
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
+                       AppShimPlaceholderDoesNotCloseDialog) {
+  webapps::AppId app_id = test::InstallDummyWebApp(
+      profile(), "Test app",
+      embedded_https_test_server().GetURL("/empty.html"));
+  BrowserWindowInterface* app_browser =
+      ::web_app::LaunchWebAppBrowser(profile(), app_id);
+
+  // Wait for the app to launch and finish loading.
+  ASSERT_NE(app_browser, nullptr);
+  content::WebContents* app_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_NE(app_contents, nullptr);
+  ASSERT_TRUE(content::WaitForLoadStop(app_contents));
+
+  // Loading the page does not guarantee the app window is visible yet.
+  views::test::WidgetVisibleWaiter(
+      BrowserView::GetBrowserViewForBrowser(app_browser)->GetWidget())
+      .Wait();
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
+  ShowSimpleInstallDialogForWebApps(app_contents, GetAppInfo(),
+                                    GetInstallTracker(app_browser),
+                                    test_future.GetCallback());
+
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  base::WeakPtr<views::Widget> weak_widget = widget->GetWeakPtr();
+  widget->SetBounds(gfx::Rect(0, 0, 1, 1));
+  ASSERT_TRUE(weak_widget);
+  ASSERT_EQ(widget->GetWindowBoundsInScreen(), gfx::Rect(0, 0, 1, 1));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(weak_widget);
+  EXPECT_FALSE(weak_widget->IsClosed());
+  EXPECT_FALSE(test_future.IsReady());
+
+  views::test::WidgetDestroyedWaiter destroyed_waiter(weak_widget.get());
+  views::test::CancelDialog(weak_widget.get());
+  destroyed_waiter.Wait();
+  ASSERT_TRUE(test_future.Wait());
+  EXPECT_FALSE(test_future.Get<bool>());
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsMetrics) {

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "build/build_config.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -114,6 +115,16 @@ bool IsWidgetCurrentSizeSmallerThanPreferredSize(
     views::Widget* widget,
     MaxAllowedShrinkage shrinkage) {
   CHECK(widget);
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/567218109): Remove this workaround when the
+  // MaxAllowedShrinkage-based origin visibility protection is removed.
+  // The app shim can asynchronously report this initial placeholder after the
+  // dialog is sized. It mirrors ui::kWindowSizeDeterminedLater, which cannot be
+  // included here because it requires Objective-C++.
+  if (widget->GetWindowBoundsInScreen() == gfx::Rect(0, 0, 1, 1)) {
+    return false;
+  }
+#endif
   views::View* contents_view = widget->GetContentsView();
   CHECK(contents_view);
 
