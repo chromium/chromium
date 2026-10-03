@@ -29,6 +29,10 @@ gfx::Rect NativeWidgetPrivate::ConstrainBoundsToDisplayWorkArea(
 
 void NativeWidgetPrivate::ClientDestroyedWidget() {}
 
+bool NativeWidgetPrivate::ShouldActivateOnFocusRequest() const {
+  return true;
+}
+
 void NativeWidgetPrivate::PaintAsActiveChanged() {}
 
 void NativeWidgetPrivate::ShowWindowControlsMenu(const gfx::Point& point) {}

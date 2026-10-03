@@ -52,6 +52,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
+#include "ui/views/views_features.h"
 #endif
 
 DEFINE_USER_DATA(ToastController);
@@ -158,6 +159,14 @@ bool ToastController::MaybeShowToast(ToastParams params) {
 #if BUILDFLAG(IS_MAC)
 void ToastController::OnWidgetActivationChanged(views::Widget* widget,
                                                 bool active) {
+  // These workarounds are only needed when focusing a View in an inactive
+  // widget does not activate the widget.
+  // TODO(crbug.com/40486728): Remove once kMacActivateWidgetOnFocusRequest is
+  // removed.
+  if (base::FeatureList::IsEnabled(
+          views::features::kMacActivateWidgetOnFocusRequest)) {
+    return;
+  }
   if (active) {
     // Clears the stored focus view so that after widget activation occurs,
     // focus will not advance out of the widget and into the ContentsWebView.

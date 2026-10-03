@@ -60,6 +60,13 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
 BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
+// When enabled, focusing a View in an inactive Widget makes the Widget's window
+// key (i.e. activates it), matching the behavior on other platforms. This is a
+// kill switch, see crbug.com/40486728.
+// TODO(crbug.com/40486728): Remove this flag once the behavior is stable.
+BASE_FEATURE(kMacActivateWidgetOnFocusRequest,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, tell the browser compositor when the window is on an inactive
 // space, to allow it to reclaim resources. Should be enabled alongside
 // `features::kDetectSpaceChangeViaOcclusion` so that windows become visible
