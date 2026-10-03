@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <atomic>
 #include <map>
-#include <string_view>
 #include <vector>
 
 #include "base/apple/foundation_util.h"
@@ -20,12 +19,9 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
-#include "base/timer/elapsed_timer.h"
 #include "crypto/apple/security_framework_lock.h"
 #include "crypto/hash.h"
 #include "net/base/features.h"
@@ -354,7 +350,6 @@ class TrustDomainCacheFullCerts {
     if (rv != noErr) {
       // Note: SecTrustSettingsCopyCertificates can legitimately return
       // errSecNoTrustSettings if there are no trust settings in |domain_|.
-      HistogramTrustDomainCertCount(0U);
       return;
     }
     std::vector<std::pair<SHA256HashValue, TrustStatusDetails>>
@@ -384,7 +379,6 @@ class TrustDomainCacheFullCerts {
       trust_status_vector.emplace_back(x509_util::CalculateFingerprint256(cert),
                                        TrustStatusDetails());
     }
-    HistogramTrustDomainCertCount(trust_status_vector.size());
     trust_status_cache_ = base::flat_map<SHA256HashValue, TrustStatusDetails>(
         std::move(trust_status_vector));
   }
@@ -426,24 +420,6 @@ class TrustDomainCacheFullCerts {
   }
 
  private:
-  void HistogramTrustDomainCertCount(size_t count) const {
-    std::string_view domain_name;
-    switch (domain_) {
-      case kSecTrustSettingsDomainUser:
-        domain_name = "User";
-        break;
-      case kSecTrustSettingsDomainAdmin:
-        domain_name = "Admin";
-        break;
-      case kSecTrustSettingsDomainSystem:
-        NOTREACHED();
-    }
-    base::UmaHistogramCounts1000(
-        base::StrCat(
-            {"Net.CertVerifier.MacTrustDomainCertCount.", domain_name}),
-        count);
-  }
-
   const SecTrustSettingsDomain domain_;
   const CFStringRef policy_oid_;
   base::flat_map<SHA256HashValue, TrustStatusDetails> trust_status_cache_;
@@ -701,14 +677,10 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     const int64_t keychain_trust_iteration =
         keychain_trust_observer_->Iteration();
     const bool trust_changed = trust_iteration_ != keychain_trust_iteration;
-    base::ElapsedTimer trust_domain_cache_init_timer;
     if (trust_changed) {
       trust_iteration_ = keychain_trust_iteration;
       user_domain_cache_.Initialize();
       admin_domain_cache_.Initialize();
-      base::UmaHistogramMediumTimes(
-          "Net.CertVerifier.MacTrustDomainCacheInitTime",
-          trust_domain_cache_init_timer.Elapsed());
     }
 
     const int64_t keychain_certs_iteration =
@@ -720,19 +692,10 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       certs_iteration_ = keychain_certs_iteration;
       InitializeIntermediatesCache();
     }
-    if (trust_changed) {
-      // Histogram of total init time for the case where both the trust cache
-      // and intermediates cache were updated.
-      base::UmaHistogramMediumTimes(
-          "Net.CertVerifier.MacTrustImplCacheInitTime",
-          trust_domain_cache_init_timer.Elapsed());
-    }
   }
 
   void InitializeIntermediatesCache() EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
     cache_lock_.AssertAcquired();
-
-    base::ElapsedTimer timer;
 
     intermediates_cert_issuer_source_.Clear();
 
@@ -764,12 +727,10 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     OSStatus err =
         SecItemCopyMatching(query.get(), matching_items.InitializeInto());
     if (err == errSecItemNotFound) {
-      RecordCachedIntermediatesHistograms(0, timer.Elapsed());
       // No matches found.
       return;
     }
     if (err) {
-      RecordCachedIntermediatesHistograms(0, timer.Elapsed());
       OSSTATUS_LOG(ERROR, err) << "SecItemCopyMatching error";
       return;
     }
@@ -812,22 +773,6 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       }
       intermediates_cert_issuer_source_.AddCert(std::move(parsed_cert));
     }
-    RecordCachedIntermediatesHistograms(CFArrayGetCount(matching_items_array),
-                                        timer.Elapsed());
-  }
-
-  void RecordCachedIntermediatesHistograms(CFIndex total_cert_count,
-                                           base::TimeDelta cache_init_time)
-      const EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
-    cache_lock_.AssertAcquired();
-    base::UmaHistogramMediumTimes(
-        "Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime",
-        cache_init_time);
-    base::UmaHistogramCounts1000("Net.CertVerifier.MacKeychainCerts.TotalCount",
-                                 total_cert_count);
-    base::UmaHistogramCounts1000(
-        "Net.CertVerifier.MacKeychainCerts.IntermediateCount",
-        intermediates_cert_issuer_source_.size());
   }
 
   const std::unique_ptr<KeychainTrustObserver, base::OnTaskRunnerDeleter>
@@ -925,8 +870,6 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
       return;
     keychain_iteration_ = keychain_iteration;
 
-    base::ElapsedTimer timer;
-
     trust_status_cache_.clear();
     cert_issuer_source_.Clear();
 
@@ -958,12 +901,10 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
     OSStatus err =
         SecItemCopyMatching(query.get(), matching_items.InitializeInto());
     if (err == errSecItemNotFound) {
-      RecordHistograms(0, timer.Elapsed());
       // No matches found.
       return;
     }
     if (err) {
-      RecordHistograms(0, timer.Elapsed());
       OSSTATUS_LOG(ERROR, err) << "SecItemCopyMatching error";
       return;
     }
@@ -1013,22 +954,6 @@ class TrustStoreMac::TrustImplKeychainCacheFullCerts
     }
     trust_status_cache_ = base::flat_map<SHA256HashValue, TrustStatus>(
         std::move(trust_status_vector));
-    RecordHistograms(CFArrayGetCount(matching_items_array), timer.Elapsed());
-  }
-
-  void RecordHistograms(CFIndex total_cert_count,
-                        base::TimeDelta init_time) const
-      EXCLUSIVE_LOCKS_REQUIRED(cache_lock_) {
-    cache_lock_.AssertAcquired();
-    base::UmaHistogramMediumTimes("Net.CertVerifier.MacTrustImplCacheInitTime",
-                                  init_time);
-    base::UmaHistogramCounts1000("Net.CertVerifier.MacKeychainCerts.TotalCount",
-                                 total_cert_count);
-    base::UmaHistogramCounts1000(
-        "Net.CertVerifier.MacKeychainCerts.IntermediateCount",
-        cert_issuer_source_.size() - trust_status_cache_.size());
-    base::UmaHistogramCounts1000("Net.CertVerifier.MacKeychainCerts.TrustCount",
-                                 trust_status_cache_.size());
   }
 
   const std::unique_ptr<KeychainTrustOrCertsObserver, base::OnTaskRunnerDeleter>

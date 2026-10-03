@@ -20,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_view_util.h"
 #include "base/synchronization/lock.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "crypto/apple/security_framework_lock.h"
 #include "crypto/sha2.h"
@@ -261,7 +260,6 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
 
   const TrustStoreMac::TrustImplType trust_impl = GetImplParam();
 
-  base::HistogramTester histogram_tester;
   TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl);
 
   std::map<std::string, bssl::CertificateTrust> user_added_certs;
@@ -359,52 +357,6 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     // that checks the trust value for a cert which has already been cached.
     bssl::CertificateTrust cert_trust2 = trust_store.GetTrust(cert.get());
     EXPECT_EQ(cert_trust.ToDebugString(), cert_trust2.ToDebugString());
-  }
-
-  // Since this is testing the actual platform certs and trust settings, we
-  // don't know what values the histograms should be, so just verify that the
-  // histogram is recorded (or not) depending on the requested trust impl.
-
-  {
-    // Histograms only logged by DomainCacheFullCerts impl:
-    const int expected_count =
-        (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts) ? 1
-                                                                            : 0;
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCertCount.User", expected_count);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCertCount.Admin", expected_count);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCacheInitTime", expected_count);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacKeychainCerts.IntermediateCacheInitTime",
-        expected_count);
-  }
-
-  {
-    // Histograms only logged by KeychainCacheFullCerts impl:
-    const int expected_count =
-        (trust_impl == TrustStoreMac::TrustImplType::kKeychainCacheFullCerts)
-            ? 1
-            : 0;
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacKeychainCerts.TrustCount", expected_count);
-  }
-
-  {
-    // Histograms logged by both DomainCacheFullCerts and KeychainCacheFullCerts
-    // impls:
-    const int expected_count =
-        (trust_impl == TrustStoreMac::TrustImplType::kDomainCacheFullCerts ||
-         trust_impl == TrustStoreMac::TrustImplType::kKeychainCacheFullCerts)
-            ? 1
-            : 0;
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacKeychainCerts.IntermediateCount", expected_count);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacKeychainCerts.TotalCount", expected_count);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustImplCacheInitTime", expected_count);
   }
 }
 
