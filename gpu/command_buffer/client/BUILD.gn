@@ -303,6 +303,7 @@ source_set("webgpu_sources") {
     ":gles2_implementation",
     ":webgpu_interface",
     "//gpu/command_buffer/common:webgpu",
+    "//gpu/config",
   ]
   public_deps = [ "//third_party/dawn/include/dawn:headers" ]
   sources = [

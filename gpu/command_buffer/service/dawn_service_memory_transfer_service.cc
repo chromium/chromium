@@ -4,37 +4,54 @@
 
 #include "gpu/command_buffer/service/dawn_service_memory_transfer_service.h"
 
+#include <dawn/dawn_proc_table.h>
+#include <dawn/webgpu.h>
+
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_span.h"
 #include "gpu/command_buffer/common/dawn_memory_transfer_handle.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/common_decoder.h"
+#include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
 namespace webgpu {
 
 namespace {
 
-std::pair<scoped_refptr<gpu::Buffer>, base::span<std::byte>> GetHandleInfo(
-    CommonDecoder* decoder,
-    base::span<const std::byte> deserialize_data_bytes) {
+struct HandleInfo {
+  scoped_refptr<gpu::Buffer> buffer;
+  base::raw_span<std::byte> data;
+  TransferBufferType type = TransferBufferType::kShared;
+};
+
+HandleInfo GetHandleInfo(CommonDecoder* decoder,
+                         base::span<const std::byte> deserialize_data_bytes) {
   if (deserialize_data_bytes.size() != sizeof(MemoryTransferHandle)) {
-    return {nullptr, {}};
+    return {};
   }
 
   MemoryTransferHandle handle;
   base::byte_span_from_ref(handle).copy_from(
       base::as_bytes(deserialize_data_bytes));
 
+  // A dedicated transfer buffer is never sub-allocated, so a well-behaved
+  // client always sends shm_offset == 0 for it and we should reject any handle
+  // that violates this rule.
+  if (handle.type == TransferBufferType::kDedicated && handle.shm_offset > 0) {
+    return {};
+  }
+
   scoped_refptr<gpu::Buffer> buffer =
       decoder->command_buffer_service()->GetTransferBuffer(handle.shm_id);
   if (buffer == nullptr) {
-    return {nullptr, {}};
+    return {};
   }
 
   std::span<std::byte> data = base::subtle::reinterpret_span<std::byte>(
       buffer->GetSpanData(handle.shm_offset, handle.size));
-  return {std::move(buffer), data};
+  return {std::move(buffer), data, handle.type};
 }
 
 class MemoryHandleImpl
@@ -89,10 +106,141 @@ class MemoryHandleImpl
     return true;
   }
 
- private:
+ protected:
   scoped_refptr<gpu::Buffer> buffer_;
   // Data view to client-visible shared memory owned by buffer_.
   base::raw_span<std::byte> buffer_data_view_;
+};
+
+// A memory handle backed by a dedicated shared memory transfer buffer that can
+// be imported directly into Dawn as SharedBufferMemory. Falls back to the
+// copy-through-shared-memory path of MemoryHandleImpl when direct wrapping is
+// unavailable.
+class MemoryHandleWithSharedMemoryImpl : public MemoryHandleImpl {
+ public:
+  using MemoryHandleImpl::MemoryHandleImpl;
+
+  ~MemoryHandleWithSharedMemoryImpl() override { ReleaseWGPUObjects(); }
+
+  WGPUBuffer TryWrapInBuffer(const DawnProcTable* procs,
+                             WGPUDevice device,
+                             const WGPUBufferDescriptor* descriptor) override {
+    if (descriptor->size > buffer_data_view_.size()) {
+      return nullptr;
+    }
+
+    DCHECK(procs);
+    procs_ = procs;
+
+    if (!procs_->deviceHasFeature(
+            device, WGPUFeatureName_SharedBufferMemoryHostPointer)) {
+      ReleaseWGPUObjects();
+      return nullptr;
+    }
+
+    // `buffer_` is allocated with `TransferBufferType::kDedicated` so it owns
+    // the entire shared memory region.
+    const base::UnsafeSharedMemoryRegion& region =
+        buffer_->backing()->shared_memory_region();
+    if (!region.IsValid()) {
+      ReleaseWGPUObjects();
+      return nullptr;
+    }
+
+    WGPUSharedBufferMemoryHostPointerDescriptor host_pointer_desc = {};
+    host_pointer_desc.chain.sType =
+        WGPUSType_SharedBufferMemoryHostPointerDescriptor;
+    host_pointer_desc.pointer = buffer_data_view_.data();
+    host_pointer_desc.size = region.GetSize();
+    // We need to keep the underlying `gpu::Buffer` alive until the shared
+    // buffer memory is destroyed, so we pass a reference to the `gpu::Buffer`
+    // in the dispose callback when creating `shared_buffer_memory_`.
+    host_pointer_desc.disposeCallbackInfo.mode =
+        WGPUCallbackMode_AllowSpontaneous;
+    host_pointer_desc.disposeCallbackInfo.userdata1 =
+        new scoped_refptr<gpu::Buffer>(buffer_);
+    host_pointer_desc.disposeCallbackInfo.callback =
+        [](WGPUCallbackStatus, void* userdata1, void* userdata2) {
+          delete static_cast<scoped_refptr<gpu::Buffer>*>(userdata1);
+        };
+
+    WGPUSharedBufferMemoryDescriptor desc = {};
+    desc.nextInChain = &host_pointer_desc.chain;
+
+    shared_buffer_memory_ =
+        procs_->deviceImportSharedBufferMemory(device, &desc);
+    if (shared_buffer_memory_ == nullptr) {
+      ReleaseWGPUObjects();
+      return nullptr;
+    }
+
+    // `wgpu_buffer_` will only be set after a successful `BeginAccess`.
+    WGPUBuffer wgpu_buffer = procs_->sharedBufferMemoryCreateBuffer(
+        shared_buffer_memory_, descriptor);
+    if (wgpu_buffer == nullptr) {
+      ReleaseWGPUObjects();
+      return nullptr;
+    }
+
+    // BeginAccess only returns success/failure with no way to retrieve the
+    // underlying reason, so wrap it in a validation error scope and discard
+    // the result. This just prevents the error from reaching the device's
+    // uncaptured error callback.
+    procs_->devicePushErrorScope(device, WGPUErrorFilter_Validation);
+
+    WGPUSharedBufferMemoryBeginAccessDescriptor begin_access_desc = {};
+    begin_access_desc.initialized = true;
+    begin_access_desc.fenceCount = 0;
+    WGPUStatus status = procs_->sharedBufferMemoryBeginAccess(
+        shared_buffer_memory_, wgpu_buffer, &begin_access_desc);
+
+    procs_->devicePopErrorScope(
+        device, {nullptr, WGPUCallbackMode_AllowSpontaneous,
+                 [](WGPUPopErrorScopeStatus pop_status, WGPUErrorType type,
+                    WGPUStringView message, void*, void*) {},
+                 nullptr, nullptr});
+
+    if (status != WGPUStatus_Success) {
+      procs_->bufferDestroy(wgpu_buffer);
+      procs_->bufferRelease(wgpu_buffer);
+      ReleaseWGPUObjects();
+      return nullptr;
+    }
+
+    // Take our own reference on top of the one returned to the wire table as
+    // the wire server releases the table's reference before this handle is
+    // destroyed.
+    wgpu_buffer_ = wgpu_buffer;
+    procs_->bufferAddRef(wgpu_buffer_);
+    return wgpu_buffer_;
+  }
+
+ private:
+  void ReleaseWGPUObjects() {
+    if (shared_buffer_memory_ != nullptr) {
+      DCHECK(procs_);
+      if (wgpu_buffer_ != nullptr) {
+        WGPUSharedBufferMemoryEndAccessState end_state = {};
+        procs_->sharedBufferMemoryEndAccess(shared_buffer_memory_, wgpu_buffer_,
+                                            &end_state);
+        // EndAccess may allocate `end_state.fences`/`signaledValues` and
+        // hand back owned fence references. We need to free them since this
+        // class uses the raw proc table rather than the C++ wrapper that would
+        // do this automatically.
+        procs_->sharedBufferMemoryEndAccessStateFreeMembers(end_state);
+        procs_->bufferDestroy(wgpu_buffer_);
+        procs_->bufferRelease(wgpu_buffer_);
+        wgpu_buffer_ = nullptr;
+      }
+      procs_->sharedBufferMemoryRelease(shared_buffer_memory_);
+      shared_buffer_memory_ = nullptr;
+    }
+    procs_ = nullptr;
+  }
+
+  WGPUSharedBufferMemory shared_buffer_memory_ = nullptr;
+  WGPUBuffer wgpu_buffer_ = nullptr;
+  raw_ptr<const DawnProcTable> procs_ = nullptr;
 };
 
 }  // namespace
@@ -106,14 +254,19 @@ DawnServiceMemoryTransferService::~DawnServiceMemoryTransferService() = default;
 std::unique_ptr<dawn::wire::server::MemoryTransferService::MemoryHandle>
 DawnServiceMemoryTransferService::DeserializeMemoryHandle(
     std::span<const std::byte> creation_data) {
-  auto [buffer, buffer_data_view] = GetHandleInfo(decoder_, creation_data);
-  if (buffer_data_view.data() == nullptr) {
+  HandleInfo info = GetHandleInfo(decoder_, creation_data);
+  if (info.data.data() == nullptr) {
     return nullptr;
   }
-  DCHECK(buffer);
+  DCHECK(info.buffer);
 
-  return std::make_unique<MemoryHandleImpl>(std::move(buffer),
-                                            buffer_data_view);
+  if (info.type == TransferBufferType::kDedicated &&
+      base::FeatureList::IsEnabled(
+          features::kWebGPUUseDedicatedTransferBuffer)) {
+    return std::make_unique<MemoryHandleWithSharedMemoryImpl>(
+        std::move(info.buffer), info.data);
+  }
+  return std::make_unique<MemoryHandleImpl>(std::move(info.buffer), info.data);
 }
 
 }  // namespace webgpu

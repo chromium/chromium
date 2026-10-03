@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
 #include "base/run_loop.h"
@@ -19,6 +20,7 @@
 #include "gpu/command_buffer/client/dawn_client_serializer.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 #define GPU_CLIENT_SINGLE_THREAD_CHECK()
@@ -27,6 +29,7 @@ namespace gpu {
 namespace webgpu {
 
 #if BUILDFLAG(USE_DAWN)
+
 DawnWireServices::~DawnWireServices() {
   wgpuDawnWireClientInstanceRelease(wgpu_instance_);
 }
@@ -38,7 +41,10 @@ DawnWireServices::DawnWireServices(
     std::unique_ptr<TransferBuffer> transfer_buffer,
     bool support_locking)
     : lock_(support_locking ? std::make_optional<base::Lock>() : std::nullopt),
-      memory_transfer_service_(mapped_memory),
+      memory_transfer_service_(
+          mapped_memory,
+          base::FeatureList::IsEnabled(
+              features::kWebGPUUseDedicatedTransferBuffer)),
       serializer_(webgpu_implementation,
                   helper,
                   &memory_transfer_service_,
@@ -163,6 +169,7 @@ WebGPUImplementation::~WebGPUImplementation() {
 #if BUILDFLAG(USE_DAWN)
   if (dawn_wire_) {
     dawn_wire_->FreeMappedResources(helper_);
+    dawn_wire_.reset();
   }
 #endif
 

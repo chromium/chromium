@@ -219,6 +219,7 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseSpirvReconvergenceMode);
 #if BUILDFLAG(IS_WIN)
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUQualcommWindows);
 #endif
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kWebGPUUseDedicatedTransferBuffer);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
     kWebGPUDisabledToggles;
 GPU_CONFIG_EXPORT extern const base::FeatureParam<std::string>
