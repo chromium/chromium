@@ -907,6 +907,7 @@ source_set("unit_tests") {
   }
   if (enable_widevine && is_linux) {
     sources += [ "media/cdm_registration_unittest.cc" ]
+    deps += [ "//third_party/widevine/cdm:headers" ]
     data_deps = [ "//third_party/widevine/cdm" ]
   }
 }
