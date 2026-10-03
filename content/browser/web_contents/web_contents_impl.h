@@ -1178,10 +1178,11 @@ class CONTENT_EXPORT WebContentsImpl
   void PreHandleDragExit();
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
+  bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
   bool HandleMouseEvent(const blink::WebMouseEvent& event) override;
   bool HandleKeyboardEvent(const input::NativeWebKeyboardEvent& event) override;
   bool HandleWheelEvent(const blink::WebMouseWheelEvent& event) override;
-  bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
   ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager()
       override;
   ui::BrowserAccessibilityManager* GetOrCreateRootBrowserAccessibilityManager()

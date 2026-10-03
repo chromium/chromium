@@ -122,15 +122,21 @@ KeyboardEventProcessingResult WebContentsDelegate::PreHandleKeyboardEvent(
   return KeyboardEventProcessingResult::NOT_HANDLED;
 }
 
-bool WebContentsDelegate::HandleKeyboardEvent(
+bool WebContentsDelegate::PreHandleMouseEvent(
     WebContents* source,
-    const input::NativeWebKeyboardEvent& event) {
+    const blink::WebMouseEvent& event) {
   return false;
 }
 
 bool WebContentsDelegate::PreHandleGestureEvent(
     WebContents* source,
     const blink::WebGestureEvent& event) {
+  return false;
+}
+
+bool WebContentsDelegate::HandleKeyboardEvent(
+    WebContents* source,
+    const input::NativeWebKeyboardEvent& event) {
   return false;
 }
 

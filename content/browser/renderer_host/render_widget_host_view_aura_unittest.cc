@@ -1649,7 +1649,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                           ui::DomCode::US_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
   const input::NativeWebKeyboardEvent* event1 =
-      render_widget_host_delegate()->last_event();
+      render_widget_host_delegate()->last_keyboard_event();
   ASSERT_FALSE(event1);
   // Run the runloop to ensure input messages are dispatched.  Otherwise the
   // result of GetAndResetDispatchedMessages() will not be valid.
@@ -1674,7 +1674,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            dom_code, ui::EF_NONE);
     view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
-        render_widget_host_delegate()->last_event();
+        render_widget_host_delegate()->last_keyboard_event();
     ASSERT_TRUE(event) << "Failed for DomCode: "
                        << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
     ASSERT_EQ(key_event.key_code(), event->windows_key_code);
@@ -1700,7 +1700,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       ui::DomCode::ESCAPE, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
   const input::NativeWebKeyboardEvent* event1 =
-      render_widget_host_delegate()->last_event();
+      render_widget_host_delegate()->last_keyboard_event();
   ASSERT_TRUE(event1);
   ASSERT_EQ(key_event1.key_code(), event1->windows_key_code);
   ASSERT_EQ(ui::KeycodeConverter::DomCodeToNativeKeycode(key_event1.code()),
@@ -1712,7 +1712,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                           ui::DomCode::US_B, ui::EF_NONE);
   view_->OnKeyEvent(&key_event2);
   const input::NativeWebKeyboardEvent* event2 =
-      render_widget_host_delegate()->last_event();
+      render_widget_host_delegate()->last_keyboard_event();
   ASSERT_TRUE(event2);
   ASSERT_EQ(key_event2.key_code(), event2->windows_key_code);
   ASSERT_EQ(ui::KeycodeConverter::DomCodeToNativeKeycode(key_event2.code()),
@@ -1738,7 +1738,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            dom_code, ui::EF_NONE);
     view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
-        render_widget_host_delegate()->last_event();
+        render_widget_host_delegate()->last_keyboard_event();
     ASSERT_FALSE(event) << "Failed for DomCode: "
                         << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
     // Run the runloop to ensure input messages are dispatched.  Otherwise the
@@ -1767,7 +1767,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
       ui::DomCode::ESCAPE, ui::EF_NONE);
   view_->OnKeyEvent(&esc_key_event);
   const input::NativeWebKeyboardEvent* esc_event =
-      render_widget_host_delegate()->last_event();
+      render_widget_host_delegate()->last_keyboard_event();
   ASSERT_TRUE(esc_event);
   ASSERT_EQ(esc_key_event.key_code(), esc_event->windows_key_code);
   ASSERT_EQ(ui::KeycodeConverter::DomCodeToNativeKeycode(esc_key_event.code()),
@@ -1810,13 +1810,13 @@ TEST_F(RenderWidgetHostViewAuraTest,
                            dom_code, ui::EF_NONE);
     parent_view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* parent_event =
-        delegates_[0]->last_event();
+        delegates_.front()->last_keyboard_event();
     ASSERT_FALSE(parent_event)
         << "Failed for DomCode: "
         << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
 
     const input::NativeWebKeyboardEvent* child_event =
-        render_widget_host_delegate()->last_event();
+        render_widget_host_delegate()->last_keyboard_event();
     ASSERT_TRUE(child_event)
         << "Failed for DomCode: "
         << ui::KeycodeConverter::DomCodeToCodeString(dom_code);
@@ -5089,7 +5089,8 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEvent) {
                          ui::DomCode::US_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event);
 
-  const input::NativeWebKeyboardEvent* event = delegates_.back()->last_event();
+  const input::NativeWebKeyboardEvent* event =
+      render_widget_host_delegate()->last_keyboard_event();
   ASSERT_TRUE(event);
   EXPECT_EQ(key_event.key_code(), event->windows_key_code);
   EXPECT_EQ(ui::KeycodeConverter::DomCodeToNativeKeycode(key_event.code()),
@@ -5097,17 +5098,13 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEvent) {
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
-  InitViewForFrame(nullptr);
-  view_->ShowWithVisibility(PageVisibilityState::kVisible);
-
   ui::KeyEvent key_event1(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event1);
   // Normally event should be handled.
   EXPECT_TRUE(key_event1.handled());
 
-  ASSERT_FALSE(delegates_.empty());
   // Make the delegate mark the event as not-handled.
-  delegates_.back()->set_pre_handle_keyboard_event_result(
+  render_widget_host_delegate()->set_pre_handle_keyboard_event_result(
       KeyboardEventProcessingResult::HANDLED_DONT_UPDATE_EVENT);
   ui::KeyEvent key_event2(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
   view_->OnKeyEvent(&key_event2);
@@ -5148,14 +5145,15 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputRightAlt) {
                            ui::DomCode::NONE, ui::EF_ALT_DOWN);
     view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
-        delegates_.back()->last_event();
+        render_widget_host_delegate()->last_keyboard_event();
     ASSERT_TRUE(event);
 
     // InsertChar should no-op for right alt + digit key. On Windows versions
     // where Arabic 101 does not implement AltGr, this generates WM_SYSCHAR
     // which invokes InsertChar.
     view_->InsertChar(key_event);
-    EXPECT_EQ(event, delegates_.back()->last_event()) << "Digit index: " << i;
+    EXPECT_EQ(event, render_widget_host_delegate()->last_keyboard_event())
+        << "Digit index: " << i;
 
     char16_t expected = static_cast<char16_t>(i + kArabicIndicZero);
     EXPECT_EQ(expected, event->windows_key_code) << "Digit index: " << i;
@@ -5188,7 +5186,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputCtrlAndAlt) {
                            (ui::EF_ALT_DOWN | ui::EF_CONTROL_DOWN));
     view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
-        delegates_.back()->last_event();
+        render_widget_host_delegate()->last_keyboard_event();
     ASSERT_TRUE(event);
 
     char16_t expected = static_cast<char16_t>(i + kArabicIndicZero);
@@ -5433,6 +5431,81 @@ TEST_F(RenderWidgetHostViewAuraTest, ForwardMouseEvent) {
 
   // view_ will be destroyed when parent is destroyed.
   view_ = nullptr;
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, MouseEventsHandled) {
+  InitViewForFrame(nullptr);
+
+  // Simulate mouse event, ensure it is dispatched.
+  ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
+  view_->OnMouseEvent(&mouse_event);
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_FALSE(events.empty());  // No point continuing test if this is broken
+  EXPECT_EQ("MouseDown", GetMessageNames(events));
+
+  // Now simulate again but pre-handle the event.
+  render_widget_host_delegate()->set_pre_handle_mouse_event_result(true);
+  mouse_event =
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  view_->OnMouseEvent(&mouse_event);
+
+  // view_ will be destroyed when parent is destroyed. Reset now in case assert
+  // below fails.
+  view_ = nullptr;
+
+  // The pre-handle phase should have seen the event.
+  const blink::WebMouseEvent* pre_handled_event =
+      render_widget_host_delegate()->last_mouse_event();
+  ASSERT_TRUE(pre_handled_event);
+  EXPECT_EQ(1, pre_handled_event->ClickCount());
+
+  // The event should not have actually been dispatched.
+  events = GetAndResetDispatchedMessages();
+  EXPECT_TRUE(events.empty());
+}
+
+TEST_F(RenderWidgetHostViewAuraTest, GestureEventsHandled) {
+  InitViewForFrame(nullptr);
+
+  // Simulate gesture event, ensure it is dispatched.
+  ui::GestureEventDetails gesture_tap_down_details(
+      ui::EventType::kGestureTapDown);
+  gesture_tap_down_details.set_is_source_touch_event_set_blocking(true);
+  gesture_tap_down_details.set_device_type(
+      ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
+  ui::GestureEvent gesture_tap_down(2, 2, 0, ui::EventTimeForNow(),
+                                    gesture_tap_down_details);
+  view_->OnGestureEvent(&gesture_tap_down);
+  base::RunLoop().RunUntilIdle();
+  MockWidgetInputHandler::MessageVector events =
+      GetAndResetDispatchedMessages();
+  ASSERT_FALSE(events.empty());  // No point continuing test if this is broken.
+  EXPECT_EQ("GestureTapDown", GetMessageNames(events));
+
+  // Now simulate again but pre-handle the event.
+  render_widget_host_delegate()->set_pre_handle_gesture_event_result(true);
+  gesture_tap_down = ui::GestureEvent(2, 2, 0, ui::EventTimeForNow(),
+                                      gesture_tap_down_details);
+  view_->OnGestureEvent(&gesture_tap_down);
+  base::RunLoop().RunUntilIdle();
+
+  // view_ will be destroyed when parent is destroyed. Reset now in case assert
+  // below fails.
+  view_ = nullptr;
+
+  // The pre-handle phase should have seen the event.
+  const blink::WebGestureEvent* pre_handled_event =
+      render_widget_host_delegate()->last_gesture_event();
+  ASSERT_TRUE(pre_handled_event);
+  EXPECT_EQ(WebInputEvent::Type::kGestureTapDown, pre_handled_event->GetType());
+
+  // The event should not have actually been dispatched.
+  events = GetAndResetDispatchedMessages();
+  EXPECT_TRUE(events.empty());
 }
 
 #if BUILDFLAG(IS_WIN)

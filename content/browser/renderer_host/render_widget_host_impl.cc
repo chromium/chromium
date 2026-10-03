@@ -1696,8 +1696,10 @@ void RenderWidgetHostImpl::SetNewContentRenderingTimeoutForTesting(
 }
 
 void RenderWidgetHostImpl::ForwardMouseEvent(const WebMouseEvent& mouse_event) {
+  // Detect delegate possibly destroying `this` in `PreHandleMouseEvent()`.
+  const auto weak_this = weak_factory_.GetWeakPtr();
   ForwardMouseEventWithLatencyInfo(mouse_event, ui::LatencyInfo());
-  if (owner_delegate_) {
+  if (weak_this && owner_delegate_) {
     owner_delegate_->RenderWidgetDidForwardMouseEvent(mouse_event);
   }
 }
@@ -1741,6 +1743,13 @@ void RenderWidgetHostImpl::ForwardMouseEventWithLatencyInfo(
         }
       }
     }
+  }
+
+  // Protect against delegate handling possibly destroying `this`.
+  const auto weak_this = weak_factory_.GetWeakPtr();
+  // `!IsIgnoringWebInputEvents()` implies `delegate_` is non-null.
+  if (delegate_->PreHandleMouseEvent(mouse_event) || !weak_this) {
+    return;
   }
 
   auto* touch_emulator = GetTouchEmulator(/*create_if_necessary=*/false);

@@ -27,8 +27,20 @@ void MockRenderWidgetHostDelegate::ResizeDueToAutoResize(
 KeyboardEventProcessingResult
 MockRenderWidgetHostDelegate::PreHandleKeyboardEvent(
     const input::NativeWebKeyboardEvent& event) {
-  last_event_ = std::make_unique<input::NativeWebKeyboardEvent>(event);
+  last_keyboard_event_ = std::make_unique<input::NativeWebKeyboardEvent>(event);
   return pre_handle_keyboard_event_result_;
+}
+
+bool MockRenderWidgetHostDelegate::PreHandleMouseEvent(
+    const blink::WebMouseEvent& event) {
+  last_mouse_event_ = std::make_unique<blink::WebMouseEvent>(event);
+  return pre_handle_mouse_event_result_;
+}
+
+bool MockRenderWidgetHostDelegate::PreHandleGestureEvent(
+    const blink::WebGestureEvent& event) {
+  last_gesture_event_ = std::make_unique<blink::WebGestureEvent>(event);
+  return pre_handle_gesture_event_result_;
 }
 
 void MockRenderWidgetHostDelegate::ExecuteEditCommand(

@@ -32,8 +32,14 @@ class MockRenderWidgetHostDelegate
 
   ~MockRenderWidgetHostDelegate() override;
 
-  const input::NativeWebKeyboardEvent* last_event() const {
-    return last_event_.get();
+  const input::NativeWebKeyboardEvent* last_keyboard_event() const {
+    return last_keyboard_event_.get();
+  }
+  const blink::WebMouseEvent* last_mouse_event() const {
+    return last_mouse_event_.get();
+  }
+  const blink::WebGestureEvent* last_gesture_event() const {
+    return last_gesture_event_.get();
   }
   void set_widget_host(RenderWidgetHostImpl* rwh) { rwh_ = rwh; }
   void set_is_fullscreen(bool is_fullscreen) { is_fullscreen_ = is_fullscreen; }
@@ -43,6 +49,12 @@ class MockRenderWidgetHostDelegate
   void set_pre_handle_keyboard_event_result(
       KeyboardEventProcessingResult result) {
     pre_handle_keyboard_event_result_ = result;
+  }
+  void set_pre_handle_mouse_event_result(bool result) {
+    pre_handle_mouse_event_result_ = result;
+  }
+  void set_pre_handle_gesture_event_result(bool result) {
+    pre_handle_gesture_event_result_ = result;
   }
 
   void CreateInputEventRouter();
@@ -55,6 +67,8 @@ class MockRenderWidgetHostDelegate
                              const gfx::Size& new_size) override;
   KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event) override;
+  bool PreHandleMouseEvent(const blink::WebMouseEvent& event) override;
+  bool PreHandleGestureEvent(const blink::WebGestureEvent& event) override;
   void ExecuteEditCommand(const std::string& command,
                           const std::optional<std::u16string>& value) override;
   void Undo() override;
@@ -81,7 +95,9 @@ class MockRenderWidgetHostDelegate
   void CancelAutoscroll(input::RenderWidgetHostViewInput* view) override;
 
  private:
-  std::unique_ptr<input::NativeWebKeyboardEvent> last_event_;
+  std::unique_ptr<input::NativeWebKeyboardEvent> last_keyboard_event_;
+  std::unique_ptr<blink::WebMouseEvent> last_mouse_event_;
+  std::unique_ptr<blink::WebGestureEvent> last_gesture_event_;
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> rwh_ = nullptr;
   scoped_refptr<input::RenderWidgetHostInputEventRouter>
       rwh_input_event_router_;
@@ -92,6 +108,8 @@ class MockRenderWidgetHostDelegate
   raw_ptr<RenderWidgetHostImpl, DanglingUntriaged> focused_widget_ = nullptr;
   KeyboardEventProcessingResult pre_handle_keyboard_event_result_ =
       KeyboardEventProcessingResult::NOT_HANDLED;
+  bool pre_handle_mouse_event_result_ = false;
+  bool pre_handle_gesture_event_result_ = false;
   StubRenderViewHostDelegateView rvh_delegate_view_;
   VisibleTimeRequestTrigger visible_time_request_trigger_;
 };

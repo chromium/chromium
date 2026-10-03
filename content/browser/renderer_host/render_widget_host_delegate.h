@@ -112,6 +112,15 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   virtual KeyboardEventProcessingResult PreHandleKeyboardEvent(
       const input::NativeWebKeyboardEvent& event);
 
+  // Callback to give the browser a chance to handle the specified mouse event
+  // before sending it to the renderer. Returns whether `event` was handled.
+  virtual bool PreHandleMouseEvent(const blink::WebMouseEvent& event);
+
+  // Callback to give the browser a chance to handle the specified gesture
+  // event before sending it to the renderer. Returns whether `event` was
+  // handled.
+  virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event);
+
   // Callback to inform the browser that the renderer did not process the
   // specified events. This gives an opportunity to the browser to process the
   // back/forward mouse buttons.
@@ -140,11 +149,6 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Asks whether the page is in a state of ignoring input events.
   virtual bool ShouldIgnoreWebInputEvents(const blink::WebInputEvent& event);
   virtual bool ShouldIgnoreInputEvents();
-
-  // Callback to give the browser a chance to handle the specified gesture
-  // event before sending it to the renderer.
-  // Returns true if the |event| was handled.
-  virtual bool PreHandleGestureEvent(const blink::WebGestureEvent& event);
 
   // Get the root BrowserAccessibilityManager for this frame tree.
   virtual ui::BrowserAccessibilityManager* GetRootBrowserAccessibilityManager();
