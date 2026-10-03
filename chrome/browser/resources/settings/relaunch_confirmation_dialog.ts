@@ -12,7 +12,7 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './relaunch_confirmation_dialog.html.js';
-import {RestartType} from './relaunch_mixin.js';
+import {RestartType} from './relaunch_mixin_lit.js';
 
 export interface RelaunchConfirmationDialogElement {
   $: {
@@ -23,23 +23,23 @@ export interface RelaunchConfirmationDialogElement {
 }
 
 /**
- * The polymer element corresponding to <relaunch-confirmation-dialog>.
+ * The element corresponding to <relaunch-confirmation-dialog>.
  * The dialog is only supported for "non" ChromeOS platforms and is
  * shown to warn users if they have any open Incognito windows before
  * proceeding with the restart/relaunch action.
  *
  * To make use of this dialog, add the below html to the target html and
- * substitute the value of restart-type to either restartTypeEnum.RELAUNCH or
- * restartTypeEnum.RESTART.
+ * substitute the value of restartType to either RestartType.RELAUNCH or
+ * RestartType.RESTART.
  *
- * <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
- *   <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RELAUNCH]]"
- * on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
- * </template>
+ * ${this.shouldShowRelaunchDialog ? html`
+ *   <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
+ *       @close="${this.onRelaunchDialogClose}"></relaunch-confirmation-dialog>
+ * ` : ''}
  *
  * Then, in the corresponding typescript file, make the target HTMLElement
- * inherit from RelaunchMixin and invoke the member method
- * RelaunchMixin#performRestart where required.
+ * inherit from RelaunchMixinLit and invoke the member method
+ * RelaunchMixinLit#performRestart where required.
  */
 export class RelaunchConfirmationDialogElement extends CrLitElement {
   static get is() {

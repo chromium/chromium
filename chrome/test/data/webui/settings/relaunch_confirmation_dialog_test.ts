@@ -3,28 +3,30 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LifetimeBrowserProxyImpl, RelaunchMixin, RestartType} from 'chrome://settings/settings.js';
+import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {LifetimeBrowserProxyImpl, RelaunchMixinLit, RestartType} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 // clang-format on
 
-class TestRelaunchMixinElement extends RelaunchMixin
-(PolymerElement) {
+class TestRelaunchMixinElement extends RelaunchMixinLit
+(CrLitElement) {
   static get is() {
-    return 'test-relaunch-mixin-element';
+    return 'test-relaunch-mixin';
   }
 
-  static get template() {
+  override render() {
+    // clang-format off
     return html`
-    <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
-      <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RELAUNCH]]"
-          on-close="onRelaunchDialogClose">
-      </relaunch-confirmation-dialog>
-    </template>`;
+      ${this.shouldShowRelaunchDialog ? html`
+        <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
+            @close="${this.onRelaunchDialogClose}">
+        </relaunch-confirmation-dialog>
+      ` : ''}`;
+    // clang-format on
   }
 }
 
@@ -32,7 +34,7 @@ customElements.define(TestRelaunchMixinElement.is, TestRelaunchMixinElement);
 
 declare global {
   interface HTMLElementTagNameMap {
-    'test-relaunch-mixin-element': TestRelaunchMixinElement;
+    'test-relaunch-mixin': TestRelaunchMixinElement;
   }
 }
 
@@ -45,13 +47,12 @@ suite('RelaunchConfirmationDialogTestSuite', function() {
     LifetimeBrowserProxyImpl.setInstance(lifetimeBrowserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testRelaunchMixin = document.createElement('test-relaunch-mixin-element');
+    testRelaunchMixin = document.createElement('test-relaunch-mixin');
     document.body.appendChild(testRelaunchMixin);
-    flush();
 
     assertEquals(
         null,
-        testRelaunchMixin.shadowRoot!.querySelector(
+        testRelaunchMixin.shadowRoot.querySelector(
             'relaunch-confirmation-dialog'));
   });
 
@@ -75,7 +76,7 @@ suite('RelaunchConfirmationDialogTestSuite', function() {
 
     await eventToPromise('cr-dialog-open', testRelaunchMixin);
     const relaunchConfirmationDialogElement =
-        testRelaunchMixin.shadowRoot!.querySelector(
+        testRelaunchMixin.shadowRoot.querySelector(
             'relaunch-confirmation-dialog')!;
 
     assertTrue(relaunchConfirmationDialogElement.$.dialog.open);
@@ -91,16 +92,17 @@ suite('RelaunchConfirmationDialogTestSuite', function() {
 
     await eventToPromise('cr-dialog-open', testRelaunchMixin);
     const relaunchConfirmationDialogElement =
-        testRelaunchMixin.shadowRoot!.querySelector(
+        testRelaunchMixin.shadowRoot.querySelector(
             'relaunch-confirmation-dialog')!;
 
     assertTrue(relaunchConfirmationDialogElement.$.dialog.open);
     relaunchConfirmationDialogElement.$.cancel.click();
     await eventToPromise('close', testRelaunchMixin);
+    await microtasksFinished();
     assertFalse(relaunchConfirmationDialogElement.$.dialog.open);
 
     // The dialog should be removed from the dom.
-    assertFalse(!!testRelaunchMixin.shadowRoot!.querySelector(
+    assertFalse(!!testRelaunchMixin.shadowRoot.querySelector(
         'relaunch-confirmation-dialog'));
   });
 });

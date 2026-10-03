@@ -379,7 +379,6 @@ build_webui("build") {
     "privacy_page/privacy_guide/step_indicator.ts",
     "privacy_page/security/safe_browsing_types.ts",
     "privacy_page/security/security_keys_browser_proxy.ts",
-    "relaunch_mixin.ts",
     "relaunch_mixin_lit.ts",
     "reset_page/reset_browser_proxy.ts",
     "reset_page/reset_page.html.ts",

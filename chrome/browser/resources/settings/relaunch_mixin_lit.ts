@@ -14,6 +14,11 @@ export enum RestartType {
 
 type Constructor<T> = new (...args: any[]) => T;
 
+/**
+ * A helper Mixin to channel the relaunch/restart signal to native Chrome.
+ * This uses LifetimeBrowserProxy under the surface but additionally supports
+ * the <relaunch-confirmation-dialog> for non ChromeOS based desktop platforms.
+ */
 export const RelaunchMixinLit = <T extends Constructor<CrLitElement>>(
     superClass: T): T&Constructor<RelaunchMixinLitInterface> => {
   class RelaunchMixinLit extends superClass implements
@@ -61,6 +66,19 @@ export const RelaunchMixinLit = <T extends Constructor<CrLitElement>>(
     }
     // </if>
 
+    /**
+     * This either performs restart or relaunch depending on the function
+     * argument restartType. For non ChromeOS platforms it shows the
+     * additional <relaunch-confirmation-dialog> html element **if** that
+     * was specified in the caller's DOM, **otherwise** doesn't do anything.
+     * Please see, RelaunchConfirmationDialogElement for more information on
+     * how to add the new <relaunch-confirmation-dialog> element in the DOM.
+     *
+     * @param restartType This specifies the type of restart to perform.
+     * @param alwaysShowDialog Always show a confirmation dialog before the
+     *     restart if this parameter is true. Otherwise, only when there is
+     *     an incognito window open.
+     */
     performRestart(restartType: RestartType, alwaysShowDialog?: boolean) {
       if (alwaysShowDialog == null) {
         alwaysShowDialog = false;
