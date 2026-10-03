@@ -17,9 +17,11 @@ namespace ambient_signin {
 AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    PermissionDecidedCallback permission_decided_callback,
-    const std::u16string& username,
-    const std::u16string& provider_name)
+    std::vector<PasskeyOrPasswordCredential> credentials,
+    PasskeyOrPasswordSelectedCallback credential_selected_callback,
+    std::vector<FederatedCredential> federated_credentials,
+    FederatedCredentialSelectedCallback federated_selected_callback,
+    PermissionDecidedCallback permission_decided_callback)
     : permissions::PermissionRequest(
           std::make_unique<permissions::PermissionRequestData>(
               permissions::RequestType::kAmbientLogin,
@@ -31,10 +33,41 @@ AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
           // Disable automatic embargo so repeated dismissals of ambient sign-in
           // prompts do not trigger standard permission auto-blocking.
           /*uses_automatic_embargo=*/false),
-      username_(username),
-      provider_name_(provider_name) {}
+      credentials_(std::move(credentials)),
+      credential_selected_callback_(std::move(credential_selected_callback)),
+      federated_credentials_(std::move(federated_credentials)),
+      federated_selected_callback_(std::move(federated_selected_callback)) {}
+
+AmbientLoginPermissionRequest::AmbientLoginPermissionRequest(
+    const GURL& requesting_origin,
+    const GURL& embedding_origin,
+    std::vector<PasskeyOrPasswordCredential> credentials,
+    PasskeyOrPasswordSelectedCallback credential_selected_callback,
+    PermissionDecidedCallback permission_decided_callback)
+    : AmbientLoginPermissionRequest(
+          requesting_origin,
+          embedding_origin,
+          std::move(credentials),
+          std::move(credential_selected_callback),
+          /*federated_credentials=*/{},
+          /*federated_selected_callback=*/base::NullCallback(),
+          std::move(permission_decided_callback)) {}
 
 AmbientLoginPermissionRequest::~AmbientLoginPermissionRequest() = default;
+
+void AmbientLoginPermissionRequest::SelectCredential(size_t index) {
+  CHECK_LT(index, credentials_.size());
+  if (credential_selected_callback_) {
+    std::move(credential_selected_callback_).Run(index);
+  }
+}
+
+void AmbientLoginPermissionRequest::SelectFederatedCredential(size_t index) {
+  CHECK_LT(index, federated_credentials_.size());
+  if (federated_selected_callback_) {
+    std::move(federated_selected_callback_).Run(index);
+  }
+}
 
 std::u16string AmbientLoginPermissionRequest::GetMessageTextFragment() const {
   // TODO(https://crbug.com/532206357): Ambient login uses a custom permission

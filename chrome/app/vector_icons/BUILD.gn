@@ -356,6 +356,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "travel_explore_old.icon",
     "tv.icon",
     "tv_old.icon",
+    "unfold_more.icon",
     "ungroup.icon",
     "ungroup_refresh_old.icon",
     "user_account_avatar_old.icon",

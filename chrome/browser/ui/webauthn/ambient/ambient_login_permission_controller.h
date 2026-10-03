@@ -49,7 +49,6 @@ class AmbientLoginPermissionController
   void OnRequestFinished();
 
   State state_ = State::kIdle;
-
   base::OnceClosure finished_closure_;
 
   base::WeakPtrFactory<AmbientLoginPermissionController> weak_ptr_factory_{

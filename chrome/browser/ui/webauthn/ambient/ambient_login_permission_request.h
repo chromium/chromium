@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBAUTHN_AMBIENT_AMBIENT_LOGIN_PERMISSION_REQUEST_H_
 
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/permissions/permission_request.h"
@@ -13,27 +14,78 @@
 
 namespace ambient_signin {
 
+enum class CredentialType {
+  kPasskey,
+  kPassword,
+};
+
+// Represents a WebAuthn passkey or saved password credential option.
+struct PasskeyOrPasswordCredential {
+  std::u16string username;
+  std::u16string provider_name;
+  CredentialType type = CredentialType::kPasskey;
+  std::u16string display_name;
+};
+
+// Represents a federated sign-in credential option (e.g. from FedCM).
+struct FederatedCredential {
+  std::u16string idp_name;
+  std::u16string account_name;
+  std::u16string email;
+  GURL idp_origin;
+};
+
 // A permission request for displaying ambient login options (e.g. WebAuthn
 // passkeys/passwords or FedCM sign-in) via PermissionRequestManager.
 class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
  public:
+  using PasskeyOrPasswordSelectedCallback =
+      base::OnceCallback<void(size_t index)>;
+  using FederatedCredentialSelectedCallback =
+      base::OnceCallback<void(size_t index)>;
+
+  // Constructor supporting both WebAuthn/password credentials and FedCM
+  // federated credentials.
   AmbientLoginPermissionRequest(
       const GURL& requesting_origin,
       const GURL& embedding_origin,
-      PermissionDecidedCallback permission_decided_callback,
-      const std::u16string& username,
-      const std::u16string& provider_name);
+      std::vector<PasskeyOrPasswordCredential> credentials,
+      PasskeyOrPasswordSelectedCallback credential_selected_callback,
+      std::vector<FederatedCredential> federated_credentials,
+      FederatedCredentialSelectedCallback federated_selected_callback,
+      PermissionDecidedCallback permission_decided_callback);
+
+  // Convenience constructor for passkey/password-only requests.
+  AmbientLoginPermissionRequest(
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      std::vector<PasskeyOrPasswordCredential> credentials,
+      PasskeyOrPasswordSelectedCallback credential_selected_callback,
+      PermissionDecidedCallback permission_decided_callback);
+
   ~AmbientLoginPermissionRequest() override;
 
-  const std::u16string& username() const { return username_; }
-  const std::u16string& provider_name() const { return provider_name_; }
+  const std::vector<PasskeyOrPasswordCredential>& credentials() const {
+    return credentials_;
+  }
+  const std::vector<FederatedCredential>& federated_credentials() const {
+    return federated_credentials_;
+  }
+
+  // Invokes the credential selection callback with the chosen index.
+  void SelectCredential(size_t index);
+
+  // Invokes the federated credential selection callback with the chosen index.
+  void SelectFederatedCredential(size_t index);
 
   // permissions::PermissionRequest:
   std::u16string GetMessageTextFragment() const override;
 
  private:
-  std::u16string username_;
-  std::u16string provider_name_;
+  std::vector<PasskeyOrPasswordCredential> credentials_;
+  PasskeyOrPasswordSelectedCallback credential_selected_callback_;
+  std::vector<FederatedCredential> federated_credentials_;
+  FederatedCredentialSelectedCallback federated_selected_callback_;
 };
 
 }  // namespace ambient_signin

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webauthn/ambient/ambient_login_permission_controller.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -22,6 +23,14 @@
 #include "url/gurl.h"
 
 namespace ambient_signin {
+
+namespace {
+
+std::vector<PasskeyOrPasswordCredential> CreateSinglePasskey() {
+  return {{u"user@example.com", u"Google Password Manager"}};
+}
+
+}  // namespace
 
 class AmbientLoginPermissionControllerTest
     : public ChromeRenderViewHostTestHarness {
@@ -73,7 +82,7 @@ TEST_F(AmbientLoginPermissionControllerTest, RequestPermission) {
   base::RunLoop run_loop;
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://example.com"), GURL("https://example.com"),
-      base::DoNothing(), u"user@example.com", u"Google Password Manager");
+      CreateSinglePasskey(), base::DoNothing(), base::DoNothing());
   controller()->SetFinishedNotificationForTesting(run_loop.QuitClosure());
 
   controller()->RequestPermission(main_rfh(), std::move(request));
@@ -103,7 +112,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   base::RunLoop run_loop;
   auto request = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://subframe.example.org"), GURL("https://example.com"),
-      base::DoNothing(), u"user@example.com", u"Google Password Manager");
+      CreateSinglePasskey(), base::DoNothing(), base::DoNothing());
   EXPECT_EQ(request->requesting_origin(), GURL("https://subframe.example.org"));
   EXPECT_EQ(request->embedding_origin(), GURL("https://example.com"));
 
@@ -129,7 +138,7 @@ TEST_F(AmbientLoginPermissionControllerTest,
   base::RunLoop first_finished_loop;
   auto request1 = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://example.com"), GURL("https://example.com"),
-      base::DoNothing(), u"user@example.com", u"Google Password Manager");
+      CreateSinglePasskey(), base::DoNothing(), base::DoNothing());
   controller()->SetFinishedNotificationForTesting(
       first_finished_loop.QuitClosure());
 
@@ -142,14 +151,14 @@ TEST_F(AmbientLoginPermissionControllerTest,
   std::optional<PermissionDecision> second_decision;
   auto request2 = std::make_unique<AmbientLoginPermissionRequest>(
       GURL("https://example.com"), GURL("https://example.com"),
+      CreateSinglePasskey(), base::DoNothing(),
       base::BindRepeating(
           [](std::optional<PermissionDecision>* out,
              const permissions::PermissionPromptDecision& decision,
              const permissions::PermissionRequestData& request_data) {
             *out = decision.overall_decision;
           },
-          &second_decision),
-      u"user2@example.com", u"Google Password Manager");
+          &second_decision));
 
   controller()->RequestPermission(main_rfh(), std::move(request2));
 
@@ -162,6 +171,39 @@ TEST_F(AmbientLoginPermissionControllerTest,
 
   permission_request_manager()->Dismiss(std::monostate());
   first_finished_loop.Run();
+
+  EXPECT_FALSE(permission_request_manager()->IsRequestInProgress());
+  EXPECT_EQ(controller()->state(),
+            AmbientLoginPermissionController::State::kIdle);
+}
+
+TEST_F(AmbientLoginPermissionControllerTest, RequestPermissionWithCredentials) {
+  base::RunLoop run_loop;
+  std::vector<PasskeyOrPasswordCredential> credentials = {
+      {u"alice@example.com", u"Google Password Manager",
+       CredentialType::kPasskey},
+      {u"bob@example.com", u"Google Password Manager",
+       CredentialType::kPassword}};
+  std::optional<size_t> selected_index;
+
+  auto request = std::make_unique<AmbientLoginPermissionRequest>(
+      GURL("https://example.com"), GURL("https://example.com"),
+      std::move(credentials),
+      base::BindOnce(
+          [](std::optional<size_t>* out, size_t index) { *out = index; },
+          &selected_index),
+      base::DoNothing());
+  controller()->SetFinishedNotificationForTesting(run_loop.QuitClosure());
+
+  controller()->RequestPermission(main_rfh(), std::move(request));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return permission_request_manager()->IsRequestInProgress(); }));
+
+  EXPECT_EQ(controller()->state(),
+            AmbientLoginPermissionController::State::kRequestAdded);
+
+  permission_request_manager()->Dismiss(std::monostate());
+  run_loop.Run();
 
   EXPECT_FALSE(permission_request_manager()->IsRequestInProgress());
   EXPECT_EQ(controller()->state(),
