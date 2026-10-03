@@ -930,7 +930,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private void applyAndNotifySettingImport(
             Profile profile, SyncedSetupSettings settingsToApply, boolean nonNtp) {
         if (shouldShowSnackbar(profile, settingsToApply, nonNtp)) {
-            SyncedSetupSettings currentSettings = getCurrentSettings(profile);
+            SyncedSetupSettings currentSettings =
+                    getCurrentSettings(profile, settingsToApply.getTheme());
             showOfferUndoSnackbarAfterDialogs(profile, currentSettings, settingsToApply, nonNtp);
             applySettings(profile, settingsToApply, nonNtp);
         } else {
@@ -965,7 +966,29 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      */
     private SyncedSetupSettings maybeUpdateSettingsWithDownloadedTheme(
             SyncedSetupSettings settingsToApply) {
-        if (!isThemeFeatureEnabled()) return settingsToApply;
+        @Nullable NtpBackgroundDataBase enrichedTheme =
+                maybeEnrichThemeWithDownloadedBitmap(
+                        settingsToApply.getTheme(),
+                        getCurrentLocalTheme(/* incomingTheme= */ null));
+        if (enrichedTheme == null) return settingsToApply;
+        return new SyncedSetupSettings(settingsToApply.getPrefs(), enrichedTheme);
+    }
+
+    /**
+     * Returns the current local NTP background theme. When importing a cross-platform theme,
+     * prefers any Android-synced theme staged via {@link
+     * NtpCustomizationConfigManager#getSyncedNtpBackgroundData()} before {@link
+     * NtpCustomizationConfigManager#maybeApplyBackgroundUpdateFromDeviceSync} promotes it to {@link
+     * NtpCustomizationConfigManager#getNtpBackgroundData()}. When importing a same-platform ({@link
+     * PlatformType#ANDROID}) theme, {@code getSyncedNtpBackgroundData()} holds the incoming remote
+     * Android theme itself rather than the prior local theme, so {@code getNtpBackgroundData()} is
+     * used directly.
+     */
+    private @Nullable NtpBackgroundDataBase getCurrentLocalTheme(
+            @Nullable NtpBackgroundDataBase incomingTheme) {
+        if (!isThemeFeatureEnabled()) return null;
+
+        ensureNtpCustomizationConfigManagerInitialized();
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
 
         // When NtpSyncedThemeManager finishes downloading a wallpaper, it first stages the
@@ -977,14 +1000,13 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         //   getSyncedNtpBackgroundData().
         // - After maybeApplyBackgroundUpdateFromDeviceSync() runs (and recreates the Activity),
         //   the downloaded theme is in getNtpBackgroundData().
-        @Nullable NtpBackgroundDataBase downloadedTheme =
-                configManager.getSyncedNtpBackgroundData() != null
-                        ? configManager.getSyncedNtpBackgroundData()
-                        : configManager.getNtpBackgroundData();
-        @Nullable NtpBackgroundDataBase enrichedTheme =
-                maybeEnrichThemeWithDownloadedBitmap(settingsToApply.getTheme(), downloadedTheme);
-        if (enrichedTheme == null) return settingsToApply;
-        return new SyncedSetupSettings(settingsToApply.getPrefs(), enrichedTheme);
+        boolean isSamePlatformImport =
+                incomingTheme != null && incomingTheme.getPlatformType() == PlatformType.ANDROID;
+        @Nullable NtpBackgroundDataBase syncedTheme = configManager.getSyncedNtpBackgroundData();
+        if (!isSamePlatformImport && syncedTheme != null) {
+            return syncedTheme;
+        }
+        return configManager.getNtpBackgroundData();
     }
 
     /**
@@ -1134,6 +1156,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             // disk in saveBackgroundInfo().
                             imageBase.setIsBitmapSaved(false);
                         }
+                        if (currentSettings.getTheme()
+                                instanceof NtpBackgroundDataImageBase currentImageBase) {
+                            // Applying a cross-OS theme calls
+                            // clearPendingSyncedBackgroundAndSharedPreference(), which deletes a
+                            // staged Android-synced theme's image file on disk while leaving
+                            // isBitmapSaved() == true in memory. Resetting isBitmapSaved to false
+                            // ensures Undo re-persists the restored bitmap file to disk.
+                            currentImageBase.setIsBitmapSaved(false);
+                        }
                         applyThemeSettings(currentSettings.getTheme());
                     }
                 },
@@ -1197,7 +1228,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /** Returns the user's current settings (including preferences and NTP theme). */
-    private SyncedSetupSettings getCurrentSettings(Profile profile) {
+    private SyncedSetupSettings getCurrentSettings(
+            Profile profile, @Nullable NtpBackgroundDataBase incomingTheme) {
         Map<String, Object> prefs = new HashMap<>();
 
         PrefService localStatePrefs = LocalStatePrefs.get();
@@ -1218,13 +1250,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         }
 
         // Snapshot current NTP background theme so undo can restore the user's exact prior state.
-        @Nullable NtpBackgroundDataBase currentTheme = null;
-        if (isThemeFeatureEnabled()) {
-            ensureNtpCustomizationConfigManagerInitialized();
-            currentTheme = NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
-        }
-
-        return new SyncedSetupSettings(prefs, currentTheme);
+        return new SyncedSetupSettings(prefs, getCurrentLocalTheme(incomingTheme));
     }
 
     /**
@@ -1301,10 +1327,12 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         ? importedSettingsAffectNonNtp(settings.getPrefs())
                         : importedSettingsHavePreferenceChange(profile, settings.getPrefs());
 
+        @Nullable NtpBackgroundDataBase candidateTheme = settings.getTheme();
         boolean themeChange =
-                settings.getTheme() != null
-                        && settings.getTheme().getPlatformType() != PlatformType.ANDROID
-                        && importedSettingHasThemeChange(settings.getTheme());
+                candidateTheme != null
+                        && candidateTheme.getPlatformType() != PlatformType.ANDROID
+                        && importedSettingHasThemeChange(
+                                candidateTheme, getCurrentLocalTheme(candidateTheme));
 
         // If in observation-only mode and the user would have been shown the snackbar solely
         // due to a theme change (and not any preference change), record the observation action.
@@ -1388,20 +1416,6 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         // A null primary color means "unknown" (e.g. iOS never sends one), so the same image with a
         // null color on either side is not a theme change.
         return !candidateTheme.hasSameThemeAndCompatibleColor(currentTheme);
-    }
-
-    /**
-     * @param candidateTheme The candidate remote theme to evaluate.
-     * @return whether the candidate remote theme differs from the user's current local NTP theme.
-     */
-    private boolean importedSettingHasThemeChange(@Nullable NtpBackgroundDataBase candidateTheme) {
-        if (!isThemeFeatureEnabled() || candidateTheme == null) {
-            return false;
-        }
-        ensureNtpCustomizationConfigManagerInitialized();
-        @Nullable NtpBackgroundDataBase currentTheme =
-                NtpCustomizationConfigManager.getInstance().getNtpBackgroundData();
-        return importedSettingHasThemeChange(candidateTheme, currentTheme);
     }
 
     /**

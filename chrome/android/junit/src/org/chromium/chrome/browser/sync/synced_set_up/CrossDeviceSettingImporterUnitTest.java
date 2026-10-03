@@ -2203,6 +2203,7 @@ public class CrossDeviceSettingImporterUnitTest {
         // User clicks Undo: because platformType is preserved as DESKTOP, THEMES sync toggle must
         // NOT be disabled! And the original desktopInFlightTheme must not be mutated in place.
         undoSnackbar.getController().onAction(null);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData()).thenReturn(null);
         verify(mSyncService, never()).setSelectedType(eq(UserSelectableType.THEMES), anyBoolean());
         assertNull(desktopInFlightTheme.getBitmap());
         assertNull(desktopInFlightTheme.getPrimaryColor());
@@ -2300,6 +2301,100 @@ public class CrossDeviceSettingImporterUnitTest {
         verify(mNtpCustomizationConfigManager, never()).onBackgroundDataChanged(any(), any());
         verify(mNtpCustomizationConfigManager)
                 .maybeApplyBackgroundUpdateFromDeviceSync(eq(mActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void testUndoCrossOsImport_withStagedAndroidSyncedTheme_restoresSyncedTheme() {
+        CustomBackgroundInfo androidBgInfo =
+                new CustomBackgroundInfo(
+                        new GURL("https://example.com/android_synced.png"),
+                        "collection_android",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        Bitmap androidBitmap = mock(Bitmap.class);
+        NtpBackgroundDataThemeCollection stagedAndroidTheme =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        androidBgInfo,
+                        /* backgroundImageInfo= */ null,
+                        androidBitmap,
+                        /* primaryColor= */ 0xFF112233,
+                        /* fileIdHash= */ "hash_android");
+        stagedAndroidTheme.setIsBitmapSaved(true);
+
+        // Before maybeApplyBackgroundUpdateFromDeviceSync() runs, the Android-synced theme is
+        // staged in getSyncedNtpBackgroundData() while getNtpBackgroundData() is still null.
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(stagedAndroidTheme);
+
+        NtpBackgroundDataColor crossOsIosColor =
+                new NtpBackgroundDataColor(
+                        mActivity,
+                        PlatformType.IOS,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any()))
+                .thenReturn(crossOsIosColor);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+        when(mPrefService.isDefaultValuePreference(any(String.class))).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+
+        // 1. Cross-OS iOS color theme is applied and Undo snackbar is shown.
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mActivity), eq(crossOsIosColor));
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+
+        // 2. User clicks Undo -> reverts to stagedAndroidTheme (with isBitmapSaved reset to false
+        // so the deleted disk file is re-saved) while keeping THEMES continuous sync enabled.
+        undoSnackbar.getController().onAction(null);
+        verify(mSyncService, never()).setSelectedType(eq(UserSelectableType.THEMES), anyBoolean());
+        assertFalse(stagedAndroidTheme.isBitmapSaved());
+        verify(mNtpCustomizationConfigManager)
+                .onBackgroundDataChanged(eq(mActivity), eq(stagedAndroidTheme));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
+    public void
+            testUndoSameOsImport_withStagedIncomingAndroidTheme_restoresPriorThemeAndDisablesSync() {
+        NtpBackgroundDataColor incomingAndroidTheme =
+                new NtpBackgroundDataColor(
+                        mActivity,
+                        PlatformType.ANDROID,
+                        NtpThemeColorId.NTP_COLORS_BLUE,
+                        /* isChromeColorDailyRefreshEnabled= */ false);
+
+        // During a same-platform import, NtpSyncedThemeManager has already staged the incoming
+        // remote Android theme in getSyncedNtpBackgroundData() while getNtpBackgroundData() holds
+        // the user's prior local theme (null / default).
+        when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(null);
+        when(mNtpCustomizationConfigManager.getSyncedNtpBackgroundData())
+                .thenReturn(incomingAndroidTheme);
+
+        when(mCrossDeviceThemeTracker.getThemeForDeviceGuid(any(), any()))
+                .thenReturn(incomingAndroidTheme);
+        when(mCrossDevicePrefTracker.getServiceStatus()).thenReturn(ServiceStatus.AVAILABLE);
+
+        // Include a preference change so that Synced Set Up triggers for same-platform.
+        SyncedSetUpUtilsBridge.setCrossDeviceSettingsForTesting(
+                Map.of(Pref.MAGIC_STACK_HOME_MODULE_ENABLED, false));
+        when(mPrefService.getBoolean(Pref.MAGIC_STACK_HOME_MODULE_ENABLED)).thenReturn(true);
+
+        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
+        importer.onTabChangeOrGainFocus(mTab);
+
+        verify(mSnackbarManager, times(1)).showSnackbar(mSnackbarCaptor.capture());
+        Snackbar undoSnackbar = mSnackbarCaptor.getValue();
+
+        // User clicks Undo -> reverts to prior local theme (null) and disables THEMES sync.
+        undoSnackbar.getController().onAction(null);
+        verify(mNtpCustomizationConfigManager).onBackgroundDataChanged(eq(mActivity), isNull());
+        verify(mSyncService).setSelectedType(UserSelectableType.THEMES, false);
     }
 
     /**
