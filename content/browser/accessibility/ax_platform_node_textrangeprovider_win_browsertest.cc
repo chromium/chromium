@@ -3966,6 +3966,71 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   EXPECT_HRESULT_SUCCEEDED(text_range_provider->Select());
 }
 
+// Requery the outer provider between selections inside its focused iframe.
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       RootGetSelectionReturnsFocusedIframeSelection) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!doctype html>
+      <iframe tabindex="0"
+          srcdoc="<p>Sample text for selection testing</p>"></iframe>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(
+      shell()->web_contents(), "Sample text for selection testing");
+  RenderFrameHost* iframe =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_NE(nullptr, iframe);
+  ASSERT_TRUE(ExecJs(iframe, "window.focus();"));
+
+  auto* text_node = FindNode(ax::mojom::Role::kStaticText,
+                             "Sample text for selection testing");
+  ASSERT_NE(nullptr, text_node);
+  ASSERT_NE(text_node->manager(), GetManager());
+
+  ui::BrowserAccessibilityComWin* root_com =
+      ToBrowserAccessibilityWin(GetManager()->GetBrowserAccessibilityRoot())
+          ->GetCOM();
+  ComPtr<ITextProvider> root_text_provider;
+  ASSERT_HRESULT_SUCCEEDED(
+      root_com->GetPatternProvider(UIA_TextPatternId, &root_text_provider));
+  ASSERT_NE(nullptr, root_text_provider.Get());
+
+  ComPtr<ITextRangeProvider> selection_range;
+  GetTextRangeProviderFromTextNode(*text_node, &selection_range);
+  ASSERT_NE(nullptr, selection_range.Get());
+  ASSERT_HRESULT_SUCCEEDED(selection_range->MoveEndpointByRange(
+      TextPatternRangeEndpoint_End, selection_range.Get(),
+      TextPatternRangeEndpoint_Start));
+
+  auto select_and_check = [&](int count, const wchar_t* expected_text) {
+    int moved = 0;
+    ASSERT_HRESULT_SUCCEEDED(selection_range->MoveEndpointByUnit(
+        TextPatternRangeEndpoint_End, TextUnit_Word, count, &moved));
+    ASSERT_EQ(count, moved);
+    {
+      AccessibilityNotificationWaiter waiter(
+          shell()->web_contents(), ax::mojom::Event::kDocumentSelectionChanged);
+      ASSERT_HRESULT_SUCCEEDED(selection_range->Select());
+      ASSERT_TRUE(waiter.WaitForNotification());
+    }
+
+    base::win::ScopedSafearray updated_selection;
+    ASSERT_HRESULT_SUCCEEDED(
+        root_text_provider->GetSelection(updated_selection.Receive()));
+    auto ranges = updated_selection.CreateLockScope<VT_UNKNOWN>();
+    ASSERT_TRUE(ranges);
+    ASSERT_EQ(1u, ranges->size());
+    ASSERT_NE(nullptr, (*ranges)[0]);
+    ASSERT_HRESULT_SUCCEEDED(
+        (*ranges)[0]->QueryInterface(IID_PPV_ARGS(&selection_range)));
+    ASSERT_NE(nullptr, selection_range.Get());
+    EXPECT_UIA_TEXTRANGE_EQ(selection_range, expected_text);
+  };
+
+  ASSERT_NO_FATAL_FAILURE(select_and_check(1, L"Sample "));
+  ASSERT_NO_FATAL_FAILURE(select_and_check(1, L"Sample text "));
+  ASSERT_NO_FATAL_FAILURE(select_and_check(-1, L"Sample "));
+}
+
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        ReplaceStartAndEndEndpointNodeInMultipleTrees) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
