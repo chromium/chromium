@@ -17,6 +17,15 @@ let kJPEGImageQualityDefault: CGFloat = 1.0
 // file size by ~3-5x compared to 1.0.
 let kJPEGImageQualityCompressed: CGFloat = 0.97
 
+// Wraps a main-thread completion so it can be transferred through the background queue.
+private final class ImageWriteCompletion: @unchecked Sendable {
+  let callback: (UIImage) -> Void
+
+  init(_ callback: @escaping (UIImage) -> Void) {
+    self.callback = callback
+  }
+}
+
 // A class to manage images stored in disk.
 // Tasks for handling disk (reading an image, writing an image, deleting images, renaming an image,
 // etc.) are executed on a background thread. Callbacks to use UI APIs should be called on the main
@@ -91,6 +100,14 @@ let kJPEGImageQualityCompressed: CGFloat = 0.97
 
   // Writes an image to disk.
   func write(image: UIImage?, snapshotID: SnapshotIDWrapper) {
+    write(image: image, snapshotID: snapshotID, completion: nil)
+  }
+
+  // Writes an image to disk and returns the image used for storage on the main thread.
+  func write(
+    image: UIImage?, snapshotID: SnapshotIDWrapper,
+    completion: ((_ optimizedImage: UIImage) -> Void)?
+  ) {
     guard let image = image,
       let imagePath = imagePath(
         snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
@@ -98,14 +115,30 @@ let kJPEGImageQualityCompressed: CGFloat = 0.97
       return
     }
 
+    let backgroundTaskGroup = self.backgroundTaskGroup
+    let mainTaskGroup = self.mainTaskGroup
+    let completion = completion.map(ImageWriteCompletion.init)
     backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
-      guard let self = self else { return }
+    backgroundTaskQueue.async(group: backgroundTaskGroup) {
+      let imageToWrite = autoreleasepool {
+        IsSnapshotDownsampleImageEnabled()
+          ? Self.downsampledForStorage(image) : image
+      }
+      defer {
+        if let completion = completion {
+          mainTaskGroup.enter()
+          DispatchQueue.main.async { [imageToWrite] in
+            completion.callback(imageToWrite)
+            mainTaskGroup.leave()
+          }
+        }
+        backgroundTaskGroup.leave()
+      }
+
       let quality =
         IsSnapshotCompressedJPEGQualityEnabled()
         ? kJPEGImageQualityCompressed : kJPEGImageQualityDefault
-      guard let data = image.jpegData(compressionQuality: quality) else {
-        backgroundTaskGroup.leave()
+      guard let data = imageToWrite.jpegData(compressionQuality: quality) else {
         return
       }
       do {
@@ -123,7 +156,6 @@ let kJPEGImageQualityCompressed: CGFloat = 0.97
       } catch {
         print("Failed to store an image: \(error)")
       }
-      backgroundTaskGroup.leave()
     }
   }
 
@@ -262,6 +294,17 @@ let kJPEGImageQualityCompressed: CGFloat = 0.97
       }
 
       backgroundTaskGroup.leave()
+    }
+  }
+
+  // Halves the pixel density of the image while keeping the same point dimensions.
+  private static func downsampledForStorage(_ image: UIImage) -> UIImage {
+    let targetSize = image.size
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = image.scale / 2.0
+    let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
+    return renderer.image { _ in
+      image.draw(in: CGRect(origin: .zero, size: targetSize))
     }
   }
 

@@ -9,6 +9,7 @@
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
@@ -111,24 +112,45 @@ UIImage* ReadImageForSnapshotIDFromDisk(SnapshotID snapshot_id,
   // Downsampled images are stored at half the device scale, so read
   // them back at the same reduced scale to preserve point dimensions.
   CGFloat device_scale = [SnapshotImageScale floatImageScaleForDevice];
-  CGFloat read_scale = IsSnapshotDownsampleImageEnabled()
-                           ? (device_scale / 2.0)
-                           : device_scale;
+  CGFloat read_scale =
+      IsSnapshotDownsampleImageEnabled() ? (device_scale / 2.0) : device_scale;
   return [UIImage imageWithData:[NSData dataWithContentsOfFile:path]
                           scale:read_scale];
 }
 
-// Helper function to write an image to disk.
-void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
+// Downsamples `image` when enabled, synchronously attempts to write it to
+// `file_path`, and returns the image used for encoding. The return value does
+// not indicate whether the write succeeded.
+UIImage* DownsampleAndWriteImageToDisk(UIImage* image,
+                                       const base::FilePath& file_path) {
   if (!image) {
-    return;
+    return nil;
   }
   if (!image.CGImage) {
     // It's possible that CGImage doesn't exist for the chrome:// pages when
     // it's an official build.
     // TODO(crbug.com/40284759): Investigate why it happens and how to solve it.
-    return;
+    return image;
   }
+
+  UIImage* image_to_write = image;
+  if (IsSnapshotDownsampleImageEnabled()) {
+    @autoreleasepool {
+      CGSize target_size = image.size;
+      UIGraphicsImageRendererFormat* format =
+          [[UIGraphicsImageRendererFormat alloc] init];
+      format.scale = image.scale / 2.0;
+      UIGraphicsImageRenderer* renderer =
+          [[UIGraphicsImageRenderer alloc] initWithSize:target_size
+                                                 format:format];
+      image_to_write = [renderer
+          imageWithActions:^(UIGraphicsImageRendererContext* context) {
+            [image drawInRect:CGRectMake(0, 0, target_size.width,
+                                         target_size.height)];
+          }];
+    }
+  }
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
@@ -138,7 +160,7 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
     if (!success) {
       DLOG(ERROR) << "Error creating thumbnail directory "
                   << directory.AsUTF8Unsafe();
-      return;
+      return image_to_write;
     }
   }
 
@@ -147,12 +169,12 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
       base::FeatureList::IsEnabled(kSnapshotCompressedJPEGQuality)
           ? kJPEGImageQualityCompressed
           : kJPEGImageQualityDefault;
-  NSData* data = UIImageJPEGRepresentation(image, quality);
+  NSData* data = UIImageJPEGRepresentation(image_to_write, quality);
   if (!data) {
     // Use UIImagePNGRepresentation instead when ImageJPEGRepresentation returns
     // nil. It happens when the underlying CGImageRef contains data in an
     // unsupported bitmap format.
-    data = UIImagePNGRepresentation(image);
+    data = UIImagePNGRepresentation(image_to_write);
   }
 
   base::UmaHistogramMemoryKB(
@@ -173,6 +195,7 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
     DLOG(ERROR) << "Error encrypting thumbnail file "
                 << base::SysNSStringToUTF8([error description]);
   }
+  return image_to_write;
 }
 
 // Helper function to delete an image from disk.
@@ -319,9 +342,28 @@ void CopyImageFile(const base::FilePath& old_image_path,
     return;
   }
   _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(&WriteImageToDisk, image,
-                                ImagePath(snapshotID, IMAGE_TYPE_COLOR,
-                                          _snapshotsScale, _storageDirectory)));
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&DownsampleAndWriteImageToDisk), image,
+                     ImagePath(snapshotID, IMAGE_TYPE_COLOR, _snapshotsScale,
+                               _storageDirectory)));
+}
+
+- (void)writeImage:(UIImage*)image
+    withSnapshotID:(SnapshotID)snapshotID
+        completion:(ImageWriteCompletionBlock)completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_taskRunner) {
+    // No disk write is performed after shutdown. Return the original image so
+    // callers waiting for the completion are not left pending.
+    std::move(completion).Run(image);
+    return;
+  }
+  _taskRunner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&DownsampleAndWriteImageToDisk, image,
+                     ImagePath(snapshotID, IMAGE_TYPE_COLOR, _snapshotsScale,
+                               _storageDirectory)),
+      std::move(completion));
 }
 
 - (void)removeImageWithSnapshotID:(SnapshotID)snapshotID {

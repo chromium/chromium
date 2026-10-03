@@ -14,6 +14,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
@@ -331,6 +332,36 @@ TEST_F(LegacyImageFileManagerTest, SizeAndScalePreservation) {
   EXPECT_TRUE(callbackComplete);
 }
 
+// Tests that downsampling is performed asynchronously and preserves point
+// dimensions while reducing the image scale.
+TEST_F(LegacyImageFileManagerTest, DownsampleImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSnapshotDownsampleImage);
+
+  LegacyImageFileManager* file_manager = GetImageFileManager();
+  ASSERT_TRUE(file_manager);
+
+  UIImage* image = GenerateRandomImage(2.0);
+  const SnapshotID kSnapshotID(SessionID::NewUnique().id());
+  __block UIImage* optimized_image = nil;
+  [file_manager writeImage:image
+            withSnapshotID:kSnapshotID
+                completion:base::BindOnce(^(UIImage* result) {
+                  EXPECT_TRUE([NSThread isMainThread]);
+                  optimized_image = result;
+                })];
+  FlushRunLoops();
+
+  ASSERT_TRUE(optimized_image);
+  EXPECT_EQ(image.size.width, optimized_image.size.width);
+  EXPECT_EQ(image.size.height, optimized_image.size.height);
+  EXPECT_EQ(image.scale / 2.0, optimized_image.scale);
+  EXPECT_EQ(CGImageGetWidth(image.CGImage) / 2,
+            CGImageGetWidth(optimized_image.CGImage));
+  EXPECT_EQ(CGImageGetHeight(image.CGImage) / 2,
+            CGImageGetHeight(optimized_image.CGImage));
+}
+
 // Tests that retina-scale images are deleted properly.
 TEST_F(LegacyImageFileManagerTest, DeleteRetinaImages) {
   LegacyImageFileManager* file_manager = GetImageFileManager();
@@ -639,6 +670,37 @@ TEST_F(ImageFileManagerTest, SizeAndScalePreservation) {
 
   FlushRunLoops();
   EXPECT_TRUE(callbackComplete);
+}
+
+// Tests that downsampling is performed asynchronously and preserves point
+// dimensions while reducing the image scale.
+TEST_F(ImageFileManagerTest, DownsampleImage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kSnapshotDownsampleImage);
+
+  ImageFileManager* file_manager = GetImageFileManager();
+  ASSERT_TRUE(file_manager);
+
+  UIImage* image = GenerateRandomImage(2.0);
+  SnapshotIDWrapper* snapshot_id = [[SnapshotIDWrapper alloc]
+      initWithSnapshotID:SnapshotID(SessionID::NewUnique().id())];
+  __block UIImage* optimized_image = nil;
+  [file_manager writeWithImage:image
+                    snapshotID:snapshot_id
+                    completion:^(UIImage* result) {
+                      EXPECT_TRUE([NSThread isMainThread]);
+                      optimized_image = result;
+                    }];
+  FlushRunLoops();
+
+  ASSERT_TRUE(optimized_image);
+  EXPECT_EQ(image.size.width, optimized_image.size.width);
+  EXPECT_EQ(image.size.height, optimized_image.size.height);
+  EXPECT_EQ(image.scale / 2.0, optimized_image.scale);
+  EXPECT_EQ(CGImageGetWidth(image.CGImage) / 2,
+            CGImageGetWidth(optimized_image.CGImage));
+  EXPECT_EQ(CGImageGetHeight(image.CGImage) / 2,
+            CGImageGetHeight(optimized_image.CGImage));
 }
 
 // Tests that retina-scale images are deleted properly.

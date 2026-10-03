@@ -61,21 +61,6 @@ LegacySnapshotLRUCache<UIImage*>* CreateDefaultSnapshotLRUCache() {
 
 }  // namespace
 
-// Halves the pixel density of the image for disk storage while keeping
-// the same point dimensions, so UIKit layout stays correct when the
-// image is read back from disk.
-UIImage* DownsampledForStorage(UIImage* image) {
-  CGSize target_size = image.size;
-  UIGraphicsImageRendererFormat* format =
-      [[UIGraphicsImageRendererFormat alloc] init];
-  format.scale = image.scale / 2.0;
-  UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:target_size format:format];
-  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
-    [image drawInRect:CGRectMake(0, 0, target_size.width, target_size.height)];
-  }];
-}
-
 // Protocol observers subclass that explicitly implements
 // <SnapshotStorageObserver>.
 @interface SnapshotStorageObservers
@@ -92,6 +77,12 @@ UIImage* DownsampledForStorage(UIImage* image) {
 @interface LegacySnapshotStorage ()
 // List of observers to be notified of changes to the snapshot storage.
 @property(nonatomic, strong) SnapshotStorageObservers* observers;
+
+// Replaces the cached image if `generation` is still the latest write for
+// `snapshotID`.
+- (void)updateCacheWithOptimizedImage:(UIImage*)optimizedImage
+                           snapshotID:(SnapshotID)snapshotID
+                           generation:(uint64_t)generation;
 @end
 
 @implementation LegacySnapshotStorage {
@@ -101,6 +92,12 @@ UIImage* DownsampledForStorage(UIImage* image) {
 
   // File manager to read/write images from/to disk.
   __strong LegacyImageFileManager* _fileManager;
+
+  // Generation of the latest write for each snapshot. This prevents an
+  // asynchronous write from replacing a newer image in the cache or restoring
+  // an image that has been removed.
+  uint64_t _nextImageGeneration;
+  std::map<SnapshotID, uint64_t> _imageGenerations;
 }
 
 - (instancetype)initWithLRUCache:(LegacySnapshotLRUCache*)lruCache
@@ -109,6 +106,7 @@ UIImage* DownsampledForStorage(UIImage* image) {
     _lruCache = lruCache;
     _fileManager =
         [[LegacyImageFileManager alloc] initWithStoragePath:storagePath];
+    _nextImageGeneration = 0;
 
     _observers = [SnapshotStorageObservers observers];
 
@@ -168,24 +166,44 @@ UIImage* DownsampledForStorage(UIImage* image) {
     return;
   }
 
-  // Downsample before caching so the LRU cache holds smaller images,
-  // reducing the overall memory footprint of snapshot storage.
-  UIImage* optimizedImage =
-      base::FeatureList::IsEnabled(kSnapshotDownsampleImage)
-          ? DownsampledForStorage(image)
-          : image;
-  [_lruCache setObject:optimizedImage forKey:snapshotID];
+  const uint64_t generation = ++_nextImageGeneration;
+  _imageGenerations[snapshotID] = generation;
+
+  // Keep setImage synchronous for callers. The cache is replaced with the
+  // smaller image after the file manager has downsampled it on its background
+  // task runner.
+  [_lruCache setObject:image forKey:snapshotID];
 
   base::UmaHistogramMemoryKB("IOS.Snapshots.SnapshotImageMemoryFootprint",
                              MemoryFootprintForImage(image));
 
   [self.observers didUpdateSnapshotStorageWithSnapshotID:snapshotIDWrapper];
 
-  [_fileManager writeImage:optimizedImage withSnapshotID:snapshotID];
+  __weak LegacySnapshotStorage* weakSelf = self;
+  [_fileManager writeImage:image
+            withSnapshotID:snapshotID
+                completion:base::BindOnce(^(UIImage* optimizedImage) {
+                  [weakSelf updateCacheWithOptimizedImage:optimizedImage
+                                               snapshotID:snapshotID
+                                               generation:generation];
+                })];
+}
+
+- (void)updateCacheWithOptimizedImage:(UIImage*)optimizedImage
+                           snapshotID:(SnapshotID)snapshotID
+                           generation:(uint64_t)generation {
+  auto generation_it = _imageGenerations.find(snapshotID);
+  if (generation_it == _imageGenerations.end() ||
+      generation_it->second != generation) {
+    return;
+  }
+  _imageGenerations.erase(generation_it);
+  [_lruCache setObject:optimizedImage forKey:snapshotID];
 }
 
 - (void)removeImageWithSnapshotID:(SnapshotIDWrapper*)snapshotIDWrapper {
   const SnapshotID snapshotID = snapshotIDWrapper.snapshot_id;
+  _imageGenerations.erase(snapshotID);
   [_lruCache removeObjectForKey:snapshotID];
 
   [self.observers
@@ -196,6 +214,7 @@ UIImage* DownsampledForStorage(UIImage* image) {
 }
 
 - (void)removeAllImages {
+  _imageGenerations.clear();
   [_lruCache removeAllObjects];
 
   [_fileManager removeAllImages];

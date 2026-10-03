@@ -18,6 +18,7 @@ class Time;
 }  // namespace base
 
 using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
+using ImageWriteCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 
 // A class to manage images stored in disk.
 // TODO(crbug.com/40943236): Remove this class once the new implementation
@@ -38,6 +39,13 @@ using ImageReadCompletionBlock = base::OnceCallback<void(UIImage* image)>;
 
 // Writes an image to disk.
 - (void)writeImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID;
+
+// Writes an image to disk and returns the image used for storage on the main
+// thread. If the task runner has been invalidated, no disk write is performed
+// and `completion` is invoked with the original image.
+- (void)writeImage:(UIImage*)image
+    withSnapshotID:(SnapshotID)snapshotID
+        completion:(ImageWriteCompletionBlock)completion;
 
 // Removes an image specified by `snapshotID` from disk.
 - (void)removeImageWithSnapshotID:(SnapshotID)snapshotID;
