@@ -4,6 +4,8 @@
 
 #include "device/gamepad/udev_gamepad_linux.h"
 
+#include <array>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "device/udev_linux/udev.h"
@@ -45,11 +47,11 @@ UdevGamepadLinux::UdevGamepadLinux(Type type,
 // static
 std::unique_ptr<UdevGamepadLinux> UdevGamepadLinux::Create(udev_device* dev) {
   using DeviceRootPair = std::pair<Type, const char*>;
-  static const std::vector<DeviceRootPair> device_roots = {
+  constexpr auto device_roots = std::to_array<DeviceRootPair>({
       {Type::EVDEV, "/dev/input/event"},
       {Type::JOYDEV, "/dev/input/js"},
       {Type::HIDRAW, "/dev/hidraw"},
-  };
+  });
 
   if (!dev)
     return nullptr;
