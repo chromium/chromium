@@ -6602,10 +6602,31 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
             ]),
 
             # #################################################################
+            # Cases that should produce errors (3-arg where C++ identifier
+            # matches 'k' + string literal).
+            # #################################################################
+            MockAffectedFile('error_3param.cc', [
+                'BASE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('error_3param_multiline.cc', [
+                'BASE_FEATURE(kMyToggle,', '             "MyToggle",',
+                '             base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('error_3param_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('error_3param_multiline_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(', '    kMyToggle,',
+                '    "MyToggle",', '    base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+
+            # #################################################################
             # Cases that should produce warnings.
             # #################################################################
-            MockAffectedFile('warning_3param.cc', [
-                'BASE_FEATURE(kMyToggle, "MyToggle", '
+            MockAffectedFile('warning_3param_mismatch.cc', [
+                'BASE_FEATURE(kMyToggle, "OtherToggleName", '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
             MockAffectedFile(
@@ -6615,12 +6636,12 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 'warning_lowercase_after_k.cc',
                 ['BASE_FEATURE(kmyToggle, base::FEATURE_ENABLED_BY_DEFAULT);'
                  ]),
-            MockAffectedFile('warning_3param_multiline.cc', [
-                'BASE_FEATURE(kMyToggle,', '             "MyToggle",',
+            MockAffectedFile('warning_3param_multiline_mismatch.cc', [
+                'BASE_FEATURE(kMyToggle,', '             "OtherToggleName",',
                 '             base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
-            MockAffectedFile('warning_3param_runtime_mutable.cc', [
-                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+            MockAffectedFile('warning_3param_runtime_mutable_mismatch.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "OtherToggleName", '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
             MockAffectedFile('warning_no_k_runtime_mutable.cc', [
@@ -6631,38 +6652,73 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                 'BASE_RUNTIME_MUTABLE_FEATURE(kmyToggle, '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
-            MockAffectedFile('warning_3param_multiline_runtime_mutable.cc', [
-                'BASE_RUNTIME_MUTABLE_FEATURE(', '    kMyToggle,',
-                '    "MyToggle",', '    base::FEATURE_ENABLED_BY_DEFAULT);'
-            ]),
+            MockAffectedFile(
+                'warning_3param_multiline_runtime_mutable_mismatch.cc', [
+                    'BASE_RUNTIME_MUTABLE_FEATURE(', '    kMyToggle,',
+                    '    "OtherToggleName",',
+                    '    base::FEATURE_ENABLED_BY_DEFAULT);'
+                ]),
         ]
         results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
                                                   MockOutputApi())
 
-        self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual(2, len(results))
+        self.assertEqual('error', results[0].type)
         self.assertEqual('BASE_FEATURE() macro naming:', results[0].message)
-        warnings = results[0].items
+        errors = results[0].items
+
+        expected_errors = [
+            '    error_3param.cc:1: Use of the 3-argument BASE_FEATURE and '
+            'BASE_RUNTIME_MUTABLE_FEATURE macros where the C++ identifier '
+            'matches the string literal is not allowed. Use the 2-argument '
+            'version instead.',
+            '    error_3param_multiline.cc:1: Use of the 3-argument '
+            'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros where the '
+            'C++ identifier matches the string literal is not allowed. Use '
+            'the 2-argument version instead.',
+            '    error_3param_runtime_mutable.cc:1: Use of the 3-argument '
+            'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros where the '
+            'C++ identifier matches the string literal is not allowed. Use '
+            'the 2-argument version instead.',
+            '    error_3param_multiline_runtime_mutable.cc:1: Use of the '
+            '3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros '
+            'where the C++ identifier matches the string literal is not '
+            'allowed. Use the 2-argument version instead.',
+        ]
+
+        self.maxDiff = None
+        self.assertEqual(len(expected_errors), len(errors))
+        self.assertCountEqual(expected_errors, errors)
+
+        self.assertEqual('warning', results[1].type)
+        self.assertEqual('BASE_FEATURE() macro naming:', results[1].message)
+        warnings = results[1].items
 
         expected_warnings = [
-            '    warning_3param.cc:1: Use of the 3-argument BASE_FEATURE and '
-            'BASE_RUNTIME_MUTABLE_FEATURE macros with a string literal is '
-            'discouraged. Use the 2-argument version instead.',
-            '    warning_3param_multiline.cc:1: Use of the 3-argument '
+            '    warning_3param_mismatch.cc:1: Use of the 3-argument '
             'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros with a '
-            'string literal is discouraged. Use the 2-argument version '
-            'instead.',
+            'string literal is discouraged. Prefer using an identical '
+            'spelling for the feature constant and the string literal '
+            'identifying it, and using the 2-argument version instead.',
+            '    warning_3param_multiline_mismatch.cc:1: Use of the '
+            '3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros '
+            'with a string literal is discouraged. Prefer using an identical '
+            'spelling for the feature constant and the string literal '
+            'identifying it, and using the 2-argument version instead.',
             '    warning_no_k.cc:1: Feature identifier "MyToggle" should start '
             'with "k" followed by an uppercase letter.',
             '    warning_lowercase_after_k.cc:1: Feature identifier "kmyToggle"'
             ' should start with "k" followed by an uppercase letter.',
-            '    warning_3param_runtime_mutable.cc:1: Use of the 3-argument '
-            'BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros with a '
-            'string literal is discouraged. Use the 2-argument version '
-            'instead.',
-            '    warning_3param_multiline_runtime_mutable.cc:1: Use of the '
+            '    warning_3param_runtime_mutable_mismatch.cc:1: Use of the '
             '3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE macros '
-            'with a string literal is discouraged. Use the 2-argument version '
+            'with a string literal is discouraged. Prefer using an identical '
+            'spelling for the feature constant and the string literal '
+            'identifying it, and using the 2-argument version instead.',
+            '    warning_3param_multiline_runtime_mutable_mismatch.cc:1: Use '
+            'of the 3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE '
+            'macros with a string literal is discouraged. Prefer using an '
+            'identical spelling for the feature constant and the string '
+            'literal identifying it, and using the 2-argument version '
             'instead.',
             '    warning_no_k_runtime_mutable.cc:1: Feature identifier '
             '"MyToggle" should start with "k" followed by an uppercase letter.',
@@ -6671,7 +6727,6 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
             'uppercase letter.',
         ]
 
-        self.maxDiff = None
         self.assertEqual(len(expected_warnings), len(warnings))
         self.assertCountEqual(expected_warnings, warnings)
 
@@ -6685,19 +6740,31 @@ class CheckBaseFeatureMacroTest(unittest.TestCase):
                                                   MockOutputApi())
         self.assertEqual(0, len(results))
 
-    def testBaseRuntimeMutableFeatureWarning(self):
+    def testBaseRuntimeMutableFeatureErrorAndWarning(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
-            MockAffectedFile('warning_3param_runtime_mutable.cc', [
+            MockAffectedFile('error_3param_runtime_mutable.cc', [
                 'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "MyToggle", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);'
+            ]),
+            MockAffectedFile('warning_3param_runtime_mutable.cc', [
+                'BASE_RUNTIME_MUTABLE_FEATURE(kMyToggle, "OtherToggle", '
                 'base::FEATURE_ENABLED_BY_DEFAULT);'
             ]),
         ]
         results = PRESUBMIT.CheckBaseFeatureMacro(mock_input_api,
                                                   MockOutputApi())
-        self.assertEqual(1, len(results))
-        self.assertIn('Use of the 3-argument BASE_FEATURE and BASE_RUNTIME_MUTABLE_FEATURE',
-                      results[0].items[0])
+        self.assertEqual(2, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertIn(
+            'Use of the 3-argument BASE_FEATURE and '
+            'BASE_RUNTIME_MUTABLE_FEATURE macros where the C++ identifier '
+            'matches the string literal is not allowed.', results[0].items[0])
+        self.assertEqual('warning', results[1].type)
+        self.assertIn(
+            'Use of the 3-argument BASE_FEATURE and '
+            'BASE_RUNTIME_MUTABLE_FEATURE macros with a string literal is '
+            'discouraged.', results[1].items[0])
 
 
 class CheckBaseFeatureParamMacroTest(unittest.TestCase):
@@ -6724,26 +6791,26 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
 
             # 4-arg BASE_FEATURE_PARAM with std::string default (string
             # literal is the default value, not a name).
-            MockAffectedFile(
-                'valid_string_default.cc',
-                ['BASE_FEATURE_PARAM(std::string, kMyStringParam, '
-                 '&kMyFeature, "default_value");']),
+            MockAffectedFile('valid_string_default.cc', [
+                'BASE_FEATURE_PARAM(std::string, kMyStringParam, '
+                '&kMyFeature, "default_value");'
+            ]),
 
             # 4-arg BASE_FEATURE_PARAM with a template type containing a
             # comma inside angle brackets. The regex should treat the whole
             # template as one argument.
-            MockAffectedFile(
-                'valid_template_type.cc',
-                ['BASE_FEATURE_PARAM(std::map<int, std::string>, '
-                 'kMyMapParam, &kMyFeature, {});']),
+            MockAffectedFile('valid_template_type.cc', [
+                'BASE_FEATURE_PARAM(std::map<int, std::string>, '
+                'kMyMapParam, &kMyFeature, {});'
+            ]),
 
             # 4-arg BASE_FEATURE_PARAM with a default value that is a
             # function call containing commas. The regex should treat the
             # whole call as one argument.
-            MockAffectedFile(
-                'valid_nested_call.cc',
-                ['BASE_FEATURE_PARAM(base::TimeDelta, kMyTimeParam, '
-                 '&kMyFeature, base::Seconds(30, 0));']),
+            MockAffectedFile('valid_nested_call.cc', [
+                'BASE_FEATURE_PARAM(base::TimeDelta, kMyTimeParam, '
+                '&kMyFeature, base::Seconds(30, 0));'
+            ]),
 
             # 5-arg BASE_FEATURE_ENUM_PARAM (short form, preferred).
             MockAffectedFile('valid_enum_5arg.cc', [
@@ -6758,17 +6825,18 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
             ]),
 
             # #################################################################
-            # Cases that should produce warnings.
+            # Cases that should produce errors (where C++ identifier matches
+            # 'k' + string literal).
             # #################################################################
 
-            # 5-arg BASE_FEATURE_PARAM (has explicit string name).
-            MockAffectedFile('warning_5arg_param.cc', [
+            # 5-arg BASE_FEATURE_PARAM with matching name.
+            MockAffectedFile('error_5arg_param.cc', [
                 'BASE_FEATURE_PARAM(int, kMyParam, &kMyFeature, '
                 '"MyParam", 42);',
             ]),
 
-            # 5-arg BASE_FEATURE_PARAM multiline.
-            MockAffectedFile('warning_5arg_multiline.cc', [
+            # 5-arg BASE_FEATURE_PARAM multiline with matching name.
+            MockAffectedFile('error_5arg_multiline.cc', [
                 'BASE_FEATURE_PARAM(int,',
                 '                   kMyParam,',
                 '                   &kMyFeature,',
@@ -6776,7 +6844,32 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
                 '                   42);',
             ]),
 
-            # 6-arg BASE_FEATURE_ENUM_PARAM (has explicit string name).
+            # 6-arg BASE_FEATURE_ENUM_PARAM with matching name.
+            MockAffectedFile('error_6arg_enum.cc', [
+                'BASE_FEATURE_ENUM_PARAM(MyEnum, kMyEnumParam, &kMyFeature,',
+                '    "MyEnumParam", MyEnum::kFirst, &kOptions);',
+            ]),
+
+            # #################################################################
+            # Cases that should produce warnings.
+            # #################################################################
+
+            # 5-arg BASE_FEATURE_PARAM (mismatched explicit string name).
+            MockAffectedFile('warning_5arg_param_mismatch.cc', [
+                'BASE_FEATURE_PARAM(int, kMyParam, &kMyFeature, '
+                '"my_param", 42);',
+            ]),
+
+            # 5-arg BASE_FEATURE_PARAM multiline (mismatched explicit name).
+            MockAffectedFile('warning_5arg_multiline_mismatch.cc', [
+                'BASE_FEATURE_PARAM(int,',
+                '                   kMyParam,',
+                '                   &kMyFeature,',
+                '                   "my_param",',
+                '                   42);',
+            ]),
+
+            # 6-arg BASE_FEATURE_ENUM_PARAM (mismatched explicit string name).
             MockAffectedFile('warning_6arg_enum.cc', [
                 'BASE_FEATURE_ENUM_PARAM(MyEnum, kMyEnumParam, &kMyFeature,',
                 '    "my_enum_param", MyEnum::kFirst, &kOptions);',
@@ -6801,23 +6894,51 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
         results = PRESUBMIT.CheckBaseFeatureParamMacro(mock_input_api,
                                                        MockOutputApi())
 
-        self.assertEqual(1, len(results))
-        self.assertEqual('warning', results[0].type)
+        self.assertEqual(2, len(results))
+        self.assertEqual('error', results[0].type)
         self.assertEqual(
             'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
             results[0].message)
-        warnings = results[0].items
+        errors = results[0].items
+
+        expected_errors = [
+            '    error_5arg_param.cc:1: The 5-argument BASE_FEATURE_PARAM '
+            'macro where the C++ identifier matches the string literal is not '
+            'allowed. Use the 4-argument version instead.',
+            '    error_5arg_multiline.cc:1: The 5-argument BASE_FEATURE_PARAM '
+            'macro where the C++ identifier matches the string literal is not '
+            'allowed. Use the 4-argument version instead.',
+            '    error_6arg_enum.cc:1: The 6-argument BASE_FEATURE_ENUM_PARAM '
+            'macro where the C++ identifier matches the string literal is not '
+            'allowed. Use the 5-argument version instead.',
+        ]
+
+        self.maxDiff = None
+        self.assertEqual(len(expected_errors), len(errors))
+        self.assertCountEqual(expected_errors, errors)
+
+        self.assertEqual('warning', results[1].type)
+        self.assertEqual(
+            'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
+            results[1].message)
+        warnings = results[1].items
 
         expected_warnings = [
-            '    warning_5arg_param.cc:1: The 5-argument BASE_FEATURE_PARAM '
-            'macro with a string literal name is discouraged. Use the '
-            '4-argument version instead.',
-            '    warning_5arg_multiline.cc:1: The 5-argument '
+            '    warning_5arg_param_mismatch.cc:1: The 5-argument '
             'BASE_FEATURE_PARAM macro with a string literal name is '
-            'discouraged. Use the 4-argument version instead.',
+            'discouraged. Prefer using an identical spelling for the param '
+            'constant and the string literal identifying it, and using the '
+            '4-argument version instead.',
+            '    warning_5arg_multiline_mismatch.cc:1: The 5-argument '
+            'BASE_FEATURE_PARAM macro with a string literal name is '
+            'discouraged. Prefer using an identical spelling for the param '
+            'constant and the string literal identifying it, and using the '
+            '4-argument version instead.',
             '    warning_6arg_enum.cc:1: The 6-argument '
             'BASE_FEATURE_ENUM_PARAM macro with a string literal name is '
-            'discouraged. Use the 5-argument version instead.',
+            'discouraged. Prefer using an identical spelling for the param '
+            'constant and the string literal identifying it, and using the '
+            '5-argument version instead.',
             '    warning_no_k.cc:1: Feature param identifier "MyParam" should '
             'start with "k" followed by an uppercase letter.',
             '    warning_lowercase.cc:1: Feature param identifier "kmyParam" '
@@ -6840,9 +6961,13 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
                                                        MockOutputApi())
         self.assertEqual(0, len(results))
 
-    def testEnumParamWarning(self):
+    def testEnumParamErrorAndWarning(self):
         mock_input_api = MockInputApi()
         mock_input_api.files = [
+            MockAffectedFile('error_6arg_enum.cc', [
+                'BASE_FEATURE_ENUM_PARAM(MyEnum, kMyEnumParam, &kMyFeature,',
+                '    "MyEnumParam", MyEnum::kFirst, &kOptions);',
+            ]),
             MockAffectedFile('warning_6arg_enum.cc', [
                 'BASE_FEATURE_ENUM_PARAM(MyEnum, kMyEnumParam, &kMyFeature,',
                 '    "my_enum_param", MyEnum::kFirst, &kOptions);',
@@ -6850,9 +6975,16 @@ class CheckBaseFeatureParamMacroTest(unittest.TestCase):
         ]
         results = PRESUBMIT.CheckBaseFeatureParamMacro(mock_input_api,
                                                        MockOutputApi())
-        self.assertEqual(1, len(results))
-        self.assertIn('The 6-argument BASE_FEATURE_ENUM_PARAM macro',
-                      results[0].items[0])
+        self.assertEqual(2, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertIn(
+            'The 6-argument BASE_FEATURE_ENUM_PARAM macro where the C++ '
+            'identifier matches the string literal is not allowed.',
+            results[0].items[0])
+        self.assertEqual('warning', results[1].type)
+        self.assertIn(
+            'The 6-argument BASE_FEATURE_ENUM_PARAM macro with a string '
+            'literal name is discouraged.', results[1].items[0])
 
 
 class CheckNoMojomDataViewIncludesTest(unittest.TestCase):

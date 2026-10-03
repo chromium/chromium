@@ -8450,6 +8450,7 @@ def CheckBaseFeatureMacro(input_api, output_api):
         return []
     pattern = input_api.re.compile(
         r'\bBASE_(?:RUNTIME_MUTABLE_)?FEATURE\s*\(\s*([^,]+)\s*,\s*([^,)]+)')
+    errors = []
     warnings = []
 
     for f in input_api.AffectedFiles():
@@ -8487,11 +8488,22 @@ def CheckBaseFeatureMacro(input_api, output_api):
             param2 = match.group(2).strip()
 
             if param2.startswith('"') and param2.endswith('"'):
-                warnings.append(
-                    '    %s:%d: Use of the 3-argument BASE_FEATURE and '
-                    'BASE_RUNTIME_MUTABLE_FEATURE macros with a '
-                    'string literal is discouraged. Use the 2-argument '
-                    'version instead.' % (f.LocalPath(), start_line))
+                if param1 == 'k' + param2[1:-1]:
+                    errors.append(
+                        '    %s:%d: Use of the 3-argument BASE_FEATURE and '
+                        'BASE_RUNTIME_MUTABLE_FEATURE macros where the C++ '
+                        'identifier matches the string literal is not allowed. '
+                        'Use the 2-argument version instead.' %
+                        (f.LocalPath(), start_line))
+                else:
+                    warnings.append(
+                        '    %s:%d: Use of the 3-argument BASE_FEATURE and '
+                        'BASE_RUNTIME_MUTABLE_FEATURE macros with a '
+                        'string literal is discouraged. Prefer using an '
+                        'identical spelling for the feature constant and the '
+                        'string literal identifying it, and using the '
+                        '2-argument version instead.' %
+                        (f.LocalPath(), start_line))
 
             if not input_api.re.match(r'^k[A-Z]', param1):
                 warnings.append(
@@ -8499,13 +8511,15 @@ def CheckBaseFeatureMacro(input_api, output_api):
                     'followed by an uppercase letter.' %
                     (f.LocalPath(), start_line, param1))
 
-    if not warnings:
-        return []
-
-    return [
-        output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
-                                          warnings)
-    ]
+    results = []
+    if errors:
+        results.append(
+            output_api.PresubmitError('BASE_FEATURE() macro naming:', errors))
+    if warnings:
+        results.append(
+            output_api.PresubmitPromptWarning('BASE_FEATURE() macro naming:',
+                                              warnings))
+    return results
 
 
 def CheckBaseFeatureParamMacro(input_api, output_api):
@@ -8531,7 +8545,7 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
     # The 4th arg is a string literal followed by a comma (discouraged form).
     param_5_args_re = input_api.re.compile(
         r'\bBASE_FEATURE_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
-        r'\s*' + quote_str + r'\s*,(?:[^;"]|' + quote_str + r')*?\);',
+        r'\s*(' + quote_str + r')\s*,(?:[^;"]|' + quote_str + r')*?\);',
         input_api.re.MULTILINE | input_api.re.DOTALL)
 
     # 4-arg BASE_FEATURE_PARAM(type, kVar, &feature, default);
@@ -8545,7 +8559,7 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
     # &opts); The 4th arg is a string literal (discouraged form).
     enum_param_6_args_re = input_api.re.compile(
         r'\bBASE_FEATURE_ENUM_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
-        r'\s*' + quote_str + r'\s*,' + arg + r',(?:[^;"]|' + quote_str +
+        r'\s*(' + quote_str + r')\s*,' + arg + r',(?:[^;"]|' + quote_str +
         r')*?\);', input_api.re.MULTILINE | input_api.re.DOTALL)
 
     # 5-arg BASE_FEATURE_ENUM_PARAM(type, kVar, &feature, default, &opts);
@@ -8555,10 +8569,16 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
         r'\s*(?!' + quote_str + r'\s*,)' + arg + r',(?:[^;"]|' + quote_str +
         r')*?\);', input_api.re.MULTILINE | input_api.re.DOTALL)
 
+    errors = []
     warnings = []
 
-    def _check_matches(f, contents, lines, changed_line_numbers, regex,
-                       discouraged_msg):
+    def _check_matches(f,
+                       contents,
+                       lines,
+                       changed_line_numbers,
+                       regex,
+                       error_msg=None,
+                       discouraged_msg=None):
         for match in regex.finditer(contents):
             start_line = contents.count('\n', 0, match.start()) + 1
             end_line = contents.count('\n', 0, match.end()) + 1
@@ -8573,8 +8593,14 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
             identifier = match.group(1).strip()
 
             if discouraged_msg:
-                warnings.append('    %s:%d: %s' %
-                                (f.LocalPath(), start_line, discouraged_msg))
+                param_name = match.group(2).strip()
+                if identifier == 'k' + param_name[1:-1]:
+                    errors.append('    %s:%d: %s' %
+                                  (f.LocalPath(), start_line, error_msg))
+                else:
+                    warnings.append(
+                        '    %s:%d: %s' %
+                        (f.LocalPath(), start_line, discouraged_msg))
 
             if not input_api.re.match(r'^k[A-Z]', identifier):
                 warnings.append(
@@ -8601,26 +8627,40 @@ def CheckBaseFeatureParamMacro(input_api, output_api):
 
         _check_matches(
             f, contents, lines, changed_line_numbers, param_5_args_re,
-            'The 5-argument BASE_FEATURE_PARAM macro with a string literal '
-            'name is discouraged. Use the 4-argument version instead.')
+            'The 5-argument BASE_FEATURE_PARAM macro where the C++ '
+            'identifier matches the string literal is not allowed. '
+            'Use the 4-argument version instead.',
+            'The 5-argument BASE_FEATURE_PARAM macro with a string '
+            'literal name is discouraged. Prefer using an identical '
+            'spelling for the param constant and the string literal '
+            'identifying it, and using the 4-argument version instead.')
         _check_matches(f, contents, lines, changed_line_numbers,
-                       param_4_args_re, None)
+                       param_4_args_re)
         _check_matches(
             f, contents, lines, changed_line_numbers, enum_param_6_args_re,
-            'The 6-argument BASE_FEATURE_ENUM_PARAM macro with a string '
-            'literal name is discouraged. Use the 5-argument version '
+            'The 6-argument BASE_FEATURE_ENUM_PARAM macro where the '
+            'C++ identifier matches the string literal is not '
+            'allowed. Use the 5-argument version instead.',
+            'The 6-argument BASE_FEATURE_ENUM_PARAM macro with a '
+            'string literal name is discouraged. Prefer using an '
+            'identical spelling for the param constant and the string '
+            'literal identifying it, and using the 5-argument version '
             'instead.')
         _check_matches(f, contents, lines, changed_line_numbers,
-                       enum_param_5_args_re, None)
+                       enum_param_5_args_re)
 
-    if not warnings:
-        return []
-
-    return [
-        output_api.PresubmitPromptWarning(
-            'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
-            warnings)
-    ]
+    results = []
+    if errors:
+        results.append(
+            output_api.PresubmitError(
+                'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
+                errors))
+    if warnings:
+        results.append(
+            output_api.PresubmitPromptWarning(
+                'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
+                warnings))
+    return results
 
 
 def CheckTestFileNamesOnUpload(input_api, output_api):
