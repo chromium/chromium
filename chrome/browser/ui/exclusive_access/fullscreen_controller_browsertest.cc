@@ -681,3 +681,51 @@ IN_PROC_BROWSER_TEST_F(
                    ->keyboard_lock_controller()
                    ->IsKeyboardLockActive());
 }
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
+                       ExitTabFullscreenAndUnlockKeyboardOnPressAndHoldEsc) {
+  // Enter tab fullscreen only. Then request keyboard lock with Esc locked.
+  GetFullscreenController()->EnterFullscreenModeForTab(
+      browser()
+          ->GetTabStripModel()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame(),
+      {});
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/false,
+                               /*tab_fullscreen=*/true);
+  ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
+
+  // Short-press Esc key will not do anything.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  EXPECT_TRUE(IsWindowFullscreenForTabOrPending());
+  EXPECT_FALSE(IsFullscreenForBrowser());
+  ASSERT_TRUE(GetExclusiveAccessManager()
+                  ->keyboard_lock_controller()
+                  ->IsKeyboardLockActive());
+
+  // Press-and-hold Esc key will exit tab fullscreen and unlock the keyboard.
+  // Only a single key down event is sent on purpose: no auto-repeat key down
+  // or key up follows, so the exit must be triggered by the hold timer itself.
+  {
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
+    SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+    task_runner()->FastForwardBy(base::Seconds(2));
+  }
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/false,
+                               /*tab_fullscreen=*/false);
+  EXPECT_FALSE(IsFullscreenForBrowser());
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->keyboard_lock_controller()
+                   ->IsKeyboardLockActive());
+
+  // The eventual Esc key up must not change the state.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  WaitAndVerifyFullscreenState(/*browser_fullscreen=*/false,
+                               /*tab_fullscreen=*/false);
+  EXPECT_FALSE(IsWindowFullscreenForTabOrPending());
+  EXPECT_FALSE(IsFullscreenForBrowser());
+  EXPECT_FALSE(GetExclusiveAccessManager()
+                   ->keyboard_lock_controller()
+                   ->IsKeyboardLockActive());
+}
