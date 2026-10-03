@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -25,8 +26,9 @@ const uint16_t kProductSwitchChargingGrip = 0x200e;
 const size_t kSwitchProMaxOutputReportSizeBytesUsb = 63;
 const size_t kSwitchProMaxOutputReportSizeBytesBluetooth = 48;
 
-// Input report size.
+// Input report sizes.
 const size_t kMaxInputReportSizeBytes = 64;
+const size_t kInputReport30SizeBytesBluetooth = 48;
 
 // Device name for a composite Joy-Con device.
 const char kProductNameSwitchCompositeDevice[] = "Joy-Con L+R";
@@ -268,8 +270,34 @@ struct ControllerDataReport {
 static_assert(sizeof(ControllerDataReport) == kMaxInputReportSizeBytes - 1,
               "ControllerDataReport has incorrect size");
 
+// Over Bluetooth, reports with ID 0x30 contain controller data and IMU data
+// without trailing USB padding.
+#pragma pack(push, 1)
+struct ControllerDataReportBluetooth {
+  ControllerData controller_data;  // 12 bytes
+  uint8_t imu_data[36];
+};
+#pragma pack(pop)
+static_assert(sizeof(ControllerDataReportBluetooth) ==
+                  kInputReport30SizeBytesBluetooth,
+              "ControllerDataReportBluetooth has incorrect size");
+
 // Responses to SPI read requests are sent in reports with ID 0x21. These
 // reports also include controller data.
+#pragma pack(push, 1)
+struct SpiReadReportHeader {
+  ControllerData controller_data;  // 12 bytes
+  uint8_t subcommand_ack;          // 0x90
+  uint8_t subcommand;              // 0x10
+  uint8_t addrl;
+  uint8_t addrh;
+  uint8_t padding[2];  // 0x00 0x00
+  uint8_t length;
+};
+#pragma pack(pop)
+static_assert(sizeof(SpiReadReportHeader) == 19,
+              "SpiReadReportHeader has incorrect size");
+
 #pragma pack(push, 1)
 struct SpiReadReport {
   ControllerData controller_data;  // 12 bytes
@@ -284,6 +312,8 @@ struct SpiReadReport {
 #pragma pack(pop)
 static_assert(sizeof(SpiReadReport) == kMaxInputReportSizeBytes - 1,
               "SpiReadReport has incorrect size");
+static_assert(offsetof(SpiReadReport, spi_data) == sizeof(SpiReadReportHeader),
+              "SpiReadReportHeader layout does not match SpiReadReport");
 
 // Unpack two packed 12-bit values.
 void UnpackShorts(uint8_t byte0,
@@ -311,8 +341,11 @@ uint64_t UnpackSwitchMacAddress(base::span<const uint8_t, 6> data) {
 
 // Unpack the analog stick parameters into |cal|.
 void UnpackSwitchAnalogStickParameters(
-    base::span<const uint8_t, kSpiDataLength> data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
+  if (data.size() < kSpiAnalogStickParametersSize) {
+    return;
+  }
   // Only fetch the dead zone and range ratio. The other parameters are unknown.
   UnpackShorts(data[3], data[4], data[5], &cal.dead_zone, &cal.range_ratio);
   if (cal.dead_zone == kCalBogusValue) {
@@ -324,8 +357,11 @@ void UnpackSwitchAnalogStickParameters(
 
 // Unpack the IMU calibration data into |cal|
 void UnpackSwitchImuCalibration(
-    base::span<const uint8_t, kSpiDataLength> data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
+  if (data.size() < kSpiImuCalibrationSize) {
+    return;
+  }
   // 24 bytes, as 4 groups of 3 16-bit little-endian values.
   cal.accelerometer_origin_x = (data[1] << 8) | data[0];
   cal.accelerometer_origin_y = (data[3] << 8) | data[2];
@@ -343,8 +379,11 @@ void UnpackSwitchImuCalibration(
 
 // Unpack the IMU horizontal offsets into |cal|.
 void UnpackSwitchImuHorizontalOffsets(
-    base::span<const uint8_t, kSpiDataLength> data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
+  if (data.size() < kSpiImuHorizontalOffsetsSize) {
+    return;
+  }
   // 6 bytes, as 3 16-bit little-endian values.
   cal.horizontal_offset_x = (data[1] << 8) | data[0];
   cal.horizontal_offset_y = (data[3] << 8) | data[2];
@@ -353,8 +392,11 @@ void UnpackSwitchImuHorizontalOffsets(
 
 // Unpack the analog stick calibration data into |cal|.
 void UnpackSwitchAnalogStickCalibration(
-    base::span<const uint8_t, kSpiDataLength> data,
+    base::span<const uint8_t> data,
     NintendoController::SwitchCalibrationData& cal) {
+  if (data.size() < kSpiAnalogStickCalibrationSize) {
+    return;
+  }
   // 18 bytes, as 2 groups of 6 packed 12-bit values.
   UnpackShorts(data[0], data[1], data[2], &cal.lx_max, &cal.ly_max);
   UnpackShorts(data[3], data[4], data[5], &cal.lx_center, &cal.ly_center);
@@ -1349,11 +1391,16 @@ void NintendoController::HandleUsbInputReport81(
 
 void NintendoController::HandleInputReport21(
     const std::vector<uint8_t>& report_bytes) {
-  if (report_bytes.size() < sizeof(SpiReadReport)) {
+  const size_t min_report_size = (bus_type_ == GAMEPAD_BUS_BLUETOOTH)
+                                     ? sizeof(SpiReadReportHeader)
+                                     : sizeof(SpiReadReport);
+  if (report_bytes.size() < min_report_size) {
     return;
   }
-  const auto* spi_report =
-      UNSAFE_TODO(reinterpret_cast<const SpiReadReport*>(report_bytes.data()));
+  // SAFETY: report_bytes is verified to contain at least min_report_size bytes
+  // above.
+  const auto* spi_report = UNSAFE_BUFFERS(
+      reinterpret_cast<const SpiReadReportHeader*>(report_bytes.data()));
   if (UpdateGamepadFromControllerData(spi_report->controller_data, cal_data_,
                                       pad_)) {
     pad_.timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();
@@ -1362,19 +1409,26 @@ void NintendoController::HandleInputReport21(
   // with the data that was read. Use the read address to determine how to
   // unpack the data.
   if (spi_report->subcommand == kSubCommandReadSpi) {
+    if (report_bytes.size() <
+        sizeof(SpiReadReportHeader) + spi_report->length) {
+      return;
+    }
+    base::span<const uint8_t> spi_data =
+        base::span(report_bytes)
+            .subspan(sizeof(SpiReadReportHeader), spi_report->length);
     uint16_t address = (spi_report->addrh << 8) | spi_report->addrl;
     switch (address) {
       case kSpiImuCalibrationAddress:
-        UnpackSwitchImuCalibration(spi_report->spi_data, cal_data_);
+        UnpackSwitchImuCalibration(spi_data, cal_data_);
         break;
       case kSpiImuHorizontalOffsetsAddress:
-        UnpackSwitchImuHorizontalOffsets(spi_report->spi_data, cal_data_);
+        UnpackSwitchImuHorizontalOffsets(spi_data, cal_data_);
         break;
       case kSpiAnalogStickCalibrationAddress:
-        UnpackSwitchAnalogStickCalibration(spi_report->spi_data, cal_data_);
+        UnpackSwitchAnalogStickCalibration(spi_data, cal_data_);
         break;
       case kSpiAnalogStickParametersAddress:
-        UnpackSwitchAnalogStickParameters(spi_report->spi_data, cal_data_);
+        UnpackSwitchAnalogStickParameters(spi_data, cal_data_);
         break;
       default:
         break;
@@ -1384,11 +1438,18 @@ void NintendoController::HandleInputReport21(
 
 void NintendoController::HandleInputReport30(
     const std::vector<uint8_t>& report_bytes) {
-  if (report_bytes.size() < sizeof(ControllerDataReport)) {
+  const size_t min_report_size = (bus_type_ == GAMEPAD_BUS_BLUETOOTH)
+                                     ? sizeof(ControllerDataReportBluetooth)
+                                     : sizeof(ControllerDataReport);
+  if (report_bytes.size() < min_report_size) {
     return;
   }
-  const auto* controller_report = UNSAFE_TODO(
-      reinterpret_cast<const ControllerDataReport*>(report_bytes.data()));
+  // SAFETY: report_bytes is verified to contain at least min_report_size
+  // (sizeof(ControllerDataReportBluetooth) or sizeof(ControllerDataReport))
+  // bytes above.
+  const auto* controller_report =
+      UNSAFE_BUFFERS(reinterpret_cast<const ControllerDataReportBluetooth*>(
+          report_bytes.data()));
   // Each input report contains three frames of IMU data.
   UnpackSwitchImuData(base::span(controller_report->imu_data).subspan<0, 12>(),
                       &imu_data_[0]);
@@ -1405,23 +1466,52 @@ void NintendoController::HandleInputReport30(
 void NintendoController::ContinueInitSequence(
     uint8_t report_id,
     const std::vector<uint8_t>& report_bytes) {
-  if (report_bytes.size() < sizeof(UsbInputReport81) ||
-      report_bytes.size() < sizeof(SpiReadReport)) {
+  uint8_t ack_subtype = 0;
+  uint8_t spi_subcommand = 0;
+  bool is_spi_read = false;
+  uint16_t spi_read_address = 0;
+  uint16_t spi_read_length = 0;
+
+  if (report_id == kUsbReportIdInput81) {
+    if (report_bytes.size() < sizeof(UsbInputReport81)) {
+      return;
+    }
+    // SAFETY: report_bytes is verified to contain at least
+    // sizeof(UsbInputReport81) bytes above.
+    const auto* ack_report = UNSAFE_BUFFERS(
+        reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
+    ack_subtype = ack_report->subtype;
+  } else if (report_id == kReportIdInput21) {
+    const size_t min_report_size = (bus_type_ == GAMEPAD_BUS_BLUETOOTH)
+                                       ? sizeof(SpiReadReportHeader)
+                                       : sizeof(SpiReadReport);
+    if (report_bytes.size() < min_report_size) {
+      return;
+    }
+    // SAFETY: report_bytes is verified to contain at least min_report_size
+    // bytes above.
+    const auto* spi_report = UNSAFE_BUFFERS(
+        reinterpret_cast<const SpiReadReportHeader*>(report_bytes.data()));
+    spi_subcommand = spi_report->subcommand;
+    is_spi_read = (spi_subcommand == kSubCommandReadSpi);
+    if (is_spi_read) {
+      if (report_bytes.size() <
+          sizeof(SpiReadReportHeader) + spi_report->length) {
+        return;
+      }
+      spi_read_address = (spi_report->addrh << 8) | spi_report->addrl;
+      spi_read_length = spi_report->length;
+    }
+  } else if (report_id == kReportIdInput30) {
+    const size_t min_report_size = (bus_type_ == GAMEPAD_BUS_BLUETOOTH)
+                                       ? sizeof(ControllerDataReportBluetooth)
+                                       : sizeof(ControllerDataReport);
+    if (report_bytes.size() < min_report_size) {
+      return;
+    }
+  } else {
     return;
   }
-  const auto* ack_report = UNSAFE_TODO(
-      reinterpret_cast<const UsbInputReport81*>(report_bytes.data()));
-  const auto* spi_report =
-      UNSAFE_TODO(reinterpret_cast<const SpiReadReport*>(report_bytes.data()));
-  const uint8_t ack_subtype =
-      (report_id == kUsbReportIdInput81) ? ack_report->subtype : 0;
-  const uint8_t spi_subcommand =
-      (report_id == kReportIdInput21) ? spi_report->subcommand : 0;
-  const bool is_spi_read =
-      (report_id == kReportIdInput21 && spi_subcommand == kSubCommandReadSpi);
-  const uint16_t spi_read_address =
-      is_spi_read ? ((spi_report->addrh << 8) | spi_report->addrl) : 0;
-  const uint16_t spi_read_length = is_spi_read ? spi_report->length : 0;
 
   switch (state_) {
     case kPendingMacAddress:
