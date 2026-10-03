@@ -4845,6 +4845,21 @@
             ]
         }
     ],
+    "ClientSideDetectionServerModelForScamDetectionIos": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionServerModelForScamDetectionIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClipboardDeemphasisAndroid": [
         {
             "platforms": [
