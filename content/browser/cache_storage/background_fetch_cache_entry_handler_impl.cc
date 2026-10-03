@@ -4,6 +4,8 @@
 
 #include "content/browser/cache_storage/background_fetch_cache_entry_handler_impl.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 
@@ -37,7 +39,9 @@ BackgroundFetchCacheEntryHandlerImpl::CreatePutContext(
 
   return std::make_unique<PutContext>(
       std::move(request), std::move(response), std::move(response_blob),
-      response_blob_size, std::move(request_blob), request_blob_size, trace_id);
+      response_blob_size, std::move(request_blob),
+      /*side_data_blob_size=*/request_blob_size,
+      /*side_data_buffer=*/std::nullopt, trace_id);
 }
 
 void BackgroundFetchCacheEntryHandlerImpl::PopulateResponseBody(

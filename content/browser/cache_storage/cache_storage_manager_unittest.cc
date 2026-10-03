@@ -690,7 +690,7 @@ class CacheStorageManagerTest : public testing::Test {
         /*cache_storage_cache_name=*/std::string(),
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
-        /*side_data_blob_for_cache_put=*/nullptr,
+        /*side_data_for_cache_put=*/std::nullopt,
         network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,

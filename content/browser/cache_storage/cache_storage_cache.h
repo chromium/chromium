@@ -461,6 +461,11 @@ class CONTENT_EXPORT CacheStorageCache {
                           int rv);
   void PutWriteBlobToCache(std::unique_ptr<PutContext> put_context,
                            int disk_cache_body_index);
+  void PutDidWriteSideDataToCache(std::unique_ptr<PutContext> put_context,
+                                  int disk_cache_body_index,
+                                  ScopedWritableEntry entry,
+                                  base::ByteSize expected_bytes,
+                                  int rv);
   void PutDidWriteBlobToCache(std::unique_ptr<PutContext> put_context,
                               BlobToDiskCacheIDMap::KeyType blob_to_cache_key,
                               int disk_cache_body_index,

@@ -250,6 +250,7 @@ PutContext::PutContext(blink::mojom::FetchAPIRequestPtr request,
                        uint64_t blob_size,
                        mojo::PendingRemote<blink::mojom::Blob> side_data_blob,
                        uint64_t side_data_blob_size,
+                       std::optional<mojo_base::BigBuffer> side_data_buffer,
                        int64_t trace_id)
     : request(std::move(request)),
       response(std::move(response)),
@@ -257,7 +258,10 @@ PutContext::PutContext(blink::mojom::FetchAPIRequestPtr request,
       blob_size(blob_size),
       side_data_blob(std::move(side_data_blob)),
       side_data_blob_size(side_data_blob_size),
-      trace_id(trace_id) {}
+      side_data_buffer(std::move(side_data_buffer)),
+      trace_id(trace_id) {
+  CHECK(!(this->side_data_blob && this->side_data_buffer));
+}
 
 PutContext::~PutContext() = default;
 
@@ -276,21 +280,22 @@ class CacheStorageCacheEntryHandlerImpl : public CacheStorageCacheEntryHandler {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     mojo::PendingRemote<blink::mojom::Blob> blob;
     uint64_t blob_size = blink::BlobUtils::kUnknownSize;
-    mojo::PendingRemote<blink::mojom::Blob> side_data_blob;
-    uint64_t side_data_blob_size = blink::BlobUtils::kUnknownSize;
+    std::optional<mojo_base::BigBuffer> side_data_buffer;
 
     if (response->blob) {
       blob = std::move(response->blob->blob);
       blob_size = response->blob->size;
     }
-    if (response->side_data_blob_for_cache_put) {
-      side_data_blob = std::move(response->side_data_blob_for_cache_put->blob);
-      side_data_blob_size = response->side_data_blob_for_cache_put->size;
+    if (response->side_data_for_cache_put) {
+      side_data_buffer = std::move(response->side_data_for_cache_put);
+      response->side_data_for_cache_put.reset();
     }
 
     return std::make_unique<PutContext>(
         std::move(request), std::move(response), std::move(blob), blob_size,
-        std::move(side_data_blob), side_data_blob_size, trace_id);
+        mojo::NullRemote(),
+        /*side_data_blob_size=*/blink::BlobUtils::kUnknownSize,
+        std::move(side_data_buffer), trace_id);
   }
 
   void PopulateResponseBody(scoped_refptr<DiskCacheBlobEntry> blob_entry,

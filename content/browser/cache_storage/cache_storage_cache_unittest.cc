@@ -53,6 +53,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -552,7 +553,7 @@ std::string CopySideData(blink::mojom::Blob* actual_blob) {
   actual_blob->ReadSideData(base::BindLambdaForTesting(
       [&](const std::optional<mojo_base::BigBuffer> data) {
         if (data)
-          output.append(base::as_string_view(data->byte_span()));
+          output.append(base::as_string_view(base::span(*data)));
         loop.Quit();
       }));
   loop.Run();
@@ -895,7 +896,7 @@ class CacheStorageCacheTest : public testing::Test {
         response_time_, /*cache_storage_cache_name=*/std::string(),
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
-        /*side_data_blob_cache_put=*/nullptr,
+        /*side_data_for_cache_put=*/std::nullopt,
         network::mojom::ParsedHeaders::New(), net::HttpConnectionInfo::kUNKNOWN,
         /*alpn_negotiated_protocol=*/"unknown",
         /*was_fetched_via_spdy=*/false, /*has_range_requested=*/false,
@@ -904,16 +905,10 @@ class CacheStorageCacheTest : public testing::Test {
         /*timing_allow_passed=*/true);
   }
 
-  void CopySideDataToResponse(const std::string& uuid,
-                              const std::string& data,
+  void CopySideDataToResponse(const std::string& data,
                               blink::mojom::FetchAPIResponse* response) {
-    auto& blob = response->side_data_blob_for_cache_put;
-    blob = blink::mojom::SerializedBlob::New();
-    blob->uuid = uuid;
-    blob->size = data.size();
-    blob_storage_context_->context()->RegisterFromMemory(
-        blob->blob.InitWithNewPipeAndPassReceiver(), uuid,
-        base::as_byte_span(data));
+    response->side_data_for_cache_put =
+        mojo_base::BigBuffer(base::as_byte_span(data));
   }
 
   blink::mojom::FetchAPIRequestPtr CopyFetchRequest(
@@ -2179,9 +2174,9 @@ TEST_P(CacheStorageCacheTestP, PutResponseType) {
 TEST_P(CacheStorageCacheTestP, PutWithSideData) {
   blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
 
-  const std::string expected_side_data = "SideData";
-  CopySideDataToResponse("blob-id:mysideblob", expected_side_data,
-                         response.get());
+  const std::string expected_side_data(
+      mojo_base::BigBuffer::kMaxInlineBytes + 1, 'x');
+  CopySideDataToResponse(expected_side_data, response.get());
   EXPECT_TRUE(Put(body_request_, std::move(response)));
 
   EXPECT_TRUE(Match(body_request_));
@@ -2199,8 +2194,7 @@ TEST_P(CacheStorageCacheTestP, PutWithSideData_QuotaExceeded) {
       cache_->GetRequiredSafeSpaceForResponse(response);
   SetQuota(uint64_t{safe_expected_entry_size.ValueOrDie()} - 1);
   const std::string expected_side_data = "SideData";
-  CopySideDataToResponse("blob-id:mysideblob", expected_side_data,
-                         response.get());
+  CopySideDataToResponse(expected_side_data, response.get());
   // When the available space is not enough for the body, Put operation must
   // fail.
   EXPECT_FALSE(Put(body_request_, std::move(response)));
@@ -2214,8 +2208,7 @@ TEST_P(CacheStorageCacheTestP, PutWithSideData_QuotaExceededSkipSideData) {
       cache_->GetRequiredSafeSpaceForResponse(response);
   SetQuota(safe_expected_entry_size.ValueOrDie());
   const std::string expected_side_data = "SideData";
-  CopySideDataToResponse("blob-id:mysideblob", expected_side_data,
-                         response.get());
+  CopySideDataToResponse(expected_side_data, response.get());
   // When the available space is enough for the body but not enough for the side
   // data, Put operation must succeed.
   EXPECT_TRUE(Put(body_request_, std::move(response)));
@@ -2227,34 +2220,6 @@ TEST_P(CacheStorageCacheTestP, PutWithSideData_QuotaExceededSkipSideData) {
   EXPECT_EQ(expected_blob_data_, storage::BlobToString(blob.get()));
   // The side data should not be written.
   EXPECT_EQ("", CopySideData(blob.get()));
-}
-
-TEST_P(CacheStorageCacheTestP, PutWithSideData_BadMessage) {
-  base::HistogramTester histogram_tester;
-  blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
-
-  const std::string expected_side_data = "SideData";
-  CopySideDataToResponse("blob-id:mysideblob", expected_side_data,
-                         response.get());
-
-  blink::mojom::BatchOperationPtr operation =
-      blink::mojom::BatchOperation::New();
-  operation->operation_type = blink::mojom::OperationType::kPut;
-  operation->request = BackgroundFetchSettledFetch::CloneRequest(body_request_);
-  operation->response = std::move(response);
-  operation->response->side_data_blob_for_cache_put->size =
-      std::numeric_limits<uint64_t>::max();
-
-  std::vector<blink::mojom::BatchOperationPtr> operations;
-  operations.emplace_back(std::move(operation));
-  EXPECT_EQ(CacheStorageError::kErrorStorage,
-            BatchOperation(std::move(operations)));
-  histogram_tester.ExpectBucketCount(
-      "ServiceWorkerCache.ErrorStorageType",
-      ErrorStorageType::kBatchDidGetUsageAndQuotaInvalidSpace, 1);
-  EXPECT_EQ("CSDH_UNEXPECTED_OPERATION", bad_message_reason_);
-
-  EXPECT_FALSE(Match(body_request_));
 }
 
 TEST_P(CacheStorageCacheTestP, WriteSideData) {

@@ -4,6 +4,8 @@
 
 #include "content/common/background_fetch/background_fetch_types.h"
 
+#include <optional>
+
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom.h"
 
@@ -38,7 +40,9 @@ blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
       response->response_time, response->cache_storage_cache_name,
       response->cors_exposed_header_names,
       CloneSerializedBlob(response->side_data_blob),
-      CloneSerializedBlob(response->side_data_blob_for_cache_put),
+      response->side_data_for_cache_put
+          ? std::make_optional(response->side_data_for_cache_put->Clone())
+          : std::nullopt,
       mojo::Clone(response->parsed_headers), response->connection_info,
       response->alpn_negotiated_protocol, response->was_fetched_via_spdy,
       response->has_range_requested, response->auth_challenge_info,

@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/auth.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
@@ -79,9 +80,8 @@ struct FetchAPIResponse {
   SerializedBlob? side_data_blob;
 
   // Used to pass code cache for a response that is being newly stored in
-  // cache_storage.  This blob is created from a memory buffer in the renderer
-  // and the code cache is contained in the primary data stream of the blob.
-  SerializedBlob? side_data_blob_for_cache_put;
+  // cache_storage.
+  mojo_base.mojom.BigBuffer? side_data_for_cache_put;
 
   // A set of parsed headers for clients that can't do the parsing themselves,
   // because they aren't sandboxed (e.g. the browser process). This is the
