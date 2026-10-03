@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_flags.h"
@@ -376,7 +377,8 @@ class CORE_EXPORT InvalidationSet
     void SetIsHashSet(Flags& flags) { flags.bits_ |= GetMask(); }
 
     AtomicString string_{};
-    HashSet<AtomicString>* hash_set_;
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION HashSet<AtomicString>* hash_set_;
   };
 
  protected:

@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -100,6 +101,8 @@ void MediaQuery::Trace(Visitor* visitor) const {
 void MediaQuery::CollectExpressions(const ConditionalExpNode& root,
                                     HeapVector<MediaQueryExp>& expressions) {
   class ExpressionCollector : public ConditionalExpNodeVisitor {
+    STACK_ALLOCATED();
+
    public:
     explicit ExpressionCollector(HeapVector<MediaQueryExp>& expressions)
         : expressions_(expressions) {}

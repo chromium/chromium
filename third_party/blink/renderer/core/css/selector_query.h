@@ -30,6 +30,7 @@
 #include <iosfwd>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -285,9 +286,12 @@ class CORE_EXPORT SelectorQuery : public GarbageCollected<SelectorQuery> {
     //
     // We do not store an explicit edge for (sibling, mismatch), since it's
     // always the same compound.
-    const Compound* next_compound_for_children_on_match = nullptr;
-    const Compound* next_compound_for_siblings_on_match = nullptr;
-    const Compound* next_compound_for_children_on_mismatch = nullptr;
+    raw_ptr<const Compound, UnprotectedInRelease | DanglingUntriaged>
+        next_compound_for_children_on_match = nullptr;
+    raw_ptr<const Compound, UnprotectedInRelease | DanglingUntriaged>
+        next_compound_for_siblings_on_match = nullptr;
+    raw_ptr<const Compound, UnprotectedInRelease | DanglingUntriaged>
+        next_compound_for_children_on_mismatch = nullptr;
   };
 
   // See if we have compounds above our root that we must skip;

@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -290,7 +291,9 @@ class CORE_EXPORT CSSParserToken {
   unsigned value_length_;
   union {
     char value_data_char_inline_[8];   // If value_is_inline_ is true.
-    const void* value_data_char_raw_;  // Either LChar* or UChar*.
+    // RAW_PTR_EXCLUSION: #union
+    RAW_PTR_EXCLUSION const void*
+        value_data_char_raw_;  // Either LChar* or UChar*.
   };
 
   union {
