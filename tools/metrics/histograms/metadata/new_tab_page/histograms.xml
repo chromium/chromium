@@ -851,6 +851,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Drive.UserAction" enum="NTPFileAction"
+    expires_after="2027-03-28">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user action within the NTP Drive module. Only
+    logged on the 1P NTP.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.FailToShowHomeSurfaceUI"
     enum="FailToShowHomeSurfaceReason" expires_after="2027-03-28">
   <owner>hanxi@chromium.org</owner>
@@ -1385,6 +1395,16 @@ chromium-metrics-reviews@google.com.
     is receieved. Only logged on the 1P NTP. Note that even if the user has
     Google as their default search engine, Incognito and Guest mode NTPs are not
     considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.UserAction" enum="NTPFileAction"
+    expires_after="2027-03-28">
+  <owner>jennserrano@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs count of each type of user action within the NTP Microsoft Files
+    module. Only logged on the 1P NTP.
   </summary>
 </histogram>
 

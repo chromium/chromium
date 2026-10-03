@@ -54,7 +54,7 @@ export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/
 // </if>
 export {driveModuleDescriptor, DriveModuleElement} from './modules/file_suggestion/drive_module.js';
 export {FileProxy} from './modules/file_suggestion/file_module_proxy.js';
-export {FileSuggestionElement} from './modules/file_suggestion/file_suggestion.js';
+export {FileAction, FileSuggestionElement} from './modules/file_suggestion/file_suggestion.js';
 export {microsoftFilesModuleDescriptor, MicrosoftFilesModuleElement} from './modules/file_suggestion/microsoft_files_module.js';
 export {MicrosoftFilesProxyImpl} from './modules/file_suggestion/microsoft_files_proxy.js';
 export {InfoDialogElement} from './modules/info_dialog.js';

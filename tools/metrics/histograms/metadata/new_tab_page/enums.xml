@@ -541,6 +541,16 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Threads Rail"/>
 </enum>
 
+<!-- LINT.IfChange(NTPFileAction) -->
+
+<enum name="NTPFileAction">
+  <summary>File suggestion module user actions.</summary>
+  <int value="0" label="File suggestion clicked"/>
+  <int value="1" label="See more clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/modules/file_suggestion/file_suggestion.ts:FileAction) -->
+
 <enum name="NTPImageType">
   <int value="0" label="A user's selected NTP background image"/>
   <int value="1"
