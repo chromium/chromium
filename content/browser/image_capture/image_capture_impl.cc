@@ -11,7 +11,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
-#include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -31,9 +30,11 @@ namespace content {
 namespace {
 
 void GetPhotoStateOnIOThread(const std::string& source_id,
-                             MediaStreamManager* media_stream_manager,
                              ImageCaptureImpl::GetPhotoStateCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+
+  MediaStreamManager* media_stream_manager = MediaStreamManager::GetInstance();
+  CHECK(media_stream_manager);
 
   const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
@@ -46,10 +47,12 @@ void GetPhotoStateOnIOThread(const std::string& source_id,
 
 void SetPhotoOptionsOnIOThread(
     const std::string& source_id,
-    MediaStreamManager* media_stream_manager,
     media::mojom::PhotoSettingsPtr settings,
     ImageCaptureImpl::SetPhotoOptionsCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
+
+  MediaStreamManager* media_stream_manager = MediaStreamManager::GetInstance();
+  CHECK(media_stream_manager);
 
   const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
@@ -60,12 +63,14 @@ void SetPhotoOptionsOnIOThread(
 }
 
 void TakePhotoOnIOThread(const std::string& source_id,
-                         MediaStreamManager* media_stream_manager,
                          ImageCaptureImpl::TakePhotoCallback callback) {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M160);
   TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                        "image_capture_impl.cc::TakePhotoOnIOThread",
                        TRACE_EVENT_SCOPE_PROCESS);
+
+  MediaStreamManager* media_stream_manager = MediaStreamManager::GetInstance();
+  CHECK(media_stream_manager);
 
   const base::UnguessableToken session_id =
       media_stream_manager->VideoDeviceIdToSessionId(source_id);
@@ -105,10 +110,8 @@ void ImageCaptureImpl::GetPhotoState(const std::string& source_id,
                              weak_factory_.GetWeakPtr(), std::move(callback))),
           mojo::CreateEmptyPhotoState());
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GetPhotoStateOnIOThread, source_id,
-                     BrowserMainLoop::GetInstance()->media_stream_manager(),
-                     std::move(scoped_callback)));
+      FROM_HERE, base::BindOnce(&GetPhotoStateOnIOThread, source_id,
+                                std::move(scoped_callback)));
 }
 
 void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
@@ -137,9 +140,8 @@ void ImageCaptureImpl::SetPhotoOptions(const std::string& source_id,
           base::BindPostTaskToCurrentDefault(std::move(callback)), false);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&SetPhotoOptionsOnIOThread, source_id,
-                     BrowserMainLoop::GetInstance()->media_stream_manager(),
-                     std::move(settings), std::move(scoped_callback)));
+      base::BindOnce(&SetPhotoOptionsOnIOThread, source_id, std::move(settings),
+                     std::move(scoped_callback)));
 }
 
 void ImageCaptureImpl::TakePhoto(const std::string& source_id,
@@ -154,10 +156,8 @@ void ImageCaptureImpl::TakePhoto(const std::string& source_id,
           base::BindPostTaskToCurrentDefault(std::move(callback)),
           media::mojom::Blob::New());
   GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&TakePhotoOnIOThread, source_id,
-                     BrowserMainLoop::GetInstance()->media_stream_manager(),
-                     std::move(scoped_callback)));
+      FROM_HERE, base::BindOnce(&TakePhotoOnIOThread, source_id,
+                                std::move(scoped_callback)));
 }
 
 ImageCaptureImpl::ImageCaptureImpl(

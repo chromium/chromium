@@ -11,22 +11,22 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/task/execution_fence.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/scoped_command_line.h"
-#include "content/browser/browser_main_loop.h"                 //nogncheck
 #include "content/browser/image_capture/image_capture_impl.h"  //nogncheck
-#include "content/browser/site_instance_impl.h"                //nogncheck
+#include "content/browser/renderer_host/media/media_stream_manager.h"  //nogncheck
+#include "content/browser/site_instance_impl.h"  //nogncheck
 #include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/main_function_params.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/fuzzer/image_capture_mojolpm_fuzzer.pb.h"
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
+#include "media/audio/audio_manager.h"
+#include "media/audio/audio_system_impl.h"
+#include "media/audio/audio_thread_impl.h"
 #include "media/capture/mojom/image_capture.mojom-mojolpm.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -34,11 +34,15 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-constexpr const char* kCmdline[] = {"image_capture_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {
+    "image_capture_mojolpm_fuzzer",
+    "--use-fake-device-for-media-stream",  // Make sure we use fake devices to
+                                           // avoid long delays.
+    nullptr};
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<content::mojolpm::FuzzerEnvironment> environment(
-      1, kCmdline);
+      2, kCmdline);
   return *environment;
 }
 
@@ -73,20 +77,15 @@ class ImageCaptureTestcase
 
   // Prerequisite state.
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
+  std::unique_ptr<media::AudioManager> audio_manager_;
+  std::unique_ptr<content::MediaStreamManager> media_stream_manager_;
+  std::unique_ptr<media::AudioSystem> audio_system_;
   raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
 ImageCaptureTestcase::ImageCaptureTestcase(const ProtoTestcase& testcase)
     : Testcase<ProtoTestcase, ProtoAction>(testcase) {
   test_adapter_.SetUp();
-
-  base::test::ScopedCommandLine scoped_command_line;
-  content::MainFunctionParams main_function_params(
-      scoped_command_line.GetProcessCommandLine());
-  content::BrowserMainLoop browser_main_loop_(
-      std::move(main_function_params),
-      std::make_unique<base::ScopedThreadPoolExecutionFence>());
-  browser_main_loop_.Init();
 }
 
 ImageCaptureTestcase::~ImageCaptureTestcase() {
@@ -157,11 +156,27 @@ void ImageCaptureTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
           ->GetPrimaryMainFrame();
   render_frame_host_->InitializeRenderFrameIfNeeded();
 
+  audio_manager_ = media::AudioManager::CreateForTesting(
+      std::make_unique<media::AudioThreadImpl>());
+  audio_system_ =
+      std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
+  media_stream_manager_ =
+      std::make_unique<content::MediaStreamManager>(audio_system_.get());
+
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
 void ImageCaptureTestcase::TearDown(base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ImageCaptureTestcase::TearDownOnIOThread,
+                     base::Unretained(this), std::move(done_closure)));
+}
+
+void ImageCaptureTestcase::TearDownOnIOThread(base::OnceClosure done_closure) {
+  media_stream_manager_->WillDestroyCurrentMessageLoop();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -170,13 +185,8 @@ void ImageCaptureTestcase::TearDown(base::OnceClosure done_closure) {
 }
 
 void ImageCaptureTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ImageCaptureTestcase::TearDownOnIOThread,
-                     base::Unretained(this), std::move(done_closure)));
-}
+  audio_manager_->Shutdown();
 
-void ImageCaptureTestcase::TearDownOnIOThread(base::OnceClosure done_closure) {
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
