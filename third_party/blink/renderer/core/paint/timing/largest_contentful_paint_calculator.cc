@@ -27,8 +27,6 @@
 
 namespace blink {
 
-BASE_FEATURE(kSoftNavigationTraceEvents, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLcpEntropyGatedOnCors, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -217,16 +215,13 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
       /*element=*/image_element);
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
-    if (delegate_->IsHardNavigation() ||
-        base::FeatureList::IsEnabled(kSoftNavigationTraceEvents)) {
-      TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-          kTraceCategories,
-          delegate_->IsHardNavigation() ? kLCPCandidate
-                                        : kLCPCandidateForSoftNavs,
-          largest_image.PaintTime(), "data",
-          CreateWebExposedCandidateTraceData(largest_image), "frame",
-          GetFrameIdForTracing(window->GetFrame()));
-    }
+    TRACE_EVENT_MARK_WITH_TIMESTAMP2(
+        kTraceCategories,
+        delegate_->IsHardNavigation() ? kLCPCandidate
+                                      : kLCPCandidateForSoftNavs,
+        largest_image.PaintTime(), "data",
+        CreateWebExposedCandidateTraceData(largest_image), "frame",
+        GetFrameIdForTracing(window->GetFrame()));
   }
 }
 

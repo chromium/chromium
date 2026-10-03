@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -248,24 +247,22 @@ void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(SatisfiesSoftNavNonPaintCriteria());
   was_emitted_ = true;
 
-  if (base::FeatureList::IsEnabled(kSoftNavigationTraceEvents)) {
-    // This trace event reports the TimeOrigin() value which we already report
-    // as part of the umbrella "SoftNavigation" trace, as an instant event.
-    // However, that other event reports all new *potential* soft navs, while
-    // this event only reports actually *emitted* soft navs.
-    // This is used by DevTools performance profiler to mark the perf timeline.
-    TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                        "SoftNavigationStart", track_, TimeOrigin(), "context",
-                        *this, "frame",
-                        GetFrameIdForTracing(window_->GetFrame()));
+  // This trace event reports the TimeOrigin() value which we already report
+  // as part of the umbrella "SoftNavigation" trace, as an instant event.
+  // However, that other event reports all new *potential* soft navs, while
+  // this event only reports actually *emitted* soft navs.
+  // This is used by DevTools performance profiler to mark the perf timeline.
+  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                      "SoftNavigationStart", track_, TimeOrigin(), "context",
+                      *this, "frame",
+                      GetFrameIdForTracing(window_->GetFrame()));
 
-    // This trace event reports the when the soft nav heuristics were observerd,
-    // and thus when the new navigationId was created, and when the performance
-    // timeline is logically "sliced" into soft-nav sub-timelines.
-    TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                        "SoftNavigationEmitted", track_,
-                        soft_navigation_slicing_time_, "context", *this);
-  }
+  // This trace event reports the when the soft nav heuristics were observerd,
+  // and thus when the new navigationId was created, and when the performance
+  // timeline is logically "sliced" into soft-nav sub-timelines.
+  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                      "SoftNavigationEmitted", track_,
+                      soft_navigation_slicing_time_, "context", *this);
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   CHECK(performance);

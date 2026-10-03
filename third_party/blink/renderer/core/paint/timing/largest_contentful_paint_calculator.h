@@ -27,9 +27,6 @@ class Size;
 namespace blink {
 class PaintTimingDetector;
 
-// Kill switch for Soft Nav/LCP trace events.
-BASE_DECLARE_FEATURE(kSoftNavigationTraceEvents);
-
 // Kill switch for filtering entropy check on CORS. When enabled, the entropy
 // check only applies to images that are CORS-same-origin.
 CORE_EXPORT BASE_DECLARE_FEATURE(kLcpEntropyGatedOnCors);
