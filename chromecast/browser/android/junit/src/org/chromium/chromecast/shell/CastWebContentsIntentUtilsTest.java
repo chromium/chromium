@@ -5,6 +5,7 @@
 package org.chromium.chromecast.shell;
 
 import android.content.Intent;
+import android.os.Bundle;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -107,5 +108,26 @@ public class CastWebContentsIntentUtilsTest {
                 CastWebContentsIntentUtils.requestStartCastActivity(
                         mWebContents, true, false, false, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
+    }
+
+    @Test
+    public void testNullExtras() {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        Assert.assertNull(intent.getExtras());
+        Assert.assertNull(CastWebContentsIntentUtils.getSessionId(intent));
+        Assert.assertNull(CastWebContentsIntentUtils.getUriString(intent));
+        Assert.assertNull(CastWebContentsIntentUtils.getWebContents(intent));
+        Assert.assertFalse(CastWebContentsIntentUtils.isTouchable(intent));
+        Assert.assertFalse(CastWebContentsIntentUtils.shouldRequestAudioFocus(intent));
+    }
+
+    @Test
+    public void testNullBundle() {
+        Bundle bundle = null;
+        Assert.assertNull(CastWebContentsIntentUtils.getSessionId(bundle));
+        Assert.assertNull(CastWebContentsIntentUtils.getUriString(bundle));
+        Assert.assertNull(CastWebContentsIntentUtils.getWebContents(bundle));
+        Assert.assertFalse(CastWebContentsIntentUtils.isTouchable(bundle));
+        Assert.assertFalse(CastWebContentsIntentUtils.shouldRequestAudioFocus(bundle));
     }
 }

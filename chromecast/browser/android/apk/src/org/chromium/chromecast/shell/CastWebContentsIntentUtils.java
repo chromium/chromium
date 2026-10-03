@@ -198,52 +198,62 @@ public class CastWebContentsIntentUtils {
 
     // Used by ACTION_VIEW
     public static String getSessionId(Bundle bundle) {
+        if (bundle == null) return null;
         return bundle.getString(INTENT_EXTRA_SESSION_ID);
     }
 
     // Used by ACTION_VIEW
     public static String getSessionId(Intent in) {
+        if (in == null || in.getExtras() == null) return null;
         return getSessionId(in.getExtras());
     }
 
     // Used by ACTION_VIEW
     public static WebContents getWebContents(Bundle bundle) {
+        if (bundle == null) return null;
         String sessionId = bundle.getString(INTENT_EXTRA_SESSION_ID);
         return WebContentsRegistry.getWebContents(sessionId);
     }
 
     // Used by ACTION_VIEW
     public static WebContents getWebContents(Intent in) {
+        if (in == null || in.getExtras() == null) return null;
         return getWebContents(in.getExtras());
     }
 
     // Used by ACTION_VIEW
     public static String getUriString(Bundle bundle) {
+        if (bundle == null) return null;
         return bundle.getString(INTENT_EXTRA_URI);
     }
 
     // Used by ACTION_VIEW
     public static String getUriString(Intent in) {
+        if (in == null || in.getExtras() == null) return null;
         return getUriString(in.getExtras());
     }
 
     // Used by ACTION_VIEW
     public static boolean isTouchable(Bundle bundle) {
+        if (bundle == null) return false;
         return bundle.getBoolean(INTENT_EXTRA_TOUCH_INPUT_ENABLED);
     }
 
     // Used by ACTION_VIEW
     public static boolean isTouchable(Intent in) {
+        if (in == null || in.getExtras() == null) return false;
         return isTouchable(in.getExtras());
     }
 
     // Used by ACTION_VIEW
     public static boolean shouldRequestAudioFocus(Bundle bundle) {
+        if (bundle == null) return false;
         return bundle.getBoolean(INTENT_EXTRA_SHOULD_REQUEST_AUDIO_FOCUS);
     }
 
     // Used by ACTION_VIEW
     public static boolean shouldRequestAudioFocus(Intent in) {
+        if (in == null || in.getExtras() == null) return false;
         return shouldRequestAudioFocus(in.getExtras());
     }
 
