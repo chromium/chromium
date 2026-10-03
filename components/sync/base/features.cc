@@ -199,7 +199,6 @@ BASE_FEATURE(kSyncFixWebSigninSessionDurationForShortLivedSessions,
 BASE_FEATURE(kSyncSimplifyDeviceNaming, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncDisambiguateDeviceNamesWithChannel,
-             "SyncDisambiguateDeviceNamesWithChannel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSyncUseServerDeterminedDeviceName,

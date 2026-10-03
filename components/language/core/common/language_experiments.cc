@@ -20,6 +20,6 @@ BASE_FEATURE(kTranslateOpenSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableGeoLanguageModel, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGmsCoreUlp, "GmsCoreUlp", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGmsCoreUlp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace language

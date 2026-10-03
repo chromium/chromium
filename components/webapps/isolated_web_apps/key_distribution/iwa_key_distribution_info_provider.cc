@@ -615,7 +615,6 @@ IwaKeyDistributionInfoProvider::Component::Component(const Component&) =
 
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kIsolatedWebAppBypassManagedAllowlist,
-             "IsolatedWebAppBypassManagedAllowlist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

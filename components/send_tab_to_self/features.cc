@@ -58,7 +58,6 @@ BASE_FEATURE(kSendTabToSelfNoTargetDeviceQrCode,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 BASE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2,
-             "SendTabToSelfEnhancedDesktopUIv2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfSubmenuSigninPromos,

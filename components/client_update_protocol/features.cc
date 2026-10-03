@@ -10,6 +10,6 @@ namespace client_update_protocol::features {
 
 // Controls whether Client Update Protocol (CUP) signing uses the Post-Quantum
 // Cryptography (PQC) ML-DSA44 key instead of the pre-existing ECDSA key.
-BASE_FEATURE(kPqcCupSigning, "PqcCupSigning", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPqcCupSigning, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace client_update_protocol::features

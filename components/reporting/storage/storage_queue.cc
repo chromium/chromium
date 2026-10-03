@@ -77,9 +77,7 @@ BASE_FEATURE(kReportingStorageDegradationFeature,
              "ReportingStorageDegradation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEraseLegacyQueueOnDataLoss,
-             "EraseLegacyQueueOnDataLoss",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEraseLegacyQueueOnDataLoss, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 

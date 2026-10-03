@@ -101,9 +101,7 @@ namespace {
 
 // TODO(crbug.com/558757898): Remove flag once it is fully rolled out.
 // Enables sending non-modifiable (PDF) documents to the print compositor.
-BASE_FEATURE(kPdfWatermarkPrintCompositor,
-             "PdfWatermarkPrintCompositor",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPdfWatermarkPrintCompositor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
 const char16_t kBasicPrintShortcut[] = u"(⌥⌘P)";

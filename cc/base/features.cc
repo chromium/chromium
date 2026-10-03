@@ -89,9 +89,7 @@ BASE_FEATURE(kPreserveDiscardableImageMapQuality,
 
 BASE_FEATURE(kCCSlimming, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebViewMemoryMultiplier,
-             "WebViewMemoryMultiplier",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebViewMemoryMultiplier, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kWebViewMemoryMultiplierParam{
     &kWebViewMemoryMultiplier, "MemoryMultiplier", 20};

@@ -17,7 +17,6 @@
 namespace content {
 
 BASE_FEATURE(kDesktopCaptureAndroidFrameBufferReuse,
-             "DesktopCaptureAndroidFrameBufferReuse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {

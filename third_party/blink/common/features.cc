@@ -2056,7 +2056,6 @@ BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromRenderer,
 BASE_FEATURE(kSetIntervalWithoutClamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSetSelectionForAccessibilityHandlingInputEvent,
-             "SetSelectionForAccessibilityHandlingInputEvent",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSharedStorageWorkletSharedBackingThreadImplementation,
@@ -2117,7 +2116,6 @@ BASE_FEATURE(kServiceWorkerRaceNetworkRequestFallbackOnDisconnect,
 // ServiceWorker. For navigation requests, the pre-learned static response
 // header is returned in parallel with dispatching the network request.
 BASE_FEATURE(kServiceWorkerSyntheticResponse,
-             "ServiceWorkerSyntheticResponse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // (crbug.com/539155958): When enabled, ServiceWorkerDatabase treats missing

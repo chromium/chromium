@@ -134,7 +134,6 @@ BASE_FEATURE(kPrefetchAsyncPrefetchHandleCallback,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchMatchResolverUnblockAsync,
-             "PrefetchMatchResolverUnblockAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrefetchRevampAcceptHeader, base::FEATURE_ENABLED_BY_DEFAULT);

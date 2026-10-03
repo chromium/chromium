@@ -94,15 +94,12 @@ const base::FeatureParam<bool> kClearDeviceSignalsPermissionOnStartup{
 BASE_FEATURE(kURLBlocklistOverridesIncognitoAllowlist,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExportPlatformPoliciesJson,
-             "ExportPlatformPoliciesJson",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kExportPlatformPoliciesJson, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, migrates user cloud management status and sign-in interception
 // policy fetching from the legacy SecureConnect endpoint to Device Management
 // Server.
 BASE_FEATURE(kMigrateSecureConnectApiToDmServer,
-             "MigrateSecureConnectApiToDmServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta>
     kMigrateSecureConnectApiToDmServerFetchTimeout{

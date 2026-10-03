@@ -320,12 +320,10 @@ BASE_FEATURE(kGlicHotkeyLocalScope,
 );
 
 BASE_FEATURE(kGlicPasteEligibilityCheck,
-             "GlicPasteEligibilityCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 
 BASE_FEATURE(kGlicWebPasteEligibilityCheck,
-             "GlicWebPasteEligibilityCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 
 BASE_FEATURE(kGlicTabGroups, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicSparkSettingsAccessibleLabels,
@@ -358,9 +356,7 @@ BASE_FEATURE(kGlicSetAuthUser, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
 // functionality implemented by glic's webview.ts is implemented instead by c++
 // code.
 BASE_FEATURE(kGlicDisconnectedWebview, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicShakeTrigger,
-             "GlicShakeTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicShakeTrigger, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kGlicShakeTriggerOnlyOnSidePanel{
     &kGlicShakeTrigger, "only_on_side_panel", true};
 
@@ -384,9 +380,7 @@ const base::FeatureParam<std::string> kGlicMarketingUrlAllowlist{
 const base::FeatureParam<int> kGlicMarketingAutoOpenMaxCount{
     &kGlicMarketingAutoOpen, "max_impressions", 1};
 
-BASE_FEATURE(kGlicActionFirstFRE,
-             "GlicActionFirstFRE",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActionFirstFRE, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicWarmOnNudge, base::FEATURE_DISABLED_BY_DEFAULT);
 

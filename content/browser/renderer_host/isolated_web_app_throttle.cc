@@ -98,7 +98,6 @@ void RunNavigationInDefaultBrowser(NavigationHandle* handle) {
 }
 
 BASE_FEATURE(kBlockCrossIwaMainFrameNavigations,
-             "BlockCrossIwaMainFrameNavigations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace

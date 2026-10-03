@@ -86,9 +86,7 @@
 namespace {
 
 // TODO(thomasanderson): Remove this feature flag in the future.
-BASE_FEATURE(kWebNotificationPortalFallback,
-             "WebNotificationPortalFallback",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebNotificationPortalFallback, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // DBus name / path.
 const char kFreedesktopNotificationsName[] = "org.freedesktop.Notifications";

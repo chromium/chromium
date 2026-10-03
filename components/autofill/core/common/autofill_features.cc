@@ -722,7 +722,6 @@ BASE_FEATURE(kAutofillEnableEntryLimitInPopup,
 // When enabled, IBAN regex pattern matching is expanded to support more
 // formats.
 BASE_FEATURE(kAutofillEnableExpandIbanRegexPattern,
-             "AutofillEnableExpandIbanRegexPattern",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables a couple of improvements to credit card expiration date handling:

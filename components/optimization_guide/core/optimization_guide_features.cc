@@ -443,7 +443,6 @@ bool IsOnDeviceExecutionEnabled() {
 }
 
 BASE_FEATURE(kOnDeviceModelCachesDiskSpaceCheck,
-             "OnDeviceModelCachesDiskSpaceCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsFreeDiskSpaceTooLowForOnDeviceModelCachesBuild(
