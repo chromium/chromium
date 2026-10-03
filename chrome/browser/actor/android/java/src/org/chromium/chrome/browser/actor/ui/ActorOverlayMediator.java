@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable;
@@ -70,8 +71,8 @@ class ActorOverlayMediator
      * @param tabObscuringHandler The TabObscuringHandler to obscure the web content.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      * @param omniboxFocusStateSupplier Supplier for whether the omnibox currently has focus. The
-     *     overlay is suppressed while the omnibox is focused so its glow and handoff button do not
-     *     show through behind the suggestions list.
+     *     take-over button is hidden while the omnibox is focused. On phones and tablets, the
+     *     overlay is also suppressed so it does not cover the full-width suggestions list.
      * @param inflateOverlayCallback The callback to ensure the overlay view is inflated.
      * @param backPressCallback The callback to show the snackbar.
      * @param dismissSnackbarCallback The callback to dismiss the snackbar.
@@ -209,7 +210,13 @@ class ActorOverlayMediator
             mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false);
             return;
         }
-        boolean visible = calculateCanShowOverlay(mCurrentTab) && isHandoffButtonActive();
+        // Like desktop Chrome's kGlicHandoffButtonHideWhenOmniboxPopupOpened, hide the button
+        // whenever the omnibox is focused, since it sits where the suggestions are drawn.
+        boolean isOmniboxFocused = Boolean.TRUE.equals(mOmniboxFocusStateSupplier.get());
+        boolean visible =
+                !isOmniboxFocused
+                        && calculateCanShowOverlay(mCurrentTab)
+                        && isHandoffButtonActive();
         mModel.set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, visible);
     }
 
@@ -260,11 +267,15 @@ class ActorOverlayMediator
         boolean isBrowsing =
                 mLayoutManager != null
                         && mLayoutManager.getActiveLayoutType() == LayoutType.BROWSING;
-        // While the omnibox is focused the suggestions list is drawn above the overlay. Suppress
-        // the overlay so its glow and handoff button are not partially visible behind it.
-        boolean isOmniboxFocused = Boolean.TRUE.equals(mOmniboxFocusStateSupplier.get());
+        // On phones and tablets, the focused omnibox's full-width suggestions list is drawn below
+        // the overlay, so suppress the overlay to avoid covering the list. Desktop platforms show
+        // the suggestions as an elevated popover drawn above the overlay, so the overlay stays
+        // visible behind it, matching desktop Chrome.
+        boolean wouldCoverOmniboxSuggestions =
+                Boolean.TRUE.equals(mOmniboxFocusStateSupplier.get())
+                        && !OmniboxCapabilities.isDesktopPlatform();
         return isBrowsing
-                && !isOmniboxFocused
+                && !wouldCoverOmniboxSuggestions
                 && tab != null
                 && !tab.isDestroyed()
                 && !tab.isClosing()

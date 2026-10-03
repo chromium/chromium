@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link ActorOverlayCoordinator}. */
@@ -817,8 +818,7 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertEquals(View.GONE, mHandoffButtonView.getVisibility());
     }
 
-    @Test
-    public void testOmniboxFocusHidesOverlayAndTakeOverButton() {
+    private PropertyModel showActiveOverlayAndTakeOverButton() {
         mCurrentTabSupplier.set(mTab);
         Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
 
@@ -834,8 +834,15 @@ public class ActorOverlayCoordinatorTest {
         PropertyModel model = mCoordinator.getModelForTesting();
         Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
         Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        return model;
+    }
 
-        // Focusing the omnibox draws the suggestions list above the overlay, so the overlay glow
+    @Test
+    public void testOmniboxFocusHidesOverlayAndTakeOverButton() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        PropertyModel model = showActiveOverlayAndTakeOverButton();
+
+        // The full-width suggestions list would be drawn under the overlay, so the overlay glow
         // and the handoff button must be suppressed.
         mOmniboxFocusStateSupplier.set(true);
 
@@ -847,6 +854,55 @@ public class ActorOverlayCoordinatorTest {
 
         Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
         Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testOmniboxFocusOnDesktopKeepsOverlayAndHidesTakeOverButton() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        PropertyModel model = showActiveOverlayAndTakeOverButton();
+
+        // On desktop platforms the suggestions popover is drawn above the overlay, so the overlay
+        // stays visible, but the handoff button is hidden while the omnibox is focused.
+        mOmniboxFocusStateSupplier.set(true);
+
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        mOmniboxFocusStateSupplier.set(false);
+
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertTrue(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testOmniboxFocusOnDesktopKeepsInactiveTakeOverButtonHidden() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mCurrentTabSupplier.set(mTab);
+        Mockito.when(mLayoutManager.getActiveLayoutType()).thenReturn(LayoutType.BROWSING);
+
+        UiTabState overlayOnlyState =
+                new UiTabState(
+                        TAB_ID,
+                        new ActorOverlayState(/* isActive= */ true, false, false),
+                        new HandoffButtonState(/* isActive= */ false, 0),
+                        0,
+                        false);
+        mTabController.onUiTabStateChange(overlayOnlyState);
+
+        PropertyModel model = mCoordinator.getModelForTesting();
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        // The inactive handoff button must stay hidden across omnibox focus transitions.
+        mOmniboxFocusStateSupplier.set(true);
+
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        mOmniboxFocusStateSupplier.set(false);
+
+        Assert.assertTrue(model.get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
     }
 
     @Test
