@@ -32,6 +32,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_NO_STATE_PREFETCH_CLIENT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -50,13 +51,15 @@ class CORE_EXPORT NoStatePrefetchClient
   NoStatePrefetchClient(Page&, WebNoStatePrefetchClient*);
   NoStatePrefetchClient(const NoStatePrefetchClient&) = delete;
   NoStatePrefetchClient& operator=(const NoStatePrefetchClient&) = delete;
+  virtual ~NoStatePrefetchClient() = default;
 
   virtual bool IsPrefetchOnly();
 
   static NoStatePrefetchClient* From(Page*);
 
  private:
-  WebNoStatePrefetchClient* client_;
+  raw_ptr<WebNoStatePrefetchClient, UnprotectedInRelease | DanglingUntriaged>
+      client_;
 };
 
 CORE_EXPORT void ProvideNoStatePrefetchClientTo(Page&, NoStatePrefetchClient*);

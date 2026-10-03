@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "services/network/public/cpp/features.h"
@@ -1200,8 +1201,11 @@ TEST_F(CSPDirectiveListTest, StrictDynamicIgnoresAllowlistWarning) {
 
   struct {
     const char* name;
-    const network::mojom::blink::ContentSecurityPolicyPtr& directive_list;
-    const KURL& script_url;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const network::mojom::blink::ContentSecurityPolicyPtr&
+        directive_list;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const KURL& script_url;
     const char* script_nonce;
     bool allowed;
     bool console_message;

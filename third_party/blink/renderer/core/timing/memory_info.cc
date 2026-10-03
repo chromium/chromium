@@ -32,6 +32,7 @@
 
 #include <limits>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -103,7 +104,8 @@ class HeapSizeCache {
   }
 
   std::optional<base::TimeTicks> last_update_time_;
-  const base::TickClock* clock_;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const base::TickClock* clock_;
 
   HeapInfo info_;
 };

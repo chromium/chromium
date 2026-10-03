@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -63,7 +64,9 @@ class ProgressTrackerTest : public testing::Test, public FakeLocalFrameHost {
 
   double WaitForNextProgressChange() const {
     base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> current_loop(&current_run_loop_, &run_loop);
+    base::AutoReset<
+        raw_ptr<base::RunLoop, UnprotectedInRelease | DanglingUntriaged>>
+        current_loop(&current_run_loop_, &run_loop);
     run_loop.Run();
     return last_progress_;
   }
@@ -76,7 +79,8 @@ class ProgressTrackerTest : public testing::Test, public FakeLocalFrameHost {
 
  private:
   test::TaskEnvironment task_environment_;
-  mutable base::RunLoop* current_run_loop_ = nullptr;
+  mutable raw_ptr<base::RunLoop, UnprotectedInRelease | DanglingUntriaged>
+      current_run_loop_ = nullptr;
   frame_test_helpers::TestWebFrameClient web_frame_client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
   ResourceResponse response_;

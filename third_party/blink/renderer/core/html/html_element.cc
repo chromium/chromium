@@ -30,6 +30,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
@@ -174,9 +175,11 @@ using AttributeChangedFunction =
 using mojom::blink::FormControlType;
 
 struct AttributeTriggers {
-  const QualifiedName& attribute;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const QualifiedName& attribute;
   WebFeature web_feature;
-  const AtomicString& event;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const AtomicString& event;
   AttributeChangedFunction function;
 };
 

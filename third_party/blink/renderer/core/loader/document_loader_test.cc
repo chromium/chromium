@@ -379,7 +379,8 @@ class DocumentLoaderSimTest : public SimTest {
         .ToChecked();
   }
 
-  SimRequest* main_resource_for_reenter_ = nullptr;
+  raw_ptr<SimRequest, UnprotectedInRelease | DanglingUntriaged>
+      main_resource_for_reenter_ = nullptr;
   int reenter_call_count_ = 0;
 
  private:
@@ -460,8 +461,8 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_Buffered) {
 // Test reentrancy into DocumentLoader during the initial `CommitData()` call.
 TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_ReentrancyFromInitialCommit) {
   SimRequest main_resource("https://example.com", "text/html");
-  base::AutoReset<SimRequest*> main_resource_reset(&main_resource_for_reenter_,
-                                                   &main_resource);
+  base::AutoReset<raw_ptr<SimRequest, UnprotectedInRelease | DanglingUntriaged>>
+      main_resource_reset(&main_resource_for_reenter_, &main_resource);
   LoadURL("https://example.com");
 
   InstallReenterHelper(MainFrame());
@@ -478,8 +479,8 @@ TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_ReentrancyFromInitialCommit) {
 // buffered data.
 TEST_F(DocumentLoaderSimTest, ProcessDataBuffer_ReentrancyDuringIteration) {
   SimRequest main_resource("https://example.com", "text/html");
-  base::AutoReset<SimRequest*> main_resource_reset(&main_resource_for_reenter_,
-                                                   &main_resource);
+  base::AutoReset<raw_ptr<SimRequest, UnprotectedInRelease | DanglingUntriaged>>
+      main_resource_reset(&main_resource_for_reenter_, &main_resource);
   LoadURL("https://example.com");
 
   // `BlockParser()` ensures DocumentLoader buffers data, which is necessary to

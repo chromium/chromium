@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -42,7 +43,7 @@ class TestMediaSourceAttachment final : public MediaSourceAttachment {
   explicit TestMediaSourceAttachment(MediaSourceRegistry& registry)
       : registry_(registry) {}
 
-  MediaSourceRegistry& Registry() const override { return registry_; }
+  MediaSourceRegistry& Registry() const override { return *registry_; }
   void Unregister() override {}
   MediaSourceTracer* StartAttachingToMediaElement(HTMLMediaElement*,
                                                   bool* success) override {
@@ -67,7 +68,8 @@ class TestMediaSourceAttachment final : public MediaSourceAttachment {
  private:
   ~TestMediaSourceAttachment() override = default;
 
-  MediaSourceRegistry& registry_;
+  const raw_ref<MediaSourceRegistry, UnprotectedInRelease | DanglingUntriaged>
+      registry_;
 };
 
 class FakeMediaSourceRegistry final : public MediaSourceRegistry {

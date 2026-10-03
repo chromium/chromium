@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/highlight_painter.h"
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -235,7 +236,8 @@ struct MergedHighlightPart {
  public:
   struct Merged {
    public:
-    const Inner& inner;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const Inner& inner;
     unsigned from;
     unsigned to;
   };

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/integrity_policy.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/mojom/integrity_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,8 +72,10 @@ TEST_F(IntegrityPolicyTest, AllowRequestTest) {
   struct TestCase {
     network::mojom::RequestDestination destination;
     network::mojom::RequestMode mode;
-    const IntegrityMetadataSet& metadata;
-    const KURL& url;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const IntegrityMetadataSet& metadata;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const KURL& url;
     bool allow;
   } cases[] = {
       {network::mojom::RequestDestination::kScript,

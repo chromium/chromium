@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_THEME_PAINTER_DEFAULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_THEME_PAINTER_DEFAULT_H_
 
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/paint/theme_painter.h"
 
@@ -114,7 +115,8 @@ class ThemePainterDefault final : public ThemePainter {
                             float zoom_level);
 
   // ThemePaintDefault is a part object of m_theme.
-  LayoutThemeDefault& theme_;
+  const raw_ref<LayoutThemeDefault, UnprotectedInRelease | DanglingUntriaged>
+      theme_;
 };
 
 }  // namespace blink

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/sanitizer/sanitizer.h"
@@ -38,8 +39,10 @@ CORE_EXPORT std::unique_ptr<SanitizerNameSet> MakeNameSet(
     base::span<const QualifiedName* const> names);
 
 struct ElementAttrs {
-  const QualifiedName* element;
-  base::span<const QualifiedName* const> attrs;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION const QualifiedName* element;
+  // RAW_PTR_EXCLUSION: #global-scope
+  RAW_PTR_EXCLUSION base::span<const QualifiedName* const> attrs;
 };
 
 CORE_EXPORT SanitizerNameMap

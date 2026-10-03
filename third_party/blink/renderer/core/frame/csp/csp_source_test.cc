@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/csp_source.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -337,7 +338,8 @@ TEST(CSPSourceTest, MatchingAsSelf) {
   };
   struct TestCase {
     const Source self_source;
-    const String& url;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const String& url;
     bool expected;
   } cases[] = {
       // Same origin

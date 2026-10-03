@@ -559,9 +559,9 @@ void ThemePainterDefault::SetupMenuListArrow(
 
     menu_list.arrow_y = middle;
     float arrow_box_width =
-        theme_.ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
+        theme_->ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
     float arrow_scale_factor =
-        arrow_box_width / theme_.MenuListArrowWidthInDIP();
+        arrow_box_width / theme_->MenuListArrowWidthInDIP();
     // TODO(tkent): This should be 7.0 to match scroll bar buttons.
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.
@@ -583,9 +583,9 @@ void ThemePainterDefault::SetupMenuListArrow(
 
     menu_list.arrow_x = middle;
     float arrow_box_height =
-        theme_.ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
+        theme_->ClampedMenuListArrowPaddingSize(document.GetFrame(), style);
     float arrow_scale_factor =
-        arrow_box_height / theme_.MenuListArrowWidthInDIP();
+        arrow_box_height / theme_->MenuListArrowWidthInDIP();
     // TODO(tkent): This should be 7.0 to match scroll bar buttons.
     float arrow_size = 8.0 * arrow_scale_factor;
     // Put the arrow at the center of paddingForArrow area.

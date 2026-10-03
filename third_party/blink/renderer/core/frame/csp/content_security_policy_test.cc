@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
@@ -603,7 +604,8 @@ TEST_F(ContentSecurityPolicyTest, NonceMultiplePolicy) {
 TEST_F(ContentSecurityPolicyTest, DirectiveType) {
   struct TestCase {
     CSPDirectiveName type;
-    const String& name;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const String& name;
   } cases[] = {
       {CSPDirectiveName::BaseURI, "base-uri"},
       {CSPDirectiveName::BlockAllMixedContent, "block-all-mixed-content"},
