@@ -898,4 +898,55 @@ public class GlicSettingsUnitTest {
         assertEquals(
                 1, mUserActionTester.getActionCount("Glic.Settings.BottomBarGlicButton.Enabled"));
     }
+
+    @Test
+    public void testLocationPermissionDenied_TurnsToggleOff() {
+        GlicSettings fragment = launchFragment();
+        ChromeSwitchPreference locationPref =
+                fragment.findPreference(GlicSettings.PERMISSION_LOCATION);
+        locationPref.performClick();
+        assertTrue(locationPref.isChecked());
+        verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_GEOLOCATION_ENABLED, true);
+
+        // The user refuses the OS location permission prompt.
+        fragment.onRequestPermissionsResult(
+                GlicSettings.LOCATION_PERMISSION_REQUEST_CODE,
+                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                new int[] {PackageManager.PERMISSION_DENIED});
+
+        verify(mPrefServiceMock).setBoolean(GlicPrefNames.GLIC_GEOLOCATION_ENABLED, false);
+        assertFalse(locationPref.isChecked());
+    }
+
+    @Test
+    public void testDisabledByPolicy_DisablesSwitches() {
+        when(mGlicEnablingJniMock.isDisabledByPolicy(mProfileMock)).thenReturn(true);
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_GEOLOCATION_ENABLED)).thenReturn(true);
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_MICROPHONE_ENABLED)).thenReturn(true);
+        when(mPrefServiceMock.getBoolean(GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED))
+                .thenReturn(true);
+        when(mGlicKeyedServiceMock.getUserEnabledActuationOnWeb()).thenReturn(true);
+
+        GlicSettings fragment = launchFragment();
+
+        ChromeSwitchPreference locationPref =
+                fragment.findPreference(GlicSettings.PERMISSION_LOCATION);
+        assertFalse(locationPref.isEnabled());
+        assertFalse(locationPref.isChecked());
+
+        ChromeSwitchPreference microphonePref =
+                fragment.findPreference(GlicSettings.PERMISSION_MICROPHONE);
+        assertFalse(microphonePref.isEnabled());
+        assertFalse(microphonePref.isChecked());
+
+        ChromeSwitchPreference tabAccessPref =
+                fragment.findPreference("glic_permissions_default_tab_access");
+        assertFalse(tabAccessPref.isEnabled());
+        assertFalse(tabAccessPref.isChecked());
+
+        ChromeSwitchPreference autoBrowsePref =
+                fragment.findPreference("glic_permissions_auto_browse");
+        assertFalse(autoBrowsePref.isEnabled());
+        assertFalse(autoBrowsePref.isChecked());
+    }
 }

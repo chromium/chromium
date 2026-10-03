@@ -106,7 +106,7 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @VisibleForTesting static final String PREF_NAVIGATION_SHORTCUT = "glic_navigation_shortcut";
 
     // Request codes for runtime permissions requested from this fragment.
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    @VisibleForTesting static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     @VisibleForTesting static final int MICROPHONE_PERMISSION_REQUEST_CODE = 2;
 
     private final SharedPreferencesManager mSharedPreferencesManager =
