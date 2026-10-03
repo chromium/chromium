@@ -6,10 +6,13 @@ package org.chromium.chromecast.shell;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
 
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PackageUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -29,6 +32,12 @@ public class CastBrowserApplication extends Application {
     public static void initialize(Application application) {
         Log.d(TAG, "initialize");
         ContextUtils.initApplicationContext(application);
+        if (!ContextUtils.isIsolatedProcess() && !ApkInfo.isInitializedForTesting()) {
+            PackageInfo packageInfo = PackageUtils.getPackageInfo(application.getPackageName(), 0);
+            if (packageInfo != null) {
+                ApkInfo.setBrowserPackageInfo(packageInfo);
+            }
+        }
         ResourceBundle.setAvailablePakLocales(ProductConfig.LOCALES);
         LibraryLoader.getInstance().setLinkerImplementation(ProductConfig.USE_CHROMIUM_LINKER);
         LibraryLoader.getInstance()

@@ -23,8 +23,7 @@ CastCrashReporterClientAndroid::CastCrashReporterClientAndroid(
 CastCrashReporterClientAndroid::~CastCrashReporterClientAndroid() {}
 
 void CastCrashReporterClientAndroid::GetProductInfo(ProductInfo* product_info) {
-  std::string version = CAST_BUILD_RELEASE ".";
-  version += base::android::apk_info::package_version_code();
+  std::string version = base::android::apk_info::package_version_name();
 #if CAST_IS_DEBUG_BUILD()
   version += ".debug";
 #endif
