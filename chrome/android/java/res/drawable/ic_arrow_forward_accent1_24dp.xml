@@ -13,5 +13,5 @@ found in the LICENSE file.
     android:viewportHeight="24.0"
     android:viewportWidth="24.0"
     android:tint="@macro/default_icon_color_accent1">
-    <path android:fillColor="@color/default_icon_color_accent1_baseline" android:pathData="M12,4l-1.41,1.41L16.17,11H4v2h12.17l-5.58,5.59L12,20l8,-8z"/>
+    <path android:fillColor="@android:color/white" android:pathData="M12,4l-1.41,1.41L16.17,11H4v2h12.17l-5.58,5.59L12,20l8,-8z"/>
 </vector>

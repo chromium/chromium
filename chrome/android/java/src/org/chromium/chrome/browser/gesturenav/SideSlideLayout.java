@@ -237,7 +237,7 @@ public class SideSlideLayout extends ViewGroup {
     public void setDirection(boolean forward) {
         mIsForward = forward;
         mArrowView.setIcon(
-                forward ? R.drawable.ic_arrow_forward_blue_24dp : R.drawable.ic_arrow_back_24dp);
+                forward ? R.drawable.ic_arrow_forward_accent1_24dp : R.drawable.ic_arrow_back_24dp);
     }
 
     public void setInitiatingEdge(@BackGestureEventSwipeEdge int edge) {
