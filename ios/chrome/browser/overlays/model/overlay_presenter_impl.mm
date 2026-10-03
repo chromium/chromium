@@ -563,7 +563,9 @@ void OverlayPresenterImpl::
     OverlayPresentationContextDidChangePresentationCapabilities(
         OverlayPresentationContext* presentation_context) {
   DCHECK_EQ(presentation_context_, presentation_context);
-  if (!presenting_) {
+  OverlayRequest* request = GetActiveRequest();
+  if (!presenting_ && request &&
+      presentation_context->CanShowUIForRequest(request)) {
     PresentOverlayForActiveRequest();
   }
 }

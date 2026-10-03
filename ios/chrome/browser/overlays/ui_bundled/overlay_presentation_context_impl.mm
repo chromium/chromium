@@ -113,12 +113,12 @@ void OverlayPresentationContextImpl::SetDelegate(
   if (delegate_ == delegate) {
     return;
   }
+  delegate_ = delegate;
+
   // Reset the presentation capabilities.
   container_view_controller_ = nil;
   presentation_context_view_controller_ = nil;
   UpdatePresentationCapabilities();
-
-  delegate_ = delegate;
 
   // The context is only capable of presenting once the delegate is provided.
   presenter_->SetPresentationContext(delegate_ ? this : nullptr);

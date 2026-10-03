@@ -6,7 +6,9 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_contained_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator+initialization.h"
@@ -17,9 +19,16 @@
 #import "ios/chrome/browser/overlays/ui_bundled/test/test_overlay_presentation_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 using base::test::ios::kWaitForUIElementTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
@@ -69,6 +78,36 @@ TEST_F(OverlayContainerCoordinatorTest, UpdatePresentationCapabilities) {
   // supports contained overlay UI.
   [coordinator_ stop];
   EXPECT_FALSE(OverlayPresentationContextSupportsContainedUI(context_.get()));
+}
+
+// Tests that stopping the coordinator while an active contained overlay is
+// presented does not re-enter `UpdatePresentationCapabilities()` or leave
+// contained UI capabilities enabled.
+TEST_F(OverlayContainerCoordinatorTest, StopWithActiveContainedOverlay) {
+  auto web_state = std::make_unique<web::FakeWebState>();
+  WebViewProxyTabHelper::CreateForWebState(web_state.get());
+  CRWWebViewScrollViewProxy* scroll_view_proxy =
+      [[CRWWebViewScrollViewProxy alloc] init];
+  UIScrollView* scroll_view = [[UIScrollView alloc] init];
+  [scroll_view_proxy setScrollView:scroll_view];
+  id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
+  [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
+  web_state->SetWebViewProxy(web_view_proxy_mock);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+  OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
+      browser_->GetWebStateList()->GetActiveWebState(),
+      OverlayModality::kTesting);
+  queue->AddRequest(OverlayRequest::CreateWithConfig<TestContainedOverlay>());
+
+  [coordinator_ start];
+  EXPECT_TRUE(OverlayPresentationContextSupportsContainedUI(context_.get()));
+  EXPECT_TRUE(context_->IsShowingOverlayUI());
+
+  [coordinator_ stop];
+  EXPECT_FALSE(OverlayPresentationContextSupportsContainedUI(context_.get()));
+  EXPECT_FALSE(context_->IsShowingOverlayUI());
 }
 
 // Tests that the coordinator sets up the presentation context upon being added
