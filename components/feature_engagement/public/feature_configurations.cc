@@ -1717,8 +1717,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHBookmarkBarVisibilityFeature.name == feature->name) {
     // Allows an IPH telling the user they can show the Bookmark Bar on Android:
+    // * Only when no other session IPHs have been shown.
     // * At most once per 7 days.
-    // * If the user has never opened the appearance settings page.
+    // * If the user has not opened the appearance settings page in the last
+    //   360 days.
     // * Up to 3 times total (over 10 years).
     IPHBookmarkBarVisibilityVariant variant =
         kIPHBookmarkBarVisibilityVariantParam.Get();
@@ -1731,7 +1733,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     FeatureConfig config;
     config.valid = true;
     config.availability = kAlwaysAvailable;
-    config.session_rate = kNoRestrictions;
+    config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig(trigger_event, Comparator(EQUAL, 0), 7, kMaxStoragePeriod);
     config.used = EventConfig("settings_appearance_opened",
