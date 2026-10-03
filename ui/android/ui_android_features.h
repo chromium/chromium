@@ -77,9 +77,10 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMaximumWindowForGestureNavDetection);
 
 // Scaling multiplier for captured physical mouse movement
 // (crbug.com/490206349).
+// See also crbug.com/567695649 for display density compensation.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kPointerLockMouseScaling);
 inline constexpr base::FeatureParam<double> kPointerLockMouseScalingFactor{
-    &kPointerLockMouseScaling, "factor", 2.4};
+    &kPointerLockMouseScaling, "factor", 1.0};
 
 // Whether to enable the refactor of the smallestScreenWidthDp override.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kRefactorMinWidthContextOverride);
