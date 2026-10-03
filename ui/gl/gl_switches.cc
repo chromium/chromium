@@ -420,6 +420,15 @@ VulkanPhysicalDeviceProperties::VulkanPhysicalDeviceProperties() = default;
 VulkanPhysicalDeviceProperties::~VulkanPhysicalDeviceProperties() = default;
 
 bool IsDefaultANGLEVulkan() {
+  // In Chromium builds, ANGLE's share group locks are disabled. This makes the
+  // Vulkan backend of ANGLE *not* thread safe. If Skia is directly rendering
+  // with Vulkan, ANGLE is only used for WebGL translation and is therefore used
+  // single-threaded. Therefore, only allow ANGLE/Vulkan if Skia is also using
+  // Vulkan.
+  if (!IsUsingVulkan()) {
+    return false;
+  }
+
   // Force on if DefaultANGLEVulkan feature is enabled from command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
