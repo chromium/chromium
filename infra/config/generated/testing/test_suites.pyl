@@ -2529,6 +2529,17 @@
       },
     },
 
+    'openscreen_chromium_gtests': {
+      'cast_unittests': {},
+      'components_unittests': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+      'media_unittests': {},
+      'openscreen_unittests': {},
+    },
+
     'optimization_guide_android_gtests': {
     },
 
