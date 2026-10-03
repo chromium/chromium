@@ -16,6 +16,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -221,10 +222,13 @@ void GlicWebClientManager::DidFinishNavigation(
   bool is_api_allowed =
       IsOriginAllowedGlicApi(guest_main_frame->GetLastCommittedOrigin(),
                              guest_main_frame->GetBrowserContext());
+  bool is_error_page =
+      navigation_handle->IsErrorPage() ||
+      (navigation_handle->GetResponseHeaders() &&
+       navigation_handle->GetResponseHeaders()->response_code() >= 400);
   mojom::GuestPageType page_type =
-      navigation_handle->IsErrorPage()
-          ? mojom::GuestPageType::kLoadError
-          : GetGuestPageType(guest_main_frame->GetLastCommittedURL());
+      is_error_page ? mojom::GuestPageType::kLoadError
+                    : GetGuestPageType(guest_main_frame->GetLastCommittedURL());
   bool is_initial_commit = !has_navigation_committed_;
   has_navigation_committed_ = true;
 

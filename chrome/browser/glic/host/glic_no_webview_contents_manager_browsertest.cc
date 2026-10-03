@@ -168,6 +168,24 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
             http_response->set_content("<html><body>Proxy Auth</body></html>");
             return http_response;
           }
+          if (request.relative_url == "/status/404") {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_NOT_FOUND);
+            http_response->set_content_type("text/html");
+            http_response->set_content(
+                "<html><body>404 Not Found</body></html>");
+            return http_response;
+          }
+          if (request.relative_url == "/status/500") {
+            auto http_response =
+                std::make_unique<net::test_server::BasicHttpResponse>();
+            http_response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+            http_response->set_content_type("text/html");
+            http_response->set_content(
+                "<html><body>500 Internal Error</body></html>");
+            return http_response;
+          }
           return nullptr;
         }));
     embedded_https_test_server().ServeFilesFromSourceDirectory(
@@ -969,6 +987,36 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   EXPECT_EQ(overlay_state->get_error(), mojom::ErrorPanelType::kError);
   EXPECT_FALSE(manager.loading_timer_for_testing().IsRunning());
   EXPECT_TRUE(manager.ShouldReloadOnShow());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       HttpStatusErrorsTreatedAsLoadError) {
+  GlicNoWebviewContentsManager manager(GetProfile(), &service()->enabling(),
+                                       /*initially_hidden=*/false);
+  manager.SetVisibility(content::Visibility::VISIBLE);
+
+  // Navigate to a 404 URL. Should be treated as a load error immediately.
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/status/404")));
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+
+  manager.ClearErrorState();
+
+  // Navigate to a 500 URL. Should be treated as a load error immediately.
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/status/500")));
+  EXPECT_EQ(manager.error_type(), mojom::ErrorPanelType::kError);
+
+  manager.ClearErrorState();
+
+  // Navigate to a 200 URL. Should clear the error state and continue loading
+  // normally.
+  ASSERT_TRUE(content::NavigateToURL(
+      manager.guest_contents(),
+      embedded_https_test_server().GetURL("/title1.html")));
+  EXPECT_EQ(manager.error_type(), std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
