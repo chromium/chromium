@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_interactive_test_base.h"
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
@@ -79,7 +80,19 @@ TestingAimEligibilityService::TestingAimEligibilityService(
                                   /*identity_manager=*/nullptr,
                                   /*configuration=*/{}),
       is_aim_eligible_(is_aim_eligible),
-      is_cobrowse_eligible_(is_cobrowse_eligible) {}
+      is_cobrowse_eligible_(is_cobrowse_eligible) {
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(is_aim_eligible);
+  response.add_interception_allowed_hosts("www.google.com");
+  response.add_interception_allowed_hosts("www.g.ai");
+  response.add_interception_allowed_paths("/search");
+  auto* rule = response.add_aim_detection_url_rule();
+  auto* param = rule->add_required_params();
+  param->set_key("udm");
+  param->set_value("50");
+  SetEligibilityResponseForDebugging(
+      base::Base64Encode(response.SerializeAsString()));
+}
 
 TestingAimEligibilityService::~TestingAimEligibilityService() = default;
 
