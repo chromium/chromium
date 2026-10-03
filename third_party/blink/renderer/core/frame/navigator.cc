@@ -39,22 +39,6 @@ namespace blink {
 
 Navigator::Navigator(ExecutionContext* context) : NavigatorBase(context) {}
 
-String Navigator::productSub() const {
-  return "20030107";
-}
-
-String Navigator::vendor() const {
-  // Do not change without good cause. History:
-  // https://code.google.com/p/chromium/issues/detail?id=276813
-  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=27786
-  // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/QrgyulnqvmE
-  return "Google Inc.";
-}
-
-String Navigator::vendorSub() const {
-  return "";
-}
-
 String Navigator::platform() const {
   // TODO(955620): Consider changing devtools overrides to only allow overriding
   // the platform with a frozen platform to distinguish between

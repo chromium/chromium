@@ -22,10 +22,6 @@
 [
     Exposed=Window
 ] interface Navigator {
-    // TODO(crbug.com/470288157): move these to the NavigatorID mixin
-    [MeasureAs=NavigatorVendorSub] readonly attribute DOMString vendorSub;
-    [MeasureAs=NavigatorProductSub] readonly attribute DOMString productSub;
-    [MeasureAs=NavigatorVendor] readonly attribute DOMString vendor;
 };
 
 Navigator includes NavigatorConcurrentHardware;

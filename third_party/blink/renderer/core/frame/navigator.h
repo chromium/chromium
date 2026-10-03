@@ -41,10 +41,6 @@ class CORE_EXPORT Navigator final : public NavigatorBase,
 
   bool webdriver() const;
 
-  String productSub() const;
-  String vendor() const;
-  String vendorSub() const;
-
   String platform() const override;
 
   String GetAcceptLanguages() override;

@@ -36,7 +36,8 @@ interface mixin NavigatorID {
     [MeasureAs=NavigatorAppVersion] readonly attribute DOMString appVersion;
     [MeasureAs=NavigatorPlatform] readonly attribute DOMString platform;
     readonly attribute DOMString product; // constant "Gecko"
-    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22555
-    // boolean taintEnabled(); // constant false
+    [Exposed=Window, MeasureAs=NavigatorProductSub] readonly attribute DOMString productSub;
     [MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
+    [Exposed=Window, MeasureAs=NavigatorVendor] readonly attribute DOMString vendor;
+    [Exposed=Window, MeasureAs=NavigatorVendorSub] readonly attribute DOMString vendorSub;
 };

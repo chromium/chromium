@@ -87,4 +87,21 @@ String NavigatorID::product() {
   return "Gecko";
 }
 
+String NavigatorID::productSub() const {
+  return "20030107";
+}
+
+String NavigatorID::vendor() const {
+  // Do not change without good cause. History:
+  // https://code.google.com/p/chromium/issues/detail?id=276813
+  // https://www.w3.org/Bugs/Public/show_bug.cgi?id=27786
+  // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/QrgyulnqvmE
+  // https://html.spec.whatwg.org/multipage/system-state.html#dom-navigator-vendor
+  return "Google Inc.";
+}
+
+String NavigatorID::vendorSub() const {
+  return "";
+}
+
 }  // namespace blink
