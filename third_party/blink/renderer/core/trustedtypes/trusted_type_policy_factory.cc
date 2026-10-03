@@ -6,6 +6,7 @@
 
 #include <iterator>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
@@ -51,8 +52,10 @@ typedef Vector<AttributeTypeEntry> AttributeTypeVector;
 
 AttributeTypeVector BuildAttributeVector() {
   const struct {
-    const QualifiedName& element;
-    const QualifiedName& attribute;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const QualifiedName& element;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const QualifiedName& attribute;
     SpecificTrustedType type;
   } kTypeTable[] = {{html_names::kEmbedTag, html_names::kSrcAttr,
                      SpecificTrustedType::kScriptURL},
@@ -109,7 +112,8 @@ const AttributeTypeVector& GetAttributeTypeVector() {
 AttributeTypeVector BuildPropertyVector() {
   const QualifiedName any_element(g_null_atom, g_star_atom, g_null_atom);
   const struct {
-    const QualifiedName& element;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const QualifiedName& element;
     const char* property;
     SpecificTrustedType type;
   } kTypeTable[] = {
