@@ -101,7 +101,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
         reflect: true,
       },
       isCobrowseEligible: {type: Boolean},
-      isHandshakeComplete: {type: Boolean},
       isUserSignedIn: {type: Boolean},
       onboardingTooltipShowing: {type: Boolean},
       contextualTasksEnableSpatialModelToolbarLayout_: {type: Boolean},
@@ -126,7 +125,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
   accessor isAimEligible: boolean = loadTimeData.getBoolean('isAimEligible');
   accessor isCobrowseEligible: boolean =
       loadTimeData.getBoolean('isCobrowseEligible');
-  accessor isHandshakeComplete: boolean = false;
   accessor permissionDashboardState: PermissionDashboardState|null = null;
   protected accessor isSidePanelRearchitectureEnabled_: boolean =
       loadTimeData.getBoolean('contextualTasksSidePanelRearchitectureEnabled');
@@ -175,9 +173,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
       }),
       callbackRouter.setExpandButtonEnabled.addListener((enabled: boolean) => {
         this.isExpandButtonEnabled = enabled;
-      }),
-      callbackRouter.onHandshakeComplete.addListener(() => {
-        this.isHandshakeComplete = true;
       }),
     ];
     this.toolbarListenerIds_ = [
@@ -294,9 +289,6 @@ export class TopToolbarElement extends TopToolbarElementBase {
         changedProperties.has('onboardingTooltipShowing')) {
       this.hideOverflowMenuButton_ =
           this.isAiPage && this.hideOverflowMenuOnAiPageEnabled_;
-      if (changedProperties.has('isAiPage') && !this.isAiPage) {
-        this.isHandshakeComplete = false;
-      }
       // <if expr="not is_android">
       if (this.isAiPage) {
         if (!this.onboardingTooltipShowing) {
