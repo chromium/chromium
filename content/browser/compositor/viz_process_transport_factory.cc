@@ -340,6 +340,12 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   if (!compositor)
     return;
 
+  // Windows refuses to launch new processes while ending the user session.
+  // Do not treat the resulting null channel as an unexpected GPU failure.
+  if (!gpu_channel_host && GpuProcessHost::IsSessionEnding()) {
+    return;
+  }
+
   bool gpu_compositing =
       !is_gpu_compositing_disabled_ && !compositor->force_software_compositor();
 

@@ -67,6 +67,11 @@ class GpuProcessHost final : public BrowserChildProcessHostDelegate,
       GpuProcessKind kind = GPU_PROCESS_KIND_SANDBOXED,
       bool force_create = true);
 
+  // Returns true while the OS is ending the user session (Windows logoff,
+  // shutdown, or restart). During session teardown, Windows kills child
+  // processes and refuses to start new ones, which says nothing about the GPU.
+  CONTENT_EXPORT static bool IsSessionEnding();
+
   GpuProcessHost(const GpuProcessHost&) = delete;
   GpuProcessHost& operator=(const GpuProcessHost&) = delete;
 

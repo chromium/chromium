@@ -585,18 +585,16 @@ void InitGpuPersistentCacheFileFactoryOnce() {
   }
 }
 
-// True while the OS is ending the user session (Windows logoff, shutdown,
-// restart): it is killing this browser's child processes and refuses to start
-// new ones, which says nothing about the GPU.
-bool IsSessionEnding() {
+}  // anonymous namespace
+
+// static
+bool GpuProcessHost::IsSessionEnding() {
 #if BUILDFLAG(IS_WIN)
   return ::GetSystemMetrics(SM_SHUTTINGDOWN) != 0;
 #else
   return false;
 #endif
 }
-
-}  // anonymous namespace
 
 // static
 bool GpuProcessHost::ValidateHost(GpuProcessHost* host) {
