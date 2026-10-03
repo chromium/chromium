@@ -134,9 +134,8 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // running (if `status_` is kDumpSucceeded or kDumpFailed).
   base::ElapsedLiveTimer elapsed_timer_;
 
-  // Measures the time it takes for a MemoryDumpProvider that's posted to
-  // execute on another thread to finish.
-  std::optional<base::ElapsedLiveTimer> post_task_timer_;
+  // The time at which this provider was posted to run on another thread.
+  std::optional<base::LiveTicks> post_task_time_;
 };
 
 }  // namespace base::trace_event

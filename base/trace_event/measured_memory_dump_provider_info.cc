@@ -63,10 +63,11 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
   if (provider_info_) {
     CHECK(num_following_providers_.has_value());
 
-    const base::TimeDelta total_time = elapsed_timer_.Elapsed();
-    const std::optional<base::TimeDelta> post_task_time =
-        post_task_timer_ ? std::make_optional(post_task_timer_->Elapsed())
-                         : std::nullopt;
+    base::LiveTicks now;
+    const base::TimeDelta total_time = elapsed_timer_.Elapsed(&now);
+    const std::optional<base::TimeDelta> post_task_delay =
+        post_task_time_ ? std::make_optional(now - *post_task_time_)
+                        : std::nullopt;
 
     const std::string provider_name = provider_info_->name.histogram_name();
     LogUmaHistograms(&base::UmaHistogramCounts100000, "FollowingProviders",
@@ -76,10 +77,10 @@ MeasuredMemoryDumpProviderInfo::~MeasuredMemoryDumpProviderInfo() {
                      provider_name, request_args_.level_of_detail, status_);
     LogUmaHistograms(&base::UmaHistogramMediumTimes, "TotalTime", provider_name,
                      request_args_.level_of_detail, total_time);
-    if (post_task_time) {
+    if (post_task_delay) {
       LogUmaHistograms(&base::UmaHistogramMediumTimes, "PostTaskTime",
                        provider_name, request_args_.level_of_detail,
-                       *post_task_time);
+                       *post_task_delay);
     }
   }
 }
@@ -93,9 +94,9 @@ MeasuredMemoryDumpProviderInfo& MeasuredMemoryDumpProviderInfo::operator=(
 void MeasuredMemoryDumpProviderInfo::SetStatus(Status status) {
   CHECK_NE(status, status_);
   if (status == Status::kPosted) {
-    // Start `post_task_timer_`.
-    CHECK(!post_task_timer_.has_value());
-    post_task_timer_.emplace();
+    // Start `post_task_time_`.
+    CHECK(!post_task_time_.has_value());
+    post_task_time_ = base::LiveTicks::Now();
   }
   status_ = status;
 }
