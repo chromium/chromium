@@ -95,7 +95,8 @@ class NotificationCardAccountAwarePasswordSigninPromoTest
 
     signin::AccountPreviewDataService::AccountPreviewPreference pref;
     pref.gaia_id = account_info.GetGaiaId();
-    pref.other_device_form_factor = form_factor;
+    pref.other_device_info.form_factor = form_factor;
+    pref.other_device_info.enabled_data_types.Put(syncer::PASSWORDS);
     if (include_passwords) {
       pref.preferred_data_types = {
           {.data_type = syncer::PASSWORDS,
