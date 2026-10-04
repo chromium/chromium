@@ -164,6 +164,8 @@ struct UrlInfo {
           const std::optional<std::string> previewText = std::nullopt);
   UrlInfo(const UrlInfo&);
   UrlInfo& operator=(const UrlInfo&);
+  UrlInfo(UrlInfo&&) noexcept;
+  UrlInfo& operator=(UrlInfo&&) noexcept;
   bool operator==(const UrlInfo& other) const {
     return url == other.url && title == other.title;
   }

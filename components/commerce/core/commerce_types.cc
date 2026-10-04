@@ -74,6 +74,8 @@ UrlInfo::UrlInfo(const GURL& url,
       previewText(std::move(previewText)) {}
 UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
+UrlInfo::UrlInfo(UrlInfo&&) noexcept = default;
+UrlInfo& UrlInfo::operator=(UrlInfo&&) noexcept = default;
 UrlInfo::~UrlInfo() = default;
 
 EntryPointInfo::EntryPointInfo(

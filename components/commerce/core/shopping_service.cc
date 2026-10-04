@@ -887,7 +887,8 @@ void ShoppingService::GetUrlInfosForWebWrappersWithProducts(
 const std::vector<UrlInfo>
 ShoppingService::GetUrlInfosForRecentlyViewedWebWrappers() {
   std::vector<UrlInfo> info_list;
-  for (auto info : recently_visited_tabs_) {
+  info_list.reserve(recently_visited_tabs_.size());
+  for (const auto& info : recently_visited_tabs_) {
     if (!info.url.SchemeIsHTTPOrHTTPS()) {
       continue;
     }
@@ -1593,6 +1594,15 @@ void ShoppingService::GetProductIdentifierForUrl(
 }
 
 void ShoppingService::UpdateRecentlyViewedURL(WebWrapper* web) {
+  // Viewing the most recent URL again only needs its title refreshed. Entries
+  // only carry a URL and a title, so this matches the erase and insert below
+  // without shifting the whole list.
+  if (!recently_visited_tabs_.empty() &&
+      recently_visited_tabs_.front().url == web->GetLastCommittedURL()) {
+    recently_visited_tabs_.front().title = web->GetTitle();
+    return;
+  }
+
   bool already_exists_in_recents = false;
   for (auto it = recently_visited_tabs_.begin();
        it != recently_visited_tabs_.end(); ++it) {

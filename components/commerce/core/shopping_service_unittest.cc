@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <string>
+#include <type_traits>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -686,6 +687,41 @@ TEST_P(ShoppingServiceTest, TestRecentUrls_NoDuplicates) {
   ASSERT_EQ(2u, urls.size());
   ASSERT_EQ(urls[0].url, GURL(url1));
   ASSERT_EQ(urls[1].url, GURL(url2));
+}
+
+// Viewing the URL at the head of the list again refreshes its title in place
+// and leaves the rest of the list untouched.
+TEST_P(ShoppingServiceTest, TestRecentUrls_ViewingHeadAgainUpdatesTitle) {
+  // UrlInfo needs real, non-throwing move operations. Without them, the
+  // recently viewed list deep copies its entries every time it is reordered.
+  static_assert(std::is_nothrow_move_constructible_v<UrlInfo>);
+  static_assert(std::is_nothrow_move_assignable_v<UrlInfo>);
+
+  const std::string url1 = "http://example.com/foo";
+  NiceMockWebWrapper web1(GURL(url1), false, nullptr, u"Old title");
+  NiceMockWebWrapper web1_renamed(GURL(url1), false, nullptr, u"New title");
+  const std::string url2 = "http://example.com/bar";
+  NiceMockWebWrapper web2(GURL(url2), false, nullptr, u"Bar");
+
+  OnWebWrapperSwitched(&web2);
+  OnWebWrapperSwitched(&web1);
+  OnWebWrapperSwitched(&web1_renamed);
+
+  std::vector<UrlInfo> urls =
+      shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
+  ASSERT_EQ(2u, urls.size());
+  EXPECT_EQ(GURL(url1), urls[0].url);
+  EXPECT_EQ(u"New title", urls[0].title);
+  EXPECT_EQ(GURL(url2), urls[1].url);
+  EXPECT_EQ(u"Bar", urls[1].title);
+
+  // Moving an entry that is not at the head to the front still works.
+  OnWebWrapperSwitched(&web2);
+  urls = shopping_service_->GetUrlInfosForRecentlyViewedWebWrappers();
+  ASSERT_EQ(2u, urls.size());
+  EXPECT_EQ(GURL(url2), urls[0].url);
+  EXPECT_EQ(GURL(url1), urls[1].url);
+  EXPECT_EQ(u"New title", urls[1].title);
 }
 
 // Make sure recent URLs doesn't go over the max size.
