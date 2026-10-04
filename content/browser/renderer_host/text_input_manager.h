@@ -76,7 +76,7 @@ class CONTENT_EXPORT TextInputManager {
     SelectionRegion();
     SelectionRegion(const SelectionRegion& other);
     SelectionRegion& operator=(const SelectionRegion& other);
-    bool operator==(const SelectionRegion& other) const = default;
+    bool operator==(const SelectionRegion& other) const;
 
     // The begining of the selection region.
     gfx::SelectionBound anchor;
@@ -309,6 +309,20 @@ class CONTENT_EXPORT TextInputManager {
   const gfx::Range* GetCompositionRangeForTesting() const;
 
  private:
+  struct ViewState {
+    ViewState();
+    ViewState(ViewState&&);
+    ViewState& operator=(ViewState&&);
+    ~ViewState();
+
+    ui::mojom::TextInputStatePtr text_input_state =
+        ui::mojom::TextInputState::New();
+    SelectionRegion selection_region;
+    std::optional<SelectionRegion> edit_context_selection_region;
+    CompositionRangeInfo composition_range_info;
+    TextSelection text_selection;
+  };
+
   // This class is used to create maps which hold specific IME state for a
   // view.
   template <class Value>
@@ -323,14 +337,10 @@ class CONTENT_EXPORT TextInputManager {
   // cannot have a |TextInputState.type| of ui::TEXT_INPUT_TYPE_NONE.
   raw_ptr<RenderWidgetHostViewBase> active_view_;
 
-  // The following maps track corresponding IME state for views. For each view,
-  // the values in the map are initialized and cleared in Register and
-  // Unregister methods, respectively.
-  ViewMap<ui::mojom::TextInputStatePtr> text_input_state_map_;
-  ViewMap<SelectionRegion> selection_region_map_;
-  ViewMap<std::optional<SelectionRegion>> edit_context_selection_region_map_;
-  ViewMap<CompositionRangeInfo> composition_range_info_map_;
-  ViewMap<TextSelection> text_selection_map_;
+  // Tracks IME state for registered views. For each view, the entry in the map
+  // is initialized and cleared in Register and Unregister methods,
+  // respectively.
+  ViewMap<ViewState> view_map_;
 #if BUILDFLAG(IS_WIN)
   ViewMap<blink::mojom::ProximateCharacterRangeBoundsPtr>
       proximate_character_bounds_map_;
