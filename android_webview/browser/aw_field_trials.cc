@@ -392,6 +392,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // DISABLED_TEMPORARY: crbug.com/515084572
   aw_feature_overrides.DisableFeature(
       net::features::kCloseQuicSessionsOnPreFreeze);
+
+  // DISABLED_TEMPORARY: b/568735242
+  aw_feature_overrides.DisableFeature(
+      blink::features::kDisconnectWebSocketOnBFCache);
 }
 
 void AwFieldTrials::EnableRuntimeMutableFeatures(

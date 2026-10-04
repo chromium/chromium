@@ -20804,6 +20804,21 @@
             ]
         }
     ],
+    "WebViewDisconnectWebSocketOnBFCacheKillSwitch": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled_EmergencyKillSwitch",
+                    "disable_features": [
+                        "DisconnectWebSocketOnBFCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewEarlyStartupTracing": [
         {
             "platforms": [
