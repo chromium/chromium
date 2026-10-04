@@ -2262,6 +2262,7 @@ Dit beleid is een tijdelijke maatregel om de functie te beheren en wordt verwijd
 <translation id="2479760962196319822">Met dit beleid wordt bepaald of <ph name="PRODUCT_OS_NAME" />-gebruikers gegevens wel of niet lokaal kunnen opslaan.
       Als je dit beleid instelt op Onwaar, wordt lokale opslag in <ph name="PRODUCT_OS_NAME" /> geblokkeerd. Gebruikers kunnen gegevens niet lokaal opslaan en hebben geen toegang tot lokale directory's.
       Als je dit beleid instelt op Waar of niet instelt, is lokale opslag in <ph name="PRODUCT_OS_NAME" /> toegestaan. Er gelden geen beperkingen voor waar gebruikers gegevens kunnen opslaan of tot welke directory's ze toegang hebben.</translation>
+<translation id="2481931731272002134">Sta generatieve AI-functies in Automatisch invullen toe en verbeter AI-modellen.</translation>
 <translation id="2482676533225429905">Systeemeigen berichten</translation>
 <translation id="2483146640187052324">Netwerkacties voorspellen voor elke netwerkverbinding</translation>
 <translation id="2487495476672607707">Met de bestandssynchronisatie van <ph name="PRODUCT_OS_NAME" /> worden <ph name="GOOGLE_DRIVE_NAME" />-bestanden in de Mijn Drive van een gebruiker automatisch offline beschikbaar gemaakt (als er genoeg ruimte is) op ondersteunde <ph name="CHROMEBOOK_PLUS_NAME" />-apparaten.
@@ -4705,6 +4706,7 @@ Overwegingen:
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
 <translation id="4032740546145417900">Sta Praten om te typen niet toe.</translation>
+<translation id="4035252407064087455">Sta generatieve AI-functies in Automatisch invullen toe zonder AI-modellen te verbeteren.</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="4047633048700722778">Als je dit beleid instelt, wordt de toepassing van het SafeSites URL-filter beheerd. Dit filter gebruikt de Google Safe Search API om URL's al dan niet te classificeren als pornografisch.
 
@@ -5894,6 +5896,7 @@ Als je het beleid niet toepast, wordt de promotie voor de extensie voor inloggeg
       <ph name="PAGE_SIZE_NAME" /> moet een van de vermelde indelingen bevatten of 'custom' als het vereiste papierformaat niet in de lijst staat. Als de waarde 'custom' is opgegeven, moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> worden gespecificeerd. Dit beschrijft de gewenste hoogte en breedte in micrometers. Anders moet de eigenschap <ph name="PAGE_SIZE_CUSTOM_SIZE" /> niet worden gespecificeerd. Beleid dat deze regels schendt, wordt genegeerd.
 
       Als het paginaformaat niet beschikbaar is op de printer die de gebruiker heeft gekozen, wordt dit beleid genegeerd.</translation>
+<translation id="4787894429283141328">Functies voor generatieve AI in Automatisch invullen niet toestaan.</translation>
 <translation id="4789450349513792856">Pop-ups blokkeren op deze sites</translation>
 <translation id="4790391579868456557">Essentiële en niet-essentiële cookies gebruiken voor zoeken.</translation>
 <translation id="4790588245699320140">De Google Assistent toegang geven tot schermcontext</translation>
@@ -6448,6 +6451,7 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
       </translation>
 <translation id="5118635822783657217">Updates uitzetten voor niet-kritieke componenten</translation>
 <translation id="5120168808610189805">Import van homepage bij eerste uitvoering aanzetten</translation>
+<translation id="5124321040285474825">Instellingen voor generatieve AI-functies in Automatisch invullen</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
 <translation id="5124652340668722849">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
 
@@ -8749,6 +8753,27 @@ De screensaver bestaat uit de afbeeldingen waarnaar wordt verwezen door het bele
 De time-out voor inactiviteit waarna de screensaver wordt gestart en het interval waarmee een afbeelding wordt getoond, kunnen worden aangepast met het beleid <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> en <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />. Als een van deze beleidsregels niet is ingesteld, worden de standaardwaarden van het beleid gebruikt.</translation>
 <translation id="651248769129998376">Geen installatieverzoeken voor extensies maken of uploaden naar de Beheerdersconsole</translation>
 <translation id="6513453889192806240">HTTPS-latentie</translation>
+<translation id="6514006253468048943">Deze functies in <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om gebruikers te helpen formulieren op internet in te vullen. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens verzamelen zoals de structuur van de formulieren waarmee een gebruiker interactie heeft en, voor Zoeken en invullen met Gemini, de vrije-tekstquery's die een gebruiker invoert om gekoppelde Gemini-apps te doorzoeken, en deze gegevens naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd.
+
+Als je het beleid instelt op 0 (Functies voor generatieve AI toestaan in Automatisch invullen en AI-modellen verbeteren), kunnen de functies worden gebruikt en kan Google relevante gegevens gebruiken om de AI-modellen te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer, bronmateriaal en geschreven feedback zijn, afhankelijk van de functie. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+Als je het beleid instelt op 1 (Functies voor generatieve AI in Automatisch invullen toestaan zonder AI-modellen te verbeteren), kunnen de functies worden gebruikt, maar kan Google geen modellen verbeteren met content van gebruikers (waaronder prompts, invoer, uitvoer, bronmateriaal en geschreven feedback). 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd via <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd via <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Als je het beleid instelt op 2 (Functies voor generatieve AI niet toestaan in Automatisch invullen), worden de functies niet toegestaan.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Functies voor generatieve AI in Automatisch invullen zijn onder andere:
+
+- Slimmer formulieren invullen: Gebruikt AI om de velden van een formulier te herkennen en te classificeren, zodat er meer kunnen worden ingevuld.
+
+- Zoeken en invullen met Gemini: Vindt informatie uit de apps die een gebruiker aan Gemini heeft gekoppeld en biedt deze aan om in te vullen, als proactieve suggesties op een formulier of als reactie op een vraag die de gebruiker schrijft.
+
+Dit beleid vervangt het beleid <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, dat nog steeds van toepassing is als dit beleid niet is ingesteld. Voor de functie Zoeken en invullen met Gemini mag het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" /> ook niet uitstaan.
+
+Dit beleid beheert geen functies voor automatisch invullen die geen generatieve AI gebruiken.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6515357889978918016"><ph name="PLUGIN_VM_NAME" />-afbeelding</translation>
 <translation id="6515520014183265350">Geef een lijst aan met oorsprongen die in een eigen proces worden uitgevoerd.
 

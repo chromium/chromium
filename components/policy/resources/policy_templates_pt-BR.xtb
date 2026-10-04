@@ -2341,6 +2341,7 @@ Esta política é uma medida temporária para controlar o recurso e será removi
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
       Se a política for definida como falsa, o armazenamento local no <ph name="PRODUCT_OS_NAME" /> será bloqueado. Os usuários não poderão armazenar dados localmente nem acessar diretórios locais.
       Se a política for definida como verdadeira ou deixada sem definição, o armazenamento local será permitido no <ph name="PRODUCT_OS_NAME" />. Não há restrições sobre onde os usuários podem armazenar dados ou quais diretórios eles podem acessar.</translation>
+<translation id="2481931731272002134">Permitir recursos de IA generativa no preenchimento automático e aprimorar os modelos de IA.</translation>
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
 <translation id="2487495476672607707">A sincronização de arquivos do <ph name="PRODUCT_OS_NAME" /> disponibiliza automaticamente
@@ -4866,6 +4867,7 @@ Importante:
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
 <translation id="4030152268425532846">Desativar o descarte do login automático</translation>
 <translation id="4032740546145417900">Não permitir o recurso de digitação por voz.</translation>
+<translation id="4035252407064087455">Permitir recursos de IA generativa no preenchimento automático sem aprimorar os modelos de IA.</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Se a política for definida, será possível controlar o filtro de URL SafeSites, que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
 
@@ -6112,6 +6114,7 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
       <ph name="PAGE_SIZE_NAME" /> precisa conter um dos formatos listados ou "personalizado" se o tamanho do papel exigido não estiver na lista. Se um valor "personalizado" for fornecido, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> precisará ser especificada. Ela descreve a altura e a largura desejadas em micrômetros. Caso contrário, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> não precisa ser especificada. A política que violar essas regras será ignorada.
 
       Se o tamanho da página não estiver disponível na impressora escolhida pelo usuário, esta política será ignorada.</translation>
+<translation id="4787894429283141328">Não permitir recursos de IA generativa no preenchimento automático.</translation>
 <translation id="4789450349513792856">Bloquear pop-ups nesses sites</translation>
 <translation id="4790391579868456557">Usa cookies essenciais e não essenciais na pesquisa.</translation>
 <translation id="4790588245699320140">Permitir que o Google Assistente acesse o contexto na tela</translation>
@@ -6705,6 +6708,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
       </translation>
 <translation id="5118635822783657217">Desativar atualizações de componentes não essenciais</translation>
 <translation id="5120168808610189805">Ativar a importação da página inicial na primeira execução</translation>
+<translation id="5124321040285474825">Configurações dos recursos de IA generativa no preenchimento automático</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
 <translation id="5124652340668722849">Configura uma lista de domínios de provisionamento (PvDs) que o <ph name="PRODUCT_NAME" /> vai usar para buscar configurações de proxy de maneira dinâmica.
 
@@ -9135,6 +9139,27 @@ O protetor de tela do usuário mostra as imagens referenciadas pela política <p
 O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de exibição de uma imagem podem ser modificados com as políticas <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> e <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Se uma dessas políticas for deixada sem definição, os valores padrão vão ser usados.</translation>
 <translation id="651248769129998376">Não criar nem fazer upload de solicitações para instalar extensões no Admin Console</translation>
 <translation id="6513453889192806240">Latência de HTTPS</translation>
+<translation id="6514006253468048943">Esses recursos no <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para ajudar os usuários a preencher formulários na web. O uso desses recursos exige que o <ph name="PRODUCT_NAME" /> colete dados, como a estrutura dos formulários com que o usuário interage e, no caso da opção "Encontrar e preencher com o Gemini", as consultas de texto livre que o usuário insere para pesquisar nos apps do Gemini conectados. Esses dados são enviados a um servidor do Google, que executa um modelo de IA generativa.
+
+Se a política for definida como 0 (permitir recursos de IA generativa no preenchimento automático e aprimorar os modelos de IA), os recursos serão habilitados e o Google poderá usar os dados relevantes para aprimorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Definir a política como 1 (permitir recursos de IA generativa no preenchimento automático sem aprimorar os modelos de IA) permite o uso dos recursos, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de fonte e feedback por escrito) para aprimorar os modelos. O valor padrão é 1 para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Definir a política como 2 (não permitir recursos de IA generativa no preenchimento automático) proíbe os recursos.
+
+Quando a política é deixada sem definição, a <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> determina o comportamento.
+
+Os recursos de IA generativa no preenchimento automático incluem:
+
+- Preenchimento inteligente de formulários: usa IA para identificar e classificar os campos de um formulário para que mais deles possam ser preenchidos.
+
+- Encontrar e preencher com o Gemini: localiza informações nos apps que o usuário conectou ao Gemini e as oferece para preenchimento, seja como sugestões proativas em um formulário ou em resposta a uma consulta que o usuário escreve.
+
+Esta política substitui a <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, que ainda é válida quando esta é deixada sem definição. A opção "Encontrar e preencher com o Gemini" também exige que a política <ph name="GEMINI_SETTINGS_POLICY_NAME" /> não esteja desativada.
+
+Esta política não controla os recursos de preenchimento automático que não usam IA generativa.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Especifique uma lista de origens que são executadas em um processo dedicado.
 

@@ -3561,7 +3561,7 @@
 <translation id="6957153644870901611">अझ धेरै फिल्डहरू स्वतः भर्न अटोफिल गर्ने परिष्कृत सुविधा अन गर्नुहोस्</translation>
 <translation id="6957887021205513506">सर्भरको प्रमाणपत्र जालसाजी जस्तो देखिन्छ।</translation>
 <translation id="6958564499836457428">आफ्नो Google खातामा गई Google का गोपनीयतासम्बन्धी सेटिङ मिलाउनुहोस्</translation>
-<translation id="6961161369573226336">Google पासवर्ड म्यानेजरले तपाईंको Gmail <ph name="EMAIL" /> बाट यी कोडहरू प्राप्त गर्न सक्छ। तपाईं आफ्नो निर्णय बदलेर <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" /> सक्नुहुन्छ।</translation>
+<translation id="6961161369573226336">Google पासवर्ड म्यानेजरले तपाईंको Gmail <ph name="EMAIL" /> बाट यी कोडहरू प्राप्त गर्न सक्छ। तपाईं आफ्नो निर्णय बदल्न र <ph name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="6961844873822989059">तपाईंको डिभाइसमा इन्स्टल गरिएका फन्ट प्रयोग गर्ने अनुमति माग्न सक्छ</translation>
 <translation id="6962858948849099922">सार्ने समय सकिएको छ</translation>
 <translation id="6963520811470373926">यसको साटो लागू गरिँदै छ</translation>
@@ -4900,7 +4900,7 @@
 <translation id="949026252328034572"><ph name="MEMBER_COUNT" /> जना सदस्य "<ph name="GROUP_NAME" />" ट्याब समूहमा सामेल हुनुभएको छ</translation>
 <translation id="949314938206378263">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावक Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
 <translation id="949484466204182817">Google Wallet मा रिड्रेस नम्बर हाल्नुहोस्</translation>
-<translation id="950533895669718124">सेटिङमा गई यो सुविधाका बारेमा थप जान्नुहोस्</translation>
+<translation id="950533895669718124">सेटिङमा गई यो सुविधाका बारेमा थप जान्न</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="950926967802086924">पासकी • Google पासवर्ड म्यानेजर</translation>
 <translation id="952165179818196872">एपहरू अदलबदल नगरिकनै भुक्तानी गर्न <ph name="PROVIDER" /> हाल्नुहोस्</translation>

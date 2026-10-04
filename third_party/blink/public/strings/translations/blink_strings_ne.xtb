@@ -4,7 +4,7 @@
 <translation id="1012241361789814178">डिबगर अर्को ट्याबमा पज गरिएको छ। सो ट्याबमा जान क्लिक गर्नुहोस्।</translation>
 <translation id="1171774979989969504">कृपया एउटा इमेल ठेगाना प्रविष्टि गर्नुहोस्।</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
-<translation id="1254779809141342904">यो CAP अलर्टले XSLT नामक प्रविधि प्रयोग गर्छ; उक्त सुविधा <ph name="REMOVAL_LINK" />। त्यस्तो अवस्थामा यो अलर्ट कच्चा XML डेटाका रूपमा देखाइने छ। तपाईं <ph name="EXTENSION_LINK" /> गर्न सक्नुहुन्छ। तपाईंले यसो गर्नुभयो भने तपाईं यो सामग्री हेरिराख्न सक्नुहुन्छ।</translation>
+<translation id="1254779809141342904">यो CAP अलर्टले XSLT नामक प्रविधि प्रयोग गर्छ; उक्त सुविधा <ph name="REMOVAL_LINK" /> छ। त्यस्तो अवस्थामा यो अलर्ट अप्रशोधित XML डेटाका रूपमा देखाइने छ। तपाईं <ph name="EXTENSION_LINK" /> गर्न सक्नुहुन्छ। तपाईंले यसो गर्नुभयो भने तपाईं यो अलर्ट हेरिराख्न सक्नुहुन्छ।</translation>
 <translation id="1306460908038601864">अफ छ</translation>
 <translation id="1311894908970423688">मान अनिवार्य रूपमा <ph name="VALUE_DATE_OR_TIME" /> हुनु पर्छ।</translation>
 <translation id="1588438908519853928">सामान्य</translation>
@@ -27,7 +27,7 @@
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> वा पछि हुनुरपर्छ।</translation>
 <translation id="2761667185364618470">यदि तपाईं अगाडि बढ्न चाहनुहुन्छ भने यस बाकसमा ठिक चिह्न लगाउनुहोस्।</translation>
-<translation id="2854734116215697908">यो ब्राउजरबाट हटाइएको छ</translation>
+<translation id="2854734116215697908">यो ब्राउजरबाट हटाइँदै</translation>
 <translation id="2908441821576996758">कृपया अल्पविरामले विभाजित गरिएको इमले ठेगानाहरूको सूची प्रविष्टि गर्नुहोस्।</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
 <translation id="3075154866155599887">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। क्षेत््र अपूर्ण छ वा त्यसमा एउटा अमान्य मिति छ।</translation>
@@ -62,7 +62,7 @@
 <translation id="5537725057119320332">कास्ट गर्नु</translation>
 <translation id="5630795885300617244">१० सेकेन्ड छाडेर अगाडि पछाडि जान बायाँ वा दायाँतिर डबल ट्याप गर्नुहोस्</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
-<translation id="5855560023261018690">यो ब्राउजरबाट चाँडै नै हटाइने छ</translation>
+<translation id="5855560023261018690">यो ब्राउजरबाट चाँडै नै हटाइँदै</translation>
 <translation id="5868587040512539609">भिडियो ट्र्याकहरू</translation>
 <translation id="588258955323874662">पूर्णस्क्रिन</translation>
 <translation id="5888666972993069672">अहिले <ph name="DEVICE_FRIENDLY_NAME" /> मा casting गर्दै</translation>
@@ -72,7 +72,7 @@
 <translation id="6310801910862476708">Picture-in-Picture बाट बाहिरिनुहोस्‌</translation>
 <translation id="6484738902856791350">प्रिटी प्रिन्ट गर्नुहोस्</translation>
 <translation id="6550675742724504774">विकल्पहरू</translation>
-<translation id="65574987622079584">ब्राउजर एक्स्टेन्सन इन्स्टल गर्नुहोस्</translation>
+<translation id="65574987622079584">एउटा ब्राउजर एक्स्टेन्सन इन्स्टल</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6661136971638885481">ट्र्याक #<ph name="TRACK_NUMBER" /></translation>
 <translation id="668171684555832681">अन्य...</translation>
@@ -104,7 +104,7 @@
 <translation id="8637593834423658414">१.७५</translation>
 <translation id="8668988909814782445">लाइन र्‍याप गर्नुहोस्</translation>
 <translation id="8750798805984357768">कृपया यी विकल्पहरू मध्ये एउटा चयन गर्नुहोस्।</translation>
-<translation id="8753001114009816390">यो साइटले XSLT प्रयोग गर्छ; उक्त सुविधा <ph name="REMOVAL_LINK" />। त्यसो भएमा यो पेज सम्भवतः सही तरिकाले देखिने छैन। तपाईं <ph name="EXTENSION_LINK" /> गर्न सक्नुहुन्छ। तपाईंले यसो गर्नुभयो भने तपाईं यो सामग्री हेरिराख्न सक्नुहुन्छ। अन्यथा तपाईंले यस सम्बन्धमा थप जानकारी प्राप्त गर्न साइटका मेन्टेनरलाई सम्पर्क गर्नु पर्ने हुन्छ।</translation>
+<translation id="8753001114009816390">यो साइटले XSLT प्रयोग गर्छ; उक्त सुविधा <ph name="REMOVAL_LINK" /> छ। त्यसो भएमा यो पेज सम्भवतः सही तरिकाले देखिने छैन। तपाईं <ph name="EXTENSION_LINK" /> गर्न सक्नुहुन्छ। तपाईंले यसो गर्नुभयो भने तपाईं यो पेज हेरिराख्न सक्नुहुन्छ। अन्यथा, तपाईंले यस सम्बन्धमा थप जानकारी प्राप्त गर्न साइटका मेन्टेनरलाई सम्पर्क गर्नु पर्ने हुन्छ।</translation>
 <translation id="8845239796550121995">हाल तपाईंको टिभी मा cast गर्दै</translation>
 <translation id="8875657656876809964">भिडियो प्लेब्याकसम्बन्धी त्रुटि</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> केबी</translation>
