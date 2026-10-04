@@ -128,6 +128,21 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
                 'allowed': True,
                 'path': 'third_party/blink/common/safe_url_pattern.cc',
             },
+            {
+                'type': 'v8::Local',
+                'allowed': True,
+                'path': 'third_party/blink/public/platform/web_url.h',
+            },
+            {
+                'type': 'v8::Local',
+                'allowed': True,
+                'path': 'third_party/blink/public/web/web_node.h',
+            },
+            {
+                'type': 'v8::Local',
+                'allowed': False,
+                'path': 'third_party/blink/public/common/safe_url_pattern.h',
+            },
         ]
         for item in check_list:
             # Make sure that the identifier we're testing is parsed
