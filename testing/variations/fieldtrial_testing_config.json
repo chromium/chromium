@@ -10289,6 +10289,24 @@
             ]
         }
     ],
+    "IOSAimButtonRefactor": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "FocusComposeboxAimQuickAction",
+                    "params": {
+                        "aim-button-refactor-arm": "1"
+                    },
+                    "enable_features": [
+                        "AimButtonRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSAppSwitcherAISummarization": [
         {
             "platforms": [
