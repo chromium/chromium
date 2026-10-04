@@ -211,11 +211,10 @@ void TextTrackContainer::UpdateDisplay(HTMLMediaElement& media_element,
   // corresponding CSS boxes added to output, in text track cue order, run the
   // following substeps:
   double movie_time = video.currentTime();
-  for (const auto& active_cue : active_cues) {
-    TextTrackCue* cue = active_cue.Data();
-
+  for (const auto& cue : active_cues) {
     // Cues may have been deactivated or removed if synchronous script ran
-    // during a previous iteration (e.g., via video.load()).
+    // during a previous iteration (e.g., via video.load() or
+    // track.removeCue()).
     if (!cue->IsActive() || !cue->track() || !cue->track()->IsRendered()) {
       continue;
     }
