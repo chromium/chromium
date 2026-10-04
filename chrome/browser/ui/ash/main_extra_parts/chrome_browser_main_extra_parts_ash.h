@@ -62,6 +62,10 @@ namespace policy {
 class DisplaySettingsHandler;
 }
 
+namespace ui {
+class HeatmapPalmDetector;
+}
+
 class AccessibilityControllerClient;
 class AppAccessNotifier;
 class AppListClientImpl;
@@ -183,6 +187,8 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<chromeos::MahiMediaAppContentManager>
       mahi_media_app_content_manager_;
   std::optional<ash::LoginReadaheadPerformer> login_readahead_performer_;
+
+  std::unique_ptr<ui::HeatmapPalmDetector> heatmap_palm_detector_;
 
   std::unique_ptr<internal::ChromeShelfControllerInitializer>
       chrome_shelf_controller_initializer_;

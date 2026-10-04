@@ -436,8 +436,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
       ash::SystemGeolocationSource::
           CreateGeolocationSystemPermissionManagerOnAsh());
 
-  ui::HeatmapPalmDetector::SetInstance(
-      std::make_unique<ash::HeatmapPalmDetectorImpl>());
+  heatmap_palm_detector_ = std::make_unique<ash::HeatmapPalmDetectorImpl>();
 
   // Required by `read_write_cards_manager_` and
   // `mahi_media_app_content_manager_`.
@@ -636,6 +635,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
     device::GeolocationSystemPermissionManager::GetInstance()->Shutdown();
   }
   device::GeolocationSystemPermissionManager::SetInstance(nullptr);
+
+  heatmap_palm_detector_.reset();
 
   settings_window_manager_.reset();
   system_tray_client_.reset();

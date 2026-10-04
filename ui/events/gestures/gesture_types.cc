@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "ui/events/gestures/gesture_types.h"
+
+#include "base/no_destructor.h"
 #include "ui/events/gestures/gesture_provider_aura.h"
 
 namespace ui {
@@ -15,8 +17,8 @@ bool GestureConsumer::RequiresDoubleTapGestureEvents() const {
 }
 
 const std::string& GestureConsumer::GetName() const {
-  static const std::string name("GestureConsumer");
-  return name;
+  static const base::NoDestructor<std::string> name("GestureConsumer");
+  return *name;
 }
 
 std::unique_ptr<GestureProviderAura> GestureConsumer::TakeProvider() {

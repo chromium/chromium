@@ -4,15 +4,24 @@
 
 #include "ui/events/ozone/evdev/heatmap_palm_detector.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
+
 namespace ui {
 
 namespace {
-std::unique_ptr<HeatmapPalmDetector> g_instance = nullptr;
+HeatmapPalmDetector* g_instance = nullptr;
 }  // namespace
 
-HeatmapPalmDetector::HeatmapPalmDetector() = default;
+HeatmapPalmDetector::HeatmapPalmDetector() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-HeatmapPalmDetector::~HeatmapPalmDetector() = default;
+HeatmapPalmDetector::~HeatmapPalmDetector() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 HeatmapPalmDetector::TouchRecord::TouchRecord(
     base::Time timestamp,
@@ -26,13 +35,9 @@ HeatmapPalmDetector::TouchRecord::TouchRecord(
 
 HeatmapPalmDetector::TouchRecord::~TouchRecord() = default;
 
-void HeatmapPalmDetector::SetInstance(
-    std::unique_ptr<HeatmapPalmDetector> detector) {
-  g_instance = std::move(detector);
-}
-
+// static
 HeatmapPalmDetector* HeatmapPalmDetector::GetInstance() {
-  return g_instance.get();
+  return g_instance;
 }
 
 }  // namespace ui

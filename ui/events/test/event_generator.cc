@@ -16,6 +16,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
@@ -84,8 +85,6 @@ ui::TouchEvent CreateTestTouchEvent(ui::EventType type,
 
 const int kAllButtonMask = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_RIGHT_MOUSE_BUTTON;
 
-EventGeneratorDelegate::FactoryFunction g_event_generator_delegate_factory;
-
 bool g_event_generator_allowed = true;
 
 struct ModifierKey {
@@ -100,11 +99,16 @@ constexpr ModifierKey kModifierKeys[] = {
     {VKEY_LWIN, EF_COMMAND_DOWN},
 };
 
+EventGeneratorDelegate::FactoryFunction& GetEventGeneratorDelegateFactory() {
+  static base::NoDestructor<EventGeneratorDelegate::FactoryFunction> factory;
+  return *factory;
+}
+
 }  // namespace
 
 // static
 void EventGeneratorDelegate::SetFactoryFunction(FactoryFunction factory) {
-  g_event_generator_delegate_factory = std::move(factory);
+  GetEventGeneratorDelegateFactory() = std::move(factory);
 }
 
 // static
@@ -768,8 +772,8 @@ void EventGenerator::Init(gfx::NativeWindow root_window,
   tick_clock_ = std::make_unique<TestTickClock>();
   ui::SetEventTickClockForTesting(tick_clock_.get());
   if (!delegate_) {
-    DCHECK(g_event_generator_delegate_factory);
-    delegate_ = g_event_generator_delegate_factory.Run(this, root_window,
+    DCHECK(GetEventGeneratorDelegateFactory());
+    delegate_ = GetEventGeneratorDelegateFactory().Run(this, root_window,
                                                        target_window);
   }
   if (target_window)

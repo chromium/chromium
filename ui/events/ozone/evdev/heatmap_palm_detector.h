@@ -49,8 +49,8 @@ class COMPONENT_EXPORT(EVDEV) HeatmapPalmDetector {
     std::vector<int> tracking_ids;
   };
 
-  static void SetInstance(std::unique_ptr<HeatmapPalmDetector> detector);
-
+  // Returns the live detector, if any. A detector registers itself on
+  // construction and unregisters on destruction; at most one may exist.
   static HeatmapPalmDetector* GetInstance();
 
   HeatmapPalmDetector();
