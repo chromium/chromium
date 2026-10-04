@@ -71,7 +71,6 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
 
   void UpdatePowerPolicyFromPrefs();
-  void UpdatePowerPolicyFromPrefsChange();
 
   // Observes either the signin screen prefs or active user prefs and loads
   // initial settings.
@@ -98,9 +97,6 @@ class ASH_EXPORT PowerPrefs : public chromeos::PowerManagerClient::Observer,
   // Time at which the screen was last turned off due to user inactivity.
   // Unset if the screen isn't currently turned off due to user inactivity.
   base::TimeTicks screen_idle_off_time_;
-
-  // The last observed quick dim state for the current pref service.
-  bool quick_dim_pref_enabled_ = false;
 
   raw_ptr<PrefService> local_state_ = nullptr;  // Not owned.
 };

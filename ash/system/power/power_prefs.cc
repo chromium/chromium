@@ -11,12 +11,10 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/system/human_presence/lock_on_leave_controller.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "chromeos/ash/components/human_presence/human_presence_configuration.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -36,8 +34,6 @@ using PeakShiftDayConfig =
 
 using AdvancedBatteryChargeModeDayConfig =
     power_manager::PowerManagementPolicy::AdvancedBatteryChargeModeDayConfig;
-
-namespace qd_metrics = ash::quick_dim_metrics;
 
 chromeos::PowerPolicyController::Action GetPowerPolicyAction(
     const PrefService* prefs,
@@ -274,23 +270,6 @@ void PowerPrefs::OnActiveUserPrefServiceChanged(PrefService* prefs) {
   ObservePrefs(prefs);
 }
 
-void PowerPrefs::UpdatePowerPolicyFromPrefsChange() {
-  PrefService* prefs = GetPrefService();
-  if (!prefs) {
-    return;
-  }
-
-  bool new_quick_dim_pref_enabled =
-      prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
-  if (quick_dim_pref_enabled_ != new_quick_dim_pref_enabled) {
-    quick_dim_pref_enabled_ = new_quick_dim_pref_enabled;
-    base::UmaHistogramBoolean(qd_metrics::kEnabledHistogramName,
-                              quick_dim_pref_enabled_);
-  }
-
-  UpdatePowerPolicyFromPrefs();
-}
-
 void PowerPrefs::UpdatePowerPolicyFromPrefs() {
   PrefService* prefs = GetPrefService();
   if (!prefs || !local_state_) {
@@ -488,13 +467,9 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
 }
 
 void PowerPrefs::ObservePrefs(PrefService* prefs) {
-  // Store initial state of the quick dim preference to detect whether it has
-  // been manually flipped.
-  quick_dim_pref_enabled_ = prefs->GetBoolean(prefs::kPowerQuickDimEnabled);
-
   // Observe pref updates from policy.
   base::RepeatingClosure update_callback(base::BindRepeating(
-      &PowerPrefs::UpdatePowerPolicyFromPrefsChange, base::Unretained(this)));
+      &PowerPrefs::UpdatePowerPolicyFromPrefs, base::Unretained(this)));
 
   profile_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_registrar_->Init(prefs);

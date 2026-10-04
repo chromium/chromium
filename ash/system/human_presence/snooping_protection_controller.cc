@@ -11,12 +11,10 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/system/human_presence/snooping_protection_notification_blocker.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/hps/hps_service.pb.h"
@@ -30,8 +28,6 @@
 #include "ui/message_center/message_center.h"
 
 namespace ash {
-
-namespace metrics = ash::snooping_protection_metrics;
 
 SnoopingProtectionController::SnoopingProtectionController()
     : notification_blocker_(
@@ -82,10 +78,6 @@ SnoopingProtectionController::~SnoopingProtectionController() {
 
   for (auto& observer : observers_)
     observer.OnSnoopingProtectionControllerDestroyed();
-
-  // We want to log current presence/absence duration since we'll not get
-  // another event anymore.
-  LogPresenceWindow(state_.present);
 }
 
 // static
@@ -173,13 +165,6 @@ void SnoopingProtectionController::OnRestart() {
 }
 
 void SnoopingProtectionController::OnShutdown() {
-  // Log current presence window and reset the report time so that the next
-  // present/absent duration will not be logged, because the duration will be
-  // incorrect.
-  // This has to be done before UpdateSnooperStatus below.
-  LogPresenceWindow(state_.present);
-  last_presence_report_time_ = base::TimeTicks();
-
   State new_state = state_;
   new_state.service_available = false;
 
@@ -216,12 +201,6 @@ void SnoopingProtectionController::UpdateSnooperStatus(const State& new_state) {
   clean_state.within_pos_window =
       new_state.within_pos_window && detection_active;
 
-  // If the present state changes to false while within_pos_window, we would
-  // have got a flakey disappearing of the eyecon without pos_window.
-  if (clean_state.within_pos_window && !clean_state.present) {
-    base::UmaHistogramBoolean("ChromeOS.HPS.SnoopingProtection.FlakeyDetection",
-                              false);
-  }
   const bool was_present = SnooperPresent();
   state_ = clean_state;
   const bool is_present = SnooperPresent();
@@ -229,7 +208,6 @@ void SnoopingProtectionController::UpdateSnooperStatus(const State& new_state) {
   if (was_present == is_present)
     return;
 
-  LogPresenceWindow(was_present);
   for (auto& observer : observers_)
     observer.OnSnoopingStatusChanged(is_present);
 }
@@ -304,9 +282,6 @@ void SnoopingProtectionController::StartServiceObservation(
 }
 
 // This callback almost always runs as the service is starting up.
-// LogPresenceWindow is purposefully not called inside ths function, because
-// during startup the service reports an UNKNOWN state, so there's a risk of
-// logging a spurious window of absence.
 void SnoopingProtectionController::UpdateServiceState(
     std::optional<hps::HpsResultProto> response) {
   LOG_IF(WARNING, !response.has_value())
@@ -341,38 +316,12 @@ void SnoopingProtectionController::UpdatePrefState() {
 
   ReconfigureService(&new_state);
   UpdateSnooperStatus(new_state);
-  base::UmaHistogramBoolean(metrics::kEnabledHistogramName, pref_enabled);
 }
 
 void SnoopingProtectionController::OnMinWindowExpired() {
   State new_state = state_;
   new_state.within_pos_window = false;
   UpdateSnooperStatus(new_state);
-}
-
-void SnoopingProtectionController::LogPresenceWindow(bool was_present) {
-  const auto now = base::TimeTicks::Now();
-
-  // Set last_presence_report_time_ and return if it is the first time reported.
-  if (last_presence_report_time_.is_null()) {
-    last_presence_report_time_ = now;
-    return;
-  }
-
-  const auto time_since_last_report = now - last_presence_report_time_;
-  last_presence_report_time_ = now;
-
-  if (was_present) {
-    base::UmaHistogramCustomTimes(metrics::kPositiveDurationHistogramName,
-                                  time_since_last_report, metrics::kDurationMin,
-                                  metrics::kPositiveDurationMax,
-                                  metrics::kDurationNumBuckets);
-  } else {
-    base::UmaHistogramCustomTimes(metrics::kNegativeDurationHistogramName,
-                                  time_since_last_report, metrics::kDurationMin,
-                                  metrics::kNegativeDurationMax,
-                                  metrics::kDurationNumBuckets);
-  }
 }
 
 }  // namespace ash

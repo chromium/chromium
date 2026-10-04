@@ -15,7 +15,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/human_presence/human_presence_metrics.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/human_presence/snooping_protection_notification_blocker_internal.h"
 #include "ash/system/model/system_tray_model.h"
@@ -25,7 +24,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -39,8 +37,6 @@
 namespace ash {
 
 namespace {
-
-namespace metrics = ash::snooping_protection_metrics;
 
 constexpr char kNotifierId[] = "hps-notify";
 
@@ -136,13 +132,6 @@ void SnoopingProtectionNotificationBlocker::OnBlockingActiveChanged() {
 }
 
 void SnoopingProtectionNotificationBlocker::OnBlockingPrefChanged() {
-  DCHECK(pref_change_registrar_);
-  DCHECK(pref_change_registrar_->prefs());
-  const bool pref_enabled = pref_change_registrar_->prefs()->GetBoolean(
-      prefs::kSnoopingProtectionNotificationSuppressionEnabled);
-  base::UmaHistogramBoolean(
-      metrics::kNotificationSuppressionEnabledHistogramName, pref_enabled);
-
   OnBlockingActiveChanged();
 }
 

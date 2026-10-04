@@ -1893,7 +1893,6 @@ component("ash") {
     "system/hotspot/hotspot_notifier.h",
     "system/hotspot/hotspot_tray_view.cc",
     "system/hotspot/hotspot_tray_view.h",
-    "system/human_presence/human_presence_metrics.h",
     "system/human_presence/human_presence_orientation_controller.cc",
     "system/human_presence/human_presence_orientation_controller.h",
     "system/human_presence/lock_on_leave_controller.cc",
