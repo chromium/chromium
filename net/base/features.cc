@@ -162,9 +162,9 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 
 BASE_FEATURE(kCacheControlImmutable, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHttpCacheZstdDecompression, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHttpCacheZstdDecompression, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHttpCacheZstdCompression, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kHttpCacheZstdCompression, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRendererAccessibleHttpCache, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
