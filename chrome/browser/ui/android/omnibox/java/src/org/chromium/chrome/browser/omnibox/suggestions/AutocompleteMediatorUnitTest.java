@@ -1898,6 +1898,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTextChanged_cachedZpsEligibleOnSelectPageClasses() {
         Set<@PageClassification Integer> eligibleClasses =
                 Set.of(
@@ -1924,6 +1925,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTextChanged_cachedZpsNotInvokedInTypedContext() {
         var session = createSession(PAGE_URL, PAGE_TITLE, 0);
         mMediator.beginInput(session);
@@ -1944,6 +1946,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTextChanged_cacheZpsFromEligiblePageClasses() {
         Set<@PageClassification Integer> eligibleClasses =
                 Set.of(
@@ -1970,6 +1973,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTextChanged_dontCacheTypedSuggestions() {
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;
@@ -1983,6 +1987,7 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
     public void onTextChanged_dontCacheCachedSuggestions() {
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
                 pageClass <= PageClassification.MAX_VALUE;

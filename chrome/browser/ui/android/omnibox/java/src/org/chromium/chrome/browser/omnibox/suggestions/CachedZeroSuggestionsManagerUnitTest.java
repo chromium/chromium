@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
@@ -39,6 +40,7 @@ import java.util.List;
 
 /** Unit tests for {@link CachedZeroSuggestionsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
 public class CachedZeroSuggestionsManagerUnitTest {
     private static final @PageClassification int PAGE_CLASS = PageClassification.INVALID_SPEC;
     private static final AutocompleteResult EMPTY_RESULT = AutocompleteResult.fromCache(null, null);

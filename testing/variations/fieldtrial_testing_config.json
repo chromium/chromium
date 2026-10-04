@@ -16927,6 +16927,21 @@
             ]
         }
     ],
+    "ServeJavaCachedZeroSuggest": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ServeJavaCachedZeroSuggest"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerBackgroundUpdate": [
         {
             "platforms": [

@@ -35,12 +35,45 @@ import java.util.List;
 /** This is the place where we define these: List of Omnibox features and parameters. */
 @NullMarked
 public class OmniboxFeatures {
-    @IntDef({FeatureState.DISABLED, FeatureState.ENABLED_IN_TEST, FeatureState.ENABLED_IN_PROD})
+    /**
+     * Specifies the default state of a {@link CachedFlag} in production and in tests.
+     *
+     * <p>Because {@link CachedFlag} may be queried before native is initialized, it requires both
+     * the production default (matching {@code omnibox_features.cc}) and the test/developer-build
+     * default (matching {@code fieldtrial_testing_config.json}) to be known statically in Java.
+     */
+    @IntDef({
+        FeatureState.DISABLED_IN_PROD,
+        FeatureState.DISABLED_IN_TEST,
+        FeatureState.ENABLED_IN_TEST,
+        FeatureState.ENABLED_IN_PROD
+    })
     @Retention(RetentionPolicy.SOURCE)
     @interface FeatureState {
-        int DISABLED = 0;
-        int ENABLED_IN_TEST = 1;
-        int ENABLED_IN_PROD = 2;
+        /**
+         * Disabled in both production ({@code omnibox_features.cc}) and tests (not enabled in
+         * {@code fieldtrial_testing_config.json}).
+         */
+        int DISABLED_IN_PROD = 0;
+
+        /**
+         * Enabled by default in production ({@code omnibox_features.cc}), but disabled in tests via
+         * {@code fieldtrial_testing_config.json} (e.g. when evaluating a feature deprecation or
+         * holdback).
+         */
+        int DISABLED_IN_TEST = 1;
+
+        /**
+         * Disabled by default in production ({@code omnibox_features.cc}), but enabled in tests via
+         * {@code fieldtrial_testing_config.json} (e.g. when rolling out a new feature).
+         */
+        int ENABLED_IN_TEST = 2;
+
+        /**
+         * Enabled in both production ({@code omnibox_features.cc}) and tests (not disabled in
+         * {@code fieldtrial_testing_config.json}).
+         */
+        int ENABLED_IN_PROD = 3;
     }
 
     // LINT.IfChange(OmniboxJumpStartState)
@@ -92,7 +125,7 @@ public class OmniboxFeatures {
     public static final CachedFlag sPrefetchSelectedSuggestionsOmtAndroid =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_PREFETCH_SELECTED_SUGGESTIONS_OMT_ANDROID,
-                    FeatureState.DISABLED);
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxSearchPrefetchOnEnterKeyDown =
             newFlag(
@@ -141,7 +174,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
 
     public static final CachedFlag sForceAndroidRealbox =
-            newFlag(OmniboxFeatureList.FORCE_ANDROID_REALBOX, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.FORCE_ANDROID_REALBOX, FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sDebounceKeyboardVisibility =
             newFlag(
@@ -178,25 +211,27 @@ public class OmniboxFeatures {
     public static final CachedFlag sFuseboxUserEdModelSubtitles =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_MODEL_SUBTITLES,
-                    FeatureState.DISABLED);
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sFuseboxUserEdPlusButtonIph =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_PLUS_BUTTON_IPH,
-                    FeatureState.DISABLED);
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sFuseboxUserEdTabPickerIph =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_TAB_PICKER_IPH,
-                    FeatureState.DISABLED);
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sFuseboxUserEdFakeboxAnimation =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_FAKEBOX_ANIMATION,
-                    FeatureState.DISABLED);
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sFuseboxUserEdGuidedTour =
-            newFlag(OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_GUIDED_TOUR, FeatureState.DISABLED);
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_FUSEBOX_USER_ED_GUIDED_TOUR,
+                    FeatureState.DISABLED_IN_PROD);
 
     public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "multi_context", true);
@@ -287,10 +322,10 @@ public class OmniboxFeatures {
     public static final CachedFlag sServeJavaCachedZeroSuggest =
             newFlag(
                     OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST,
-                    FeatureState.ENABLED_IN_PROD);
+                    FeatureState.DISABLED_IN_TEST);
 
     public static final CachedFlag sResetSuggestionsScroll =
-            newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.RESET_SUGGESTIONS_SCROLL, FeatureState.DISABLED_IN_PROD);
 
     public static final CachedFlag sOmniboxDisableTabsForCanvas =
             newFlag(
@@ -346,7 +381,7 @@ public class OmniboxFeatures {
 
     // Omnibox Diagnostics
     private static final CachedFlag sDiagnostics =
-            newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.DIAGNOSTICS, FeatureState.DISABLED_IN_PROD);
     public static final BooleanCachedFeatureParam sDiagInputConnection =
             newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
 
@@ -364,8 +399,10 @@ public class OmniboxFeatures {
                 new CachedFlag(
                         OmniboxFeatureMap.getInstance(),
                         featureName,
-                        /* defaultValue= */ state == FeatureState.ENABLED_IN_PROD,
-                        /* defaultValueInTests= */ state != FeatureState.DISABLED);
+                        /* defaultValue= */ state == FeatureState.ENABLED_IN_PROD
+                                || state == FeatureState.DISABLED_IN_TEST,
+                        /* defaultValueInTests= */ state == FeatureState.ENABLED_IN_PROD
+                                || state == FeatureState.ENABLED_IN_TEST);
         sCachedFlags.add(cachedFlag);
         return cachedFlag;
     }
