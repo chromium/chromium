@@ -606,6 +606,7 @@ void TabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
       EndDrag(EndDragReason::kCancel);
       break;
 
+    case ui::EventType::kGestureScrollBegin:
     case ui::EventType::kGestureScrollUpdate:
       ContinueDrag(*this, *event);
       break;

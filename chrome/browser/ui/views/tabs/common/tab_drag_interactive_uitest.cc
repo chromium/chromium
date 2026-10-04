@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/common/unpinned_tab_container_view.h"
@@ -42,12 +43,17 @@
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interactive_views_test.h"
 #include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_utils.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -461,6 +467,61 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
                   tab_strip_model->GetWebContentsAt(2)->GetURL());
       }));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, TouchTapSelectsTab) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUIBookmarksURL), 1),
+      Do([&]() {
+        tab_strip_model->ActivateTabAt(0);
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 0),
+      Do([&]() {
+        tabs::TabInterface* tab1 = tab_strip_model->GetTabAtIndex(1);
+        RootTabCollectionNode* root_node =
+            GetBrowserView()
+                .vertical_tab_strip_region_view_for_testing()
+                ->root_node_for_testing();
+        views::View* tab1_view =
+            root_node->GetNodeForHandle(tab1->GetHandle())->view();
+        gfx::Point tap_point = tab1_view->GetBoundsInScreen().CenterPoint();
+
+        // Simulate realistic finger touch with radius and slight movement
+        // exceeding ChromeOS 6px touch slop.
+        ui::test::EventGenerator generator(
+            views::GetRootWindow(GetBrowserView().GetWidget()),
+            GetBrowserView().GetNativeWindow());
+        generator.SetTouchRadius(15, 15);
+        generator.PressTouch(tap_point);
+        generator.MoveTouchBy(10, 0);
+        generator.ReleaseTouch();
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 1),
+      Do([&]() {
+        tabs::TabInterface* tab0 = tab_strip_model->GetTabAtIndex(0);
+        RootTabCollectionNode* root_node =
+            GetBrowserView()
+                .vertical_tab_strip_region_view_for_testing()
+                ->root_node_for_testing();
+        views::View* tab0_view =
+            root_node->GetNodeForHandle(tab0->GetHandle())->view();
+        gfx::Point tap_point = tab0_view->GetBoundsInScreen().CenterPoint();
+
+        // Simulate stylus/pen tap with slight movement exceeding touch slop.
+        ui::test::EventGenerator generator(
+            views::GetRootWindow(GetBrowserView().GetWidget()),
+            GetBrowserView().GetNativeWindow());
+        generator.SetTouchPointerType(ui::EventPointerType::kPen);
+        generator.PressTouch(tap_point);
+        generator.MoveTouchBy(8, 0);
+        generator.ReleaseTouch();
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 0));
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, CancelDragWithinUnpinnedContainer) {
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
@@ -1642,6 +1703,15 @@ class HorizontalTabDragTest : public InteractiveBrowserTest {
         Do([this]() { views::test::RunScheduledLayout(&GetBrowserView()); }));
   }
 
+  void DispatchGestureToView(views::View* view,
+                             const ui::GestureEventDetails& details) {
+    gfx::Point point_in_widget = view->GetLocalBounds().CenterPoint();
+    views::View::ConvertPointToWidget(view, &point_in_widget);
+    ui::GestureEvent event(point_in_widget.x(), point_in_widget.y(), 0,
+                           ui::EventTimeForNow(), details);
+    GetBrowserView().GetWidget()->OnGestureEvent(&event);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   gfx::AnimationTestApi::RenderModeResetter disable_animation_ =
@@ -1689,6 +1759,147 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragMultipleCompressedTabs) {
                   strip_collective_width);
       }),
       ReleaseMouse(), WaitForState(kDragStatePoller, false));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, TouchTapSelectsTab) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+  RunTestSequence(
+      Do([&]() {
+        chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                         /*foreground=*/false);
+        views::test::RunScheduledLayout(&GetBrowserView());
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 0),
+      Do([&]() {
+        views::View* tab1_view = GetTabViewAt(1);
+        ASSERT_NE(nullptr, tab1_view);
+        gfx::Point tap_point = tab1_view->GetBoundsInScreen().CenterPoint();
+
+        // Simulate realistic finger touch with radius and slight movement
+        // exceeding ChromeOS 6px touch slop.
+        ui::test::EventGenerator generator(
+            views::GetRootWindow(GetBrowserView().GetWidget()),
+            GetBrowserView().GetNativeWindow());
+        generator.SetTouchRadius(15, 15);
+        generator.PressTouch(tap_point);
+        generator.MoveTouchBy(10, 0);
+        generator.ReleaseTouch();
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 1),
+      Do([&]() {
+        views::View* tab0_view = GetTabViewAt(0);
+        ASSERT_NE(nullptr, tab0_view);
+        gfx::Point tap_point = tab0_view->GetBoundsInScreen().CenterPoint();
+
+        // Simulate stylus/pen tap with slight movement exceeding touch slop.
+        ui::test::EventGenerator generator(
+            views::GetRootWindow(GetBrowserView().GetWidget()),
+            GetBrowserView().GetNativeWindow());
+        generator.SetTouchPointerType(ui::EventPointerType::kPen);
+        generator.PressTouch(tap_point);
+        generator.MoveTouchBy(8, 0);
+        generator.ReleaseTouch();
+      }),
+      CheckResult([&]() { return tab_strip_model->active_index(); }, 0));
+}
+#endif
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       GestureScrollEndWithoutDragDoesNotSynthesizeTapOnTab) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                   /*foreground=*/false);
+  views::test::RunScheduledLayout(&GetBrowserView());
+
+  // Select both Tab 0 and Tab 1 (with Tab 0 active).
+  ui::ListSelectionModel selection;
+  selection.SetSelectedIndex(0);
+  selection.AddIndexToSelection(0);
+  selection.AddIndexToSelection(1);
+  tab_strip_model->SetSelectionFromModel(selection);
+  views::test::RunScheduledLayout(&GetBrowserView());
+  ASSERT_TRUE(tab_strip_model->IsTabSelected(0));
+  ASSERT_TRUE(tab_strip_model->IsTabSelected(1));
+  ASSERT_EQ(0, tab_strip_model->active_index());
+
+  views::View* tab1_view = GetTabViewAt(1);
+  ASSERT_NE(nullptr, tab1_view);
+
+  // Start a gesture scroll on Tab 1 that stays under kMinimumDragDistance and
+  // ends without starting a drag. Because Tab 1 is already part of a
+  // multi-selection, kGestureTapDown and kGestureScrollBegin preserve the
+  // multi-selection, and kGestureScrollEnd / kGestureEnd must not synthesize a
+  // redundant kGestureTap that calls SelectTab and collapses the selection.
+  DispatchGestureToView(
+      tab1_view, ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+  DispatchGestureToView(
+      tab1_view,
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 3.0f, 0.0f));
+  EXPECT_TRUE(TabDragController::IsActive());
+
+  DispatchGestureToView(
+      tab1_view, ui::GestureEventDetails(ui::EventType::kGestureScrollEnd));
+  DispatchGestureToView(tab1_view,
+                        ui::GestureEventDetails(ui::EventType::kGestureEnd));
+  EXPECT_FALSE(TabDragController::IsActive());
+
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(0));
+  EXPECT_TRUE(tab_strip_model->IsTabSelected(1));
+  EXPECT_EQ(0, tab_strip_model->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest,
+                       GestureEndWithoutDragDoesNotToggleTabGroupHeader) {
+  TabStripModel* tab_strip_model = browser()->GetTabStripModel();
+  ASSERT_NE(nullptr, tab_strip_model);
+
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1,
+                   /*foreground=*/false);
+  tab_groups::TabGroupId group_id = tab_strip_model->AddToNewGroup({1});
+  views::test::RunScheduledLayout(&GetBrowserView());
+  ASSERT_FALSE(tab_strip_model->IsGroupCollapsed(group_id));
+
+  auto* group_view = views::AsViewClass<TabGroupView>(
+      GetBrowserView().tab_strip_view()->GetTabGroupAnchorView(group_id));
+  ASSERT_NE(nullptr, group_view);
+  views::View* group_header = group_view->group_header();
+  ASSERT_NE(nullptr, group_header);
+
+  // A long press that ends without dragging (or where kGestureLongTap is
+  // canceled by tiny movement under kMinimumDragDistance) must not synthesize a
+  // kGestureTap that toggles the group header's collapsed state.
+  DispatchGestureToView(
+      group_header, ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+  DispatchGestureToView(
+      group_header, ui::GestureEventDetails(ui::EventType::kGestureLongPress));
+  EXPECT_TRUE(TabDragController::IsActive());
+  DispatchGestureToView(group_header,
+                        ui::GestureEventDetails(ui::EventType::kGestureEnd));
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_FALSE(tab_strip_model->IsGroupCollapsed(group_id));
+
+  // A short scroll/fling that stays under kMinimumDragDistance must also not
+  // synthesize a kGestureTap that toggles the group header's collapsed state.
+  const bool collapsed_before_fling =
+      tab_strip_model->IsGroupCollapsed(group_id);
+  DispatchGestureToView(
+      group_header, ui::GestureEventDetails(ui::EventType::kGestureTapDown));
+  DispatchGestureToView(
+      group_header,
+      ui::GestureEventDetails(ui::EventType::kGestureScrollBegin, 3.0f, 0.0f));
+  EXPECT_TRUE(TabDragController::IsActive());
+  DispatchGestureToView(
+      group_header,
+      ui::GestureEventDetails(ui::EventType::kScrollFlingStart, 100.0f, 0.0f));
+  DispatchGestureToView(group_header,
+                        ui::GestureEventDetails(ui::EventType::kGestureEnd));
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ(collapsed_before_fling,
+            tab_strip_model->IsGroupCollapsed(group_id));
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabDragTest, DragPinnedTab) {

@@ -280,6 +280,7 @@ source_set("interactive_ui_tests") {
     "//testing/gtest",
     "//ui/base",
     "//ui/base:ozone_buildflags",
+    "//ui/events:test_support",
     "//ui/views",
   ]
 }

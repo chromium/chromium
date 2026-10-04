@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/horizontal/horizontal_tab_closing_helper.h"
@@ -158,6 +159,12 @@ TabGroupHeaderView::TabGroupHeaderView(
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
   attention_indicator_->SetProperty(views::kElementIdentifierKey,
                                     kTabGroupHeaderAttentionIndicatorElementId);
+  sync_icon_->SetCanProcessEventsWithinSubtree(false);
+  group_header_label_->SetCanProcessEventsWithinSubtree(false);
+  attention_indicator_->SetCanProcessEventsWithinSubtree(false);
+  if (collapse_icon_) {
+    collapse_icon_->SetCanProcessEventsWithinSubtree(false);
+  }
   SetNotifyEnterExitOnChild(true);
 
   if (editor_bubble_button_) {
@@ -362,6 +369,13 @@ void TabGroupHeaderView::OnGestureEvent(ui::GestureEvent* event) {
             kTabGroupHeaderElementId, this);
       }
       event->SetHandled();
+      break;
+
+    case ui::EventType::kGestureScrollBegin:
+      if (!CanScrollAlongAxis(this, orientation_, *event)) {
+        delegate_->InitHeaderDrag(*event);
+        event->SetHandled();
+      }
       break;
 
     case ui::EventType::kGestureLongPress:

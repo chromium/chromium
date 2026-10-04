@@ -74,6 +74,7 @@
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/clip_recorder.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
@@ -125,9 +126,9 @@ TabStripUserGestureDetails GetGestureDetail(const ui::Event& event) {
       TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
   TabStripUserGestureDetails::GestureType type =
       TabStripUserGestureDetails::GestureType::kOther;
-  if (event.type() == ui::EventType::kMousePressed) {
+  if (event.IsMouseEvent()) {
     type = TabStripUserGestureDetails::GestureType::kMouse;
-  } else if (event.type() == ui::EventType::kGestureTapDown) {
+  } else if (event.IsGestureEvent()) {
     type = TabStripUserGestureDetails::GestureType::kTouch;
   }
   gesture_detail.type = type;
@@ -757,18 +758,38 @@ void TabView::OnGestureEvent(ui::GestureEvent* event) {
 
   switch (event->type()) {
     case ui::EventType::kGestureTapDown: {
-      // Handle TapDown to receive subsequent events like LongPress or Tap.
-      // We don't call InitializeDrag here to allow scrolling.
+      // Handle TapDown to receive subsequent events like LongPress or Tap, and
+      // select the tab immediately on touch down (matching OnMousePressed and
+      // ensuring touch/pen taps on ChromeOS that exceed touch slop still select
+      // the tab). We don't call InitializeDrag here to allow scrolling.
+      if (!selected_) {
+        controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
+        base::RecordAction(base::UserMetricsAction("SwitchTab_Click"));
+      }
       event->SetHandled();
       break;
     }
 
     case ui::EventType::kGestureTap: {
-      // Short press release. Select the tab.
-      if (!selected_) {
-        controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
-      }
+      // Short press release. Activate/select the tab (matching OnMouseReleased
+      // for multi-selected or split tabs).
+      controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
       event->SetHandled();
+      break;
+    }
+
+    case ui::EventType::kGestureScrollBegin: {
+      // If the containing ScrollView cannot scroll along the gesture axis,
+      // start dragging the tab rather than letting ScrollView consume the
+      // gesture.
+      if (!CanScrollAlongAxis(this, orientation_, *event)) {
+        if (!selected_) {
+          controller->SelectTab(GetTabInterface(), GetGestureDetail(*event));
+        }
+        controller->GetDragHandler().InitializeDrag(
+            *collection_node_, original_selection_model, *event);
+        event->SetHandled();
+      }
       break;
     }
 
@@ -933,7 +954,12 @@ void TabView::OnThemeChanged() {
 }
 
 bool TabView::GetHitTestMask(SkPath* mask) const {
-  *mask = GetPath();
+  const float scale = GetWidget() && GetWidget()->GetCompositor()
+                          ? GetWidget()->GetCompositor()->device_scale_factor()
+                          : 1.0f;
+  *mask =
+      tab_styling()->GetPath(TabStyle::PathType::kHitTest, scale,
+                             {.render_units = TabStyle::RenderUnits::kDips});
   return true;
 }
 

@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/tabs/common/tab_strip_utils.h"
 
+#include <cmath>
+
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_view.h"
+#include "ui/events/event.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -34,4 +38,25 @@ TabStripView* GetTabStripView(views::View* view) {
     }
   }
   return nullptr;
+}
+
+bool CanScrollAlongAxis(const views::View* view,
+                        TabStripOrientation orientation,
+                        const ui::GestureEvent& event) {
+  const views::ScrollView* scroll_view = nullptr;
+  for (const views::View* curr = view->parent(); curr; curr = curr->parent()) {
+    if (const auto* sv = views::AsViewClass<views::ScrollView>(curr)) {
+      scroll_view = sv;
+      break;
+    }
+  }
+  if (!scroll_view) {
+    return false;
+  }
+  const float dx = std::abs(event.details().scroll_x_hint());
+  const float dy = std::abs(event.details().scroll_y_hint());
+  if (orientation == TabStripOrientation::kVertical) {
+    return scroll_view->IsVerticalContentOverflowing() && dy >= dx;
+  }
+  return scroll_view->IsHorizontalContentOverflowing() && dx >= dy;
 }
