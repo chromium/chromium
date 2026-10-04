@@ -17,6 +17,10 @@ CGFloat MostVisitedIconContainerSize();
 // The corner radius of the container for a Most Visited Tile's icon.
 CGFloat MostVisitedIconContainerCornerRadius();
 
+// Maximum number of Most Visited Tiles visible on screen, based on whether an
+// AIM button is available next to the most visited tiles container.
+NSUInteger MostVisitedMaximumVisibleItemsOnScreen(BOOL aim_available = NO);
+
 // Insets for the Most Visited collection in a container.
 extern const NSDirectionalEdgeInsets kMostVisitedContainerInsets;
 

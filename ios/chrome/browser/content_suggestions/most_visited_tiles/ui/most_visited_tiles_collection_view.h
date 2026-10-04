@@ -16,6 +16,9 @@
 /// Callback invoked when the collection view's content size changes.
 @property(nonatomic, copy) void (^onContentSizeChanged)(CGSize newSize);
 
+/// Maximum number of items that should be fully visible on the screen.
+@property(nonatomic, assign) NSUInteger maxVisibleItems;
+
 /// Initializes the collection view with `config` and `spacing` between the
 /// cells.
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config

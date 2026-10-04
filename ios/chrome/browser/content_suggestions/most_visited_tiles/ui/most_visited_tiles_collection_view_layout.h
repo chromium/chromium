@@ -11,6 +11,9 @@
 @interface MostVisitedTilesCollectionViewLayout
     : UICollectionViewCompositionalLayout
 
+/// Maximum number of items that should be fully visible on the screen.
+@property(nonatomic, assign) NSUInteger maxVisibleItems;
+
 /// Initializer with `count` number of items in the collection.
 - (instancetype)initWithItemCount:(NSUInteger)count NS_DESIGNATED_INITIALIZER;
 

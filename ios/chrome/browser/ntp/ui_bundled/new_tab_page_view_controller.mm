@@ -866,6 +866,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)setAIMAllowed:(BOOL)allowed {
   _isAIMAllowed = allowed;
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    [self.contentSuggestionsViewController setAIMAllowed:allowed];
+  }
 }
 
 - (void)setAIMTitle:(NSString*)title icon:(UIImage*)icon {
@@ -1201,6 +1205,15 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [self.traitCollection objectForNewTabPageTrait];
 
   _feedContainer.backgroundColor = NTPCardBackgroundColor(colorPalette);
+}
+
+- (void)setContentSuggestionsViewController:
+    (ContentSuggestionsViewController*)contentSuggestionsViewController {
+  _contentSuggestionsViewController = contentSuggestionsViewController;
+  if (ntp_tiles::GetAimButtonRefactorArm() ==
+      ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
+    [_contentSuggestionsViewController setAIMAllowed:_isAIMAllowed];
+  }
 }
 
 - (void)setNTPShortcutsHandler:

@@ -12,20 +12,6 @@
 
 namespace {
 
-constexpr NSUInteger kMaximumVisibleItemsOnScreen = 4;
-constexpr NSUInteger kMaximumVisibleItemsOnScreenWithAimModule =
-    kMaximumVisibleItemsOnScreen - 1;
-
-/// Maximum number of items that should be fully visible on the screen.
-NSUInteger MaximumVisibleItemsOnScreen() {
-  if (IsAimEnabledInNtp() &&
-      ntp_tiles::GetAimButtonRefactorArm() ==
-          ntp_tiles::AimButtonRefactorArm::kAimAsModule) {
-    return kMaximumVisibleItemsOnScreenWithAimModule;
-  }
-  return kMaximumVisibleItemsOnScreen;
-}
-
 /// Multiplier for peeking the first off-screen element.
 const CGFloat kPeekInsetMultiplerCompactWidth = 0.6;
 const CGFloat kPeekInsetMultiplerRegularWidth = 0.85;
@@ -42,9 +28,10 @@ CGFloat PeekInsetForCollectionView(UITraitCollection* trait_collection) {
 /// Creates a section in the collection view layout.
 NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
     NSUInteger item_count,
+    NSUInteger max_visible_items,
     CGFloat container_width,
     UITraitCollection* trait_collection) {
-  CGFloat items_per_group = MIN(item_count, MaximumVisibleItemsOnScreen());
+  CGFloat items_per_group = MIN(item_count, max_visible_items);
   NSCollectionLayoutDimension* estimated_height_dimension =
       [NSCollectionLayoutDimension
           estimatedDimension:ntp_tiles::GetAimButtonRefactorArm() ==
@@ -64,8 +51,8 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
   /// Group configuration.
   CGFloat group_width = container_width - kMagicStackContainerInsets.leading -
                         kMagicStackContainerInsets.trailing;
-  if (item_count > MaximumVisibleItemsOnScreen()) {
-    /// Allow peeking the 5th element.
+  if (item_count > max_visible_items) {
+    /// Allow peeking the first off-screen element.
     group_width -= PeekInsetForCollectionView(trait_collection);
   }
   NSCollectionLayoutDimension* group_width_dimension =
@@ -99,15 +86,33 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
 - (instancetype)initWithItemCount:(NSUInteger)count {
   UICollectionViewCompositionalLayoutConfiguration* config =
       [[UICollectionViewCompositionalLayoutConfiguration alloc] init];
+  __weak __typeof(self) weakSelf = self;
   UICollectionViewCompositionalLayoutSectionProvider sectionProvider =
       ^NSCollectionLayoutSection*(
           NSInteger sectionIndex,
           id<NSCollectionLayoutEnvironment> layoutEnvironment) {
+        if (!weakSelf) {
+          return nil;
+        }
         return GetSectionForMostVisitedTilesCollectionView(
-            count, layoutEnvironment.container.contentSize.width,
+            count, weakSelf.maxVisibleItems,
+            layoutEnvironment.container.contentSize.width,
             layoutEnvironment.traitCollection);
       };
-  return [super initWithSectionProvider:sectionProvider configuration:config];
+
+  self = [super initWithSectionProvider:sectionProvider configuration:config];
+  if (self) {
+    _maxVisibleItems = MostVisitedMaximumVisibleItemsOnScreen();
+  }
+  return self;
+}
+
+- (void)setMaxVisibleItems:(NSUInteger)maxVisibleItems {
+  if (_maxVisibleItems == maxVisibleItems) {
+    return;
+  }
+  _maxVisibleItems = maxVisibleItems;
+  [self invalidateLayout];
 }
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds {
