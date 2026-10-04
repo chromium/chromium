@@ -56,13 +56,17 @@ class BackGestureContextualNudgeControllerTest : public NoSessionAshTestBase {
   ~BackGestureContextualNudgeControllerTest() override = default;
 
   // NoSessionAshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    NoSessionAshTestBase::SetUpInitParams(init_params);
     std::unique_ptr<TestShellDelegate> delegate;
     if (!can_go_back_) {
       delegate = std::make_unique<TestShellDelegate>();
       delegate->SetCanGoBack(false);
     }
-    set_shell_delegate(std::move(delegate));
+    init_params.delegate = std::move(delegate);
+  }
+
+  void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
     auto accountId1 = SimulateUserLogin({kUser1Email});

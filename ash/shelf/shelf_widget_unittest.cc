@@ -497,7 +497,13 @@ TEST_F(ShelfWidgetTest, HiddenShelfHitTestTouch) {
 
 class ShelfWidgetHitTest : public ShelfWidgetTest {
  public:
-  ShelfWidgetHitTest() { set_add_default_shelf_icon(false); }
+  ShelfWidgetHitTest() = default;
+
+  // ShelfWidgetTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ShelfWidgetTest::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 };
 
 // Tests that the shelf lets mouse-events close to the edge fall through to the
@@ -1122,9 +1128,14 @@ TEST_F(ShelfWidgetViewsVisibilityTest, LoginViewsLockViews) {
 
 class ShelfWidgetVirtualKeyboardTest : public AshTestBase {
  public:
-  ShelfWidgetVirtualKeyboardTest() { set_add_default_shelf_icon(false); }
+  ShelfWidgetVirtualKeyboardTest() = default;
 
  protected:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
+
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);

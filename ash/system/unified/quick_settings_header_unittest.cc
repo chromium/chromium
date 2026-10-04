@@ -47,11 +47,15 @@ class QuickSettingsHeaderTest : public NoSessionAshTestBase {
   QuickSettingsHeaderTest() = default;
 
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    NoSessionAshTestBase::SetUpInitParams(init_params);
     // Install a test delegate to allow overriding channel version.
     auto delegate = std::make_unique<TestShellDelegate>();
     test_shell_delegate_ = delegate.get();
-    set_shell_delegate(std::move(delegate));
+    init_params.delegate = std::move(delegate);
+  }
+
+  void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);

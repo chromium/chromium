@@ -98,9 +98,12 @@ class ScrollableShelfViewWithGuestModePixelTest
   bool UseGuestMode() const { return std::get<0>(GetParam()); }
   bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
 
-  void SetUp() override {
-    set_start_session(false);
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ShelfTestBase::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 
+  void SetUp() override {
     ShelfTestBase::SetUp();
     if (UseGuestMode()) {
       SimulateGuestLogin();

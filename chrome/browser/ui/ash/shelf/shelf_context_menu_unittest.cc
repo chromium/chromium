@@ -124,6 +124,11 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   }
   ~ShelfContextMenuTest() override = default;
 
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
+
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::chrome_switches::kDisableDefaultApps);
@@ -143,7 +148,6 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
     ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
                     .AddRegularUser(kPrimaryUserId));
 
-    set_start_session(false);
     ChromeAshTestBase::SetUp();
     browser_controller_.emplace();
 

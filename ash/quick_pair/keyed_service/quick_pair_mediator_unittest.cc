@@ -94,9 +94,12 @@ class MediatorTest : public AshTestBase {
   MediatorTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  void SetUp() override {
-    set_create_quick_pair_mediator(false);
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.create_quick_pair_mediator = false;
+  }
 
+  void SetUp() override {
     AshTestBase::SetUp();
 
     adapter_ =

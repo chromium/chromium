@@ -47,9 +47,9 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
   ~PolicyRecommendationRestorerTest() override = default;
 
   // NoSessionAshTestBase override:
-  void SetUp() override {
-    set_create_signin_pref_service(false);
-    NoSessionAshTestBase::SetUp();
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    NoSessionAshTestBase::SetUpInitParams(init_params);
+    init_params.create_signin_pref_service = false;
   }
 
   void ConnectToSigninPrefService() {

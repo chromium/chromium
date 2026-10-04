@@ -147,7 +147,7 @@ namespace ash {
 // various windows and instantiates the MultiUserWindowManager.
 class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
  public:
-  MultiUserWindowManagerBrowserAdaptorTest() { set_start_session(false); }
+  MultiUserWindowManagerBrowserAdaptorTest() = default;
 
   MultiUserWindowManagerBrowserAdaptorTest(
       const MultiUserWindowManagerBrowserAdaptorTest&) = delete;
@@ -155,6 +155,7 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
       const MultiUserWindowManagerBrowserAdaptorTest&) = delete;
 
   // ChromeAshTestBase:
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override;
   void SetUp() override;
   void TearDown() override;
   void OnSubsystemsTornDown() override;
@@ -361,6 +362,13 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
   std::optional<ash::BrowserControllerImpl> browser_controller_;
 };
 
+void MultiUserWindowManagerBrowserAdaptorTest::SetUpInitParams(
+    ash::AshTestHelper::InitParams& init_params) {
+  ChromeAshTestBase::SetUpInitParams(init_params);
+  init_params.start_session = false;
+  init_params.delegate = std::make_unique<TestShellDelegateChromeOS>();
+}
+
 void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
   ash::DeviceSettingsService::Initialize();
   cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
@@ -373,7 +381,6 @@ void MultiUserWindowManagerBrowserAdaptorTest::SetUp() {
       std::make_unique<user_manager::FakeUserManagerDelegate>(),
       TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
       ash::CrosSettings::Get()));
-  set_shell_delegate(std::make_unique<TestShellDelegateChromeOS>());
 
   ChromeAshTestBase::SetUp();
   GetSessionControllerClient()->set_pref_service_must_exist(true);

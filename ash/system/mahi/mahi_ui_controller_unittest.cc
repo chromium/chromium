@@ -677,7 +677,7 @@ TEST_F(MahiUiControllerWithSessionTest, PanelCloseOnSessionStateChanged) {
 class MahiUiControllerWithNoSessionTest
     : public MahiUiControllerWithSessionTest {
  public:
-  MahiUiControllerWithNoSessionTest() { set_start_session(false); }
+  MahiUiControllerWithNoSessionTest() = default;
 
   MahiUiControllerWithNoSessionTest(const MahiUiControllerWithNoSessionTest&) =
       delete;
@@ -685,6 +685,12 @@ class MahiUiControllerWithNoSessionTest
       const MahiUiControllerWithNoSessionTest&) = delete;
 
   ~MahiUiControllerWithNoSessionTest() override = default;
+
+  // MahiUiControllerWithSessionTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    MahiUiControllerWithSessionTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 TEST_F(MahiUiControllerWithNoSessionTest, PanelCloseOnActiveUserChanged) {

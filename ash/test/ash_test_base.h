@@ -99,11 +99,6 @@ class AshTestBase : public testing::Test {
   explicit AshTestBase(
       std::unique_ptr<base::test::TaskEnvironment> task_environment);
 
-  // In addition, a subclass may pass a TestingPrefServiceSimple to be used in
-  // the shell. `local_state` must be non-null and outlive `this`.
-  AshTestBase(std::unique_ptr<base::test::TaskEnvironment> task_environment,
-              TestingPrefServiceSimple* local_state);
-
   AshTestBase(const AshTestBase&) = delete;
   AshTestBase& operator=(const AshTestBase&) = delete;
 
@@ -260,49 +255,24 @@ class AshTestBase : public testing::Test {
       const;
   virtual std::string GenerateScreenshotName(const std::string& title);
 
-  void set_start_session(bool start_session) {
-    CHECK(init_params_) << "start_session must set before calling SetUp()";
-    init_params_->start_session = start_session;
-  }
-
-  void set_create_signin_pref_service(bool create_signin_pref_service) {
-    CHECK(init_params_)
-        << "create_create_signin_pref_service must set before calling SetUp()";
-    init_params_->create_signin_pref_service = create_signin_pref_service;
-  }
-
-  void set_create_global_cras_audio_handler(
-      bool create_global_cras_audio_handler) {
-    CHECK(init_params_)
-        << "create_global_cras_audio_handler must set before calling SetUp()";
-    init_params_->create_global_cras_audio_handler =
-        create_global_cras_audio_handler;
-  }
-
-  void set_create_quick_pair_mediator(bool create_quick_pair_mediator) {
-    CHECK(init_params_)
-        << "create_quick_pair_mediator must set before calling SetUp()";
-    init_params_->create_quick_pair_mediator = create_quick_pair_mediator;
-  }
-
-  void set_add_default_shelf_icon(bool add_default_shelf_icon) {
-    CHECK(init_params_)
-        << "add_default_shelf_icon must be set before calling SetUp()";
-    init_params_->add_default_shelf_icon = add_default_shelf_icon;
-  }
-
-  void set_shell_delegate(std::unique_ptr<ShellDelegate> shell_delegate) {
-    CHECK(init_params_) << "shell_delegate mustset before calling SetUp()";
-    CHECK(!init_params_->delegate);
-    init_params_->delegate = std::move(shell_delegate);
-  }
+  // Configures `init_params` passed to `AshTestHelper::SetUp()`.
+  // Called inside `AshTestBase::SetUp()` right before `AshTestHelper` is
+  // initialized. Subclasses can override this to customize `init_params`, and
+  // should call the parent class's `SetUpInitParams(init_params)` first.
+  virtual void SetUpInitParams(AshTestHelper::InitParams& init_params);
 
   base::test::TaskEnvironment* task_environment() {
     return task_environment_.get();
   }
 
+  // Returns the local state `PrefService` owned by `AshTestBase` and passed to
+  // `AshTestHelper` (and `Shell`) by default when `init_params.local_state` is
+  // not overridden in `SetUpInitParams()`.
+  // Lazily initialized on first call (can be called before `SetUp()` to
+  // pre-configure prefs, or after `SetUp()`). Must not be called if a subclass
+  // provides its own `init_params.local_state` (e.g. `ChromeAshTestBase`).
   // Always returns a non-null pointer.
-  TestingPrefServiceSimple* local_state() { return local_state_.get(); }
+  TestingPrefServiceSimple* local_state();
 
   AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
   AshPixelTestHelper* pixel_test_helper() { return pixel_test_helper_.get(); }
@@ -396,19 +366,12 @@ class AshTestBase : public testing::Test {
   bool setup_called_ = false;
   bool teardown_called_ = false;
 
-  // AshTestHelper's init params.
-  std::unique_ptr<AshTestHelper::InitParams> init_params_ =
-      std::make_unique<AshTestHelper::InitParams>();
-
   // |task_environment_| is initialized-once at construction time but
   // subclasses may elect to provide their own.
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
-  // Used only if no TestingPrefServiceSimple is provided to ctor.
-  std::unique_ptr<TestingPrefServiceSimple> owned_local_state_;
-
   // A pref service used for local state.
-  raw_ptr<TestingPrefServiceSimple> local_state_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
 
   // A helper class to take screen shots then compare with benchmarks. Set by
   // `PrepareForPixelDiffTest()`.
@@ -438,6 +401,10 @@ class NoSessionAshTestBase : public AshTestBase {
   NoSessionAshTestBase& operator=(const NoSessionAshTestBase&) = delete;
 
   ~NoSessionAshTestBase() override;
+
+ protected:
+  // AshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override;
 };
 
 }  // namespace ash

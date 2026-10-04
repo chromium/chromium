@@ -41,13 +41,13 @@ class ChannelIndicatorViewTest
   ~ChannelIndicatorViewTest() override = default;
 
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     // Instantiate a `TestShellDelegate` with the channel set to our param.
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_channel(static_cast<version_info::Channel>(GetParam()));
-    set_shell_delegate(std::move(shell_delegate));
-    AshTestBase::SetUp();
+    init_params.delegate = std::move(shell_delegate);
   }
 
   void SetSessionState(session_manager::SessionState state) {

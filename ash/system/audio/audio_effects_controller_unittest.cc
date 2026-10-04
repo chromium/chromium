@@ -122,6 +122,11 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
   ~AudioEffectsControllerTest() override = default;
 
   // NoSessionAshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    NoSessionAshTestBase::SetUpInitParams(init_params);
+    init_params.create_global_cras_audio_handler = false;
+  }
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kFeatureManagementVideoConference);
@@ -137,8 +142,6 @@ class AudioEffectsControllerTest : public NoSessionAshTestBase {
     // ash unit tests). This controller is needed because it owns the effects
     // manager.
     tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-
-    set_create_global_cras_audio_handler(false);
 
     NoSessionAshTestBase::SetUp();
 

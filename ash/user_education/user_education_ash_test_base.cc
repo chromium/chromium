@@ -50,7 +50,10 @@ UserEducationAshTestBase::UserEducationAshTestBase(
     base::test::TaskEnvironment::TimeSource time_source)
     : NoSessionAshTestBase(time_source) {}
 
-void UserEducationAshTestBase::SetUp() {
+void UserEducationAshTestBase::SetUpInitParams(
+    AshTestHelper::InitParams& init_params) {
+  NoSessionAshTestBase::SetUpInitParams(init_params);
+
   // Mock the `user_education_delegate_`.
   auto shell_delegate = std::make_unique<TestShellDelegate>();
   shell_delegate->SetUserEducationDelegateFactory(base::BindLambdaForTesting(
@@ -95,8 +98,7 @@ void UserEducationAshTestBase::SetUp() {
 
         return user_education_delegate;
       }));
-  set_shell_delegate(std::move(shell_delegate));
-  NoSessionAshTestBase::SetUp();
+  init_params.delegate = std::move(shell_delegate);
 }
 
 }  // namespace ash

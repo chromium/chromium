@@ -336,12 +336,17 @@ TEST_F(PersonalizationAppThemeProviderImplTest,
 class PersonalizationAppThemeProviderImplJellyTest
     : public PersonalizationAppThemeProviderImplTest {
  public:
-  PersonalizationAppThemeProviderImplJellyTest() { set_start_session(false); }
+  PersonalizationAppThemeProviderImplJellyTest() = default;
 
   PersonalizationAppThemeProviderImplJellyTest(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
   PersonalizationAppThemeProviderImplJellyTest& operator=(
       const PersonalizationAppThemeProviderImplJellyTest&) = delete;
+
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    PersonalizationAppThemeProviderImplTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 
   void SetUp() override {
     PersonalizationAppThemeProviderImplTest::SetUp();

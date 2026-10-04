@@ -158,13 +158,18 @@ void VerifyNetworkDataErrorBucketCounts(
 
 class NetworkHealthProviderTest : public AshTestBase {
  public:
-  NetworkHealthProviderTest() { set_start_session(false); }
+  NetworkHealthProviderTest() = default;
 
   NetworkHealthProviderTest(const NetworkHealthProviderTest&) = delete;
   NetworkHealthProviderTest& operator=(const NetworkHealthProviderTest&) =
       delete;
 
   ~NetworkHealthProviderTest() override = default;
+
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 
   void SetUp() override {
     ui::ResourceBundle::CleanupSharedInstance();

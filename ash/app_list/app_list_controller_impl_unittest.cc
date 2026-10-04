@@ -159,13 +159,18 @@ class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
 
 class AppListControllerImplTest : public AshTestBase {
  public:
-  AppListControllerImplTest() { set_add_default_shelf_icon(false); }
+  AppListControllerImplTest() = default;
 
   AppListControllerImplTest(const AppListControllerImplTest&) = delete;
   AppListControllerImplTest& operator=(const AppListControllerImplTest&) =
       delete;
 
   ~AppListControllerImplTest() override = default;
+
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
   void SetUp() override {
     AshTestBase::SetUp();

@@ -3665,11 +3665,17 @@ namespace {
 
 class NoSessionDisplayManagerTest : public DisplayManagerTest {
  public:
-  NoSessionDisplayManagerTest() { set_start_session(false); }
+  NoSessionDisplayManagerTest() = default;
   NoSessionDisplayManagerTest(const NoSessionDisplayManagerTest&) = delete;
   NoSessionDisplayManagerTest& operator=(const NoSessionDisplayManagerTest&) =
       delete;
   ~NoSessionDisplayManagerTest() override = default;
+
+  // DisplayManagerTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    DisplayManagerTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 }  // namespace

@@ -28,9 +28,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
-ChromeQuickAnswersTestBase::ChromeQuickAnswersTestBase() {
-  set_start_session(false);
-}
+ChromeQuickAnswersTestBase::ChromeQuickAnswersTestBase() = default;
 
 ChromeQuickAnswersTestBase::~ChromeQuickAnswersTestBase() = default;
 
@@ -43,10 +41,16 @@ user_manager::User* ChromeQuickAnswersTestBase::StartUserSession() {
   return user;
 }
 
+void ChromeQuickAnswersTestBase::SetUpInitParams(
+    ash::AshTestHelper::InitParams& init_params) {
+  ChromeAshTestBase::SetUpInitParams(init_params);
+  init_params.start_session = false;
+}
+
 void ChromeQuickAnswersTestBase::SetUp() {
   user_session_test_environment_ =
       std::make_unique<ash::test::UserSessionTestEnvironment>(
-          local_state(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
               TestingBrowserProcess::GetGlobal()));
 

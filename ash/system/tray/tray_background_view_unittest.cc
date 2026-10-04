@@ -287,7 +287,13 @@ namespace {
 
 class NoSessionTrayBackgroundViewTest : public TrayBackgroundViewTest {
  public:
-  NoSessionTrayBackgroundViewTest() { set_start_session(false); }
+  NoSessionTrayBackgroundViewTest() = default;
+
+  // TrayBackgroundViewTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    TrayBackgroundViewTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 }  // namespace

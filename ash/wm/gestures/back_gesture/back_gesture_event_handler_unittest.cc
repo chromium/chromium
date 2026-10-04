@@ -68,13 +68,17 @@ class BackGestureEventHandlerTest : public AshTestBase {
       delete;
   ~BackGestureEventHandlerTest() override = default;
 
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     std::unique_ptr<TestShellDelegate> delegate;
     if (!can_go_back_) {
       delegate = std::make_unique<TestShellDelegate>();
       delegate->SetCanGoBack(false);
     }
-    set_shell_delegate(std::move(delegate));
+    init_params.delegate = std::move(delegate);
+  }
+
+  void SetUp() override {
     AshTestBase::SetUp();
 
     RecreateTopWindow(AppType::BROWSER);

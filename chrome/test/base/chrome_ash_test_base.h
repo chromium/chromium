@@ -21,6 +21,11 @@ class ChromeAshTestBase : public ash::AshTestBase {
   ChromeAshTestBase(const ChromeAshTestBase&) = delete;
   ChromeAshTestBase& operator=(const ChromeAshTestBase&) = delete;
   ~ChromeAshTestBase() override;
+
+ protected:
+  // ash::AshTestBase:
+  void SetUp() override;
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override;
 };
 
 #endif  // CHROME_TEST_BASE_CHROME_ASH_TEST_BASE_H_

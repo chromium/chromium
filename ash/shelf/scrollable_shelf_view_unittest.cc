@@ -132,8 +132,14 @@ class TestShelfItemDelegate : public ShelfItemDelegate {
 
 class ScrollableShelfViewTest : public ShelfTestBase {
  public:
-  ScrollableShelfViewTest() { set_add_default_shelf_icon(false); }
+  ScrollableShelfViewTest() = default;
   ~ScrollableShelfViewTest() override = default;
+
+  // ShelfTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ShelfTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
  protected:
   ShelfID AddAppShortcut(ShelfItemType item_type = TYPE_PINNED_APP) {

@@ -8932,12 +8932,15 @@ class DeskBarTest : public AshTestBase,
   DeskBarTest()
       : test_close_all_window_close_timeout_(
             DesksTestApi::SetCloseAllWindowCloseTimeout(
-                base::Milliseconds(20))) {
-    set_add_default_shelf_icon(false);
-  }
+                base::Milliseconds(20))) {}
   DeskBarTest(const DeskBarTest&) = delete;
   DeskBarTest& operator=(const DeskBarTest&) = delete;
   ~DeskBarTest() override = default;
+
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
   void SetUp() override {
     std::tie(use_touch_gestures_, use_16_desks_, bar_type_) = GetParam();
@@ -10574,12 +10577,17 @@ class DeskButtonTest
     : public AshTestBase,
       public ::testing::WithParamInterface<DeskButtonTestParams> {
  public:
-  DeskButtonTest() { set_add_default_shelf_icon(false); }
+  DeskButtonTest() = default;
   DeskButtonTest(const DeskButtonTest&) = delete;
   DeskButtonTest& operator=(const DeskButtonTest&) = delete;
   ~DeskButtonTest() override = default;
 
   // AshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
+
   void SetUp() override {
     AshTestBase::SetUp();
     shelf_test_api_ = std::make_unique<ShelfViewTestAPI>(

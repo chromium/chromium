@@ -600,10 +600,10 @@ class PaletteTrayTestWithOOBE : public PaletteTrayTest {
   PaletteTrayTestWithOOBE() = default;
   ~PaletteTrayTestWithOOBE() override = default;
 
-  // PalatteTrayTest:
-  void SetUp() override {
-    set_start_session(false);
-    PaletteTrayTest::SetUp();
+  // PaletteTrayTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    PaletteTrayTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
   }
 };
 

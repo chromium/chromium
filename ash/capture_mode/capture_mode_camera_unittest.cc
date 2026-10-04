@@ -4242,7 +4242,7 @@ TEST_F(CameraPreviewWithNotificationTest,
 
 class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
  public:
-  CameraPreviewWithHoldingSpaceTest() { set_start_session(false); }
+  CameraPreviewWithHoldingSpaceTest() = default;
   CameraPreviewWithHoldingSpaceTest(const CameraPreviewWithHoldingSpaceTest&) =
       delete;
   CameraPreviewWithHoldingSpaceTest& operator=(
@@ -4260,6 +4260,11 @@ class CameraPreviewWithHoldingSpaceTest : public CaptureModeCameraTest {
   }
 
   // CaptureModeCameraTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    CaptureModeCameraTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
+
   void SetUp() override {
     CaptureModeCameraTest::SetUp();
 

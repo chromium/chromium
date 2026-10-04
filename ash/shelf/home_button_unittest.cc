@@ -195,7 +195,13 @@ class HomeButtonWithQuickAppAccess : public HomeButtonTestBase {
 
 class HomeButtonNoSessionTest : public HomeButtonTest {
  public:
-  HomeButtonNoSessionTest() { set_start_session(false); }
+  HomeButtonNoSessionTest() = default;
+
+  // HomeButtonTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    HomeButtonTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 // Test that setting an existing app item as the quick app shows a working

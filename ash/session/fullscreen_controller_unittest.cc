@@ -47,12 +47,15 @@ class FullscreenControllerTest : public AshTestBase {
   ~FullscreenControllerTest() override = default;
 
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     // Create a test shell delegate which can return fake responses.
     auto test_shell_delegate = std::make_unique<TestShellDelegate>();
     test_shell_delegate_ = test_shell_delegate.get();
+    init_params.delegate = std::move(test_shell_delegate);
+  }
 
-    set_shell_delegate(std::move(test_shell_delegate));
+  void SetUp() override {
     AshTestBase::SetUp();
 
     CreateFullscreenWindow();

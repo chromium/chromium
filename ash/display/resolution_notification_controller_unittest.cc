@@ -437,12 +437,18 @@ namespace {
 class NoSessionResolutionNotificationControllerTest
     : public ResolutionNotificationControllerTest {
  public:
-  NoSessionResolutionNotificationControllerTest() { set_start_session(false); }
+  NoSessionResolutionNotificationControllerTest() = default;
   NoSessionResolutionNotificationControllerTest(
       const NoSessionResolutionNotificationControllerTest&) = delete;
   NoSessionResolutionNotificationControllerTest& operator=(
       const NoSessionResolutionNotificationControllerTest&) = delete;
   ~NoSessionResolutionNotificationControllerTest() override = default;
+
+  // ResolutionNotificationControllerTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ResolutionNotificationControllerTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 }  // namespace

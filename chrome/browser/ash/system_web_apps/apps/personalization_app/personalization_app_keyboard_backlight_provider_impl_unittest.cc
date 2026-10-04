@@ -114,7 +114,8 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
         std::make_unique<PersonalizationAppKeyboardBacklightProviderImpl>(
             &web_ui_);
     keyboard_backlight_color_controller_ =
-        std::make_unique<KeyboardBacklightColorController>(local_state());
+        std::make_unique<KeyboardBacklightColorController>(
+            TestingBrowserProcess::GetGlobal()->local_state());
     keyboard_backlight_color_controller_->OnRgbKeyboardSupportedChanged(true);
     keyboard_backlight_provider_->SetKeyboardBacklightColorControllerForTesting(
         keyboard_backlight_color_controller_.get());

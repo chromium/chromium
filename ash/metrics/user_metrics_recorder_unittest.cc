@@ -55,7 +55,13 @@ class UserMetricsRecorderTest : public NoSessionAshTestBase {
 
 class UserMetricsRecorderShelfItemTest : public UserMetricsRecorderTest {
  public:
-  UserMetricsRecorderShelfItemTest() { set_add_default_shelf_icon(false); }
+  UserMetricsRecorderShelfItemTest() = default;
+
+  // UserMetricsRecorderTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    UserMetricsRecorderTest::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 };
 
 // Verifies the return value of IsUserInActiveDesktopEnvironment() for the

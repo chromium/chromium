@@ -109,12 +109,17 @@ int64_t GetPrimaryDisplayId() {
 // Used to test that app launched metrics are properly recorded.
 class AppListMetricsTest : public AshTestBase {
  public:
-  AppListMetricsTest() { set_add_default_shelf_icon(false); }
+  AppListMetricsTest() = default;
 
   AppListMetricsTest(const AppListMetricsTest&) = delete;
   AppListMetricsTest& operator=(const AppListMetricsTest&) = delete;
 
   ~AppListMetricsTest() override = default;
+
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
   void SetUp() override {
     AshTestBase::SetUp();

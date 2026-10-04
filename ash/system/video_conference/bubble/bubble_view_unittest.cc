@@ -628,6 +628,11 @@ class ResourceDependencyTest
   ~ResourceDependencyTest() override = default;
 
   // AshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.create_global_cras_audio_handler = false;
+  }
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         features::kFeatureManagementVideoConference);
@@ -643,7 +648,6 @@ class ResourceDependencyTest
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
 
-    set_create_global_cras_audio_handler(false);
     AshTestBase::SetUp();
 
     // Make the video conference tray visible for testing.

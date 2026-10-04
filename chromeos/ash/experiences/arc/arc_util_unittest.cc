@@ -81,10 +81,14 @@ class ArcUtilTest : public ash::AshTestBase {
   ArcUtilTest& operator=(const ArcUtilTest&) = delete;
   ~ArcUtilTest() override = default;
 
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ash::AshTestBase::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
+
   void SetUp() override {
     ash::ConciergeClient::InitializeFake();
     ash::UpstartClient::InitializeFake();
-    set_start_session(false);
     fake_arc_platform_support_ = std::make_unique<FakeArcPlatformSupport>();
     ash::AshTestBase::SetUp();
     prefs::RegisterProfilePrefs(profile_prefs_.registry());

@@ -148,12 +148,16 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
             content::BrowserTaskEnvironment::REAL_IO_THREAD)) {}
   ~MediaNotificationProviderImplTest() override = default;
 
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    auto shell_delegate = std::make_unique<MediaTestShellDelegate>();
+    shell_delegate_ = shell_delegate.get();
+    init_params.delegate = std::move(shell_delegate);
+  }
+
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 
-    auto shell_delegate = std::make_unique<MediaTestShellDelegate>();
-    shell_delegate_ = shell_delegate.get();
-    set_shell_delegate(std::move(shell_delegate));
     ChromeAshTestBase::SetUp();
 
     provider_ = static_cast<MediaNotificationProviderImpl*>(

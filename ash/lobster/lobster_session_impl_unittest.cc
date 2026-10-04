@@ -110,11 +110,15 @@ class LobsterSessionImplTest : public AshTestBase {
   LobsterSessionImplTest& operator=(const LobsterSessionImplTest&) = delete;
   ~LobsterSessionImplTest() override = default;
 
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     auto shell_delegate = std::make_unique<TestShellDelegate>();
     shell_delegate->SetSendSpecializedFeatureFeedbackCallback(
         mock_send_specialized_feature_feedback_.Get());
-    set_shell_delegate(std::move(shell_delegate));
+    init_params.delegate = std::move(shell_delegate);
+  }
+
+  void SetUp() override {
     AshTestBase::SetUp();
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
   }

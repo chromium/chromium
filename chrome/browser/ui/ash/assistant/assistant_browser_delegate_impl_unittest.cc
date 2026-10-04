@@ -57,8 +57,13 @@ constexpr auto kAccountId =
 
 class AssistantBrowserDelegateImplTest : public ChromeAshTestBase {
  public:
-  AssistantBrowserDelegateImplTest() { set_start_session(false); }
+  AssistantBrowserDelegateImplTest() = default;
   ~AssistantBrowserDelegateImplTest() override = default;
+
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 
   void SetUp() override {
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(

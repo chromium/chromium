@@ -1920,10 +1920,14 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 class AmbientControllerForManagedScreensaverLoginScreenTest
     : public AmbientControllerForManagedScreensaverTest {
  public:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AmbientControllerForManagedScreensaverTest::SetUpInitParams(init_params);
     // For login screen tests we don't want to start a session rather we want to
     // start on the login screen.
-    set_start_session(false);
+    init_params.start_session = false;
+  }
+
+  void SetUp() override {
     AmbientControllerForManagedScreensaverTest::SetUp();
     SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
     managed_policy_handler()->SetImagesForTesting(image_file_paths_);

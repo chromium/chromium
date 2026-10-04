@@ -167,12 +167,18 @@ TEST_F(SessionLimitNotificationControllerTest, RemoveNotification) {
 class SessionLimitNotificationControllerLoginTest
     : public SessionLimitNotificationControllerTest {
  public:
-  SessionLimitNotificationControllerLoginTest() { set_start_session(false); }
+  SessionLimitNotificationControllerLoginTest() = default;
 
   SessionLimitNotificationControllerLoginTest(
       const SessionLimitNotificationControllerLoginTest&) = delete;
   SessionLimitNotificationControllerLoginTest& operator=(
       const SessionLimitNotificationControllerLoginTest&) = delete;
+
+  // SessionLimitNotificationControllerTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    SessionLimitNotificationControllerTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 TEST_F(SessionLimitNotificationControllerLoginTest,

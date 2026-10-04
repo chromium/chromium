@@ -42,6 +42,7 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   ~ChromeQuickAnswersTestBase() override;
 
   // ChromeAshTestBase:
+  void SetUpInitParams(ash::AshTestHelper::InitParams& init_params) override;
   void SetUp() override;
   void TearDown() override;
 

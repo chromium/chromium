@@ -29,11 +29,15 @@ class ChannelIndicatorQuickSettingsViewPixelTest
   ~ChannelIndicatorQuickSettingsViewPixelTest() override = default;
 
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     // Install a test delegate to allow overriding channel version.
     auto delegate = std::make_unique<TestShellDelegate>();
     delegate->set_channel(version_info::Channel::BETA);
-    set_shell_delegate(std::move(delegate));
+    init_params.delegate = std::move(delegate);
+  }
+
+  void SetUp() override {
     AshTestBase::SetUp();
 
     GetSystemTrayClient()->set_user_feedback_enabled(true);

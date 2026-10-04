@@ -33,14 +33,14 @@ class ChannelIndicatorUtilsTest : public AshTestBase {
   ~ChannelIndicatorUtilsTest() override = default;
 
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     // Instantiate a `TestShellDelegate` with the version set to something
     // tests can verify.
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_version_string(kTestOsVersion);
-    set_shell_delegate(std::move(shell_delegate));
-    AshTestBase::SetUp();
+    init_params.delegate = std::move(shell_delegate);
   }
 };
 

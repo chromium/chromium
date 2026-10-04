@@ -969,13 +969,17 @@ TEST_F(PowerTrayViewTest, AccessibleName) {
 class UnifiedSystemTrayAccessibilityTest : public AshTestBase {
  public:
   // AshTestBase:
-  void SetUp() override {
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
     // Force the channel to return version_info::Channel::BETA so that the
     // ChannelIndicatorView gets created.
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_channel(version_info::Channel::BETA);
-    set_shell_delegate(std::move(shell_delegate));
+    init_params.delegate = std::move(shell_delegate);
+  }
+
+  void SetUp() override {
     AshTestBase::SetUp();
 
     scoped_fake_power_status_ = std::make_unique<ScopedFakePowerStatus>();

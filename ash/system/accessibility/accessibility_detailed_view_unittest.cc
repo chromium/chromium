@@ -1410,12 +1410,17 @@ class AccessibilityDetailedViewSodaTest
     : public AccessibilityDetailedViewTest,
       public testing::WithParamInterface<SodaFeature> {
  public:
-  AccessibilityDetailedViewSodaTest() { set_start_session(false); }
+  AccessibilityDetailedViewSodaTest() = default;
   AccessibilityDetailedViewSodaTest(const AccessibilityDetailedViewSodaTest&) =
       delete;
   AccessibilityDetailedViewSodaTest& operator=(
       const AccessibilityDetailedViewSodaTest&) = delete;
   ~AccessibilityDetailedViewSodaTest() override = default;
+
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AccessibilityDetailedViewTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 
   void SetUp() override {
     AccessibilityDetailedViewTest::SetUp();
@@ -1565,8 +1570,14 @@ class AccessibilityDetailedViewLoginScreenTest
       const AccessibilityDetailedViewLoginScreenTest&) = delete;
 
  protected:
-  AccessibilityDetailedViewLoginScreenTest() { set_start_session(false); }
+  AccessibilityDetailedViewLoginScreenTest() = default;
   ~AccessibilityDetailedViewLoginScreenTest() override = default;
+
+  // AccessibilityDetailedViewTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AccessibilityDetailedViewTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 TEST_F(AccessibilityDetailedViewLoginScreenTest, NothingCheckedByDefault) {

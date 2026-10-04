@@ -219,7 +219,13 @@ using StackedHotseatWidgetTest = HotseatWidgetTest;
 
 class HotseatWidgetDragTest : public HotseatWidgetTest {
  public:
-  HotseatWidgetDragTest() { set_add_default_shelf_icon(false); }
+  HotseatWidgetDragTest() = default;
+
+  // HotseatWidgetTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    HotseatWidgetTest::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 };
 
 // Counts the number of times the work area changes.

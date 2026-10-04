@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ash/shell.h"
+#include "base/check_op.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "content/public/test/browser_task_environment.h"
 
@@ -16,7 +18,18 @@ ChromeAshTestBase::ChromeAshTestBase()
 
 ChromeAshTestBase::ChromeAshTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : AshTestBase(std::move(task_environment),
-                  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()) {}
+    : AshTestBase(std::move(task_environment)) {}
 
 ChromeAshTestBase::~ChromeAshTestBase() = default;
+
+void ChromeAshTestBase::SetUp() {
+  ash::AshTestBase::SetUp();
+  CHECK_EQ(ash::Shell::Get()->local_state(),
+           TestingBrowserProcess::GetGlobal()->local_state());
+}
+
+void ChromeAshTestBase::SetUpInitParams(
+    ash::AshTestHelper::InitParams& init_params) {
+  ash::AshTestBase::SetUpInitParams(init_params);
+  init_params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
+}

@@ -14,6 +14,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -110,14 +111,20 @@ class MultiDeviceNotificationPresenterTest : public NoSessionAshTestBase {
   MultiDeviceNotificationPresenterTest& operator=(
       const MultiDeviceNotificationPresenterTest&) = delete;
 
-  void SetUp() override {
-    fake_multidevice_setup_ =
-        std::make_unique<multidevice_setup::FakeMultiDeviceSetup>();
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    NoSessionAshTestBase::SetUpInitParams(init_params);
+    CHECK(fake_multidevice_setup_);
     auto delegate = std::make_unique<TestShellDelegate>();
     delegate->SetMultiDeviceSetupBinder(base::BindRepeating(
         &multidevice_setup::MultiDeviceSetupBase::BindReceiver,
         base::Unretained(fake_multidevice_setup_.get())));
-    set_shell_delegate(std::move(delegate));
+    init_params.delegate = std::move(delegate);
+  }
+
+  void SetUp() override {
+    fake_multidevice_setup_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetup>();
+
     NoSessionAshTestBase::SetUp();
 
     test_system_tray_client_ = GetSystemTrayClient();

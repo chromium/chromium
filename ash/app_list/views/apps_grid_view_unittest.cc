@@ -800,9 +800,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class AppsGridViewDragTestBase : public AppsGridViewTest {
  public:
-  AppsGridViewDragTestBase() { set_add_default_shelf_icon(false); }
+  AppsGridViewDragTestBase() = default;
 
   // AppsGridViewTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AppsGridViewTest::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
+
   void SetUp() override {
     AppsGridViewTest::SetUp();
     ShelfModel::Get()->SetShelfItemFactory(&shelf_item_factory_);

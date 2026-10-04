@@ -23,7 +23,7 @@ class UserEducationAshTestBase : public NoSessionAshTestBase {
 
  protected:
   // NoSessionAshTestBase:
-  void SetUp() override;
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override;
 
   // Returns the mocked delegate which facilitates communication between Ash and
   // user education services in the browser.

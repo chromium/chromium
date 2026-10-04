@@ -37,9 +37,13 @@ class DragDropCaptureDelegateTest : public AshTestBase {
   ~DragDropCaptureDelegateTest() override = default;
 
   // AshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    AshTestBase::SetUpInitParams(init_params);
+    init_params.delegate = std::make_unique<TestShellDelegate>();
+  }
+
   void SetUp() override {
     drag_drop_capture_delegate_.reset(new DragDropCaptureDelegate());
-    set_shell_delegate(std::make_unique<TestShellDelegate>());
     AshTestBase::SetUp();
   }
 

@@ -134,20 +134,7 @@ class AshEventGeneratorDelegate
 
 AshTestBase::AshTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)),
-      owned_local_state_(std::make_unique<TestingPrefServiceSimple>()),
-      local_state_(owned_local_state_.get()) {
-  CHECK(local_state_);
-  RegisterLocalStatePrefs(owned_local_state_->registry(), true);
-}
-
-AshTestBase::AshTestBase(
-    std::unique_ptr<base::test::TaskEnvironment> task_environment,
-    TestingPrefServiceSimple* local_state)
-    : task_environment_(std::move(task_environment)),
-      local_state_(local_state) {
-  CHECK(local_state_);
-}
+    : task_environment_(std::move(task_environment)) {}
 
 AshTestBase::~AshTestBase() {
   // Ensure the next test starts with a null display::Screen.  This must be done
@@ -167,13 +154,19 @@ void AshTestBase::SetUp() {
   CHECK(base::SingleThreadTaskRunner::HasCurrentDefault());
   CHECK(base::ThreadPoolInstance::Get());
 
+  AshTestHelper::InitParams init_params;
+  SetUpInitParams(init_params);
+  if (!init_params.local_state) {
+    init_params.local_state = local_state();
+  } else {
+    CHECK(!local_state_);
+  }
   setup_called_ = true;
-  CHECK(!init_params_->local_state) << "local state can not be overridden";
-  init_params_->local_state = local_state();
+
   // AshTestBase destroys the Screen instance at the destructor,
   // because some of the tests verifies the screen instance
   // after the ash::Shell destroyed in AshTestHelper::TearDown().
-  init_params_->destroy_screen = false;
+  init_params.destroy_screen = false;
 
   // Prepare for a pixel test if having pixel init params.
   std::optional<pixel_test::InitParams> pixel_test_init_params =
@@ -190,14 +183,13 @@ void AshTestBase::SetUp() {
   test_context_factories_ = std::make_unique<ui::TestContextFactories>(
       /*enable_pixel_output=*/enable_pixel_output,
       /*output_to_window=*/enable_pixel_output);
-  if (!init_params_->post_subsystems_teardown_callback) {
-    init_params_->post_subsystems_teardown_callback = base::BindOnce(
+  if (!init_params.post_subsystems_teardown_callback) {
+    init_params.post_subsystems_teardown_callback = base::BindOnce(
         &AshTestBase::OnSubsystemsTornDown, base::Unretained(this));
   }
   ash_test_helper_ = std::make_unique<AshTestHelper>(
       test_context_factories_->GetContextFactory());
-  ash_test_helper_->SetUp(std::move(*init_params_));
-  init_params_.reset();
+  ash_test_helper_->SetUp(std::move(init_params));
 
   // Call `StabilizeUI()` after the user session is activated (if any) in the
   // test setup.
@@ -297,6 +289,18 @@ std::optional<pixel_test::InitParams> AshTestBase::CreatePixelTestInitParams()
 std::string AshTestBase::GenerateScreenshotName(const std::string& title) {
   CHECK(CreatePixelTestInitParams());
   return pixel_test_helper()->GenerateScreenshotName(title);
+}
+
+void AshTestBase::SetUpInitParams(AshTestHelper::InitParams& init_params) {}
+
+TestingPrefServiceSimple* AshTestBase::local_state() {
+  // TODO(hidehiko): Remove the laziness of initialization.
+  if (!local_state_) {
+    CHECK(!setup_called_);
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterLocalStatePrefs(local_state_->registry(), true);
+  }
+  return local_state_.get();
 }
 
 void AshTestBase::UpdateDisplay(const std::string& display_specs,
@@ -716,16 +720,18 @@ void AshTestBase::PrepareForPixelDiffTest() {
 // ============================================================================
 // NoSessionAshTestBase:
 
-NoSessionAshTestBase::NoSessionAshTestBase() {
-  set_start_session(false);
-}
+NoSessionAshTestBase::NoSessionAshTestBase() = default;
 
 NoSessionAshTestBase::NoSessionAshTestBase(
     base::test::TaskEnvironment::TimeSource time_source)
-    : AshTestBase(time_source) {
-  set_start_session(false);
-}
+    : AshTestBase(time_source) {}
 
 NoSessionAshTestBase::~NoSessionAshTestBase() = default;
+
+void NoSessionAshTestBase::SetUpInitParams(
+    AshTestHelper::InitParams& init_params) {
+  AshTestBase::SetUpInitParams(init_params);
+  init_params.start_session = false;
+}
 
 }  // namespace ash

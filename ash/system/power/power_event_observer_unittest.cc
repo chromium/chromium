@@ -684,7 +684,13 @@ TEST_F(PowerEventObserverTest, LockOnLidCloseWhenDocked) {
 
 class LockOnSuspendUsageTest : public PowerEventObserverTest {
  public:
-  LockOnSuspendUsageTest() { set_start_session(false); }
+  LockOnSuspendUsageTest() = default;
+
+  // PowerEventObserverTest:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    PowerEventObserverTest::SetUpInitParams(init_params);
+    init_params.start_session = false;
+  }
 };
 
 TEST_F(LockOnSuspendUsageTest, LockOnSuspendUsage) {

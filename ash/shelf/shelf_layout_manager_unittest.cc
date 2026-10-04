@@ -264,7 +264,13 @@ class AutoHideStateDetector : public ShelfLayoutManagerObserver {
 
 class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
  public:
-  ShelfLayoutManagerTest() { set_add_default_shelf_icon(false); }
+  ShelfLayoutManagerTest() = default;
+
+  // ShelfLayoutManagerTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ShelfLayoutManagerTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
   // Sets up a Kiosk session after the app has launched.
   void SetUpKioskSession() {
@@ -4323,10 +4329,14 @@ TEST_F(ShelfLayoutManagerTest, ShelfShowsPinnedAppsOnOtherDisplays) {
 class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
                                   public testing::WithParamInterface<bool> {
  public:
-  QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {
-    set_add_default_shelf_icon(false);
-  }
+  QuickActionShowBubbleTest() : scoped_locale_(GetParam() ? "ar" : "") {}
   ~QuickActionShowBubbleTest() override = default;
+
+  // ShelfLayoutManagerTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ShelfLayoutManagerTestBase::SetUpInitParams(init_params);
+    init_params.add_default_shelf_icon = false;
+  }
 
  private:
   base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
