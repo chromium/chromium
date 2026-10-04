@@ -104,6 +104,7 @@ class CORE_EXPORT AnchorElementMetricsSender final
   void SetTickClockForTesting(const base::TickClock* clock);
   void SetNowAsNavigationStartForTesting();
   void FireUpdateTimerForTesting();
+  void FlushMetricsHostForTesting();
 
   // Report the pointer event for the anchor element.
   void MaybeReportAnchorElementPointerEvent(HTMLAnchorElementBase& element,
@@ -115,11 +116,13 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // calls.
   static constexpr auto kUpdateMetricsTimeGap = base::Milliseconds(200);
 
-  // Returns true if `random_anchor_sampling_period_` is configured to sample in
-  // all anchors.
+  // Returns true if every anchor is being sampled in.
   bool AllAnchorsSampledIn() const;
 
  private:
+  // Returns the effective anchor sampling period.
+  int EffectiveSamplingPeriod() const;
+
   // Associates |metrics_host_| with the IPC interface if not already, so it can
   // be used to send messages. Returns true if associated, false otherwise.
   bool AssociateInterface();
@@ -190,9 +193,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // If `should_skip_update_delays_for_testing_` becomes true, the rate limiting
   // is no longer done.
   bool should_skip_update_delays_for_testing_ = false;
-
-  // Cached field trial param values.
-  const int random_anchor_sampling_period_;
 
   Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;

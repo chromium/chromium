@@ -434,7 +434,7 @@ class AnchorElementSetIsNavigationInDomainBrowserTest
     : public AnchorElementPreloaderBrowserTest {
  public:
   base::FieldTrialParams GetNavigationPredictorFieldTrialParams() override {
-    return {{"random_anchor_sampling_period", "1"}};
+    return {{"RandomAnchorSamplingPeriod", "1"}};
   }
 };
 

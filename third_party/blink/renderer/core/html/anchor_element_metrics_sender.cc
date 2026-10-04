@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/rand_util.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink-forward.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -34,6 +37,7 @@
 
 namespace blink {
 namespace {
+
 // Returns true if `document` should have an associated
 // AnchorElementMetricsSender.
 bool ShouldHaveAnchorElementMetricsSender(Document& document) {
@@ -46,6 +50,9 @@ bool ShouldHaveAnchorElementMetricsSender(Document& document) {
          document.GetExecutionContext()->IsSecureContext();
 }
 
+// Unlike `ShouldTrackViewportPositions()`, this intentionally excludes DevTools
+// mobile emulation because `NavigationPredictor` rejects position updates over
+// Mojo unless `kNavigationPredictorNewViewportFeatures` is enabled.
 bool ShouldReportViewportPositions() {
   return base::FeatureList::IsEnabled(
       features::kNavigationPredictorNewViewportFeatures);
@@ -212,7 +219,22 @@ void AnchorElementMetricsSender::Trace(Visitor* visitor) const {
 }
 
 bool AnchorElementMetricsSender::AllAnchorsSampledIn() const {
-  return random_anchor_sampling_period_ == 1;
+  return EffectiveSamplingPeriod() == 1;
+}
+
+int AnchorElementMetricsSender::EffectiveSamplingPeriod() const {
+  if (int period = features::kRandomAnchorSamplingPeriod.Get(); period > 0) {
+    return period;
+  }
+#if BUILDFLAG(IS_ANDROID)
+  return 1;
+#else
+  const Document& document = *GetSupplementable();
+  return (ShouldRunModerateMobileViewportHeuristic(document) ||
+          ShouldRunEagerMobileViewportHeuristic(document))
+             ? 1
+             : 100;
+#endif
 }
 
 bool AnchorElementMetricsSender::AssociateInterface() {
@@ -245,15 +267,6 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
                         TaskType::kInternalDefault),
                     this,
                     &AnchorElementMetricsSender::UpdateMetrics),
-      random_anchor_sampling_period_(base::GetFieldTrialParamByFeatureAsInt(
-          blink::features::kNavigationPredictor,
-          "random_anchor_sampling_period",
-#if BUILDFLAG(IS_ANDROID)
-          1
-#else
-          100
-#endif
-          )),
       clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(document.IsInOutermostMainFrame());
@@ -279,6 +292,10 @@ void AnchorElementMetricsSender::FireUpdateTimerForTesting() {
     update_timer_.Stop();
   }
   UpdateMetrics(&update_timer_);
+}
+
+void AnchorElementMetricsSender::FlushMetricsHostForTesting() {
+  metrics_host_.FlushForTesting();
 }
 
 void AnchorElementMetricsSender::SetShouldSkipUpdateDelays(
@@ -456,7 +473,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
       continue;
     }
 
-    int random = base::RandIntInclusive(1, random_anchor_sampling_period_);
+    int random = base::RandIntInclusive(1, EffectiveSamplingPeriod());
     if (random == 1) {
       // This anchor element is sampled in.
       if (viewport_position_tracker) {
@@ -591,9 +608,10 @@ void AnchorElementMetricsSender::UpdateMetrics(TimerBase* /*timer*/) {
     left_viewport_messages_.clear();
   }
   if (!position_update_messages_.empty()) {
-    CHECK(ShouldReportViewportPositions());
-    metrics_host_->ReportAnchorElementsPositionUpdate(
-        std::move(position_update_messages_));
+    if (ShouldReportViewportPositions()) {
+      metrics_host_->ReportAnchorElementsPositionUpdate(
+          std::move(position_update_messages_));
+    }
     position_update_messages_.clear();
   }
 }
@@ -617,7 +635,9 @@ void AnchorElementMetricsSender::ViewportIntersectionUpdate(
 
 void AnchorElementMetricsSender::AnchorPositionsUpdated(
     HeapVector<Member<AnchorPositionUpdate>>& position_updates) {
-  CHECK(ShouldReportViewportPositions());
+  if (!ShouldReportViewportPositions()) {
+    return;
+  }
 
   for (AnchorPositionUpdate* update : position_updates) {
     position_update_messages_.push_back(

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_VIEWPORT_POSITION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_VIEWPORT_POSITION_TRACKER_H_
 
+#include <optional>
+
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -20,6 +22,9 @@ class HTMLAnchorElementBase;
 class IntersectionObserver;
 class IntersectionObserverEntry;
 class PointerEvent;
+
+// Returns true if the page's `ViewportStyle` is `kMobile`.
+CORE_EXPORT bool IsMobileViewportContext(const Document& document);
 
 // This class uses an IntersectionObserver to track the position of <a> and
 // <area> elements in the viewport. It notifies observers of when observed
@@ -38,7 +43,7 @@ class CORE_EXPORT AnchorElementViewportPositionTracker
         const HeapVector<Member<const HTMLAnchorElementBase>>& entered_viewport,
         const HeapVector<Member<const HTMLAnchorElementBase>>& left_viewport) {}
 
-    struct AnchorPositionUpdate
+    struct CORE_EXPORT AnchorPositionUpdate
         : public GarbageCollected<AnchorPositionUpdate> {
       Member<const HTMLAnchorElementBase> anchor_element;
       // The vertical position of the `anchor_element`'s center in the viewport

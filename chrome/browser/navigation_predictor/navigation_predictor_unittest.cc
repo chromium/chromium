@@ -94,7 +94,7 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
 
     // Report all anchors to avoid non-deterministic behavior.
     std::map<std::string, std::string> params;
-    params["random_anchor_sampling_period"] = "1";
+    params["RandomAnchorSamplingPeriod"] = "1";
     params["traffic_client_enabled_percent"] = "100";
 
     std::map<std::string, std::string> ml_model_params;

@@ -13,16 +13,21 @@
 #include "cc/base/features.h"
 #include "cc/test/scoped_browser_controls_linear_animation.h"
 #include "cc/trees/browser_controls_params.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
@@ -170,7 +175,7 @@ class AnchorElementMetricsSenderTest
     task_environment().FastForwardBy(base::Milliseconds(1));
     // Report all anchors to avoid non-deterministic behavior.
     std::map<std::string, std::string> nav_predictor_params;
-    nav_predictor_params["random_anchor_sampling_period"] = "1";
+    nav_predictor_params["RandomAnchorSamplingPeriod"] = "1";
     nav_predictor_params["intersection_observation_after_fcp_only"] = "false";
     // Set "eager" hover time to the same as "moderate" hover time to avoid test
     // flakiness.
@@ -1079,7 +1084,7 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
       {{"max_intersection_observations", "3"},
-       {"random_anchor_sampling_period", "1"},
+       {"RandomAnchorSamplingPeriod", "1"},
        {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
@@ -1157,7 +1162,7 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorUnobservedByIntersectionObserver) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
       {{"max_intersection_observations", "1"},
-       {"random_anchor_sampling_period", "1"},
+       {"RandomAnchorSamplingPeriod", "1"},
        {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
@@ -1224,7 +1229,7 @@ TEST_F(AnchorElementMetricsSenderTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
       {{"max_intersection_observations", "1"},
-       {"random_anchor_sampling_period", "1"},
+       {"RandomAnchorSamplingPeriod", "1"},
        {"intersection_observation_after_fcp_only", "false"}});
 
   String source("https://example.com/p1");
@@ -1276,6 +1281,58 @@ TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
       AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
           ->GetIntersectionObserverForTesting();
   EXPECT_EQ(intersection_observer->delay(), 252.0);
+}
+
+// Verifies that when kNavigationPredictorNewViewportFeatures is disabled,
+// position updates are not dispatched over Mojo while DevTools mobile
+// emulation is enabled on Desktop. Dispatching them would trigger the
+// browser-side ReportBadMessage (and renderer kill) for unexpected anchor
+// position update messages.
+TEST_F(AnchorElementMetricsSenderTest,
+       PositionUpdateNotReportedWhenFeatureDisabledInMobileEmulation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kNavigationPredictorNewViewportFeatures);
+
+  DeviceEmulationParams emulation_params;
+  emulation_params.screen_type = mojom::EmulatedScreenType::kMobile;
+  WebView().EnableDeviceEmulation(emulation_params);
+  ASSERT_EQ(GetDocument().GetSettings()->GetViewportStyle(),
+            mojom::blink::ViewportStyle::kMobile);
+
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"HTML(
+    <a href="https://bar.com">link</a>
+  )HTML");
+  Compositor().BeginFrame();
+  ProcessEvents(/*expected_anchors=*/1);
+
+  ASSERT_EQ(1u, hosts_.size());
+  ASSERT_THAT(hosts_[0]->positions_, testing::IsEmpty());
+  auto* anchor = To<HTMLAnchorElement>(GetDocument().links()->item(0));
+  auto* position_update = MakeGarbageCollected<
+      AnchorElementViewportPositionTracker::Observer::AnchorPositionUpdate>();
+  position_update->anchor_element = anchor;
+  position_update->vertical_position = 0.5f;
+  position_update->distance_from_pointer_down = std::nullopt;
+  position_update->size_in_viewport = 1;
+  HeapVector<Member<
+      AnchorElementViewportPositionTracker::Observer::AnchorPositionUpdate>>
+      position_updates;
+  position_updates.push_back(position_update);
+
+  AnchorElementMetricsSender* sender =
+      AnchorElementMetricsSender::From(GetDocument());
+  ASSERT_TRUE(sender);
+  static_cast<AnchorElementViewportPositionTracker::Observer*>(sender)
+      ->AnchorPositionsUpdated(position_updates);
+  sender->FireUpdateTimerForTesting();
+  sender->FlushMetricsHostForTesting();
+
+  EXPECT_THAT(hosts_[0]->positions_, testing::IsEmpty());
+  WebView().DisableDeviceEmulation();
 }
 
 TEST_F(AnchorElementMetricsSenderTest, PositionUpdate) {
@@ -1855,7 +1912,7 @@ TEST_F(AnchorElementMetricsSenderTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
       {{"max_intersection_observations", "1"},
-       {"random_anchor_sampling_period", "1"},
+       {"RandomAnchorSamplingPeriod", "1"},
        {"intersection_observation_after_fcp_only", "false"}});
 
   // Navigate the main frame.
@@ -1925,7 +1982,7 @@ TEST_F(AnchorElementMetricsSenderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       features::kNavigationPredictor,
-      {{"random_anchor_sampling_period", "1"},
+      {{"RandomAnchorSamplingPeriod", "1"},
        {"intersection_observation_after_fcp_only", "true"},
        {"post_fcp_observation_delay", "200ms"}});
 
@@ -1994,7 +2051,7 @@ TEST_F(AnchorElementMetricsSenderTest, RegressionTestForCrbug384610894) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeaturesAndParameters(
       {{features::kNavigationPredictor,
-        {{"random_anchor_sampling_period", "1"},
+        {{"RandomAnchorSamplingPeriod", "1"},
          {"intersection_observation_after_fcp_only", "true"},
          {"post_fcp_observation_delay", "200ms"}}}},
       {features::kPreloadingModerateViewportHeuristics});

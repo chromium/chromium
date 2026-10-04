@@ -827,7 +827,7 @@ TEST_F(PreloadingDeciderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "true"}});
+      {{"PreloadingModerateViewportHeuristicsEnactCandidates", "true"}});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -858,7 +858,7 @@ TEST_F(PreloadingDeciderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "true"}});
+      {{"PreloadingModerateViewportHeuristicsEnactCandidates", "true"}});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -880,7 +880,7 @@ TEST_F(PreloadingDeciderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "false"}});
+      {{"PreloadingModerateViewportHeuristicsEnactCandidates", "false"}});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
@@ -907,7 +907,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "true"}});
+      {{"PreloadingModerateViewportHeuristicsEnactCandidates", "true"}});
 
   base::HistogramTester histogram_tester;
   auto* preloading_decider =
@@ -988,7 +988,7 @@ TEST_F(PreloadingDeciderTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       blink::features::kPreloadingModerateViewportHeuristics,
-      {{"enact_candidates", "true"}});
+      {{"PreloadingModerateViewportHeuristicsEnactCandidates", "true"}});
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());

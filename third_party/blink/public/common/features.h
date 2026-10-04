@@ -1276,6 +1276,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kPredictorTrafficClientEnabledPercent);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kRandomAnchorSamplingPeriod);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kNavigationPredictorNewViewportFeatures);
 
@@ -1376,6 +1378,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kPreloadingEagerHoverHeuristicsDwellTime);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingEagerViewportHeuristics);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPreloadingEagerViewportHeuristicsForDevToolsEmulation);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kPreloadingEagerViewportHeuristicsPresentTime);
 
@@ -1399,16 +1404,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 
 // If enabled, a viewport based heuristic will be used to predict the next click
 // for speculation-rule based preloading.
-// Note: To work correctly, this also needs kNavigationPredictor enabled with
-// "random_anchor_sampling_period" set to 1, and
-// kNavigationPredictorNewViewportFeatures.
-// Note: The prediction will only be preloaded if the "enact_candidates" param
-// is set to true (the default outside Android is false), otherwise it is only
-// logged for metrics purposes.
+// Predictions are only preloaded when
+// kPreloadingModerateViewportHeuristicsEnactCandidates is true.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingModerateViewportHeuristics);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kPreloadingModerateViewportHeuristicsEnactCandidates);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kPreloadingModerateViewportHeuristicsForDevToolsEmulation);
 
 // If enabled, preloading eligibility checks (e.g., data saver, battery saver)
 // are performed on the renderer side.

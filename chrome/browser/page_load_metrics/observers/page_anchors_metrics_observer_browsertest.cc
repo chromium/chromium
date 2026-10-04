@@ -29,7 +29,7 @@ class PageAnchorsMetricsObserverBrowserTest
   PageAnchorsMetricsObserverBrowserTest() {
     // Report all anchors to avoid non-deterministic behavior.
     std::map<std::string, std::string> params;
-    params["random_anchor_sampling_period"] = "1";
+    params["RandomAnchorSamplingPeriod"] = "1";
 
     feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kNavigationPredictor, params);

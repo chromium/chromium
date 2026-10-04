@@ -6,27 +6,41 @@
 
 #include <limits>
 
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/widget/frame_widget.h"
 
 namespace blink {
+
+bool IsMobileViewportContext(const Document& document) {
+  const Page* page = document.GetPage();
+  if (!page) {
+    return false;
+  }
+  return page->GetSettings().GetViewportStyle() ==
+         mojom::blink::ViewportStyle::kMobile;
+}
 
 namespace {
 
@@ -71,9 +85,17 @@ base::TimeDelta PostFCPObservationDelay() {
   return param.Get();
 }
 
-bool ShouldReportViewportPositions() {
-  return base::FeatureList::IsEnabled(
-      features::kNavigationPredictorNewViewportFeatures);
+bool ShouldTrackViewportPositions(const Document& document) {
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationPredictorNewViewportFeatures)) {
+    return true;
+  }
+#if !BUILDFLAG(IS_ANDROID)
+  return ShouldRunModerateMobileViewportHeuristic(document) ||
+         ShouldRunEagerMobileViewportHeuristic(document);
+#else
+  return false;
+#endif
 }
 
 float GetBrowserControlsHeight(Document& document) {
@@ -253,7 +275,8 @@ void AnchorElementViewportPositionTracker::RecordPointerDown(
 }
 
 void AnchorElementViewportPositionTracker::OnScrollEnd() {
-  if (!ShouldReportViewportPositions() || !intersection_observer_) {
+  if (!ShouldTrackViewportPositions(*GetSupplementable()) ||
+      !intersection_observer_) {
     return;
   }
 
@@ -319,9 +342,10 @@ void AnchorElementViewportPositionTracker::UpdateVisibleAnchors(
   }
 
   if (position_update_timer_.IsActive()) {
-    CHECK(ShouldReportViewportPositions());
     position_update_timer_.Stop();
-    RegisterForLifecycleNotifications();
+    if (ShouldTrackViewportPositions(*GetSupplementable())) {
+      RegisterForLifecycleNotifications();
+    }
   }
 
   for (Observer* observer : observers_) {
@@ -331,7 +355,9 @@ void AnchorElementViewportPositionTracker::UpdateVisibleAnchors(
 
 void AnchorElementViewportPositionTracker::PositionUpdateTimerFired(
     TimerBase*) {
-  CHECK(ShouldReportViewportPositions());
+  if (!ShouldTrackViewportPositions(*GetSupplementable())) {
+    return;
+  }
   if (LocalFrameView* view = GetSupplementable()->View()) {
     view->ScheduleAnimation();
     RegisterForLifecycleNotifications();
@@ -340,7 +366,6 @@ void AnchorElementViewportPositionTracker::PositionUpdateTimerFired(
 
 void AnchorElementViewportPositionTracker::DidFinishLifecycleUpdate(
     const LocalFrameView& local_frame_view) {
-  CHECK(ShouldReportViewportPositions());
   Document* document = local_frame_view.GetFrame().GetDocument();
   if (document->Lifecycle().GetState() <
       DocumentLifecycle::kAfterPerformLayout) {
@@ -349,7 +374,9 @@ void AnchorElementViewportPositionTracker::DidFinishLifecycleUpdate(
   if (!GetSupplementable()->GetFrame()) {
     return;
   }
-  DispatchAnchorElementsPositionUpdates();
+  if (ShouldTrackViewportPositions(*document)) {
+    DispatchAnchorElementsPositionUpdates();
+  }
   DCHECK_EQ(&local_frame_view, GetSupplementable()->View());
   DCHECK(is_registered_for_lifecycle_notifications_);
   GetSupplementable()->View()->UnregisterFromLifecycleNotifications(this);
@@ -358,7 +385,7 @@ void AnchorElementViewportPositionTracker::DidFinishLifecycleUpdate(
 
 void AnchorElementViewportPositionTracker::
     DispatchAnchorElementsPositionUpdates() {
-  CHECK(ShouldReportViewportPositions());
+  DCHECK(ShouldTrackViewportPositions(*GetSupplementable()));
 
   Screen* screen = GetSupplementable()->domWindow()->screen();
   FrameWidget* widget =

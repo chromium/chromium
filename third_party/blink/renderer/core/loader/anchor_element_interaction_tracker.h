@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
@@ -29,6 +30,12 @@ class Node;
 class PointerEvent;
 
 CORE_EXPORT BASE_DECLARE_FEATURE(kPreloadingNoSamePageFragmentAnchorTracking);
+
+CORE_EXPORT bool ShouldRunModerateMobileViewportHeuristic(
+    const Document& document);
+
+CORE_EXPORT bool ShouldRunEagerMobileViewportHeuristic(
+    const Document& document);
 
 // Config for viewport heuristic derived from field trial params.
 struct ModerateViewportHeuristicConfig {
