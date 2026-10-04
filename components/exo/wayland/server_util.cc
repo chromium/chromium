@@ -7,6 +7,7 @@
 #include <wayland-server-core.h>
 
 #include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/wayland/server.h"
@@ -33,7 +34,11 @@ DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*, kDataOfferResourceKey, nullptr)
 // Wayland provides no convenient way to annotate a wl_display with arbitrary
 // data. Therefore, to map displays to their security_delegate, we maintain this
 // mapping.
-base::flat_map<wl_display*, SecurityDelegate*> g_display_security_map;
+base::flat_map<wl_display*, SecurityDelegate*>& GetDisplaySecurityMap() {
+  static base::NoDestructor<base::flat_map<wl_display*, SecurityDelegate*>>
+      display_security_map;
+  return *display_security_map;
+}
 
 }  // namespace
 
@@ -69,18 +74,18 @@ void SetDataOfferResource(DataOffer* data_offer,
 void SetSecurityDelegate(wl_display* display,
                          SecurityDelegate* security_delegate) {
   auto emplace_result =
-      g_display_security_map.emplace(display, security_delegate);
+      GetDisplaySecurityMap().emplace(display, security_delegate);
   DCHECK(emplace_result.second);
 }
 
 void RemoveSecurityDelegate(wl_display* display) {
-  DCHECK(g_display_security_map.contains(display));
-  g_display_security_map.erase(display);
+  DCHECK(GetDisplaySecurityMap().contains(display));
+  GetDisplaySecurityMap().erase(display);
 }
 
 SecurityDelegate* GetSecurityDelegate(wl_display* display) {
-  DCHECK(g_display_security_map.contains(display));
-  return g_display_security_map[display];
+  DCHECK(GetDisplaySecurityMap().contains(display));
+  return GetDisplaySecurityMap()[display];
 }
 
 SecurityDelegate* GetSecurityDelegate(wl_client* client) {

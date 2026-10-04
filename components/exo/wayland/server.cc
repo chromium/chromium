@@ -40,6 +40,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -118,7 +119,10 @@ const char kWaylandSocketGroup[] = "wayland";
 constexpr int kMaxPendingConnections = 128;
 
 // Callback used to find a Server instance for a given wl_display.
-Server::ServerGetter g_server_getter;
+Server::ServerGetter& GetServerGetter() {
+  static base::NoDestructor<Server::ServerGetter> server_getter;
+  return *server_getter;
+}
 
 void wayland_log(const char* fmt, va_list argp) {
   // SAFETY: wayland_log is a callback from libwayland that uses va_list.
@@ -390,13 +394,14 @@ std::unique_ptr<Server> Server::Create(
 
 // static.
 Server* Server::GetServerForDisplay(wl_display* display) {
-  return g_server_getter ? g_server_getter.Run(display) : nullptr;
+  const ServerGetter& server_getter = GetServerGetter();
+  return server_getter ? server_getter.Run(display) : nullptr;
 }
 
 // static.
 void Server::SetServerGetter(Server::ServerGetter server_getter) {
-  CHECK(!server_getter || !g_server_getter);
-  g_server_getter = std::move(server_getter);
+  CHECK(!server_getter || !GetServerGetter());
+  GetServerGetter() = std::move(server_getter);
 }
 
 void Server::StartWithDefaultPath(StartCallback callback) {
