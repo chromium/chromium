@@ -32,7 +32,8 @@ class ExtensionInstallDialogViewAndroid {
   void ShowDialog(ui::WindowAndroid* window_android);
 
   // JNI methods.
-  void OnDialogAccepted(const std::string& justification_text);
+  void OnDialogAccepted(const std::string& justification_text,
+                        bool with_withheld_permissions);
   void OnDialogCanceled();
   void OnDialogDismissed();
   void Destroy();

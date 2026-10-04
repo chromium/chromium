@@ -99,11 +99,16 @@ void ExtensionInstallDialogViewAndroid::ShowDialog(
 }
 
 void ExtensionInstallDialogViewAndroid::OnDialogAccepted(
-    const std::string& justification_text) {
+    const std::string& justification_text,
+    bool with_withheld_permissions) {
   prompt_->OnDialogAccepted();
+  auto result =
+      with_withheld_permissions
+          ? ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS
+          : ExtensionInstallPrompt::Result::ACCEPTED;
   std::move(done_callback_)
-      .Run(ExtensionInstallPrompt::DoneCallbackPayload(
-          ExtensionInstallPrompt::Result::ACCEPTED, justification_text));
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(result,
+                                                       justification_text));
 }
 
 void ExtensionInstallDialogViewAndroid::OnDialogCanceled() {
@@ -169,6 +174,19 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
 
     Java_ExtensionInstallDialogBridge_withJustification(
         env, java_object_, justification_heading, justification_placeholder);
+  }
+
+  if (prompt_->ShouldWithheldPermissionsOnDialogAccept()) {
+    std::u16string site_access_heading =
+        l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_ALLOW_SITE_ACCESS_TITLE);
+    std::u16string on_click_text = l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_CLICK);
+    std::u16string always_all_sites_text = l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2);
+
+    Java_ExtensionInstallDialogBridge_withSiteAccessOptions(
+        env, java_object_, site_access_heading, on_click_text,
+        always_all_sites_text);
   }
 
   if (prompt_->has_webstore_data()) {

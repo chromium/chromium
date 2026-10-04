@@ -14,6 +14,7 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -49,6 +50,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     private @Nullable PropertyModel mDialogModel;
     private @Nullable View mContentView;
     private @Nullable TextInputEditText mJustificationInputText;
+    private @Nullable RadioButton mOnClickRadioButton;
 
     @VisibleForTesting
     public ExtensionInstallDialogBridge(
@@ -229,6 +231,38 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                 });
     }
 
+    /**
+     * Populates the site access options section of the dialog.
+     *
+     * @param siteAccessHeading The heading text for the site access section.
+     * @param onClickText The label text for the "on click" option.
+     * @param alwaysAllSitesText The label text for the "always on all sites" option.
+     */
+    @CalledByNative
+    public void withSiteAccessOptions(
+            @JniType("std::u16string") final String siteAccessHeading,
+            @JniType("std::u16string") final String onClickText,
+            @JniType("std::u16string") final String alwaysAllSitesText) {
+        View contentView = getContentView();
+        LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
+
+        LinearLayout siteAccessContainer =
+                scrollViewContainer.findViewById(R.id.site_access_container);
+        siteAccessContainer.setVisibility(View.VISIBLE);
+
+        TextView siteAccessHeadingView = siteAccessContainer.findViewById(R.id.site_access_heading);
+        siteAccessHeadingView.setText(siteAccessHeading);
+
+        mOnClickRadioButton = siteAccessContainer.findViewById(R.id.site_access_on_click);
+        mOnClickRadioButton.setText(onClickText);
+        mOnClickRadioButton.setChecked(true);
+
+        RadioButton alwaysAllSitesRadioButton =
+                siteAccessContainer.findViewById(R.id.site_access_always_all_sites);
+        alwaysAllSitesRadioButton.setText(alwaysAllSitesText);
+        alwaysAllSitesRadioButton.setChecked(false);
+    }
+
     @CalledByNative
     public void withWebstoreData(
             @JniType("std::u16string") final String storeLinkText,
@@ -298,8 +332,13 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                         justificationText = text.toString().trim();
                     }
                 }
+                boolean withWithheldPermissions =
+                        mOnClickRadioButton != null && mOnClickRadioButton.isChecked();
                 ExtensionInstallDialogBridgeJni.get()
-                        .onDialogAccepted(mNativeExtensionInstallDialogView, justificationText);
+                        .onDialogAccepted(
+                                mNativeExtensionInstallDialogView,
+                                justificationText,
+                                withWithheldPermissions);
                 break;
             case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
                 ExtensionInstallDialogBridgeJni.get()
@@ -344,7 +383,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     interface Natives {
         void onDialogAccepted(
                 long nativeExtensionInstallDialogViewAndroid,
-                @JniType("std::string") String justificationText);
+                @JniType("std::string") String justificationText,
+                boolean withWithheldPermissions);
 
         void onDialogCanceled(long nativeExtensionInstallDialogViewAndroid);
 

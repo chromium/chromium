@@ -598,8 +598,7 @@ ExtensionInstallDialogView::CreateExtensionInfoContainer(
                     .CopyAddressTo(&always_all_sites_radio_button_)
                     .SetText(l10n_util::GetStringUTF16(
                         IDS_EXTENSIONS_CONTEXT_MENU_PAGE_ACCESS_RUN_ON_ALL_SITES_V2))
-                    .SetGroup(kRadioGroupId)
-                    .SetChecked(false)));
+                    .SetGroup(kRadioGroupId)));
   }
 
   return views::Builder<views::ScrollView>()

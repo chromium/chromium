@@ -14,6 +14,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -56,6 +58,9 @@ public class ExtensionInstallDialogBridgeTest {
             "Justification for requesting this extension:";
     private static final String JUSTIFICATION_PLACEHOLDER = "Enter justification...";
     private static final String JUSTIFICATION_TEXT_INPUT = "This is a test justification.";
+    private static final String SITE_ACCESS_HEADING = "Allow site access";
+    private static final String SITE_ACCESS_ON_CLICK = "When you click the extension";
+    private static final String SITE_ACCESS_ALWAYS_ALL_SITES = "Always on all sites";
     private static final long NATIVE_INSTALL_EXTENSION_DIALOG_VIEW = 100L;
     private static final Bitmap ICON = Bitmap.createBitmap(24, 24, Bitmap.Config.ARGB_8888);
 
@@ -243,7 +248,8 @@ public class ExtensionInstallDialogBridgeTest {
 
         // Verify the native method was called with the input text.
         verify(mNativeMock, times(1))
-                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, JUSTIFICATION_TEXT_INPUT);
+                .onDialogAccepted(
+                        NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, JUSTIFICATION_TEXT_INPUT, false);
         verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
     }
 
@@ -372,7 +378,7 @@ public class ExtensionInstallDialogBridgeTest {
 
         String justification = "";
         verify(mNativeMock, times(1))
-                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, justification);
+                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, justification, false);
         verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
     }
 
@@ -404,6 +410,107 @@ public class ExtensionInstallDialogBridgeTest {
 
         Assert.assertNull(mModalDialogManager.getShownDialogModel());
         verify(mNativeMock, times(1)).onDialogDismissed(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+    }
+
+    /** Tests that the dialog displays the site access options correctly. */
+    @Test
+    public void testDialogWithSiteAccessOptions() throws Exception {
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        LinearLayout siteAccessContainer = customView.findViewById(R.id.site_access_container);
+        Assert.assertEquals(View.VISIBLE, siteAccessContainer.getVisibility());
+
+        TextView headingView = customView.findViewById(R.id.site_access_heading);
+        Assert.assertEquals(SITE_ACCESS_HEADING, headingView.getText());
+
+        RadioGroup radioGroup = customView.findViewById(R.id.site_access_radio_group);
+        Assert.assertNotNull("Site access radio group must exist.", radioGroup);
+
+        RadioButton onClickRadioButton = customView.findViewById(R.id.site_access_on_click);
+        Assert.assertNotNull("On click radio button must exist.", onClickRadioButton);
+        Assert.assertEquals(SITE_ACCESS_ON_CLICK, onClickRadioButton.getText());
+        Assert.assertTrue(
+                "On click radio button should be checked by default.",
+                onClickRadioButton.isChecked());
+
+        RadioButton alwaysAllSitesRadioButton =
+                customView.findViewById(R.id.site_access_always_all_sites);
+        Assert.assertNotNull(
+                "Always all sites radio button must exist.", alwaysAllSitesRadioButton);
+        Assert.assertEquals(SITE_ACCESS_ALWAYS_ALL_SITES, alwaysAllSitesRadioButton.getText());
+        Assert.assertFalse(
+                "Always all sites radio button should not be checked by default.",
+                alwaysAllSitesRadioButton.isChecked());
+    }
+
+    /**
+     * Tests that accepting the dialog with the default 'on click' option selected withholds
+     * permissions.
+     */
+    @Test
+    public void testAcceptWithSiteAccessOnClickWithholdsPermissions() throws Exception {
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        buildAndShowDialog();
+
+        mModalDialogManager.clickPositiveButton();
+
+        verify(mNativeMock, times(1))
+                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, "", true);
+        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+    }
+
+    /**
+     * Tests that accepting the dialog after selecting 'always on all sites' grants permissions
+     * (does not withhold permissions).
+     */
+    @Test
+    public void testAcceptWithSiteAccessAlwaysAllSitesGrantsPermissions() throws Exception {
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        RadioButton alwaysAllSitesRadioButton =
+                customView.findViewById(R.id.site_access_always_all_sites);
+        alwaysAllSitesRadioButton.performClick();
+
+        mModalDialogManager.clickPositiveButton();
+
+        verify(mNativeMock, times(1))
+                .onDialogAccepted(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, "", false);
+        verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
+    }
+
+    /**
+     * Tests that when both justification and site access options are present, accepting the dialog
+     * passes both justification text and the site access choice.
+     */
+    @Test
+    public void testDialogWithJustificationAndSiteAccessOptions() throws Exception {
+        mExtensionInstallDialogBridge.withJustification(
+                JUSTIFICATION_HEADING, JUSTIFICATION_PLACEHOLDER);
+        mExtensionInstallDialogBridge.withSiteAccessOptions(
+                SITE_ACCESS_HEADING, SITE_ACCESS_ON_CLICK, SITE_ACCESS_ALWAYS_ALL_SITES);
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+
+        TextInputEditText justificationInputText =
+                customView.findViewById(R.id.justification_input_text);
+        justificationInputText.setText(JUSTIFICATION_TEXT_INPUT);
+
+        mModalDialogManager.clickPositiveButton();
+
+        verify(mNativeMock, times(1))
+                .onDialogAccepted(
+                        NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, JUSTIFICATION_TEXT_INPUT, true);
         verify(mNativeMock, times(1)).destroy(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW);
     }
 }

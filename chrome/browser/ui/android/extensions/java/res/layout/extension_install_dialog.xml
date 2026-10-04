@@ -98,6 +98,37 @@ found in the LICENSE file.
               android:layout_height="wrap_content"/>
       </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/site_access_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:paddingTop="@dimen/modal_dialog_control_vertical_padding_filled"
+      android:visibility="gone">
+      <TextView
+        android:id="@+id/site_access_heading"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        style="@style/AlertDialogContent" />
+
+      <RadioGroup
+        android:id="@+id/site_access_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/dialog_padding_sides">
+        <RadioButton
+          android:id="@+id/site_access_on_click"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <RadioButton
+          android:id="@+id/site_access_always_all_sites"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+      </RadioGroup>
+    </LinearLayout>
   </LinearLayout>
   <TextView
     android:id="@+id/store_link"
