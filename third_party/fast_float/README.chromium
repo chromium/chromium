@@ -1,7 +1,7 @@
 Name: fast_float
 URL: https://github.com/fastfloat/fast_float
-Version: upstream/v8.3.0
-Revision: b0ab987b3dfdde13fa1915f65ef2a5c068d9208c
+Version: upstream/v8.3.1
+Revision: f3f02c8ad0afd8181166dabce6a9e69f8aec24de
 Update Mechanism: Autoroll
 License: MIT
 License File: src/LICENSE-MIT
