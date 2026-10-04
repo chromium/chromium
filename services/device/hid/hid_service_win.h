@@ -118,6 +118,9 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
     // https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/hidpi/ns-hidpi-_hidp_caps
     virtual const HIDP_CAPS& GetCaps() const = 0;
 
+    // Returns the type of the top-level collection.
+    virtual uint32_t GetCollectionType() const = 0;
+
     // Returns a vector of ReportItems describing the fields that make up
     // reports of type |report_type|.
     virtual std::vector<ReportItem> GetReportItems(

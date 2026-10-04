@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/hid/hid_service_win.h"
+#include "services/device/hid/hid_preparsed_data.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <vector>
 
 #include "services/device/public/mojom/hid.mojom.h"
@@ -54,13 +56,19 @@ constexpr uint16_t kBitFieldVariable = 0x0002;
 class MockPreparsedData : public NiceMock<HidServiceWin::PreparsedData> {
  public:
   MockPreparsedData() {
+    ON_CALL(*this, GetCollectionType)
+        .WillByDefault(Return(mojom::kHIDCollectionTypeApplication));
     ON_CALL(*this, GetReportItems)
         .WillByDefault(Return(std::vector<ReportItem>()));
   }
   ~MockPreparsedData() override = default;
 
-  MOCK_CONST_METHOD0(GetCaps, const HIDP_CAPS&());
-  MOCK_CONST_METHOD1(GetReportItems, std::vector<ReportItem>(HIDP_REPORT_TYPE));
+  MOCK_METHOD(const HIDP_CAPS&, GetCaps, (), (const, override));
+  MOCK_METHOD(uint32_t, GetCollectionType, (), (const, override));
+  MOCK_METHOD(std::vector<ReportItem>,
+              GetReportItems,
+              (HIDP_REPORT_TYPE),
+              (const, override));
 };
 
 ReportItem SimpleButtonItem(uint16_t usage_page,
@@ -189,7 +197,92 @@ ReportItem RangeValueItem(uint16_t usage_page,
           bit_index};
 }
 
+using PreparsedDataHeader = HidPreparsedData::PreparsedDataHeader;
+using PreparsedDataItem = HidPreparsedData::PreparsedDataItem;
+
+#pragma pack(push, 1)
+struct TestPreparsedData {
+  PreparsedDataHeader header;
+  PreparsedDataItem item;
+};
+#pragma pack(pop)
+
+TestPreparsedData MakePreparsedData() {
+  TestPreparsedData data = {};
+  data.header.magic = HidPreparsedData::kHidPreparsedDataMagic;
+  data.header.usage = mojom::kGenericDesktopGamePad;
+  data.header.usage_page = mojom::kPageGenericDesktop;
+  data.header.input_item_count = 1;
+  data.header.input_report_byte_length = 5;
+  data.header.item_count = 1;
+  data.header.size_bytes = sizeof(PreparsedDataItem);
+
+  data.item.usage_page = mojom::kPageConsumer;
+  data.item.report_id = 3;
+  data.item.bit_size = 16;
+  data.item.report_count = 2;
+  data.item.byte_index = 1;
+  data.item.bit_count = 32;
+  data.item.usage_minimum = 0;
+  data.item.usage_maximum = 652;
+  return data;
+}
+
 }  // namespace
+
+TEST(HidPreparsedDataTest, ButtonItemUsesButtonLogicalBounds) {
+  auto data = MakePreparsedData();
+  data.item.flags = 1 << 2;
+  data.item.data.button.logical_minimum = 0;
+  data.item.data.button.logical_maximum = 652;
+
+  HIDP_CAPS capabilities = {};
+  capabilities.InputReportByteLength = 5;
+  auto preparsed_data = HidPreparsedData::CreateForTesting(
+      reinterpret_cast<PHIDP_PREPARSED_DATA>(&data.header), capabilities);
+
+  const auto report_items = preparsed_data->GetReportItems(HidP_Input);
+  ASSERT_EQ(report_items.size(), 1U);
+  EXPECT_EQ(report_items[0].logical_minimum, 0);
+  EXPECT_EQ(report_items[0].logical_maximum, 652);
+  EXPECT_EQ(report_items[0].physical_minimum, 0);
+  EXPECT_EQ(report_items[0].physical_maximum, 0);
+}
+
+TEST(HidPreparsedDataTest, ValueItemUsesValueLogicalAndPhysicalBounds) {
+  auto data = MakePreparsedData();
+  data.item.data.value.has_null = 1;
+  data.item.data.value.logical_minimum = -127;
+  data.item.data.value.logical_maximum = 127;
+  data.item.data.value.physical_minimum = -1000;
+  data.item.data.value.physical_maximum = 1000;
+
+  HIDP_CAPS capabilities = {};
+  capabilities.InputReportByteLength = 5;
+  auto preparsed_data = HidPreparsedData::CreateForTesting(
+      reinterpret_cast<PHIDP_PREPARSED_DATA>(&data.header), capabilities);
+
+  const auto report_items = preparsed_data->GetReportItems(HidP_Input);
+  ASSERT_EQ(report_items.size(), 1U);
+  EXPECT_EQ(report_items[0].logical_minimum, -127);
+  EXPECT_EQ(report_items[0].logical_maximum, 127);
+  EXPECT_EQ(report_items[0].physical_minimum, -1000);
+  EXPECT_EQ(report_items[0].physical_maximum, 1000);
+}
+
+TEST(HidPreparsedDataTest, UsesCollectionTypeFromPreparsedData) {
+  HIDP_CAPS capabilities = {0};
+  capabilities.UsagePage = kPageGenericDesktop;
+  capabilities.Usage = kUsageMouse;
+
+  MockPreparsedData preparsed_data;
+  ON_CALL(preparsed_data, GetCaps).WillByDefault(ReturnRef(capabilities));
+  ON_CALL(preparsed_data, GetCollectionType)
+      .WillByDefault(Return(mojom::kHIDCollectionTypePhysical));
+
+  const auto collection = preparsed_data.CreateHidCollectionInfo();
+  EXPECT_EQ(collection->collection_type, mojom::kHIDCollectionTypePhysical);
+}
 
 TEST(HidPreparsedDataTest, NoReportItems) {
   HIDP_CAPS capabilities = {0};

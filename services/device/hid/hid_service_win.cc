@@ -356,7 +356,7 @@ HidServiceWin::PreparsedData::CreateHidCollectionInfo() const {
   auto collection_info = mojom::HidCollectionInfo::New();
   collection_info->usage =
       mojom::HidUsageAndPage::New(caps.Usage, caps.UsagePage);
-  collection_info->collection_type = mojom::kHIDCollectionTypeApplication;
+  collection_info->collection_type = GetCollectionType();
   collection_info->input_reports = CreateReportDescriptions(*this, HidP_Input);
   collection_info->output_reports =
       CreateReportDescriptions(*this, HidP_Output);
