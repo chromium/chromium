@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Nuk ka skeda të hapura</translation>
 <translation id="1469381646033328562">Llogaria jote menaxhohet nga prindi yt.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">që nga përfundimi i "Krijo një grup skedash"</translation>
 <translation id="147982357559798527">Ndryshuar</translation>
 <translation id="1481450969185702334">Gjej dhe plotëso</translation>
 <translation id="1483493594462132177">Dërgo</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" është bllokuar që të mos ketë qasje te kamera jote</translation>
 <translation id="2223461067862937305">Krijo një kod QR</translation>
+<translation id="222798989929574238">Ke përdorur mbi 20 fotografi për të kërkuar</translation>
 <translation id="2230173723195178503">Faqja e uebit u ngarkua</translation>
 <translation id="2236949375853147973">Aktiviteti im</translation>
 <translation id="2237869114829007407">Merr një përmbledhje dhe statistika kryesore për çdo faqe ose temë</translation>
@@ -1763,6 +1765,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6525550806864373485">Modifiko menynë</translation>
 <translation id="6527208859483186860">sfondi {position} nga {total}</translation>
 <translation id="6527303717912515753">Ndaj</translation>
+<translation id="6529706885792457023">Ke organizuar mbi 15 skeda</translation>
 <translation id="6532106788206463496">Ruaj ndryshimet</translation>
 <translation id="6536759809440150308">Hap "<ph name="GROUP_TITLE" />", grupi me <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6642362222295953972">Kalo te skeda ekzistuese</translation>
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6645899968535965230">Kodi QR: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Ke kontrolluar mbi 25 fjalëkalime</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659660757330712663">Mund të rrëshqasësh shpejt te shiriti i veglave për të ndërruar skedat.</translation>
 <translation id="6663529247339810546">Imazhi nuk mund të ruhet</translation>
@@ -1966,6 +1970,7 @@ Për të vazhduar nga kompjuteri, kalo te <ph name="OTHER_EMAIL" />. Do të marr
 <translation id="7145337554745942724">Përditëso lejen e drejtimit</translation>
 <translation id="7146301801400584641">Ofrohet skedari i kalendarit</translation>
 <translation id="7149893636342594995">24 orët e fundit</translation>
+<translation id="7151361008641622036">{count,plural, =1{Ke organizuar 1 skedë}other{Ke organizuar # skeda}}</translation>
 <translation id="7154417656353909837">Hiq adresat</translation>
 <translation id="7161230316646448869">Sinkronizo faqeshënuesit, historikun etj. në të gjitha pajisjet</translation>
 <translation id="7165323152084385463">Numri VIN</translation>
@@ -2396,6 +2401,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8481184073299279701">Trokit butonin "Nis regjistrimin" për të mbledhur evidenca dhe gabime të ardhshme të panelit të JavaScript nga të gjitha skedat. Evidencat do të mblidhen (dhe ruhen vetëm në memorie) derisa kjo faqe të mbyllet ose të trokitet mbi "Ndalo regjistrimin".</translation>
 <translation id="8487667956631253959">Aktivizo</translation>
 <translation id="8487700953926739672">Mundësohet offline</translation>
+<translation id="8488065047914929586">që nga përfundimi i "Ruaj një fjalëkalim"</translation>
 <translation id="8488923644885757471">Dritare e re</translation>
 <translation id="8490629238792920282">Lidhja nuk mund të krijohet</translation>
 <translation id="8501469528283376592">Fshi automatikisht shkarkimet</translation>
@@ -2543,6 +2549,7 @@ Mund ta rinisësh në çdo kohë.</translation>
 <translation id="8890516388109605451">Burimet</translation>
 <translation id="8893208530912252670">Videot</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>
+<translation id="890009681345348416">Mbi 40 fjalëkalime të plotësuara automatikisht</translation>
 <translation id="8900845556227858314">Aplikacioni i shfletuesit</translation>
 <translation id="890565330728586731">Pas</translation>
 <translation id="8907722425137681851">Gjej në faqe…</translation>

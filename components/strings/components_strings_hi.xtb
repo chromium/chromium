@@ -868,6 +868,7 @@
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="243815215670139125">इस कार्ड की जानकारी आपके Google खाते में सेव नहीं की जा सकी. इसके बजाय, इस डिवाइस पर यह जानकारी Chrome में सेव की गई है.</translation>
 <translation id="2438874542388153331">दाईं ओर क्वाड पंच</translation>
+<translation id="2442033148418774391">ऑटोमैटिक तरीके से भरने की सुविधा के लिए बेहतर सुझाव और निजता बनाए रखने से जुड़ी सूचना वाला मैसेज बंद किया गया</translation>
 <translation id="2442865686365739754">Chrome यह जानकारी <ph name="BEGIN_EMPHASIS" />सेव नहीं करेगा<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />आपका ब्राउज़िंग इतिहास
@@ -880,6 +881,7 @@
 <translation id="2451607499823206582">ट्रैक किया जा रहा है</translation>
 <translation id="2452837234288608067">इस अनुरोध को पूरा नहीं किया जा सका. फिर से कोशिश करें.</translation>
 <translation id="2453045048779611513">आपका संगठन यह मैनेज करता है कि आपके पास किस तरह का डेटा सेव करने की अनुमति है</translation>
+<translation id="2456490423293803882">ऑटोमैटिक तरीके से भरने की सुविधा के लिए बेहतर सुझाव और निजता बनाए रखने से जुड़ी सूचना, पूरी स्क्रीन पर दिख रही है</translation>
 <translation id="2459882793359532780">ब्राउज़र पर लागू की गई नीतियां (मशीन और प्रोफ़ाइल की नीतियां)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core, आपको क्लाउड से ब्राउज़र की नीतियों को कॉन्फ़िगर करने के लिए, एक ही जगह पर टूल उपलब्ध कराता है</translation>
 <translation id="2461822463642141190">मौजूदा</translation>
@@ -1109,6 +1111,7 @@
 <translation id="2878197950673342043">पोस्टर फ़ोल्ड</translation>
 <translation id="2878424575911748999">ए1</translation>
 <translation id="2879694782644540289">पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करें</translation>
+<translation id="2880119244122776372">बनाएं और कोडिंग करें</translation>
 <translation id="2881276955470682203">कार्ड सेव करना है?</translation>
 <translation id="2882280148032777436">नोन ट्रैवलर नंबर मिटाएं</translation>
 <translation id="2882949212241984732">डबल-गेट फ़ोल्ड</translation>
@@ -3914,6 +3917,7 @@
 <translation id="753713322968419914">क्या Chrome में जानकारी ऑटोमैटिक तरीके से भरने की सुविधा से, घर का पता हटाना है?</translation>
 <translation id="753714465667062283">अपनी फ़ोटो सेव करने के लिए साइन इन करें</translation>
 <translation id="7537536606612762813">ज़रूरी है</translation>
+<translation id="7540924742308928499">आइडिया जनरेट करें और खास जानकारी पाएं</translation>
 <translation id="7543525346216957623">अपने अभिभावक से पूछें</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> शुरू हो रहा है</translation>
 <translation id="7548892272833184391">कनेक्शन गड़बड़ियां ठीक करना</translation>

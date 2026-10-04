@@ -867,6 +867,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2436186046335138073">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Tuto kartu se nepodařilo uložit do vašeho účtu Google. Místo toho je uložena v Chromu na tomto zařízení.</translation>
 <translation id="2438874542388153331">Čtyři otvory vpravo</translation>
+<translation id="2442033148418774391">Oznámení o chytřejším automatickém vyplňování se zachováním soukromí bylo zavřeno</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nebude ukládat<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />vaši historii prohlížení,
@@ -879,6 +880,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2451607499823206582">Sledování</translation>
 <translation id="2452837234288608067">Pomoc se nepodařila. Zkuste to znovu.</translation>
 <translation id="2453045048779611513">Vaše organizace omezuje, co můžete ukládat</translation>
+<translation id="2456490423293803882">Oznámení o chytřejším automatickém vyplňování se zachováním soukromí otevřené na celou výšku</translation>
 <translation id="2459882793359532780">Použité zásady prohlížeče (zásady zařízení a profilu)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core poskytuje centralizovaný nástroj pro konfiguraci zásad prohlížeče z cloudu</translation>
 <translation id="2461822463642141190">Aktuální</translation>
@@ -1108,6 +1110,7 @@ Tento návrh můžete z Chromu odstranit. Původní zdroj se nesmaže. <ph name
 <translation id="2878197950673342043">Plakátové přeložení</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">používat k vyplňování hesel zámek obrazovky</translation>
+<translation id="2880119244122776372">Sestavování a programování</translation>
 <translation id="2881276955470682203">Uložit kartu?</translation>
 <translation id="2882280148032777436">Smazat číslo prověřeného cestujícího</translation>
 <translation id="2882949212241984732">Dvojité otevírací přeložení</translation>
@@ -3908,6 +3911,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="753713322968419914">Odebrat z automatického vyplňování v Chromu adresu domů?</translation>
 <translation id="753714465667062283">Pokud chcete fotku uložit, přihlaste se</translation>
 <translation id="7537536606612762813">Povinná</translation>
+<translation id="7540924742308928499">Brainstorming a shrnutí</translation>
 <translation id="7543525346216957623">Požádej rodiče</translation>
 <translation id="7546409722674205727">Spouštění aplikace <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Oprava chyb připojení</translation>

@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Žiadne otvorené karty</translation>
 <translation id="1469381646033328562">Tvoj účet spravuje tvoj rodič.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">od splnenia úlohy Vytvorenie skupiny kariet</translation>
 <translation id="147982357559798527">Zmenené</translation>
 <translation id="1481450969185702334">Nájsť a vyplniť</translation>
 <translation id="1483493594462132177">Odoslať</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Nahlásiť problém</translation>
 <translation id="2222149859067335623">Web <ph name="SITE_DOMAIN" /> má zablokovaný prístup k vašej kamere</translation>
 <translation id="2223461067862937305">Vytvoriť QR kód</translation>
+<translation id="222798989929574238">Pri vyhľadávaní ste použili viac ako 20 fotiek</translation>
 <translation id="2230173723195178503">Načítala sa webová stránka</translation>
 <translation id="2236949375853147973">Moja aktivita</translation>
 <translation id="2237869114829007407">Získajte prehľad a kľúčové analýzy pre ľubovoľnú stránku alebo tému</translation>
@@ -1763,6 +1765,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6525550806864373485">Ponuka Upraviť</translation>
 <translation id="6527208859483186860">{position}. pozadie z {total}</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
+<translation id="6529706885792457023">Usporiadali ste viac ako 15 kariet</translation>
 <translation id="6532106788206463496">Uložiť zmeny</translation>
 <translation id="6536759809440150308">Otvoriť <ph name="GROUP_TITLE" />, skupina <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">priklad.sk</translation>
@@ -1808,6 +1811,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6642362222295953972">Prepnúť na existujúcu kartu</translation>
 <translation id="6643016212128521049">Vymazať</translation>
 <translation id="6645899968535965230">QR kód: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Skontrolovali ste viac ako 25 hesiel</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659660757330712663">Medzi kartami môžete prepínať potiahnutím po paneli s nástrojmi.</translation>
 <translation id="6663529247339810546">Obrázok sa nedá uložiť</translation>
@@ -1966,6 +1970,7 @@ Ak chcete pokračovať v počítači, prepnite na účet <ph name="OTHER_EMAIL"
 <translation id="7145337554745942724">Aktualizujte vodičský preukaz</translation>
 <translation id="7146301801400584641">K dispozícii je súbor kalendára</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
+<translation id="7151361008641622036">{count,plural, =1{Usporiadali ste 1 kartu}few{Usporiadali ste # karty}many{You organized # tabs}other{Usporiadali ste # kariet}}</translation>
 <translation id="7154417656353909837">Odstrániť adresy</translation>
 <translation id="7161230316646448869">Synchronizujte svoje záložky, históriu a ďalšie údaje vo všetkých zariadeniach</translation>
 <translation id="7165323152084385463">VIN</translation>
@@ -2396,6 +2401,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8481184073299279701">Ak chcete zhromažďovať budúce denníky a chyby konzoly JavaScript zo všetkých kariet, klepnite na Spustiť zapisovanie do denníka. Denníky sa budú zhromažďovať (a ukladať iba v pamäti), kým túto stránku nezavriete alebo neklepnete na Zastaviť zapisovanie do denníka.</translation>
 <translation id="8487667956631253959">Zapnúť</translation>
 <translation id="8487700953926739672">K dispozícii offline</translation>
+<translation id="8488065047914929586">od splnenia úlohy Uloženie hesla</translation>
 <translation id="8488923644885757471">Nové okno</translation>
 <translation id="8490629238792920282">Odkaz sa nepodarilo vytvoriť</translation>
 <translation id="8501469528283376592">Automaticky odstraňujte stiahnuté súbory</translation>
@@ -2543,6 +2549,7 @@ Kedykoľvek môžete začať odznova.</translation>
 <translation id="8890516388109605451">Zdroje</translation>
 <translation id="8893208530912252670">Videá</translation>
 <translation id="8898822736010347272">Odosiela webové adresy niektorých navštívených stránok, obmedzené informácie o systéme a určitý obsah stránok, aby pomáhalo objavovať nové hrozby a chrániť všetkých na internete.</translation>
+<translation id="890009681345348416">Viac ako 40 automaticky doplnených hesiel</translation>
 <translation id="8900845556227858314">Aplikácia prehliadača</translation>
 <translation id="890565330728586731">Späť</translation>
 <translation id="8907722425137681851">Vyhľadanie na stránke…</translation>

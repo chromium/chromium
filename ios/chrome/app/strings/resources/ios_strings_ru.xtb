@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Нет открытых вкладок</translation>
 <translation id="1469381646033328562">Твоим аккаунтом управляет твой родитель.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">после выполнения задания "Создать группу вкладок"</translation>
 <translation id="147982357559798527">Изменено</translation>
 <translation id="1481450969185702334">Найти и заполнить</translation>
 <translation id="1483493594462132177">Отправить</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Сообщить о проблеме</translation>
 <translation id="2222149859067335623">У сайта <ph name="SITE_DOMAIN" /> нет доступа к камере.</translation>
 <translation id="2223461067862937305">Создать QR-код</translation>
+<translation id="222798989929574238">Вы использовали для поиска более 20 фото</translation>
 <translation id="2230173723195178503">Веб-страница загружена</translation>
 <translation id="2236949375853147973">Мои действия</translation>
 <translation id="2237869114829007407">Получайте обзоры и ключевую информацию по любой странице или теме.</translation>
@@ -1763,6 +1765,7 @@
 <translation id="6525550806864373485">Меню "Правка"</translation>
 <translation id="6527208859483186860">фон номер {position} из общего числа {total}</translation>
 <translation id="6527303717912515753">Поделиться</translation>
+<translation id="6529706885792457023">Вы упорядочили более 15 вкладок</translation>
 <translation id="6532106788206463496">Сохранить</translation>
 <translation id="6536759809440150308">Открыть группу "<ph name="GROUP_TITLE" />", <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@
 <translation id="6642362222295953972">Переключиться на открытую ранее вкладку</translation>
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6645899968535965230">QR-код: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Вы проверили более 25 паролей</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659660757330712663">Чтобы переключаться между вкладками, листайте панель инструментов.</translation>
 <translation id="6663529247339810546">Не удалось сохранить</translation>
@@ -1966,6 +1970,7 @@
 <translation id="7145337554745942724">Обновить данные водительского удостоверения?</translation>
 <translation id="7146301801400584641">Доступен файл календаря</translation>
 <translation id="7149893636342594995">Последние 24 часа</translation>
+<translation id="7151361008641622036">{count,plural, =1{Вы упорядочили 1 вкладку}one{Вы упорядочили # вкладку}few{Вы упорядочили # вкладки}many{Вы упорядочили # вкладок}other{Вы упорядочили # вкладки}}</translation>
 <translation id="7154417656353909837">Удалить адреса</translation>
 <translation id="7161230316646448869">Синхронизируйте закладки, историю и другие данные на всех своих устройствах</translation>
 <translation id="7165323152084385463">Номер VIN</translation>
@@ -2396,6 +2401,7 @@
 <translation id="8481184073299279701">Чтобы фиксировать журналы консоли JavaScript и ошибки на всех вкладках, нажмите кнопку "Начать запись журнала". Журналы будут записываться и храниться в памяти, пока вы не закроете страницу или не нажмете кнопку "Остановить запись журнала".</translation>
 <translation id="8487667956631253959">Включено</translation>
 <translation id="8487700953926739672">Доступно в автономном режиме</translation>
+<translation id="8488065047914929586">после выполнения задания "Сохранить пароль"</translation>
 <translation id="8488923644885757471">Новое окно</translation>
 <translation id="8490629238792920282">Не удалось создать ссылку</translation>
 <translation id="8501469528283376592">Автоудаление скачанных файлов</translation>
@@ -2543,6 +2549,7 @@
 <translation id="8890516388109605451">Источники</translation>
 <translation id="8893208530912252670">Видео</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
+<translation id="890009681345348416">Автоматически подставлено более 40 паролей</translation>
 <translation id="8900845556227858314">Приложение браузера</translation>
 <translation id="890565330728586731">Назад</translation>
 <translation id="8907722425137681851">Поиск на странице</translation>

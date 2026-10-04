@@ -972,6 +972,21 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1635748761015837179">Permitir gravação em dispositivos de armazenamento externo</translation>
 <translation id="1639468541408865385">Ativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
+<translation id="1640646094704433064">Permite definir uma lista de padrões de URL que especificam sites sem permissão para executar o compilador Just-in-Time (JIT, na sigla em inglês) do JavaScript ativado.
+
+          Se você desativar o JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da web mais lentamente, e partes do próprio JavaScript poderão ser desativadas, incluindo o WebAssembly. Com a desativação do JIT do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da web com uma configuração mais segura.
+
+          Para informações mais detalhadas sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+          As exceções da política podem ser definidas para subdomínios específicos, assim como para sites inteiros. Por exemplo, uma política definida apenas para subdomínio.site.com se aplica a subdomínio.site.com sem afetar site.com. Em alguns casos em que não é possível isolar um subdomínio do site pai, ele pode herdar a política definida em site.com. Além disso, talvez as exceções não entrem em vigor para frames carregados em uma guia atual até que o site seja aberto em uma nova guia. Em dispositivos <ph name="ANDROID_NAME" /> com pouca memória, as exceções específicas do site podem não ser aplicadas. Nesses casos, os sites usarão a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (se definida) ou vão adotar o ajuste padrão de JIT do JavaScript do perfil.
+
+          Para aplicar as exceções, o <ph name="PRODUCT_NAME" /> pode colocar em processos dedicados os sites ou subdomínios com configurações diferentes do padrão. Isso pode aumentar o uso da memória, especialmente no <ph name="ANDROID_NAME" /> ou quando um padrão de caracteres curinga corresponde a muitos subdomínios, já que cada origem compatível pode ser isolada separadamente. Os subdomínios isolados também não podem usar document.domain para acessar o site pai.
+
+          Observação: nas versões 155 e anteriores, as exceções da política eram aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomínio.site.com não entrava em vigor, nem mesmo para subdomínio.site.com. Ela precisava ser definida em site.com para ser aplicada tanto a site.com quanto a subdomínio.site.com.
+
+          Essa política é aplicada frame a frame, e não apenas com base no URL de origem de nível superior. Por exemplo, se o site-um.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame que contém o site-dois.com, o primeiro terá o JIT do JavaScript desativado, mas o segundo vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (se definida) ou adotará o JIT do JavaScript ativado por padrão. As entradas da lista de bloqueio têm mais prioridade do que as da lista de permissões, que têm menos prioridade do que o valor padrão configurado.
+
+          Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada (se definida). Do contrário, um JIT do JavaScript será ativado.</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
 <translation id="1643642938972654829">Permitir acesso à página de teste da política</translation>
 <translation id="1645793986494086629">Esquema:</translation>
@@ -1251,6 +1266,44 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 
       Se a política não for definida, será possível manipular toda a lista de idiomas preferidos.</translation>
 <translation id="1803646570632580723">Lista de aplicativos fixados a serem mostrados no iniciador</translation>
+<translation id="180432221123109556">Permite definir uma lista de padrões de URL que especifica os sites em que
+as otimizações avançadas do JavaScript são ativadas.
+
+Para saber mais sobre padrões de URL válidos, consulte
+https://chromeenterprise.google/policies/url-patterns.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As exceções da política podem ser definidas para subdomínios específicos, assim como para sites inteiros.
+Por exemplo, uma política definida apenas para subdomínio.site.com se aplica a
+subdomínio.site.com sem afetar site.com. Em alguns casos em que um
+subdomínio não pode ser isolado do site pai, ele pode herdar a política
+definida em site.com. Além disso, as exceções podem não entrar em vigor para frames carregados em uma
+guia existente até que o site seja aberto em uma nova guia. Em dispositivos
+<ph name="ANDROID_NAME" /> com pouca memória, as exceções específicas do site podem
+não ser aplicadas. Nesses casos, os sites usarão a política de
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />
+(se definida) ou vão adotar o ajuste padrão de otimização do JavaScript do perfil.
+
+Para aplicar as exceções, o <ph name="PRODUCT_NAME" />
+pode colocar em processos dedicados os sites ou subdomínios com configurações
+diferentes do padrão. Isso pode aumentar o uso da memória, especialmente no
+<ph name="ANDROID_NAME" /> ou quando um padrão de caracteres curinga corresponde a muitos
+subdomínios, já que cada origem compatível pode ser isolada separadamente. Os subdomínios
+isolados também não podem usar document.domain para acessar o site pai.
+
+Observação: nas versões 138 e anteriores, as exceções da política eram aplicadas apenas na
+granularidade de um site (eTLD+1). Uma política definida apenas para subdomínio.site.com não
+entrava em vigor, nem mesmo para subdomínio.site.com. Ela precisava ser definida em site.com para
+ser aplicada tanto a site.com quanto a subdomínio.site.com.
+
+Essa política é aplicada frame a frame, e não apenas com base no URL de origem
+de nível superior. Por exemplo, se o site-um.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame que contém o site-dois.com, o primeiro terá otimizações do JavaScript
+ativadas, mas o segundo vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (se definida) ou adotará otimizações do JavaScript
+ativadas por padrão. As entradas da lista de bloqueio têm prioridade maior do que as da
+lista de permissões, que têm prioridade maior do que o valor padrão configurado.
+
+Se esta política for deixada sem definição para um site, a política do <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada (se definida). Caso contrário,
+a otimização do JavaScript será ativada para o site.</translation>
 <translation id="1807539058116290184">Desativar o gesto de pinça para zoom no modo quiosque</translation>
 <translation id="1808715480127969042">Bloquear cookies nestes sites</translation>
 <translation id="1810261428246410396">Permitir que o tethering instantâneo seja usado.</translation>
@@ -2341,6 +2394,7 @@ Esta política é uma medida temporária para controlar o recurso e será removi
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
       Se a política for definida como falsa, o armazenamento local no <ph name="PRODUCT_OS_NAME" /> será bloqueado. Os usuários não poderão armazenar dados localmente nem acessar diretórios locais.
       Se a política for definida como verdadeira ou deixada sem definição, o armazenamento local será permitido no <ph name="PRODUCT_OS_NAME" />. Não há restrições sobre onde os usuários podem armazenar dados ou quais diretórios eles podem acessar.</translation>
+<translation id="2481931731272002134">Permitir recursos de IA generativa no preenchimento automático e aprimorar os modelos de IA.</translation>
 <translation id="2482676533225429905">Mensagens nativas</translation>
 <translation id="2483146640187052324">Prever ações da rede em qualquer conexão de rede</translation>
 <translation id="2487495476672607707">A sincronização de arquivos do <ph name="PRODUCT_OS_NAME" /> disponibiliza automaticamente
@@ -3068,6 +3122,25 @@ Esta política só pode ser definida como uma política do usuário em nuvem.</t
 <translation id="2890645751406497668">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos USB com determinados IDs de fornecedores e produtos.</translation>
 <translation id="2893546967669465276">Enviar registros do sistema ao servidor de gerenciamento</translation>
 <translation id="2893660462311365527">Frequência de coleta da telemetria de rede em milissegundos.</translation>
+<translation id="2894720693512285641">Esta política configura o <ph name="PRODUCT_NAME" /> de modo que o produto ordene as criptografias no TLS 1.3 para refletir uma preferência por algoritmos que foram aprovados por um regime de compliance específico.
+
+A definição desta política não garante que algoritmos específicos sejam negociados.
+
+A política existe para permitir que operadores de servidores que querem oferecer suporte a clientes com e sem requisitos de compliance façam a diferenciação entre esses clientes e usem apenas determinados algoritmos não padrão com maior força criptográfica para aqueles que os preferem explicitamente.
+
+Ao definir a política como "<ph name="CNSA_NAME" />", o <ph name="PRODUCT_NAME" /> dá preferência a criptografias necessárias para compliance com as versões 1.0 e 2.0 do Commercial National Security Algorithm Suite (CNSA 1.0 e 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
+
+Se a política for deixada sem definição ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_NAME" /> vai usar as criptografias padrão.
+
+A definição desta política não é necessária para a segurança. A criptografia padrão usada pelo <ph name="PRODUCT_NAME" /> é forte o suficiente para resistir a um ataque de força bruta usando toda a energia do Sol.
+
+A definição da política vai fazer com que o <ph name="PRODUCT_NAME" /> fique mais lento ao acessar sites.
+
+Esta política afeta apenas o TLS 1.3 e o QUIC, e não as versões anteriores do TLS.
+
+Esta política pode ser definida para a máquina e para o usuário. Se for definida para o usuário, ela vai afetar apenas as solicitações de rede iniciadas pelo perfil do usuário, e não as feitas pelo <ph name="PRODUCT_NAME" /> para realizar tarefas em segundo plano em todo o navegador. Essas solicitações são controladas pelo valor no nível da máquina. Se esta política for definida nos níveis da máquina e do usuário, o valor no nível da máquina será aplicado, a menos que a <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> tenha mudado a ordem de precedência da política.
+
+Nas versões 156 e anteriores, esta política é apenas para toda a máquina.</translation>
 <translation id="2894914342151915910">Suprimir avisos quando o Chrome for executado em um sistema sem suporte</translation>
 <translation id="2895444724612647239">Permitir automaticamente que os sites se conectem a qualquer dispositivo HID.</translation>
 <translation id="2896434627453256512">Definir a política para ativar o recurso de janela fantasma.
@@ -4855,6 +4928,7 @@ Importante:
 <translation id="4027608872760987929">Ativar o provedor de pesquisa padrão</translation>
 <translation id="4030152268425532846">Desativar o descarte do login automático</translation>
 <translation id="4032740546145417900">Não permitir o recurso de digitação por voz.</translation>
+<translation id="4035252407064087455">Permitir recursos de IA generativa no preenchimento automático sem aprimorar os modelos de IA.</translation>
 <translation id="4043796890723386527">Impedir que os usuários criem e usem perfis secundários e usem o modo visitante no navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4047633048700722778">Se a política for definida, será possível controlar o filtro de URL SafeSites, que usa a API Google Safe Search para classificar URLs como sendo pornográficos ou não.
 
@@ -6079,6 +6153,7 @@ Quando ela é desativada, a promoção da extensão do provedor de credenciais n
       <ph name="PAGE_SIZE_NAME" /> precisa conter um dos formatos listados ou "personalizado" se o tamanho do papel exigido não estiver na lista. Se um valor "personalizado" for fornecido, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> precisará ser especificada. Ela descreve a altura e a largura desejadas em micrômetros. Caso contrário, a propriedade <ph name="PAGE_SIZE_CUSTOM_SIZE" /> não precisa ser especificada. A política que violar essas regras será ignorada.
 
       Se o tamanho da página não estiver disponível na impressora escolhida pelo usuário, esta política será ignorada.</translation>
+<translation id="4787894429283141328">Não permitir recursos de IA generativa no preenchimento automático.</translation>
 <translation id="4789450349513792856">Bloquear pop-ups nesses sites</translation>
 <translation id="4790391579868456557">Usa cookies essenciais e não essenciais na pesquisa.</translation>
 <translation id="4790588245699320140">Permitir que o Google Assistente acesse o contexto na tela</translation>
@@ -6672,6 +6747,7 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
       </translation>
 <translation id="5118635822783657217">Desativar atualizações de componentes não essenciais</translation>
 <translation id="5120168808610189805">Ativar a importação da página inicial na primeira execução</translation>
+<translation id="5124321040285474825">Configurações dos recursos de IA generativa no preenchimento automático</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
 <translation id="5124652340668722849">Configura uma lista de domínios de provisionamento (PvDs) que o <ph name="PRODUCT_NAME" /> vai usar para buscar configurações de proxy de maneira dinâmica.
 
@@ -8272,6 +8348,47 @@ Se a política for deixada sem definição, o congelamento de guias em segundo p
 <translation id="608788685013546076">Definir o limite de bateria (em porcentagem) para a economia de energia no período de pico</translation>
 <translation id="6089679180657323464">Controla as configurações do controlador de telemetria e diagnósticos wilco.</translation>
 <translation id="6091233616732024397">Forçar o usuário a fazer login para usar o navegador</translation>
+<translation id="6091279561320899147">Permite definir uma lista de padrões de URL que especifica os sites em que as otimizações avançadas
+do JavaScript são desativadas.
+
+Se você desativar as otimizações do JavaScript, o <ph name="PRODUCT_NAME" /> poderá renderizar conteúdo da web mais lentamente.
+
+Para informações mais detalhadas sobre os padrões de URL válidos, consulte
+https://chromeenterprise.google/policies/url-patterns.
+Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+As exceções da política podem ser definidas para subdomínios específicos, assim como para sites inteiros.
+Por exemplo, uma política definida apenas para subdomínio.site.com se aplica a
+subdomínio.site.com sem afetar site.com. Em alguns casos em que um
+subdomínio não pode ser isolado do site pai, ele pode herdar a política
+definida em site.com. Além disso, as exceções podem não entrar em vigor para frames carregados em uma
+guia existente até que o site seja aberto em uma nova guia. Em dispositivos
+<ph name="ANDROID_NAME" /> com pouca memória, as exceções específicas do site podem
+não ser aplicadas. Nesses casos, os sites usarão a política de
+<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />
+(se definida) ou vão adotar o ajuste padrão de otimização do JavaScript do perfil.
+
+Para aplicar as exceções, o <ph name="PRODUCT_NAME" />
+pode colocar em processos dedicados os sites ou subdomínios com configurações
+diferentes do padrão. Isso pode aumentar o uso da memória, especialmente no
+<ph name="ANDROID_NAME" /> ou quando um padrão de caracteres curinga corresponde a muitos
+subdomínios, já que cada origem compatível pode ser isolada separadamente. Os subdomínios
+isolados também não podem usar document.domain para acessar o site pai.
+
+Observação: nas versões 138 e anteriores, as exceções da política eram aplicadas apenas na
+granularidade de um site (eTLD+1). Uma política definida apenas para subdomínio.site.com não
+entrava em vigor, nem mesmo para subdomínio.site.com. Ela precisava ser definida em site.com para
+ser aplicada tanto a site.com quanto a subdomínio.site.com.
+
+Essa política é aplicada frame a frame, e não apenas com base no URL de origem
+de nível superior. Por exemplo, se o site-um.com estiver listado na política <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mas carregar um frame que
+contém o site-dois.com, o primeiro terá otimizações do JavaScript
+desativadas, mas o segundo vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (se definida) ou adotará otimizações do JavaScript
+ativadas por padrão. As entradas da lista de bloqueio têm prioridade maior do que as da
+lista de permissões, que têm prioridade maior do que o valor padrão configurado.
+
+Se esta política for deixada sem definição para um site, a política de <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> será aplicada (se definida). Do contrário,
+a otimização do JavaScript será ativada.</translation>
 <translation id="6092073071805297119">Permitir o uso da filtragem de desempenho de acessibilidade.</translation>
 <translation id="6093156968240188330">Permitir que usuários remotos interajam com janelas elevadas em sessões de assistência remota</translation>
 <translation id="6093551397728373988">Aplicar todos os métodos de entrada permitidos para que sejam ativados em uma sessão de usuário</translation>
@@ -9080,6 +9197,27 @@ O protetor de tela do usuário mostra as imagens referenciadas pela política <p
 O tempo limite de inatividade para iniciar o protetor de tela e o intervalo de exibição de uma imagem podem ser modificados com as políticas <ph name="SCREENSAVER_LOCK_SCREEN_IDLE_TIMEOUT_SECONDS_POLICY_NAME" /> e <ph name="SCREENSAVER_LOCK_SCREEN_DISPLAY_INTERVAL_SECONDS_POLICY_NAME" />, respectivamente. Se uma dessas políticas for deixada sem definição, os valores padrão vão ser usados.</translation>
 <translation id="651248769129998376">Não criar nem fazer upload de solicitações para instalar extensões no Admin Console</translation>
 <translation id="6513453889192806240">Latência de HTTPS</translation>
+<translation id="6514006253468048943">Esses recursos no <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para ajudar os usuários a preencher formulários na web. O uso desses recursos exige que o <ph name="PRODUCT_NAME" /> colete dados, como a estrutura dos formulários com que o usuário interage e, no caso da opção "Encontrar e preencher com o Gemini", as consultas de texto livre que o usuário insere para pesquisar nos apps do Gemini conectados. Esses dados são enviados a um servidor do Google, que executa um modelo de IA generativa.
+
+Se a política for definida como 0 (permitir recursos de IA generativa no preenchimento automático e aprimorar os modelos de IA), os recursos serão habilitados e o Google poderá usar os dados relevantes para aprimorar os modelos de IA. Esses dados podem incluir comandos, entradas, saídas, materiais de fonte e feedback por escrito, dependendo do recurso. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
+
+Definir a política como 1 (permitir recursos de IA generativa no preenchimento automático sem aprimorar os modelos de IA) permite o uso dos recursos, mas o Google não poderá usar o conteúdo dos usuários (incluindo comandos, entradas, saídas, materiais de fonte e feedback por escrito) para aprimorar os modelos. O valor padrão é 1 para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Definir a política como 2 (não permitir recursos de IA generativa no preenchimento automático) proíbe os recursos.
+
+Quando a política é deixada sem definição, a <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> determina o comportamento.
+
+Os recursos de IA generativa no preenchimento automático incluem:
+
+- Preenchimento inteligente de formulários: usa IA para identificar e classificar os campos de um formulário para que mais deles possam ser preenchidos.
+
+- Encontrar e preencher com o Gemini: localiza informações nos apps que o usuário conectou ao Gemini e as oferece para preenchimento, seja como sugestões proativas em um formulário ou em resposta a uma consulta que o usuário escreve.
+
+Esta política substitui a <ph name="AUTOFILL_PREDICTION_SETTINGS_POLICY_NAME" />, que ainda é válida quando esta é deixada sem definição. A opção "Encontrar e preencher com o Gemini" também exige que a política <ph name="GEMINI_SETTINGS_POLICY_NAME" /> não esteja desativada.
+
+Esta política não controla os recursos de preenchimento automático que não usam IA generativa.
+
+Para mais informações sobre como tratar dados de recursos de IA generativa, consulte https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6515357889978918016">Imagem de <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="6515520014183265350">Especifique uma lista de origens que são executadas em um processo dedicado.
 
@@ -11005,6 +11143,19 @@ Quando ela estiver desativada, o visualizador de PDF vai usar o renderizador AGG
 
 Quando ela for deixada sem definição, o renderizador de PDF será escolhido pelo navegador.</translation>
 <translation id="7704244074621846004">Ativar ciclo de vida estendido para SharedWorkers</translation>
+<translation id="7706986409083477132">Permite definir uma lista de padrões de URL que especificam sites com permissão para executar o JavaScript com o compilador Just-in-Time (JIT, na sigla em inglês) ativado.
+
+          Para informações mais detalhadas sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+          As exceções da política podem ser definidas para subdomínios específicos, assim como para sites inteiros. Por exemplo, uma política definida apenas para subdomínio.site.com se aplica a subdomínio.site.com sem afetar site.com. Em alguns casos em que não é possível isolar um subdomínio do site pai, ele pode herdar a política definida em site.com. Além disso, talvez as exceções não entrem em vigor para frames carregados em uma guia atual até que o site seja aberto em uma nova guia. Em dispositivos <ph name="ANDROID_NAME" /> com pouca memória, as exceções específicas do site podem não ser aplicadas. Nesses casos, os sites usarão a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (se definida) ou vão adotar o ajuste padrão de JIT do JavaScript do perfil.
+
+          Para aplicar as exceções, o <ph name="PRODUCT_NAME" /> pode colocar em processos dedicados os sites ou subdomínios com configurações diferentes do padrão. Isso pode aumentar o uso da memória, especialmente no <ph name="ANDROID_NAME" /> ou quando um padrão de caracteres curinga corresponde a muitos subdomínios, já que cada origem compatível pode ser isolada separadamente. Os subdomínios isolados também não podem usar document.domain para acessar o site pai.
+
+          Observação: nas versões 155 e anteriores, as exceções da política eram aplicadas apenas na granularidade de um site (eTLD+1). Uma política definida apenas para subdomínio.site.com não entrava em vigor, nem mesmo para subdomínio.site.com. Ela precisava ser definida em site.com para ser aplicada tanto a site.com quanto a subdomínio.site.com.
+
+          Essa política é aplicada frame a frame, e não apenas com base no URL de origem de nível superior. Por exemplo, se o site-um.com estiver listado na política <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mas carregar um frame que contém o site-dois.com, o primeiro terá o JIT do JavaScript ativado, mas o segundo vai usar a política de <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (se definida) ou adotará o JIT do JavaScript ativado por padrão. As entradas da lista de bloqueio têm mais prioridade do que as da lista de permissões, que têm menos prioridade do que o valor padrão configurado.
+
+          Se esta política for deixada sem definição para um site, a política do <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> será aplicada (se definida). Do contrário, um JIT do JavaScript será ativado para o site.</translation>
 <translation id="7707869387893611318">Ativar o recurso de sons de carregamento.
 
           Esse recurso é responsável por reproduzir os sons de carregamento no dispositivo.
@@ -12264,6 +12415,13 @@ Para mais informações sobre a política <ph name="DOWNLOAD_RESTRICTIONS_POLICY
 <translation id="8489169564515126823">Desativada: os controles de rolagem não são focalizados por padrão.</translation>
 <translation id="8489964335640955763">PluginVm</translation>
 <translation id="8493645415242333585">Desativar o salvamento do histórico do navegador</translation>
+<translation id="8494605948258449467">Esta política controla se as conexões WebSocket ativas são desconectadas quando uma página entra no cache de avanço e retorno. As conexões WebSocket ativas impediam que uma página fosse armazenada no cache de avanço e retorno, mas o <ph name="PRODUCT_NAME" /> mudou esse comportamento para desconectar as WebSockets, permitindo que a página seja armazenada em cache e restaurada em um estado desconectado.
+
+Se esta política for ativada ou deixada sem definição, as WebSockets serão desconectadas quando uma página entrar no cache de avanço e retorno.
+
+Se ela for desativada, as WebSockets não serão desconectadas quando uma página entrar no cache de avanço e retorno. Como o cache de avanço e retorno não é compatível com WebSockets ativas, as páginas com elas não serão armazenadas em cache.
+
+Esta política foi descontinuada na versão 157 do <ph name="PRODUCT_NAME" /> e será removida na versão 167.</translation>
 <translation id="8499172469244085141">Configurações padrão (podem ser substituídas pelos usuários)</translation>
 <translation id="8499359456965625209">Essa política foi descontinuada.
 
@@ -13348,6 +13506,25 @@ O padrão é RollbackDisabled.</translation>
 <translation id="9204863016826119209">Chaves corporativas poderão ser usadas por apps Android instalados e listados nesta política.</translation>
 <translation id="9206364386317031168">Permitir que sites façam solicitações de rede para o dispositivo local.</translation>
 <translation id="9206472508136116830">Não permitir a detecção de compartilhamento do NetBIOS</translation>
+<translation id="9207289612253941907">Esta política configura o <ph name="PRODUCT_NAME" /> para organizar a ordem de preferência dos seus algoritmos de acordo de chaves (grupos compatíveis) no TLS 1.3, de modo a priorizar algoritmos aprovados por um regime de conformidade específico.
+
+Definir a política não garante que algoritmos específicos sejam negociados.
+
+Esta política existe para que os operadores de servidores que querem atender a clientes com e sem requisitos de conformidade possam diferenciá-los, aplicando algoritmos não padrão com maior força criptográfica apenas àqueles explicitamente configurados para preferi-los.
+
+Ao definir a política como "<ph name="CNSA2_NAME" />" o <ph name="PRODUCT_NAME" /> é configurado de modo a priorizar os métodos de troca de chaves exigidos pela conformidade com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0).
+
+Se a política for deixada sem definição ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_NAME" /> vai usar os métodos de troca de chaves padrão.
+
+A definição desta política não é necessária para a segurança. A criptografia padrão adotada pelo <ph name="PRODUCT_NAME" /> é forte o suficiente para resistir a um ataque de força bruta que usa toda a energia do Sol.
+
+Definir esta política vai fazer com que o <ph name="PRODUCT_NAME" /> fique mais lento ao acessar sites.
+
+A política afeta apenas o TLS 1.3 e o QUIC, e não as versões anteriores do TLS.
+
+Ela pode ser definida para o computador e para o usuário. Se for definida para o usuário, a política só vai afetar as solicitações de rede iniciadas pelo perfil do usuário, e não as feitas pelo <ph name="PRODUCT_NAME" /> para realizar tarefas em segundo plano em todo o navegador. Elas são controladas pelo valor no nível da máquina. Se esta política for definida nos níveis da máquina e do usuário, o valor no nível da máquina será aplicado, a menos que a política <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME" /> tenha mudado a ordem de precedência.
+
+Nas versões 156 e anteriores, esta política aplica-se apenas ao nível da máquina.</translation>
 <translation id="9207596996305971030">Não informar eventos de login/logout</translation>
 <translation id="9208328979373108724">Permitir que as origens de Apps Isolados da Web adicionem Sub Apps, mas exigir o comando do usuário</translation>
 <translation id="9210647066889383361">Permitir que os usuários façam login no próprio dispositivo com o Smart Lock</translation>

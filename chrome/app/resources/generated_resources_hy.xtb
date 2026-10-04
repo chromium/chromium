@@ -1033,6 +1033,7 @@
 <translation id="1790976235243700817">Հեռացնել մուտքի թույլտվությունը</translation>
 <translation id="1791662854739702043">Տեղադրվեց</translation>
 <translation id="1792619191750875668">Ընդարձակված էկրան</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990">Թաքցնել <ph name="DOMAIN" /> տիրույթի գաղտնաբառը</translation>
 <translation id="1794791083288629568">Հայտնել կարծիք՝ խնդիրը վերացնելու համար:</translation>
 <translation id="1795214765651529549">Օգտագործել դասական թեման</translation>
@@ -2939,6 +2940,7 @@
 <translation id="323262942975422760">Լրացուցիչ ընտրանքներ խմբագրելու կամ ջնջելու համար <ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /></translation>
 <translation id="3232754137068452469">Վեբ ծրագիր</translation>
 <translation id="3233271424239923319">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
+<translation id="3233577317461669428">Այլ սարք չի գտնվել</translation>
 <translation id="3234251228180563751">Օգտանունը պարունակում է ավելի քան 1000 նիշ</translation>
 <translation id="3234978181857588512">Պահել սարքում</translation>
 <translation id="3237871032310650497">Ջնջե՞լ <ph name="PARTITION_SITE_NAME" /> կայքում առանձնացված <ph name="SITE_NAME" /> կայքի տվյալները</translation>
@@ -6985,6 +6987,7 @@
 <translation id="6356893102071098867">Համոզվեք, որ ընտրել եք ճիշտ հաշիվը</translation>
 <translation id="6357305427698525450">Որոշ աջակցվող հղումներ նախկինի պես կբացվեն <ph name="APP_NAME" /> կամ <ph name="APP_NAME_2" /> հավելվածում։</translation>
 <translation id="6357750620525943720">Այլ մշտական նույնացուցիչներ (օր․՝ հեշեր կամ UUID-ներ)</translation>
+<translation id="6357830294871526418">Ներդիրներ այլ սարքերում</translation>
 <translation id="6358884629796491903">Վիշապ</translation>
 <translation id="6359640073754977254">Թերթել մինչև վերջին ներդիրը</translation>
 <translation id="6361850914223837199">Սխալի մանրամասներ՝</translation>

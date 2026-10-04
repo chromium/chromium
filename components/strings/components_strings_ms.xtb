@@ -867,6 +867,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2436186046335138073">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan?</translation>
 <translation id="243815215670139125">Kad ini tidak dapat disimpan dalam Google Account anda. Kad ini telah disimpan pada Chrome pada peranti ini.</translation>
 <translation id="2438874542388153331">Empat tebukan kanan</translation>
+<translation id="2442033148418774391">Autolengkap yang lebih pintar, notis kekal peribadi ditutup</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Sejarah penyemakan imbas anda
@@ -879,6 +880,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2451607499823206582">Penjejakan</translation>
 <translation id="2452837234288608067">Perkara itu tidak dapat dibantu. Cuba lagi.</translation>
 <translation id="2453045048779611513">Organisasi anda mengehadkan perkara yang boleh anda simpan</translation>
+<translation id="2456490423293803882">Autolengkap yang lebih pintar, notis kekal peribadi dibuka pada ketinggian penuh</translation>
 <translation id="2459882793359532780">Dasar penyemak imbas yang digunakan (dasar mesin dan profil)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core memberi anda alat terpusat untuk mengkonfigurasikan dasar penyemak imbas daripada awan</translation>
 <translation id="2461822463642141190">Semasa</translation>
@@ -956,6 +958,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2556173336856001120"><ph name="USER_GIVEN_NAME" /> • <ph name="DEVICE_NAME" /></translation>
 <translation id="2556876185419854533">&amp;Buat Asal Edit</translation>
 <translation id="2559566667529177711">Berbilang Lapisan</translation>
+<translation id="2561224416042784023">Lihat tetapan</translation>
 <translation id="2570734079541893434">Urus tetapan</translation>
 <translation id="257136025287118539">Pentadbir anda mengalihkan fail anda kepada <ph name="CLOUD_PROVIDER" />. Anda boleh mengubah suai fail ini setelah muat naik selesai.</translation>
 <translation id="2571488850200220306">Untuk memastikan keselamatan, pentadbir juga boleh melihat OS dan versi penyemak imbas peranti serta perisian yang dipasang pada peranti</translation>
@@ -1108,6 +1111,7 @@ Anda boleh mengalih keluar cadangan ini daripada Chrome. Sumber asal anda tidak 
 <translation id="2878197950673342043">Lipatan poster</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">gunakan kunci skrin anda untuk mengisikan kata laluan</translation>
+<translation id="2880119244122776372">Bina dan kod</translation>
 <translation id="2881276955470682203">Simpan kad?</translation>
 <translation id="2882280148032777436">Padamkan Nombor Pengembara Yang Diketahui</translation>
 <translation id="2882949212241984732">Lipatan dua pintu</translation>
@@ -3915,6 +3919,7 @@ Butiran tambahan:
 <translation id="753713322968419914">Alih keluar alamat rumah daripada autolengkap Chrome?</translation>
 <translation id="753714465667062283">Log masuk untuk menyimpan foto anda</translation>
 <translation id="7537536606612762813">Wajib</translation>
+<translation id="7540924742308928499">Sumbang saran dan ringkaskan</translation>
 <translation id="7543525346216957623">Tanya ibu/bapa anda</translation>
 <translation id="7546409722674205727">Memulakan <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Betulkan ralat sambungan</translation>
@@ -4615,6 +4620,7 @@ Butiran tambahan:
 <translation id="8763676559028782284">{COUNT,plural, =1{Pautan dihantar daripada <ph name="DEVICE_NAME" />}other{# pautan dihantar daripada <ph name="DEVICE_NAME" />}}</translation>
 <translation id="8763927697961133303">Peranti USB</translation>
 <translation id="8763986294015493060">Tutup semua tetingkap Inkognito yang terbuka pada masa ini</translation>
+<translation id="8766878556492508344">Ketahui perihal Autolengkap kod pengesahan daripada Gmail dengan lebih lanjut</translation>
 <translation id="8766943070169463815">Helaian pengesahan bukti kelayakan pembayaran selamat dibuka</translation>
 <translation id="8767765348545497220">Tutup gelembung bantuan</translation>
 <translation id="8767881944435256294">{COUNT,plural, =1{1 kaedah pembayaran}other{# kaedah pembayaran}}</translation>

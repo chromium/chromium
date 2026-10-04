@@ -867,6 +867,7 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2436186046335138073">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Kjo kartë nuk mund të ruhen në "Llogarinë tënde të Google". Në vend të kësaj, ajo është ruajtur në Chrome në këtë pajisje.</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
+<translation id="2442033148418774391">Njoftimi për plotësimin automatik më inteligjent, të mbajtur privat, u mbyll</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Historikun tënd të shfletimit
@@ -879,6 +880,7 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2451607499823206582">Po monitorohet</translation>
 <translation id="2452837234288608067">Nuk mund të të ndihmoja me këtë. Provo përsëri.</translation>
 <translation id="2453045048779611513">Organizata jote kufizon se çfarë mund të ruash</translation>
+<translation id="2456490423293803882">Njoftimi për plotësimin automatik më inteligjent dhe të mbajtur privat u hap në lartësi të plotë</translation>
 <translation id="2459882793359532780">Politikat e zbatuara të shfletuesit (politikat e pajisjes dhe të profilit)</translation>
 <translation id="2461385121573678775">Chrome Enterprise Core të jep një vegël të centralizuar për konfigurimin e politikave të shfletuesit nga reja kompjuterike</translation>
 <translation id="2461822463642141190">Rryma</translation>
@@ -1108,6 +1110,7 @@ Mund ta heqësh këtë sugjerim nga Chrome. Burimi yt origjinal nuk do të fshih
 <translation id="2878197950673342043">Palosje posteri</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">të përdorë kyçjen e ekranit për plotësimin e fjalëkalimeve</translation>
+<translation id="2880119244122776372">Ndërto dhe kodo</translation>
 <translation id="2881276955470682203">Të ruhet karta?</translation>
 <translation id="2882280148032777436">Fshi numrin e udhëtarit të njohur</translation>
 <translation id="2882949212241984732">Palosje me dy dritare</translation>
@@ -3912,6 +3915,7 @@ Detaje shtesë:
 <translation id="753713322968419914">Të hiqet adresa e shtëpisë nga plotësimi automatik i Chrome?</translation>
 <translation id="753714465667062283">Identifikohu për të ruajtur fotografinë tënde</translation>
 <translation id="7537536606612762813">E detyrueshme</translation>
+<translation id="7540924742308928499">Gjenero ide dhe përmblidh</translation>
 <translation id="7543525346216957623">Pyet prindin tënd</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> po niset</translation>
 <translation id="7548892272833184391">Rregullo gabimet në lidhje</translation>

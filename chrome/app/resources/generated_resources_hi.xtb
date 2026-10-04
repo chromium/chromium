@@ -1042,6 +1042,7 @@
 <translation id="1790976235243700817">ऐक्सेस हटाएं</translation>
 <translation id="1791662854739702043">इंस्‍टॉल किया गया</translation>
 <translation id="1792619191750875668">बढ़ाया हुआ डिसप्ले</translation>
+<translation id="1793048658013002380"><ph name="TOOLTIP_TEXT" /> (<ph name="KEYBOARD_SHORTCUT" />)</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> का पासवर्ड छिपाएं</translation>
 <translation id="1794791083288629568">इस समस्या को ठीक करने में हमारी सहायता करने के लिए फ़ीडबैक भेजें.</translation>
 <translation id="1795214765651529549">क्लासिक का उपयोग करें</translation>
@@ -2954,6 +2955,7 @@
 <translation id="323262942975422760"><ph name="ENTITY_INSTANCE_LABEL" />, <ph name="ENTITY_INSTANCE_SUBLABEL" /> में बदलाव करने या उसे मिटाने के ज़्यादा विकल्प</translation>
 <translation id="3232754137068452469">वेब ऐप्लिकेशन</translation>
 <translation id="3233271424239923319">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप लें</translation>
+<translation id="3233577317461669428">कोई अन्य डिवाइस नहीं मिला</translation>
 <translation id="3234251228180563751">उपयोगकर्ता नाम में 1000 से ज़्यादा वर्ण हैं</translation>
 <translation id="3234978181857588512">डिवाइस में सेव करें</translation>
 <translation id="3237871032310650497">क्या <ph name="PARTITION_SITE_NAME" /> पर पार्टीशन किए गए <ph name="SITE_NAME" /> का साइट डेटा मिटाना है?</translation>
@@ -7003,6 +7005,7 @@
 <translation id="6356893102071098867">देखें कि आपने सही खाता चुना है या नहीं</translation>
 <translation id="6357305427698525450">कुछ सहायता लिंक <ph name="APP_NAME" /> या  <ph name="APP_NAME_2" /> में अब भी खुलेंगे.</translation>
 <translation id="6357750620525943720">अन्य स्थायी आइडेंटिफ़ायर (उदाहरण के लिए, हैश या यूयूआईडी)</translation>
+<translation id="6357830294871526418">अन्य डिवाइसों पर खुले हुए टैब</translation>
 <translation id="6358884629796491903">ड्रैगन</translation>
 <translation id="6359640073754977254">स्क्रोल करके आखिरी टैब पर जाएं</translation>
 <translation id="6361850914223837199">गड़बड़ी विवरण:</translation>

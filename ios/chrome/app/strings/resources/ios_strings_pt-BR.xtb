@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">Não há guias abertas</translation>
 <translation id="1469381646033328562">Sua conta é gerenciada pelo seu familiar responsável.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">desde a conclusão da etapa "Criar um grupo de guias"</translation>
 <translation id="147982357559798527">Alterada</translation>
 <translation id="1481450969185702334">Encontrar e preencher</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">Informar um problema</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" não tem permissão para acessar sua câmera</translation>
 <translation id="2223461067862937305">Criar um QR code</translation>
+<translation id="222798989929574238">Você usou mais de 20 fotos para pesquisar</translation>
 <translation id="2230173723195178503">Página da Web carregada</translation>
 <translation id="2236949375853147973">Minha atividade</translation>
 <translation id="2237869114829007407">Tenha uma visão geral e insights importantes sobre qualquer página ou tema</translation>
@@ -1763,6 +1765,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6525550806864373485">Editar Menu</translation>
 <translation id="6527208859483186860">plano de fundo {position} de {total}</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
+<translation id="6529706885792457023">Você organizou mais de 15 guias</translation>
 <translation id="6532106788206463496">Salvar alterações</translation>
 <translation id="6536759809440150308">Abrir <ph name="GROUP_TITLE" />, grupo de <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1811,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6642362222295953972">Mudar para guia existente</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6645899968535965230">QR code: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">Você verificou mais de 25 senhas</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659660757330712663">Você pode deslizar a barra de ferramentas para trocar de guia.</translation>
 <translation id="6663529247339810546">Impossível salvar imagem</translation>
@@ -1966,6 +1970,7 @@ Para continuar pelo computador, mude para <ph name="OTHER_EMAIL" />. Você vai r
 <translation id="7145337554745942724">Atualizar carteira de habilitação</translation>
 <translation id="7146301801400584641">Arquivo do Google Agenda disponível</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="7151361008641622036">{count,plural, =1{Você organizou 1 guia}one{Você organizou # guia}other{Você organizou # guias}}</translation>
 <translation id="7154417656353909837">Remover endereços</translation>
 <translation id="7161230316646448869">Sincronize seus favoritos, histórico e muito mais em todos os dispositivos</translation>
 <translation id="7165323152084385463">NIV</translation>
@@ -2396,6 +2401,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8481184073299279701">Toque no botão "Iniciar registro" para coletar erros e registros futuros do Console JavaScript em todas as guias. Os registros serão coletados (e armazenados apenas na memória) até que a página seja fechada ou que o botão "Parar de registrar" seja pressionado.</translation>
 <translation id="8487667956631253959">Ativada</translation>
 <translation id="8487700953926739672">Disponível off-line</translation>
+<translation id="8488065047914929586">desde a conclusão da etapa "Salvar uma senha"</translation>
 <translation id="8488923644885757471">Nova janela</translation>
 <translation id="8490629238792920282">Não foi possível criar o link</translation>
 <translation id="8501469528283376592">Excluir downloads automaticamente</translation>
@@ -2543,6 +2549,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="8890516388109605451">Fontes</translation>
 <translation id="8893208530912252670">Vídeos</translation>
 <translation id="8898822736010347272">Envia ao Google URLs de algumas páginas que você visita, informações do sistema limitadas e parte do conteúdo das páginas para ajudar a descobrir novas ameaças e proteger todos os usuários na Web.</translation>
+<translation id="890009681345348416">Mais de 40 senhas preenchidas automaticamente</translation>
 <translation id="8900845556227858314">App de navegador</translation>
 <translation id="890565330728586731">Voltar</translation>
 <translation id="8907722425137681851">Encontrar na página…</translation>
@@ -2630,7 +2637,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="9162432979321511934">Ative a opção "Preenchimento automático de senhas"</translation>
 <translation id="9165320910061267720">Para receber notificações de alertas de redução no preço, ative as notificações nas configurações do iOS.</translation>
 <translation id="9179151630575358778">Oculta este item</translation>
-<translation id="9183563643084679152">Você fez login no Chrome usando um QR code. Por isso, vai receber as senhas, os favoritos e outros itens dessa conta.</translation>
+<translation id="9183563643084679152">Você leu um QR code para fazer login no Chrome. Por isso, vai receber as senhas, os favoritos e outros itens dessa conta.</translation>
 <translation id="9183733013282108610">Pesquisa anônima</translation>
 <translation id="9186762474139509529">Iniciar registro</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>

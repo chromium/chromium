@@ -161,6 +161,7 @@
 <translation id="1466035273550360103">खुला हुआ कोई भी टैब मौजूद नहीं है</translation>
 <translation id="1469381646033328562">आपके खाते को आपके माता-पिता/अभिभावक मैनेज करते हैं.
 <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
+<translation id="147259385261660284">"टैब ग्रुप बनाएं" टास्क पूरा होने के बाद</translation>
 <translation id="147982357559798527">बदला गया</translation>
 <translation id="1481450969185702334">खोजें और भरें</translation>
 <translation id="1483493594462132177">भेजें</translation>
@@ -409,6 +410,7 @@
 <translation id="2220529011494928058">किसी समस्या की रिपोर्ट करें</translation>
 <translation id="2222149859067335623">"<ph name="SITE_DOMAIN" />" के लिए आपके कैमरे का ऐक्सेस ब्लॉक किया गया है</translation>
 <translation id="2223461067862937305">क्यूआर कोड बनाएं</translation>
+<translation id="222798989929574238">आपने खोजने के लिए 20 से ज़्यादा फ़ोटो का इस्तेमाल किया</translation>
 <translation id="2230173723195178503">वेबपेज लोड हो गया है</translation>
 <translation id="2236949375853147973">मेरी गतिविधि</translation>
 <translation id="2237869114829007407">किसी भी पेज या विषय के बारे में खास जानकारी और अहम इनसाइट पाएं</translation>
@@ -780,6 +782,7 @@
 <translation id="3459644598174926977">'Gemini से Live बातचीत करें' सुविधा का इस्तेमाल करके, किसी पेज के बारे में सवाल पूछें, नए आइडिया पर मिलकर सोच-विचार करें और Gemini के साथ बोलकर बातचीत करें.</translation>
 <translation id="3462768334899086950">इसका मतलब है कि सेव नहीं की गई फ़ाइल और मौजूदा टैब मिट जाएंगे</translation>
 <translation id="3464194322481586217">कीमत ट्रैक नहीं की जा सकी.</translation>
+<translation id="3468009081835548033">एक बार के लिए अनुमति दी गई</translation>
 <translation id="3469117812148449995">पासवर्ड सेव करने के विकल्प</translation>
 <translation id="3472469028191701821">लिंक नए टैब में खुलेगा</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{{COUNT} साइट या ऐप्लिकेशन के लिए}one{{COUNT} साइट और ऐप्लिकेशन के लिए}other{{COUNT} साइटों और ऐप्लिकेशन के लिए}}</translation>
@@ -1310,6 +1313,7 @@
 <translation id="512533434554095351">पासवर्ड से जुड़ी कई समस्याएं हैं.</translation>
 <translation id="5128788795241319992">नए मेन्यू के बारे में जानें</translation>
 <translation id="5132942445612118989">सभी डिवाइस पर अपने पासवर्ड, इतिहास और दूसरी कई चीज़ें सिंक करें</translation>
+<translation id="5137568953923142260">एक बार अनुमति दें</translation>
 <translation id="5141363746588976328">'आपके टैब पर कीमत में गिरावट' कार्ड को छिपाएं</translation>
 <translation id="514154868070499296">फ़ॉन्ट: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">टैब बदलने की सुविधा को बंद करें</translation>
@@ -1763,6 +1767,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6525550806864373485">मेन्यू में बदलाव करें</translation>
 <translation id="6527208859483186860">{total} में से {position} बैकग्राउंड</translation>
 <translation id="6527303717912515753">शेयर करें</translation>
+<translation id="6529706885792457023">आपने 15 से ज़्यादा टैब व्यवस्थित किए</translation>
 <translation id="6532106788206463496">बदलाव सेव करें</translation>
 <translation id="6536759809440150308"><ph name="GROUP_TITLE" /> खोलें, <ph name="NUMBER_OF_TABS" /> का ग्रुप, <ph name="CREATION_TEXT" /></translation>
 <translation id="6537746030088321027">example.com</translation>
@@ -1808,6 +1813,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="6642362222295953972">मौजूदा टैब पर जाएं</translation>
 <translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6645899968535965230">क्यूआर कोड: <ph name="PAGE_TITLE" /></translation>
+<translation id="6655140398250775751">आपने 25 से ज़्यादा पासवर्ड की जांच की</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659660757330712663">एक से दूसरे टैब पर जाने के लिए, टूलबार पर स्वाइप किया जा सकता है.</translation>
 <translation id="6663529247339810546">इमेज सेव नहीं की जा सकी</translation>
@@ -1966,6 +1972,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="7145337554745942724">ड्राइविंग लाइसेंस की जानकारी अपडेट करें</translation>
 <translation id="7146301801400584641">कैलेंडर फ़ाइल उपलब्ध है</translation>
 <translation id="7149893636342594995">पिछले 24 घंटे</translation>
+<translation id="7151361008641622036">{count,plural, =1{आपने 1 टैब व्यवस्थित किया}one{आपने # टैब व्यवस्थित किया}other{आपने # टैब व्यवस्थित किए}}</translation>
 <translation id="7154417656353909837">पते हटाएं</translation>
 <translation id="7161230316646448869">सभी डिवाइसों पर, अपने बुकमार्क, इतिहास, और दूसरी कई चीज़ें सिंक करें</translation>
 <translation id="7165323152084385463">वीआईएन</translation>
@@ -1989,6 +1996,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="722339453342442311">अभी देखें</translation>
 <translation id="7227235818314667565">शेयर करने की प्रोसेस मैनेज करें</translation>
 <translation id="7233006041370588369">भरने के लिए कोई पासवर्ड चुनें.</translation>
+<translation id="7238074332967840767">सुरक्षा</translation>
 <translation id="723874023660911012">प्रोफ़ाइल स्विच करें</translation>
 <translation id="7241135764990439166">गुप्त मोड उपलब्ध नहीं है</translation>
 <translation id="7245288034498365666">व्यवस्थित रहें और समय बचाएं</translation>
@@ -2396,6 +2404,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8481184073299279701">आने वाले समय के JavaScript कंसोल लॉग और सभी टैब की गड़बड़ियां इकट्ठा करने के लिए, "लॉग करना शुरू करें" बटन पर टैप करें. लॉग तब तक इकट्ठा किए जाएंगे (और सिर्फ़ मेमोरी में सेव किए जाएंगे), जब तक कि यह पेज बंद नहीं किया जाता या फिर "लॉग करना बंद करें" पर टैप नहीं किया जाता.</translation>
 <translation id="8487667956631253959">चालू है</translation>
 <translation id="8487700953926739672">ऑफ़लाइन उपलब्ध है</translation>
+<translation id="8488065047914929586">"कोई पासवर्ड सेव करें" प्रोसेस पूरी होने के बाद</translation>
 <translation id="8488923644885757471">नई विंडो</translation>
 <translation id="8490629238792920282">लिंक नहीं बनाया जा सका</translation>
 <translation id="8501469528283376592">डाउनलोड किए गए आइटम के अपने-आप मिटने की सुविधा</translation>
@@ -2543,6 +2552,7 @@ Handoff को Settings के General अनुभाग में भी स�
 <translation id="8890516388109605451">स्रोत</translation>
 <translation id="8893208530912252670">वीडियो</translation>
 <translation id="8898822736010347272">आपने जिन पेजों को विज़िट किया है उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज का कुछ कॉन्टेंट Google को भेजा जाता है. ऐसा इसलिए, ताकि नए खतरों का पता लगाया जा सके और वेब पर सबको सुरक्षित रखा जा सके.</translation>
+<translation id="890009681345348416">40 से ज़्यादा पासवर्ड ऑटोमैटिक तरीके से भरे गए</translation>
 <translation id="8900845556227858314">ब्राउज़र ऐप्लिकेशन</translation>
 <translation id="890565330728586731">वापस जाएं</translation>
 <translation id="8907722425137681851">पेज में ढूंढना…</translation>

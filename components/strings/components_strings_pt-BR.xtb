@@ -867,6 +867,7 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Não pudemos salvar o cartão na sua Conta do Google. Ele foi salvo no Chrome neste dispositivo.</translation>
 <translation id="2438874542388153331">Perfuração quádrupla no lado direito</translation>
+<translation id="2442033148418774391">Aviso sobre o preenchimento automático mais inteligente e particular fechado</translation>
 <translation id="2442865686365739754">O Chrome <ph name="BEGIN_EMPHASIS" />não vai salvar<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Seu histórico de navegação
@@ -879,6 +880,7 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2451607499823206582">Monitoramento</translation>
 <translation id="2452837234288608067">Não foi possível ajudar. Tente de novo.</translation>
 <translation id="2453045048779611513">Sua organização limita o que você pode salvar</translation>
+<translation id="2456490423293803882">Aviso sobre o preenchimento automático mais inteligente e particular aberto no tamanho máximo</translation>
 <translation id="2459882793359532780">Políticas de navegador aplicadas (políticas do computador e perfil)</translation>
 <translation id="2461385121573678775">O Chrome Enterprise Core oferece uma ferramenta centralizada para configurar políticas do navegador na nuvem</translation>
 <translation id="2461822463642141190">Atual</translation>
@@ -1108,6 +1110,7 @@ Se quiser, você pode remover essa sugestão do Chrome. A fonte original dos dad
 <translation id="2878197950673342043">Dobra em cruz sanfona</translation>
 <translation id="2878424575911748999">A1</translation>
 <translation id="2879694782644540289">usar o bloqueio de tela para preencher senhas</translation>
+<translation id="2880119244122776372">Criar e programar</translation>
 <translation id="2881276955470682203">Salvar cartão?</translation>
 <translation id="2882280148032777436">Excluir o número do programa de passageiro conhecido</translation>
 <translation id="2882949212241984732">Dobra janela dupla</translation>
@@ -3914,6 +3917,7 @@ Mais detalhes:
 <translation id="753713322968419914">Remover o endereço de casa do preenchimento automático do Chrome?</translation>
 <translation id="753714465667062283">Faça login para salvar sua foto</translation>
 <translation id="7537536606612762813">Obrigatória</translation>
+<translation id="7540924742308928499">Discutir ideias e resumir</translation>
 <translation id="7543525346216957623">Peça ajuda à sua família</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Corrigir erros de conexão</translation>
