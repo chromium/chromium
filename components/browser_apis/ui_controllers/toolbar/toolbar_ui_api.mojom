@@ -16,14 +16,14 @@ import "mojo/public/mojom/base/error.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
-// Used by Toolbar UI to observe navigation controls state changes.
+// Used by Toolbar UI to observe toolbar state changes.
 interface ToolbarUIObserver {
-  // Observes events for navigation controls (e.g. back, forward, reload
-  // buttons). |state| contains the state for all navigation controls
-  // so that they can update together to avoid visual flicker.
-  OnNavigationControlsStateChanged(
+  // Observes toolbar state changes. |state| contains the state for all
+  // toolbar controls (e.g. back, forward, reload buttons, location bar) so
+  // that they can update together to avoid visual flicker.
+  OnToolbarStateChanged(
     array<IconUpdate> icons,
-    NavigationControlsState state);
+    ToolbarState state);
 
   // Called to focus an element in the WebUI, with `target` specifying
   // which one.
@@ -37,7 +37,7 @@ interface ToolbarUIObserver {
 
 struct InitialState {
     array<IconUpdate> icons;
-    NavigationControlsState state;
+    ToolbarState state;
     pending_receiver<ToolbarUIObserver> update_stream;
 };
 
@@ -141,7 +141,7 @@ interface ToolbarUIService {
   // Invoke the pinned toolbar action for `action_id`. It's expected that the
   // corresponding pinned toolbar action button is visible and enabled, i.e.
   // `action_id` is one of the `PinnedToolbarActionState.action`'s that's
-  // passed to `OnNavigationControlsStateChanged()`.
+  // passed to `OnToolbarStateChanged()`.
   InvokePinnedToolbarAction(PinnedToolbarAction action_id);
 
   // Called when whether the focus is inside or outside the location bar is

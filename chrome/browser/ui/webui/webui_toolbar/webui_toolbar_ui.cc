@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
@@ -100,10 +100,10 @@ constexpr char kInitialWebUISurfaceSyncEnabled[] =
     "initialWebUISurfaceSyncEnabled";
 constexpr char kIsFallbackPrewarming[] = "isFallbackPrewarming";
 
-// Retrieves the current navigation controls state from the provider's fetcher
+// Retrieves the current toolbar state from the provider's fetcher
 // and populates a nested dictionary `initialState`.
 //
-// This method extracts only the critical subset of `NavigationControlsState`
+// This method extracts only the critical subset of `ToolbarState`
 // required for the initial paint of the toolbar on startup. This critical
 // subset includes reload, back, forward, and home button states, touch UI mode,
 // battery saver visibility, and layout constants version. These fields are
@@ -125,10 +125,9 @@ void PopulateInitialState(base::DictValue& dict,
   dict.Set(
       kInitialWebUISurfaceSyncEnabled,
       base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync));
-  toolbar_ui_api::mojom::NavigationControlsStatePtr state;
-  if (provider && provider->GetNavigationControlsStateFetcher()) {
-    state = provider->GetNavigationControlsStateFetcher()
-                ->GetNavigationControlsState();
+  toolbar_ui_api::mojom::ToolbarStatePtr state;
+  if (provider && provider->GetToolbarStateFetcher()) {
+    state = provider->GetToolbarStateFetcher()->GetToolbarState();
   }
   if (!state) {
     dict.Set(kIsNavigationLoading, false);
@@ -353,10 +352,10 @@ void WebUIToolbarUI::BindInterface(
   searchbox_page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void WebUIToolbarUI::OnNavigationControlsStateChanged(
-    const toolbar_ui_api::mojom::NavigationControlsState& state) {
+void WebUIToolbarUI::OnToolbarStateChanged(
+    const toolbar_ui_api::mojom::ToolbarState& state) {
   if (toolbar_ui_service_) {
-    toolbar_ui_service_->OnNavigationControlsStateChanged(state);
+    toolbar_ui_service_->OnToolbarStateChanged(state);
   }
 }
 
@@ -453,7 +452,7 @@ void WebUIToolbarUI::InitToolbarUIService(
 
   toolbar_ui_service_ = std::make_unique<toolbar_ui_api::ToolbarUIService>(
       std::move(toolbar_channel_service_end_),
-      dependency_provider.GetNavigationControlsStateFetcher(),
+      dependency_provider.GetToolbarStateFetcher(),
       dependency_provider.GetIconTableFetcher(),
       metrics_service->metrics_reporter(),
       dependency_provider.GetToolbarUIServiceDelegate());

@@ -12,7 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -33,7 +33,7 @@ namespace toolbar_ui_api {
 
 ToolbarUIService::ToolbarUIService(
     mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> service,
-    std::unique_ptr<NavigationControlsStateFetcher> state_fetcher,
+    std::unique_ptr<ToolbarStateFetcher> state_fetcher,
     std::unique_ptr<IconTableFetcher> icon_table_fetcher,
     MetricsReporter* metrics_reporter,
     ToolbarUIServiceDelegate* delegate)
@@ -51,8 +51,7 @@ void ToolbarUIService::SetDelegate(ToolbarUIServiceDelegate* delegate) {
   delegate_ = delegate;
 }
 
-void ToolbarUIService::OnNavigationControlsStateChanged(
-    const mojom::NavigationControlsState& state) {
+void ToolbarUIService::OnToolbarStateChanged(const mojom::ToolbarState& state) {
   auto* mark = state.reload_control_state->is_navigation_loading
                    ? kChangeVisibleModeToLoadingStartMark
                    : kChangeVisibleModeToNotLoadingStartMark;
@@ -72,19 +71,17 @@ void ToolbarUIService::OnNavigationControlsStateChanged(
     ++it;
     if (it == observers_.end()) {
       // Last item, can avoid some copies.
-      observer->OnNavigationControlsStateChanged(std::move(icon_updates),
-                                                 state.Clone());
+      observer->OnToolbarStateChanged(std::move(icon_updates), state.Clone());
       break;
     } else {
-      observer->OnNavigationControlsStateChanged(mojo::Clone(icon_updates),
-                                                 state.Clone());
+      observer->OnToolbarStateChanged(mojo::Clone(icon_updates), state.Clone());
     }
   }
 }
 
 void ToolbarUIService::Bind(BindCallback callback) {
   auto result = toolbar_ui_api::mojom::InitialState::New();
-  result->state = state_fetcher_->GetNavigationControlsState();
+  result->state = state_fetcher_->GetToolbarState();
   result->icons = icon_table_fetcher_->GetFullState();
 
   mojo::Remote<toolbar_ui_api::mojom::ToolbarUIObserver> observer;

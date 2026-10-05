@@ -42,9 +42,9 @@ class MockToolbarUIObserver : public toolbar_ui_api::mojom::ToolbarUIObserver {
 
   // toolbar_ui_api::mojom::ToolbarUIObserver:
   MOCK_METHOD(void,
-              OnNavigationControlsStateChanged,
+              OnToolbarStateChanged,
               (std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
-               toolbar_ui_api::mojom::NavigationControlsStatePtr state),
+               toolbar_ui_api::mojom::ToolbarStatePtr state),
               (override));
 
   MOCK_METHOD(void,
@@ -211,9 +211,8 @@ class MockBrowserControlsServiceDelegate
   MOCK_METHOD(void, PermitLaunchUrl, (), (override));
 };
 
-// Helper to create a valid NavigationControlsState with initialized fields.
-toolbar_ui_api::mojom::NavigationControlsStatePtr
-CreateValidNavigationControlsState();
+// Helper to create a valid ToolbarState with initialized fields.
+toolbar_ui_api::mojom::ToolbarStatePtr CreateValidToolbarState();
 
 // Mock implementation of CommandUpdater for testing.
 class MockCommandUpdater : public CommandUpdater {

@@ -884,7 +884,7 @@ struct LhsChipsState {
   PermissionDashboardState permission_dashboard;
 };
 
-struct NavigationControlsState {
+struct ToolbarState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;

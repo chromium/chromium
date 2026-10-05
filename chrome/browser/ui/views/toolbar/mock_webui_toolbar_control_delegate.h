@@ -107,7 +107,7 @@ class MockWebUIToolbarControlDelegate
               OnPageActionChanged,
               (std::vector<toolbar_ui_api::mojom::PageActionStatePtr> state),
               (override));
-  MOCK_METHOD(const toolbar_ui_api::mojom::NavigationControlsState&,
+  MOCK_METHOD(const toolbar_ui_api::mojom::ToolbarState&,
               GetState,
               (),
               (const override));

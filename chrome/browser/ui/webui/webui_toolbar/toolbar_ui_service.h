@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/icon_table_fetcher.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -119,7 +119,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
 
   ToolbarUIService(
       mojo::PendingReceiver<toolbar_ui_api::mojom::ToolbarUIService> service,
-      std::unique_ptr<NavigationControlsStateFetcher> state_fetcher,
+      std::unique_ptr<ToolbarStateFetcher> state_fetcher,
       std::unique_ptr<IconTableFetcher> icon_table_fetcher,
       MetricsReporter* metrics_reporter,
       ToolbarUIServiceDelegate* delegate);
@@ -131,8 +131,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
 
   void SetDelegate(ToolbarUIServiceDelegate* delegate);
 
-  void OnNavigationControlsStateChanged(
-      const mojom::NavigationControlsState& state);
+  void OnToolbarStateChanged(const mojom::ToolbarState& state);
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
   void ShowSplitTabsContextMenu();
 
@@ -226,7 +225,7 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;
   mojo::RemoteSet<toolbar_ui_api::mojom::ToolbarUIObserver> observers_;
 
-  std::unique_ptr<NavigationControlsStateFetcher> state_fetcher_;
+  std::unique_ptr<ToolbarStateFetcher> state_fetcher_;
   std::unique_ptr<IconTableFetcher> icon_table_fetcher_;
 
   // Not owned.

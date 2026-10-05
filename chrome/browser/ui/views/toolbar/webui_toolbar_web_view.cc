@@ -61,7 +61,7 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/browser_controls_adapter_impl.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
@@ -996,8 +996,8 @@ void WebUIToolbarWebView::OnPreferredSizeChanged() {
   PreferredSizeChanged();
 }
 
-const toolbar_ui_api::mojom::NavigationControlsState&
-WebUIToolbarWebView::GetState() const {
+const toolbar_ui_api::mojom::ToolbarState& WebUIToolbarWebView::GetState()
+    const {
   return last_queued_state_;
 }
 
@@ -1016,10 +1016,10 @@ WebUIToolbarWebView::GetToolbarUIServiceDelegate() {
   return this;
 }
 
-std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
-WebUIToolbarWebView::GetNavigationControlsStateFetcher() {
-  return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
-      base::BindRepeating(&WebUIToolbarWebView::GetNavigationControlsState,
+std::unique_ptr<toolbar_ui_api::ToolbarStateFetcher>
+WebUIToolbarWebView::GetToolbarStateFetcher() {
+  return std::make_unique<toolbar_ui_api::ToolbarStateFetcherImpl>(
+      base::BindRepeating(&WebUIToolbarWebView::GetToolbarState,
                           base::Unretained(this)));
 }
 
@@ -1036,8 +1036,7 @@ OmniboxController* WebUIToolbarWebView::GetOmniboxController() {
   return location_bar_ ? location_bar_->GetOmniboxController() : nullptr;
 }
 
-toolbar_ui_api::mojom::NavigationControlsStatePtr
-WebUIToolbarWebView::GetNavigationControlsState() {
+toolbar_ui_api::mojom::ToolbarStatePtr WebUIToolbarWebView::GetToolbarState() {
   return last_queued_state_.Clone();
 }
 
@@ -1486,7 +1485,7 @@ void WebUIToolbarWebView::OnReloadControlStateChanged(
     toolbar_ui_api::mojom::ReloadControlStatePtr state) {
   if (*state != *last_queued_state_.reload_control_state) {
     last_queued_state_.reload_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1494,7 +1493,7 @@ void WebUIToolbarWebView::OnSplitTabsControlStateChanged(
     toolbar_ui_api::mojom::SplitTabsControlStatePtr state) {
   if (*state != *last_queued_state_.split_tabs_control_state) {
     last_queued_state_.split_tabs_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1502,7 +1501,7 @@ void WebUIToolbarWebView::OnBackForwardStateChanged() {
   auto state = GetBackForwardState();
   if (*state != *last_queued_state_.back_forward_control_state) {
     last_queued_state_.back_forward_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1510,7 +1509,7 @@ void WebUIToolbarWebView::OnHomeControlStateChanged(
     toolbar_ui_api::mojom::HomeControlStatePtr state) {
   if (*state != *last_queued_state_.home_control_state) {
     last_queued_state_.home_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1519,7 +1518,7 @@ void WebUIToolbarWebView::OnPerformanceInterventionControlStateChanged(
   if (*state != *last_queued_state_.performance_intervention_control_state) {
     last_queued_state_.performance_intervention_control_state =
         std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1527,7 +1526,7 @@ void WebUIToolbarWebView::OnAppMenuControlStateChanged(
     toolbar_ui_api::mojom::AppMenuControlStatePtr state) {
   if (*state != *last_queued_state_.app_menu_control_state) {
     last_queued_state_.app_menu_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1535,7 +1534,7 @@ void WebUIToolbarWebView::OnOverflowButtonControlStateChanged(
     toolbar_ui_api::mojom::OverflowButtonControlStatePtr state) {
   if (*state != *last_queued_state_.overflow_button_control_state) {
     last_queued_state_.overflow_button_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1543,7 +1542,7 @@ void WebUIToolbarWebView::OnBatterySaverControlStateChanged(
     toolbar_ui_api::mojom::BatterySaverControlStatePtr state) {
   if (*state != *last_queued_state_.battery_saver_control_state) {
     last_queued_state_.battery_saver_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1552,7 +1551,7 @@ void WebUIToolbarWebView::OnOmniboxViewStateChanged(
   if (*state != *last_queued_state_.location_bar_state->omnibox_view_state) {
     last_queued_state_.location_bar_state->omnibox_view_state =
         std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1561,7 +1560,7 @@ void WebUIToolbarWebView::OnLocationBarFlagsChanged(
   if (*state != *last_queued_state_.location_bar_state->location_bar_flags) {
     last_queued_state_.location_bar_state->location_bar_flags =
         std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1571,7 +1570,7 @@ void WebUIToolbarWebView::OnSelectedKeywordChanged(
   if (!mojo::Equals(state,
                     last_queued_state_.location_bar_state->selected_keyword)) {
     last_queued_state_.location_bar_state->selected_keyword = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1580,7 +1579,7 @@ void WebUIToolbarWebView::OnLhsChipsStateChanged(
   if (!mojo::Equals(state,
                     last_queued_state_.location_bar_state->lhs_chips_state)) {
     last_queued_state_.location_bar_state->lhs_chips_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1648,7 +1647,7 @@ void WebUIToolbarWebView::OnPinnedToolbarActionsStateChanged(
     std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state) {
   if (!mojo::Equals(state, last_queued_state_.pinned_toolbar_actions_state)) {
     last_queued_state_.pinned_toolbar_actions_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1656,7 +1655,7 @@ void WebUIToolbarWebView::OnExtensionsStateChanged(
     std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> state) {
   if (!mojo::Equals(state, last_queued_state_.extensions_state)) {
     last_queued_state_.extensions_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1666,7 +1665,7 @@ void WebUIToolbarWebView::OnContentSettingChanged(
                                ->content_setting_image_states)) {
     last_queued_state_.location_bar_state->content_setting_image_states =
         std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1676,7 +1675,7 @@ void WebUIToolbarWebView::OnPageActionChanged(
           state, last_queued_state_.location_bar_state->page_action_states)) {
     last_queued_state_.location_bar_state->page_action_states =
         std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1684,7 +1683,7 @@ void WebUIToolbarWebView::OnAvatarControlStateChanged(
     toolbar_ui_api::mojom::AvatarControlStatePtr state) {
   if (!mojo::Equals(state, last_queued_state_.avatar_control_state)) {
     last_queued_state_.avatar_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1692,7 +1691,7 @@ void WebUIToolbarWebView::OnMediaControlStateChanged(
     toolbar_ui_api::mojom::MediaControlStatePtr state) {
   if (!mojo::Equals(state, last_queued_state_.media_control_state)) {
     last_queued_state_.media_control_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 
@@ -1700,7 +1699,7 @@ void WebUIToolbarWebView::OnGlicButtonStateChanged(
     toolbar_ui_api::mojom::GlicButtonStatePtr state) {
   if (!mojo::Equals(state, last_queued_state_.glic_button_state)) {
     last_queued_state_.glic_button_state = std::move(state);
-    PostPushNavigationState();
+    PostPushToolbarState();
   }
 }
 void WebUIToolbarWebView::OnFocusRequested(
@@ -1733,10 +1732,10 @@ std::optional<GURL> WebUIToolbarWebView::ConsumeDroppedUrl(
 void WebUIToolbarWebView::OnTouchUiChanged() {
   ++last_queued_state_.layout_constants_version;
   last_queued_state_.touch_ui = ui::TouchUiController::Get()->touch_ui();
-  PostPushNavigationState();
+  PostPushToolbarState();
 }
 
-void WebUIToolbarWebView::PostPushNavigationState() {
+void WebUIToolbarWebView::PostPushToolbarState() {
   // The toolbar is implemented by many individual elements that all update
   // their state separately. To avoid significant visual flicker caused by
   // repeated state pushes that only update individual elements, we delay
@@ -1751,19 +1750,19 @@ void WebUIToolbarWebView::PostPushNavigationState() {
   state_push_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Then waiting to perform the push of the latest state until the last posted
-  // invocation of PushNavigationState from here. Note that this post may also
+  // invocation of PushToolbarState from here. Note that this post may also
   // get cancelled if later updates trickle in.  If the state gets modified
   // after this post, there is a fair chance that there may still be other
   // pending tasks to further update the state, so we keep cancelling pending
-  // posts and issuing a later post of PushNavigationState().
+  // posts and issuing a later post of PushToolbarState().
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&WebUIToolbarWebView::PushNavigationState,
+      FROM_HERE, base::BindOnce(&WebUIToolbarWebView::PushToolbarState,
                                 state_push_weak_ptr_factory_.GetWeakPtr()));
 }
 
-void WebUIToolbarWebView::PushNavigationState() {
+void WebUIToolbarWebView::PushToolbarState() {
   if (WebUIToolbarUI* web_ui = GetWebUIToolbarUI()) {
-    web_ui->OnNavigationControlsStateChanged(last_queued_state_);
+    web_ui->OnToolbarStateChanged(last_queued_state_);
   }
 }
 

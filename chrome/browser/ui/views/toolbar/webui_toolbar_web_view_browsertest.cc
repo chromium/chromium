@@ -288,7 +288,6 @@ void AssertToolbarSyncState(content::WebContents* web_contents,
           .ExtractBool());
 }
 
-
 // Dispatches a pointerup or pointerdown event based on `event`name`.
 std::string DispatchPointerEventImpl(
     const std::string& event_name,
@@ -1722,7 +1721,7 @@ class WebUIToolbarLifecycleBrowserTest : public InProcessBrowserTest {
 // state propagation on startup.
 //
 // By overriding `BindInterface()` for `ToolbarUIService` and event forwarders
-// across `OnNavigationControlsStateChanged()` to drop connections and block
+// across `OnToolbarStateChanged()` to drop connections and block
 // broadcasts, this class isolates the TypeScript renderer in
 // `ToolbarAppElement` entirely from asynchronous Mojo updates. Any successful
 // DOM state verification performed under this controller factory guarantees
@@ -1748,8 +1747,8 @@ class SyncOnlyWebUIToolbarUI : public WebUIToolbarUI {
 
   // Blocks C++ event forwarding to prevent secondary broadcasts from altering
   // test evaluation states.
-  void OnNavigationControlsStateChanged(
-      const toolbar_ui_api::mojom::NavigationControlsState& state) override {
+  void OnToolbarStateChanged(
+      const toolbar_ui_api::mojom::ToolbarState& state) override {
     // Block C++ forwarding updates.
   }
 };

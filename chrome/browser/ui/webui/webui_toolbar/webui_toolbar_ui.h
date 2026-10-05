@@ -52,7 +52,7 @@ class WebuiOmniboxHandler;
 namespace content {
 class NavigationHandle;
 class WebUIDataSource;
-}
+}  // namespace content
 
 class WebUIToolbarUI : public TopChromeWebUIController,
                        public content::WebContentsObserver,
@@ -72,8 +72,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
     virtual toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate*
     GetToolbarUIServiceDelegate() = 0;
     // Cannot be null.
-    virtual std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
-    GetNavigationControlsStateFetcher() = 0;
+    virtual std::unique_ptr<toolbar_ui_api::ToolbarStateFetcher>
+    GetToolbarStateFetcher() = 0;
     // Cannot be null.
     virtual std::unique_ptr<toolbar_ui_api::IconTableFetcher>
     GetIconTableFetcher() = 0;
@@ -112,8 +112,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   void BindInterface(
       mojo::PendingReceiver<searchbox::mojom::PageHandlerFactory> receiver);
 
-  virtual void OnNavigationControlsStateChanged(
-      const toolbar_ui_api::mojom::NavigationControlsState& state);
+  virtual void OnToolbarStateChanged(
+      const toolbar_ui_api::mojom::ToolbarState& state);
   void OnFocusRequested(toolbar_ui_api::mojom::FocusRequestTarget target);
   void ShowSplitTabsContextMenu();
 
@@ -129,8 +129,8 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // 1. Decide which resources to expose, e.g. only expose "chrome://theme"
   //    resources to trusted "chrome://" origins.
   // 2. Generate correct CORS headers. Since resources added here often belong
-  //    to a different origin than the page loading them, they need a CORS header
-  //    that explicitly allow `current_origin`.
+  //    to a different origin than the page loading them, they need a CORS
+  //    header that explicitly allow `current_origin`.
   void PopulateLocalResourceLoaderConfig(
       blink::mojom::LocalResourceLoaderConfig* config,
       const url::Origin& requesting_origin) override;

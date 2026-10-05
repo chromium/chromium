@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
@@ -129,11 +129,10 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
     return nullptr;
   }
 
-  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
-  GetNavigationControlsStateFetcher() override {
-    return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
-        base::BindLambdaForTesting(
-            []() { return CreateValidNavigationControlsState(); }));
+  std::unique_ptr<toolbar_ui_api::ToolbarStateFetcher> GetToolbarStateFetcher()
+      override {
+    return std::make_unique<toolbar_ui_api::ToolbarStateFetcherImpl>(
+        base::BindLambdaForTesting([]() { return CreateValidToolbarState(); }));
   }
 
   std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()

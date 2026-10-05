@@ -73,11 +73,11 @@ class WebUILocationBarTest : public testing::Test {
     // web UI popups that require fully attached widgets and profiles.
     location_bar_->toolbar_delegate_ = toolbar_view_.get();
 
-    fetcher_ = toolbar_view_->GetNavigationControlsStateFetcher();
+    fetcher_ = toolbar_view_->GetToolbarStateFetcher();
   }
 
-  toolbar_ui_api::mojom::NavigationControlsStatePtr GetState() {
-    return fetcher_->GetNavigationControlsState();
+  toolbar_ui_api::mojom::ToolbarStatePtr GetState() {
+    return fetcher_->GetToolbarState();
   }
 
   bool WillNextBubbleShowBeSuppressed() const {
@@ -101,7 +101,7 @@ class WebUILocationBarTest : public testing::Test {
   std::unique_ptr<TestLocationBarViewDelegate> delegate_;
   std::unique_ptr<WebUIToolbarWebView> toolbar_view_;
   raw_ptr<WebUILocationBar> location_bar_ = nullptr;
-  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher> fetcher_;
+  std::unique_ptr<toolbar_ui_api::ToolbarStateFetcher> fetcher_;
 };
 
 TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {

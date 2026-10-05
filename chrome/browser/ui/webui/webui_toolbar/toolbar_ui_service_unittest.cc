@@ -15,7 +15,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/metrics_reporter/mock_metrics_reporter.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
@@ -65,9 +65,8 @@ class Observer : public mojom::ToolbarUIObserver {
   Observer(const Observer&) = delete;
   Observer& operator=(const Observer&) = delete;
 
-  void OnNavigationControlsStateChanged(
-      std::vector<mojom::IconUpdatePtr> icons_update,
-      mojom::NavigationControlsStatePtr changed) override {
+  void OnToolbarStateChanged(std::vector<mojom::IconUpdatePtr> icons_update,
+                             mojom::ToolbarStatePtr changed) override {
     icons = std::move(icons_update);
     state = std::move(changed);
   }
@@ -82,7 +81,7 @@ class Observer : public mojom::ToolbarUIObserver {
   // Easily accessible for testing. Start with nullopt to easily differentiate
   // between uninitialized and unset.
   std::optional<std::vector<mojom::IconUpdatePtr>> icons;
-  mojom::NavigationControlsStatePtr state;
+  mojom::ToolbarStatePtr state;
 
  private:
   mojo::Receiver<mojom::ToolbarUIObserver> receiver_{this};
@@ -98,9 +97,8 @@ class ToolbarUIServiceTest : public ::testing::Test {
       : auto_add_observer_(auto_add_observer) {}
 
   void SetUp() override {
-    auto fetcher = std::make_unique<NavigationControlsStateFetcherImpl>(
-        base::BindLambdaForTesting(
-            [&] { return navigation_controls_state().Clone(); }));
+    auto fetcher = std::make_unique<ToolbarStateFetcherImpl>(
+        base::BindLambdaForTesting([&] { return toolbar_state().Clone(); }));
     auto icon_table_fetcher = std::make_unique<FakeIconTableFetcher>();
     icon_table_fetcher_ = icon_table_fetcher.get();
     service_ = std::make_unique<ToolbarUIService>(
@@ -127,13 +125,11 @@ class ToolbarUIServiceTest : public ::testing::Test {
     return metrics_reporter_;
   }
 
-  mojom::NavigationControlsStatePtr& navigation_controls_state() {
-    return navigation_controls_state_;
-  }
+  mojom::ToolbarStatePtr& toolbar_state() { return toolbar_state_; }
 
   // Updates the service with the current navigation control state.
-  void PushNavigationControlsStateUpdate() {
-    service_->OnNavigationControlsStateChanged(*navigation_controls_state_);
+  void PushToolbarStateUpdate() {
+    service_->OnToolbarStateChanged(*toolbar_state_);
     if (observer()) {
       observer()->FlushForTesting();
     }
@@ -152,8 +148,7 @@ class ToolbarUIServiceTest : public ::testing::Test {
   raw_ptr<FakeIconTableFetcher> icon_table_fetcher_;  // owned by service_;
   std::unique_ptr<Observer> observer_;
   MockToolbarUIServiceDelegate delegate_;
-  mojom::NavigationControlsStatePtr navigation_controls_state_ =
-      CreateValidNavigationControlsState();
+  mojom::ToolbarStatePtr toolbar_state_ = CreateValidToolbarState();
 };
 
 class ToolbarUIServiceNoInitialObserverTest : public ToolbarUIServiceTest {
@@ -172,7 +167,7 @@ TEST_F(ToolbarUIServiceTest, TestShowContextMenu) {
                             ui::mojom::MenuSourceType::kMouse, std::nullopt);
 }
 
-// Tests that calling OnNavigationControlsStateChanged() calls the page with the
+// Tests that calling OnToolbarStateChanged() calls the page with the
 // correct state and records metrics when loading.
 TEST_F(ToolbarUIServiceTest, TestOnNavigationStatusChangedLoading) {
   EXPECT_CALL(mock_metrics_reporter(),
@@ -180,34 +175,32 @@ TEST_F(ToolbarUIServiceTest, TestOnNavigationStatusChangedLoading) {
       .Times(1);
   ASSERT_FALSE(observer()->state->reload_control_state->is_navigation_loading);
 
-  navigation_controls_state()->reload_control_state->is_navigation_loading =
-      true;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->reload_control_state->is_navigation_loading = true;
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(observer()->state->reload_control_state->is_navigation_loading);
 }
 
-// Tests that calling OnNavigationControlsStateChanged() calls the page with the
+// Tests that calling OnToolbarStateChanged() calls the page with the
 // correct state and records metrics when not loading.
 TEST_F(ToolbarUIServiceTest, TestOnNavigationStatusChangedNotLoading) {
   EXPECT_CALL(mock_metrics_reporter(),
               Mark(kChangeVisibleModeToNotLoadingStartMark))
       .Times(1);
 
-  navigation_controls_state()->reload_control_state->is_navigation_loading =
-      false;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->reload_control_state->is_navigation_loading = false;
+  PushToolbarStateUpdate();
 
   ASSERT_FALSE(observer()->state->reload_control_state->is_navigation_loading);
 }
 
-// Tests that calling OnNavigationControlsStateChanged() calls the page with the
+// Tests that calling OnToolbarStateChanged() calls the page with the
 // correct state.
 TEST_F(ToolbarUIServiceTest, TestOnCanShowMenuChangedToTrue) {
   ASSERT_FALSE(observer()->state->reload_control_state->can_show_menu);
 
-  navigation_controls_state()->reload_control_state->can_show_menu = true;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->reload_control_state->can_show_menu = true;
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(observer()->state->reload_control_state->can_show_menu);
 }
@@ -223,9 +216,8 @@ TEST_F(ToolbarUIServiceTest, MultipleObserversReceiveUpdates) {
   ASSERT_FALSE(observer()->state->reload_control_state->is_navigation_loading);
   ASSERT_FALSE(observer2.state->reload_control_state->is_navigation_loading);
 
-  navigation_controls_state()->reload_control_state->is_navigation_loading =
-      true;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->reload_control_state->is_navigation_loading = true;
+  PushToolbarStateUpdate();
   observer2.FlushForTesting();
 
   ASSERT_TRUE(observer()->state->reload_control_state->is_navigation_loading);
@@ -235,14 +227,13 @@ TEST_F(ToolbarUIServiceTest, MultipleObserversReceiveUpdates) {
 // Test suite for SplitTabs-related tests.
 using ToolbarUIServiceSplitTabsTest = ToolbarUIServiceTest;
 
-// Tests that OnNavigationControlsStateChanged calls the page with the correct
+// Tests that OnToolbarStateChanged calls the page with the correct
 // state.
 TEST_F(ToolbarUIServiceSplitTabsTest, TestOnTabSplitStatusChanged) {
-  navigation_controls_state()->split_tabs_control_state->is_current_tab_split =
-      true;
-  navigation_controls_state()->split_tabs_control_state->location =
+  toolbar_state()->split_tabs_control_state->is_current_tab_split = true;
+  toolbar_state()->split_tabs_control_state->location =
       toolbar_ui_api::mojom::SplitTabActiveLocation::kStart;
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(
       observer()->state->split_tabs_control_state->is_current_tab_split);
@@ -250,12 +241,12 @@ TEST_F(ToolbarUIServiceSplitTabsTest, TestOnTabSplitStatusChanged) {
             observer()->state->split_tabs_control_state->location);
 }
 
-// Tests that OnNavigationControlsStateChanged calls the page with the correct
+// Tests that OnToolbarStateChanged calls the page with the correct
 // state.
 TEST_F(ToolbarUIServiceSplitTabsTest,
        TestOnSplitTabsButtonShouldBeShownChanged) {
-  navigation_controls_state()->split_tabs_control_state->should_be_shown = true;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->split_tabs_control_state->should_be_shown = true;
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(observer()->state->split_tabs_control_state->should_be_shown);
 }
@@ -285,7 +276,7 @@ TEST_F(ToolbarUIServiceTest, IconUpdates) {
       3u, "icon-set:kitten", mojom::IconType::kIconSet, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
   ASSERT_TRUE(observer()->icons);
   EXPECT_THAT(*observer()->icons,
               testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
@@ -300,7 +291,7 @@ TEST_F(ToolbarUIServiceTest, IconUpdates) {
   // (But not 1 again, since it's not new).
   fake_icon_table()->AddUpdate(icon2.Clone());
   fake_icon_table()->AddUpdate(icon3.Clone());
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(observer()->icons);
   EXPECT_THAT(*observer()->icons,
@@ -323,7 +314,7 @@ TEST_F(ToolbarUIServiceTest, IconUpdates2) {
       3u, "icon-set:kitten", mojom::IconType::kIconSet, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
   ASSERT_TRUE(observer()->icons);
   EXPECT_THAT(*observer()->icons,
               testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
@@ -340,7 +331,7 @@ TEST_F(ToolbarUIServiceTest, IconUpdates2) {
 
   // Now add the 3rd icon, and push an update.
   fake_icon_table()->AddUpdate(icon3.Clone());
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
 
   // The update message includes both icons, though the second observer already
   // knows about `icon2`. This is OK since these are idempotent.
@@ -363,7 +354,7 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect) {
   fake_icon_table()->AddUpdate(icon1.Clone());
 
   // No observer here yet, so this doesn't notify anyone.
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
 
   AddInitialObserver();
   // Now observer gets the icon as initial state.
@@ -372,7 +363,7 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect) {
               testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
 
   // Pushing doesn't re-send it.
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
   ASSERT_TRUE(observer()->icons);
   EXPECT_THAT(*observer()->icons, testing::ElementsAre());
 }
@@ -393,7 +384,7 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect2) {
 
   // It gets redundantly re-sent with the first update, but that's not
   // a big deal since it's idempotent.
-  PushNavigationControlsStateUpdate();
+  PushToolbarStateUpdate();
   ASSERT_TRUE(observer()->icons);
   EXPECT_THAT(*observer()->icons,
               testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
@@ -413,11 +404,11 @@ TEST_F(ToolbarUIServiceTest, TestOnGlicButtonClicked) {
   service().OnGlicButtonClicked();
 }
 
-// Tests that GlicButtonState updates in NavigationControlsState are received.
+// Tests that GlicButtonState updates in ToolbarState are received.
 TEST_F(ToolbarUIServiceTest, TestGlicButtonStateUpdate) {
-  navigation_controls_state()->glic_button_state->open = true;
-  navigation_controls_state()->glic_button_state->should_show = true;
-  PushNavigationControlsStateUpdate();
+  toolbar_state()->glic_button_state->open = true;
+  toolbar_state()->glic_button_state->should_show = true;
+  PushToolbarStateUpdate();
 
   ASSERT_TRUE(observer()->state->glic_button_state->open);
   ASSERT_TRUE(observer()->state->glic_button_state->should_show);

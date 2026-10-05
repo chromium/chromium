@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
-#include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/toolbar_state_fetcher_impl.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -313,11 +313,10 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
   GetToolbarUIServiceDelegate() override {
     return &toolbar_ui_delegate_;
   }
-  std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
-  GetNavigationControlsStateFetcher() override {
-    return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
-        base::BindRepeating(
-            [&] { return CreateValidNavigationControlsState(); }));
+  std::unique_ptr<toolbar_ui_api::ToolbarStateFetcher> GetToolbarStateFetcher()
+      override {
+    return std::make_unique<toolbar_ui_api::ToolbarStateFetcherImpl>(
+        base::BindRepeating([&] { return CreateValidToolbarState(); }));
   }
   std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()
       override {
@@ -388,27 +387,27 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, MovePinnedToolbarActionBy) {
   service_remote.FlushForTesting();
 }
 
-// Tests that OnNavigationControlsStateChanged calls the browser controls
+// Tests that OnToolbarStateChanged calls the browser controls
 // observer with the correct parameters.
 IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
   ToolbarUIServiceConnectionManager connection(ui());
 
-  auto state = CreateValidNavigationControlsState();
+  auto state = CreateValidToolbarState();
   state->reload_control_state->is_navigation_loading = true;
   connection.RegisterObserver();
 
   EXPECT_CALL(
       connection.mock_observer(),
-      OnNavigationControlsStateChanged(
-          testing::_, testing::Pointee(testing::Field(
-                          &toolbar_ui_api::mojom::NavigationControlsState::
-                              reload_control_state,
-                          testing::Pointee(testing::Field(
-                              &toolbar_ui_api::mojom::ReloadControlState::
-                                  is_navigation_loading,
-                              true))))))
+      OnToolbarStateChanged(
+          testing::_,
+          testing::Pointee(testing::Field(
+              &toolbar_ui_api::mojom::ToolbarState::reload_control_state,
+              testing::Pointee(
+                  testing::Field(&toolbar_ui_api::mojom::ReloadControlState::
+                                     is_navigation_loading,
+                                 true))))))
       .Times(1);
-  ui()->OnNavigationControlsStateChanged(*state);
+  ui()->OnToolbarStateChanged(*state);
   connection.mock_observer().FlushForTesting();
 }
 
@@ -416,22 +415,21 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
 IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetMediaButtonState) {
   ToolbarUIServiceConnectionManager connection(ui());
 
-  auto state = CreateValidNavigationControlsState();
+  auto state = CreateValidToolbarState();
   state->media_control_state->should_be_shown = true;
   connection.RegisterObserver();
 
   EXPECT_CALL(
       connection.mock_observer(),
-      OnNavigationControlsStateChanged(
+      OnToolbarStateChanged(
           testing::_,
           testing::Pointee(testing::Field(
-              &toolbar_ui_api::mojom::NavigationControlsState::
-                  media_control_state,
+              &toolbar_ui_api::mojom::ToolbarState::media_control_state,
               testing::Pointee(testing::Field(
                   &toolbar_ui_api::mojom::MediaControlState::should_be_shown,
                   true))))))
       .Times(1);
-  ui()->OnNavigationControlsStateChanged(*state);
+  ui()->OnToolbarStateChanged(*state);
   connection.mock_observer().FlushForTesting();
 }
 
