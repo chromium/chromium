@@ -4919,7 +4919,7 @@ class CSSMathExpressionNodeParser {
     if (token.Id() == CSSValueID::kE) {
       context_.Count(WebFeature::kCSSCalcConstants);
       return CSSMathExpressionNumericLiteral::Create(
-          M_E, CSSPrimitiveValue::UnitType::kNumber);
+          std::numbers::e, CSSPrimitiveValue::UnitType::kNumber);
     }
     if (state.allow_size_keyword && token.Id() == CSSValueID::kSize) {
       return CSSMathExpressionKeywordLiteral::Create(

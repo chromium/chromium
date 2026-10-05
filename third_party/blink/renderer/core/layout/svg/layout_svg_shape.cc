@@ -222,12 +222,13 @@ gfx::RectF LayoutSVGShape::ApproximateStrokeBoundingBox(
     const ComputedStyle& style = StyleRef();
     if (CanHaveMiters(geometry_type_) && HasMiterJoinStyle(style)) {
       const float miter = style.StrokeMiterLimit();
-      if (miter < M_SQRT2 && HasSquareCapStyle(style))
-        delta *= M_SQRT2;
-      else
+      if (miter < std::numbers::sqrt2 && HasSquareCapStyle(style)) {
+        delta *= std::numbers::sqrt2;
+      } else {
         delta *= std::max(miter, 1.0f);
+      }
     } else if (HasSquareCapStyle(style)) {
-      delta *= M_SQRT2;
+      delta *= std::numbers::sqrt2;
     }
   }
   stroke_box.Outset(delta);
