@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "components/autofill/content/browser/autofill_log_router_factory.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
@@ -26,6 +27,12 @@ AutofillInternalsUI::AutofillInternalsUI(content::WebUI* web_ui)
       "autofillAmbientAutofillSuppressionEnabled",
       base::Value(base::FeatureList::IsEnabled(
           autofill::features::kAutofillAmbientAutofillSuppression)));
+  on_load_argument.Set(
+      "autofillGmailOtpEnabled",
+      base::Value(base::FeatureList::IsEnabled(
+                      autofill::features::kAutofillShowGmailOtpSuggestions) ||
+                  base::FeatureList::IsEnabled(
+                      features::kGlicActorAutofillOneTimePassword)));
   on_load_argument.Set("showDomNodeIDsEnabled",
                        base::Value(base::FeatureList::IsEnabled(
                            autofill::features::debug::kShowDomNodeIDs)));

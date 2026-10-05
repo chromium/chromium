@@ -127,6 +127,7 @@ class InternalsUIHandler
   // Clears all suppressed AutofillAI Personal Context entity suggestions via
   // `EntitySuppressionManager`.
   void OnClearAutofillAiEntitySuppressions(const base::ListValue& args);
+  void OnClearGmailOtpOptInPrefs(const base::ListValue& args);
   void OnDumpAddresses(const base::ListValue& args);
   void OnSetPasswordChangeOverrideUrl(const base::ListValue& args);
   void CheckAtMemoryPermissions(const base::ListValue& args);

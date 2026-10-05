@@ -4,8 +4,10 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/entity_suppression_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
@@ -15,8 +17,10 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -31,7 +35,8 @@ class AutofillInternalsWebUIBrowserTest : public InProcessBrowserTest {
         /*enabled_features=*/
         {autofill::features::kAutofillAiServerModel,
          autofill::features::kAutofillAiWithDataSchema,
-         autofill::features::kAutofillAmbientAutofillSuppression},
+         autofill::features::kAutofillAmbientAutofillSuppression,
+         autofill::features::kAutofillShowGmailOtpSuggestions},
         /*disabled_features=*/{});
   }
 
@@ -146,6 +151,46 @@ IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
   EXPECT_EQ(autofill::kClearAutofillAiEntitySuppressionsDone,
             EvalJs(kDialogText));
   EXPECT_FALSE(suppression_manager->IsSuppressed(passport));
+}
+
+IN_PROC_BROWSER_TEST_F(AutofillInternalsWebUIBrowserTest,
+                       ClearGmailOtpOptInPrefs) {
+  PrefService* prefs = GetProfile()->GetPrefs();
+  ASSERT_TRUE(prefs);
+
+  autofill::prefs::SetAutofillGmailOtpFillingEnabled(prefs, true);
+  autofill::prefs::SetAutofillGmailOtpFillingActivationDismissalTimestamp(
+      prefs, base::Time::Now());
+  ASSERT_TRUE(
+      prefs->HasPrefPath(autofill::prefs::kAutofillGmailOtpFillingEnabled));
+  ASSERT_TRUE(prefs->HasPrefPath(
+      autofill::prefs::kAutofillGmailOtpFillingActivationDismissalTimestamp));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome://autofill-internals")));
+
+  // Wait for clear-gmail-otp-opt-in-prefs-fake-button to become visible.
+  constexpr char kGetButtonDisplayStyle[] =
+      "document.getElementById("
+      "'clear-gmail-otp-opt-in-prefs-fake-button').style.display";
+  while ("inline" != EvalJs(kGetButtonDisplayStyle)) {
+    SpinRunLoop();
+  }
+
+  // Trigger clear Gmail OTP opt-in prefs button.
+  constexpr char kClickButton[] =
+      "document.getElementById("
+      "'clear-gmail-otp-opt-in-prefs-fake-button').click();";
+  EXPECT_TRUE(ExecJs(kClickButton));
+
+  // Wait for the preferences to be cleared.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !prefs->HasPrefPath(
+               autofill::prefs::kAutofillGmailOtpFillingEnabled) &&
+           !prefs->HasPrefPath(
+               autofill::prefs::
+                   kAutofillGmailOtpFillingActivationDismissalTimestamp);
+  }));
 }
 
 // Tests the "Check AtMemory permissions" button works as expected.

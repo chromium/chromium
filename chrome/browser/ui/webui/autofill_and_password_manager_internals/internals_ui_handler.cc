@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -146,6 +147,10 @@ void InternalsUIHandler::RegisterMessages() {
       base::BindRepeating(
           &InternalsUIHandler::OnClearAutofillAiEntitySuppressions,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "clearGmailOtpOptInPrefs",
+      base::BindRepeating(&InternalsUIHandler::OnClearGmailOtpOptInPrefs,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "dumpAddresses", base::BindRepeating(&InternalsUIHandler::OnDumpAddresses,
                                            base::Unretained(this)));
@@ -458,6 +463,15 @@ void InternalsUIHandler::OnClearAutofillAiEntitySuppressions(
   }
   FireWebUIListener("notify-reset-done",
                     base::Value(kClearAutofillAiEntitySuppressionsDone));
+}
+
+void InternalsUIHandler::OnClearGmailOtpOptInPrefs(
+    const base::ListValue& args) {
+  if (PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs()) {
+    prefs->ClearPref(autofill::prefs::kAutofillGmailOtpFillingEnabled);
+    prefs->ClearPref(
+        autofill::prefs::kAutofillGmailOtpFillingActivationDismissalTimestamp);
+  }
 }
 
 void InternalsUIHandler::OnDumpAddresses(const base::ListValue& args) {

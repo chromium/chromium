@@ -62,9 +62,11 @@ if (!is_android) {
       ":autofill_and_password_manager_internals",
       "//base",
       "//chrome/browser/autofill",
+      "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
       "//components/device_reauth:test_support",
+      "//components/prefs",
       "//content/public/browser",
       "//content/test:test_support",
     ]

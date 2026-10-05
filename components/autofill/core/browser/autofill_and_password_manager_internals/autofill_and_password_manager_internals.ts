@@ -253,6 +253,7 @@ function setUpStopRecording() {
 interface OnLoadArgument {
   autofillAiServerModelEnabled: boolean;
   autofillAmbientAutofillSuppressionEnabled: boolean;
+  autofillGmailOtpEnabled: boolean;
   showDomNodeIDsEnabled: boolean;
 }
 
@@ -276,6 +277,9 @@ function setUpAutofillInternals(onLoadArgument: OnLoadArgument) {
   setUpCheckAtMemoryPermissions();
   if (onLoadArgument.showDomNodeIDsEnabled) {
     setUpButtonForDomNodeIdCapture();
+  }
+  if (onLoadArgument.autofillGmailOtpEnabled) {
+    setUpClearGmailOtpOptInPrefsButton();
   }
   setUpDownload('autofill');
   if (onLoadArgument.autofillAiServerModelEnabled) {
@@ -998,6 +1002,16 @@ function setUpClearAutofillAiEntitySuppressionsButton() {
   button.style.display = 'inline';
   button.addEventListener('click', () => {
     chrome.send('clearAutofillAiEntitySuppressions');
+  });
+  // </if>
+}
+
+function setUpClearGmailOtpOptInPrefsButton() {
+  // <if expr="not is_ios" >
+  const button = getRequiredElement('clear-gmail-otp-opt-in-prefs-fake-button');
+  button.style.display = 'inline';
+  button.addEventListener('click', () => {
+    chrome.send('clearGmailOtpOptInPrefs');
   });
   // </if>
 }
