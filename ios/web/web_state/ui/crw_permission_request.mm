@@ -4,6 +4,7 @@
 
 #import "ios/web/web_state/ui/crw_permission_request.h"
 
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
@@ -28,6 +29,76 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   }
 }
 
+// Returns the presenting WebState from `presenter` or nullptr if the presenter
+// is nil or the WebState has been destroyed.
+web::WebStateImpl* GetPresentingWebState(id<CRWPermissionPresenter> presenter) {
+  if (!presenter) {
+    return nullptr;
+  }
+
+  web::WebStateImpl* web_state_impl = presenter.presentingWebState;
+  if (!web_state_impl || web_state_impl->IsBeingDestroyed()) {
+    return nullptr;
+  }
+
+  return web_state_impl;
+}
+
+// Returns `decision` if `presenter` is not nil or WKPermissionDecisionDeny
+// otherwise.
+WKPermissionDecision GetFinalDecision(id<CRWPermissionPresenter> presenter,
+                                      WKPermissionDecision decision) {
+  return presenter ? decision : WKPermissionDecisionDeny;
+}
+
+// Displays the prompt for media capture using `presenter` for `origin`,
+// and `media_capture_type` and invokes `callback` with the result.
+void DisplayPromptForMediaCapture(
+    id<CRWPermissionPresenter> presenter,
+    WKMediaCaptureType media_capture_type,
+    const GURL& origin,
+    base::OnceCallback<void(WKPermissionDecision)> callback) {
+  if (web::WebStateImpl* web_state_impl = GetPresentingWebState(presenter)) {
+    web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(
+        web_state_impl);
+  }
+
+  // Calling WillDisplayMediaCapturePermissionPrompt() may destroy the
+  // WebStateImpl, so re-access the pointer from the presenter.
+  if (web::WebStateImpl* web_state_impl = GetPresentingWebState(presenter)) {
+    __weak id<CRWPermissionPresenter> weak_presenter = presenter;
+    web_state_impl->RequestPermissionsWithDecisionHandler(
+        GetPermissionsFromWKMediaCaptureType(media_capture_type), origin,
+        base::CallbackToBlock(base::BindOnce(&GetFinalDecision, weak_presenter)
+                                  .Then(std::move(callback))));
+    return;
+  }
+
+  // If this point is reached, then the prompt could not be displayed, so
+  // invoke the callback with WKPermissionDecisionDeny.
+  std::move(callback).Run(WKPermissionDecisionDeny);
+}
+
+// Displays the prompt for gelocation using `presenter` for `origin` and
+// invokes `callback` with the result.
+void DisplayPromptForGeolocation(
+    id<CRWPermissionPresenter> presenter,
+    const GURL& origin,
+    base::OnceCallback<void(WKPermissionDecision)> callback) {
+  if (web::WebStateImpl* web_state_impl = GetPresentingWebState(presenter)) {
+    __weak id<CRWPermissionPresenter> weak_presenter = presenter;
+    web_state_impl->RequestGeolocationPermissionWithDecisionHandler(
+        origin,
+        base::CallbackToBlock(base::BindOnce(&GetFinalDecision, weak_presenter)
+                                  .Then(std::move(callback))));
+    return;
+  }
+
+  // If this point is reached, then the prompt could not be displayed, so
+  // invoke the callback with WKPermissionDecisionDeny.
+  std::move(callback).Run(WKPermissionDecisionDeny);
+}
+
 }  // namespace
 
 @implementation CRWPermissionRequest {
@@ -44,6 +115,8 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
       decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler
          onTaskRunner:
              (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner {
+  CHECK(taskRunner, base::NotFatalUntil::M160);
+  CHECK(decisionHandler, base::NotFatalUntil::M160);
   if ((self = [super init])) {
     _presenter = presenter;
     _taskRunner = taskRunner;
@@ -61,104 +134,42 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
 
 - (void)dealloc {
   // Deny permission if decision handler has never been invoked.
-  [self handleDecision:WKPermissionDecisionDeny];
+  if (_decisionCallback) {
+    _taskRunner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(_decisionCallback), WKPermissionDecisionDeny));
+  }
 }
 
 - (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType
                                   origin:(const GURL&)origin {
-  // This block strongly captures `self` intentionally to ensure that
-  // `_decisionHandler` is always invoked, even if the scope of `self` has
-  // deallocated.
-  __block GURL originCopy = origin;
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [self displayPromptForMediaCaptureTypeOnTaskRunner:mediaCaptureType
-                                                    origin:originCopy];
-      }));
-}
-
-- (void)displayPromptForGeolocationOrigin:(const GURL&)origin {
-  // This block strongly captures `self` intentionally to ensure that
-  // `_decisionHandler` is always invoked, even if the scope of `self` has
-  // deallocated.
-  __block GURL originCopy = origin;
-  _taskRunner->PostTask(
-      FROM_HERE, base::BindOnce(^{
-        [self displayPromptForGeolocationOriginOnTaskRunner:originCopy];
-      }));
-}
-
-#pragma mark - Private
-
-// Helper method that only executes on `_taskRunner`'s sequence.
-- (void)displayPromptForMediaCaptureTypeOnTaskRunner:
-            (WKMediaCaptureType)mediaCaptureType
-                                              origin:(const GURL&)origin {
-  if (!_presenter) {
-    [self handleDecision:WKPermissionDecisionDeny];
-    return;
-  }
-  web::WebStateImpl* webState = _presenter.presentingWebState;
-  if (webState && !webState->IsBeingDestroyed()) {
-    web::GetWebClient()->WillDisplayMediaCapturePermissionPrompt(webState);
-
-    // Calling WillDisplayMediaCapturePermissionPrompt(...) may cause the
-    // WebState to be closed. Fetch the value from the presenter again (as it
-    // uses a weak pointer internally) to avoid having a dangling pointer.
-    webState = _presenter.presentingWebState;
-  }
-  // By this point, the WebState may have been destroyed. If this is the case,
-  // then `webState->IsBeingDestroyed` will be YES.
-  if (!webState || webState->IsBeingDestroyed()) {
-    [self handleDecision:WKPermissionDecisionDeny];
-    return;
-  }
-
-  // This block strongly captures `self` intentionally to ensure that
-  // `_decisionHandler` is always invoked, even if the scope of `self` has
-  // deallocated.
-  webState->RequestPermissionsWithDecisionHandler(
-      GetPermissionsFromWKMediaCaptureType(mediaCaptureType), origin,
-      ^(WKPermissionDecision decision) {
-        [self handleDecision:decision];
-      });
-}
-
-// Helper method that only executes on `_taskRunner`'s sequence.
-- (void)displayPromptForGeolocationOriginOnTaskRunner:(const GURL&)origin {
-  if (!_presenter) {
-    [self handleDecision:WKPermissionDecisionDeny];
-    return;
-  }
-  web::WebStateImpl* webState = _presenter.presentingWebState;
-  if (!webState || webState->IsBeingDestroyed()) {
-    [self handleDecision:WKPermissionDecisionDeny];
-    return;
-  }
-
-  // This block strongly captures `self` intentionally to ensure that
-  // `_decisionHandler` is always invoked, even if the scope of `self` has
-  // deallocated.
-  webState->RequestGeolocationPermissionWithDecisionHandler(
-      origin, ^(WKPermissionDecision decision) {
-        [self handleDecision:decision];
-      });
-}
-
-// Handle user response to permission request.
-- (void)handleDecision:(WKPermissionDecision)decision {
   if (!_decisionCallback) {
     return;
   }
-  // Post the decision handler asynchronously to prevent synchronous re-entrancy
-  // and stack overflow if WebKit immediately initiates another permission
-  // request upon decision completion. If the taskRunner is torn down before the
-  // task has run, the decision handler will be invoked synchronously during
-  // teardown, thus ensuring that the handler is always called.
+
+  // Wrap `_decisionCallback` in base::BindPostTask(...) to ensure WebKit is
+  // not informed of the decision synchronously, and prevent stack overflow
+  // if invoking the callback results in another permission prompt.
   _taskRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(_decisionCallback),
-                     _presenter ? decision : WKPermissionDecisionDeny));
+      base::BindOnce(
+          &DisplayPromptForMediaCapture, _presenter, mediaCaptureType, origin,
+          base::BindPostTask(_taskRunner, std::move(_decisionCallback))));
+}
+
+- (void)displayPromptForGeolocationOrigin:(const GURL&)origin {
+  if (!_decisionCallback) {
+    return;
+  }
+
+  // Wrap `_decisionCallback` in base::BindPostTask(...) to ensure WebKit is
+  // not informed of the decision synchronously, and prevent stack overflow
+  // if invoking the callback results in another permission prompt.
+  _taskRunner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DisplayPromptForGeolocation, _presenter, origin,
+          base::BindPostTask(_taskRunner, std::move(_decisionCallback))));
 }
 
 @end
