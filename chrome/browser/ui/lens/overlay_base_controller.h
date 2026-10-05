@@ -336,8 +336,10 @@ class OverlayBaseController : public content::WebContentsDelegate,
   void ShowOverlay();
 
   // Hides the overlay view and restores input to the tab contents web view.
-  // This does not change any overlay state.
-  void HideOverlay();
+  // This does not change any overlay state. `entering_background` is true when
+  // the overlay is only being hidden because its tab is entering the
+  // background, in which case it is re-shown when the tab is foregrounded.
+  virtual void HideOverlay(bool entering_background);
 
   // Hides the overlay, but also sets the state to kHidden.
   void HideOverlayAndSetHiddenState();

@@ -537,7 +537,7 @@ void OverlayBaseController::TabWillEnterBackground(tabs::TabInterface* tab) {
 
     // If the overlay UI is showing, hide it.
     if (overlay_web_view_ && overlay_web_view_->GetVisible()) {
-      HideOverlay();
+      HideOverlay(/*entering_background=*/true);
       if (!IsOverlayViewShared()) {
         // Preserve the overlay view and other visual elements for the
         // tab-scoped overlay. These preserve views will be re-attached to a
@@ -724,7 +724,7 @@ void OverlayBaseController::ShowOverlay() {
   contents_web_view->SetEnabled(false);
 }
 
-void OverlayBaseController::HideOverlay() {
+void OverlayBaseController::HideOverlay(bool /*entering_background*/) {
   // Re-enable mouse and keyboard events to the tab contents web view, and take
   // focus before the overlay view is hidden. If it is done after, focus will
   // move from the overlay view to another Chrome UI element before the contents
@@ -859,7 +859,7 @@ void OverlayBaseController::HideOverlayAndSetHiddenState() {
   if (state_ != State::kHiding) {
     return;
   }
-  HideOverlay();
+  HideOverlay(/*entering_background=*/false);
   state_ = State::kHidden;
 }
 

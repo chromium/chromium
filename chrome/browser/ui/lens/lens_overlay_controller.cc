@@ -96,6 +96,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -253,6 +254,9 @@ void LensOverlayController::CloseUI() {
   GetLensSearchboxController()->ResetOverlaySearchboxHandler();
 
   OverlayBaseController::CloseUI();
+
+  // Resume media playback for the tab if it was suspended by the overlay.
+  MaybeResumeMedia();
 
   // A permission prompt may be suspended if the overlay was showing when the
   // permission was queued. Restore the suspended prompt if possible.
@@ -695,6 +699,8 @@ void LensOverlayController::ShowUI(
   if (!CanShowModalUI()) {
     return;
   }
+
+  MaybeSuspendMedia();
 
   Profile* profile =
       Profile::FromBrowserContext(tab_->GetContents()->GetBrowserContext());
@@ -1408,6 +1414,15 @@ void LensOverlayController::ShowPreselectionBubble() {
   OverlayBaseController::ShowPreselectionBubble();
 }
 
+void LensOverlayController::HideOverlay(bool entering_background) {
+  OverlayBaseController::HideOverlay(entering_background);
+  // Keep media suspended while the tab is in the background, since the overlay
+  // is re-shown when the tab is foregrounded.
+  if (!entering_background) {
+    MaybeResumeMedia();
+  }
+}
+
 bool LensOverlayController::UseOverlayBlur() {
   return lens::features::GetLensOverlayUseBlur();
 }
@@ -1793,7 +1808,7 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
   // If we are in the zero state, this request must have come from CSB. In that
   // case, hide the overlay to allow live page to show through.
   if (!IsResultsSidePanelShowing() && state_ == State::kOverlay) {
-    HideOverlay();
+    HideOverlay(/*entering_background=*/false);
     state_ = overlay_view_ ? State::kHidden : State::kOff;
   }
 
@@ -2163,6 +2178,7 @@ void LensOverlayController::NotifyIsOverlayShowing(bool is_showing) {
 }
 
 void LensOverlayController::NotifyPageNavigated() {
+  did_suspend_media_ = false;
   if (state() == State::kHidden) {
     UpdateNavigationMetrics();
     NotifyPageContentUpdated();
@@ -2412,6 +2428,41 @@ LensOverlayController::GetContextualizationController() {
 lens::LensSessionMetricsLogger*
 LensOverlayController::GetLensSessionMetricsLogger() {
   return lens_search_controller_->lens_session_metrics_logger();
+}
+
+void LensOverlayController::MaybeSuspendMedia() {
+  if (invocation_source_ !=
+      lens::LensOverlayInvocationSource::kContentAreaContextMenuVideo) {
+    return;
+  }
+  auto* media_session = content::MediaSession::GetIfExists(tab_->GetContents());
+  if (!media_session) {
+    return;
+  }
+  media_session::mojom::MediaSessionInfoPtr session_info =
+      media_session->GetMediaSessionInfoSync();
+  if (session_info && session_info->playback_state ==
+                          media_session::mojom::MediaPlaybackState::kPlaying) {
+    media_session->Suspend(content::MediaSession::SuspendType::kUI);
+    did_suspend_media_ = true;
+  }
+}
+
+void LensOverlayController::MaybeResumeMedia() {
+  if (!did_suspend_media_) {
+    return;
+  }
+  did_suspend_media_ = false;
+  auto* media_session = content::MediaSession::GetIfExists(tab_->GetContents());
+  if (!media_session) {
+    return;
+  }
+  media_session::mojom::MediaSessionInfoPtr session_info =
+      media_session->GetMediaSessionInfoSync();
+  if (session_info && session_info->playback_state ==
+                          media_session::mojom::MediaPlaybackState::kPaused) {
+    media_session->Resume(content::MediaSession::SuspendType::kUI);
+  }
 }
 
 void LensOverlayController::StartQueryFlow() {

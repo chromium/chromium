@@ -131,6 +131,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
@@ -10857,4 +10858,250 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.NonBlockingPrivacyNotice.Accepted", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, MediaPauseResume) {
+  WaitForPaint(kDocumentWithImage);
+  auto* controller = GetLensOverlayController();
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create and play audio.
+  std::string media_url = embedded_test_server()->GetURL(kAudioFile).spec();
+  ASSERT_TRUE(content::ExecJs(tab_contents, content::JsReplace(R"(
+      const m = document.createElement('audio');
+      m.src = $1;
+      m.id = 'test_media';
+      m.loop = true;
+      document.body.appendChild(m);
+      new Promise((resolve, reject) => {
+        m.onplaying = () => resolve();
+        m.onerror = () => reject('Media error: ' + m.error.code);
+        m.play().catch(reject);
+        setTimeout(() => reject('Play timeout'), 5000);
+      });
+  )",
+                                                               media_url)));
+
+  // Wait for the media to start playing and for MediaSession to observe it.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* media_session = content::MediaSession::GetIfExists(tab_contents);
+    if (!media_session) {
+      return false;
+    }
+    auto info = media_session->GetMediaSessionInfoSync();
+    return info &&
+           info->playback_state ==
+               media_session::mojom::MediaPlaybackState::kPlaying &&
+           content::EvalJs(
+               tab_contents,
+               "document.getElementById('test_media').paused == false")
+               .ExtractBool();
+  }));
+
+  // Opening the overlay from the video context menu entrypoint with a pending
+  // region (which also opens the results side panel) should suspend the media.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuVideo,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+
+  // Media should be paused while the overlay is showing.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(tab_contents,
+                           "document.getElementById('test_media').paused")
+        .ExtractBool();
+  }));
+
+  // Switching to another tab while the overlay is open should background the
+  // overlay without resuming media playback on the original tab.
+  int active_controller_tab_index =
+      browser()->GetTabStripModel()->active_index();
+  WaitForPaint(kDocumentWithNamedElement,
+               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+  content::MediaSession::FlushObserversForTesting(tab_contents);
+  EXPECT_TRUE(content::EvalJs(tab_contents,
+                              "document.getElementById('test_media').paused")
+                  .ExtractBool());
+
+  // Switching back to the original tab should restore the overlay and keep
+  // media paused.
+  browser()->GetTabStripModel()->ActivateTabAt(active_controller_tab_index);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  content::MediaSession::FlushObserversForTesting(tab_contents);
+  EXPECT_TRUE(content::EvalJs(tab_contents,
+                              "document.getElementById('test_media').paused")
+                  .ExtractBool());
+
+  // Hiding the overlay (while keeping the side panel open) should resume media
+  // on the live page.
+  GetLensSearchController()->HideOverlay(
+      lens::LensOverlayDismissalSource::kOverlayCloseButton);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kHidden; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               tab_contents,
+               "document.getElementById('test_media').paused == false")
+        .ExtractBool();
+  }));
+
+  // Close the session, then start a new video search and verify closing the
+  // entire Lens session directly also resumes the media.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuVideo,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(tab_contents,
+                           "document.getElementById('test_media').paused")
+        .ExtractBool();
+  }));
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Media should be playing again.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               tab_contents,
+               "document.getElementById('test_media').paused == false")
+        .ExtractBool();
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       MediaNotPausedForNonVideoEntrypoint) {
+  WaitForPaint(kDocumentWithImage);
+  auto* controller = GetLensOverlayController();
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create and play audio.
+  std::string media_url = embedded_test_server()->GetURL(kAudioFile).spec();
+  ASSERT_TRUE(content::ExecJs(tab_contents, content::JsReplace(R"(
+      const m = document.createElement('audio');
+      m.src = $1;
+      m.id = 'test_media';
+      m.loop = true;
+      document.body.appendChild(m);
+      new Promise((resolve, reject) => {
+        m.onplaying = () => resolve();
+        m.onerror = () => reject('Media error: ' + m.error.code);
+        m.play().catch(reject);
+        setTimeout(() => reject('Play timeout'), 5000);
+      });
+  )",
+                                                               media_url)));
+
+  // Wait for the media to start playing and for MediaSession to observe it.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* media_session = content::MediaSession::GetIfExists(tab_contents);
+    if (!media_session) {
+      return false;
+    }
+    auto info = media_session->GetMediaSessionInfoSync();
+    return info &&
+           info->playback_state ==
+               media_session::mojom::MediaPlaybackState::kPlaying &&
+           content::EvalJs(
+               tab_contents,
+               "document.getElementById('test_media').paused == false")
+               .ExtractBool();
+  }));
+
+  // Opening the overlay from a non-video entrypoint (e.g. the app menu) should
+  // not suspend active media playback.
+  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  content::MediaSession::FlushObserversForTesting(tab_contents);
+  auto* media_session = content::MediaSession::GetIfExists(tab_contents);
+  ASSERT_NE(media_session, nullptr);
+  EXPECT_EQ(media_session->GetMediaSessionInfoSync()->playback_state,
+            media_session::mojom::MediaPlaybackState::kPlaying);
+  EXPECT_FALSE(content::EvalJs(tab_contents,
+                               "document.getElementById('test_media').paused")
+                   .ExtractBool());
+
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, MediaStayPaused) {
+  WaitForPaint(kDocumentWithImage);
+  auto* controller = GetLensOverlayController();
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create and play audio, then pause it manually.
+  std::string media_url = embedded_test_server()->GetURL(kAudioFile).spec();
+  ASSERT_TRUE(content::ExecJs(tab_contents, content::JsReplace(R"(
+      const m = document.createElement('audio');
+      m.src = $1;
+      m.id = 'test_media';
+      m.loop = true;
+      document.body.appendChild(m);
+      new Promise((resolve, reject) => {
+        m.onplaying = () => {
+          m.pause();
+          resolve();
+        };
+        m.onerror = () => reject('Media error: ' + m.error.code);
+        m.play().catch(reject);
+        setTimeout(() => reject('Play timeout'), 5000);
+      });
+  )",
+                                                               media_url)));
+
+  // Wait for the media to be paused and for MediaSession to observe kPaused.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    auto* media_session = content::MediaSession::GetIfExists(tab_contents);
+    if (!media_session) {
+      return false;
+    }
+    auto info = media_session->GetMediaSessionInfoSync();
+    return info &&
+           info->playback_state ==
+               media_session::mojom::MediaPlaybackState::kPaused &&
+           content::EvalJs(
+               tab_contents,
+               "document.getElementById('test_media').paused == true")
+               .ExtractBool();
+  }));
+
+  // Opening the overlay from the video context menu entrypoint.
+  SkBitmap initial_bitmap = CreateNonEmptyBitmap(100, 100);
+  OpenLensOverlayWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuVideo,
+      kTestRegion->Clone(), initial_bitmap);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
+
+  // Closing the overlay.
+  CloseOverlayAndWaitForOff(controller,
+                            LensOverlayDismissalSource::kOverlayCloseButton);
+
+  // Media should STILL be paused because it was paused manually before the
+  // overlay. Flush MediaSession observers to ensure no asynchronous Resume IPC
+  // was dispatched.
+  content::MediaSession::FlushObserversForTesting(tab_contents);
+  auto* media_session = content::MediaSession::GetIfExists(tab_contents);
+  ASSERT_NE(media_session, nullptr);
+  EXPECT_EQ(media_session->GetMediaSessionInfoSync()->playback_state,
+            media_session::mojom::MediaPlaybackState::kPaused);
+  EXPECT_TRUE(content::EvalJs(tab_contents,
+                              "document.getElementById('test_media').paused")
+                  .ExtractBool());
 }

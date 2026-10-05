@@ -621,6 +621,7 @@ class LensOverlayController : public OverlayBaseController,
   void FinishedWaitingForReflow(base::TimeTicks reflow_start_time) override;
   bool ShouldShowPreselectionBubble() override;
   void ShowPreselectionBubble() override;
+  void HideOverlay(bool entering_background) override;
   bool UseOverlayBlur() override;
   void NotifyPageNavigated() override;
   void NotifyOverlayClosing() override;
@@ -824,6 +825,13 @@ class LensOverlayController : public OverlayBaseController,
   // Shorthand to grab the LensSessionMetricsLogger for this instance of Lens.
   lens::LensSessionMetricsLogger* GetLensSessionMetricsLogger();
 
+  // Suspends media playback on the tab if media is actively playing and Lens
+  // was invoked from the video context menu entrypoint.
+  void MaybeSuspendMedia();
+
+  // Resumes media playback on the tab if it was suspended by the overlay.
+  void MaybeResumeMedia();
+
   // Owns this class.
   raw_ptr<LensSearchController> lens_search_controller_;
 
@@ -949,6 +957,9 @@ class LensOverlayController : public OverlayBaseController,
   // Whether the user performed an interaction without accepting the privacy
   // notice.
   bool user_interacted_without_accepting_privacy_notice = false;
+
+  // Whether media playback on the tab was suspended by the overlay.
+  bool did_suspend_media_ = false;
 
   // --------------------Browser window scoped state: END---------------------
 
