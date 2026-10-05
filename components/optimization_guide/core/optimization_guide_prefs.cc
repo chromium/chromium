@@ -4,51 +4,11 @@
 
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 
-#include "components/optimization_guide/core/feature_registry/enterprise_policy_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace optimization_guide {
 namespace prefs {
-
-// A pref that stores the last time a hints fetch was attempted. This limits the
-// frequency that hints are fetched and prevents a crash loop that continually
-// fetches hints on startup.
-const char kHintsFetcherLastFetchAttempt[] =
-    "optimization_guide.hintsfetcher.last_fetch_attempt";
-
-// A dictionary pref that stores hosts that have had hints successfully fetched
-// from the remote Optimization Guide Server. The entry for each host contains
-// the time that the fetch that covered this host expires, i.e., any hints
-// from the fetch would be considered stale.
-const char kHintsFetcherHostsSuccessfullyFetched[] =
-    "optimization_guide.hintsfetcher.hosts_successfully_fetched";
-
-// A string pref that stores the version of the Optimization Hints component
-// that is currently being processed. This pref is cleared once processing
-// completes. It is used for detecting a potential crash loop on processing a
-// version of hints.
-const char kPendingHintsProcessingVersion[] =
-    "optimization_guide.pending_hints_processing_version";
-
-// A dictionary pref that stores optimization type was previously
-// registered so that the first run of optimization types can be identified.
-// The entry is the OptimizationType enum. The value of the key-value pair will
-// not be used.
-const char kPreviouslyRegisteredOptimizationTypes[] =
-    "optimization_guide.previously_registered_optimization_types";
-
-// A dictionary pref that stores the file paths that need to be deleted as keys.
-// The value will not be used.
-const char kStoreFilePathsToDelete[] =
-    "optimization_guide.store_file_paths_to_delete";
-
-// A dictionary pref that stores optimization types that had filter associated
-// with this type. The entry is the OptimizationType enum. The value of the
-// key-value pair will not be used.
-const char kPreviousOptimizationTypesWithFilter[] =
-    "optimization_guide.previous_optimization_types_with_filter";
 
 // TODO(b/354704993): Move this to the SettingsUiMetadata.
 // Pref that contains user opt-in state for different features.
@@ -75,26 +35,6 @@ void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
         GetSettingEnabledPrefName(key),
         static_cast<int>(FeatureOptInState::kNotInitialized));
   }
-}
-
-void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(
-      kHintsFetcherLastFetchAttempt,
-      base::Time().ToDeltaSinceWindowsEpoch().InMicroseconds(),
-      PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kHintsFetcherHostsSuccessfullyFetched,
-                                   PrefRegistry::LOSSY_PREF);
-
-  registry->RegisterStringPref(kPendingHintsProcessingVersion, "",
-                               PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kPreviouslyRegisteredOptimizationTypes,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
-                                   PrefRegistry::LOSSY_PREF);
-  registry->RegisterDictionaryPref(kPreviousOptimizationTypesWithFilter,
-                                   PrefRegistry::LOSSY_PREF);
-
-  RegisterSettingsEnabledPrefs(registry);
 }
 
 }  // namespace prefs

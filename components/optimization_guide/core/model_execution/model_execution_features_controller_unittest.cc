@@ -52,7 +52,6 @@ class ModelExecutionFeaturesControllerTest : public testing::Test {
 
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs::RegisterProfilePrefs(pref_service_->registry());
     model_execution::prefs::RegisterProfilePrefs(pref_service_->registry());
   }
 

@@ -137,6 +137,8 @@ source_set("hints") {
     "hints/optimization_guide_store.h",
     "hints/optimization_metadata.cc",
     "hints/optimization_metadata.h",
+    "hints/prefs.cc",
+    "hints/prefs.h",
     "hints/push_notification_manager.cc",
     "hints/push_notification_manager.h",
     "hints/store_update_data.cc",
@@ -160,7 +162,6 @@ source_set("hints") {
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
-  visibility = [ ":*" ]
 }
 
 source_set("core_util") {

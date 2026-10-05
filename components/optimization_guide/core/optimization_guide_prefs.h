@@ -8,6 +8,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PREFS_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PREFS_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 
@@ -15,20 +17,6 @@ class PrefRegistrySimple;
 
 namespace optimization_guide {
 namespace prefs {
-
-// User profile prefs.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kHintsFetcherLastFetchAttempt[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kHintsFetcherHostsSuccessfullyFetched[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPendingHintsProcessingVersion[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPreviouslyRegisteredOptimizationTypes[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kStoreFilePathsToDelete[];
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const char kPreviousOptimizationTypesWithFilter[];
 
 // Value stored in the pref.
 enum class FeatureOptInState {
@@ -47,9 +35,9 @@ enum class FeatureOptInState {
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature);
 
-// Registers the optimization guide's prefs.
+// Registers the setting opt-in state prefs.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-void RegisterProfilePrefs(PrefRegistrySimple* registry);
+void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
 }  // namespace optimization_guide

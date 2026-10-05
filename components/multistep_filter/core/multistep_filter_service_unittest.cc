@@ -65,7 +65,6 @@ class MultistepFilterServiceTest : public testing::Test {
     RegisterRetentionProfilePrefs(pref_service_.registry());
     optimization_guide::model_execution::prefs::RegisterProfilePrefs(
         pref_service_.registry());
-    optimization_guide::prefs::RegisterProfilePrefs(pref_service_.registry());
     sync_service_.GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kHistory, true);
   }
