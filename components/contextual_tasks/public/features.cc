@@ -193,6 +193,12 @@ BASE_FEATURE(kContextualTasksUploadChunking, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCopyTextJourneys, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsCopyTextJourneysEnabled() {
+  return base::FeatureList::IsEnabled(kCopyTextJourneys);
+}
+
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1038,6 +1044,11 @@ const char kContextualTasksEphemeralButtonContextMenuName[] =
 const char kContextualTasksEphemeralButtonContextMenuDescription[] =
     "Enables a context menu on the ephemeral contextual tasks toolbar button "
     "to remove it from the toolbar.";
+
+const char kCopyTextJourneysName[] = "Copy-Text Journeys";
+const char kCopyTextJourneysDescription[] =
+    "Enables offering to reopen a search answer in the Contextual Tasks side "
+    "panel.";
 
 }  // namespace flag_descriptions
 

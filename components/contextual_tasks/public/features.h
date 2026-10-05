@@ -163,6 +163,10 @@ BASE_DECLARE_FEATURE(kAllowSignedOutUserInDesktopAndroid);
 // Desktop Android.
 bool IsAllowSignedOutUserInDesktopAndroidEnabled();
 
+BASE_DECLARE_FEATURE(kCopyTextJourneys);
+
+bool IsCopyTextJourneysEnabled();
+
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
 enum class OverflowMenuItems {
@@ -568,6 +572,8 @@ extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];
 extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedDescription[];
 extern const char kContextualTasksEphemeralButtonContextMenuName[];
 extern const char kContextualTasksEphemeralButtonContextMenuDescription[];
+extern const char kCopyTextJourneysName[];
+extern const char kCopyTextJourneysDescription[];
 
 }  // namespace flag_descriptions
 
