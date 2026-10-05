@@ -78,6 +78,7 @@ void LoadHtml(NSString* html, const GURL& url, web::WebState* web_state) {
     web_state->GetNavigationManager()->LoadURLWithParams(params);
 
     CHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
+      base::RunLoop().RunUntilIdle();
       return web_controller.navigationState == web::WKNavigationState::FINISHED;
     }));
   }
