@@ -414,7 +414,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
-  'libprotobuf-mutator': 'c1c950eae0440c3808f2b8bd7c57d0c6a42c1a90',
+  'libprotobuf-mutator': '4373c81cd7d50a65f7fbd8dc3779c0c3b1dc9d72',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling android_sdk_build-tools_version
   # and whatever else without interference from each other.
