@@ -117,6 +117,35 @@ class WindowZOrderTracker {
                                 }
                             }
                         }
+
+                        @Override
+                        public void onActivityResumed() {
+                            if (DEBUG_LOGGING) {
+                                Log.i(TAG, "onActivityResumed: window=%s", windowAndroid);
+                            }
+                            mZOrderChangedCallback.run();
+                        }
+
+                        @Override
+                        public void onActivityPaused() {
+                            if (DEBUG_LOGGING) {
+                                Log.i(TAG, "onActivityPaused: window=%s", windowAndroid);
+                            }
+                            mZOrderChangedCallback.run();
+                        }
+
+                        @Override
+                        public void onActivityStopped() {
+                            if (DEBUG_LOGGING) {
+                                Log.i(TAG, "onActivityStopped: window=%s", windowAndroid);
+                            }
+                            // Outgoing desk activities reach STOPPED after the desk switch
+                            // transition animation completes (~600-700ms after the incoming desk's
+                            // top activity received onActivityTopResumedChanged). Recalculate
+                            // occlusion when any tracked activity stops so active windows are no
+                            // longer occluded by now-stopped windows.
+                            mZOrderChangedCallback.run();
+                        }
                     };
             assert !mObservers.containsKey(windowAndroid);
             mObservers.put(windowAndroid, observer);
