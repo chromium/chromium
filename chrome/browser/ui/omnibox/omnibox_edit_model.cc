@@ -943,7 +943,7 @@ void OmniboxEditModel::OpenSelection(
   if (selection.state == OmniboxPopupSelection::LineState::kCtrlEnter &&
       autocomplete_controller()->history_url_provider()) {
     std::u16string text_for_desired_tld_navigation = input_.text();
-    if (has_temporary_text_ && selection.line > 0) {
+    if (has_temporary_text_) {
       text_for_desired_tld_navigation = GetText();
     } else if (!user_input_in_progress()) {
       text_for_desired_tld_navigation = url_for_editing_;

@@ -2104,6 +2104,31 @@ TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_CtrlEnterWithNoMatch) {
       std::move(selection), WindowOpenDisposition::CURRENT_TAB);
 }
 
+TEST_F(WebuiOmniboxHandlerTest, OpenPopupSelection_CtrlEnterWithMatch) {
+  page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&page_);
+
+  test_omnibox_view_->SetUserText(u"google");
+  omnibox_controller_->edit_model()->StartAutocomplete(false);
+
+  TestOmniboxClient* client =
+      static_cast<TestOmniboxClient*>(omnibox_controller_->client());
+  EXPECT_CALL(*client, OnAutocompleteAccept(GURL("http://www.google.com/"), _,
+                                            WindowOpenDisposition::CURRENT_TAB,
+                                            _, _, _, _, _, _, _, _))
+      .Times(1);
+
+  // When dropdown is showing suggestions, line 0 is selected.
+  auto selection = searchbox::mojom::OmniboxPopupSelection::New();
+  selection->line = 0;
+  selection->state = searchbox::mojom::SelectionLineState::kCtrlEnter;
+  selection->action_index = 0;
+
+  handler_->OpenPopupSelection(
+      omnibox_controller_->autocomplete_controller()->result().sequence_id(),
+      std::move(selection), WindowOpenDisposition::CURRENT_TAB);
+}
+
 TEST_F(WebuiOmniboxHandlerTest, OpenLensSearch) {
   // Set a mock AutocompleteController.
   auto mock_client = std::make_unique<MockAutocompleteProviderClient>();
