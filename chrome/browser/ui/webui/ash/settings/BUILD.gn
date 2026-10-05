@@ -93,7 +93,6 @@ static_library("settings") {
     "//chrome/browser/ui/webui/ash/settings/pages/storage",
     "//chrome/browser/ui/webui/ash/settings/pages/system_preferences",
     "//chrome/browser/ui/webui/ash/settings/search",
-    "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/browser/ui/webui/ash/settings/services/metrics",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
     "//chrome/browser/ui/webui/ash/user_image",

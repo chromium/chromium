@@ -115,7 +115,6 @@
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
-#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 
@@ -222,7 +221,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ScanServiceFactory::GetInstance();
   ScreenTimeControllerFactory::GetInstance();
   secure_channel::NearbyConnectorFactory::GetInstance();
-  settings::OsSettingsHatsManagerFactory::GetInstance();
   settings::OsSettingsManagerFactory::GetInstance();
   sharesheet::SharesheetServiceFactory::GetInstance();
   shortcut_ui::ShortcutsAppManagerFactory::GetInstance();

@@ -49,8 +49,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
-#include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/metrics/settings_user_action_tracker.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
@@ -190,19 +188,6 @@ OSSettingsUI::~OSSettingsUI() {
                                 /*min=*/base::Microseconds(500),
                                 /*max=*/base::Hours(1),
                                 /*buckets=*/50);
-
-  // Sends request for OsSettingsHats notification upon shutting down the app.
-  OsSettingsHatsManager* settingsHatsManager =
-      OsSettingsHatsManagerFactory::GetInstance()->GetForProfile(
-          Profile::FromWebUI(web_ui()));
-  settingsHatsManager->MaybeSendSettingsHats();
-
-  // OsSettingsHatsManager records whether the user used the Search
-  // functionality per each session that Settings app has opened up. When the
-  // Settings app is closed, OsSettingsHatsManager will remain alive in the
-  // background and the state remains stored in the manager, so we will reset
-  // that knowledge.
-  settingsHatsManager->SetSettingsUsedSearch(false);
 
   // Resets the tracking of device IDs associated with notification clicks.
   // This method is called when the Settings app is closed to prevent the
