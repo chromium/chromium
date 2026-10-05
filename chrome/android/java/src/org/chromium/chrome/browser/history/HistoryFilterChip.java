@@ -67,12 +67,14 @@ class HistoryFilterChip {
             @Nullable Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @Nullable Runnable hideSoftKeyboard) {
         mChipView = container.findViewById(mChipViewId);
+        if (!mCanShow) {
+            mChipView.setVisibility(View.GONE);
+            return;
+        }
+        assert bottomSheetControllerSupplier != null;
+        assert hideSoftKeyboard != null;
         mChipView.setOnClickListener(
-                _ ->
-                        openSheet(
-                                activity,
-                                assumeNonNull(bottomSheetControllerSupplier),
-                                assumeNonNull(hideSoftKeyboard)));
+                _ -> openSheet(activity, bottomSheetControllerSupplier, hideSoftKeyboard));
         mChipView.getPrimaryTextView().setText(mTitleResId);
         mChipView.addDropdownIcon();
         setChipEnabled(mEnabled);
@@ -81,6 +83,7 @@ class HistoryFilterChip {
 
     /** Replaces the items displayed in the filter sheet. */
     void setItems(List<FilterItem> items) {
+        assert mCanShow;
         mItems.clear();
         mItems.addAll(items);
         if (mFilterSheet != null) {
