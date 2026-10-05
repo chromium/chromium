@@ -40,6 +40,8 @@
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator.h"
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
@@ -1855,8 +1857,12 @@ using ntp_tiles::AimButtonRefactorArm;
 
 // Opens the AIM web page.
 - (void)openAIMWeb {
-  GURL URL = GetUrlForAim(self.templateURLService,
-                          /*query_start_time=*/base::Time::Now());
+  AIModeButtonServiceIOS* service =
+      AIModeButtonServiceIOSFactory::GetForProfile(self.profile);
+  if (!service) {
+    return;
+  }
+  GURL URL = service->GetUrl();
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
   command.extraHeaders =
       web_navigation_util::VariationHeadersForURL(URL, /*is_incognito=*/false);
