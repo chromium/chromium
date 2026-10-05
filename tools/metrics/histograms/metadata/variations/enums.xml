@@ -352,12 +352,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Engaged - without safe values"/>
 </enum>
 
+<!-- LINT.IfChange(UpdateSeedDateResult) -->
+
 <enum name="VariationsSeedDateChange">
   <int value="0" label="No previous date"/>
   <int value="1" label="New date older than old date"/>
   <int value="2" label="Same day"/>
   <int value="3" label="Day changed"/>
+  <int value="4" label="No new date (untrusted or absent server date)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/variations/metrics.h:UpdateSeedDateResult) -->
 
 <!-- LINT.IfChange(VariationsSeedLoadResult) -->
 

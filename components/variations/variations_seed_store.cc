@@ -126,9 +126,11 @@ base::Time TruncateToUTCDay(base::Time time) {
   return out_time;
 }
 
-UpdateSeedDateResult GetSeedDateChangeState(
-    base::Time server_seed_date,
-    base::Time stored_seed_date) {
+UpdateSeedDateResult GetSeedDateChangeState(base::Time server_seed_date,
+                                            base::Time stored_seed_date) {
+  CHECK(!server_seed_date.is_null());
+  CHECK(!stored_seed_date.is_null());
+
   if (server_seed_date < stored_seed_date) {
     return UpdateSeedDateResult::kNewDateIsOlder;
   }
@@ -287,8 +289,9 @@ VariationsSeedStore::VariationsSeedStore(
                                              entropy_providers,
                                              /*histogram_suffix=*/"Latest")) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (initial_seed)
+  if (initial_seed) {
     ImportInitialSeed(std::move(initial_seed));
+  }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
@@ -494,8 +497,7 @@ int VariationsSeedStore::GetSafeSeedMilestone() const {
   return safe_seed_store_->GetMilestone();
 }
 
-base::Time VariationsSeedStore::GetLatestTimeForStudyDateChecks()
-    const {
+base::Time VariationsSeedStore::GetLatestTimeForStudyDateChecks() const {
   return seed_reader_writer_->GetSeedInfo().seed_date;
 }
 
@@ -531,14 +533,23 @@ void VariationsSeedStore::UpdateSeedDateAndLogDayChange(base::Time seed_date) {
   seed_reader_writer_->SetSeedDate(seed_date);
 }
 
-void VariationsSeedStore::LogSeedDayChange(base::Time seed_date) {
-  UpdateSeedDateResult result = UpdateSeedDateResult::kNoOldDate;
-  const base::Time stored_date = seed_reader_writer_->GetSeedInfo().seed_date;
-  if (!stored_date.is_null()) {
-    result = GetSeedDateChangeState(seed_date, stored_date);
+UpdateSeedDateResult VariationsSeedStore::GetSeedDateUpdateResult(
+    base::Time seed_date) const {
+  if (seed_date.is_null()) {
+    return UpdateSeedDateResult::kNoNewDate;
   }
 
-  base::UmaHistogramEnumeration("Variations.SeedDateChange", result);
+  const base::Time stored_date = seed_reader_writer_->GetSeedInfo().seed_date;
+  if (stored_date.is_null()) {
+    return UpdateSeedDateResult::kNoOldDate;
+  }
+
+  return GetSeedDateChangeState(seed_date, stored_date);
+}
+
+void VariationsSeedStore::LogSeedDayChange(base::Time seed_date) {
+  base::UmaHistogramEnumeration("Variations.SeedDateChange",
+                                GetSeedDateUpdateResult(seed_date));
 }
 
 const std::string& VariationsSeedStore::GetLatestSerialNumber() {

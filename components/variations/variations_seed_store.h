@@ -168,6 +168,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // with a base64-encoded digital signature for seed and any additional client
   // metadata relevant to the safe seed. Calls `done_callback` with true on
   // success or false on failure; no prefs are updated in case of failure.
+  // Note: `client_state.reference_date` supplies the safe seed date. Safe seed
+  // dates remain isolated and unaffected by untrusted HTTP date omissions.
   // Virtual for testing.
   virtual void StoreSafeSeed(base::OnceCallback<void(bool)> done_callback,
                              const std::string& seed_data,
@@ -225,9 +227,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // Updates |kVariationsSeedDate| and logs when previous date was from a
   // different day.
   void UpdateSeedDateAndLogDayChange(base::Time seed_date);
-
-  // Creates a histogram for the result of the update of the seed date.
-  void LogSeedDayChange(base::Time seed_date);
 
   // Returns the serial number of the most recently received seed, or an empty
   // string if there is no seed (or if it could not be read).
@@ -349,6 +348,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
     SeedProcessingResult(SeedProcessingResult&& other);
     SeedProcessingResult& operator=(SeedProcessingResult&& other);
   };
+
+  // Computes the result of the seed date update.
+  UpdateSeedDateResult GetSeedDateUpdateResult(base::Time seed_date) const;
+
+  // Creates a histogram for the result of the update of the seed date.
+  void LogSeedDayChange(base::Time seed_date);
 
   // Callback for reading both seeds. They contain the result of loading the
   // safe and latest seeds.

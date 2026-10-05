@@ -273,12 +273,6 @@ class SeedReaderWriterGroupTest
 
   std::string_view GetHistogramSuffix() const { return histogram_suffix_; }
 
- private:
-  std::string histogram_suffix_;
-};
-
-class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterGroupTest {
- public:
   StoredSeedInfo ReadStoredSeedInfo() {
     std::string seed_file_data;
     CHECK(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
@@ -289,7 +283,12 @@ class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterGroupTest {
     CHECK(stored_seed_info.ParseFromString(uncompressed_contents));
     return stored_seed_info;
   }
+
+ private:
+  std::string histogram_suffix_;
 };
+
+class SeedReaderWriterSeedFilesGroupTest : public SeedReaderWriterGroupTest {};
 class SeedReaderWriterLocalStateGroupsTest : public SeedReaderWriterGroupTest {
 };
 
@@ -1925,6 +1924,60 @@ TEST_P(SeedReaderWriterAllGroupsTest, ReadSeedDataSentinel) {
       &seed_data, &base64_seed_signature);
   EXPECT_EQ(result, LoadSeedResult::kSuccess);
   EXPECT_EQ(seed_data, kIdenticalToSafeSeedSentinel);
+}
+
+// Verifies that SetSeedDate() and StoreValidatedSeedInfo() keep the stored
+// seed date when the new seed date is null.
+TEST_P(SeedReaderWriterAllGroupsTest, NullSeedDatePreservesExistingSeedDate) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), GetHistogramSuffix(),
+      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  const base::Time initial_seed_date = base::Time::Now() - base::Days(2);
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = CreateVariationsSeed(),
+      .signature = "signature",
+      .milestone = 2,
+      .seed_date = initial_seed_date,
+      .client_fetch_time = base::Time::Now() - base::Days(2),
+  });
+  if (timer_.IsRunning()) {
+    timer_.Fire();
+  }
+  file_writer_thread_.FlushForTesting();
+
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, initial_seed_date);
+
+  seed_reader_writer.SetSeedDate(base::Time());
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, initial_seed_date);
+
+  const base::Time updated_seed_date = initial_seed_date + base::Days(1);
+  seed_reader_writer.SetSeedDate(updated_seed_date);
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, updated_seed_date);
+
+  seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
+      .seed_data = CreateVariationsSeed(),
+      .signature = "new signature",
+      .milestone = 3,
+      .seed_date = base::Time(),
+      .client_fetch_time = base::Time::Now(),
+  });
+  if (timer_.IsRunning()) {
+    timer_.Fire();
+  }
+  file_writer_thread_.FlushForTesting();
+
+  EXPECT_EQ(seed_reader_writer.GetSeedInfo().seed_date, updated_seed_date);
+  if (GetParam().field_trial_group == kSeedFilesGroup) {
+    EXPECT_EQ(
+        SeedReaderWriter::ProtoTimeToTime(ReadStoredSeedInfo().seed_date()),
+        updated_seed_date);
+  }
 }
 
 TEST_P(SeedReaderWriterSeedFilesGroupTest,

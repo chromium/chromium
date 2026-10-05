@@ -1596,14 +1596,11 @@ void VariationsService::RecordSuccessfulFetchSeedNotModified(
   field_trial_creator_.seed_store()->RecordLastFetchTime(base::Time::Now());
   safe_seed_manager_.RecordSuccessfulFetch(field_trial_creator_.seed_store());
 
-  // Only treat a 304 as confirmation that the stored seed is current when it
-  // was received over HTTPS. Callers set `response_date` to std::nullopt for
-  // insecure HTTP retries because unauthenticated Date headers cannot be
-  // trusted.
-  if (response_date) {
-    field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
-        response_date.value());
-  }
+  // Callers set `response_date` to std::nullopt for insecure HTTP retries
+  // because unauthenticated Date headers cannot be trusted. A null date logs
+  // kNoNewDate and keeps the stored seed date.
+  field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
+      response_date.value_or(base::Time()));
 }
 
 VariationsSeedStore* VariationsService::GetSeedStoreForTesting() {

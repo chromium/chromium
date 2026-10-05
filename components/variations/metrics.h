@@ -84,13 +84,18 @@ enum class StoreSeedResult {
 // The result of updating the date associated with an existing stored variations
 // seed.
 // Note: UMA histogram enum - don't re-order or remove entries.
+// LINT.IfChange(UpdateSeedDateResult)
 enum class UpdateSeedDateResult {
   kNoOldDate = 0,
   kNewDateIsOlder = 1,
   kSameDay = 2,
   kNewDay = 3,
-  kMaxValue = kNewDay,
+  // The response did not provide a trusted server date. Takes precedence over
+  // kNoOldDate.
+  kNoNewDate = 4,
+  kMaxValue = kNoNewDate,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:UpdateSeedDateResult)
 
 // The result of verifying a variation seed's signature.
 // Note: UMA histogram enum - don't re-order or remove entries.

@@ -195,6 +195,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
   // Updates the server-provided seed date that is used for study date checks.
+  // Keeps the stored seed date when `seed_date` is null.
   void SetSeedDate(base::Time seed_date);
 
   // Updates the time of the last fetch of the seed.

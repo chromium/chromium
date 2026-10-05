@@ -321,6 +321,16 @@ void SetGeoLevel1Pref(const SeedFieldsPrefs& prefs,
   }
 }
 
+// Sets the seed date pref value if `seed_date` is not null. Keeps the stored
+// value otherwise.
+void SetSeedDatePref(const SeedFieldsPrefs& prefs,
+                     PrefService& local_state,
+                     base::Time seed_date) {
+  if (!seed_date.is_null()) {
+    local_state.SetTime(prefs.seed_date, seed_date);
+  }
+}
+
 // Gets the Geo Level1 pref value if its pref name exists. Returns an empty
 // string otherwise.
 std::string GetGeoLevel1Pref(const SeedFieldsPrefs& prefs,
@@ -535,7 +545,7 @@ void SeedReaderWriter::SetSeedDate(base::Time seed_date) {
   // Both groups store the seed date in local state. It is updated after every
   // successful seed fetch, including "HTTP 304 Not Modified" responses, so
   // avoid rewriting the whole seed file just to refresh a timestamp.
-  local_state_->SetTime(fields_prefs_->seed_date, seed_date);
+  SetSeedDatePref(*fields_prefs_, *local_state_, seed_date);
 }
 
 void SeedReaderWriter::SetFetchTime(base::Time fetch_time) {
@@ -763,10 +773,11 @@ StoreSeedResult SeedReaderWriter::ScheduleSeedFileWrite(
 
   // The timestamps are read from local state, see SetSeedDate(). Keep the copy
   // in the seed file up to date too, since it is written anyway.
-  stored_seed_info_.set_seed_date(TimeToProtoTime(seed_info.seed_date));
+  SetSeedDatePref(*fields_prefs_, *local_state_, seed_info.seed_date);
+  stored_seed_info_.set_seed_date(
+      TimeToProtoTime(local_state_->GetTime(fields_prefs_->seed_date)));
   stored_seed_info_.set_client_fetch_time(
       TimeToProtoTime(seed_info.client_fetch_time));
-  local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
   local_state_->SetTime(fields_prefs_->client_fetch_time,
                         seed_info.client_fetch_time);
 
@@ -956,7 +967,7 @@ StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
   local_state_->SetString(fields_prefs_->seed, seed_data);
   local_state_->SetString(fields_prefs_->signature, seed_info.signature);
   local_state_->SetInteger(fields_prefs_->milestone, seed_info.milestone);
-  local_state_->SetTime(fields_prefs_->seed_date, seed_info.seed_date);
+  SetSeedDatePref(*fields_prefs_, *local_state_, seed_info.seed_date);
   local_state_->SetTime(fields_prefs_->client_fetch_time,
                         seed_info.client_fetch_time);
   // Note: It is possible for the country code to be empty, e.g. if the seed was

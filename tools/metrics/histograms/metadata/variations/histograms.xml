@@ -637,7 +637,8 @@ chromium-metrics-reviews@google.com.
     day or not. This is counted when a new valid seed or a 304 is received. The
     date line is computed in UTC and the times being compared are the server
     time from the server response and the stored server time from the last
-    successful request.
+    successful request. Records &quot;No new date&quot; when the response lacks
+    a trusted server date, such as over insecure HTTP.
   </summary>
 </histogram>
 
