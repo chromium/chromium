@@ -29,6 +29,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
@@ -286,10 +287,17 @@ class AdsPageLoadMetricsObserver
   // Triggers the heavy ad intervention page in the target frame if it is safe
   // to do so on this origin, and the frame meets the criteria to be considered
   // a heavy ad. This first sends an intervention report to every affected
-  // frame then loads an error page in the root ad frame.
+  // frame then loads an error page in the root ad frame. The intervention is
+  // carried out asynchronously via TriggerHeavyAdIntervention.
   void MaybeTriggerHeavyAdIntervention(
       content::RenderFrameHost* render_frame_host,
       FrameTreeData* frame_data);
+
+  // Carries out the heavy ad intervention posted asynchronously by
+  // MaybeTriggerHeavyAdIntervention.
+  void TriggerHeavyAdIntervention(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      base::WeakPtr<FrameTreeData> frame_data);
 
   bool IsBlocklisted(bool report);
   heavy_ad_intervention::HeavyAdBlocklist* GetHeavyAdBlocklist();

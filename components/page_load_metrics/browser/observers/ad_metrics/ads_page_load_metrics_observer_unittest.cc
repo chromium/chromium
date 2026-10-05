@@ -420,6 +420,9 @@ class FrameRemoteTester : public content::FakeLocalFrame {
   // Sends an empty message and waits for it to be received. Returns true if any
   // other messages were received.
   bool FlushForTesting(RenderFrameHost* render_frame_host) {
+    // Run any pending async heavy ad intervention tasks so their Mojo report
+    // messages are queued before the empty sentinel report is sent.
+    base::RunLoop().RunUntilIdle();
     base::RunLoop run_loop;
     on_empty_report_callback_ = run_loop.QuitClosure();
     render_frame_host->SendInterventionReport("", "", nullptr);

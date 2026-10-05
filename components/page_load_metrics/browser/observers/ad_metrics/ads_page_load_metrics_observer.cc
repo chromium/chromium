@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -1289,10 +1291,9 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
 void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
     content::NavigationHandle* navigation_handle) {
   // Extract the entry up front so the resource is owned locally for the rest
-  // of this call. Processing it can synchronously re-enter this method: the
-  // heavy ad intervention destroys the frame's in-flight NavigationRequest,
-  // which dispatches DidFinishNavigation. The re-entrant call must not observe
-  // or remove this entry again.
+  // of this call. Although the heavy ad intervention now runs asynchronously,
+  // extracting the node first defends against any synchronous re-entrancy into
+  // DidFinishNavigation observing or removing this entry again.
   auto request_node = ongoing_navigation_resources_.extract(
       navigation_handle->GetFrameTreeNodeId());
   if (request_node.empty()) {
@@ -1350,6 +1351,26 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
     content::RenderFrameHost* render_frame_host,
     FrameTreeData* frame_data) {
   DCHECK(render_frame_host);
+  if (frame_data->MaybeTriggerHeavyAdIntervention() == HeavyAdAction::kNone) {
+    return;
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AdsPageLoadMetricsObserver::TriggerHeavyAdIntervention,
+                     ads_weak_factory_.GetWeakPtr(),
+                     render_frame_host->GetGlobalId(),
+                     frame_data->AsWeakPtr()));
+}
+
+void AdsPageLoadMetricsObserver::TriggerHeavyAdIntervention(
+    content::GlobalRenderFrameHostId render_frame_host_id,
+    base::WeakPtr<FrameTreeData> frame_data) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id);
+  if (!render_frame_host || !frame_data) {
+    return;
+  }
   HeavyAdAction action = frame_data->MaybeTriggerHeavyAdIntervention();
   if (action == HeavyAdAction::kNone) {
     return;
