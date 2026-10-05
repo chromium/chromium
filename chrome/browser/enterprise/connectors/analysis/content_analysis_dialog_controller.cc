@@ -175,20 +175,6 @@ void ContentAnalysisDialogController::CancelButtonClicked() {
   }
 }
 
-void ContentAnalysisDialogController::SuccessCallback() {
-#if defined(USE_AURA)
-  if (web_contents()) {
-    // It's possible focus has been lost and gained back incorrectly if the user
-    // clicked on the page between the time the scan started and the time the
-    // dialog closes. This results in the behaviour detailed in
-    // crbug.com/40153261. The fix is to preemptively take back focus when this
-    // dialog closes on its own.
-    scoped_ignore_input_events_.reset();
-    web_contents()->Focus();
-  }
-#endif
-}
-
 void ContentAnalysisDialogController::WebContentsDestroyed() {
   // If WebContents are destroyed, then the scan results don't matter so the
   // delegate can be destroyed as well.

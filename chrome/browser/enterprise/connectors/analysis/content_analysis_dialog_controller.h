@@ -139,10 +139,6 @@ class ContentAnalysisDialogController
   void AcceptButtonClicked();
   void CancelButtonClicked();
 
-  // This callback used by DialogDelegate::SetCancelCallback and is used to
-  // ensure the auto-closing success dialog handles focus correctly.
-  void SuccessCallback();
-
   // download::DownloadItem::Observer:
   void OnDownloadUpdated(download::DownloadItem* download) override;
   void OnDownloadOpened(download::DownloadItem* download) override;
