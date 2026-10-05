@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import android.app.Activity;
 import android.content.Context;
 
 import org.junit.Assert;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserDataHost;
@@ -26,7 +28,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsOffsetTagModifications;
 import org.chromium.cc.input.BrowserControlsOffsetTags;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -37,7 +38,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link TabBrowserControlsConstraintsHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabBrowserControlsConstraintsHelperTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final UserDataHost mUserDataHost = new UserDataHost();
@@ -95,7 +95,7 @@ public class TabBrowserControlsConstraintsHelperTest {
         Mockito.when(mTab.isInitialized()).thenReturn(true);
         WindowAndroid window = Mockito.mock(WindowAndroid.class);
         Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(window);
-        ChromeActivity activity = Mockito.mock(ChromeActivity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
         WeakReference<Context> activityRef = new WeakReference<>(activity);
         Mockito.when(window.getContext()).thenReturn(activityRef);
 
