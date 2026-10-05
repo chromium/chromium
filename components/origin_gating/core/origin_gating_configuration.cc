@@ -89,7 +89,7 @@ PredicateConfiguration& PredicateConfiguration::operator=(
 OriginGatingConfiguration::OriginGatingConfiguration(
     std::vector<PredicateConfiguration> predicates,
     bool use_site_keyed_cache)
-    : predicates_(predicates),
+    : predicates_(std::move(predicates)),
       use_site_keyed_cache_(use_site_keyed_cache),
       uses_cache_(UsesCache(predicates_)) {
   for (const PredicateConfiguration& pc : predicates_) {
