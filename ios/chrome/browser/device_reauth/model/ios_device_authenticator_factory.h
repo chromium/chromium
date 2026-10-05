@@ -15,6 +15,7 @@ class IOSDeviceAuthenticator;
 class ProfileIOS;
 
 namespace device_reauth {
+class DeviceAuthAvailabilityChecker;
 class DeviceAuthParams;
 }
 
@@ -38,7 +39,13 @@ class DeviceAuthenticatorProxyFactory : public ProfileKeyedServiceFactoryIOS {
       ProfileIOS* profile) const override;
 };
 
-// Creates an IOSDeviceAuthenticator. It is built on top of a
+// Creates an `IOSDeviceAuthAvailabilityChecker`. `reauth_module` is the
+// component that provides the device reauth functionalities.
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+CreateIOSDeviceAuthAvailabilityChecker(
+    id<ReauthenticationProtocol> reauth_module);
+
+// Creates an `IOSDeviceAuthenticator`. It is built on top of a
 // DeviceAuthenticatorProxy. `reauth_module` is the component that provides the
 // device reauth functionalities. `profile` is the ProfileIOS the
 // underlying DeviceAuthenticatorProxy is attached to. `params` contains configs

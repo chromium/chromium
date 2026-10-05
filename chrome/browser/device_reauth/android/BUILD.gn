@@ -24,6 +24,7 @@ android_library("java") {
   ]
 
   sources = [
+    "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthAvailabilityCheckerBridge.java",
     "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorController.java",
     "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
@@ -34,6 +35,7 @@ android_library("java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthAvailabilityCheckerBridge.java",
     "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorBridge.java",
     "java/src/org/chromium/chrome/browser/device_reauth/ReauthenticatorBridge.java",
   ]

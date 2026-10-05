@@ -18,6 +18,7 @@ source_set("device_reauth") {
 
   if (is_android) {
     public += [
+      "android/device_auth_availability_checker_android.h",
       "android/device_authenticator_android.h",
       "android/device_authenticator_bridge.h",
       "android/reauthenticator_bridge.h",
@@ -27,6 +28,7 @@ source_set("device_reauth") {
   if (is_chromeos) {
     public += [
       "chromeos/authenticator_chromeos.h",
+      "chromeos/device_auth_availability_checker_chromeos.h",
       "chromeos/device_authenticator_chromeos.h",
     ]
   }
@@ -34,6 +36,7 @@ source_set("device_reauth") {
   if (is_mac) {
     public += [
       "mac/authenticator_mac.h",
+      "mac/device_auth_availability_checker_mac.h",
       "mac/device_authenticator_mac.h",
     ]
   }
@@ -41,6 +44,7 @@ source_set("device_reauth") {
   if (is_win) {
     public += [
       "win/authenticator_win.h",
+      "win/device_auth_availability_checker_win.h",
       "win/device_authenticator_win.h",
     ]
   }
@@ -68,6 +72,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "android/device_auth_availability_checker_android.cc",
       "android/device_authenticator_android.cc",
       "android/device_authenticator_bridge_impl.cc",
       "android/device_authenticator_bridge_impl.h",
@@ -83,6 +88,7 @@ source_set("impl") {
   if (is_chromeos) {
     sources += [
       "chromeos/authenticator_chromeos.cc",
+      "chromeos/device_auth_availability_checker_chromeos.cc",
       "chromeos/device_authenticator_chromeos.cc",
     ]
     deps += [
@@ -97,6 +103,7 @@ source_set("impl") {
   if (is_mac) {
     sources += [
       "mac/authenticator_mac.mm",
+      "mac/device_auth_availability_checker_mac.mm",
       "mac/device_authenticator_mac.mm",
     ]
     deps += [
@@ -109,6 +116,7 @@ source_set("impl") {
     deps += [ "//chrome/browser/ui:browser_window_header" ]
     sources += [
       "win/authenticator_win.cc",
+      "win/device_auth_availability_checker_win.cc",
       "win/device_authenticator_win.cc",
     ]
   }
@@ -134,17 +142,23 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_win || is_mac || is_android) {
+  if (is_win || is_mac || is_android || is_chromeos) {
     sources += [ "chrome_device_authenticator_factory_unittest.cc" ]
   }
 
   if (is_android) {
-    sources += [ "android/device_authenticator_android_unittest.cc" ]
+    sources += [
+      "android/device_auth_availability_checker_android_unittest.cc",
+      "android/device_authenticator_android_unittest.cc",
+    ]
     deps += [ "//ui/android" ]
   }
 
   if (is_chromeos) {
-    sources += [ "chromeos/device_authenticator_chromeos_unittest.cc" ]
+    sources += [
+      "chromeos/device_auth_availability_checker_chromeos_unittest.cc",
+      "chromeos/device_authenticator_chromeos_unittest.cc",
+    ]
     deps += [
       "//ash/constants",
       "//chromeos/ash/components/cryptohome",
@@ -152,7 +166,10 @@ source_set("unit_tests") {
   }
 
   if (is_mac) {
-    sources += [ "mac/device_authenticator_mac_unittest.mm" ]
+    sources += [
+      "mac/device_auth_availability_checker_mac_unittest.mm",
+      "mac/device_authenticator_mac_unittest.mm",
+    ]
     deps += [
       "//device/fido",
       "//device/fido:test_support",
@@ -160,6 +177,9 @@ source_set("unit_tests") {
   }
 
   if (is_win) {
-    sources += [ "win/device_authenticator_win_unittest.cc" ]
+    sources += [
+      "win/device_auth_availability_checker_win_unittest.cc",
+      "win/device_authenticator_win_unittest.cc",
+    ]
   }
 }

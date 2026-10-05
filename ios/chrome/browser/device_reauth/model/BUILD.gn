@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_device_auth_availability_checker.h",
+    "ios_device_auth_availability_checker.mm",
     "ios_device_authenticator.h",
     "ios_device_authenticator.mm",
     "ios_device_authenticator_factory.h",
@@ -27,7 +29,10 @@ source_set("model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_device_authenticator_unittest.mm" ]
+  sources = [
+    "ios_device_auth_availability_checker_unittest.mm",
+    "ios_device_authenticator_unittest.mm",
+  ]
   deps = [
     "//base/test:test_proto",
     "//base/test:test_support",

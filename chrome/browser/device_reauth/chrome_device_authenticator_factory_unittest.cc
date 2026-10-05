@@ -10,11 +10,13 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator_common.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_ui_types.h"
+
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/window_android.h"
 #endif
@@ -120,4 +122,10 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
 TEST_F(ChromeDeviceAuthenticatorFactoryTest, Guest) {
   ChromeDeviceAuthenticatorFactory::GetForProfile(
       guest_profile(), native_window(), GetDeviceAuthenticatorParams());
+}
+
+// Checks that an availability checker can be created.
+TEST_F(ChromeDeviceAuthenticatorFactoryTest, CreateAvailabilityChecker) {
+  EXPECT_NE(ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker(),
+            nullptr);
 }

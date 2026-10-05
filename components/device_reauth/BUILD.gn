@@ -9,6 +9,7 @@ if (is_android) {
 
 static_library("device_reauth") {
   sources = [
+    "device_auth_availability_checker.h",
     "device_authenticator.cc",
     "device_authenticator.h",
     "device_authenticator_common.cc",
@@ -45,7 +46,7 @@ if (is_android) {
 
   java_cpp_enum("device_reauth_java_enums_srcjar") {
     sources = [
-      "device_authenticator.h",
+      "device_auth_availability_checker.h",
       "device_reauth_metrics_util.h",
     ]
   }

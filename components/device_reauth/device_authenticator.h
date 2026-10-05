@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_reauth_metrics_util.h"
 
 namespace device_reauth {
@@ -42,15 +43,6 @@ class DeviceAuthParams {
   // enum.
   std::string auth_result_histogram_;
 };
-
-#if BUILDFLAG(IS_ANDROID)
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.device_reauth
-enum class BiometricStatus {
-  kBiometricsAvailable,
-  kOnlyLskfAvailable,
-  kUnavailable,
-};
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // This interface encapsulates operations related to biometric authentication.
 // It's intended to be used prior to sharing the user's credentials with a

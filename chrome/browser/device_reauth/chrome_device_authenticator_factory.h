@@ -16,12 +16,13 @@ class BrowserContext;
 }
 
 namespace device_reauth {
+class DeviceAuthAvailabilityChecker;
 class DeviceAuthenticator;
 class DeviceAuthParams;
 }  // namespace device_reauth
 
 // Implementation for every OS will be in the same file, as the only thing
-// different will be the way of creating a DeviceAuthenticator object, and
+// different will be the way of creating a `DeviceAuthenticator` object, and
 // that part will be hidden behind a BUILDFLAG.
 class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
  public:
@@ -32,7 +33,11 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
 
   static ChromeDeviceAuthenticatorFactory* GetInstance();
 
-  // Create an instance of the DeviceAuthenticator. Trying to use this
+  // Create an instance of the `DeviceAuthAvailabilityChecker`.
+  static std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+  CreateAvailabilityChecker();
+
+  // Create an instance of the `DeviceAuthenticator`. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
@@ -41,7 +46,7 @@ class ChromeDeviceAuthenticatorFactory : public ProfileKeyedServiceFactory {
       const device_reauth::DeviceAuthParams& params);
 
 #if BUILDFLAG(IS_ANDROID)
-  // Create an instance of the DeviceAuthenticator. Trying to use this
+  // Create an instance of the `DeviceAuthenticator`. Trying to use this
   // API on platforms that do not provide an implementation will result in a
   // link error.
   static std::unique_ptr<device_reauth::DeviceAuthenticator> GetForProfile(
