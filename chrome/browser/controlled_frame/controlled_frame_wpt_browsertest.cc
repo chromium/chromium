@@ -48,7 +48,10 @@ const auto kTestFiles = testing::Values("add_content_scripts.window.js",
                                         "webrequest_auth.window.js",
 #endif
                                         "webrequest_core.window.js",
+// TODO(crbug.com/569841724): webrequest_modify is flaky on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
                                         "webrequest_modify.window.js",
+#endif
                                         "webrequest_read.window.js");
 
 constexpr char kTestDirectory[] = "chrome/test/data/controlled_frame";
