@@ -3650,6 +3650,8 @@ TEST_P(QuicSessionPoolTest,
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
 
+  base::HistogramTester histogram_tester;
+
   // Path degrading starts probing on kNewNetworkForTests.
   session->connection()->OnPathDegradingDetected();
   // OnPathDegradingDetected() asynchronously connects and configures the socket
@@ -3659,8 +3661,6 @@ TEST_P(QuicSessionPoolTest,
   // quic_data2's AddReadPause(), ensuring that path validation is in flight.
   quic_data2.GetSequencedSocketData()->RunUntilPaused();
   EXPECT_TRUE(session->connection()->HasPendingPathValidation());
-
-  base::HistogramTester histogram_tester;
 
   // Signal that kNewNetworkForTests2 is connected and made default.
   scoped_mock_network_change_notifier_->mock_network_change_notifier()
@@ -3700,8 +3700,171 @@ TEST_P(QuicSessionPoolTest,
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
 
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 2);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost", 0);
+
   session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  histogram_tester.ExpectUniqueSample("Net.QuicSession.NumMigrations", 0, 1);
+  histogram_tester.ExpectTotalCount("Net.QuicSession.NumMigrations.GoogleHost",
+                                    0);
+
+  stream.reset();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
+}
+
+TEST_P(QuicSessionPoolTest,
+       ProbingFailsWithNoUnusedConnectionIdWhenProbingInFlight_GoogleHost) {
+  const handles::NetworkHandle kNewNetworkForTests2 = 3;
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests, kNewNetworkForTests2});
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+  client_maker_.set_hostname("www.google.com");
+  server_maker_.set_hostname("www.google.com");
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), task_runner.get());
+
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+
+  MockQuicData quic_data1(version_);
+  quic_data1.AddReadPauseForever();
+  int packet_num = 1;
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_num++));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for first probe on kNewNetworkForTests.
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  MockQuicData quic_data2(version_);
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
+  quic_data2.AddReadPause();
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Socket data for second probe on kNewNetworkForTests2.
+  MockQuicData quic_data3(version_);
+  quic_data3.AddReadPauseForever();
+  quic_data3.AddSocketDataToFactory(socket_factory_.get());
+
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  builder.destination = kGoogleDestination;
+  builder.url = GURL("https://www.google.com/");
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com/");
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  QuicChromiumClientSession* session = GetActiveSession(kGoogleDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kGoogleDestination));
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  base::HistogramTester histogram_tester;
+
+  // Path degrading starts probing on kNewNetworkForTests.
+  session->connection()->OnPathDegradingDetected();
+  quic_data2.GetSequencedSocketData()->RunUntilPaused();
+  EXPECT_TRUE(session->connection()->HasPendingPathValidation());
+
+  // Signal that kNewNetworkForTests2 is connected and made default.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->SetConnectedNetworksList(
+          {kDefaultNetworkForTests, kNewNetworkForTests, kNewNetworkForTests2});
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkConnected(kNewNetworkForTests2);
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests2);
+
+  task_runner->RunUntilIdle();
+
+  // Probe 1 is cancelled as superseded by kOnNetworkMadeDefault.
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.Superseded",
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.ConnectionMigration",
+      MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION, 1);
+
+  // Probe 2 fails because active_connection_id_limit is 2 and Probe 1 consumed
+  // the only spare CID.
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+  histogram_tester.ExpectBucketCount("Net.QuicSession.ConnectionMigration",
+                                     MIGRATION_STATUS_INTERNAL_ERROR, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 2);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 2);
+
+  session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  histogram_tester.ExpectUniqueSample("Net.QuicSession.NumMigrations", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.NumMigrations.GoogleHost", 0, 1);
+
   stream.reset();
   quic_data1.ExpectAllWriteDataConsumed();
   quic_data2.ExpectAllWriteDataConsumed();
@@ -5319,6 +5482,8 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
                                     callback_.callback()));
 
+  base::HistogramTester histogram_tester;
+
   EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumDegradingSessions(pool_.get()));
   // Cause the connection to report path degrading to the session.
   // Session will start to probe the alternate network.
@@ -5362,11 +5527,205 @@ TEST_P(QuicSessionPoolTest, MigrateToProbingSocket) {
   EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
 
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 0);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost", 0);
+
   stream.reset();
   quic_data1.ExpectAllReadDataConsumed();
   quic_data1.ExpectAllWriteDataConsumed();
   quic_data2.ExpectAllReadDataConsumed();
   quic_data2.ExpectAllWriteDataConsumed();
+
+  session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  histogram_tester.ExpectUniqueSample("Net.QuicSession.NumMigrations", 1, 1);
+  histogram_tester.ExpectTotalCount("Net.QuicSession.NumMigrations.GoogleHost",
+                                    0);
+}
+
+TEST_P(QuicSessionPoolTest, MigrateToProbingSocket_GoogleHost) {
+  InitializeConnectionMigrationV2Test(
+      {kDefaultNetworkForTests, kNewNetworkForTests});
+  ProofVerifyDetailsChromium verify_details = GoogleProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  client_maker_.set_save_packet_frames(true);
+  client_maker_.set_hostname("www.google.com");
+  server_maker_.set_hostname("www.google.com");
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicSessionPoolPeer::SetTaskRunner(pool_.get(), task_runner.get());
+
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->QueueNetworkMadeDefault(kDefaultNetworkForTests);
+
+  int packet_number = 1;
+  MockQuicData quic_data1(version_);
+  quic_data1.AddReadPauseForever();
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructInitialSettingsPacket(packet_number++));
+  quic_data1.AddWrite(SYNCHRONOUS,
+                      ConstructGetRequestPacket(
+                          packet_number++,
+                          GetNthClientInitiatedBidirectionalStreamId(0), true));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used for probing on the
+  // alternate network.
+  MockQuicData quic_data2(version_);
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+  client_maker_.set_connection_id(cid_on_new_path);
+  // Connectivity probe to be sent on the new path.
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddPathChallengeFrame()
+                                       .AddPaddingFrame()
+                                       .Build());
+  quic_data2.AddReadPause();
+  // First connectivity probe to receive from the server, which will complete
+  // connection migration on path degrading.
+  quic_data2.AddRead(
+      ASYNC,
+      server_maker_.Packet(1).AddPathResponseFrame().AddPaddingFrame().Build());
+  // Read multiple connectivity probes synchronously.
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(2).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(3).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddRead(
+      SYNCHRONOUS,
+      server_maker_.Packet(4).AddPathResponseFrame().AddPaddingFrame().Build());
+  quic_data2.AddWrite(ASYNC, client_maker_.MakeAckAndRetransmissionPacket(
+                                 packet_number++, 1, 4, 1, {1, 2}));
+  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.Packet(packet_number++)
+                                       .AddRetireConnectionIdFrame(0u)
+                                       .Build());
+  quic_data2.AddRead(
+      ASYNC, ConstructOkResponsePacket(
+                 5, GetNthClientInitiatedBidirectionalStreamId(0), false));
+  quic_data2.AddReadPauseForever();
+  quic_data2.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(packet_number++)
+          .AddAckFrame(/*first_received=*/1, /*largest_received=*/5,
+                       /*smallest_received=*/1)
+          .AddStreamFrame(GetQpackDecoderStreamId(), /*fin=*/false,
+                          StreamCancellationQpackDecoderInstruction(0))
+          .AddStopSendingFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                               quic::QUIC_STREAM_CANCELLED)
+          .AddRstStreamFrame(GetNthClientInitiatedBidirectionalStreamId(0),
+                             quic::QUIC_STREAM_CANCELLED)
+          .Build());
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  const url::SchemeHostPort kGoogleDestination(
+      url::kHttpsScheme, "www.google.com", kDefaultServerPort);
+
+  // Create request and QuicHttpStream.
+  RequestBuilder builder(this);
+  builder.destination = kGoogleDestination;
+  builder.url = GURL("https://www.google.com/");
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = GURL("https://www.google.com/");
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(kGoogleDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kGoogleDestination));
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumDegradingSessions(pool_.get()));
+  // Cause the connection to report path degrading to the session.
+  // Session will start to probe the alternate network.
+  session->connection()->OnPathDegradingDetected();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumDegradingSessions(pool_.get()));
+
+  // The connection should still be alive, and not marked as going away.
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kGoogleDestination));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+  EXPECT_EQ(ERR_IO_PENDING, stream->ReadResponseHeaders(callback_.callback()));
+
+  // Resume quic data and a connectivity probe response will be read on the new
+  // socket.
+  quic_data2.Resume();
+
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kGoogleDestination));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+  // There should be a task that will complete the migration to the new network.
+  task_runner->RunUntilIdle();
+
+  EXPECT_EQ(1u, QuicSessionPoolPeer::GetNumDegradingSessions(pool_.get()));
+
+  // Response headers are received over the new network.
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_EQ(200, response.headers->response_code());
+
+  // Deliver a signal that the alternate network now becomes default to session,
+  // this will cancel migrate back to default network timer.
+  scoped_mock_network_change_notifier_->mock_network_change_notifier()
+      ->NotifyNetworkMadeDefault(kNewNetworkForTests);
+
+  EXPECT_EQ(0u, QuicSessionPoolPeer::GetNumDegradingSessions(pool_.get()));
+
+  task_runner->FastForwardBy(base::Seconds(kMinRetryTimeForDefaultNetworkSecs));
+
+  // Verify that the session is still alive.
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kGoogleDestination));
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost", 1, 1);
+  histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost", 0);
+
+  stream.reset();
+  quic_data1.ExpectAllReadDataConsumed();
+  quic_data1.ExpectAllWriteDataConsumed();
+  quic_data2.ExpectAllReadDataConsumed();
+  quic_data2.ExpectAllWriteDataConsumed();
+
+  session->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                               quic::ConnectionCloseBehavior::SILENT_CLOSE);
+  histogram_tester.ExpectUniqueSample("Net.QuicSession.NumMigrations", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.QuicSession.NumMigrations.GoogleHost", 1, 1);
 }
 
 // This test verifies that the connection migrates to the alternate network
@@ -7227,7 +7586,8 @@ TEST_P(QuicSessionPoolTest,
       QuicMigrationAttemptCause::kUnknown, session->GetCurrentNetwork(),
       handles::kInvalidNetworkHandle, quic::QuicSocketAddress(),
       std::move(reader), std::move(writer),
-      session->CreateSessionAliveCallback());
+      session->CreateSessionAliveCallback(),
+      /*is_google_host=*/false);
   session->CommitMigration(std::move(context));
 }
 
@@ -7309,7 +7669,8 @@ TEST_P(QuicSessionPoolTest,
           session->net_log()),
       std::make_unique<QuicChromiumPacketWriter>(
           socket_ptr, base::SingleThreadTaskRunner::GetCurrentDefault().get()),
-      session->CreateSessionAliveCallback());
+      session->CreateSessionAliveCallback(),
+      /*is_google_host=*/false);
   pool_->ConnectAndConfigureSocket(
       base::BindLambdaForTesting(
           [&session, context = std::move(context)](int rv) mutable {

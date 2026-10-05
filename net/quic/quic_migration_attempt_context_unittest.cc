@@ -37,7 +37,8 @@ class QuicMigrationAttemptContextTest : public ::testing::Test {
   std::unique_ptr<QuicMigrationAttemptContext> CreateAttemptContext(
       QuicMigrationAttemptCause cause,
       base::RepeatingCallback<bool()> is_session_alive =
-          base::BindRepeating([]() { return true; })) {
+          base::BindRepeating([]() { return true; }),
+      bool is_google_host = false) {
     auto reads = std::make_unique<std::vector<MockRead>>();
     reads->push_back(MockRead(SYNCHRONOUS, ERR_IO_PENDING, 0));
     auto socket_data =
@@ -64,7 +65,7 @@ class QuicMigrationAttemptContextTest : public ::testing::Test {
     return std::make_unique<QuicMigrationAttemptContext>(
         cause, /*from_network=*/1, /*target_network=*/2,
         ToQuicSocketAddress(peer_address), std::move(reader), std::move(writer),
-        std::move(is_session_alive));
+        std::move(is_session_alive), is_google_host);
   }
 
  protected:
@@ -330,7 +331,8 @@ TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
 
   for (const auto& test_case : test_cases) {
     histogram_tester.ExpectBucketCount(
-        "Net.Quic.Migration.Attempt.FailureReason", test_case.failure_reason, 1);
+        "Net.Quic.Migration.Attempt.FailureReason", test_case.failure_reason,
+        1);
     histogram_tester.ExpectBucketCount(
         base::StrCat({"Net.Quic.Migration.Attempt.FailureReason.ByTrigger.",
                       test_case.trigger_name}),
@@ -343,6 +345,40 @@ TEST_F(QuicMigrationAttemptContextTest, SetFailure) {
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
+}
+
+TEST_F(QuicMigrationAttemptContextTest, SetFailureGoogleHost) {
+  base::HistogramTester histogram_tester;
+  {
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkDisconnected,
+                             base::BindRepeating([]() { return true; }),
+                             /*is_google_host=*/true);
+    context->SetFailure(
+        QuicMigrationAttemptFailureReason::kNoUnusedConnectionId);
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+      QuicMigrationAttemptFailureReason::kNoUnusedConnectionId, 1);
+
+  // Non-Google host should not record the GoogleHost histogram.
+  {
+    auto context =
+        CreateAttemptContext(QuicMigrationAttemptCause::kOnNetworkDisconnected,
+                             base::BindRepeating([]() { return true; }),
+                             /*is_google_host=*/false);
+    context->SetFailure(QuicMigrationAttemptFailureReason::kProbeTimeout);
+  }
+
+  histogram_tester.ExpectBucketCount(
+      "Net.Quic.Migration.Attempt.FailureReason",
+      QuicMigrationAttemptFailureReason::kProbeTimeout, 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.Quic.Migration.Attempt.FailureReason.GoogleHost", 1);
 }
 
 }  // namespace

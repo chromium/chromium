@@ -59,14 +59,16 @@ QuicMigrationAttemptContext::QuicMigrationAttemptContext(
     const quic::QuicSocketAddress& target_peer_address,
     std::unique_ptr<QuicChromiumPacketReader> reader,
     std::unique_ptr<QuicChromiumPacketWriter> writer,
-    base::RepeatingCallback<bool()> is_session_alive)
+    base::RepeatingCallback<bool()> is_session_alive,
+    bool is_google_host)
     : cause_(cause),
       from_network_(from_network),
       target_network_(target_network),
       target_peer_address_(target_peer_address),
       reader_(std::move(reader)),
       writer_(std::move(writer)),
-      is_session_alive_(std::move(is_session_alive)) {
+      is_session_alive_(std::move(is_session_alive)),
+      is_google_host_(is_google_host) {
   CHECK(reader_);
   CHECK(writer_);
   CHECK(is_session_alive_);
@@ -110,6 +112,11 @@ QuicMigrationAttemptContext::~QuicMigrationAttemptContext() {
           base::StrCat({"Net.Quic.Migration.Attempt.FailureReason.ByTrigger.",
                         trigger_str}),
           failure_reason);
+      if (is_google_host_) {
+        base::UmaHistogramEnumeration(
+            "Net.Quic.Migration.Attempt.FailureReason.GoogleHost",
+            failure_reason);
+      }
       break;
     }
     case Outcome::kIneligible:

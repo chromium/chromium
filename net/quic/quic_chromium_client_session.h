@@ -1151,6 +1151,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   void LogZeroRttStats();
 
+  void RecordUnusedConnectionIdsAtMigrationAttempt();
+
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
   std::unique_ptr<WebSocketQuicStreamAdapter>
   CreateWebSocketQuicStreamAdapterImpl(

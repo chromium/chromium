@@ -4845,16 +4845,6 @@ chromium-metrics-reviews@google.com.
   <token key="Trigger" variants="QuicMigrationAttemptCause"/>
 </histogram>
 
-<histogram name="Net.Quic.Migration.Attempt.FailureReason"
-    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
-  <owner>stefanoduo@google.com</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Records the failure reason for eligible QUIC connection migration attempts
-    that failed.
-  </summary>
-</histogram>
-
 <histogram name="Net.Quic.Migration.Attempt.FailureReason.ByTrigger.{Trigger}"
     enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
   <owner>stefanoduo@google.com</owner>
@@ -4864,6 +4854,20 @@ chromium-metrics-reviews@google.com.
     migration cause {Trigger}.
   </summary>
   <token key="Trigger" variants="QuicMigrationAttemptCause"/>
+</histogram>
+
+<histogram name="Net.Quic.Migration.Attempt.FailureReason{HostType}"
+    enum="QuicMigrationAttemptFailureReason" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records the failure reason for eligible QUIC connection migration attempts
+    that failed. {HostType}
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="For Google hosts only."/>
+  </token>
 </histogram>
 
 <histogram name="Net.Quic.Migration.Attempt.Ineligible"
@@ -6528,13 +6532,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.NumMigrations" units="units"
-    expires_after="2026-11-29">
-  <owner>renjietang@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>The number of successful migrations for a QUIC session.</summary>
-</histogram>
-
 <histogram name="Net.QuicSession.NumMigrationsExercisedBeforePublicReset"
     units="migrations" expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>
@@ -6543,6 +6540,19 @@ chromium-metrics-reviews@google.com.
     Number of connection migrations exercised before the connection receives a
     public reset.
   </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.NumMigrations{HostType}" units="units"
+    expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of successful migrations for a QUIC session. {HostType}
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="For Google hosts only."/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.NumOpenStreams" units="units"
@@ -7452,6 +7462,22 @@ chromium-metrics-reviews@google.com.
     session is closed. Only includes packets where a decryption key was present
     for the packet's encryption level.
   </summary>
+</histogram>
+
+<histogram
+    name="Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt{HostType}"
+    units="connection IDs" expires_after="2027-08-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The number of unused peer connection IDs available when a QUIC connection
+    migration or probing attempt begins. Recorded at the start of probing,
+    non-probing migration, or multi-port path creation. {HostType}
+  </summary>
+  <token key="HostType">
+    <variant name=""/>
+    <variant name=".GoogleHost" summary="Google hosts only."/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.ValidConnectionTime" units="ms"

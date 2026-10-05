@@ -121,7 +121,8 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
       const quic::QuicSocketAddress& target_peer_address,
       std::unique_ptr<QuicChromiumPacketReader> reader,
       std::unique_ptr<QuicChromiumPacketWriter> writer,
-      base::RepeatingCallback<bool()> is_session_alive);
+      base::RepeatingCallback<bool()> is_session_alive,
+      bool is_google_host);
   ~QuicMigrationAttemptContext();
 
   QuicMigrationAttemptContext(const QuicMigrationAttemptContext&) = delete;
@@ -139,6 +140,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   const quic::QuicSocketAddress& target_peer_address() const {
     return target_peer_address_;
   }
+  bool is_google_host() const { return is_google_host_; }
 
   QuicChromiumPacketReader* reader() const { return reader_.get(); }
   QuicChromiumPacketWriter* writer() const { return writer_.get(); }
@@ -170,6 +172,7 @@ class NET_EXPORT_PRIVATE QuicMigrationAttemptContext {
   std::unique_ptr<QuicChromiumPacketWriter> writer_;
 
   base::RepeatingCallback<bool()> is_session_alive_;
+  const bool is_google_host_;
 };
 
 }  // namespace net

@@ -391,7 +391,8 @@ class QuicChromiumClientSessionTest
   std::unique_ptr<QuicMigrationAttemptContext> CreateMigrationAttemptContext(
       QuicMigrationAttemptCause cause,
       SocketDataProvider* socket_data,
-      base::RepeatingCallback<bool()> is_session_alive = base::NullCallback()) {
+      base::RepeatingCallback<bool()> is_session_alive = base::NullCallback(),
+      bool is_google_host = false) {
     if (socket_data) {
       socket_factory_.AddSocketDataProvider(socket_data);
     }
@@ -417,7 +418,7 @@ class QuicChromiumClientSessionTest
     return std::make_unique<QuicMigrationAttemptContext>(
         cause, session_->GetCurrentNetwork(), session_->GetCurrentNetwork(),
         ToQuicSocketAddress(peer_address), std::move(new_reader),
-        std::move(new_writer), std::move(is_session_alive));
+        std::move(new_writer), std::move(is_session_alive), is_google_host);
   }
 
   quic::QuicStreamId GetNthClientInitiatedBidirectionalStreamId(int n) {
@@ -2066,7 +2067,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
       QuicMigrationAttemptCause::kOnNetworkDisconnected,
       session_->GetCurrentNetwork(), session_->GetCurrentNetwork(),
       ToQuicSocketAddress(peer_address), std::move(new_reader),
-      std::move(new_writer), session_->CreateSessionAliveCallback());
+      std::move(new_writer), session_->CreateSessionAliveCallback(),
+      /*is_google_host=*/false);
   EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
   histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Eligible",
                                       true, 1);
@@ -2173,7 +2175,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
         QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
         session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
         std::move(new_reader), std::move(new_writer),
-        session_->CreateSessionAliveCallback());
+        session_->CreateSessionAliveCallback(),
+        /*is_google_host=*/false);
     EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
     // Spin message loop to complete migration.
     base::RunLoop().RunUntilIdle();
@@ -2217,7 +2220,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
       QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
       session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
       std::move(new_reader), std::move(new_writer),
-      session_->CreateSessionAliveCallback());
+      session_->CreateSessionAliveCallback(),
+      /*is_google_host=*/false);
   EXPECT_FALSE(session_->CommitMigration(std::move(migration_context)));
   histogram_tester.ExpectUniqueSample(
       "Net.Quic.Migration.Attempt.Ineligible",
@@ -2295,7 +2299,8 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
       QuicMigrationAttemptCause::kUnknown, session_->GetCurrentNetwork(),
       session_->GetCurrentNetwork(), ToQuicSocketAddress(peer_address),
       std::move(new_reader), std::move(new_writer),
-      session_->CreateSessionAliveCallback());
+      session_->CreateSessionAliveCallback(),
+      /*is_google_host=*/false);
   EXPECT_TRUE(session_->CommitMigration(std::move(migration_context)));
   // Spin message loop to complete migration.
   base::RunLoop().RunUntilIdle();

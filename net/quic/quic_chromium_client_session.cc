@@ -2258,6 +2258,11 @@ void QuicChromiumClientSession::OnConnectionClosed(
                               connection()->GetStats().ping_frames_sent);
 
     UMA_HISTOGRAM_COUNTS_100("Net.QuicSession.NumMigrations", num_migrations_);
+    if (IsGoogleHost(session_key_.host())) {
+      base::UmaHistogramCounts100("Net.QuicSession.NumMigrations.GoogleHost",
+                                  num_migrations_);
+    }
+
     if (IsGoogleHostWithAlpnH3(session_key_.host())) {
       UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumPingsSent.GoogleWithAlpnH3",
                                 connection()->GetStats().ping_frames_sent);
@@ -3455,6 +3460,21 @@ void QuicChromiumClientSession::MaybeMigrateToAlternateNetworkOnPathDegrading(
   net_log_.EndEvent(NetLogEventType::QUIC_CONNECTION_MIGRATION_TRIGGERED);
 }
 
+void QuicChromiumClientSession::RecordUnusedConnectionIdsAtMigrationAttempt() {
+  // Up to 9 unused connection IDs are recorded into exact 1-wide buckets 0..9.
+  // Counts >= 10 fall into the overflow bucket 10.
+  constexpr int kExclusiveMaxUnusedCids = 10;
+  size_t count = connection()->NumUnusedPeerIssuedConnectionIds();
+  base::UmaHistogramExactLinear(
+      "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt",
+      static_cast<int>(count), kExclusiveMaxUnusedCids);
+  if (IsGoogleHost(session_key_.host())) {
+    base::UmaHistogramExactLinear(
+        "Net.QuicSession.UnusedConnectionIdsAtMigrationAttempt.GoogleHost",
+        static_cast<int>(count), kExclusiveMaxUnusedCids);
+  }
+}
+
 void QuicChromiumClientSession::MaybeStartProbing(
     QuicMigrationAttemptCause migration_cause,
     handles::NetworkHandle network,
@@ -3525,6 +3545,8 @@ void QuicChromiumClientSession::CreateContextForMultiPortPath(
                                   net_log_.net_log(), net_log_.source());
   DatagramClientSocket* probing_socket_ptr = probing_socket.get();
 
+  RecordUnusedConnectionIdsAtMigrationAttempt();
+
   auto attempt_context = std::make_unique<QuicMigrationAttemptContext>(
       QuicMigrationAttemptCause::kMultiPortPath, default_network_,
       default_network_, peer_address(),
@@ -3533,7 +3555,7 @@ void QuicChromiumClientSession::CreateContextForMultiPortPath(
           yield_after_duration_, net_log_),
       std::make_unique<QuicChromiumPacketWriter>(probing_socket_ptr,
                                                  task_runner_),
-      CreateSessionAliveCallback());
+      CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
 
   if (base::FeatureList::IsEnabled(net::features::kAsyncMultiPortPath)) {
     CompletionOnceCallback configure_callback = base::BindOnce(
@@ -3624,6 +3646,8 @@ void QuicChromiumClientSession::StartProbing(
                                   net_log_.net_log(), net_log_.source());
   DatagramClientSocket* probing_socket_ptr = probing_socket.get();
 
+  RecordUnusedConnectionIdsAtMigrationAttempt();
+
   auto attempt_context = std::make_unique<QuicMigrationAttemptContext>(
       migration_cause, GetCurrentNetwork(), network, peer_address,
       std::make_unique<QuicChromiumPacketReader>(
@@ -3631,7 +3655,7 @@ void QuicChromiumClientSession::StartProbing(
           yield_after_duration_, net_log_),
       std::make_unique<QuicChromiumPacketWriter>(probing_socket_ptr,
                                                  task_runner_),
-      CreateSessionAliveCallback());
+      CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
 
   CompletionOnceCallback configure_callback =
       base::BindOnce(&QuicChromiumClientSession::FinishStartProbing,
@@ -4354,6 +4378,8 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
       handles::kInvalidNetworkHandle, net_log_.net_log(), net_log_.source()));
   DatagramClientSocket* socket_ptr = socket.get();
 
+  RecordUnusedConnectionIdsAtMigrationAttempt();
+
   auto migration_context = std::make_unique<QuicMigrationAttemptContext>(
       migration_cause, GetCurrentNetwork(), network,
       ToQuicSocketAddress(peer_address),
@@ -4361,7 +4387,7 @@ void QuicChromiumClientSession::MigrateWithoutProbing(
           std::move(socket), clock_, this, yield_after_packets_,
           yield_after_duration_, net_log_),
       std::make_unique<QuicChromiumPacketWriter>(socket_ptr, task_runner_),
-      CreateSessionAliveCallback());
+      CreateSessionAliveCallback(), IsGoogleHost(session_key_.host()));
 
   DVLOG(1) << "Force blocking the packet writer";
   static_cast<QuicChromiumPacketWriter*>(connection()->writer())
