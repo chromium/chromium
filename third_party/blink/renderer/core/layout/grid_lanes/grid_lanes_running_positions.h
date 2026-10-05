@@ -39,6 +39,12 @@ class CORE_EXPORT GridLanesRunningPositions {
     DISALLOW_NEW();
 
    public:
+    AlignmentCandidate() = default;
+    AlignmentCandidate(GridItemData* item,
+                       wtf_size_t item_index,
+                       GridLayoutSubtree* layout_subtree,
+                       const ItemIndexPath* item_index_path);
+
     bool IsValid() const { return item != nullptr; }
 
     void Trace(Visitor* visitor) const {
@@ -47,10 +53,10 @@ class CORE_EXPORT GridLanesRunningPositions {
     }
 
     Member<GridItemData> item;
-    // Without a lane graph, this indexes the container builder's children. With
-    // a lane graph (gap decorations or fragmentation collection), it indexes
-    // either the item or its root spanner in the item's start lane.
-    wtf_size_t item_index{kNotFound};
+    // Without a lane graph, the single index identifies a child in the fragment
+    // builder. With a lane graph, the path identifies the item in its start
+    // lane.
+    ItemIndexPath item_index_path;
     // This is only needed for stretch aligned items as they will need to be
     // relaid out once we know the final alignment candidate for a given track
     // opening.
@@ -81,10 +87,8 @@ class CORE_EXPORT GridLanesRunningPositions {
     // axis.
     AlignmentCandidate alignment_candidate;
 
-    // The index into the corresponding `GridLaneData::item_data` of the item
-    // directly below this opening. Dense items placed into the opening can be
-    // nested under this entry.
-    wtf_size_t item_below_index{kNotFound};
+    // Path to the lane-specific item directly below this opening.
+    ItemIndexPath item_below_index_path;
   };
 
   GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
@@ -139,11 +143,8 @@ class CORE_EXPORT GridLanesRunningPositions {
   //
   // Without a lane graph, `item_index` indexes the item's fragment in the
   // container builder. With a lane graph (gap decorations or fragmentation
-  // collection), it indexes either the item or the lane entry below its opening
-  // in the item's start lane. `layout_subtree` is the item's layout subtree
-  // (only non-null for subgrids). When `grid_lanes` is provided, it determines
-  // where this item will be added to each lane so new openings can refer to the
-  // item below them.
+  // collection), complete item paths are inferred from `grid_lanes` instead.
+  // `layout_subtree` is the item's layout subtree (only non-null for subgrids).
   //
   // Example of how `max_running_position_for_span` is used when dense-packing
   // is enabled: |Track 1|Track 2|Track 3|
@@ -187,19 +188,24 @@ class CORE_EXPORT GridLanesRunningPositions {
   // earlier in track-flow order, set `grid_lanes_item` to have the updated span
   // location, adjust the track opening as needed (either erasing it or reducing
   // the size), and return the running position at which the item will be
-  // placed. Without a lane graph, `item_index` identifies the item's fragment
-  // in the container builder. With a lane graph (gap decorations or
-  // fragmentation collection), the start-lane index is
-  // determined from the selected openings instead. The index is used when
-  // creating a stacking-axis alignment candidate above any new track openings.
+  // placed. This method returns `std::nullopt` if no eligible track opening was
+  // found.
+  //
   // This method is only used when dense-packing is set. In the case where a
   // multi-span item is densely-packed across the open ending of a track after
   // the current running position, the running position of that track will be
   // updated in this method. For an example, see the comment for
-  // `AccumulateTrackOpeningsToAccommodateItem`. If provided,
-  // `item_indices_below_opening` receives the index into each corresponding
-  // `GridLaneData::item_data` of the item below the selected opening. This
-  // method returns `std::nullopt` if no eligible track opening was found.
+  // `AccumulateTrackOpeningsToAccommodateItem`.
+  //
+  // For a densely packed item, `parent_item_index_path_per_lane` receives one
+  // path per occupied lane. Each path identifies the item below the selected
+  // opening in that lane. An empty path means there is no item below in that
+  // lane, so the item is inserted at the root.
+  // `parent_item_index_path_per_lane` is empty for a non-densely-packed item.
+  //
+  // Without a lane graph, `item_index` identifies the item's fragment in the
+  // container builder. With a lane graph, the item's complete path is inferred
+  // from its parent path and `grid_lanes`.
   std::optional<LayoutUnit> GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
       wtf_size_t start_offset,
       const LayoutUnit item_stacking_axis_contribution,
@@ -209,7 +215,7 @@ class CORE_EXPORT GridLanesRunningPositions {
       wtf_size_t item_index = kNotFound,
       GridLayoutSubtree* layout_subtree = nullptr,
       const GridLanesDataVector* grid_lanes = nullptr,
-      Vector<wtf_size_t>* item_indices_below_opening = nullptr);
+      Vector<ItemIndexPath>* parent_item_index_path_per_lane = nullptr);
 
   // If the span of `grid_lanes_item` is indefinite this method will find and
   // set the span where the item should be placed. Then, this method will return

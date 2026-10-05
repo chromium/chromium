@@ -69,7 +69,7 @@ class CORE_EXPORT GridLanesItemIterator {
   // item in each lane it spans has been processed.
   struct PendingColumnSpanner {
     // The index of the lane the spanner starts in, as well as its index in that
-    // lanes.
+    // lane.
     wtf_size_t lane_idx;
     wtf_size_t item_idx;
     // The index immediately after the last lane occupied by the spanner. The

@@ -3354,8 +3354,8 @@ TEST_F(GridLanesLayoutAlgorithmTest, PopulateDensePackedBreakTokenData) {
   ASSERT_EQ(spanner.items_densely_packed_above.size(), 1u);
   const auto& packed_item = *spanner.items_densely_packed_above[0];
 
-  // The packed item's shared placement record is found by its collection index
-  // and end-aligned within the opening above the spanner.
+  // The packed item's shared placement record is resolved by its stable lane
+  // path and end-aligned within the opening above the spanner.
   EXPECT_EQ(spanner.PlacementData().offset,
             (LogicalOffset{LayoutUnit(), LayoutUnit(20)}));
   EXPECT_EQ(packed_item.PlacementData().offset,
@@ -3466,7 +3466,7 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 }
 
 TEST_F(GridLanesLayoutAlgorithmTest,
-       PopulateDenseItemAboveDenseSpannerUsesRootSpanner) {
+       PopulateDenseItemAboveDenseSpannerUsesParentSpanner) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes; height: 200px;
         grid-template-columns: repeat(4, 100px); grid-auto-flow: dense;
@@ -3483,22 +3483,21 @@ TEST_F(GridLanesLayoutAlgorithmTest,
 
   const auto grid_lanes = GetFragmentedGridLanesData();
 
-  // Lane 2 has one direct root spanner with both packed items nested under it.
+  // Lane 2 has one direct root spanner, a packed spanner, and an item packed
+  // above that spanner.
   ASSERT_EQ(grid_lanes.size(), 4u);
   ASSERT_EQ(grid_lanes[0]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[1]->item_data.size(), 1u);
   ASSERT_EQ(grid_lanes[2]->item_data.size(), 2u);
   ASSERT_EQ(grid_lanes[3]->item_data.size(), 2u);
   const auto& root_spanner = *grid_lanes[1]->item_data[0];
-  ASSERT_EQ(root_spanner.items_densely_packed_above.size(), 2u);
+  ASSERT_EQ(root_spanner.items_densely_packed_above.size(), 1u);
   const auto& packed_spanner = *root_spanner.items_densely_packed_above[0];
-  const auto& packed_item = *root_spanner.items_densely_packed_above[1];
+  ASSERT_EQ(packed_spanner.items_densely_packed_above.size(), 1u);
+  const auto& packed_item = *packed_spanner.items_densely_packed_above[0];
 
-  // The single-lane item uses the opening above the packed spanner but remains
-  // a sibling under the original root instead of nesting under that spanner.
   EXPECT_EQ(packed_spanner.PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit(10)}));
-  EXPECT_TRUE(packed_spanner.items_densely_packed_above.empty());
   EXPECT_EQ(packed_item.PlacementData().offset,
             (LogicalOffset{LayoutUnit(100), LayoutUnit()}));
 }

@@ -64,23 +64,26 @@ class CORE_EXPORT GridLanesGapAccumulator {
 
   // Records the item and adds its `CrossGap` if needed.
   void RecordLaneEntry(const GridLanesItemData& item,
-                       const GridLanesItemData* first_item_in_track,
+                       bool has_preceding_gap,
                        wtf_size_t compact_track_index,
                        const GridLanesGapGeometryState& state,
                        Vector<wtf_size_t>& lane_occupant_ids);
+
+  // Records every item in a dense-packing tree in final stacking order.
+  // `contains_last_item_in_lane` is true for each subtree on the path to the
+  // lane's final item.
+  void RecordLaneItemTree(GridLanesItemData& item,
+                          bool is_fill_reverse,
+                          bool contains_last_item_in_lane,
+                          wtf_size_t compact_track_index,
+                          const GridLanesGapGeometryState& state,
+                          Vector<wtf_size_t>& lane_occupant_ids);
 
   // Records lane-wide emptiness and spanner-blocked ranges between two lanes.
   void RecordMainGapSegmentStates(
       wtf_size_t main_gap_index,
       const Vector<wtf_size_t>& previous_lane_occupant_ids,
       const Vector<wtf_size_t>& current_lane_occupant_ids);
-
-  // Sorts and adds the densely packed items above `item_below`.
-  void AddCrossGapsForPackedItems(const GridLanesItemData& item_below,
-                                  const GridLanesItemData* first_item_in_track,
-                                  wtf_size_t compact_track_index,
-                                  const GridLanesGapGeometryState& state,
-                                  Vector<wtf_size_t>& lane_occupant_ids);
 
   // Builds the `CrossGap`s grouped by track in ascending track order.
   void BuildCrossGaps(const GridLanesDataVector& grid_lanes,

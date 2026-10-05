@@ -863,7 +863,14 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
                              stacking_axis_gap, out_grid_lanes);
 
-  if (is_fragmentation_collection && is_for_columns && is_fill_reverse) {
+  // Gap-decoration data requires processing items in stacking order to ensure
+  // proper decoration assignment, and column fragmentation requires processing
+  // items in the correct order in the block (stacking) axis. If the stacking
+  // order is reversed with 'fill-reverse', reverse the stored item order in
+  // `out_grid_lanes`, as well.
+  if (is_fill_reverse && (out_gap_geometry_state ||
+                          (is_fragmentation_collection && is_for_columns))) {
+    CHECK(out_grid_lanes);
     ReverseGridLanesItemOrder(*out_grid_lanes);
   }
 }
@@ -1176,17 +1183,17 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
       running_positions.GetAlignmentCandidateIterator();
   while (auto candidate = alignment_candidate_iterator.Next()) {
     GridItemData& item = *candidate->item;
-    DCHECK_NE(candidate->item_index, kNotFound);
+    DCHECK(!candidate->item_index_path.empty());
 
     GridLanesItemPlacementData* grid_lanes_placement_data =
-        FindGridLanesItemPlacementData(item, candidate->item_index,
-                                       grid_axis_direction, grid_lanes);
+        FindGridLanesItemPlacementData(item, grid_axis_direction,
+                                       candidate->item_index_path, grid_lanes);
     // With a lane graph, use the stored builder index. Otherwise, the candidate
     // index already identifies the builder child.
     const wtf_size_t builder_child_index =
         grid_lanes_placement_data
             ? grid_lanes_placement_data->builder_child_index
-            : candidate->item_index;
+            : candidate->item_index_path.front();
 
     const auto& item_style = item.node.Style();
     const StyleSelfAlignmentData normal_value(ItemPosition::kNormal,
@@ -1544,7 +1551,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
 
     // Without a lane graph this indexes the child that will be added to the
     // container builder. With a lane graph (gap decorations or fragmentation
-    // collection) the item's index in its start lane is determined later, after
+    // collection), the item's path in its start lane is determined later, after
     // dense placement has selected an opening.
     wtf_size_t item_index =
         out_grid_lanes ? kNotFound : container_builder_.Children().size();
@@ -1556,7 +1563,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // be added to the item's size in the stacking axis.
     const bool is_dense_packing = style.IsGridLanesPackDense();
     bool item_moved_to_earlier_opening = false;
-    Vector<wtf_size_t> item_indices_below_opening;
+    Vector<ItemIndexPath> parent_item_index_path_per_lane;
     if (is_dense_packing) {
       std::optional<LayoutUnit> updated_item_start_offset =
           running_positions.GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
@@ -1566,7 +1573,7 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
               /*auto_placement_stacking_axis_offset=*/
               start_offset_in_stacking_axis, track_collection, grid_lanes_item,
               item_index, child_layout_subtree, out_grid_lanes,
-              out_grid_lanes ? &item_indices_below_opening : nullptr);
+              out_grid_lanes ? &parent_item_index_path_per_lane : nullptr);
 
       // If we have a valid offset for the item in the stacking axis, it means
       // we found an earlier track opening for the item.
@@ -1683,15 +1690,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // size of the item, the size of the opening in the stacking axis, and the
     // margin.
     if (!item_moved_to_earlier_opening) {
-      // With a lane graph, a normally placed item will be appended directly to
-      // its start lane at the lane's current size.
-      if (out_grid_lanes) {
-        const wtf_size_t start_lane =
-            grid_lanes_item.StartLine(grid_axis_direction);
-        const GridLaneData* lane_data = out_grid_lanes->at(start_lane);
-        item_index = lane_data ? lane_data->item_data.size() : 0;
-      }
-
       auto new_running_position =
           start_offset_in_stacking_axis + fragment_stacking_axis_contribution;
 
@@ -1793,8 +1791,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
               container_builder_.Children().size();
         }
         AddItemToGridLanesData(grid_lanes_item, grid_lanes_placement_data,
-                               item_indices_below_opening, grid_axis_direction,
-                               *out_grid_lanes);
+                               parent_item_index_path_per_lane,
+                               grid_axis_direction, *out_grid_lanes);
       }
 
       if (!is_fragmentation_collection) {

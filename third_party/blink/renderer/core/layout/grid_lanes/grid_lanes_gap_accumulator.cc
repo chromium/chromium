@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_gap_accumulator.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
@@ -16,23 +15,6 @@
 namespace blink {
 
 namespace {
-
-const GridLanesItemData* FirstItemInForwardStackingOrder(
-    const GridLaneData* lane_data) {
-  if (!lane_data || lane_data->item_data.empty()) {
-    return nullptr;
-  }
-
-  const GridLanesItemData* first = lane_data->item_data.front();
-  for (const GridLanesItemData* packed : first->items_densely_packed_above) {
-    if (packed->ForwardStackingStart() < first->ForwardStackingStart() ||
-        (packed->ForwardStackingStart() == first->ForwardStackingStart() &&
-         packed->PlacementSequence() < first->PlacementSequence())) {
-      first = packed;
-    }
-  }
-  return first;
-}
 
 bool LaneEntryIdsMatch(const Vector<wtf_size_t>& before_ids,
                        wtf_size_t before_index,
@@ -139,12 +121,12 @@ const GapGeometry* GridLanesGapAccumulator::FinalizeGapGeometry(
 
 void GridLanesGapAccumulator::RecordLaneEntry(
     const GridLanesItemData& item,
-    const GridLanesItemData* first_item_in_track,
+    bool has_preceding_gap,
     wtf_size_t compact_track_index,
     const GridLanesGapGeometryState& state,
     Vector<wtf_size_t>& lane_occupant_ids) {
   lane_occupant_ids.push_back(item.PlacementSequence());
-  if (&item == first_item_in_track) {
+  if (!has_preceding_gap) {
     return;
   }
 
@@ -169,6 +151,37 @@ void GridLanesGapAccumulator::RecordLaneEntry(
   if (compact_track_index > 0) {
     gap_geometry_->MainGapAt(compact_track_index - 1)
         .IncrementRangeOfCrossGapsAfter(cross_gap_index);
+  }
+}
+
+void GridLanesGapAccumulator::RecordLaneItemTree(
+    GridLanesItemData& item,
+    bool is_fill_reverse,
+    bool contains_last_item_in_lane,
+    wtf_size_t compact_track_index,
+    const GridLanesGapGeometryState& state,
+    Vector<wtf_size_t>& lane_occupant_ids) {
+  if (is_fill_reverse) {
+    const bool has_preceding_gap =
+        !contains_last_item_in_lane || !item.items_densely_packed_above.empty();
+    RecordLaneEntry(item, has_preceding_gap, compact_track_index, state,
+                    lane_occupant_ids);
+  }
+
+  const auto& densely_packed_items = item.items_densely_packed_above;
+  for (wtf_size_t child_index = 0; child_index < densely_packed_items.size();
+       ++child_index) {
+    bool contains_last_item = contains_last_item_in_lane;
+    contains_last_item &= child_index == densely_packed_items.size() - 1;
+    RecordLaneItemTree(*densely_packed_items[child_index], is_fill_reverse,
+                       contains_last_item, compact_track_index, state,
+                       lane_occupant_ids);
+  }
+
+  if (!is_fill_reverse) {
+    RecordLaneEntry(item,
+                    /*has_preceding_gap=*/!lane_occupant_ids.empty(),
+                    compact_track_index, state, lane_occupant_ids);
   }
 }
 
@@ -228,34 +241,6 @@ void GridLanesGapAccumulator::RecordMainGapSegmentStates(
   }
 }
 
-void GridLanesGapAccumulator::AddCrossGapsForPackedItems(
-    const GridLanesItemData& item_below,
-    const GridLanesItemData* first_item_in_track,
-    wtf_size_t compact_track_index,
-    const GridLanesGapGeometryState& state,
-    Vector<wtf_size_t>& lane_occupant_ids) {
-  if (item_below.items_densely_packed_above.empty()) {
-    return;
-  }
-
-  HeapVector<Member<GridLanesItemData>> packed_items =
-      item_below.items_densely_packed_above;
-  std::sort(packed_items.begin(), packed_items.end(),
-            [&](const GridLanesItemData* a, const GridLanesItemData* b) {
-              const LayoutUnit center_a = FinalGutterCenter(*a, state);
-              const LayoutUnit center_b = FinalGutterCenter(*b, state);
-              if (center_a != center_b) {
-                return center_a < center_b;
-              }
-              // Placement order breaks ties between equal final gutter centers.
-              return a->PlacementSequence() < b->PlacementSequence();
-            });
-  for (const GridLanesItemData* packed : packed_items) {
-    RecordLaneEntry(*packed, first_item_in_track, compact_track_index, state,
-                    lane_occupant_ids);
-  }
-}
-
 void GridLanesGapAccumulator::BuildCrossGaps(
     const GridLanesDataVector& grid_lanes,
     const GridLanesGapGeometryState& state) {
@@ -287,34 +272,17 @@ void GridLanesGapAccumulator::BuildCrossGaps(
       continue;
     }
     const GridLaneData* lane_data = grid_lanes[raw_track_index];
-    const GridLanesItemData* first_item_in_track =
-        FirstItemInForwardStackingOrder(lane_data);
     current_lane_occupant_ids.Shrink(0);
 #if DCHECK_IS_ON()
     const wtf_size_t lane_cross_gap_start = gap_geometry_->CrossGapCount();
 #endif
     if (lane_data) {
-      const auto& item_data = lane_data->item_data;
-      if (!state.is_fill_reverse) {
-        // Visit packed entries before the direct entry below them.
-        for (const GridLanesItemData* direct : item_data) {
-          AddCrossGapsForPackedItems(*direct, first_item_in_track,
-                                     compact_track_index, state,
-                                     current_lane_occupant_ids);
-          RecordLaneEntry(*direct, first_item_in_track, compact_track_index,
-                          state, current_lane_occupant_ids);
-        }
-      } else {
-        // Fill-reverse reflects offsets, so walk direct entries backward and
-        // visit each direct entry before its packed group. This keeps each
-        // track run in increasing final coordinate order.
-        for (const GridLanesItemData* direct : base::Reversed(item_data)) {
-          RecordLaneEntry(*direct, first_item_in_track, compact_track_index,
-                          state, current_lane_occupant_ids);
-          AddCrossGapsForPackedItems(*direct, first_item_in_track,
-                                     compact_track_index, state,
-                                     current_lane_occupant_ids);
-        }
+      const auto& items = lane_data->item_data;
+      for (wtf_size_t item_index = 0; item_index < items.size(); ++item_index) {
+        RecordLaneItemTree(
+            *items[item_index], state.is_fill_reverse,
+            /*contains_last_item_in_lane=*/item_index == items.size() - 1,
+            compact_track_index, state, current_lane_occupant_ids);
       }
     }
 

@@ -13,6 +13,8 @@
 
 namespace blink {
 
+using ItemIndexPath = Vector<wtf_size_t>;
+
 // Placement data shared by every lane entry for a single grid-lanes item.
 struct GridLanesItemPlacementData
     : public GarbageCollected<GridLanesItemPlacementData> {
@@ -42,10 +44,9 @@ struct GridLanesItemPlacementData
   wtf_size_t builder_child_index = kNotFound;
 };
 
-// Item and placement data for a single grid lanes item. If the item is a
-// spanner and dense packing is enabled, this will also store any items that
-// were packed above it. Entries for the same spanner share
-// `grid_lanes_placement_data`, while `is_item_start` and
+// Item and placement data for a single grid lanes item. With dense packing,
+// this also stores any items packed directly above it. Entries for the same
+// spanner share `grid_lanes_placement_data`, while `is_item_start` and
 // `items_densely_packed_above` remain lane-specific.
 struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
   GridLanesItemData(GridItemData* item,
@@ -89,7 +90,7 @@ struct GridLanesItemData : public GarbageCollected<GridLanesItemData> {
   // for the first track it occupies.
   bool is_item_start = true;
 
-  // Only set if this item is a spanner with items densely packed above it.
+  // Items densely packed directly above this item in this lane.
   HeapVector<Member<GridLanesItemData>> items_densely_packed_above;
 };
 
@@ -110,27 +111,34 @@ struct GridLaneData : public GarbageCollected<GridLaneData> {
 
 using GridLanesDataVector = HeapVector<Member<GridLaneData>, 1>;
 
+// Returns the item at `index_path` in `lane_data`'s item tree. The first index
+// selects an item from `GridLaneData::item_data`. Each subsequent index selects
+// an item from the previously selected item's `items_densely_packed_above`.
+// For example, {2, 1, 0} selects root item 2, then its packed child 1, then
+// that child's packed child 0. An empty path represents no item.
+GridLanesItemData* GridLanesItemDataFromPath(const GridLaneData& lane_data,
+                                             const ItemIndexPath& index_path);
+
 // Adds an item entry to every lane occupied by its span.
 //
-// For a densely packed item, `item_indices_below_opening` has one index per
-// occupied lane. Each index identifies the item below the selected opening.
-// `kNotFound` indicates that there is no item below the opening, so the new
-// entry is added directly to the lane. The vector is empty for an item that was
-// not densely packed.
+// For a densely packed item, `parent_item_index_path_per_lane` has one path per
+// occupied lane. Each path identifies the item below the selected opening in
+// that lane. An empty path means there is no item below in that lane, so the
+// item is appended at the root. `parent_item_index_path_per_lane` will be
+// completely empty for a non-densely-packed item.
 void AddItemToGridLanesData(
     GridItemData& grid_lanes_item,
     GridLanesItemPlacementData* grid_lanes_placement_data,
-    const Vector<wtf_size_t>& item_indices_below_opening,
+    const Vector<ItemIndexPath>& parent_item_index_path_per_lane,
     GridTrackSizingDirection grid_axis_direction,
     GridLanesDataVector& out_grid_lanes);
 
-// Returns the placement data for `item`. `item_index` identifies either the
-// item itself or the lane entry below its opening when it was densely packed.
-// Returns null when `grid_lanes` is not provided.
+// Returns the placement data at `item_index_path`. Returns null when
+// `grid_lanes` is not provided.
 GridLanesItemPlacementData* FindGridLanesItemPlacementData(
     const GridItemData& item,
-    wtf_size_t item_index,
     GridTrackSizingDirection grid_axis_direction,
+    const ItemIndexPath& item_index_path,
     const GridLanesDataVector* grid_lanes);
 
 // Applies an offset adjustment once to each shared item placement record.
