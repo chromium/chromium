@@ -17,6 +17,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -101,13 +102,13 @@ constexpr char kHistogramVideoLateFramesPercentage[] =
 class MockMirroringServiceHostFactory
     : public mirroring::MirroringServiceHostFactory {
  public:
-  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+  MOCK_METHOD(mirroring::MirroringServiceHost::UniquePtr,
               GetForTab,
               (content::FrameTreeNodeId frame_tree_node_id));
-  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+  MOCK_METHOD(mirroring::MirroringServiceHost::UniquePtr,
               GetForDesktop,
               (const std::optional<std::string>& media_id));
-  MOCK_METHOD(std::unique_ptr<mirroring::MirroringServiceHost>,
+  MOCK_METHOD(mirroring::MirroringServiceHost::UniquePtr,
               GetForOffscreenTab,
               (const GURL& presentation_url,
                const std::string& presentation_id,
@@ -129,13 +130,16 @@ class MirroringActivityTest
     CastActivityTestBase::SetUp();
 
     auto make_mirroring_service =
-        [this]() -> std::unique_ptr<MockMirroringServiceHost> {
+        [this]() -> mirroring::MirroringServiceHost::UniquePtr {
       if (!mirroring_service_) {
         auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
         mirroring_service_ = mirroring_service.get();
-        return mirroring_service;
+        return mirroring::MirroringServiceHost::UniquePtr(
+            mirroring_service.release(),
+            base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
       }
-      return nullptr;
+      return mirroring::MirroringServiceHost::UniquePtr(
+          nullptr, base::OnTaskRunnerDeleter(nullptr));
     };
 
     ON_CALL(mirroring_service_host_factory_, GetForTab)
@@ -948,8 +952,11 @@ TEST_F(MirroringActivityTest, ActionsBeforeHostCreatedDoNotCrash) {
 TEST_F(MirroringActivityTest, StartSessionBeforeHostCreationFinishes) {
   auto mirroring_service = std::make_unique<MockMirroringServiceHost>();
   auto* mirroring_service_ptr = mirroring_service.get();
+  mirroring::MirroringServiceHost::UniquePtr wrapped_service(
+      mirroring_service.release(),
+      base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
   EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId))
-      .WillOnce(testing::Return(testing::ByMove(std::move(mirroring_service))));
+      .WillOnce(testing::Return(testing::ByMove(std::move(wrapped_service))));
 
   EXPECT_CALL(*mirroring_service_ptr, Start)
       .WillOnce(WithArgs<0, 3>(
@@ -989,6 +996,75 @@ TEST_F(MirroringActivityTest, StartSessionBeforeHostCreationFinishes) {
   activity_->SetOrUpdateSession(*session_, sink_, kHashToken);
   RunUntilIdle();
   EXPECT_TRUE(session_params_);
+}
+
+namespace {
+
+// A MirroringServiceHost that reports which thread it was destroyed on.
+class ThreadRecordingMirroringServiceHost : public MockMirroringServiceHost {
+ public:
+  explicit ThreadRecordingMirroringServiceHost(
+      base::OnceCallback<void(bool destroyed_on_ui)> on_destroyed)
+      : on_destroyed_(std::move(on_destroyed)) {}
+  ~ThreadRecordingMirroringServiceHost() override {
+    std::move(on_destroyed_)
+        .Run(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  }
+
+ private:
+  base::OnceCallback<void(bool)> on_destroyed_;
+};
+
+}  // namespace
+
+// Uses a real IO thread so that BrowserThread::CurrentlyOn() distinguishes the
+// UI and IO threads, which the single-threaded CastActivityTestBase cannot.
+class MirroringActivityRealIOThreadTest : public testing::Test {
+ protected:
+  content::BrowserTaskEnvironment task_environment_{
+      content::BrowserTaskEnvironment::REAL_IO_THREAD};
+  NiceMock<MockMirroringServiceHostFactory> mirroring_service_host_factory_;
+  mojo::Remote<mojom::Logger> logger_;
+  mojo::Remote<mojom::Debugger> debugger_;
+};
+
+// Regression test for b/567673081. If the activity is destroyed on the IO
+// thread before the UI thread finishes creating the host, the reply carrying
+// the host is dropped on the IO thread. The host is UI-thread-affine and must
+// nevertheless be destroyed on the UI thread.
+TEST_F(MirroringActivityRealIOThreadTest,
+       ActivityDestroyedBeforeHostCreatedDeletesHostOnUIThread) {
+  base::test::TestFuture<bool> destroyed_on_ui;
+  EXPECT_CALL(mirroring_service_host_factory_, GetForTab(kFrameTreeNodeId))
+      .WillOnce([&destroyed_on_ui] {
+        EXPECT_TRUE(
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+        return mirroring::MirroringServiceHost::UniquePtr(
+            new ThreadRecordingMirroringServiceHost(
+                destroyed_on_ui.GetSequenceBoundCallback()),
+            base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
+      });
+
+  // `this` is safe to use unretained: the test blocks on `destroyed_on_ui`
+  // below, which cannot be satisfied until after this task has run.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([this] {
+        MediaRoute route("theRouteId", MediaSource::ForTab(kTabId), "theSinkId",
+                         kDescription, /*is_local=*/true);
+        CastSinkExtraData cast_data;
+        // Neither the message handler nor the session tracker are touched on
+        // this code path, so they are not needed.
+        auto activity = std::make_unique<MirroringActivity>(
+            route, "theAppId", /*message_handler=*/nullptr,
+            /*session_tracker=*/nullptr, logger_, debugger_, kFrameTreeNodeId,
+            cast_data, base::DoNothing(), base::DoNothing());
+        activity->CreateMirroringServiceHost(&mirroring_service_host_factory_);
+        // Destroy the activity before the UI thread has had a chance to create
+        // the host, invalidating the WeakPtr bound to the creation reply.
+        activity.reset();
+      }));
+
+  EXPECT_TRUE(destroyed_on_ui.Get());
 }
 
 }  // namespace media_router

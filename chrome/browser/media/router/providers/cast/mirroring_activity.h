@@ -112,7 +112,7 @@ class MirroringActivity : public CastActivity,
   }
 
   void SetMirroringServiceHostForTest(
-      std::unique_ptr<mirroring::MirroringServiceHost> host);
+      mirroring::MirroringServiceHost::UniquePtr host);
 
  protected:
   void OnSessionSet(const CastSession& session) override;
@@ -141,7 +141,7 @@ class MirroringActivity : public CastActivity,
     std::string sink_name;
   };
 
-  void OnHostCreated(std::unique_ptr<mirroring::MirroringServiceHost> host);
+  void OnHostCreated(mirroring::MirroringServiceHost::UniquePtr host);
   void DidGetTabSourceId(
       std::optional<content::FrameTreeNodeId> frame_tree_node_id);
 
