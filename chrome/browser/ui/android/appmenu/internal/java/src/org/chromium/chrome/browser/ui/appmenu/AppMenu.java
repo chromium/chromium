@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageButton;
@@ -471,15 +470,12 @@ class AppMenu implements OnKeyListener {
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
             HighlightParams highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
-            if (viewToHighlight instanceof ChipView) {
-                ChipView chipViewToHighlight = (ChipView) viewToHighlight;
+            if (viewToHighlight instanceof ChipView chipViewToHighlight) {
                 highlightParams.setCornerRadius(chipViewToHighlight.getCornerRadius());
                 highlightParams.setHighlightExtension(mChipHighlightExtension);
                 // Set clip children and padding should be false to prevent the highlight from
                 // getting clipped.
-                ViewParent chipViewParent = chipViewToHighlight.getParent();
-                if (chipViewParent instanceof ViewGroup) {
-                    ViewGroup parentViewGroup = (ViewGroup) chipViewParent;
+                if (chipViewToHighlight.getParent() instanceof ViewGroup parentViewGroup) {
                     parentViewGroup.setClipToPadding(false);
                     parentViewGroup.setClipChildren(false);
                 }

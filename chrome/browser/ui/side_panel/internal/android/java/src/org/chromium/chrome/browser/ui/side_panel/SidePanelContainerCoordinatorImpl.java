@@ -630,11 +630,10 @@ final class SidePanelContainerCoordinatorImpl
     }
 
     private @Nullable ThinWebView findThinWebView(View view) {
-        if (view instanceof ThinWebView) {
-            return (ThinWebView) view;
+        if (view instanceof ThinWebView thinWebView) {
+            return thinWebView;
         }
-        if (view instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) view;
+        if (view instanceof ViewGroup group) {
             for (int i = 0; i < group.getChildCount(); i++) {
                 ThinWebView child = findThinWebView(group.getChildAt(i));
                 if (child != null) {

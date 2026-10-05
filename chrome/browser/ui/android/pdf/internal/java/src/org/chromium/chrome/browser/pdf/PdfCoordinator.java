@@ -1343,8 +1343,7 @@ public class PdfCoordinator
                         PdfUtils.recordEditFabAction();
                         openPdfInExternalEditor();
                     });
-            if (view instanceof ViewGroup) {
-                ViewGroup group = (ViewGroup) view;
+            if (view instanceof ViewGroup group) {
                 for (int i = 0; i < group.getChildCount(); i++) {
                     overrideClickListeners(group.getChildAt(i));
                 }

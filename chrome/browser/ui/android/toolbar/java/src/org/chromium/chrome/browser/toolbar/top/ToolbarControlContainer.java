@@ -489,8 +489,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                         .append(" visibility=")
                         .append(child.getVisibility());
                 ViewGroup.LayoutParams lp = child.getLayoutParams();
-                if (lp instanceof MarginLayoutParams) {
-                    MarginLayoutParams mlp = (MarginLayoutParams) lp;
+                if (lp instanceof MarginLayoutParams mlp) {
                     mMeasureLogBuilder
                             .append(" marginT=")
                             .append(mlp.topMargin)

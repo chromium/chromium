@@ -50,8 +50,7 @@ public class PdfSelectionCoordinator {
     private void prepareMenuItems(PdfView pdfView, List<ContextMenuComponent> components) {
         Selection selection = pdfView.getCurrentSelection();
 
-        if (selection instanceof TextSelection) {
-            TextSelection textSelection = (TextSelection) selection;
+        if (selection instanceof TextSelection textSelection) {
             components.add(
                     new SelectionMenuComponent(
                             CONTEXT_MENU_SHARE,
@@ -63,6 +62,7 @@ public class PdfSelectionCoordinator {
                                         PdfUtils.PdfSelectionMenuItem.SHARE);
                                 return null;
                             }));
+
             components.add(
                     new SelectionMenuComponent(
                             CONTEXT_MENU_WEB_SEARCH,
