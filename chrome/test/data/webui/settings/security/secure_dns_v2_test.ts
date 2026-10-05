@@ -285,6 +285,29 @@ suite('SettingsSecureDnsV2', function() {
     assertEquals(SecureDnsV2ResolverType.CUSTOM, customRadioButton.name);
   });
 
+  test('SecureDnsSelectBuiltInResolver', async function() {
+    // Start with a custom (non built-in) resolver selected.
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.SECURE,
+      config: 'https://custom.dns',
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    await flushTasks();
+    assertEquals(
+        SecureDnsV2ResolverType.CUSTOM, testElement.$.resolverSelect.value);
+
+    // Pick the built-in resolver from the dropdown.
+    testElement.$.resolverSelect.value = '0';
+    testElement.$.resolverSelect.dispatchEvent(new Event('change'));
+    await flushTasks();
+
+    assertEquals(
+        SecureDnsMode.SECURE, testElement.getPref('dns_over_https.mode').value);
+    assertEquals(
+        resolverList[0]!.value,
+        testElement.getPref('dns_over_https.templates').value);
+  });
+
   test('SecureDnsToggleOffResetsSelection', async function() {
     // Start with "Custom" (Secure) mode selected.
     webUIListenerCallback('secure-dns-setting-changed', {
