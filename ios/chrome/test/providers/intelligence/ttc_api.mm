@@ -5,25 +5,27 @@
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
 
 #import <optional>
-#import <string_view>
 
+#import "base/no_destructor.h"
 #import "ios/chrome/test/providers/intelligence/test_ttc_api.h"
 
 namespace ios::provider {
 
 namespace {
 
-constexpr TTCConfig kDefaultMockConfig = {
-    .system_instruction = "Mock system instruction for testing.",
-    .model = "models/mock-live-model",
-    .voice_name = "MockVoice",
-    .endpoint_url = "wss://mock.example.com/ws",
-    .api_key = "mock-api-key",
-};
+TTCConfig GetDefaultMockConfig() {
+  return TTCConfig{
+      .system_instruction = "Mock system instruction for testing.",
+      .model = "models/mock-live-model",
+      .voice_name = "MockVoice",
+      .endpoint_url = "wss://mock.example.com/ws",
+      .api_key = "mock-api-key",
+  };
+}
 
 std::optional<TTCConfig>& GetCustomConfig() {
-  static std::optional<TTCConfig> custom_config;
-  return custom_config;
+  static base::NoDestructor<std::optional<TTCConfig>> custom_config;
+  return *custom_config;
 }
 
 }  // namespace
@@ -41,7 +43,7 @@ void ResetTTCConfigForTesting() {
 }  // namespace test
 
 TTCConfig GetTTCConfig() {
-  return GetCustomConfig().value_or(kDefaultMockConfig);
+  return GetCustomConfig().value_or(GetDefaultMockConfig());
 }
 
 }  // namespace ios::provider

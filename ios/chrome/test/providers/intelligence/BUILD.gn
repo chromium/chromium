@@ -12,6 +12,7 @@ source_set("intelligence") {
     "ttc_api.mm",
   ]
   deps = [
+    "//base",
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//url",
   ]
