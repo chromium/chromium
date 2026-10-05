@@ -349,7 +349,8 @@ enum class ToastCatalogName {
   kCameraNowAllowed = 61,
   kCameraNowDisallowed = 62,
   kCameraForceDisabled = 63,
-  kMaxValue = kCameraForceDisabled
+  kClipboardHistoryDisabledByPolicy = 64,
+  kMaxValue = kClipboardHistoryDisabledByPolicy
 };
 
 }  // namespace ash

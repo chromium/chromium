@@ -18,6 +18,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/color_util.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -347,9 +348,12 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenuDisabledByPolicy) {
       prefs::kClipboardHistoryEnabled,
       static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
 
-  // Attempting to show menu via accelerator should not show the menu.
+  // Attempting to show menu via accelerator should not show the menu and show
+  // toast.
   ShowMenu();
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_TRUE(Shell::Get()->toast_manager()->IsToastShown(
+      "clipboard_history_disabled_by_policy"));
 
   // Attempting to show menu directly should return false.
   EXPECT_FALSE(GetClipboardHistoryController()->ShowMenu(

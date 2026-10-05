@@ -2649,6 +2649,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="61" label="Apps Can Access Camera"/>
   <int value="62" label="Apps Can't Access Camera"/>
   <int value="63" label="Can't Turn On Camera Access Remotely"/>
+  <int value="64" label="Clipboard History Disabled By Policy"/>
 </enum>
 
 <enum name="TogglePickerAction">
