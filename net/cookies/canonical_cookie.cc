@@ -760,6 +760,30 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     int source_port,
     CookieSourceType source_type,
     CanonicalCookieFromStorageCallSite call_site) {
+  if (!IsCanonicalForFromStorage(name, value, domain, path, creation,
+                                 last_access, secure, httponly,
+                                 partition_key)) {
+    return nullptr;
+  }
+
+  // This will help capture the number of times a cookie is canonical but does
+  // not have a valid name+value size length
+  bool valid_cookie_name_value_pair =
+      ParsedCookie::IsValidCookieNameValuePair(name, value);
+  // For this iOS code path, previous metrics have shown that
+  // `ParsedCookie::IsValidCookieNameValuePair` always returns true, so no
+  // need to record metrics for this code path (and we can begin enforcing the
+  // behavior we want which is to incorporate the new check into the
+  // "is canonical" check).
+  if (call_site == CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil) {
+    if (!valid_cookie_name_value_pair) {
+      return nullptr;
+    }
+  } else {
+    MaybeRecordFromStorageWithValidLengthHistogram(
+        call_site, valid_cookie_name_value_pair);
+  }
+
   // We check source_port here because it could have concievably been
   // corrupted and changed to out of range. Eventually this would be caught by
   // IsCanonical*() but since the source_port is only used by metrics so far
@@ -768,34 +792,11 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
   // TODO(crbug.com/40165805)
   int validated_port = CookieBase::ValidateAndAdjustSourcePort(source_port);
 
-  auto cc = std::make_unique<CanonicalCookie>(
+  return std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), std::move(name), std::move(value),
       std::move(domain), std::move(path), creation, expiration, last_access,
-      last_update, secure, httponly, same_site, priority, partition_key,
-      source_scheme, validated_port, source_type);
-
-  if (cc->IsCanonicalForFromStorage()) {
-    // This will help capture the number of times a cookie is canonical but does
-    // not have a valid name+value size length
-    bool valid_cookie_name_value_pair =
-        ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
-    // For this iOS code path, previous metrics have shown that
-    // `ParsedCookie::IsValidCookieNameValuePair` always returns true, so no
-    // need to record metrics for this code path (and we can begin enforcing the
-    // behavior we want which is to incorporate the new check into the
-    // "is canonical" check).
-    if (call_site == CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil) {
-      if (valid_cookie_name_value_pair) {
-        return cc;
-      }
-      return nullptr;
-    }
-    MaybeRecordFromStorageWithValidLengthHistogram(
-        call_site, valid_cookie_name_value_pair);
-  } else {
-    return nullptr;
-  }
-  return cc;
+      last_update, secure, httponly, same_site, priority,
+      std::move(partition_key), source_scheme, validated_port, source_type);
 }
 
 // static
@@ -1010,37 +1011,54 @@ CanonicalCookie::CanonicalizationResult CanonicalCookie::IsCanonical() const {
 
 CanonicalCookie::CanonicalizationResult
 CanonicalCookie::IsCanonicalForFromStorage() const {
+  return IsCanonicalForFromStorage(
+      Name(), Value(), Domain(), Path(), CreationDate(), last_access_date_,
+      SecureAttribute(), IsHttpOnly(), PartitionKey());
+}
+
+// static
+CanonicalCookie::CanonicalizationResult
+CanonicalCookie::IsCanonicalForFromStorage(
+    std::string_view name,
+    std::string_view value,
+    std::string_view domain,
+    std::string_view path,
+    base::Time creation_date,
+    base::Time last_access_date,
+    bool is_secure,
+    bool is_http_only,
+    const std::optional<CookiePartitionKey>& partition_key) {
   // Not checking domain or path against ParsedCookie as it may have
   // come purely from the URL. Also, don't call IsValidCookieNameValuePair()
   // here because we don't want to enforce the size checks on names or values
   // that may have been reconstituted from the cookie store.
-  if (ParsedCookie::ParseTokenString(Name()) != Name()) {
+  if (ParsedCookie::ParseTokenString(name) != name) {
     return Fail(CanonicalizationFailure::kUnparseableName);
   }
-  if (!ParsedCookie::ValueMatchesParsedValue(Value())) {
+  if (!ParsedCookie::ValueMatchesParsedValue(value)) {
     return Fail(CanonicalizationFailure::kUnparseableValue);
   }
 
-  if (!ParsedCookie::IsValidCookieName(Name())) {
+  if (!ParsedCookie::IsValidCookieName(name)) {
     return Fail(CanonicalizationFailure::kInvalidName);
   }
-  if (!ParsedCookie::IsValidCookieValue(Value())) {
+  if (!ParsedCookie::IsValidCookieValue(value)) {
     return Fail(CanonicalizationFailure::kInvalidValue);
   }
 
-  if (!last_access_date_.is_null() && CreationDate().is_null()) {
+  if (!last_access_date.is_null() && creation_date.is_null()) {
     return Fail(
         CanonicalizationFailure::kInconsistentCreationAndLastAccessDate);
   }
 
   // Check if name or value contains any non-ascii values, fail if they do.
   if (base::FeatureList::IsEnabled(features::kDisallowNonAsciiCookies) &&
-      (!base::IsStringASCII(Name()) || !base::IsStringASCII(Value()))) {
+      (!base::IsStringASCII(name) || !base::IsStringASCII(value))) {
     return Fail(CanonicalizationFailure::kNonAsciiCharactersDisallowed);
   }
 
   url::CanonHostInfo canon_host_info;
-  std::string canonical_domain(CanonicalizeHost(Domain(), &canon_host_info));
+  std::string canonical_domain(CanonicalizeHost(domain, &canon_host_info));
 
   // TODO(rdsmith): This specifically allows for empty domains.  The spec
   // suggests this is invalid (if a domain attribute is empty, the cookie's
@@ -1050,22 +1068,21 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
   // Note: The above comment may be outdated. We should determine whether empty
   // Domain() is ever valid and update this code accordingly.
   // See http://crbug.com/730633 for more information.
-  if (canonical_domain != Domain()) {
+  if (canonical_domain != domain) {
     return Fail(CanonicalizationFailure::kInvalidDomain);
   }
 
-  if (Path().empty() || Path()[0] != '/') {
+  if (path.empty() || path[0] != '/') {
     return Fail(CanonicalizationFailure::kInvalidPath);
   }
 
-  CookiePrefix prefix = cookie_util::GetCookiePrefix(Name());
+  CookiePrefix prefix = cookie_util::GetCookiePrefix(name);
   // Validate prefix attributes. Pass nullopt for URL since we're loading from
   // storage and don't have the original URL. When URL is nullopt,
   // IsCookiePrefixValid uses normalized domain semantics (non-empty, no leading
   // dot for __Host-).
-  if (!cookie_util::IsCookiePrefixValid(prefix, /*url=*/std::nullopt,
-                                        SecureAttribute(), IsHttpOnly(),
-                                        Domain(), Path())) {
+  if (!cookie_util::IsCookiePrefixValid(prefix, /*url=*/std::nullopt, is_secure,
+                                        is_http_only, domain, path)) {
     switch (prefix) {
       case CookiePrefix::kHost:
         return Fail(CanonicalizationFailure::kInvalidHostPrefix);
@@ -1080,19 +1097,19 @@ CanonicalCookie::IsCanonicalForFromStorage() const {
     }
   }
 
-  if (Name() == "" && cookie_util::HasHiddenPrefixName(Value())) {
+  if (name == "" && cookie_util::HasHiddenPrefixName(value)) {
     return Fail(CanonicalizationFailure::kEmptyNameWithHiddenPrefix);
   }
 
-  if (Name().empty() &&
+  if (name.empty() &&
       base::FeatureList::IsEnabled(
           features::kCookieParseRejectEmptyNameAmbiguous) &&
-      Value().contains('=')) {
+      value.contains('=')) {
     return Fail(CanonicalizationFailure::kEmptyNameWithAmbiguousValue);
   }
 
-  if (IsPartitioned() && !CookiePartitionKey::HasNonce(PartitionKey()) &&
-      !SecureAttribute()) {
+  if (partition_key.has_value() &&
+      !CookiePartitionKey::HasNonce(partition_key) && !is_secure) {
     return Fail(CanonicalizationFailure::kPartitionedInsecure);
   }
 

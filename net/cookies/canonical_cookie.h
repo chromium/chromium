@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "crypto/process_bound_string.h"
 #include "net/base/net_export.h"
@@ -25,10 +26,6 @@
 #include "url/third_party/mozilla/url_parse.h"
 
 class GURL;
-
-namespace base {
-class Time;
-}  // namespace base
 
 namespace net {
 
@@ -281,6 +278,8 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   }
 
   // See CookieBase for other accessors.
+
+  // Note: May be expensive because it must decrypt the cookie.
   std::string Value() const;
   base::Time ExpiryDate() const { return expiry_date_; }
   base::Time LastAccessDate() const { return last_access_date_; }
@@ -454,6 +453,16 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 bool url_is_trustworthy);
 
   // Helpers for use in canonicalization checks.
+  static CanonicalizationResult IsCanonicalForFromStorage(
+      std::string_view name,
+      std::string_view value,
+      std::string_view domain,
+      std::string_view path,
+      base::Time creation_date,
+      base::Time last_access_date,
+      bool is_secure,
+      bool is_http_only,
+      const std::optional<CookiePartitionKey>& partition_key);
   static CanonicalizationResult Pass();
   static CanonicalizationResult Fail(CanonicalizationFailure failure);
 
