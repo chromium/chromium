@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.native_page;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -196,6 +198,39 @@ public class NativePageTest {
                 "Native page should not be created without associated pdf download",
                 NativePageType.NONE,
                 NativePage.nativePageType(gurl1, candidatePage, !incognito, !urlTyped, !loadPdf));
+    }
+
+    @Test
+    public void testNativePageType_FrozenCandidateIsNeverReused() {
+        // A frozen page has no view, so it must never be returned as CANDIDATE even when its URL or
+        // host matches (crbug.com/568278676).
+        NativePage candidatePage = mock(NativePage.class);
+        doReturn(true).when(candidatePage).isFrozen();
+
+        String pdfUrl = "chrome-native://pdf/link?url=xyz";
+        doReturn(pdfUrl).when(candidatePage).getUrl();
+        doReturn(true).when(candidatePage).isPdf();
+        doReturn(true).when(candidatePage).shouldReusePage(any(), any(), anyBoolean());
+        Assert.assertEquals(
+                "Frozen pdf candidate should not be reused",
+                NativePageType.PDF,
+                NativePage.nativePageType(
+                        new GURL(pdfUrl),
+                        candidatePage,
+                        /* isIncognito= */ false,
+                        /* preferReuse= */ true,
+                        /* hasPdfDownload= */ true));
+
+        doReturn("newtab").when(candidatePage).getHost();
+        Assert.assertEquals(
+                "Frozen chrome-scheme candidate should not be reused",
+                NativePageType.NTP,
+                NativePage.nativePageType(
+                        new GURL("chrome-native://newtab/"),
+                        candidatePage,
+                        /* isIncognito= */ false,
+                        /* preferReuse= */ false,
+                        /* hasPdfDownload= */ false));
     }
 
     @Test

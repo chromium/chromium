@@ -253,6 +253,10 @@ public interface NativePage {
             boolean isIncognito,
             boolean preferReuse,
             boolean hasPdfDownload) {
+        // A frozen page has no view, so it must never be reused. See crbug.com/568278676.
+        if (candidatePage != null && candidatePage.isFrozen()) {
+            candidatePage = null;
+        }
         if (hasPdfDownload) {
             String curl = candidatePage != null ? candidatePage.getUrl() : null;
             String nurl = url.getSpec();

@@ -2190,9 +2190,15 @@ class TabImpl implements Tab, TabInternal {
         mPendingNativePageHost = nativePageHost;
         mIsAlreadyCreatingNativePage = true;
 
-        // Prefer reusing the NativePage when loading pdf.
+        // Prefer reusing the NativePage when loading pdf. Never offer a frozen page as the reuse
+        // candidate: it has no view, and NativePageFactory.createNativePageForCustomTab() would
+        // hand it straight back on URL match, leaving the tab frozen with a null view. See
+        // crbug.com/568278676.
         boolean loadPdf = PdfUtils.isReuseFragmentEnabled() && pdfInfo != null;
-        NativePage candidateForReuse = forceReload && !loadPdf ? null : getNativePage();
+        NativePage currentPage = getNativePage();
+        boolean canReuseCurrent =
+                currentPage != null && !currentPage.isFrozen() && (!forceReload || loadPdf);
+        NativePage candidateForReuse = canReuseCurrent ? currentPage : null;
 
         assumeNonNull(mDelegateFactory);
         NativePage nativePage =

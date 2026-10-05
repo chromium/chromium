@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.content;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -16,22 +17,31 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.view.View;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -45,10 +55,13 @@ import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
+
+import java.util.List;
 
 /** Tests for {@link CustomTabActivityTabController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,6 +78,8 @@ public class CustomTabActivityTabControllerUnitTest {
     @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
+
+    @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private static final long TEST_TARGET_NETWORK = 1000;
 
@@ -112,6 +127,90 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.finishNativeInitialization();
         assertEquals(savedTab, env.tabProvider.getTab());
         assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
+    }
+
+    @Test
+    public void requestsFocusOnContentChanged_IfRestoredTabViewIsNull() {
+        // A restored tab whose NativePage is still frozen (e.g. a PDF CCT recreated on rotation)
+        // has no View yet. Initialization must not NPE in requestFocus() (crbug.com/568278676).
+        Tab savedTab = env.prepareTab();
+        when(savedTab.getView()).thenReturn(null);
+        env.saveTab(savedTab);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(savedTab, env.tabProvider.getTab());
+        verify(savedTab, atLeastOnce()).addObserver(mTabObserverCaptor.capture());
+        List<TabObserver> observers = mTabObserverCaptor.getAllValues();
+
+        // While the View is still null, onContentChanged() is a no-op that keeps observing.
+        View view = new View(ApplicationProvider.getApplicationContext());
+        view.setFocusableInTouchMode(true);
+        notifyContentChanged(observers, savedTab);
+        verify(savedTab, never()).removeObserver(any());
+        assertFalse(view.isFocused());
+
+        // Once the tab gains a View, focus should be requested on it and the observer removed.
+        when(savedTab.getView()).thenReturn(view);
+        notifyContentChanged(observers, savedTab);
+        assertTrue(view.isFocused());
+        verify(savedTab).removeObserver(any());
+    }
+
+    @Test
+    public void setsBackgroundColorOnContentChanged_IfRestoredTabViewIsNull() {
+        // prepareTabBackground() only runs for trusted CCTs with a non-transparent initial color.
+        when(env.connection.isFirstParty(any())).thenReturn(true);
+        when(env.colorProvider.getInitialBackgroundColor()).thenReturn(Color.RED);
+
+        // A restored tab whose NativePage is still frozen has no View yet; initialization must not
+        // NPE when applying the initial background (crbug.com/568278676).
+        Tab savedTab = env.prepareTab();
+        when(savedTab.getView()).thenReturn(null);
+        env.saveTab(savedTab);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(savedTab, env.tabProvider.getTab());
+        verify(savedTab, atLeastOnce()).addObserver(mTabObserverCaptor.capture());
+        List<TabObserver> observers = mTabObserverCaptor.getAllValues();
+
+        // While the View is still null, onContentChanged() is a no-op that keeps observing.
+        View view = new View(ApplicationProvider.getApplicationContext());
+        notifyContentChanged(observers, savedTab);
+        verify(savedTab, never()).removeObserver(any());
+        assertNull(view.getBackground());
+
+        // Once the tab gains a View, the initial background color should be applied to it. Both
+        // deferred actions (requestFocus() and prepareTabBackground()) unregister their observer.
+        when(savedTab.getView()).thenReturn(view);
+        notifyContentChanged(observers, savedTab);
+        assertTrue(view.getBackground() instanceof ColorDrawable);
+        assertEquals(Color.RED, ((ColorDrawable) view.getBackground()).getColor());
+        verify(savedTab, times(2)).removeObserver(any());
+    }
+
+    @Test
+    public void unregistersDeferredViewObserver_IfRestoredTabDestroyedBeforeContentChanged() {
+        Tab savedTab = env.prepareTab();
+        when(savedTab.getView()).thenReturn(null);
+        env.saveTab(savedTab);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        verify(savedTab, atLeastOnce()).addObserver(mTabObserverCaptor.capture());
+        List<TabObserver> observers = mTabObserverCaptor.getAllValues();
+        verify(savedTab, never()).removeObserver(any());
+
+        // Destroying the tab before a View exists must unregister the deferred observer rather
+        // than wait for an onContentChanged() that will never come.
+        for (TabObserver observer : observers) {
+            observer.onDestroyed(savedTab);
+        }
+        verify(savedTab).removeObserver(any());
+    }
+
+    private static void notifyContentChanged(List<TabObserver> observers, Tab tab) {
+        for (TabObserver observer : observers) {
+            observer.onContentChanged(tab);
+        }
     }
 
     @Test

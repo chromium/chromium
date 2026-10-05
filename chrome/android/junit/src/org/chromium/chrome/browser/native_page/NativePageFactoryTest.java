@@ -314,6 +314,28 @@ public class NativePageFactoryTest {
     }
 
     @Test
+    public void testCreateNativePageForCustomTab_doesNotReuseFrozenCandidate() {
+        doReturn(true).when(mCandidatePage).isFrozen();
+
+        NativePage page =
+                NativePageFactory.createNativePageForCustomTab(
+                        PDF_LINK,
+                        mCandidatePage,
+                        mTab,
+                        mPdfInfo,
+                        mBrowserControlsManager,
+                        mTabModelSelector,
+                        mActivity);
+
+        // crbug.com/568278676: a frozen page has no view and must never be handed back.
+        Assert.assertEquals(
+                "A frozen candidate page must not be reused even when the url matches.",
+                mPdfPage,
+                page);
+        verify(mCandidatePage, never()).updateForUrl(PDF_LINK);
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.CHROME_NATIVE_URL_OVERRIDING)
     public void testExtensionUrlOverrides() {
         // Test NTP override
