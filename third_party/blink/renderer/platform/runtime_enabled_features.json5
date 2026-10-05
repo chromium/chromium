@@ -4428,6 +4428,10 @@
       status: "stable",
     },
     {
+      // Support Nastaliq script. crbug.com/569667449
+      name: "NastaliqScript",
+    },
+    {
       name: "NavigateEventDeferCrossDocumentCommit",
       status: "experimental",
     },

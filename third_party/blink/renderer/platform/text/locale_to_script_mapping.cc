@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/text/locale_to_script_mapping.h"
 
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -50,6 +51,7 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
       {"zyyy", USCRIPT_COMMON},
       {"qaai", USCRIPT_INHERITED},
       {"arab", USCRIPT_ARABIC},
+      {"aran", USCRIPT_ARABIC_NASTALIQ},
       {"armn", USCRIPT_ARMENIAN},
       {"beng", USCRIPT_BENGALI},
       {"bopo", USCRIPT_BOPOMOFO},
@@ -155,6 +157,10 @@ UScriptCode ScriptNameToCode(const StringView& script_name) {
       {"zzzz", USCRIPT_UNKNOWN}};
   for (const auto& kv : kScriptNameCodeList) {
     if (EqualIgnoringAsciiCase(script_name, kv.subtag)) {
+      if (kv.script == USCRIPT_ARABIC_NASTALIQ &&
+          !RuntimeEnabledFeatures::NastaliqScriptEnabled()) {
+        return USCRIPT_INVALID_CODE;
+      }
       return kv.script;
     }
   }
@@ -274,7 +280,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
       {"kos", USCRIPT_LATIN},
       {"kpe", USCRIPT_LATIN},
       {"krc", USCRIPT_CYRILLIC},
-      {"ks", USCRIPT_ARABIC},
+      {"ks", USCRIPT_ARABIC_NASTALIQ},
       {"ku", USCRIPT_ARABIC},
       {"kum", USCRIPT_CYRILLIC},
       {"kvx", USCRIPT_ARABIC},
@@ -388,7 +394,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
       {"ug", USCRIPT_ARABIC},
       {"uk", USCRIPT_CYRILLIC},
       {"und", USCRIPT_LATIN},
-      {"ur", USCRIPT_ARABIC},
+      {"ur", USCRIPT_ARABIC_NASTALIQ},
       {"uz", USCRIPT_CYRILLIC},
       {"ve", USCRIPT_LATIN},
       {"vi", USCRIPT_LATIN},
@@ -449,6 +455,10 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
   while (!tag.empty()) {
     for (const auto& kv : kLocaleScriptList) {
       if (EqualIgnoringAsciiCase(tag, kv.subtag)) {
+        if (kv.script == USCRIPT_ARABIC_NASTALIQ &&
+            !RuntimeEnabledFeatures::NastaliqScriptEnabled()) [[unlikely]] {
+          return USCRIPT_ARABIC;
+        }
         return kv.script;
       }
     }

@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -50,11 +51,21 @@ struct LocaleTestData {
     // Common lang-script.
     {"en-Latn", USCRIPT_LATIN, "en-Latn"},
     {"ar-Arab", USCRIPT_ARABIC, "ar-Arab"},
+    {"ar-Aran", USCRIPT_ARABIC_NASTALIQ, "ar-Aran"},
 
     // Examples from `fonts.xml`.
     // https://android.googlesource.com/platform/frameworks/base/+/master/data/fonts/fonts.xml
     {"und-Arab", USCRIPT_ARABIC, "und-Arab"},
+    {"und-Aran", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
     {"und-Thai", USCRIPT_THAI, "und-Thai"},
+
+    // Arabic Nastaliq locales.
+    {"ur", USCRIPT_ARABIC_NASTALIQ, "ur"},
+    {"ur-PK", USCRIPT_ARABIC_NASTALIQ, "ur"},
+    {"ur-IN", USCRIPT_ARABIC_NASTALIQ, "ur"},
+    {"ur-Arab", USCRIPT_ARABIC, "ur-Arab"},
+    {"ks", USCRIPT_ARABIC_NASTALIQ, "ks"},
+    {"ks-Deva", USCRIPT_DEVANAGARI, "ks-Deva"},
 
     // Common lang-region in East Asia.
 #define EXPECT_JAPANESE \
@@ -144,6 +155,7 @@ INSTANTIATE_TEST_SUITE_P(LayoutLocaleTest,
                          testing::ValuesIn(locale_test_data));
 
 TEST_P(LocaleTestDataFixture, Script) {
+  ScopedNastaliqScriptForTest scoped_feature(true);
   const auto& test = GetParam();
   scoped_refptr<LayoutLocale> locale =
       LayoutLocale::CreateForTesting(AtomicString(test.locale));
@@ -158,6 +170,18 @@ TEST_P(LocaleTestDataFixture, Script) {
   EXPECT_EQ(test.is_macrolanguage_chinese, locale->IsMacrolanguageChinese());
   if (test.sk_font_mgr)
     EXPECT_STREQ(test.sk_font_mgr, locale->LocaleForSkFontMgr()) << test.locale;
+}
+
+TEST(LayoutLocaleTest, NastaliqScriptDisabled) {
+  ScopedNastaliqScriptForTest scoped_feature(false);
+  for (const char* locale_str : {"ur", "ur-PK", "ks", "ar-Aran"}) {
+    scoped_refptr<LayoutLocale> locale =
+        LayoutLocale::CreateForTesting(AtomicString(locale_str));
+    EXPECT_EQ(USCRIPT_ARABIC, locale->GetScript()) << locale_str;
+  }
+  scoped_refptr<LayoutLocale> und_aran =
+      LayoutLocale::CreateForTesting(AtomicString("und-Aran"));
+  EXPECT_EQ(USCRIPT_LATIN, und_aran->GetScript());
 }
 
 TEST(LayoutLocaleTest, BreakKeyword) {
