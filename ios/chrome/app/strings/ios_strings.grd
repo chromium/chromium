@@ -417,10 +417,10 @@
         Always show pop-ups on this site
       </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_ALWAYS_ALLOWED_EXPLANATION" desc="Explanation text shown under the camera permission row of the AI hub when the site is always allowed to use the camera.">
-        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" can access your camera whenever you visit this site
+        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" is allowed to use your camera whenever you visit this site
       </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_BLOCKED_EXPLANATION" desc="Explanation text shown under the camera permission row of the AI hub when the site is never allowed to use the camera.">
-        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" is blocked from accessing your camera
+        "<ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>" is not allowed to access your camera
       </message>
       <message name="IDS_IOS_AI_HUB_CAMERA_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL" desc="The accessibility label for the dropdown used to choose the camera permission for the current site in the AI hub.">
         Camera access for this site
@@ -453,10 +453,10 @@
         Search screen is only available when Google is set as your default search engine. You can change your default search engine in <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_ALWAYS_ALLOWED_EXPLANATION" desc="Explanation text shown under the microphone permission row of the AI hub when the site is always allowed to use the microphone.">
-        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" can access your microphone whenever you visit this site
+        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" is allowed to use your microphone whenever you visit this site
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_BLOCKED_EXPLANATION" desc="Explanation text shown under the microphone permission row of the AI hub when the site is never allowed to use the microphone.">
-        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" is blocked from accessing your microphone
+        "<ph name="SITE_DOMAIN">$1<ex>microphone.com</ex></ph>" is not allowed to access your microphone
       </message>
       <message name="IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL" desc="The accessibility label for the dropdown used to choose the microphone permission for the current site in the AI hub.">
         Microphone access for this site
@@ -6387,7 +6387,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Allowed
       </message>
       <message name="IDS_IOS_PERMISSIONS_SETTING_ALLOWED_ONCE" desc="Option in a site permission dropdown indicating the site is allowed to use the permission for the current visit only. [iOS only]">
-        Allowed once
+        Allow once
       </message>
       <message name="IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED" desc="Option in a site permission dropdown indicating the site is not allowed to use the permission. [iOS only]">
         Not allowed
