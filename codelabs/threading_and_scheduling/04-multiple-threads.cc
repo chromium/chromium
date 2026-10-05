@@ -13,9 +13,10 @@
 
 // For this example, these are global so that each task running on each thread
 // can easily grab the *other* thread's task runner to post continuation tasks
-// to.
-static scoped_refptr<base::SingleThreadTaskRunner> g_main_thread_task_runner;
-static scoped_refptr<base::SingleThreadTaskRunner> g_io_thread_task_runner;
+// to. They are raw pointers because `main()` and `IOThreadDelegate` own the
+// task runners for the program's lifetime.
+static base::SingleThreadTaskRunner* g_main_thread_task_runner = nullptr;
+static base::SingleThreadTaskRunner* g_io_thread_task_runner = nullptr;
 
 void RunOnIOThread();
 
@@ -51,7 +52,7 @@ class IOThreadDelegate : public base::Thread::Delegate {
     owned_sequence_manager_->SetDefaultTaskQueue(task_queue_.get());
     // Set the global TaskRunner-to-this-thread, so that the main thread can
     // post tasks to the IO thread.
-    g_io_thread_task_runner = default_task_runner_;
+    g_io_thread_task_runner = default_task_runner_.get();
   }
 
   // base::Thread::Delegate implementation.
@@ -97,7 +98,7 @@ int main() {
 
   // Set the global TaskRunner-to-this-thread, so that the IO thread can post
   // tasks to the main thread.
-  g_main_thread_task_runner = default_task_runner;
+  g_main_thread_task_runner = default_task_runner.get();
 
   // Create an IO thread to run alongside the main thread.
   std::unique_ptr<IOThreadDelegate> delegate =

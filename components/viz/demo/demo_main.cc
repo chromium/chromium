@@ -202,8 +202,6 @@ int DemoMain() {
 }
 
 #if BUILDFLAG(IS_OZONE)
-std::unique_ptr<ui::OzoneGpuTestHelper> gpu_helper;
-
 static void SetupOzone(base::WaitableEvent* done) {
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
@@ -255,7 +253,7 @@ int main(int argc, char** argv) {
   done.Wait();
 
   // To create dmabuf through gbm, Ozone needs to be set up.
-  gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
+  auto gpu_helper = std::make_unique<ui::OzoneGpuTestHelper>();
   gpu_helper->Initialize();
 #endif
 
