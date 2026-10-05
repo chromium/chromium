@@ -13,16 +13,19 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_filler.h"
 #include "chrome/browser/password_manager/password_change/password_change_actuator.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
+namespace affiliations {
+class AffiliationService;
+}
 namespace content {
 class WebContents;
 }
@@ -99,6 +102,12 @@ class GlicPasswordChangeActuator
   void OnExperimentalTriggeringRegistered(bool success);
   void OnUpdatesReceiverDisconnected();
 
+  affiliations::AffiliationService* GetAffiliationService();
+  void OnAffiliationsReceived(const GURL& target_url,
+                              const affiliations::AffiliatedFacets& results,
+                              bool success);
+  void StartActuation(const GURL& target_url);
+
   const GURL change_password_url_;
   const password_manager::StoredCredential credential_;
   std::u16string generated_password_;
@@ -124,6 +133,8 @@ class GlicPasswordChangeActuator
 
   base::ObserverList<PasswordChangeActuator::Observer, /*check_empty=*/true>
       observers_;
+
+  std::set<net::SchemefulSite> allowed_origins_;
 
   base::WeakPtrFactory<GlicPasswordChangeActuator> weak_ptr_factory_{this};
 };

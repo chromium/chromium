@@ -4,6 +4,7 @@
 
 #include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_manager.h"
 #include "chrome/browser/glic/public/glic_instance.h"
@@ -29,6 +31,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/grit/browser_resources.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/origin_gating/core/task_policy_config.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -47,6 +51,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -197,6 +202,11 @@ origin_gating::TaskPolicyConfig BuildPasswordChangeContainerConfig(
   return origin_gating::TaskPolicyConfig(std::move(rules));
 }
 
+affiliations::FacetURI GetFacetURI(const GURL& url) {
+  return affiliations::FacetURI::FromPotentiallyInvalidSpec(
+      url.GetWithEmptyPath().spec());
+}
+
 }  // namespace
 
 GlicPasswordChangeActuator::GlicPasswordChangeActuator(
@@ -221,7 +231,35 @@ void GlicPasswordChangeActuator::Start() {
 
   GURL target_url =
       change_password_url_.is_empty() ? credential_.url : change_password_url_;
+  if (affiliations::AffiliationService* affiliation_service =
+          GetAffiliationService()) {
+    affiliation_service->GetAffiliationsAndBranding(
+        GetFacetURI(target_url),
+        base::BindOnce(&GlicPasswordChangeActuator::OnAffiliationsReceived,
+                       weak_ptr_factory_.GetWeakPtr(), target_url));
+  } else {
+    OnAffiliationsReceived(target_url, {}, /*success=*/false);
+  }
+}
 
+void GlicPasswordChangeActuator::OnAffiliationsReceived(
+    const GURL& target_url,
+    const affiliations::AffiliatedFacets& results,
+    bool success) {
+  if (!originator_ || !success) {
+    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
+    return;
+  }
+
+  for (const auto& facet : results) {
+    if (facet.uri.IsValidWebFacetURI()) {
+      allowed_origins_.emplace(GURL(facet.uri.canonical_spec()));
+    }
+  }
+  GlicPasswordChangeActuator::StartActuation(target_url);
+}
+
+void GlicPasswordChangeActuator::StartActuation(const GURL& target_url) {
   std::string site_domain(target_url.host());
   std::string reach_form_prompt = GetReachFormPrompt(
       site_domain, base::UTF16ToUTF8(credential_.username_value));
@@ -419,16 +457,15 @@ void GlicPasswordChangeActuator::OnActorTaskStateChanged(
              .GetOriginGatingChecker()
              .task_policy_config_slot()
              .has_value());
-  std::set<net::SchemefulSite> allowed_origins;
-  allowed_origins.emplace(credential_.url);
+  allowed_origins_.emplace(credential_.url);
   if (change_password_url_.is_valid()) {
-    allowed_origins.emplace(change_password_url_);
+    allowed_origins_.emplace(change_password_url_);
   }
 
   task.GetExecutionEngine()
       .GetOriginGatingChecker()
       .task_policy_config_slot()
-      .Assign(BuildPasswordChangeContainerConfig(allowed_origins));
+      .Assign(BuildPasswordChangeContainerConfig(allowed_origins_));
 
   if (auto logger = GetLoggerIfAvailable(originator_.get())) {
     logger->LogMessage(
@@ -579,6 +616,8 @@ void GlicPasswordChangeActuator::CloseGlicSession() {
 
 void GlicPasswordChangeActuator::ResetInternalState(
     actor::ActorTask::StoppedReason stop_reason) {
+  allowed_origins_.clear();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   if (actuation_web_contents_) {
     actor::ActorKeyedService* actor_service =
         actor::ActorKeyedService::Get(Profile::FromBrowserContext(
@@ -733,4 +772,16 @@ void GlicPasswordChangeActuator::OnUpdate(
           return;
       }
   }
+}
+
+affiliations::AffiliationService*
+GlicPasswordChangeActuator::GetAffiliationService() {
+  if (profile_) {
+    return AffiliationServiceFactory::GetForProfile(profile_);
+  }
+  if (originator_) {
+    return AffiliationServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(originator_->GetBrowserContext()));
+  }
+  return nullptr;
 }

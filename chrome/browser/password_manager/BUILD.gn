@@ -507,6 +507,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/actor:test_support",
+      "//chrome/browser/affiliations",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/password_manager/password_change",

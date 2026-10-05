@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/actor_features.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -69,6 +72,16 @@ std::unique_ptr<KeyedService> CreateMockOptimizationGuideService(
       testing::NiceMock<MockOptimizationGuideKeyedService>>();
 }
 
+std::unique_ptr<KeyedService> CreateTestAffiliationService(
+    content::BrowserContext* context) {
+  auto affiliation_service = std::make_unique<
+      testing::NiceMock<affiliations::MockAffiliationService>>();
+  ON_CALL(*affiliation_service, GetAffiliationsAndBranding)
+      .WillByDefault(base::test::RunOnceCallbackRepeatedly<1>(
+          affiliations::AffiliatedFacets(), true));
+  return affiliation_service;
+}
+
 }  // namespace
 
 class PasswordChangeFromCheckupDelegateBrowserTest
@@ -83,6 +96,8 @@ class PasswordChangeFromCheckupDelegateBrowserTest
 
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
+    AffiliationServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&CreateTestAffiliationService));
     OptimizationGuideKeyedServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateMockOptimizationGuideService));
   }
