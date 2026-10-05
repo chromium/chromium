@@ -7157,14 +7157,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_DSEv1CompatPriority",
+                    "name": "Enabled_DSEv1CompatPriority_AheadOfImminentNavigation",
                     "params": {
                         "dse_preload2_initial_no_vary_search_hint": "",
-                        "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat"
+                        "dse_preload2_prefetch_priority_policy": "SearchPrefetchCompat",
+                        "force_wait_no_vary_search_header_policy": "AlwaysUse",
+                        "use_block_until_head_timeout": "false"
                     },
                     "enable_features": [
                         "DsePreload2",
-                        "DsePreload2OnPress"
+                        "DsePreload2AheadOfImminentNavigation",
+                        "DsePreload2OnPress",
+                        "PrefetchAheadOfImminentNavigation"
                     ]
                 }
             ]
