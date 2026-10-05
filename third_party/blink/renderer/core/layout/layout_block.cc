@@ -100,54 +100,16 @@ void LayoutBlock::WillBeDestroyed(const ComputedStyle* style) {
   LayoutBox::WillBeDestroyed(style);
 }
 
-// Compute a local version of the "font size scale factor" used by SVG
-// <text>. Squared to avoid computing the square root. See
-// SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
-static double ComputeSquaredLocalFontSizeScalingFactor(
-    const gfx::Transform* transform) {
-  if (!transform)
-    return 1;
-  const auto affine = AffineTransform::FromTransform(*transform);
-  return affine.XScaleSquared() + affine.YScaleSquared();
-}
-
 void LayoutBlock::StyleDidChange(
     StyleDifference diff,
     const ComputedStyle* old_style,
     const ComputedStyle& new_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  // Computes old scaling factor before PaintLayer::UpdateTransform()
-  // updates Layer()->Transform().
-  double old_squared_scale = 1;
-  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() && Layer() &&
-      diff.transform_changed && HasSVGTextDescendants()) {
-    old_squared_scale =
-        ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
-  }
 
   LayoutBox::StyleDidChange(diff, old_style, new_style, style_change_context);
 
   PropagateStyleToAnonymousChildren();
-
-  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
-      diff.transform_changed && HasSVGTextDescendants()) {
-    const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
-        Layer() ? Layer()->Transform() : nullptr);
-    // Compare local scale before and after.
-    if (old_squared_scale != new_squared_scale) {
-      bool stacking_context_changed =
-          old_style &&
-          (IsStackingContext(*old_style) != IsStackingContext(new_style));
-      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
-        To<LayoutSVGText>(box)->SetNeedsTextMetricsUpdate();
-        if (GetNode() == GetDocument().documentElement() ||
-            stacking_context_changed) {
-          box->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
-        }
-      }
-    }
-  }
 }
 
 bool LayoutBlock::RespectsCSSOverflow() const {
@@ -273,33 +235,6 @@ void LayoutBlock::ImageChanged(WrappedImagePtr image,
         break;
       }
     }
-  }
-}
-
-void LayoutBlock::AddSvgTextDescendant(LayoutSVGText& svg_text) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
-  auto result = View()->SvgTextDescendantsMap().insert(this, nullptr);
-  if (result.is_new_entry) {
-    result.stored_value->value =
-        MakeGarbageCollected<GCedHeapHashSet<Member<LayoutSVGText>>>();
-  }
-  result.stored_value->value->insert(&svg_text);
-  SetHasSVGTextDescendants(true);
-}
-
-void LayoutBlock::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
-  auto& map = View()->SvgTextDescendantsMap();
-  auto it = map.find(this);
-  if (it == map.end())
-    return;
-  GCedHeapHashSet<Member<LayoutSVGText>>& descendants = *it->value;
-  descendants.erase(&svg_text);
-  if (descendants.empty()) {
-    map.erase(this);
-    SetHasSVGTextDescendants(false);
   }
 }
 

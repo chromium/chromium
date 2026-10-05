@@ -6360,10 +6360,6 @@
       status: "stable",
     },
     {
-      name: "SvgIgnoreOuterTransforms",
-      status: "stable",
-    },
-    {
       name: "SvgImageAnimationReset",
       status: "stable",
     },

@@ -60,18 +60,6 @@ AffineTransform DeprecatedCalculateTransformToLayer(
     layout_object = layout_object->Parent();
   }
 
-  if (RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled()) {
-    return transform;
-  }
-
-  // Continue walking up the layer tree, accumulating CSS transforms.
-  PaintLayer* layer = layout_object ? layout_object->EnclosingLayer() : nullptr;
-  while (layer) {
-    if (gfx::Transform* layer_transform = layer->Transform())
-      transform = AffineTransform::FromTransform(*layer_transform) * transform;
-    layer = layer->Parent();
-  }
-
   return transform;
 }
 

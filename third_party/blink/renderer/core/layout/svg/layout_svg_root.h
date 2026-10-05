@@ -35,7 +35,6 @@
 
 namespace blink {
 
-class LayoutSVGText;
 class SVGElement;
 class SVGRect;
 enum class SVGTransformChange;
@@ -126,9 +125,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   void RecalcVisualOverflow() override;
 
   bool HasNonIsolatedBlendingDescendants() const final;
-
-  void AddSvgTextDescendant(LayoutSVGText& svg_text);
-  void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 
   void IntersectChildren(HitTestResult&, const HitTestLocation&) const;
 
@@ -230,7 +226,6 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
   // The scale factors applied by the container (e.g. when
   // preserveAspectRatio="none" is used in an SVG image container).
   gfx::Vector2dF container_scale_{1.f, 1.f};
-  HeapHashSet<Member<LayoutSVGText>> text_set_;
 
   // The new content size for SVG roots. This is set during layout, and cleared
   // afterwards. Always nullptr when this object isn't in the process of being

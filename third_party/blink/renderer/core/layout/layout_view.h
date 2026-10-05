@@ -49,10 +49,6 @@ struct VariableLengthTransformResult {
   TextOffsetMap offset_map;
 };
 
-using SVGTextDescendantsMap =
-    HeapHashMap<WeakMember<const LayoutBlock>,
-                Member<GCedHeapHashSet<Member<LayoutSVGText>>>>;
-
 // LayoutView is the root of the layout tree and the Document's LayoutObject.
 //
 // It corresponds to the CSS concept of 'initial containing block' (or ICB).
@@ -346,11 +342,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   PhysicalSize InitialContainingBlockSize() const;
 
-  SVGTextDescendantsMap& SvgTextDescendantsMap() {
-    NOT_DESTROYED();
-    return svg_text_descendants_;
-  }
-
   // Manage rare data of LayoutText.
   void RegisterVariableLengthTransformResult(
       const LayoutText& text,
@@ -408,12 +399,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   Member<LocalFrameView> frame_view_;
   unsigned layout_counter_count_ = 0;
   unsigned layout_list_item_count_ = 0;
-
-  // This map keeps track of SVG <text> descendants.
-  // LayoutSVGText needs to do re-layout on transform changes of any ancestor
-  // because LayoutSVGText's layout result depends on scaling factors
-  // computed with ancestor transforms.
-  SVGTextDescendantsMap svg_text_descendants_;
 
   HeapHashMap<WeakMember<const LayoutText>, VariableLengthTransformResult>
       text_to_variable_length_transform_result_;

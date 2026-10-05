@@ -113,7 +113,6 @@ LayoutView::~LayoutView() = default;
 
 void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_view_);
-  visitor->Trace(svg_text_descendants_);
   visitor->Trace(text_to_variable_length_transform_result_);
   visitor->Trace(hit_test_cache_);
   visitor->Trace(initial_containing_block_resize_handled_list_);
@@ -124,19 +123,6 @@ bool LayoutView::HitTest(const HitTestLocation& location,
                          HitTestResult& result) {
   NOT_DESTROYED();
   TRACE_EVENT0("blink", "LayoutView::HitTest");
-  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
-      HasSVGTextDescendants()) {
-    // This is necessary because SVG <text> might have obsolete geometry after
-    // scale-only changes.  See crbug.com/1296089#c16
-    auto it = svg_text_descendants_.find(this);
-    if (it != svg_text_descendants_.end()) {
-      for (LayoutSVGText* svg_text : *it->value) {
-        if (svg_text->NeedsTextMetricsUpdate()) {
-          svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange);
-        }
-      }
-    }
-  }
 
   // We have to recursively update layout/style here because otherwise, when the
   // hit test recurses into a child document, it could trigger a layout on the

@@ -1752,8 +1752,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return GetDocument().View();
   }
 
-  bool IsRooted() const;
-
   Node* GetNode() const {
     NOT_DESTROYED();
     return IsAnonymous() ? nullptr : node_.Get();
@@ -3499,15 +3497,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     may_be_non_contiguous_ifc_ = b;
   }
 
-  bool HasSVGTextDescendants() const {
-    NOT_DESTROYED();
-    return has_svg_text_descendants_;
-  }
-  void SetHasSVGTextDescendants(bool b) {
-    NOT_DESTROYED();
-    has_svg_text_descendants_ = b;
-  }
-
   bool IsMulticolContainer() const {
     NOT_DESTROYED();
     return is_multicol_container_;
@@ -4118,10 +4107,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // preceded by a tall float that's pushed after (due to size/breaking
   // restrictions) the contents of the culled inline.
   unsigned may_be_non_contiguous_ifc_ : 1 = false;
-
-  // For LayoutBlock - true if this block has *any* SVG text descendants.
-  // Used for invalidation on transform changes.
-  unsigned has_svg_text_descendants_ : 1 = false;
 
   // True if this is a LayoutBlockFlow that establishes a multicol container.
   unsigned is_multicol_container_ : 1 = false;

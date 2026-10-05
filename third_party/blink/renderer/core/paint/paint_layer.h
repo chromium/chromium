@@ -216,13 +216,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
            GetLayoutObject().HasMask();
   }
 
-  const PaintLayer* Root() const {
-    const PaintLayer* curr = this;
-    while (curr->Parent())
-      curr = curr->Parent();
-    return curr;
-  }
-
   bool IsRootLayer() const { return is_root_layer_; }
 
   void UpdateScrollingAfterLayout();

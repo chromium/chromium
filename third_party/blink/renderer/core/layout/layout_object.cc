@@ -1722,8 +1722,7 @@ void LayoutObject::MarkContainerChainForLayout(bool schedule_relayout) {
     object->MarkSelfPaintingLayerForVisualOverflowRecalc();
 
     last = object;
-    if (allow_subtree_layout_root && ObjectIsRelayoutBoundary(last) &&
-        last->IsRooted()) {
+    if (allow_subtree_layout_root && ObjectIsRelayoutBoundary(last)) {
       GetFrameView()->ScheduleRelayoutOfSubtree(*last);
       return;
     }
@@ -4227,16 +4226,6 @@ PhysicalOffset LayoutObject::OffsetFromAncestor(
 PhysicalRect LayoutObject::LocalCaretRect(int, CaretShape) const {
   NOT_DESTROYED();
   return PhysicalRect();
-}
-
-bool LayoutObject::IsRooted() const {
-  NOT_DESTROYED();
-  const LayoutObject* object = this;
-  while (object->Parent() && !object->HasLayer())
-    object = object->Parent();
-  if (object->HasLayer())
-    return To<LayoutBoxModelObject>(object)->Layer()->Root()->IsRootLayer();
-  return false;
 }
 
 Node* LayoutObject::GeneratingNode() const {

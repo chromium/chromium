@@ -34,7 +34,6 @@
 
 namespace blink {
 
-class LayoutSVGText;
 struct PaintInfo;
 
 // LayoutBlock is the class that is used by any LayoutObject
@@ -139,9 +138,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
  public:
   void AddChild(LayoutObject* new_child,
                 LayoutObject* before_child = nullptr) override;
-
-  void AddSvgTextDescendant(LayoutSVGText& svg_text);
-  void RemoveSvgTextDescendant(LayoutSVGText& svg_text);
 
   LayoutUnit TextIndentOffset() const;
 

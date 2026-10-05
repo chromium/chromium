@@ -62,7 +62,6 @@ LayoutSVGRoot::~LayoutSVGRoot() = default;
 
 void LayoutSVGRoot::Trace(Visitor* visitor) const {
   visitor->Trace(content_);
-  visitor->Trace(text_set_);
   LayoutReplaced::Trace(visitor);
 }
 
@@ -314,15 +313,6 @@ void LayoutSVGRoot::StyleDidChange(
 
   SVGResources::UpdateEffects(*this, diff, old_style);
 
-  if (!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled() &&
-      diff.transform_changed) {
-    for (auto& svg_text : text_set_) {
-      svg_text->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
-                               kMarkContainerChain);
-      svg_text->SetNeedsTextMetricsUpdate();
-    }
-  }
-
   if (!Parent())
     return;
   if (diff.HasDifference())
@@ -546,20 +536,6 @@ bool LayoutSVGRoot::IsInSelfHitTestingPhase(HitTestPhase phase) const {
 void LayoutSVGRoot::IntersectChildren(HitTestResult& result,
                                       const HitTestLocation& location) const {
   content_.HitTest(result, location, HitTestPhase::kForeground);
-}
-
-void LayoutSVGRoot::AddSvgTextDescendant(LayoutSVGText& svg_text) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
-  DCHECK(!text_set_.Contains(&svg_text));
-  text_set_.insert(&svg_text);
-}
-
-void LayoutSVGRoot::RemoveSvgTextDescendant(LayoutSVGText& svg_text) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::SvgIgnoreOuterTransformsEnabled());
-  DCHECK(text_set_.Contains(&svg_text));
-  text_set_.erase(&svg_text);
 }
 
 PaintLayerType LayoutSVGRoot::LayerTypeRequired() const {
