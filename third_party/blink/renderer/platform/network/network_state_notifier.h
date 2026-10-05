@@ -37,6 +37,8 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -48,6 +50,8 @@ namespace blink {
 
 class PLATFORM_EXPORT NetworkStateNotifier {
   USING_FAST_MALLOC(NetworkStateNotifier);
+
+  using ObserverListUniqueId = size_t;
 
  public:
   struct NetworkState {
@@ -71,10 +75,12 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     std::optional<WebEffectiveConnectionType> network_quality_web_holdback;
   };
 
-  class NetworkStateObserver {
+  class NetworkStateObserver : public GarbageCollectedMixin {
    public:
     NetworkStateObserver(const NetworkStateObserver&) = delete;
     NetworkStateObserver& operator=(const NetworkStateObserver&) = delete;
+
+    void Trace(Visitor* visitor) const override {}
 
     // Will be called on the task runner that is passed in add*Observer.
     virtual void ConnectionChange(
@@ -107,18 +113,16 @@ class PLATFORM_EXPORT NetworkStateNotifier {
    public:
     NetworkStateObserverHandle(NetworkStateNotifier*,
                                ObserverType,
-                               NetworkStateObserver*,
-                               scoped_refptr<base::SingleThreadTaskRunner>);
+                               ObserverListUniqueId);
     NetworkStateObserverHandle(const NetworkStateObserverHandle&) = delete;
     NetworkStateObserverHandle& operator=(const NetworkStateObserverHandle&) =
         delete;
     ~NetworkStateObserverHandle();
 
    private:
-    raw_ptr<NetworkStateNotifier> notifier_;
-    ObserverType type_;
-    raw_ptr<NetworkStateObserver> observer_;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    const raw_ptr<NetworkStateNotifier> notifier_;
+    const ObserverType type_;
+    const ObserverListUniqueId id_;
   };
 
   NetworkStateNotifier() : has_override_(false) {}
@@ -330,22 +334,35 @@ class PLATFORM_EXPORT NetworkStateNotifier {
     NetworkState before_;
   };
 
+  struct ObserverListEntry {
+    USING_FAST_MALLOC(ObserverListEntry);
+
+   public:
+    ObserverListEntry(CrossThreadWeakHandle<NetworkStateObserver> observer,
+                      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+        : observer(std::move(observer)), task_runner(std::move(task_runner)) {}
+
+    const CrossThreadWeakHandle<NetworkStateObserver> observer;
+    const scoped_refptr<base::SingleThreadTaskRunner> task_runner;
+  };
+
   // The ObserverListMap is cross-thread accessed, adding/removing Observers
   // running on a task runner.
-  using ObserverListMap = HashMap<NetworkStateObserver*,
-                                  scoped_refptr<base::SingleThreadTaskRunner>>;
+  using ObserverListMap =
+      HashMap<ObserverListUniqueId, std::unique_ptr<ObserverListEntry>>;
 
   void NotifyObservers(ObserverListMap&, ObserverType, const NetworkState&);
-  void NotifyObserverOnTaskRunner(MayBeDangling<NetworkStateObserver>,
+  void NotifyObserverOnTaskRunner(ObserverListUniqueId,
+                                  NetworkStateObserver*,
                                   ObserverType,
                                   const NetworkState&);
   ObserverListMap& GetObserverMapFor(ObserverType);
-  void AddObserverToMap(ObserverListMap&,
-                        NetworkStateObserver*,
-                        scoped_refptr<base::SingleThreadTaskRunner>);
-  void RemoveObserver(ObserverType,
-                      NetworkStateObserver*,
-                      scoped_refptr<base::SingleThreadTaskRunner>);
+  std::unique_ptr<NetworkStateNotifier::NetworkStateObserverHandle>
+  AddObserverToMap(ObserverListMap&,
+                   NetworkStateObserver*,
+                   ObserverType,
+                   scoped_refptr<base::SingleThreadTaskRunner>);
+  void RemoveObserver(ObserverType, ObserverListUniqueId);
 
   // A random number by which the RTT and downlink estimates are multiplied
   // with. The returned random multiplier is a function of the hostname.
@@ -359,6 +376,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
   ObserverListMap connection_observers_;
   ObserverListMap on_line_state_observers_;
+  ObserverListUniqueId next_observer_id_ GUARDED_BY(lock_) = 1;
 
   const uint8_t randomization_salt_ = base::RandIntInclusive(1, 20);
 };
