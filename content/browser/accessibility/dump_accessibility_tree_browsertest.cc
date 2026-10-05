@@ -3060,7 +3060,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-color-with-popup-open.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDate) {
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputDate DISABLED_AccessibilityInputDate
+#else
+#define MAYBE_AccessibilityInputDate AccessibilityInputDate
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputDate) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date.html"));
 }
 
@@ -3074,8 +3081,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-color-disabled.html"));
 }
 
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputDateWithPopupOpen \
+  DISABLED_AccessibilityInputDateWithPopupOpen
+#else
+#define MAYBE_AccessibilityInputDateWithPopupOpen \
+  AccessibilityInputDateWithPopupOpen
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       NOT_ANDROID(AccessibilityInputDateWithPopupOpen)) {
+                       NOT_ANDROID(MAYBE_AccessibilityInputDateWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date-with-popup-open.html"));
 }
 
@@ -3102,13 +3117,22 @@ IN_PROC_BROWSER_TEST_P(
   RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
 }
 
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputTimeWithPopupOpen \
+  DISABLED_AccessibilityInputTimeWithPopupOpen
+#else
+#define MAYBE_AccessibilityInputTimeWithPopupOpen \
+  AccessibilityInputTimeWithPopupOpen
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       NOT_ANDROID(AccessibilityInputTimeWithPopupOpen)) {
+                       NOT_ANDROID(MAYBE_AccessibilityInputTimeWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time-with-popup-open.html"));
 }
 
+// TODO(crbug.com/569708363): Re-enable this test
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       NOT_ANDROID(AccessibilityInputTimeWithPopupOpen)) {
+                       NOT_ANDROID(MAYBE_AccessibilityInputTimeWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time-with-popup-open.html"));
 }
 
@@ -3116,8 +3140,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDateTime) {
   RunHtmlTest(FILE_PATH_LITERAL("input-datetime.html"));
 }
 
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputDateTimeLocal \
+  DISABLED_AccessibilityInputDateTimeLocal
+#else
+#define MAYBE_AccessibilityInputDateTimeLocal AccessibilityInputDateTimeLocal
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInputDateTimeLocal) {
+                       MAYBE_AccessibilityInputDateTimeLocal) {
   RunHtmlTest(FILE_PATH_LITERAL("input-datetime-local.html"));
 }
 
@@ -3141,7 +3172,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputList) {
   RunHtmlTest(FILE_PATH_LITERAL("input-list.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputMonth) {
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputMonth DISABLED_AccessibilityInputMonth
+#else
+#define MAYBE_AccessibilityInputMonth AccessibilityInputMonth
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputMonth) {
   RunHtmlTest(FILE_PATH_LITERAL("input-month.html"));
 }
 
@@ -3293,7 +3331,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-text-with-selection.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTime) {
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputTime DISABLED_AccessibilityInputTime
+#else
+#define MAYBE_AccessibilityInputTime AccessibilityInputTime
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputTime) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time.html"));
 }
 
@@ -3306,7 +3351,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTime) {
 #define AccessibilityInputTypes_TestFile FILE_PATH_LITERAL("input-types.html")
 #endif
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTypes) {
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputTypes DISABLED_AccessibilityInputTypes
+#else
+#define MAYBE_AccessibilityInputTypes AccessibilityInputTypes
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputTypes) {
   RunHtmlTest(AccessibilityInputTypes_TestFile);
 }
 
@@ -3329,7 +3381,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputUrl) {
   RunHtmlTest(FILE_PATH_LITERAL("input-url.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputWeek) {
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInputWeek DISABLED_AccessibilityInputWeek
+#else
+#define MAYBE_AccessibilityInputWeek AccessibilityInputWeek
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilityInputWeek) {
   RunHtmlTest(FILE_PATH_LITERAL("input-week.html"));
 }
 
@@ -3351,8 +3410,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityIns) {
   RunHtmlTest(FILE_PATH_LITERAL("ins.html"));
 }
 
+// TODO(crbug.com/569708363): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilityInteractiveControlsWithLabels \
+  DISABLED_AccessibilityInteractiveControlsWithLabels
+#else
+#define MAYBE_AccessibilityInteractiveControlsWithLabels \
+  AccessibilityInteractiveControlsWithLabels
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityInteractiveControlsWithLabels) {
+                       MAYBE_AccessibilityInteractiveControlsWithLabels) {
   RunHtmlTest(FILE_PATH_LITERAL("interactive-controls-with-labels.html"));
 }
 
