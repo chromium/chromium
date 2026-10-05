@@ -11,8 +11,14 @@ include_rules = [
   "+chrome/browser/printing",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/screen_ai",
-  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
-  "+chrome/browser/ui/browser_window/public/create_browser_window.h",
-  "+chrome/browser/ui/tabs/tab_activity_simulator.h",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "mahi_tab_helper_unittest\\.cc": [
+    "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+    "+chrome/browser/ui/browser_window/public/create_browser_window.h",
+    "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+  ],
+}

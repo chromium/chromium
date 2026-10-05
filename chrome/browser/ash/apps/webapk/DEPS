@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/web_applications/model/web_app_icon_types.h",
   "+chrome/browser/web_applications/web_app_filter.h",
   "+chrome/browser/web_applications/web_app_icon_manager.h",
-  "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
   "+chrome/browser/web_applications/web_app_utils.h",
@@ -17,6 +16,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "webapk_install_task_unittest\\.cc": [
+    "+chrome/browser/web_applications/web_app_install_info.h",
+  ],
   # Only tests need //chrome/browser/policy.
   "webapk_policy_browsertest\\.cc": [
     "+chrome/browser/policy/policy_test_utils.h",

@@ -16,5 +16,11 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "parent_access_service_browsertest\\.cc": [
+    "+chrome/browser/profiles",
+  ],
+}

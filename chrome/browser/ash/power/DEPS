@@ -15,9 +15,15 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/settings",
-  "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/profiles",
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "renderer_freezer_unittest\\.cc": [
+    "+chrome/browser/extensions/extension_service.h",
+    "+chrome/browser/extensions/test_extension_system.h",
+  ],
+}

@@ -18,13 +18,16 @@ include_rules = [
   "+chrome/browser/ash/system",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash",
-  "+chrome/browser/ui/exclusive_access",
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
   "+chrome/common/chrome_constants.h",
   "+chrome/grit",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "screen_locker_browsertest\\.cc": [
+    "+chrome/browser/ui/exclusive_access",
+  ],
   "lock_screen_reauth_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

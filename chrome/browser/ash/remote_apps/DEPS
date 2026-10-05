@@ -20,10 +20,16 @@ include_rules = [
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/test_support",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/extensions/chrome_test_extension_loader.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/common/apps/platform_apps/api",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "remote_apps_manager_browsertest\\.cc": [
+    "+chrome/browser/extensions/chrome_test_extension_loader.h",
+  ],
+}

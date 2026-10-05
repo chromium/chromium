@@ -11,5 +11,11 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/arc",
-  "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "fake_arc_support\\.cc": [
+    "+chrome/browser/profiles",
+  ],
+}

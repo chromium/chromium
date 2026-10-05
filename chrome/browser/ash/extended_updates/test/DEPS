@@ -11,5 +11,11 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/extended_updates",
-  "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "scoped_extended_updates_controller_unittest\\.cc": [
+    "+chrome/browser/profiles",
+  ],
+}

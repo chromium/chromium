@@ -17,5 +17,11 @@ include_rules = [
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/profiles",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "wallpaper_drivefs_delegate_impl_browsertest\\.cc": [
+    "+chrome/browser/profiles",
+  ],
+}
