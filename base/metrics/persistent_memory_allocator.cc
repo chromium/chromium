@@ -1258,17 +1258,15 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   DPCHECK(success);
 #elif BUILDFLAG(IS_FUCHSIA)
   // Fuchsia's POSIX compatibility layer does not implement msync().
-#elif BUILDFLAG(IS_APPLE)
-  // On OSX, "invalidate" removes all cached pages, forcing a re-read from
-  // disk. That's not applicable to "flush" so omit it.
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX)
+  // MS_INVALIDATE is omitted because it forces cached mapped pages to be
+  // dropped, triggering unnecessary page faults and re-reads on subsequent
+  // accesses. On POSIX and Apple platforms (Linux, ChromeOS, Android, macOS,
+  // iOS), MAP_SHARED mappings operate directly on the kernel's unified page
+  // cache, so other processes already observe writes without requiring cache
+  // invalidation.
   int result =
       ::msync(const_cast<void*>(data()), length, sync ? MS_SYNC : MS_ASYNC);
-  DPCHECK(result == 0);
-#elif BUILDFLAG(IS_POSIX)
-  // On POSIX, "invalidate" forces _other_ processes to recognize what has
-  // been written to disk and so is applicable to "flush".
-  int result = ::msync(const_cast<void*>(data()), length,
-                       MS_INVALIDATE | (sync ? MS_SYNC : MS_ASYNC));
   DPCHECK(result == 0);
 #else
 #error Unsupported OS.
