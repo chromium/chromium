@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/prefs/pref_service.h"
@@ -18,15 +19,14 @@ namespace arc {
 namespace ce = ::ash::extension_ime_util;
 using ::ash::input_method::InputMethodDescriptors;
 
-InputMethodPrefs::InputMethodPrefs(Profile* profile) : profile_(profile) {}
+InputMethodPrefs::InputMethodPrefs(PrefService* prefs)
+    : prefs_(CHECK_DEREF(prefs)) {}
 InputMethodPrefs::~InputMethodPrefs() = default;
 
 void InputMethodPrefs::UpdateEnabledImes(
     InputMethodDescriptors enabled_arc_imes) {
-  PrefService* const prefs = profile_->GetPrefs();
-
   const std::string enabled_ime_ids =
-      prefs->GetString(ash::prefs::kLanguageEnabledImes);
+      prefs_->GetString(ash::prefs::kLanguageEnabledImes);
   std::vector<std::string> enabled_ime_list = base::SplitString(
       enabled_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -36,27 +36,27 @@ void InputMethodPrefs::UpdateEnabledImes(
   for (const auto& descriptor : enabled_arc_imes)
     enabled_ime_list.push_back(descriptor.id());
 
-  prefs->SetString(ash::prefs::kLanguageEnabledImes,
-                   base::JoinString(enabled_ime_list, ","));
+  prefs_->SetString(ash::prefs::kLanguageEnabledImes,
+                    base::JoinString(enabled_ime_list, ","));
 
   const std::string current_ime =
-      prefs->GetString(ash::prefs::kLanguageCurrentInputMethod);
+      prefs_->GetString(ash::prefs::kLanguageCurrentInputMethod);
   if (ce::IsArcIME(current_ime) &&
       !std::ranges::contains(enabled_ime_list, current_ime)) {
-    prefs->SetString(ash::prefs::kLanguageCurrentInputMethod, std::string());
+    prefs_->SetString(ash::prefs::kLanguageCurrentInputMethod, std::string());
   }
   const std::string previous_ime =
-      prefs->GetString(ash::prefs::kLanguagePreviousInputMethod);
+      prefs_->GetString(ash::prefs::kLanguagePreviousInputMethod);
   if (ce::IsArcIME(previous_ime) &&
       !std::ranges::contains(enabled_ime_list, previous_ime)) {
-    prefs->SetString(ash::prefs::kLanguagePreviousInputMethod, std::string());
+    prefs_->SetString(ash::prefs::kLanguagePreviousInputMethod, std::string());
   }
 }
 
 std::set<std::string> InputMethodPrefs::GetEnabledImes() const {
-  const std::vector<std::string> imes = base::SplitString(
-      profile_->GetPrefs()->GetString(ash::prefs::kLanguageEnabledImes), ",",
-      base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  const std::vector<std::string> imes =
+      base::SplitString(prefs_->GetString(ash::prefs::kLanguageEnabledImes),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   return std::set<std::string>(imes.begin(), imes.end());
 }
 

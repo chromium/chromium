@@ -31,7 +31,7 @@ class InputMethodPrefsTest : public testing::Test {
 };
 
 TEST_F(InputMethodPrefsTest, Constructor) {
-  InputMethodPrefs prefs(profile());
+  InputMethodPrefs prefs(profile()->GetPrefs());
 }
 
 TEST_F(InputMethodPrefsTest, GetEnabledImes) {
@@ -49,7 +49,7 @@ TEST_F(InputMethodPrefsTest, GetEnabledImes) {
       base::StringPrintf("%s,%s", component_extension_ime_id.c_str(),
                          arc_ime_id.c_str()));
 
-  InputMethodPrefs prefs(profile());
+  InputMethodPrefs prefs(profile()->GetPrefs());
   const std::set<std::string> imes = prefs.GetEnabledImes();
   EXPECT_EQ(2u, imes.size());
   EXPECT_TRUE(imes.count(component_extension_ime_id) > 0);
@@ -75,7 +75,7 @@ TEST_F(InputMethodPrefsTest, UpdateEnabledImes) {
   pref_service->SetString(ash::prefs::kLanguageEnabledImes,
                           component_extension_ime_id);
 
-  InputMethodPrefs prefs(profile());
+  InputMethodPrefs prefs(profile()->GetPrefs());
   InputMethodDescriptor arc_ime_descriptor1(
       arc_ime_id1, "", "", {}, {}, false, GURL(), GURL(),
       /*handwriting_language=*/std::nullopt);

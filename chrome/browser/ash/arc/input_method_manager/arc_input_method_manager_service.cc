@@ -381,7 +381,7 @@ ArcInputMethodManagerService::ArcInputMethodManagerService(
       arc_ime_state_delegate_(
           std::make_unique<ArcInputMethodStateDelegateImpl>(profile_)),
       arc_ime_state_(arc_ime_state_delegate_.get()),
-      prefs_(profile_),
+      prefs_(profile_->GetPrefs()),
       is_virtual_keyboard_shown_(false),
       is_updating_imm_entry_(false),
       proxy_ime_extension_id_(

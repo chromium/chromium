@@ -8,16 +8,19 @@
 #include <set>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/memory/raw_ref.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
+
+class PrefService;
 
 namespace arc {
 
 // A thin wrapper of the input method related prefs.
 class InputMethodPrefs {
  public:
-  explicit InputMethodPrefs(Profile* profile);
+  // `prefs` is the user's PrefService. It must be non-null and must outlive
+  // `this`.
+  explicit InputMethodPrefs(PrefService* prefs);
   ~InputMethodPrefs();
 
   InputMethodPrefs(const InputMethodPrefs& pref) = delete;
@@ -32,7 +35,7 @@ class InputMethodPrefs {
   std::set<std::string> GetEnabledImes() const;
 
  private:
-  const raw_ptr<Profile> profile_;
+  const raw_ref<PrefService> prefs_;
 };
 
 }  // namespace arc
