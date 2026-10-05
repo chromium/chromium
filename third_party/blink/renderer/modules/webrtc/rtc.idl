@@ -5,7 +5,7 @@
 // TODO(https://crbug.com/481412281): Add spec link when available.
 
 [
-    Exposed=Window, SecureContext, RuntimeEnabled=RTCDiagnosticLogging
+    Exposed=Window, SecureContext, RuntimeEnabled=RTCLegacyDiagnosticLogging
 ] interface RTC {
     [CallWith=ScriptState, Measure] Promise<DOMString> startDiagnosticLogging(optional RTCStartDiagnosticLoggingOptions options = {});
     [CallWith=ScriptState] Promise<undefined> finishDiagnosticLogging(optional RTCFinishDiagnosticLoggingOptions options = {});
