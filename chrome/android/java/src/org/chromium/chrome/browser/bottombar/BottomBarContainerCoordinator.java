@@ -54,7 +54,9 @@ public class BottomBarContainerCoordinator
             new ComponentCallbacks() {
                 @Override
                 public void onConfigurationChanged(Configuration newConfig) {
-                    if (newConfig.orientation == mCurrentOrientation) {
+                    if (newConfig.orientation == mCurrentOrientation
+                            && newConfig.screenWidthDp == mCurrentScreenWidthDp
+                            && newConfig.screenHeightDp == mCurrentScreenHeightDp) {
                         return;
                     }
 
@@ -62,6 +64,8 @@ public class BottomBarContainerCoordinator
                         mHandler.removeCallbacks(mModelTokenChangeRunnable);
                     }
                     mCurrentOrientation = newConfig.orientation;
+                    mCurrentScreenWidthDp = newConfig.screenWidthDp;
+                    mCurrentScreenHeightDp = newConfig.screenHeightDp;
                     mPendingVisibilityUpdate = true;
                     mHandler.post(mModelTokenChangeRunnable);
                 }
@@ -77,6 +81,8 @@ public class BottomBarContainerCoordinator
     // Tracking if there is a pending visibility update to avoid scanning the whole queue.
     private boolean mPendingVisibilityUpdate;
     private int mCurrentOrientation;
+    private int mCurrentScreenWidthDp;
+    private int mCurrentScreenHeightDp;
 
     /**
      * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
@@ -107,7 +113,10 @@ public class BottomBarContainerCoordinator
         mBottomBarContainer = bottomBarContainer;
         Context context = bottomBarContainer.getContext();
         mContext = context;
-        mCurrentOrientation = context.getResources().getConfiguration().orientation;
+        Configuration configuration = context.getResources().getConfiguration();
+        mCurrentOrientation = configuration.orientation;
+        mCurrentScreenWidthDp = configuration.screenWidthDp;
+        mCurrentScreenHeightDp = configuration.screenHeightDp;
         mContext.registerComponentCallbacks(mComponentCallbacks);
         mHandler = new Handler(Looper.getMainLooper());
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
