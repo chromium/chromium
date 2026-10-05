@@ -2,9 +2,9 @@ Name: CastCore Publics
 Short Name: cast_core/public
 URL: https://chromium.googlesource.com/cast_core/public
 Version: N/A
-Date: 2025-03-21
-Revision: f5ee589bdaea60418f670fa176be15ccb9a34942
-Update Mechanism: Manual
+Date: 2026-03-02
+Revision: 1629985cfc0b065310738512a000b6e68716aa03
+Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
