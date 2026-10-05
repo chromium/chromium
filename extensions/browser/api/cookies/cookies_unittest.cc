@@ -17,10 +17,10 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/test/base/testing_browser_process_death_test_mixin.h"
-#include "chrome/test/base/testing_profile.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "extensions/browser/api/cookies/cookies_helpers.h"
+#include "extensions/browser/extensions_test.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/cookies.h"
 #include "extensions/common/extension_builder.h"
@@ -52,50 +52,34 @@ struct DomainMatchCase {
 
 }  // namespace
 
-class ExtensionCookiesTest
-    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
-      public testing::Test {
- private:
-  content::BrowserTaskEnvironment task_environment_;
-};
+class ExtensionCookiesTest : public ExtensionsTest {};
 
 TEST_F(ExtensionCookiesTest, StoreIdProfileConversion) {
-  TestingProfile::Builder profile_builder;
-  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
-  // Trigger early creation of off-the-record profile.
-  EXPECT_TRUE(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  content::TestBrowserContext otr_context;
+  otr_context.set_is_off_the_record(true);
+  extensions_browser_client()->SetIncognitoContext(&otr_context);
 
   EXPECT_EQ(std::string("0"),
-            cookies_helpers::GetStoreIdFromBrowserContext(profile.get()));
-  EXPECT_EQ(profile.get(), cookies_helpers::ChooseBrowserContextFromStoreId(
-                               "0", profile.get(), true));
-  EXPECT_EQ(profile.get(), cookies_helpers::ChooseBrowserContextFromStoreId(
-                               "0", profile.get(), false));
-  EXPECT_EQ(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-            cookies_helpers::ChooseBrowserContextFromStoreId("1", profile.get(),
-                                                             true));
+            cookies_helpers::GetStoreIdFromBrowserContext(browser_context()));
+  EXPECT_EQ(browser_context(), cookies_helpers::ChooseBrowserContextFromStoreId(
+                                   "0", browser_context(), true));
+  EXPECT_EQ(browser_context(), cookies_helpers::ChooseBrowserContextFromStoreId(
+                                   "0", browser_context(), false));
+  EXPECT_EQ(&otr_context, cookies_helpers::ChooseBrowserContextFromStoreId(
+                              "1", browser_context(), true));
   EXPECT_EQ(nullptr, cookies_helpers::ChooseBrowserContextFromStoreId(
-                         "1", profile.get(), false));
+                         "1", browser_context(), false));
 
   EXPECT_EQ(std::string("1"),
-            cookies_helpers::GetStoreIdFromBrowserContext(
-                profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
-  EXPECT_EQ(
-      nullptr,
-      cookies_helpers::ChooseBrowserContextFromStoreId(
-          "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
-  EXPECT_EQ(nullptr,
-            cookies_helpers::ChooseBrowserContextFromStoreId(
-                "0", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-                false));
-  EXPECT_EQ(
-      profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      cookies_helpers::ChooseBrowserContextFromStoreId(
-          "1", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true), true));
-  EXPECT_EQ(profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-            cookies_helpers::ChooseBrowserContextFromStoreId(
-                "1", profile->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-                false));
+            cookies_helpers::GetStoreIdFromBrowserContext(&otr_context));
+  EXPECT_EQ(nullptr, cookies_helpers::ChooseBrowserContextFromStoreId(
+                         "0", &otr_context, true));
+  EXPECT_EQ(nullptr, cookies_helpers::ChooseBrowserContextFromStoreId(
+                         "0", &otr_context, false));
+  EXPECT_EQ(&otr_context, cookies_helpers::ChooseBrowserContextFromStoreId(
+                              "1", &otr_context, true));
+  EXPECT_EQ(&otr_context, cookies_helpers::ChooseBrowserContextFromStoreId(
+                              "1", &otr_context, false));
 }
 
 TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
@@ -135,11 +119,10 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   ASSERT_TRUE(cookie2.expiration_date);
   EXPECT_EQ(10000, *cookie2.expiration_date);
 
-  TestingProfile profile;
   base::ListValue tab_ids_list;
   std::vector<int> tab_ids;
-  CookieStore cookie_store =
-      cookies_helpers::CreateCookieStore(&profile, std::move(tab_ids_list));
+  CookieStore cookie_store = cookies_helpers::CreateCookieStore(
+      browser_context(), std::move(tab_ids_list));
   EXPECT_EQ("0", cookie_store.id);
   EXPECT_EQ(tab_ids, cookie_store.tab_ids);
 }

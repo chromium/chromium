@@ -171,6 +171,9 @@ bool TestExtensionsBrowserClient::HasOffTheRecordContext(
 
 BrowserContext* TestExtensionsBrowserClient::GetOffTheRecordContext(
     BrowserContext* context) {
+  if (context == incognito_context_) {
+    return context;
+  }
   if (context == main_context_) {
     return incognito_context_;
   }
