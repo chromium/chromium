@@ -19,6 +19,7 @@ export {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
 export {OrganizerListElement} from './organizer_list.js';
 export {OrganizerListSectionElement} from './organizer_list_section.js';
 export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
+export {OrganizerListSectionHeaderElement} from './organizer_list_section_header.js';
 export type {HighlightableItem, HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemActionButton, OrganizerListSectionItemIcon, OrganizerListSectionItemStackedFavicons} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 export type {OrganizerListSectionItemDescriptionPart} from './organizer_list_section_item_description.js';

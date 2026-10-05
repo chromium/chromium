@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import './organizer_list_section_header.js';
 import './organizer_list_section_item.js';
 
-import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from '//resources/js/assert.js';
-import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
+import type {OrganizerListSectionHeaderElement} from './organizer_list_section_header.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 import type {BrowserProxy} from './organizer_panel.mojom-webui.js';
 import {browserProxyFactory} from './organizer_panel.mojom-webui.js';
@@ -23,7 +22,7 @@ import {search} from './search_utils.js';
 
 export interface OrganizerListSectionElement {
   $: {
-    header: CrExpandButtonElement,
+    header: OrganizerListSectionHeaderElement,
   };
 }
 
@@ -131,14 +130,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
         changedProperties.has('searchQuery')) {
       this.updateFilteredItems_();
     }
-  }
-
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
-    // Clicking the header label focuses the inner icon button via script, which
-    // still triggers :focus-visible; track keyboard vs mouse input so CSS can
-    // hide the focus ring on mouse clicks.
-    FocusOutlineManager.forDocument(document);
   }
 
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>) {

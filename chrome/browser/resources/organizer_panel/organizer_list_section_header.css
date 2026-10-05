@@ -1,0 +1,43 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+}
+
+#expandButton {
+  --cr-expand-button-icon-size: 16px;
+  --cr-expand-button-size: 24px;
+  --cr-section-vertical-padding: 0;
+  color: var(--cr-secondary-text-color);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 16px;
+  padding: 8px 16px;
+  text-transform: uppercase;
+}
+
+#expandButton[disabled] {
+  opacity: 1;
+}
+
+#expandButton::part(icon) {
+  margin-block: -4px;
+  margin-inline-end: 12px;
+  margin-inline-start: 8px;
+  order: -1;
+}
+
+#expandButton[disabled]::part(icon) {
+  display: none;
+}
+
+:host-context(html:not(.focus-outline-visible)) #expandButton::part(icon) {
+  --cr-icon-button-focus-outline-color: transparent;
+}

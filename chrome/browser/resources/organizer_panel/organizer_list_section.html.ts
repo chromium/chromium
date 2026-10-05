@@ -9,11 +9,11 @@ import type {OrganizerListSectionElement} from './organizer_list_section.js';
 export function getHtml(this: OrganizerListSectionElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<cr-expand-button id="header" ?expanded="${this.isExpanded_()}"
+<organizer-list-section-header id="header" ?expanded="${this.isExpanded_()}"
     ?disabled="${this.isSearching_()}"
     @expanded-changed="${this.onExpandedChanged_}">
   ${this.delegate?.getHeader() || ''}
-</cr-expand-button>
+</organizer-list-section-header>
 ${this.hasNoSearchResults_() ? html`
   <div id="noResults">$i18n{noResults}</div>
 ` : html`

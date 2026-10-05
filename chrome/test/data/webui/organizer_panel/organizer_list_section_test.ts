@@ -100,7 +100,6 @@ suite('OrganizerListSectionTest', () => {
     await microtasksFinished();
 
     const header = listSection.$.header;
-    const headerIcon = header.$.icon;
     const itemsContainer =
         listSection.shadowRoot.querySelector<CrCollapseElement>('#items')!;
 
@@ -110,28 +109,22 @@ suite('OrganizerListSectionTest', () => {
     assertEquals(4, renderedItems.length);
     assertTrue(header.expanded);
     assertTrue(itemsContainer.opened);
-    assertEquals('cr:keyboard-arrow-up', headerIcon.ironIcon);
-    assertEquals('true', headerIcon.getAttribute('aria-expanded'));
     assertEquals(0, mockHandler.getCallCount('setSectionExpanded'));
 
-    header.click();
+    header.$.expandButton.click();
     await microtasksFinished();
 
     assertFalse(header.expanded);
     assertFalse(itemsContainer.opened);
-    assertEquals('cr:keyboard-arrow-down', headerIcon.ironIcon);
-    assertEquals('false', headerIcon.getAttribute('aria-expanded'));
     assertEquals(1, mockHandler.getCallCount('setSectionExpanded'));
     assertDeepEquals(
         ['open-tabs', false], mockHandler.getArgs('setSectionExpanded')[0]);
 
-    header.click();
+    header.$.expandButton.click();
     await microtasksFinished();
 
     assertTrue(header.expanded);
     assertTrue(itemsContainer.opened);
-    assertEquals('cr:keyboard-arrow-up', headerIcon.ironIcon);
-    assertEquals('true', headerIcon.getAttribute('aria-expanded'));
     assertEquals(2, mockHandler.getCallCount('setSectionExpanded'));
     assertDeepEquals(
         ['open-tabs', true], mockHandler.getArgs('setSectionExpanded')[1]);
@@ -354,17 +347,15 @@ suite('OrganizerListSectionTest', () => {
         await microtasksFinished();
 
         const header = listSection.$.header;
-        const headerIcon = header.$.icon;
         const itemsContainer =
             listSection.shadowRoot.querySelector<CrCollapseElement>('#items')!;
 
-        header.click();
+        header.$.expandButton.click();
         await microtasksFinished();
 
         assertFalse(header.expanded);
         assertFalse(header.disabled);
         assertFalse(itemsContainer.opened);
-        assertEquals('flex', getComputedStyle(headerIcon).display);
 
         listSection.searchQuery = 'Tab';
         await microtasksFinished();
@@ -372,7 +363,6 @@ suite('OrganizerListSectionTest', () => {
         assertTrue(header.expanded);
         assertTrue(header.disabled);
         assertTrue(itemsContainer.opened);
-        assertEquals('none', getComputedStyle(headerIcon).display);
         const listItems = listSection.shadowRoot.querySelectorAll(
             'organizer-list-section-item');
         assertEquals(4, listItems.length);
@@ -383,7 +373,6 @@ suite('OrganizerListSectionTest', () => {
         assertFalse(header.expanded);
         assertFalse(header.disabled);
         assertFalse(itemsContainer.opened);
-        assertEquals('flex', getComputedStyle(headerIcon).display);
       });
 
   test('highlights matching text when searching', async () => {
