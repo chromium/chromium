@@ -26,6 +26,7 @@ class DeviceInfoSyncService;
 
 namespace personal_context {
 
+class PersonalContextEligibilityService;
 class PersonalContextKeyManager;
 class PersonalContextManager;
 
@@ -35,7 +36,8 @@ class PersonalContextServiceImpl : public PersonalContextService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       PrefService* pref_service,
-      syncer::DeviceInfoSyncService* device_info_sync_service);
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      PersonalContextEligibilityService* eligibility_service);
 
   PersonalContextServiceImpl(const PersonalContextServiceImpl&) = delete;
   PersonalContextServiceImpl& operator=(const PersonalContextServiceImpl&) = delete;

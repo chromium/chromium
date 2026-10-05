@@ -118,9 +118,9 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   }
 
   // syncer::DeviceInfoSyncClient:
-  std::optional<syncer::DeviceInfo::PersonalContextInfo>
+  syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
   GetLocalPersonalContextInfo() const override {
-    return std::nullopt;
+    return syncer::DeviceInfo::PersonalContextInfo::NotEligible();
   }
 
  private:

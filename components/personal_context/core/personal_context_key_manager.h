@@ -12,6 +12,9 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/personal_context/core/personal_context_eligibility_service.h"
+#include "components/sync_device_info/device_info.h"
 #include "crypto/hpke.h"
 #include "crypto/keypair.h"
 
@@ -33,20 +36,32 @@ inline constexpr crypto::hpke::HpkeParams kPersonalContextHpkeParams{
 
 // Manages the local device HPKE key pair for Personal Context payload
 // encryption and decryption.
-class PersonalContextKeyManager {
+class PersonalContextKeyManager
+    : public PersonalContextEligibilityService::Observer {
  public:
   PersonalContextKeyManager(
       PrefService* prefs,
-      syncer::DeviceInfoSyncService* device_info_sync_service);
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      PersonalContextEligibilityService* eligibility_service);
   PersonalContextKeyManager(const PersonalContextKeyManager&) = delete;
   PersonalContextKeyManager& operator=(const PersonalContextKeyManager&) = delete;
-  ~PersonalContextKeyManager();
+  ~PersonalContextKeyManager() override;
+
+  // Returns the local device's PersonalContextInfo (or its
+  // readiness/eligibility status) for sharing via DeviceInfo sync. Generates a
+  // new key pair in `prefs` if eligible and none exists yet.
+  static syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
+  GetLocalPersonalContextInfo(
+      PrefService* prefs,
+      const PersonalContextEligibilityService* eligibility_service);
 
   // Returns the local serialized proto bytes of tink.Keyset containing this
-  // device's public key.
-  // Generates a new key pair in `prefs` if none exists yet.
+  // device's public key if `eligibility_service` is initialized and eligible
+  // for encryption; otherwise returns an empty vector.
+  // Generates a new key pair in `prefs` if eligible and none exists yet.
   static std::vector<uint8_t> GetOrCreateLocalPublicKeyBytes(
-      PrefService* prefs);
+      PrefService* prefs,
+      const PersonalContextEligibilityService* eligibility_service);
 
   // Returns the PrivateKey instance, creating and persisting it to `prefs` if
   // needed.
@@ -70,10 +85,17 @@ class PersonalContextKeyManager {
       base::span<const uint8_t> info = {},
       base::span<const uint8_t> ad = {});
 
+  // PersonalContextEligibilityService::Observer:
+  void OnEncryptionEligibilityChanged(bool is_eligible) override;
+
  private:
   const raw_ptr<PrefService> prefs_;
   const raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service_;
+  const raw_ptr<PersonalContextEligibilityService> eligibility_service_;
   std::optional<crypto::keypair::PrivateKey> private_key_;
+  base::ScopedObservation<PersonalContextEligibilityService,
+                          PersonalContextEligibilityService::Observer>
+      eligibility_observation_{this};
 };
 
 }  // namespace personal_context

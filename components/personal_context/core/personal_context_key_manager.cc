@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_view_util.h"
+#include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/hybrid_encryption_key.pb.h"
@@ -66,17 +67,42 @@ crypto::keypair::PrivateKey LoadOrGeneratePrivateKey(
 
 PersonalContextKeyManager::PersonalContextKeyManager(
     PrefService* prefs,
-    syncer::DeviceInfoSyncService* device_info_sync_service)
-    : prefs_(prefs), device_info_sync_service_(device_info_sync_service) {
+    syncer::DeviceInfoSyncService* device_info_sync_service,
+    PersonalContextEligibilityService* eligibility_service)
+    : prefs_(prefs),
+      device_info_sync_service_(device_info_sync_service),
+      eligibility_service_(eligibility_service) {
   CHECK(prefs_);
+  CHECK(device_info_sync_service_);
+  CHECK(eligibility_service_);
+  eligibility_observation_.Observe(eligibility_service_);
+  if (eligibility_service_->IsInitialized() &&
+      eligibility_service_->IsEligibleForEncryption()) {
+    GetOrCreatePrivateKey();
+  }
 }
 
 PersonalContextKeyManager::~PersonalContextKeyManager() = default;
 
 // static
-std::vector<uint8_t>
-PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
+syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo
+PersonalContextKeyManager::GetLocalPersonalContextInfo(
+    PrefService* prefs,
+    const PersonalContextEligibilityService* eligibility_service) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPersonalContextHandleEncryptedPayloads)) {
+    return syncer::DeviceInfo::PersonalContextInfo::NotEligible();
+  }
   CHECK(prefs);
+  if (!eligibility_service) {
+    return syncer::DeviceInfo::PersonalContextInfo::NotEligible();
+  }
+  if (!eligibility_service->IsInitialized()) {
+    return syncer::DeviceInfo::PersonalContextInfo::NotReady();
+  }
+  if (!eligibility_service->IsEligibleForEncryption()) {
+    return syncer::DeviceInfo::PersonalContextInfo::NotEligible();
+  }
   crypto::keypair::PrivateKey priv = LoadOrGeneratePrivateKey(prefs);
   std::array<uint8_t, 1184> pub_bytes = priv.ToMlkem768PublicKey();
 
@@ -102,7 +128,21 @@ PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(PrefService* prefs) {
   key_data->set_key_material_type(tink::KeyData::ASYMMETRIC_PUBLIC);
 
   std::string serialized = keyset.SerializeAsString();
-  return base::ToVector(base::as_byte_span(serialized));
+  return syncer::DeviceInfo::PersonalContextInfo{
+      .serialized_tink_keyset = base::ToVector(base::as_byte_span(serialized))};
+}
+
+// static
+std::vector<uint8_t> PersonalContextKeyManager::GetOrCreateLocalPublicKeyBytes(
+    PrefService* prefs,
+    const PersonalContextEligibilityService* eligibility_service) {
+  syncer::DeviceInfo::PersonalContextInfo::StatusOrInfo status_or_info =
+      GetLocalPersonalContextInfo(prefs, eligibility_service);
+  if (auto* info = std::get_if<syncer::DeviceInfo::PersonalContextInfo>(
+          &status_or_info)) {
+    return std::move(info->serialized_tink_keyset);
+  }
+  return {};
 }
 
 crypto::keypair::PrivateKey PersonalContextKeyManager::GetOrCreatePrivateKey() {
@@ -110,7 +150,7 @@ crypto::keypair::PrivateKey PersonalContextKeyManager::GetOrCreatePrivateKey() {
   if (!private_key_) {
     bool key_generated = false;
     private_key_ = LoadOrGeneratePrivateKey(prefs_, &key_generated);
-    if (key_generated && device_info_sync_service_) {
+    if (key_generated) {
       device_info_sync_service_->RefreshLocalDeviceInfo();
     }
   }
@@ -134,9 +174,38 @@ std::optional<std::vector<uint8_t>> PersonalContextKeyManager::Open(
     base::span<const uint8_t> encrypted_data,
     base::span<const uint8_t> info,
     base::span<const uint8_t> ad) {
+  // TODO(b/544747336): return nullopt if a key isn't available for decryption.
   return crypto::hpke::Open(kPersonalContextHpkeParams, GetOrCreatePrivateKey(),
                             encrypted_data, info, ad);
 }
 
-}  // namespace personal_context
+void PersonalContextKeyManager::OnEncryptionEligibilityChanged(
+    bool is_eligible) {
+  // Note: `OnEncryptionEligibilityChanged()` is also called on every browser
+  // startup once the eligibility service finishes initializing. Calling
+  // `RefreshLocalDeviceInfo()` is safe because it will not trigger a
+  // DeviceInfo upload to the Sync server if the local DeviceInfo value has not
+  // changed.
+  if (is_eligible) {
+    // Ensure a local key pair exists in prefs and refresh DeviceInfo so the
+    // public key is shared with the Sync server (including when re-enabling
+    // eligibility with an already-persisted key).
+    if (!private_key_) {
+      private_key_ = LoadOrGeneratePrivateKey(prefs_);
+    }
 
+    device_info_sync_service_->RefreshLocalDeviceInfo();
+
+    return;
+  }
+
+  // When becoming ineligible, preserve the local private key in prefs so the
+  // device does not need to rotate keys if it becomes eligible again. If a key
+  // was previously generated, refresh DeviceInfo so the public key is no
+  // longer shared with the Sync server.
+  if (!prefs_->GetString(prefs::kPersonalContextPrivateKey).empty()) {
+    device_info_sync_service_->RefreshLocalDeviceInfo();
+  }
+}
+
+}  // namespace personal_context

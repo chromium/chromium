@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -26,7 +27,8 @@ std::unique_ptr<KeyedService> BuildPersonalContextService(
   return std::make_unique<personal_context::PersonalContextServiceImpl>(
       profile->GetURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+      DeviceInfoSyncServiceFactory::GetForProfile(profile),
+      PersonalContextEligibilityServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace
@@ -59,6 +61,7 @@ PersonalContextServiceFactory::PersonalContextServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
+  DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
 }
 
 PersonalContextServiceFactory::~PersonalContextServiceFactory() =

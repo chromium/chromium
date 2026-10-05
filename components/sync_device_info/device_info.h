@@ -145,6 +145,17 @@ class DeviceInfo {
   // Holds the device's public key used for Personal Context HPKE payload
   // encryption.
   struct PersonalContextInfo {
+    // NotReady indicates that more time is needed to calculate the
+    // PersonalContextInfo.
+    using NotReady =
+        base::StrongAlias<class PersonalContextNotReadyTag, std::monostate>;
+    // NotEligible indicates that the device/profile is not eligible for
+    // Personal Context encryption.
+    using NotEligible =
+        base::StrongAlias<class PersonalContextNotEligibleTag, std::monostate>;
+    using StatusOrInfo =
+        std::variant<NotReady, NotEligible, PersonalContextInfo>;
+
     // Serialized proto bytes of tink.Keyset.
     std::vector<uint8_t> serialized_tink_keyset;
 
