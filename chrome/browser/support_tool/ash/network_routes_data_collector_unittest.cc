@@ -4,6 +4,7 @@
 
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 
+#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -36,7 +37,7 @@ namespace {
 // routes that will be returned by FakeDebugDaemonClient once but
 // NetworkRoutesDataCollector will call it twice: one for IPv4 and other for
 // IPv6.
-const std::vector<std::string> fake_routes = {
+constexpr const char* fake_routes[] = {
     "[ ip -4/-6 rule list ]\n"
     "0: from all lookup local\n"
     "9: from all lookup main\n"
@@ -69,13 +70,13 @@ const std::vector<std::string> fake_routes = {
     "100.115.92.128/30 via 100.115.92.129 dev arc_ns0\n"
     "100.115.92.140/30 dev arc_ns9 proto kernel scope link src 100.115.92.141\n"
     "172.11.5.5/23 dev eth0 proto kernel scope link src 255.255.155.2\n",
-    "[ ip -4/-6 route show table 1002 ]\n"
-    "default via 255.255.155.255 dev eth0 metric 10\n"};
+    ("[ ip -4/-6 route show table 1002 ]\n"
+     "default via 255.255.155.255 dev eth0 metric 10\n")};
 
 // We will use `fake_routes` for both IPv4 and IPv6 outputs. That's why in the
 // `routes_output_redacted` we have a repetition of the same string twice, one
 // for IPv4 and other for IPv6 output.
-const char redacted_routes_output[] =
+constexpr char redacted_routes_output[] =
     "[ ip -4/-6 rule list ]\n"
     "0: from all lookup local\n"
     "9: from all lookup main\n"
@@ -173,7 +174,8 @@ class NetworkRoutesDataCollectorTest : public ::testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ash::DebugDaemonClient::InitializeFake();
     static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get())
-        ->SetRoutesForTesting(fake_routes);
+        ->SetRoutesForTesting(std::vector<std::string>(std::begin(fake_routes),
+                                                       std::end(fake_routes)));
   }
 
   void TearDown() override {

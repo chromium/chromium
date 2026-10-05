@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -44,14 +45,14 @@ constexpr char kServiceStart[] = R"("/service/wifi1")";
 struct TestData {
   // Name of the data in the log source and the file that the logs will be
   // exported into.
-  std::string data_source_name;
+  std::string_view data_source_name;
   // The logs that will be collected.
-  std::string test_logs;
+  std::string_view test_logs;
   // The version of the logs that has PII sensitive data redacted.
-  std::string test_logs_pii_redacted;
+  std::string_view test_logs_pii_redacted;
 };
 
-const TestData kTestData[] = {
+constexpr TestData kTestData[] = {
     {/*data_source_name=*/kNetworkDevices,
      /*test_logs=*/R"("/device/wifi1": {
          "Address": "23456789abcd",
@@ -124,20 +125,6 @@ const TestData kTestData[] = {
       })"},
 };
 
-// The PII sensitive data that the test data contains.
-const PIIMap kPIIInTestData = {
-    {redaction::PIIType::kIPAddress,
-     {"100.0.0.1", "100.0.0.2", "0:0:0:0:100:0:0:1"}},
-    {redaction::PIIType::kURL, {"http://wpad.com/wpad.dat"}},
-    {redaction::PIIType::kSSID,
-     {"\"7769666931\"\n", "stub_wifi_device1", "wifi1"}},
-    {redaction::PIIType::kMACAddress, {"0123456789ab", "23456789abcd"}}};
-
-// Types of all PII data contained in the test data
-const std::set<redaction::PIIType> kAllPIITypesInData = {
-    redaction::PIIType::kIPAddress, redaction::PIIType::kURL,
-    redaction::PIIType::kSSID, redaction::PIIType::kMACAddress};
-
 class ShillDataCollectorTest : public ::testing::Test {
  public:
   ShillDataCollectorTest() {
@@ -185,6 +172,20 @@ class ShillDataCollectorTest : public ::testing::Test {
  protected:
   base::FilePath GetTempDirForOutput() { return temp_dir_.GetPath(); }
 
+  // The PII sensitive data that the test data contains.
+  const PIIMap pii_in_test_data_ = {
+      {redaction::PIIType::kIPAddress,
+       {"100.0.0.1", "100.0.0.2", "0:0:0:0:100:0:0:1"}},
+      {redaction::PIIType::kURL, {"http://wpad.com/wpad.dat"}},
+      {redaction::PIIType::kSSID,
+       {"\"7769666931\"\n", "stub_wifi_device1", "wifi1"}},
+      {redaction::PIIType::kMACAddress, {"0123456789ab", "23456789abcd"}}};
+
+  // Types of all PII data contained in the test data
+  const std::set<redaction::PIIType> all_pii_types_in_data_ = {
+      redaction::PIIType::kIPAddress, redaction::PIIType::kURL,
+      redaction::PIIType::kSSID, redaction::PIIType::kMACAddress};
+
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool_;
@@ -211,13 +212,13 @@ TEST_F(ShillDataCollectorTest, CollectAndExportUnmaskedData) {
       detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
       &PIIMap::value_type::first);
   // If set A is a subset of set B, then A unioned with B equals B
-  EXPECT_THAT(detected_pii_types, IsSupersetOf(kAllPIITypesInData));
+  EXPECT_THAT(detected_pii_types, IsSupersetOf(all_pii_types_in_data_));
 
   // For each PII type, checks if every PII string in the fake entries has
   // been detected.
-  for (const auto& pii_type : kAllPIITypesInData) {
+  for (const auto& pii_type : all_pii_types_in_data_) {
     EXPECT_THAT(detected_pii[pii_type],
-                IsSupersetOf(kPIIInTestData.at(pii_type)));
+                IsSupersetOf(pii_in_test_data_.at(pii_type)));
   }
 
   // Check PII removal and data export.
@@ -226,7 +227,7 @@ TEST_F(ShillDataCollectorTest, CollectAndExportUnmaskedData) {
   base::FilePath output_dir = GetTempDirForOutput();
   // Export collected data to a directory and keep all PII.
   data_collector.ExportCollectedDataWithPII(
-      /*pii_types_to_keep=*/kAllPIITypesInData, output_dir,
+      /*pii_types_to_keep=*/all_pii_types_in_data_, output_dir,
       task_runner_for_redaction_tool_, redaction_tool_container_,
       test_future_export_data.GetCallback());
   // Check if ExportCollectedDataWithPII call returned an error.
@@ -245,7 +246,7 @@ TEST_F(ShillDataCollectorTest, CollectAndExportUnmaskedData) {
                                            kTestData[1].test_logs.length())}};
   std::map<std::string, std::string> expected_contents;
   for (const auto& data : kTestData)
-    expected_contents[data.data_source_name] = data.test_logs;
+    expected_contents[std::string(data.data_source_name)] = data.test_logs;
   EXPECT_THAT(result_contents, ContainerEq(expected_contents));
 }
 
@@ -269,13 +270,13 @@ TEST_F(ShillDataCollectorTest, CollectAndExportMaskedData) {
       detected_pii, std::inserter(detected_pii_types, detected_pii_types.end()),
       &PIIMap::value_type::first);
   // If set A is a subset of set B, then A unioned with B equals B
-  EXPECT_THAT(detected_pii_types, IsSupersetOf(kAllPIITypesInData));
+  EXPECT_THAT(detected_pii_types, IsSupersetOf(all_pii_types_in_data_));
 
   // For each PII type, checks if every PII string in the fake entries has
   // been detected.
-  for (const auto& pii_type : kAllPIITypesInData) {
+  for (const auto& pii_type : all_pii_types_in_data_) {
     EXPECT_THAT(detected_pii[pii_type],
-                IsSupersetOf(kPIIInTestData.at(pii_type)));
+                IsSupersetOf(pii_in_test_data_.at(pii_type)));
   }
 
   // Check PII removal and data export.
@@ -304,6 +305,7 @@ TEST_F(ShillDataCollectorTest, CollectAndExportMaskedData) {
                          kTestData[1].test_logs_pii_redacted.length())}};
   std::map<std::string, std::string> expected_contents;
   for (const auto& data : kTestData)
-    expected_contents[data.data_source_name] = data.test_logs_pii_redacted;
+    expected_contents[std::string(data.data_source_name)] =
+        data.test_logs_pii_redacted;
   EXPECT_THAT(result_contents, ContainerEq(expected_contents));
 }

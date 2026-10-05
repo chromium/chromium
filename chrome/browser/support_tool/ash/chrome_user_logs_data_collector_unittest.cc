@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -43,32 +44,28 @@ namespace {
 
 struct FakeUserLog {
   // The path that the logs will reside under user's profile directory.
-  base::FilePath path;
+  std::string_view path;
   // Name of the logs.
-  std::string log_name;
-  std::string log_contents;
+  std::string_view log_name;
+  std::string_view log_contents;
   // The version of `log_contents` that are redacted from PII.
-  std::string redacted_contents;
+  std::string_view redacted_contents;
 };
 
-const char kFakeUserEmail[] = "fakeusername@example.com";
-const GaiaId::Literal kFakeGaiaId("gaia-id");
+constexpr char kFakeUserEmail[] = "fakeusername@example.com";
+constexpr GaiaId::Literal kFakeGaiaId("gaia-id");
 
-const FakeUserLog kFakeUserLogs[] = {
-    {/*path=*/base::FilePath("log/chrome"), /*log_name=*/"chrome",
+constexpr FakeUserLog kFakeUserLogs[] = {
+    {/*path=*/"log/chrome", /*log_name=*/"chrome",
      /*log_contents=*/"Fake Chrome logs\nUser is fakeusername@example.com",
      /*redacted_contents=*/"Fake Chrome logs\nUser is (email: 1)"},
-    {/*path=*/base::FilePath("log/chrome_00000000-000000"),
+    {/*path=*/"log/chrome_00000000-000000",
      /*log_name=*/"chrome_00000000-000000",
      /*log_contents=*/"Sample logs", /*redacted_contents=*/"Sample logs"},
-    {/*path=*/base::FilePath("log/chrome_00000000-111111"),
+    {/*path=*/"log/chrome_00000000-111111",
      /*log_name=*/"chrome_00000000-111111",
      /*log_contents=*/"Sample logs with PII chrome://resources/f?user=bar",
      /*redacted_contents=*/"Sample logs with PII (URL: 1)"}};
-
-const PIIMap kExpectedPIIMap = {
-    {redaction::PIIType::kEmail, {"fakeusername@example.com"}},
-    {redaction::PIIType::kURL, {"chrome://resources/f?user=bar"}}};
 
 class ChromeUserLogsDataCollectorTest : public ::testing::Test {
  public:
@@ -185,7 +182,10 @@ TEST_F(ChromeUserLogsDataCollectorTest, CollectAndExportData) {
   EXPECT_EQ(error, std::nullopt);
 
   // Check the PII map that `data_collector` detected.
-  EXPECT_THAT(data_collector.GetDetectedPII(), ContainerEq(kExpectedPIIMap));
+  const PIIMap expected_pii_map = {
+      {redaction::PIIType::kEmail, {"fakeusername@example.com"}},
+      {redaction::PIIType::kURL, {"chrome://resources/f?user=bar"}}};
+  EXPECT_THAT(data_collector.GetDetectedPII(), ContainerEq(expected_pii_map));
 
   // Check PII removal and data export.
   base::test::TestFuture<std::optional<SupportToolError>>

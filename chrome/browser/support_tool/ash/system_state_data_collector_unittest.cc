@@ -38,20 +38,6 @@ using ::testing::ContainerEq;
 
 namespace {
 
-// The logs that `FakeDebugDaemonClient` returns and the redacted versions of
-// them.
-const std::map<std::string, std::string> kExpectedDebugdLogs = {
-    {// The data collector adds .txt extension to file names when creating the
-     // file.
-     "Sample Log.txt",
-     // Redacted version of "Your email address is abc@abc.com"
-     "Your email address is (email: 1)"}};
-
-// The PII in the sample logs that `FakeDebugDaemonClient` returns in
-// `GetFeedbackLogs()` call.
-const PIIMap kExpectedPIIInFeedbackLogs = {
-    {redaction::PIIType::kEmail, {"abc@abc.com"}}};
-
 }  // namespace
 
 class SystemStateDataCollectorTest : public ::testing::Test {
@@ -120,6 +106,20 @@ class SystemStateDataCollectorTest : public ::testing::Test {
 };
 
 TEST_F(SystemStateDataCollectorTest, CollectAndExportData) {
+  // The PII in the sample logs that `FakeDebugDaemonClient` returns in
+  // `GetFeedbackLogs()` call.
+  const PIIMap expected_pii_in_feedback_logs = {
+      {redaction::PIIType::kEmail, {"abc@abc.com"}}};
+
+  // The logs that `FakeDebugDaemonClient` returns and the redacted versions of
+  // them.
+  const std::map<std::string, std::string> expected_debugd_logs = {
+      {// The data collector adds .txt extension to file names when creating the
+       // file.
+       "Sample Log.txt",
+       // Redacted version of "Your email address is abc@abc.com"
+       "Your email address is (email: 1)"}};
+
   // Initialize SystemStateDataCollector for testing.
   SystemStateDataCollector data_collector;
 
@@ -134,7 +134,7 @@ TEST_F(SystemStateDataCollectorTest, CollectAndExportData) {
   EXPECT_EQ(error, std::nullopt);
 
   EXPECT_THAT(data_collector.GetDetectedPII(),
-              ContainerEq(kExpectedPIIInFeedbackLogs));
+              ContainerEq(expected_pii_in_feedback_logs));
 
   // Check PII removal and data export.
   base::test::TestFuture<std::optional<SupportToolError>>
@@ -158,7 +158,7 @@ TEST_F(SystemStateDataCollectorTest, CollectAndExportData) {
   std::map<std::string, std::string> expected_logs;
   // SystemStateDataCollector will include all the logs that's returned from
   // debugd.
-  for (const auto& [log_name, log_content] : kExpectedDebugdLogs) {
+  for (const auto& [log_name, log_content] : expected_debugd_logs) {
     expected_logs.emplace(log_name, log_content);
   }
 

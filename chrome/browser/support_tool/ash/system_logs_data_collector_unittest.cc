@@ -35,19 +35,7 @@ using ::testing::ContainerEq;
 
 namespace {
 
-// The logs that `FakeDebugDaemonClient` returns and the redacted versions of
-// them.
-const std::map<std::string, std::string> kExpectedLogs = {
-    {"Sample Log",
-     // Redacted version of "Your email address is abc@abc.com"
-     "Your email address is (email: 1)"}};
-
 constexpr char kExpectedLogName[] = "Sample Log";
-
-// The PII in the sample logs that `FakeDebugDaemonClient` returns in
-// `GetFeedbackLogs()` call.
-const PIIMap kExpectedPIIInFeedbackLogs = {
-    {redaction::PIIType::kEmail, {"abc@abc.com"}}};
 
 }  // namespace
 
@@ -110,6 +98,18 @@ class SystemLogsDataCollectorTest : public ::testing::Test {
 };
 
 TEST_F(SystemLogsDataCollectorTest, CollectAndExportDataSuccess) {
+  // The PII in the sample logs that `FakeDebugDaemonClient` returns in
+  // `GetFeedbackLogs()` call.
+  const PIIMap expected_pii_in_feedback_logs = {
+      {redaction::PIIType::kEmail, {"abc@abc.com"}}};
+
+  // The logs that `FakeDebugDaemonClient` returns and the redacted versions of
+  // them.
+  const std::map<std::string, std::string> expected_logs = {
+      {"Sample Log",
+       // Redacted version of "Your email address is abc@abc.com"
+       "Your email address is (email: 1)"}};
+
   std::set<base::FilePath> requested_logs = {
       base::FilePath(FILE_PATH_LITERAL(kExpectedLogName))};
   // Initialize SystemLogsDataCollector for testing.
@@ -126,7 +126,7 @@ TEST_F(SystemLogsDataCollectorTest, CollectAndExportDataSuccess) {
   EXPECT_EQ(error, std::nullopt);
 
   EXPECT_THAT(data_collector.GetDetectedPII(),
-              ContainerEq(kExpectedPIIInFeedbackLogs));
+              ContainerEq(expected_pii_in_feedback_logs));
 
   // Check PII removal and data export.
   base::test::TestFuture<std::optional<SupportToolError>>
@@ -147,7 +147,7 @@ TEST_F(SystemLogsDataCollectorTest, CollectAndExportDataSuccess) {
       ReadFileContentsToMap(
           output_dir.Append(FILE_PATH_LITERAL("var_log_files")));
 
-  EXPECT_THAT(output_file_contents, ContainerEq(kExpectedLogs));
+  EXPECT_THAT(output_file_contents, ContainerEq(expected_logs));
 }
 
 TEST_F(SystemLogsDataCollectorTest, RequestedLogNotFound) {

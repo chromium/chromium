@@ -84,14 +84,6 @@ constexpr char kRedactedNetworkHealthSnapshot[] =
     "IPV6 Addresses: (IPv6: 2)\n"
     "\n";
 
-const PIIMap kExpectedPIIMap = {
-    {redaction::PIIType::kIPAddress,
-     {"255.255.155.2", "::0101:ffff:c0a8:640a", "::ffff:cb0c:10ea"}},
-    {redaction::PIIType::kMACAddress,
-     {"aa:aa:aa:aa:aa:aa", "aa:bb:cc:dd:ee:ff"}},
-    {redaction::PIIType::kStableIdentifier,
-     {"test_ethernet", "test_wifi", "ethernet_guid", "wifi_guid"}}};
-
 class TestLogSource : public system_logs::SystemLogsSource {
  public:
   TestLogSource() : system_logs::SystemLogsSource("Test Log Source") {}
@@ -193,6 +185,14 @@ class NetworkHealthDataCollectorTest : public ::testing::Test {
 };
 
 TEST_F(NetworkHealthDataCollectorTest, CollectAndExportData) {
+  const PIIMap expected_pii_map = {
+      {redaction::PIIType::kIPAddress,
+       {"255.255.155.2", "::0101:ffff:c0a8:640a", "::ffff:cb0c:10ea"}},
+      {redaction::PIIType::kMACAddress,
+       {"aa:aa:aa:aa:aa:aa", "aa:bb:cc:dd:ee:ff"}},
+      {redaction::PIIType::kStableIdentifier,
+       {"test_ethernet", "test_wifi", "ethernet_guid", "wifi_guid"}}};
+
   // Initialize NetworkHealthDataCollector for testing.
   NetworkHealthDataCollector data_collector;
   data_collector.SetLogSourceForTesting(std::make_unique<TestLogSource>());
@@ -208,7 +208,7 @@ TEST_F(NetworkHealthDataCollectorTest, CollectAndExportData) {
   EXPECT_EQ(error, std::nullopt);
 
   PIIMap detected_pii = data_collector.GetDetectedPII();
-  EXPECT_THAT(detected_pii, ContainerEq(kExpectedPIIMap));
+  EXPECT_THAT(detected_pii, ContainerEq(expected_pii_map));
 
   // Check PII removal and data export.
   base::test::TestFuture<std::optional<SupportToolError>>
