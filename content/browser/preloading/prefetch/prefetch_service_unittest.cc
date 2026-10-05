@@ -8773,6 +8773,130 @@ TEST_P(PrefetchServiceTest, PrefetchScheduler_QueryParamBurst) {
             PrefetchContainer::LoadState::kStarted);
   ASSERT_EQ(prefetch_container3->GetLoadState(),
             PrefetchContainer::LoadState::kEligible);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", false, 2);
+}
+
+// Tests `Prefetch.PrefetchContainer.IsServed.BurstQueryParam` when the feature
+// is enabled.
+//
+// Scenario:
+//
+// - A prefetch with the matching query param (pf=op) is served to navigation.
+// - A prefetch with the matching query param (pf=op) is not served.
+// - A prefetch with a non-matching query param (pf=other) is not served.
+// - When the prefetch containers are destroyed, `IsServed.BurstQueryParam`
+//   records true for the served matching prefetch and false for the unserved
+//   matching prefetch. The non-matching prefetch is not recorded.
+TEST_P(PrefetchServiceTest,
+       UMA_Prefetch_PrefetchContainer_IsServed_BurstQueryParam_FeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPrefetchSchedulerBurstQueryParam,
+        {{"key", "pf"}, {"value", "op"}}}},
+      {});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  // 1. Matching prefetch that is served.
+  const auto url_served = GURL("https://example.com/served?pf=op");
+  auto handle_served =
+      MakePrefetchFromBrowserContext(url_served, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  auto head_served = CreateURLResponseHeadForPrefetch(
+      net::HTTP_OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false, {{"X-Testing", "Hello World"}}, url_served);
+  MakeResponseAndWait(url_served, net::OK, std::move(head_served), kHTMLBody);
+
+  NavigateInitiatedByBrowser(url_served);
+
+  PrefetchServingHandle serving_handle =
+      GetPrefetchToServe(url_served, std::nullopt);
+  ExpectServingReaderSuccess(serving_handle);
+
+  handle_served.reset();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectUniqueSample(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", true, 1);
+
+  // 2. Matching prefetch that is not served.
+  const auto url_not_served = GURL("https://example.com/not_served?pf=op");
+  auto handle_not_served =
+      MakePrefetchFromBrowserContext(url_not_served, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  auto head_not_served = CreateURLResponseHeadForPrefetch(
+      net::HTTP_OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false, {{"X-Testing", "Hello World"}},
+      url_not_served);
+  MakeResponseAndWait(url_not_served, net::OK, std::move(head_not_served),
+                      kHTMLBody);
+
+  handle_not_served.reset();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectBucketCount(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", true, 1);
+  histogram_tester().ExpectBucketCount(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", false, 1);
+  histogram_tester().ExpectTotalCount(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", 2);
+
+  // 3. Non-matching prefetch.
+  const auto url_non_matching = GURL("https://example.com/other?pf=other");
+  auto handle_non_matching = MakePrefetchFromBrowserContext(
+      url_non_matching, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  auto head_non_matching = CreateURLResponseHeadForPrefetch(
+      net::HTTP_OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false, {{"X-Testing", "Hello World"}},
+      url_non_matching);
+  MakeResponseAndWait(url_non_matching, net::OK, std::move(head_non_matching),
+                      kHTMLBody);
+
+  handle_non_matching.reset();
+  task_environment()->RunUntilIdle();
+
+  // Non-matching URL should not add any sample.
+  histogram_tester().ExpectTotalCount(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", 2);
+}
+
+// Tests `Prefetch.PrefetchContainer.IsServed.BurstQueryParam` when the feature
+// is disabled.
+//
+// Scenario:
+//
+// - The feature `kPrefetchSchedulerBurstQueryParam` is disabled.
+// - A prefetch with the matching query param (pf=op) is triggered.
+// - When the prefetch container is destroyed, `IsServed.BurstQueryParam`
+//   is not recorded because the feature is disabled.
+TEST_P(
+    PrefetchServiceTest,
+    UMA_Prefetch_PrefetchContainer_IsServed_BurstQueryParam_FeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {features::kPrefetchSchedulerBurstQueryParam});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const auto url = GURL("https://example.com/target?pf=op");
+  auto handle = MakePrefetchFromBrowserContext(url, std::nullopt, {}, nullptr);
+  task_environment()->RunUntilIdle();
+
+  handle.reset();
+  task_environment()->RunUntilIdle();
+
+  histogram_tester().ExpectTotalCount(
+      "Prefetch.PrefetchContainer.IsServed.BurstQueryParam", 0);
 }
 
 TEST_P(PrefetchServiceTest,

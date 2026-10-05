@@ -356,6 +356,20 @@ chromium-metrics-reviews@google.com.
   <token key="TriggerTypeAndEagerness" variants="TriggerTypeAndEagerness"/>
 </histogram>
 
+<histogram name="Prefetch.PrefetchContainer.IsServed.BurstQueryParam"
+    enum="Boolean" expires_after="2027-02-07">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    Records whether a prefetch with a matching burst query parameter (e.g.,
+    pf=op) was served to a navigation.
+
+    Recorded on `PrefetchContainer::dtor()` for all prefetch containers whose
+    URL matches the configured query parameter when
+    `kPrefetchSchedulerBurstQueryParam` is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Prefetch.PrefetchContainer.PrefetchMatchMissedToPrefetchStarted.{TriggerTypeAndEagerness}"
     units="ms" expires_after="2026-06-21">

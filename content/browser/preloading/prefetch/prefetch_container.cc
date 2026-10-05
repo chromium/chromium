@@ -659,6 +659,12 @@ PrefetchContainer::~PrefetchContainer() {
   RecordPrefetchMatchMissedToPrefetchStartedHistogram();
   RecordPrefetchContainerServedCountHistogram();
 
+  if (matches_burst_query_param_) {
+    base::UmaHistogramBoolean(
+        "Prefetch.PrefetchContainer.IsServed.BurstQueryParam",
+        served_count_ > 0);
+  }
+
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
     ukm_source_id = renderer_initiator_info->ukm_source_id();
