@@ -17,7 +17,7 @@ using media::mojom::RemotingStopReason;
 
 // static
 RedirectionConnector* RedirectionConnector::Get() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   static base::NoDestructor<RedirectionConnector> instance;
   return instance.get();
 }
@@ -28,7 +28,7 @@ RedirectionConnector::~RedirectionConnector() = default;
 
 void RedirectionConnector::StartingRedirection(
     CreateRedirectionSessionCallback create_session_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   create_session_callback_ = std::move(create_session_callback);
 
   for (const auto& [bridge, source_bridge] : bridges_) {
@@ -37,7 +37,7 @@ void RedirectionConnector::StartingRedirection(
 }
 
 void RedirectionConnector::StoppingRedirection() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!create_session_callback_) {
     return;
   }

@@ -45,7 +45,8 @@ void MaybeLogAdditionalMicSystemPermissionStats(SystemPermission permission) {
   // A pref exists, so there was a failure accessing the mic due to blocked
   // system permission before the last restart. Log additional stats.
 
-  DCHECK(prefs->HasPrefPath(kSystemPermissionMicLastBlockedTimePref));
+  CHECK(prefs->HasPrefPath(kSystemPermissionMicLastBlockedTimePref),
+        base::NotFatalUntil::M161);
   base::UmaHistogramEnumeration("Media.Audio.Capture.Mac.MicSystemPermission."
                                 "StartupAfterFailure",
                                 permission);
@@ -83,14 +84,16 @@ void MaybeLogAdditionalCameraSystemPermissionStats(
   PrefService* prefs = g_browser_process->local_state();
 
   if (!prefs->HasPrefPath(kSystemPermissionCameraFirstBlockedTimePref)) {
-    DCHECK(!prefs->HasPrefPath(kSystemPermissionCameraLastBlockedTimePref));
+    CHECK(!prefs->HasPrefPath(kSystemPermissionCameraLastBlockedTimePref),
+          base::NotFatalUntil::M161);
     return;
   }
 
   // A pref exists, so there was a failure accessing the camera due to blocked
   // system permission before the last restart. Log additional stats.
 
-  DCHECK(prefs->HasPrefPath(kSystemPermissionCameraLastBlockedTimePref));
+  CHECK(prefs->HasPrefPath(kSystemPermissionCameraLastBlockedTimePref),
+        base::NotFatalUntil::M161);
   base::UmaHistogramEnumeration(
       "Media.Video.Capture.Mac.CameraSystemPermission."
       "StartupAfterFailure",
@@ -153,12 +156,14 @@ void LogSystemMediaPermissionsStartupStats() {
 }
 
 void SystemAudioCapturePermissionDetermined(SystemPermission permission) {
-  DCHECK_NE(permission, SystemPermission::kNotDetermined);
+  CHECK_NE(permission, SystemPermission::kNotDetermined,
+           base::NotFatalUntil::M161);
   LogStartupMicSystemPermission(permission);
 }
 
 void SystemVideoCapturePermissionDetermined(SystemPermission permission) {
-  DCHECK_NE(permission, SystemPermission::kNotDetermined);
+  CHECK_NE(permission, SystemPermission::kNotDetermined,
+           base::NotFatalUntil::M161);
   LogStartupCameraSystemPermission(permission);
 }
 

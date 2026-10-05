@@ -21,7 +21,7 @@ void OutputProtectionImpl::Create(
   DVLOG(2) << __func__;
 
   // OutputProtectionProxy requires to run on the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(render_frame_host);
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
@@ -37,12 +37,12 @@ OutputProtectionImpl::OutputProtectionImpl(
       render_frame_id_(render_frame_host.GetRoutingID()) {}
 
 OutputProtectionImpl::~OutputProtectionImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void OutputProtectionImpl::QueryStatus(QueryStatusCallback callback) {
   DVLOG(2) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   GetProxy()->QueryStatus(
       base::BindOnce(&OutputProtectionImpl::OnQueryStatusResult,
@@ -52,7 +52,7 @@ void OutputProtectionImpl::QueryStatus(QueryStatusCallback callback) {
 void OutputProtectionImpl::EnableProtection(uint32_t desired_protection_mask,
                                             EnableProtectionCallback callback) {
   DVLOG(2) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   GetProxy()->EnableProtection(
       desired_protection_mask,
@@ -66,7 +66,7 @@ void OutputProtectionImpl::OnQueryStatusResult(QueryStatusCallback callback,
                                                uint32_t protection_mask) {
   DVLOG(2) << __func__ << ": success=" << success << ", link_mask=" << link_mask
            << ", protection_mask=" << protection_mask;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::move(callback).Run(success, link_mask, protection_mask);
 }
@@ -75,7 +75,7 @@ void OutputProtectionImpl::OnEnableProtectionResult(
     EnableProtectionCallback callback,
     bool success) {
   DVLOG(2) << __func__ << ": success=" << success;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::move(callback).Run(success);
 }

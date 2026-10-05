@@ -104,10 +104,10 @@ std::string MimeContentType() {
 void BindURLLoaderFactoryReceiver(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory>
         url_loader_factory_receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
       g_browser_process->shared_url_loader_factory();
-  DCHECK(shared_url_loader_factory);
+  CHECK(shared_url_loader_factory, base::NotFatalUntil::M161);
   shared_url_loader_factory->Clone(std::move(url_loader_factory_receiver));
 }
 
@@ -195,9 +195,9 @@ WebRtcEventLogUploaderImpl::~WebRtcEventLogUploaderImpl() {
   //    found). In that case, |url_loader_| will not have been set.
   // 4. Chrome shutdown.
   if (task_runner_->RunsTasksInCurrentSequence()) {  // Scenarios 1-3.
-    DCHECK(!url_loader_);
+    CHECK(!url_loader_, base::NotFatalUntil::M161);
   } else {  // # Scenario #4 - Chrome shutdown.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     bool will_delete =
         task_runner_->DeleteSoon(FROM_HERE, url_loader_.release());
     DCHECK(!will_delete)
@@ -207,12 +207,12 @@ WebRtcEventLogUploaderImpl::~WebRtcEventLogUploaderImpl() {
 
 const WebRtcLogFileInfo& WebRtcEventLogUploaderImpl::GetWebRtcLogFileInfo()
     const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   return log_file_;
 }
 
 void WebRtcEventLogUploaderImpl::Cancel() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   if (url_loader_.get() == nullptr) {
     // Either the upload has already completed, or it never properly started.
@@ -233,7 +233,7 @@ void WebRtcEventLogUploaderImpl::Cancel() {
 }
 
 bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   std::string log_file_contents;
   if (!base::ReadFileToStringWithMaxSize(log_file_.path, &log_file_contents,
@@ -244,7 +244,7 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
     return false;
   }
 
-  DCHECK(upload_data->empty());
+  CHECK(upload_data->empty(), base::NotFatalUntil::M161);
   upload_data->reserve(log_file_contents.size() + kExpectedMimeOverheadBytes);
 
   const std::string filename_str = log_file_.path.BaseName().MaybeAsASCII();
@@ -281,7 +281,7 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
 }
 
 void WebRtcEventLogUploaderImpl::StartUpload(const std::string& upload_data) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kUploadURL);
@@ -312,8 +312,8 @@ void WebRtcEventLogUploaderImpl::StartUpload(const std::string& upload_data) {
 
 void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
     std::optional<std::string> response_body) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(url_loader_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK(url_loader_, base::NotFatalUntil::M161);
 
   if (response_body && response_body->empty()) {
     LOG(WARNING) << "SimpleURLLoader reported upload successful, "
@@ -325,7 +325,7 @@ void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
   // NetError() is 0 when no error occurred.
   UmaRecordWebRtcEventLoggingNetErrorType(url_loader_->NetError());
 
-  DCHECK(history_file_writer_);
+  CHECK(history_file_writer_, base::NotFatalUntil::M161);
   if (upload_successful) {
     if (!history_file_writer_->WriteUploadId(*response_body)) {
       // Discard the incomplete, potentially now corrupt history file, but the
@@ -350,7 +350,7 @@ void WebRtcEventLogUploaderImpl::OnURLLoadComplete(
 
 void WebRtcEventLogUploaderImpl::ReportResult(bool upload_successful,
                                               bool delete_history_file) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   if (!callback_) {
     // ReportResult called twice. Can happen for example if an upload terminates
@@ -381,7 +381,7 @@ void WebRtcEventLogUploaderImpl::ReportResult(bool upload_successful,
 }
 
 void WebRtcEventLogUploaderImpl::DeleteLogFile() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   const bool deletion_successful = base::DeleteFile(log_file_.path);
   if (!deletion_successful) {
     // This is a somewhat serious (though unlikely) error, because now we'll
@@ -391,7 +391,7 @@ void WebRtcEventLogUploaderImpl::DeleteLogFile() {
 }
 
 void WebRtcEventLogUploaderImpl::DeleteHistoryFile() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   if (!history_file_writer_) {
     LOG(ERROR) << "Deletion of history file attempted after uploader "
                << "has relinquished ownership of it.";

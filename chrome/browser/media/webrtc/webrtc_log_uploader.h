@@ -155,7 +155,8 @@ class WebRtcLogUploader {
   // For testing purposes. If called, the multipart will not be uploaded, but
   // written to |post_data_| instead.
   void OverrideUploadWithBufferForTesting(std::string* post_data) {
-    DCHECK((post_data && !post_data_) || (!post_data && post_data_));
+    CHECK((post_data && !post_data_) || (!post_data && post_data_),
+          base::NotFatalUntil::M161);
     post_data_ = post_data;
   }
 

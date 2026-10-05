@@ -59,14 +59,14 @@ bool MediaEngagementService::IsEnabled() {
 
 // static
 MediaEngagementService* MediaEngagementService::Get(Profile* profile) {
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled(), base::NotFatalUntil::M161);
   return MediaEngagementServiceFactory::GetForProfile(profile);
 }
 
 // static
 void MediaEngagementService::CreateWebContentsObserver(
     content::WebContents* web_contents) {
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled(), base::NotFatalUntil::M161);
 
   // Ignore WebContents that are used for NoStatePrefetch.
   if (prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
@@ -94,7 +94,7 @@ MediaEngagementService::MediaEngagementService(Profile* profile)
 MediaEngagementService::MediaEngagementService(Profile* profile,
                                                base::Clock* clock)
     : profile_(profile), clock_(clock) {
-  DCHECK(IsEnabled());
+  CHECK(IsEnabled(), base::NotFatalUntil::M161);
 
   // May be null in tests.
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
@@ -144,7 +144,7 @@ void MediaEngagementService::ClearDataBetweenTime(
           [&](const ContentSettingPatternSource& setting) {
             url::Origin origin =
                 url::Origin::Create(GURL(setting.primary_pattern.ToString()));
-            DCHECK(!origin.opaque());
+            CHECK(!origin.opaque(), base::NotFatalUntil::M161);
             MediaEngagementScore score = CreateEngagementScore(origin);
             base::Time playback_time = score.last_media_playback_time();
             return playback_time >= delete_begin && playback_time <= delete_end;
@@ -167,7 +167,7 @@ void MediaEngagementService::OnHistoryDeletions(
   // If origins are expired by the history service delete them if they have no
   // more visits.
   if (deletion_info.is_from_expiration()) {
-    DCHECK(history_service);
+    CHECK(history_service, base::NotFatalUntil::M161);
 
     // Build a set of all origins in |deleted_rows|.
     std::set<url::Origin> origins;
@@ -231,7 +231,7 @@ void MediaEngagementService::Clear(const url::Origin& origin) {
           [&](const ContentSettingPatternSource& setting) {
             url::Origin pattern_origin =
                 url::Origin::Create(GURL(setting.primary_pattern.ToString()));
-            DCHECK(!pattern_origin.opaque());
+            CHECK(!pattern_origin.opaque(), base::NotFatalUntil::M161);
             return origin == pattern_origin;
           });
 }
@@ -250,7 +250,8 @@ bool MediaEngagementService::HasHighEngagement(
   }
 
   if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly)) {
-    DCHECK(!has_high_engagement || (origin.scheme() == url::kHttpsScheme));
+    CHECK(!has_high_engagement || (origin.scheme() == url::kHttpsScheme),
+          base::NotFatalUntil::M161);
   }
 
   if (!base::FeatureList::IsEnabled(media::kPreloadMediaEngagementData)) {
@@ -357,7 +358,8 @@ std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
 
     const auto& result = filtered_results.find(origin);
     if (result != filtered_results.end()) {
-      DCHECK(result->second->incognito && !site.incognito);
+      CHECK(result->second->incognito && !site.incognito,
+            base::NotFatalUntil::M161);
       continue;
     }
 
@@ -369,7 +371,7 @@ std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
     auto* const site = it.second;
 
     base::Value clone = site->setting_value.Clone();
-    DCHECK(clone.is_dict());
+    CHECK(clone.is_dict(), base::NotFatalUntil::M161);
 
     data.push_back(MediaEngagementScore(clock_, origin,
                                         std::move(clone).TakeDict(), settings));

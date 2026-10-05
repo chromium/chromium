@@ -59,7 +59,7 @@ constexpr int kMaxNumberOfDisabledTimesInPref = 3;
 // Gets the list of disabled times from "Local State".
 std::vector<base::Time> GetDisabledTimesGlobal() {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   std::vector<base::Time> times;
   for (const base::Value& time_value :
@@ -75,7 +75,7 @@ std::vector<base::Time> GetDisabledTimesGlobal() {
 // Sets the list of disabled times in "Local State".
 void SetDisabledTimesGlobal(std::vector<base::Time> times) {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   base::ListValue time_list;
   for (auto time : times)
@@ -265,7 +265,7 @@ base::Time MediaFoundationServiceMonitor::GetEarliestEnableTime(
 // static
 bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto earliest_enable_time = GetEarliestEnableTime(GetDisabledTimesGlobal());
   DVLOG(1) << __func__ << ": earliest_enable_time=" << earliest_enable_time;
@@ -276,7 +276,7 @@ bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionDisabledByPref() {
 // static
 bool MediaFoundationServiceMonitor::IsHardwareSecureDecryptionAllowedForSite(
     const GURL& site) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   static bool allow_per_site_uma_logged = false;
 
   auto earliest_enable_time =
@@ -326,7 +326,7 @@ void MediaFoundationServiceMonitor::ResetForTesting() {
 MediaFoundationServiceMonitor::MediaFoundationServiceMonitor()
     : global_samples_(kMaxNumberOfSamples) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Initialize();
 }
@@ -336,7 +336,7 @@ MediaFoundationServiceMonitor::~MediaFoundationServiceMonitor() = default;
 void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
     const content::ServiceProcessInfo& info) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Only interested in MediaFoundationService process.
   if (!info.IsService<media::mojom::MediaFoundationServiceBroker>())
@@ -378,7 +378,7 @@ void MediaFoundationServiceMonitor::OnDisplayMetricsChanged(
 
 void MediaFoundationServiceMonitor::OnSignificantPlayback(const GURL& site) {
   DVLOG(1) << __func__ << ": site=" << site;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   AddSample(site, kSignificantPlayback, base::Time::Now());
 }
@@ -386,7 +386,7 @@ void MediaFoundationServiceMonitor::OnSignificantPlayback(const GURL& site) {
 void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(const GURL& site,
                                                          HRESULT hr) {
   DVLOG(1) << __func__ << ": site=" << site;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (HasRecentPowerOrDisplayChange()) {
     DVLOG(1) << "Playback or CDM error ignored since it happened right after "
@@ -405,7 +405,7 @@ void MediaFoundationServiceMonitor::OnPlaybackOrCdmError(const GURL& site,
 void MediaFoundationServiceMonitor::OnUnexpectedHardwareContextReset(
     const GURL& site) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (media::kHardwareSecureDecryptionFallbackOnHardwareContextReset.Get()) {
     AddSample(site, kUnexpectedHardwareContextReset, base::Time::Now());
@@ -419,7 +419,7 @@ bool MediaFoundationServiceMonitor::HasRecentPowerOrDisplayChange() const {
 
 void MediaFoundationServiceMonitor::OnPowerOrDisplayChange() {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   last_power_or_display_change_time_ = base::TimeTicks::Now();
 }

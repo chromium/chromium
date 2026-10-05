@@ -21,7 +21,7 @@ CastMirroringServiceHostFactory::GetInstance() {
 
 MirroringServiceHost::UniquePtr CastMirroringServiceHostFactory::GetForTab(
     content::FrameTreeNodeId frame_tree_node_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* target_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (target_contents) {
@@ -37,7 +37,7 @@ MirroringServiceHost::UniquePtr CastMirroringServiceHostFactory::GetForTab(
 
 MirroringServiceHost::UniquePtr CastMirroringServiceHostFactory::GetForDesktop(
     const std::optional<std::string>& media_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!media_id) {
     return MirroringServiceHost::UniquePtr(nullptr,
                                            base::OnTaskRunnerDeleter(nullptr));
@@ -52,7 +52,7 @@ CastMirroringServiceHostFactory::GetForOffscreenTab(
     const GURL& presentation_url,
     const std::string& presentation_id,
     content::FrameTreeNodeId frame_tree_node_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   if (web_contents && media_router::IsValidPresentationUrl(presentation_url)) {

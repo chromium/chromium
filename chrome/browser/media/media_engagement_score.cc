@@ -148,7 +148,7 @@ MediaEngagementScore& MediaEngagementScore::operator=(MediaEngagementScore&&) =
     default;
 
 void MediaEngagementScore::Commit(bool force_update) {
-  DCHECK(settings_map_);
+  CHECK(settings_map_, base::NotFatalUntil::M161);
 
   if (origin_.opaque())
     return;

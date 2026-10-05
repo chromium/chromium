@@ -149,7 +149,7 @@ void CaptureAccessHandlerBase::UpdateMediaRequestState(
     int page_request_id,
     blink::mojom::MediaStreamType stream_type,
     content::MediaRequestState state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   switch (stream_type) {
     case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
     case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:

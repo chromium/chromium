@@ -91,7 +91,7 @@ CreateVideoCaptureHostOnIO(
     const std::string& device_id,
     blink::mojom::MediaStreamType type,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   return mojo::MakeSelfOwnedReceiver(
       std::make_unique<SingleClientVideoCaptureHost>(
           device_id, type,
@@ -104,7 +104,7 @@ void PauseVideoCaptureHostOnIO(
     mojo::SelfOwnedReceiverRef<media::mojom::VideoCaptureHost> host,
     base::UnguessableToken device_id,
     base::OnceClosure on_paused_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (host) {
     host->impl()->Pause(device_id);
     std::move(on_paused_callback).Run();
@@ -117,7 +117,7 @@ void ResumeVideoCaptureHostOnIO(
     base::UnguessableToken session_id,
     media::VideoCaptureParams params,
     base::OnceClosure on_resumed_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (host) {
     host->impl()->Resume(device_id, session_id, params);
     std::move(on_resumed_callback).Run();
@@ -526,7 +526,8 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
     devices.audio_device = device;
   else if (blink::IsVideoInputMediaType(stream_type))
     devices.video_device = device;
-  DCHECK(devices.audio_device.has_value() || devices.video_device.has_value());
+  CHECK(devices.audio_device.has_value() || devices.video_device.has_value(),
+        base::NotFatalUntil::M161);
 
   if (tab_switching_ui_enabled_) {
     ShowTabSharingUI(devices);
@@ -545,7 +546,7 @@ void CastMirroringServiceHost::ShowCaptureIndicator() {
 
 void CastMirroringServiceHost::ShowTabSharingUI(
     const blink::mojom::StreamDevices& devices) {
-  DCHECK(tab_switching_ui_enabled_);
+  CHECK(tab_switching_ui_enabled_, base::NotFatalUntil::M161);
 
   // Callbacks that were supplied to the existing `media_stream_ui_` are no
   // longer applicable. This is important as some implementations
@@ -592,7 +593,8 @@ void CastMirroringServiceHost::SwitchMirroringSourceTab(
   video_capture_host_ = nullptr;
 
   // Observe the target WebContents for tab mirroring.
-  DCHECK_EQ(source_media_id_.type, content::DesktopMediaID::TYPE_WEB_CONTENTS);
+  CHECK_EQ(source_media_id_.type, content::DesktopMediaID::TYPE_WEB_CONTENTS,
+           base::NotFatalUntil::M161);
   Observe(GetContents(source_media_id_.web_contents_id));
 
   ShowCaptureIndicator();
@@ -610,12 +612,13 @@ void CastMirroringServiceHost::OpenOffscreenTab(
     content::BrowserContext* context,
     const GURL& presentation_url,
     const std::string& presentation_id) {
-  DCHECK(!offscreen_tab_);
+  CHECK(!offscreen_tab_, base::NotFatalUntil::M161);
   offscreen_tab_ = std::make_unique<OffscreenTab>(this, context);
   offscreen_tab_->Start(presentation_url, GetCaptureResolutionConstraint(),
                         presentation_id);
   source_media_id_ = BuildMediaIdForWebContents(offscreen_tab_->web_contents());
-  DCHECK_EQ(content::DesktopMediaID::TYPE_WEB_CONTENTS, source_media_id_.type);
+  CHECK_EQ(content::DesktopMediaID::TYPE_WEB_CONTENTS, source_media_id_.type,
+           base::NotFatalUntil::M161);
   Observe(offscreen_tab_->web_contents());
 }
 

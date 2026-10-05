@@ -38,12 +38,12 @@ OutputProtectionProxy::OutputProtectionProxy(int render_process_id,
 }
 
 OutputProtectionProxy::~OutputProtectionProxy() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void OutputProtectionProxy::QueryStatus(QueryStatusCallback callback) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_CHROMEOS)
   output_protection_delegate_.QueryStatus(
@@ -58,7 +58,7 @@ void OutputProtectionProxy::EnableProtection(
     uint32_t desired_method_mask,
     EnableProtectionCallback callback) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_CHROMEOS)
   output_protection_delegate_.SetProtection(desired_method_mask,
@@ -75,7 +75,7 @@ void OutputProtectionProxy::ProcessQueryStatusResult(
     uint32_t link_mask,
     uint32_t protection_mask) {
   DVLOG(1) << __func__ << ": " << success << ", " << link_mask;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // TODO(xjz): Investigate whether this check should be removed.
   if (!GetRenderFrameView(render_process_id_, render_frame_id_)) {

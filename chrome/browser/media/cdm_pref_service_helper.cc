@@ -120,7 +120,7 @@ std::unique_ptr<CdmPrefData> FromDictValue(
 CdmPrefData::CdmPrefData(const base::UnguessableToken& origin_id,
                          base::Time origin_id_time)
     : origin_id_(origin_id), origin_id_creation_time_(origin_id_time) {
-  DCHECK(origin_id_);
+  CHECK(origin_id_, base::NotFatalUntil::M161);
 }
 
 CdmPrefData::CdmPrefData(
@@ -209,18 +209,18 @@ std::unique_ptr<CdmPrefData> CdmPrefServiceHelper::GetCdmPrefData(
     const url::Origin& cdm_origin) {
   VLOG(1) << __func__;
   // Access to the PrefService must be made from the UI thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   const base::DictValue& dict = user_prefs->GetDict(prefs::kMediaCdmOriginData);
 
-  DCHECK(!cdm_origin.opaque());
+  CHECK(!cdm_origin.opaque(), base::NotFatalUntil::M161);
   if (cdm_origin.opaque()) {
     mojo::ReportBadMessage("EME use is not allowed on opaque origin");
     return nullptr;
   }
 
   const std::string serialized_cdm_origin = cdm_origin.Serialize();
-  DCHECK(!serialized_cdm_origin.empty());
+  CHECK(!serialized_cdm_origin.empty(), base::NotFatalUntil::M161);
 
   const base::DictValue* cdm_data_dict = dict.FindDict(serialized_cdm_origin);
 

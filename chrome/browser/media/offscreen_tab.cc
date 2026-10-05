@@ -82,7 +82,7 @@ class OffscreenTab::WindowAdoptionAgent final : protected aura::WindowObserver {
 
   // aura::WindowObserver implementation.
   void OnWindowDestroyed(aura::Window* window) final {
-    DCHECK_EQ(content_window_, window);
+    CHECK_EQ(content_window_, window, base::NotFatalUntil::M161);
     content_window_ = nullptr;
   }
 
@@ -130,7 +130,7 @@ OffscreenTab::OffscreenTab(Owner* owner, content::BrowserContext* context)
       content_capture_was_detected_(false),
       navigation_policy_(
           std::make_unique<media_router::DefaultNavigationPolicy>()) {
-  DCHECK(owner_);
+  CHECK(owner_, base::NotFatalUntil::M161);
   otr_profile_->AddObserver(this);
 }
 
@@ -145,7 +145,7 @@ OffscreenTab::~OffscreenTab() {
 void OffscreenTab::Start(const GURL& start_url,
                          const gfx::Size& initial_size,
                          const std::string& optional_presentation_id) {
-  DCHECK(start_time_.is_null());
+  CHECK(start_time_.is_null(), base::NotFatalUntil::M161);
   start_url_ = start_url;
   DVLOG(1) << "Starting OffscreenTab with initial size of "
            << initial_size.ToString() << " for start_url=" << start_url_.spec();
@@ -210,7 +210,8 @@ void OffscreenTab::Close() {
 }
 
 void OffscreenTab::CloseContents(WebContents* source) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Javascript in the page called window.close().
   DVLOG(1) << "OffscreenTab for start_url=" << start_url_.spec() << " will die";
   owner_->DestroyTab(this);
@@ -218,7 +219,8 @@ void OffscreenTab::CloseContents(WebContents* source) {
 }
 
 bool OffscreenTab::ShouldSuppressDialogs(WebContents* source) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Suppress all because there is no possible direct user interaction with
   // dialogs.
   // TODO(crbug.com/40526231): This does not suppress window.print().
@@ -226,7 +228,8 @@ bool OffscreenTab::ShouldSuppressDialogs(WebContents* source) {
 }
 
 bool OffscreenTab::ShouldFocusLocationBarByDefault(WebContents* source) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Indicate the location bar should be focused instead of the page, even
   // though there is no location bar.  This will prevent the page from
   // automatically receiving input focus, which should never occur since there
@@ -258,7 +261,8 @@ bool OffscreenTab::HandleContextMenu(
 content::KeyboardEventProcessingResult OffscreenTab::PreHandleKeyboardEvent(
     WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Intercept and silence all keyboard events before they can be sent to the
   // renderer.
   return content::KeyboardEventProcessingResult::HANDLED;
@@ -266,7 +270,8 @@ content::KeyboardEventProcessingResult OffscreenTab::PreHandleKeyboardEvent(
 
 bool OffscreenTab::PreHandleGestureEvent(WebContents* source,
                                          const blink::WebGestureEvent& event) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Intercept and silence all gesture events before they can be sent to the
   // renderer.
   return true;
@@ -275,7 +280,8 @@ bool OffscreenTab::PreHandleGestureEvent(WebContents* source,
 bool OffscreenTab::CanDragEnter(WebContents* source,
                                 const content::DropData& data,
                                 blink::DragOperationsMask operations_allowed) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), source);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), source,
+           base::NotFatalUntil::M161);
   // Halt all drag attempts onto the page since there should be no direct user
   // interaction with it.
   return false;
@@ -298,7 +304,8 @@ void OffscreenTab::EnterFullscreenModeForTab(
     content::RenderFrameHost* requesting_frame,
     const blink::mojom::FullscreenOptions& options) {
   auto* contents = WebContents::FromRenderFrameHost(requesting_frame);
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), contents,
+           base::NotFatalUntil::M161);
 
   if (in_fullscreen_mode())
     return;
@@ -310,7 +317,8 @@ void OffscreenTab::EnterFullscreenModeForTab(
 }
 
 void OffscreenTab::ExitFullscreenModeForTab(WebContents* contents) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), contents,
+           base::NotFatalUntil::M161);
 
   if (!in_fullscreen_mode())
     return;
@@ -320,13 +328,15 @@ void OffscreenTab::ExitFullscreenModeForTab(WebContents* contents) {
 }
 
 bool OffscreenTab::IsFullscreenForTabOrPending(const WebContents* contents) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), contents,
+           base::NotFatalUntil::M161);
   return in_fullscreen_mode();
 }
 
 blink::mojom::DisplayMode OffscreenTab::GetDisplayMode(
     const WebContents* contents) {
-  DCHECK_EQ(offscreen_tab_web_contents_.get(), contents);
+  CHECK_EQ(offscreen_tab_web_contents_.get(), contents,
+           base::NotFatalUntil::M161);
   return in_fullscreen_mode() ? blink::mojom::DisplayMode::kFullscreen
                               : blink::mojom::DisplayMode::kBrowser;
 }
@@ -349,7 +359,7 @@ bool OffscreenTab::CheckMediaAccessPermission(
 
 void OffscreenTab::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(offscreen_tab_web_contents_.get());
+  CHECK(offscreen_tab_web_contents_.get(), base::NotFatalUntil::M161);
   if (!navigation_policy_->AllowNavigation(navigation_handle)) {
     DVLOG(2) << "Closing because NavigationPolicy disallowed "
              << "StartNavigation to " << navigation_handle->GetURL().spec();
@@ -358,7 +368,7 @@ void OffscreenTab::DidStartNavigation(
 }
 
 void OffscreenTab::DieIfContentCaptureEnded() {
-  DCHECK(offscreen_tab_web_contents_.get());
+  CHECK(offscreen_tab_web_contents_.get(), base::NotFatalUntil::M161);
 
   if (content_capture_was_detected_) {
     if (!offscreen_tab_web_contents_->IsBeingCaptured()) {
@@ -393,7 +403,7 @@ void OffscreenTab::DieIfContentCaptureEnded() {
 }
 
 void OffscreenTab::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK(profile == otr_profile_);
+  CHECK(profile == otr_profile_, base::NotFatalUntil::M161);
   otr_profile_ = nullptr;
   owner_->DestroyTab(this);
 }

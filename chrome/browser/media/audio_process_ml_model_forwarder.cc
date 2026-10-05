@@ -84,13 +84,13 @@ class AudioProcessMlModelForwarder::AudioProcessObserver
     // AudioProcessMlModelForwarder to sequence check all accesses to the
     // AudioProcessObserver.
     if (launch_callback_) {
-      DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+      CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
       content::ServiceProcessHost::RemoveObserver(this);
     }
   }
 
   void Start(ServiceLaunchCallback cb) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     launch_callback_ = std::move(cb);
     content::ServiceProcessHost::AddObserver(this);
     // Trigger immediately if the audio process is already running.
@@ -105,7 +105,7 @@ class AudioProcessMlModelForwarder::AudioProcessObserver
 
   void OnServiceProcessLaunched(
       const content::ServiceProcessInfo& info) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (!info.IsService<audio::mojom::AudioService>()) {
       return;
     }

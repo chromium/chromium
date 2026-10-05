@@ -15,7 +15,7 @@ base::WeakPtr<MirroringServiceHost> MirroringServiceHost::GetWeakPtr() {
 MirroringServiceHost::MirroringServiceHost() = default;
 
 MirroringServiceHost::~MirroringServiceHost() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 MirroringServiceHostFactory::MirroringServiceHostFactory() = default;

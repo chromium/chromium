@@ -297,7 +297,7 @@ void MediaEngagementContentsObserver::OnSignificantMediaPlaybackTimeForPlayer(
 }
 
 void MediaEngagementContentsObserver::OnSignificantMediaPlaybackTimeForPage() {
-  DCHECK(session_);
+  CHECK(session_, base::NotFatalUntil::M161);
 
   if (session_->significant_media_element_playback_recorded())
     return;
@@ -313,7 +313,7 @@ void MediaEngagementContentsObserver::OnSignificantMediaPlaybackTimeForPage() {
 
 void MediaEngagementContentsObserver::
     OnSignificantAudioContextPlaybackTimeForPage() {
-  DCHECK(session_);
+  CHECK(session_, base::NotFatalUntil::M161);
 
   if (session_->significant_audio_context_playback_recorded())
     return;
