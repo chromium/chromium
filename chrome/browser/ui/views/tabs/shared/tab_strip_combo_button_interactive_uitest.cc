@@ -7,8 +7,10 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
@@ -23,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_utils.h"
@@ -296,11 +299,17 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
 }
 
 class TabStripComboButtonHorizontalInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   TabStripComboButtonHorizontalInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures({organizer_panel::kOrganizerPanel},
-                                          {});
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {organizer_panel::kOrganizerPanel, tabs::kTabStripUnification}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures({organizer_panel::kOrganizerPanel},
+                                            {tabs::kTabStripUnification});
+    }
   }
   ~TabStripComboButtonHorizontalInteractiveUiTest() override = default;
 
@@ -310,11 +319,22 @@ class TabStripComboButtonHorizontalInteractiveUiTest
     });
   }
 
+  auto CheckTabSearchIcon(const gfx::VectorIcon& expected_icon) {
+    return CheckView(
+        kTabSearchButtonElementId,
+        [&expected_icon](TabStripFlatEdgeButton* button) {
+          const auto& image_model =
+              button->GetImageModel(views::Button::STATE_NORMAL);
+          return image_model.has_value() && image_model->IsVectorIcon() &&
+                 image_model->GetVectorIcon().vector_icon() == &expected_icon;
+        });
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripComboButtonHorizontalInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(TabStripComboButtonHorizontalInteractiveUiTest,
                        OnlyTabSearchIsPresent) {
   RunTestSequence(
       // Pin both tab search and everything menu.
@@ -326,5 +346,19 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonHorizontalInteractiveUiTest,
       // the combo button.
       EnsureNotPresent(kSavedTabGroupButtonElementId));
 }
+
+IN_PROC_BROWSER_TEST_P(TabStripComboButtonHorizontalInteractiveUiTest,
+                       TabSearchUsesVerticalTabStripIcon) {
+  const gfx::VectorIcon& expected_icon = features::IsRoundedIconsEnabled()
+                                             ? kManageSearchIcon
+                                             : kTabSearchTabStripOldIcon;
+  RunTestSequence(SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+                  WaitForShow(kTabSearchButtonElementId),
+                  CheckTabSearchIcon(expected_icon));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TabStripComboButtonHorizontalInteractiveUiTest,
+                         testing::Bool());
 
 }  // namespace

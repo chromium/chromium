@@ -1086,9 +1086,12 @@ void BrowserActions::InitializeChromeMenuActions() {
               },
               bwi),
           kActionTabSearch, IDS_TAB_SEARCH_MENU, IDS_TAB_SEARCH_MENU,
-          features::IsRoundedIconsEnabled()
-              ? vector_icons::kKeyboardArrowDownIcon
-              : vector_icons::kExpandMoreOldIcon)
+          organizer_panel::IsOrganizerPanelFeatureEnabled()
+              ? (features::IsRoundedIconsEnabled() ? kManageSearchIcon
+                                                   : kTabSearchTabStripOldIcon)
+              : (features::IsRoundedIconsEnabled()
+                     ? vector_icons::kKeyboardArrowDownIcon
+                     : vector_icons::kExpandMoreOldIcon))
           .SetProperty(
               actions::kActionItemPinnableKey,
               static_cast<std::underlying_type_t<actions::ActionPinnableState>>(
