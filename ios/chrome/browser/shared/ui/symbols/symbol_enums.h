@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, Symbol) {
   SymbolGoogleDrive,
   SymbolGoogleFull,
   SymbolGoogleIcon,
+  SymbolGoogleIconMonochrome,
   SymbolGoogleMaps,
   SymbolGooglePay,
   SymbolGooglePayV2,

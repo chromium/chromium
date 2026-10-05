@@ -83,7 +83,7 @@ TableViewDetailIconItem* DetailItemWithType(
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return SettingsRootMulticolorSymbol(SymbolGoogleIcon);
+  return SettingsRootSymbol(SymbolGoogleIconMonochrome);
 #else
   return SettingsRootSymbol(SymbolGearshape2);
 #endif
@@ -251,7 +251,7 @@ TableViewDetailIconItem* EnhancedAutofillDataUsageItem(NSInteger itemType) {
       base::FeatureList::IsEnabled(autofill::features::kAutofillAiUsePrivateAi)
           ? IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE_V2
           : IDS_SETTINGS_AUTOFILL_AI_TO_CONSIDER_DATA_USAGE,
-      MakeSymbolMonochrome(GetBrandedGoogleServicesSymbol()));
+      GetBrandedGoogleServicesSymbol());
 }
 
 TableViewDetailIconItem* EnhancedAutofillEnterpriseManagedLoggingDisabledItem(

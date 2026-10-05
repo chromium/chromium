@@ -49,8 +49,7 @@ enum ItemIdentifier {
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return MakeSymbolMonochrome(
-      SymbolWithPointSize(SymbolGoogleIcon, kDefaultSymbolSize));
+  return SymbolWithPointSize(SymbolGoogleIconMonochrome, kDefaultSymbolSize);
 #else
   return SymbolWithPointSize(SymbolGearshape2, kDefaultSymbolSize);
 #endif

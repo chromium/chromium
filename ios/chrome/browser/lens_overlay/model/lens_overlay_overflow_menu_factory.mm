@@ -49,8 +49,7 @@ const CGFloat kMenuSymbolSize = 18;
   UIImage* image;
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  image = MakeSymbolMonochrome(
-      SymbolWithPointSize(SymbolGoogleIcon, kMenuSymbolSize));
+  image = SymbolWithPointSize(SymbolGoogleIconMonochrome, kMenuSymbolSize);
 #endif
 
   return [self openURLInNewTabAction:GURL(kMyActivityURL)

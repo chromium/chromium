@@ -65,7 +65,6 @@ UIImage* GetOmniboxSuggestionIcon(OmniboxSuggestionIconType icon_type) {
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 UIImage* GetBrandedGoogleIconForOmnibox() {
-  return MakeSymbolMonochrome(
-      SymbolWithPointSize(SymbolGoogleIcon, kSymbolSize));
+  return SymbolWithPointSize(SymbolGoogleIconMonochrome, kSymbolSize);
 }
 #endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)

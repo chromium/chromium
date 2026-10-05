@@ -374,8 +374,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
   __weak __typeof(self) weakSelf = self;
 
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  UIImage* myActivityIcon = MakeSymbolMonochrome(
-      SymbolWithPointSize(SymbolGoogleIcon, kHeaderActionSymbolPointSize));
+  UIImage* myActivityIcon = SymbolWithPointSize(SymbolGoogleIconMonochrome,
+                                                kHeaderActionSymbolPointSize);
 #else
   UIImage* myActivityIcon =
       SymbolWithPointSize(SymbolInfoCircle, kHeaderActionSymbolPointSize);
