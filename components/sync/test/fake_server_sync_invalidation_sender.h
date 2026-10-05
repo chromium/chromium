@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/sync/base/data_type.h"
@@ -89,9 +89,7 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   base::flat_map<std::string, syncer::DataTypeSet>
       token_to_interested_data_types_;
 
-  // TODO(crbug.com/539790080): Remove base::WeakPtr usage once it is figured
-  // out why the invalidation sender doesn't remove Fake GCM server in tests.
-  std::vector<base::WeakPtr<instance_id::FakeGCMDriverForInstanceID>>
+  std::vector<raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
       fake_gcm_drivers_;
 };
 

@@ -13,6 +13,7 @@
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
 #import "base/path_service.h"
+#import "base/scoped_observation.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -64,8 +65,11 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -76,11 +80,8 @@
 
 namespace {
 
-instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriver() {
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  if (!profile) {
-    return nullptr;
-  }
+instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriver(ProfileIOS* profile) {
+  CHECK(profile);
   gcm::GCMProfileService* gcm_service =
       IOSChromeGCMProfileServiceFactory::GetForProfile(profile);
   if (!gcm_service) {
@@ -90,24 +91,43 @@ instance_id::FakeGCMDriverForInstanceID* GetFakeGCMDriver() {
       gcm_service->driver());
 }
 
+// Overrides the network callback of `profile`'s SyncServiceImpl with
+// `create_http_post_provider_factory_cb`.
+void OverrideSyncNetwork(ProfileIOS* profile,
+                         const syncer::CreateHttpPostProviderFactory&
+                             create_http_post_provider_factory_cb) {
+  CHECK(profile);
+  if (syncer::SyncServiceImpl* service =
+          SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
+              profile)) {
+    service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
+  }
+}
+
 // Encapsulates the fake sync server and its test invalidation infrastructure.
-class FakeSyncServerContext {
+class FakeSyncServerContext : public ProfileManagerObserverIOS {
  public:
   explicit FakeSyncServerContext(const base::FilePath& base_path)
       : server_(std::make_unique<fake_server::FakeServer>(base_path)),
         invalidation_sender_(
             std::make_unique<fake_server::FakeServerSyncInvalidationSender>(
                 server_.get())) {
-    if (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
-            GetFakeGCMDriver()) {
-      invalidation_sender_->AddFakeGCMDriver(fake_gcm_driver);
-    }
+    // Ensure the active scene's initial profile has finished loading before
+    // attaching the observer and overriding sync network.
+    CHECK(chrome_test_util::GetOriginalProfile());
+    profile_manager_observation_.Observe(
+        GetApplicationContext()->GetProfileManager());
   }
 
-  ~FakeSyncServerContext() {
-    if (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
-            GetFakeGCMDriver()) {
-      invalidation_sender_->RemoveFakeGCMDriver(fake_gcm_driver);
+  ~FakeSyncServerContext() override {
+    ProfileManagerIOS* manager = profile_manager_observation_.GetSource();
+    if (!manager) {
+      return;
+    }
+    profile_manager_observation_.Reset();
+    for (ProfileIOS* profile : manager->GetLoadedProfiles()) {
+      OnProfileUnloaded(manager, profile);
+      OverrideSyncNetwork(profile, syncer::CreateHttpPostProviderFactory());
     }
   }
 
@@ -116,10 +136,44 @@ class FakeSyncServerContext {
 
   fake_server::FakeServer* server() const { return server_.get(); }
 
+  // ProfileManagerObserverIOS implementation.
+  void OnProfileManagerWillBeDestroyed(ProfileManagerIOS* manager) override {}
+
+  void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override {
+    profile_manager_observation_.Reset();
+  }
+
+  void OnProfileCreated(ProfileManagerIOS* manager,
+                        ProfileIOS* profile) override {}
+
+  void OnProfileLoaded(ProfileManagerIOS* manager,
+                       ProfileIOS* profile) override {
+    if (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
+            GetFakeGCMDriver(profile)) {
+      invalidation_sender_->AddFakeGCMDriver(fake_gcm_driver);
+    }
+    OverrideSyncNetwork(profile,
+                        fake_server::CreateFakeServerHttpPostProviderFactory(
+                            server_->AsWeakPtr()));
+  }
+
+  void OnProfileUnloaded(ProfileManagerIOS* manager,
+                         ProfileIOS* profile) override {
+    if (instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver =
+            GetFakeGCMDriver(profile)) {
+      invalidation_sender_->RemoveFakeGCMDriver(fake_gcm_driver);
+    }
+  }
+
+  void OnProfileMarkedForPermanentDeletion(ProfileManagerIOS* manager,
+                                           ProfileIOS* profile) override {}
+
  private:
   std::unique_ptr<fake_server::FakeServer> server_;
   std::unique_ptr<fake_server::FakeServerSyncInvalidationSender>
       invalidation_sender_;
+  base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
+      profile_manager_observation_{this};
 };
 
 std::unique_ptr<FakeSyncServerContext> gSyncServerContext;
@@ -148,17 +202,6 @@ void InjectFakeSyncServerEntity(
 namespace {
 
 NSString* const kSyncTestErrorDomain = @"SyncTestDomain";
-
-// Overrides the network callback of the current SyncServiceImpl with
-// `create_http_post_provider_factory_cb`.
-void OverrideSyncNetwork(const syncer::CreateHttpPostProviderFactory&
-                             create_http_post_provider_factory_cb) {
-  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  DCHECK(profile);
-  syncer::SyncServiceImpl* service =
-      SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(profile);
-  service->OverrideNetworkForTest(create_http_post_provider_factory_cb);
-}
 
 // Returns a bookmark server entity based on `title` and `url`.
 std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkServerEntity(
@@ -275,14 +318,11 @@ void SetUpFakeSyncServer() {
   base::PathService::Get(ios::DIR_USER_DATA, &user_data_dir);
   gSyncServerContext = std::make_unique<FakeSyncServerContext>(
       user_data_dir.AppendASCII("FakeServer"));
-  OverrideSyncNetwork(fake_server::CreateFakeServerHttpPostProviderFactory(
-      GetFakeServer()->AsWeakPtr()));
 }
 
 void TearDownFakeSyncServer() {
   DCHECK(gSyncServerContext);
   gSyncServerContext.reset();
-  OverrideSyncNetwork(syncer::CreateHttpPostProviderFactory());
 }
 
 // TODO(crbug.com/556562996): Consider checking if the fake server is available
