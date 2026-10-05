@@ -8892,25 +8892,6 @@
             ]
         }
     ],
-    "GlicChromeStatusIcon": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "glic-chrome-status-icon-log-only": "true",
-                        "glic-chrome-status-icon-other-app-id": "com.google.GeminiMacOS"
-                    },
-                    "enable_features": [
-                        "GlicChromeStatusIcon"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicColdWarmingDelay": [
         {
             "platforms": [

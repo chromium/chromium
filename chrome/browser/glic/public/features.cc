@@ -23,16 +23,6 @@ BASE_FEATURE(kGlicDragAndDropFileUploadAndroid,
 
 BASE_FEATURE(kGlicAndroidOffscreenRendering, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicChromeStatusIcon, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kGlicChromeStatusIconSizePx{
-    &kGlicChromeStatusIcon, "glic-chrome-status-icon-size-px", 20};
-const base::FeatureParam<bool> kGlicChromeStatusIconUseAltIcon{
-    &kGlicChromeStatusIcon, "glic-chrome-status-icon-use-alt-icon", false};
-const base::FeatureParam<bool> kGlicChromeStatusIconLogOnly{
-    &kGlicChromeStatusIcon, "glic-chrome-status-icon-log-only", true};
-const base::FeatureParam<std::string> kGlicChromeStatusIconOtherAppID{
-    &kGlicChromeStatusIcon, "glic-chrome-status-icon-other-app-id", ""};
-
 BASE_FEATURE(kGlicOSIconVariant,
 #if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT
