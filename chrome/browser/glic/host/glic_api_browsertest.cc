@@ -3926,7 +3926,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testWindowOpenOpensTab) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testCtrlClickLinkOpensTab) {
+// TODO(crbug.com/569660051): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testCtrlClickLinkOpensTab DISABLED_testCtrlClickLinkOpensTab
+#else
+#define MAYBE_testCtrlClickLinkOpensTab testCtrlClickLinkOpensTab
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCtrlClickLinkOpensTab) {
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
   ExecuteJsTest();
