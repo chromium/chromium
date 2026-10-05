@@ -183,13 +183,12 @@ void PopulateStyleData(const content::BrowserAccessibilityAndroid& node,
     AXStyleData::AddRange(style_data->background_colors,
                           static_cast<int>(node.GetBackgroundColor()), start,
                           end);
-    if (const auto& family = node.GetInheritedFontFamilyName();
-        !family.empty()) {
+    if (auto family = node.GetInheritedFontFamilyName(); !family.empty()) {
       AXStyleData::AddRange(style_data->font_families, std::move(family), start,
                             end);
     }
     // GetLanguage() gets the inherited language locale.
-    if (const auto& lang = node.GetLanguage(); !lang.empty()) {
+    if (auto lang = node.GetLanguage(); !lang.empty()) {
       AXStyleData::AddRange(style_data->locales, std::move(lang), start, end);
     }
   }
