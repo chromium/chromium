@@ -9,11 +9,15 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/readaloud/fake_audio_stream_factory.h"
 #include "chrome/browser/readaloud/read_aloud_service_factory.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
@@ -1261,6 +1265,55 @@ TEST_F(ReadAloudServiceTest,
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(ReadAloudServiceTest, SetVoiceUpdatesSynthesizeRequestVoiceId) {
+  auto* mock_opt_guide = static_cast<MockOptimizationGuideKeyedService*>(
+      OptimizationGuideKeyedServiceFactory::GetInstance()
+          ->SetTestingFactoryAndUse(
+              profile(),
+              base::BindRepeating([](content::BrowserContext*)
+                                      -> std::unique_ptr<KeyedService> {
+                return std::make_unique<
+                    testing::NiceMock<MockOptimizationGuideKeyedService>>();
+              })));
+
+  service()->SetVoice("custom-voice-id");
+
+  optimization_guide::proto::Any any;
+  any.set_value("fake_audio_bytes");
+
+  EXPECT_CALL(
+      *mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&any](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            const auto& synthesize_request = static_cast<
+                const optimization_guide::proto::ReadAloudSynthesizeRequest&>(
+                request_metadata);
+            EXPECT_EQ(synthesize_request.voice_id(), "custom-voice-id");
+            EXPECT_EQ(synthesize_request.text_chunk(), "Hello world");
+
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                any, /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  base::test::TestFuture<mojo_base::BigBuffer, bool> future;
+  service()->RequestSpeechSynthesis(
+      /*text_chunk=*/u"Hello world",
+      /*speaker=*/read_aloud::mojom::Speaker::kSpeaker1, /*sequence_id=*/1,
+      future.GetCallback());
+  auto [response_bytes, success] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(base::as_string_view(response_bytes), "fake_audio_bytes");
 }
 
 TEST_F(ReadAloudServiceTest, OnTextChunkedForwardsToDelegate) {

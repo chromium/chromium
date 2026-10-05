@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudMetrics.IneligibilityReason;
 import org.chromium.chrome.browser.readaloud.exceptions.ReadAloudUnsupportedException;
+import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -131,6 +132,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /** Unit tests for {@link ReadAloudController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -509,6 +511,7 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayerCoordinator)
                 .playbackReady(
                         any(NativePlayback.class), eq(PlaybackListener.State.PLAYBACK_CREATION));
+        verify(mNativeBridgeNatives).setVoice(eq(12345L), eq("voiceA"));
         verify(mNativeBridgeNatives).play(eq(12345L), eq(mWebContents));
     }
 
@@ -2594,6 +2597,36 @@ public class ReadAloudControllerUnitTest {
         assertEquals(
                 PlaybackListener.State.STOPPED,
                 ((NativeVoicePreviewPlayback) previewPlayback).getState());
+    }
+
+    @Test
+    @EnableFeatures(ReadAloudFeatures.READ_ALOUD_NATIVE)
+    public void testSetVoiceAndRestartPlayback_nativeEnabled() {
+        when(mNativeBridgeNatives.init(any(), any())).thenReturn(12345L);
+        mController.onProfileAvailable(mMockProfile);
+
+        var voiceA = new PlaybackVoice("en", "voiceA", "");
+        var voiceB = new PlaybackVoice("en", "voiceB", "");
+        doReturn(List.of(voiceA, voiceB)).when(mPlaybackHooks).getVoicesFor(anyString());
+
+        mController.playTab(mTab, ReadAloudController.Entrypoint.MAGIC_TOOLBAR);
+        resolvePromises();
+
+        verify(mNativeBridgeNatives).setVoice(eq(12345L), eq("voiceA"));
+        verify(mNativeBridgeNatives).play(eq(12345L), eq(mWebContents));
+
+        // Simulate active playback before switching voice.
+        mController.onPlaybackStateChanged(PlaybackListener.State.PLAYING);
+
+        MockPrefServiceHelper.setVoices(mReadAloudPrefsNatives, Map.of("en", "voiceB"));
+        mController.setVoiceOverrideAndApplyToPlayback(voiceB);
+        resolvePromises();
+
+        verify(mReadAloudPrefsNatives).setVoice(eq(mPrefService), eq("en"), eq("voiceB"));
+        assertEquals("voiceB", mController.getVoiceIdSupplier().get());
+        verify(mNativeBridgeNatives).stop(eq(12345L));
+        verify(mNativeBridgeNatives).setVoice(eq(12345L), eq("voiceB"));
+        verify(mNativeBridgeNatives, times(2)).play(eq(12345L), eq(mWebContents));
     }
 
     @Test

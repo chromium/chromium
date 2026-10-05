@@ -1715,6 +1715,9 @@ public class ReadAloudController
             selectedVoiceId = voices.get(0).getVoiceId();
         }
         mSelectedVoiceId.set(selectedVoiceId);
+        if (ReadAloudFeatures.isNativeEnabled() && mNativeBridge.isInitialized()) {
+            mNativeBridge.setVoice(selectedVoiceId);
+        }
     }
 
     /**
