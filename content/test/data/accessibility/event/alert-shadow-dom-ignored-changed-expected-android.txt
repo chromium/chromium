@@ -1,3 +1,8 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on [Alert on Property Change Test] class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Settings saved successfully!] class_name=android.view.View
 TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [Settings saved successfully!] class_name=android.view.View
 TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Settings saved successfully!] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Settings saved successfully!] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Settings saved successfully!] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View

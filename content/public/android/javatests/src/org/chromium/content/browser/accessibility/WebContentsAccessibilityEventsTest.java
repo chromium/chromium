@@ -211,14 +211,18 @@ public class WebContentsAccessibilityEventsTest {
     public void test_addAlertWithRoleChange() {
         performTest(
                 "add-alert-with-role-change.html",
-                "add-alert-with-role-change-expected-android.txt");
+                "add-alert-with-role-change-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_addAlertContent() {
-        performTest("add-alert-content.html", "add-alert-content-expected-android.txt");
+        performTest(
+                "add-alert-content.html",
+                "add-alert-content-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -227,7 +231,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_alertShadowDomIgnoredChanged() {
         performTest(
                 "alert-shadow-dom-ignored-changed.html",
-                "alert-shadow-dom-ignored-changed-expected-android.txt");
+                "alert-shadow-dom-ignored-changed-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -236,7 +241,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_alertShadowDomIgnoredReparented() {
         performTest(
                 "alert-shadow-dom-ignored-reparented.html",
-                "alert-shadow-dom-ignored-reparented-expected-android.txt");
+                "alert-shadow-dom-ignored-reparented-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1171,14 +1177,20 @@ public class WebContentsAccessibilityEventsTest {
     @SmallTest
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionAdd() {
-        performTest("live-region-add.html", "live-region-add-expected-android.txt");
+        performTest(
+                "live-region-add.html",
+                "live-region-add-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionAtomicAdd() {
-        performTest("live-region-atomic-add.html", "live-region-atomic-add-expected-android.txt");
+        performTest(
+                "live-region-atomic-add.html",
+                "live-region-atomic-add-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1186,14 +1198,18 @@ public class WebContentsAccessibilityEventsTest {
     public void test_liveRegionAddLiveAttribute() {
         performTest(
                 "live-region-add-live-attribute.html",
-                "live-region-add-live-attribute-expected-android.txt");
+                "live-region-add-live-attribute-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionChanged() {
-        performTest("live-region-change.html", "live-region-change-expected-android.txt");
+        performTest(
+                "live-region-change.html",
+                "live-region-change-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1202,7 +1218,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_liveRegionChangedInnerHtml() {
         performTest(
                 "live-region-change-innerhtml.html",
-                "live-region-change-innerhtml-expected-android.txt");
+                "live-region-change-innerhtml-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1211,7 +1228,8 @@ public class WebContentsAccessibilityEventsTest {
     public void test_liveRegionChangedInnerText() {
         performTest(
                 "live-region-change-innertext.html",
-                "live-region-change-innertext-expected-android.txt");
+                "live-region-change-innertext-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1220,13 +1238,17 @@ public class WebContentsAccessibilityEventsTest {
     public void test_liveRegionAtomicChangedInnerText() {
         performTest(
                 "live-region-atomic-change-innertext.html",
-                "live-region-atomic-change-innertext-expected-android.txt");
+                "live-region-atomic-change-innertext-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_liveRegionCreate() {
-        performTest("live-region-create.html", "live-region-create-expected-android.txt");
+        performTest(
+                "live-region-create.html",
+                "live-region-create-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
@@ -1234,26 +1256,36 @@ public class WebContentsAccessibilityEventsTest {
     @EnableFeatures(ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS)
     public void test_liveRegionElemReparent() {
         performTest(
-                "live-region-elem-reparent.html", "live-region-elem-reparent-expected-android.txt");
+                "live-region-elem-reparent.html",
+                "live-region-elem-reparent-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_liveRegionIgnoresClick() {
         performTest(
-                "live-region-ignores-click.html", "live-region-ignores-click-expected-android.txt");
+                "live-region-ignores-click.html",
+                "live-region-ignores-click-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_liveRegionOff() {
-        performTest("live-region-off.html", "live-region-off-expected-android.txt");
+        performTest(
+                "live-region-off.html",
+                "live-region-off-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
     @SmallTest
     public void test_liveRegionRemove() {
-        performTest("live-region-remove.html", "live-region-remove-expected-android.txt");
+        performTest(
+                "live-region-remove.html",
+                "live-region-remove-expected-android.txt",
+                /* shouldFilterTrivialEvents= */ false);
     }
 
     @Test
