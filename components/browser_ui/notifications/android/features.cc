@@ -10,7 +10,7 @@
 namespace browser_ui {
 
 BASE_FEATURE(kAndroidResizeLargeNotificationBitmaps,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCacheNotificationsEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace browser_ui
