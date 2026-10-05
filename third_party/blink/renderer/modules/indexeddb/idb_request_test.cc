@@ -34,6 +34,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -420,7 +422,9 @@ class IDBRequestTest : public testing::Test {
     // Set up the transaction.
     MockIDBDatabase database_backend;
     MockIDBTransaction transaction_backend;
-    EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
+    base::RunLoop commit_run_loop;
+    EXPECT_CALL(transaction_backend, Commit(0))
+        .WillOnce(base::test::RunClosure(commit_run_loop.QuitClosure()));
     BuildTransaction(scope, database_backend, transaction_backend);
     ASSERT_TRUE(!scope.GetExceptionState().HadException());
     ASSERT_TRUE(transaction_);
@@ -454,7 +458,7 @@ class IDBRequestTest : public testing::Test {
           /*done=*/get_all_results.size() == i + 1);
     }
 
-    platform_->RunUntilIdle();
+    commit_run_loop.Run();
 
     // Verify the request completes with the expected results.
     EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kDone);
