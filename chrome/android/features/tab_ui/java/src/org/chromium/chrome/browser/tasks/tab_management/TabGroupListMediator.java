@@ -281,9 +281,7 @@ public class TabGroupListMediator {
                 new GroupWindowChecker(mContext, mTabGroupSyncService, mTabModel);
         List<GroupWindowInfo> sortedTabGroups =
                 sortUtil.getSortedGroupList(
-                        this::shouldShowGroupByState,
-                        (GroupWindowInfo a, GroupWindowInfo b) ->
-                                Long.compare(b.lastModifiedTimeMs, a.lastModifiedTimeMs));
+                        this::shouldShowGroupByState, GroupWindowChecker.UPDATE_TIME_COMPARATOR);
         for (GroupWindowInfo groupInfo : sortedTabGroups) {
             if (groupInfo.syncId == null) continue;
             SavedTabGroup savedTabGroup =

@@ -235,7 +235,8 @@ class TabGroupRowMediator {
             String syncId = savedTabGroup.syncId;
             assumeNonNull(syncId);
             boolean isTabGroupArchived = savedTabGroup.archivalTimeMs != null;
-            mTabGroupUiActionHandler.openTabGroup(syncId);
+            TabGroupUiUtils.openTabGroup(
+                    mTabModel, mTabGroupSyncService, mTabGroupUiActionHandler, syncId);
             if (isTabGroupArchived) {
                 RecordUserAction.record("TabGroups.RestoreFromTabGroupPane");
                 RecordHistogram.recordCount1000Histogram(

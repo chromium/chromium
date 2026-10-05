@@ -71,6 +71,7 @@ import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -361,6 +362,20 @@ public class TabGroupRowMediatorUnitTest {
         assertEquals(0, userActionTester.getActionCount("TabGroups.RestoreFromTabGroupPane"));
         histograms.assertExpected();
         userActionTester.tearDown();
+    }
+
+    @Test
+    public void testOpen_Hidden_RemovesStaleLocalMapping() {
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
+        when(mTabModel.tabGroupExists(GROUP_ID1)).thenReturn(false);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ true, mUrl1);
+        LocalTabGroupId localId = new LocalTabGroupId(GROUP_ID1);
+        mSyncGroup.localId = localId;
+
+        propertyModel.get(OPEN_RUNNABLE).run();
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(eq(localId), eq(ClosingSource.CLOSED_BY_USER));
+        verify(mTabGroupUiActionHandler).openTabGroup(SYNC_GROUP_ID1);
     }
 
     @Test
