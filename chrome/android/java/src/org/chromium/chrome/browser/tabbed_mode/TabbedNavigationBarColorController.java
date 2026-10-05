@@ -73,7 +73,7 @@ class TabbedNavigationBarColorController
     private final FullscreenManager.@Nullable Observer mFullscreenObserver;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private final MonotonicObservableSupplier<Integer> mOverviewColorSupplier;
-    private final Callback<Integer> mOnOverviewColorChanged = color -> updateNavigationBarColor();
+    private final Callback<Integer> mOnOverviewColorChanged = this::onOverviewColorChanged;
     private final Callback<EdgeToEdgeController> mEdgeToEdgeRegisterChangeObserverCallback;
     private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final BottomAttachedUiObserver mBottomAttachedUiObserver;
@@ -289,6 +289,18 @@ class TabbedNavigationBarColorController
             @ColorInt @Nullable Integer color, boolean forceShowDivider, boolean disableAnimation) {
         mBottomAttachedUiColor = color;
         updateNavigationBarColor(forceShowDivider, disableAnimation);
+    }
+
+    private void onOverviewColorChanged(@ColorInt @Nullable Integer color) {
+        // Only react while the Hub layout is active. mOverviewMode is cleared at the start of
+        // hiding, but the Hub keeps emitting colors during its fade-out (per-frame alpha updates,
+        // plus a final TRANSPARENT at done-hiding). Since these updates pass disableAnimation=true,
+        // they skip the no-op early return in updateNavigationBarColor() and would end() the
+        // nav bar color transition started by onStartedHiding(), snapping it to its final color.
+        // Skipping is safe: outside overview mode the nav bar color never reads this supplier.
+        if (!mOverviewMode) return;
+
+        updateNavigationBarColor(/* forceShowDivider= */ false, /* disableAnimation= */ true);
     }
 
     /**
