@@ -203,6 +203,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
+  gpu::SharedImagePool<CanvasResourceSharedImage>* image_pool() {
+    return image_pool_.get();
+  }
+
   CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -211,7 +215,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
-      CanvasResourceProviderDelegate*);
+      CanvasResourceProviderDelegate*,
+      bool create_initial_resource = true);
 
  private:
   CanvasNon2DResourceProvider(gfx::Size,

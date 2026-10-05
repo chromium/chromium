@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -213,14 +214,23 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   auto resource_provider = std::make_unique<CanvasNon2DResourceProvider>(
       size, format, alpha_type, color_space, hdr_metadata,
       context_provider_wrapper, shared_image_usage_flags,
-      /*delegate=*/nullptr);
+      /*delegate=*/nullptr, /*create_initial_resource=*/false);
   if (!resource_provider->IsValid()) {
     return nullptr;
   }
 
-  auto shared_image = resource_provider->resource()->GetSharedImage();
-  gpu::SyncToken sync_token =
-      resource_provider->resource()->acquire_sync_token();
+  if (!resource_provider->image_pool()) {
+    return nullptr;
+  }
+  auto resource = resource_provider->image_pool()->GetImage();
+  if (!resource) {
+    return nullptr;
+  }
+  resource->Initialize(/*client=*/nullptr, context_provider_wrapper,
+                       hdr_metadata, /*is_accelerated=*/true);
+
+  auto shared_image = resource->GetSharedImage();
+  gpu::SyncToken sync_token = resource->acquire_sync_token();
   MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
