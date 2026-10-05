@@ -1093,6 +1093,12 @@ public final class ChromePreferenceKeys {
             "Chrome.VerticalTabs.EnabledTimestamp";
 
     /**
+     * Stores the user preference for expanding the collapsed vertical tabs rail when the pointer
+     * hovers over it.
+     */
+    public static final String VERTICAL_TABS_EXPAND_ON_HOVER = "Chrome.VerticalTabs.ExpandOnHover";
+
+    /**
      * Stores the expanded vertical tabs rail width, in dp, that the user last chose by dragging the
      * rail's resize handle. Unset (or non-positive) means the user has never resized the rail, so
      * its width is determined automatically from the window size.
@@ -1360,6 +1366,7 @@ public final class ChromePreferenceKeys {
                 VERTICAL_TABS_COLLAPSED,
                 VERTICAL_TABS_ENABLED,
                 VERTICAL_TABS_ENABLED_TIMESTAMP,
+                VERTICAL_TABS_EXPAND_ON_HOVER,
                 VERTICAL_TABS_USER_RESIZED_WIDTH_DP,
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT,
                 WINDOW_CONTROLS_OVERLAY_ENABLED_PACKAGES);

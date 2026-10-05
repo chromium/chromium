@@ -92,6 +92,26 @@ public class VerticalTabUtils {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsLayoutToggleSourceAndDirection)
 
+    /**
+     * Entry points from which the user can turn expand-on-hover on or off. Recorded in the
+     * Android.VerticalTabs.ExpandOnHoverToggle.{Enable,Disable} histograms.
+     */
+    // LINT.IfChange(AndroidVerticalTabsExpandOnHoverToggleEntryPoint)
+    @IntDef({
+        ExpandOnHoverToggleEntryPoint.SETTINGS,
+        ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU,
+        ExpandOnHoverToggleEntryPoint.COLLAPSE_BUTTON_CONTEXT_MENU
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ExpandOnHoverToggleEntryPoint {
+        int SETTINGS = 0;
+        int TAB_STRIP_CONTEXT_MENU = 1;
+        int COLLAPSE_BUTTON_CONTEXT_MENU = 2;
+        int COUNT = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidVerticalTabsExpandOnHoverToggleEntryPoint)
+
     // LINT.IfChange(AndroidVerticalTabsWindowWidthBoundary)
     @IntDef({
         WindowWidthBoundary.NOT_SHOWABLE,
@@ -285,12 +305,46 @@ public class VerticalTabUtils {
         return outValue.getFloat();
     }
 
-    /** Returns whether expand-on-hover behavior is enabled for Vertical Tabs. */
-    public static boolean isExpandOnHoverEnabled() {
+    /**
+     * Returns whether the expand-on-hover feature is available for Vertical Tabs, i.e. whether the
+     * user can turn it on or off. Use {@link #isExpandOnHoverEnabled()} to check whether the rail
+     * should actually expand on hover.
+     */
+    public static boolean isExpandOnHoverFeatureEnabled() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS,
                 "expand_on_hover",
                 /* defaultValue= */ false);
+    }
+
+    /**
+     * Returns whether the collapsed vertical tabs rail should expand when the pointer hovers over
+     * it. This requires the expand-on-hover feature to be available and the user to not have turned
+     * it off. It is on by default.
+     */
+    public static boolean isExpandOnHoverEnabled() {
+        return isExpandOnHoverFeatureEnabled()
+                && ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER,
+                                /* defaultValue= */ true);
+    }
+
+    /**
+     * Sets whether the collapsed vertical tabs rail should expand when the pointer hovers over it,
+     * and records the entry point the user changed it from.
+     *
+     * @param enabled Whether expand-on-hover should be enabled.
+     * @param entryPoint The entry point from which the user changed the setting.
+     */
+    public static void setExpandOnHoverEnabled(
+            boolean enabled, @ExpandOnHoverToggleEntryPoint int entryPoint) {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER, enabled);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.VerticalTabs.ExpandOnHoverToggle." + (enabled ? "Enable" : "Disable"),
+                entryPoint,
+                ExpandOnHoverToggleEntryPoint.COUNT);
     }
 
     /**
@@ -432,6 +486,8 @@ public class VerticalTabUtils {
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_COLLAPSED);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.VERTICAL_TABS_USER_RESIZED_WIDTH_DP);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER);
     }
 
     /** Sets whether Vertical Tabs is eligible for testing. */

@@ -29,6 +29,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutSwitchEntryPoint;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.LayoutToggleSourceAndDirection;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.WindowWidthBoundary;
@@ -160,11 +161,69 @@ public class VerticalTabUtilsUnitTest {
 
     @Test
     public void testIsExpandOnHoverEnabled() {
+        assertFalse(VerticalTabUtils.isExpandOnHoverFeatureEnabled());
         assertFalse(VerticalTabUtils.isExpandOnHoverEnabled());
 
         FeatureOverrides.overrideParam(
                 ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+        assertTrue(VerticalTabUtils.isExpandOnHoverFeatureEnabled());
+        // On by default.
         assertTrue(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
+    @Test
+    public void testIsExpandOnHoverEnabled_RespectsUserSetting() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", true);
+
+        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        assertFalse(VerticalTabUtils.isExpandOnHoverEnabled());
+        assertTrue(VerticalTabUtils.isExpandOnHoverFeatureEnabled());
+
+        VerticalTabUtils.setExpandOnHoverEnabled(true, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        assertTrue(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
+    @Test
+    public void testIsExpandOnHoverEnabled_FalseWhenFeatureDisabled() {
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ANDROID_VERTICAL_TABS, "expand_on_hover", false);
+        VerticalTabUtils.setExpandOnHoverEnabled(true, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        assertFalse(VerticalTabUtils.isExpandOnHoverEnabled());
+    }
+
+    @Test
+    public void testSetExpandOnHoverEnabled_RecordsHistogram() {
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.SETTINGS, /* enabled= */ true);
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU, /* enabled= */ true);
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.COLLAPSE_BUTTON_CONTEXT_MENU, /* enabled= */ true);
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.SETTINGS, /* enabled= */ false);
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU, /* enabled= */ false);
+        assertExpandOnHoverToggleHistogram(
+                ExpandOnHoverToggleEntryPoint.COLLAPSE_BUTTON_CONTEXT_MENU, /* enabled= */ false);
+    }
+
+    private void assertExpandOnHoverToggleHistogram(
+            @ExpandOnHoverToggleEntryPoint int entryPoint, boolean enabled) {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                enabled
+                                        ? "Android.VerticalTabs.ExpandOnHoverToggle.Enable"
+                                        : "Android.VerticalTabs.ExpandOnHoverToggle.Disable",
+                                entryPoint)
+                        .expectNoRecords(
+                                enabled
+                                        ? "Android.VerticalTabs.ExpandOnHoverToggle.Disable"
+                                        : "Android.VerticalTabs.ExpandOnHoverToggle.Enable")
+                        .build();
+        VerticalTabUtils.setExpandOnHoverEnabled(enabled, entryPoint);
+        histogramWatcher.assertExpected();
     }
 
     @Test

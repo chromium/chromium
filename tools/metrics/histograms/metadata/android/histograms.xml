@@ -6819,6 +6819,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.VerticalTabs.ExpandOnHoverToggle.{Direction}"
+    enum="AndroidVerticalTabsExpandOnHoverToggleEntryPoint"
+    expires_after="2027-07-22">
+  <owner>spdonghao@google.com</owner>
+  <owner>agazal@google.com</owner>
+  <summary>
+    Records the entry point from which the user turns expand-on-hover for the
+    collapsed Vertical Tabs rail {Direction}.
+  </summary>
+  <token key="Direction">
+    <variant name="Disable" summary="off"/>
+    <variant name="Enable" summary="on"/>
+  </token>
+</histogram>
+
 <histogram name="Android.VerticalTabs.LayoutToggleSourceAndDirection"
     enum="AndroidVerticalTabsLayoutToggleSourceAndDirection"
     expires_after="2027-07-22">

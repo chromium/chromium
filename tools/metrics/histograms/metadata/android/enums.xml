@@ -472,6 +472,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListItemTouchHelperCallback.java:AndroidVerticalTabsDragDropResult) -->
 
+<!-- LINT.IfChange(AndroidVerticalTabsExpandOnHoverToggleEntryPoint) -->
+
+<enum name="AndroidVerticalTabsExpandOnHoverToggleEntryPoint">
+  <int value="0" label="Settings"/>
+  <int value="1" label="Tab Strip Context Menu"/>
+  <int value="2" label="Collapse Button Context Menu"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/vertical_tabs/android/java/src/org/chromium/chrome/browser/ui/vertical_tabs/VerticalTabUtils.java:AndroidVerticalTabsExpandOnHoverToggleEntryPoint)-->
+
 <!-- LINT.IfChange(AndroidVerticalTabsLayoutToggleSourceAndDirection) -->
 
 <enum name="AndroidVerticalTabsLayoutToggleSourceAndDirection">

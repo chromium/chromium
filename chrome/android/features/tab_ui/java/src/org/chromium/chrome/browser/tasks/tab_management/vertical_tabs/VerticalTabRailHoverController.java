@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.DragEvent;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -11,8 +12,10 @@ import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -70,6 +73,14 @@ class VerticalTabRailHoverController
     // Where the pointer is relative to the rail, as last observed from pointer events.
     private @PointerState int mPointerState = PointerState.OUTSIDE;
 
+    // Held as a field because SharedPreferences only keeps weak references to its listeners.
+    private final OnSharedPreferenceChangeListener mPrefsListener =
+            (sharedPreferences, key) -> {
+                if (ChromePreferenceKeys.VERTICAL_TABS_EXPAND_ON_HOVER.equals(key)) {
+                    onExpandOnHoverSettingChanged();
+                }
+            };
+
     /**
      * Starts observing the pointer events dispatched to {@code railView}.
      *
@@ -79,6 +90,7 @@ class VerticalTabRailHoverController
      *     top resumed activity.
      * @param isContextMenuShowingSupplier Returns whether any rail context menu is showing.
      */
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     VerticalTabRailHoverController(
             VerticalTabRailLayout railView,
             VerticalTabRailCollapseController collapseController,
@@ -90,17 +102,24 @@ class VerticalTabRailHoverController
         mIsContextMenuShowingSupplier = isContextMenuShowingSupplier;
         mRailView.setRailEventListener(this);
         mWindowAndroid.addActivityStateObserver(this);
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 
     /** Stops observing the rail. */
+    @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     void destroy() {
         cancelMenuDismissTimeout();
         mRailView.setRailEventListener(null);
         mWindowAndroid.removeActivityStateObserver(this);
+        ContextUtils.getAppSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(mPrefsListener);
     }
 
     /** Called when the last showing context menu is dismissed. */
     void onContextMenuDismissed() {
+        // When expand-on-hover was turned off, the rail was already collapsed.
+        if (!isTrackingPointer()) return;
         switch (mPointerState) {
             case PointerState.OUTSIDE:
                 // A collapse arrived while the menu was showing, e.g. a HOVER_EXIT outside the rail
@@ -244,10 +263,19 @@ class VerticalTabRailHoverController
 
     /** Returns whether pointer events should drive the rail's expand-on-hover state. */
     private static boolean isTrackingPointer() {
-        // TODO(crbug.com/542280452): Add entry points for enabling/disabling expand-on-hover (e.g.
-        // in settings, context menu, right click collapse button) and check the user settings
-        // here.
         return VerticalTabUtils.isExpandOnHoverEnabled();
+    }
+
+    /**
+     * Called when the user turns expand-on-hover on or off. When turned off, pointer events are no
+     * longer tracked, so the rail is collapsed right away if it is expanded for hovering. This does
+     * not wait for a context menu to be dismissed, as the setting is usually changed from one that
+     * is being dismissed. When turned on, the next hover event over the rail expands it.
+     */
+    private void onExpandOnHoverSettingChanged() {
+        if (isTrackingPointer()) return;
+        recordPointerState(PointerState.OUTSIDE);
+        mCollapseController.setHovering(false);
     }
 
     @PointerState

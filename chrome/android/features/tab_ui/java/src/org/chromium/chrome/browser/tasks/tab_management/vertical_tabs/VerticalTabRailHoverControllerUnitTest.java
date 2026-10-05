@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabRailHoverController.PointerState;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils.ExpandOnHoverToggleEntryPoint;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -90,6 +93,12 @@ public class VerticalTabRailHoverControllerUnitTest {
                         mWindowAndroid,
                         () -> mIsContextMenuShowing);
         verify(mWindowAndroid).addActivityStateObserver(mHoverController);
+    }
+
+    @After
+    public void tearDown() {
+        mHoverController.destroy();
+        VerticalTabUtils.resetSharedPrefsForTesting();
     }
 
     @Test
@@ -411,11 +420,56 @@ public class VerticalTabRailHoverControllerUnitTest {
     }
 
     @Test
+    public void testExpandOnHoverTurnedOffByUser_IgnoresEvents() {
+        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        clearInvocations(mCollapseController);
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_EXIT, OUTSIDE_X, Y);
+
+        verify(mCollapseController, never()).setHovering(true);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+    }
+
+    @Test
+    public void testExpandOnHoverTurnedOffByUser_StopsHovering() {
+        hoverInsideRail();
+        // Turned off from a context menu, which is still showing.
+        mIsContextMenuShowing = true;
+
+        VerticalTabUtils.setExpandOnHoverEnabled(
+                false, ExpandOnHoverToggleEntryPoint.TAB_STRIP_CONTEXT_MENU);
+
+        // The rail collapses right away instead of waiting for the menu to be dismissed.
+        verify(mCollapseController).setHovering(false);
+        assertEquals(PointerState.OUTSIDE, mHoverController.getPointerStateForTesting());
+
+        // Nothing is pending once the menu is dismissed.
+        clearInvocations(mCollapseController);
+        mIsContextMenuShowing = false;
+        mHoverController.onContextMenuDismissed();
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+    }
+
+    @Test
+    public void testExpandOnHoverTurnedOnByUser_NextHoverExpands() {
+        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        clearInvocations(mCollapseController);
+
+        VerticalTabUtils.setExpandOnHoverEnabled(true, ExpandOnHoverToggleEntryPoint.SETTINGS);
+        verify(mCollapseController, never()).setHovering(anyBoolean());
+
+        dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        verify(mCollapseController).setHovering(true);
+    }
+
+    @Test
     public void testDestroy_StopsObservingRail() {
         mHoverController.destroy();
         verify(mWindowAndroid).removeActivityStateObserver(mHoverController);
 
         dispatchMouseHover(MotionEvent.ACTION_HOVER_ENTER, INSIDE_X, Y);
+        VerticalTabUtils.setExpandOnHoverEnabled(false, ExpandOnHoverToggleEntryPoint.SETTINGS);
 
         verifyNoInteractions(mCollapseController);
     }
