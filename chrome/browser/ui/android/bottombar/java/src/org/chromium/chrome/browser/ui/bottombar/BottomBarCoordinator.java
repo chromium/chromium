@@ -228,9 +228,9 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
 
     @Override
     public void destroy() {
+        mButtonManager.destroy();
         mMediator.destroy();
         mMcp.destroy();
-        mButtonManager.destroy();
         mPromoDialogCoordinator.destroy();
     }
 }

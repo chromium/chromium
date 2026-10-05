@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,6 +96,7 @@ public class BottomBarMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
+
     @Captor
     private ArgumentCaptor<GlicKeyedService.AllowedChangedObserver> mAllowedChangedObserverCaptor;
 
@@ -756,6 +758,18 @@ public class BottomBarMediatorUnitTest {
         assertEquals(Host.TABBED, mMediator.getHostForTesting());
         assertEquals(BrandedColorScheme.APP_DEFAULT, mModel.get(BottomBarProperties.COLOR_SCHEME));
         verify(mVisibilityDelegate, times(2)).onBackgroundColorChanged();
+    }
+
+    @Test
+    public void testOnBottomBarStateChanged_AfterDestroy_IsNoOp() {
+        createMediator(/* shouldIncludeHomeButton= */ false);
+        assertNotNull(mMediator);
+
+        mMediator.destroy();
+        clearInvocations(mVisibilityDelegate);
+
+        mMediator.onBottomBarStateChanged(/* visibilityChanged= */ true);
+        verify(mVisibilityDelegate, never()).onModelTokenChange();
     }
 
     private void createMediator(boolean shouldIncludeHomeButton) {

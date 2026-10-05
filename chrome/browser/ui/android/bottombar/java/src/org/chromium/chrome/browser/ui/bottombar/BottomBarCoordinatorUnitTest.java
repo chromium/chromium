@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -254,9 +255,14 @@ public class BottomBarCoordinatorUnitTest {
 
     @Test
     public void testDestroy() {
+        PropertyModel actionModel = new PropertyModel.Builder(ActionProperties.BASE_KEYS).build();
+        mActionSupplier.set(actionModel);
+        clearInvocations(mVisibilityDelegate);
+
         assertTrue(mActionSupplier.hasObservers());
         mCoordinator.destroy();
         assertFalse(mActionSupplier.hasObservers());
+        verify(mVisibilityDelegate, never()).onModelTokenChange();
     }
 
     @Test

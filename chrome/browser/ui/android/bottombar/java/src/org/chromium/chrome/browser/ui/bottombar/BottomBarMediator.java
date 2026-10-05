@@ -431,6 +431,7 @@ public class BottomBarMediator
 
     @Override
     public void onBottomBarStateChanged(boolean visibilityChanged) {
+        if (mDestroyed) return;
         mVisibilityDelegate.onModelTokenChange();
         if (visibilityChanged) {
             updateNewTabButtonBackground();
