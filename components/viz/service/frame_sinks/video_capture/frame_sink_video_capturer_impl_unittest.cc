@@ -2582,6 +2582,7 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->metadata().source_size, kValidCropBounds.size());
   EXPECT_TRUE(frame->metadata().region_capture_rect.has_value());
   const auto& bounds = frame->metadata().region_capture_bounds;
   EXPECT_EQ(bounds.size(), 1u);
@@ -2624,6 +2625,7 @@ TEST_P(FrameSinkVideoCapturerTest,
 
   scoped_refptr<media::VideoFrame> frame = consumer.TakeFrame(0);
   ASSERT_TRUE(frame);
+  EXPECT_EQ(frame->metadata().source_size, kValidCropBounds.size());
   EXPECT_FALSE(frame->metadata().region_capture_rect.has_value());
   const auto& bounds = frame->metadata().region_capture_bounds;
   // ASSERT rather than EXPECT: `at()` below is fatal if the entry is missing.

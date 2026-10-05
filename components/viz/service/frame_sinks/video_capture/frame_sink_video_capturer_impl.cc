@@ -1122,7 +1122,6 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
               ? ScaleToEnclosingRect(region_properties->render_pass_subrect,
                                      1.0f / scale_factor)
               : region_properties->render_pass_subrect;
-      metadata.source_size = source_size;
     }
   } else if (IsEntireTabCapture(target_->sub_target) &&
              !frame_metadata.capture_bounds.IsEmpty()) {
