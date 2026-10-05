@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/toolchain/apple/apple_tool_wrapper.gni")
 import("//build/toolchain/concurrent_links.gni")
 
 declare_args() {
@@ -17,6 +18,12 @@ if (current_toolchain == default_toolchain) {
       depth = concurrent_links
     } else {
       depth = bundle_pool_depth
+    }
+  }
+
+  if (apple_tool_wrapper != "") {
+    pool("apple_tool_wrapper_pool") {
+      depth = apple_tool_wrapper_jobs
     }
   }
 }

@@ -12,6 +12,7 @@ import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
+import("//build/toolchain/apple/apple_tool_wrapper.gni")
 import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
@@ -94,6 +95,21 @@ tool_versions = exec_script(
             ],
             root_build_dir),
         "trim scope")
+
+# Tools can't declare inputs (https://crbug.com/621119), so version wrapped
+# tool commands by the wrapper files' mtimes, like `tool_versions` above.
+# Passing them as file dependencies also reruns gn when they change.
+apple_tool_wrapper_env = ""
+if (apple_tool_wrapper != "") {
+  _wrapper_files = [ apple_tool_wrapper ] + apple_tool_wrapper_inputs
+  _wrapper_mtimes = exec_script("get_tool_mtime.py",
+                                rebase_path(_wrapper_files, root_build_dir),
+                                "list lines",
+                                _wrapper_files)
+  apple_tool_wrapper_env =
+      "APPLE_TOOL_WRAPPER_VERSION=" +
+      string_replace(string_join(",", _wrapper_mtimes), " = ", ":") + " "
+}
 
 # Shared toolchain definition. Invocations should set current_os to set the
 # build args in this definition. This is titled "single_apple_toolchain"
@@ -892,13 +908,24 @@ template("single_apple_toolchain") {
                 "//build/toolchain/apple/swift_const_gather_protocols.json",
                 root_build_dir)
 
-        command =
-            "$_env_vars $python_path $_tool --module-name {{module_name}} " +
+        _swiftc_args =
+            "--module-name {{module_name}} " +
             "--header-path $_header_path --target-out-dir $_output_dir " +
             "--const-gather-protocols-file $_const_gather_protocols_file " +
             "--depfile-path $depfile --src-dir $_src_dir --gen-dir $_gen_dir " +
             "--bridge-header {{bridge_header}} {{include_dirs}} " +
             "{{module_dirs}} {{swiftflags}} {{inputs}}$_extra_flags"
+
+        if (apple_tool_wrapper_script == "") {
+          command = "$_env_vars $python_path $_tool $_swiftc_args"
+        } else {
+          _wrapper = rebase_path(apple_tool_wrapper_script, root_build_dir)
+          command = "$_env_vars ${apple_tool_wrapper_env}$python_path " +
+                    "$_wrapper --tool=swift -- $_tool $_swiftc_args"
+          if (apple_tool_wrapper != "") {
+            pool = apple_tool_wrapper_pool
+          }
+        }
 
         description = "SWIFT $_output_dir/{{module_name}}.swiftmodule"
       }
@@ -917,17 +944,31 @@ template("single_apple_toolchain") {
           _env_vars += " DEVELOPER_DIR=${toolchain_args.sdk_developer_dir}"
         }
 
-        command = "$_env_vars $python_path $_tool " +
-                  "-O '${toolchain_args.current_os}' " +
-                  "-p '${invoker.target_platform}' " +
-                  "-e '${invoker.target_environment}' " +
-                  "-t '${invoker.deployment_target}' " +
-                  "-T '{{bundle_product_type}}' " +
-                  "-P '{{bundle_partial_info_plist}}' " +
-                  " {{xcasset_compiler_flags}} " + "-o {{output}} {{inputs}}"
+        _xcassets_args =
+            "-O '${toolchain_args.current_os}' " +
+            "-p '${invoker.target_platform}' " +
+            "-e '${invoker.target_environment}' " +
+            "-t '${invoker.deployment_target}' " +
+            "-T '{{bundle_product_type}}' " +
+            "-P '{{bundle_partial_info_plist}}' " +
+            " {{xcasset_compiler_flags}} " + "-o {{output}} {{inputs}}"
+
+        if (apple_tool_wrapper_script == "") {
+          command = "$_env_vars $python_path $_tool $_xcassets_args"
+          pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
+        } else {
+          _wrapper = rebase_path(apple_tool_wrapper_script, root_build_dir)
+          command =
+              "$_env_vars ${apple_tool_wrapper_env}$python_path $_wrapper " +
+              "--tool=compile_xcassets -- $_tool $_xcassets_args"
+          if (apple_tool_wrapper != "") {
+            pool = apple_tool_wrapper_pool
+          } else {
+            pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
+          }
+        }
 
         description = "COMPILE_XCASSETS {{output}}"
-        pool = "//build/toolchain/apple:bundle_pool($default_toolchain)"
       }
     }
 

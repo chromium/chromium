@@ -1,0 +1,83 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+declare_args() {
+  # Optional Python script that runs Apple-only iOS build steps instead of
+  # running them directly. Empty runs them directly, which needs macOS.
+  # See the contract below.
+  apple_tool_wrapper = ""
+
+  # Other files the wrapper depends on (e.g. modules it imports). Wrapped
+  # steps rerun when they change.
+  apple_tool_wrapper_inputs = []
+
+  # Maximum number of wrapped steps that run at once.
+  apple_tool_wrapper_jobs = 6
+}
+
+# Wrapper contract
+# ----------------
+# When `apple_tool_wrapper_script` is non-empty, Apple-only iOS build steps
+# invoke:
+#
+#   python3 <wrapper> --tool=<kind> [--input <path>]... [--output <path>]... \
+#       -- <script> <args>...
+#
+# `<script> <args>...` is the exact command the build would run without a
+# wrapper, and `<script>` is always a Python script.
+#
+# `--tool` kinds:
+#
+#   swift
+#     Hook:   tool("swift") in //build/toolchain/apple/toolchain.gni
+#     Script: //build/toolchain/apple/swiftc.py
+#     --input/--output: no (parse <args>)
+#
+#   compile_xcassets
+#     Hook:   tool("compile_xcassets") in //build/toolchain/apple/toolchain.gni
+#     Script: //build/toolchain/apple/compile_xcassets.py
+#     --input/--output: no (parse <args>)
+#
+#   compile_ib_files
+#     Hook:   bundle_data_ib_file in
+#             //build/config/apple/mobile_bundle_data.gni
+#     Script: //build/config/apple/compile_ib_files.py
+#     --input/--output: yes
+#
+#   intentbuilderc
+#     Hook:   intent_definition in //build/ios/intent_definition.gni
+#     Script: //build/apple/xcrun.py
+#     --input/--output: yes
+#
+#   extract_metadata
+#     Hook:   _metadata_extraction in //build/config/ios/rules.gni
+#     Script: //build/config/ios/extract_metadata.py
+#     --input/--output: no (parse <args>)
+#
+# Rules:
+# - Paths are relative to `root_build_dir`, which is also the working
+#   directory.
+# - `--input` and `--output` may be incomplete (for example, `swift`,
+#   `compile_xcassets`, and `extract_metadata` discover additional inputs or
+#   outputs from `<args>`), so wrappers may need to parse `<args>`.
+# - Environment: for `tool()` steps (`swift` and `compile_xcassets`), the
+#   step's environment variables (`TOOL_VERSION`, `DEVELOPER_DIR`,
+#   `APPLE_TOOL_WRAPPER_VERSION`, etc.) reach the wrapper. The `action()` steps
+#   (`compile_ib_files`, `intentbuilderc`, and `extract_metadata`) do not set
+#   step environment variables.
+# - Wrapper obligations: produce every output and depfile the unwrapped
+#   command would, and exit non-zero on failure.
+# - API stability: adding a `--tool` kind, or changing a stock script's flags,
+#   can break out-of-tree wrappers.
+
+if (apple_tool_wrapper != "") {
+  apple_tool_wrapper_script = apple_tool_wrapper
+  apple_tool_wrapper_pool =
+      "//build/toolchain/apple:apple_tool_wrapper_pool($default_toolchain)"
+} else if (is_ios && host_os != "mac") {
+  apple_tool_wrapper_script =
+      "//build/toolchain/apple/apple_tool_unavailable.py"
+} else {
+  apple_tool_wrapper_script = ""
+}

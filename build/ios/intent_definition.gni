@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/ios/ios_sdk.gni")
+import("//build/toolchain/apple/apple_tool_wrapper.gni")
 
 # Template to compile an .intentdefinition file.
 #
@@ -34,10 +35,9 @@ template("intent_definition") {
       "$target_gen_dir/" + get_path_info(invoker.intent_file, "file")
 
   action(_compile_intent_target) {
-    script = "//build/apple/xcrun.py"
     inputs = [ invoker.intent_file ]
     outputs = [ _compile_intent_output ]
-    args = [
+    _args = [
       "intentbuilderc",
       "compile",
       "-input",
@@ -47,10 +47,30 @@ template("intent_definition") {
     ]
 
     if (defined(invoker.developer_dir)) {
-      args += [
+      _args += [
         "--developer-dir",
         rebase_path(invoker.developer_dir, root_build_dir),
       ]
+    }
+    _xcrun_script = "//build/apple/xcrun.py"
+    if (apple_tool_wrapper_script == "") {
+      script = _xcrun_script
+      args = _args
+    } else {
+      script = apple_tool_wrapper_script
+      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs
+      args = [
+               "--tool=intentbuilderc",
+               "--input",
+               rebase_path(invoker.intent_file, root_build_dir),
+               "--output",
+               rebase_path(_compile_intent_output, root_build_dir),
+               "--",
+               rebase_path(_xcrun_script, root_build_dir),
+             ] + _args
+      if (apple_tool_wrapper != "") {
+        pool = apple_tool_wrapper_pool
+      }
     }
   }
 
@@ -72,10 +92,9 @@ template("intent_definition") {
   }
 
   action(_generate_source_target) {
-    script = "//build/apple/xcrun.py"
     inputs = [ invoker.intent_file ]
     outputs = _generate_source_output
-    args = [
+    _args = [
       "intentbuilderc",
       "generate",
       "-input",
@@ -87,10 +106,36 @@ template("intent_definition") {
     ]
 
     if (defined(invoker.developer_dir)) {
-      args += [
+      _args += [
         "--developer-dir",
         rebase_path(invoker.developer_dir, root_build_dir),
       ]
+    }
+    _xcrun_script = "//build/apple/xcrun.py"
+    if (apple_tool_wrapper_script == "") {
+      script = _xcrun_script
+      args = _args
+    } else {
+      script = apple_tool_wrapper_script
+      inputs += [ _xcrun_script ] + apple_tool_wrapper_inputs
+      args = [
+        "--tool=intentbuilderc",
+        "--input",
+        rebase_path(invoker.intent_file, root_build_dir),
+      ]
+      foreach(_out, _generate_source_output) {
+        args += [
+          "--output",
+          rebase_path(_out, root_build_dir),
+        ]
+      }
+      args += [
+                "--",
+                rebase_path(_xcrun_script, root_build_dir),
+              ] + _args
+      if (apple_tool_wrapper != "") {
+        pool = apple_tool_wrapper_pool
+      }
     }
   }
 
