@@ -2667,6 +2667,25 @@
     "expires": "Jul 3, 2025"
   },
   {
+    "prefix": "prerender-until-script-upgrade",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/speculation-rules/prerender-until-script/pus-to-prerender-upgrade.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=PrerenderUntilScriptUpgrade"
+    ],
+    "owners": [
+      "vizlatin@microsoft.com"
+    ],
+    "expires": "Jul 1, 2027"
+  },
+  {
     "prefix": "prerender2-fallback-prefetch-spec-rules",
     "platforms": [
       "Webview"
