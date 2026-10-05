@@ -2837,6 +2837,19 @@ chromium-metrics-reviews@google.com.
   <int value="42" label="2592x1944"/>
 </enum>
 
+<!-- LINT.IfChange(VoiceIsolationCreationResult) -->
+
+<enum name="VoiceIsolationCreationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Interpreter creation failed"/>
+  <int value="2" label="Delegate creation failed"/>
+  <int value="3" label="Tensor allocation failed"/>
+  <int value="4" label="Incompatible model"/>
+  <int value="5" label="Warmup failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/webrtc/voice_isolation/voice_isolation_component.h:VoiceIsolationCreationResult) -->
+
 <!-- LINT.IfChange(VoiceIsolationStartupResult) -->
 
 <enum name="VoiceIsolationStartupResult">

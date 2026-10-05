@@ -32,6 +32,7 @@
 #include "media/webrtc/ml_model_handle.h"
 #include "media/webrtc/voice_isolation/mock_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
+#include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
@@ -836,6 +837,9 @@ TEST_F(AudioProcessorHandlerTest,
   // Metrics are logged when startup_metrics_logger_ is destroyed in
   // OnComponentCreated().
   histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Capture.VoiceIsolation.CreationResult",
+      media::VoiceIsolationCreationResult::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
       "Media.Audio.Capture.VoiceIsolation.StartupResult",
       VoiceIsolationStartupResult::kSuccess, 1);
   histogram_tester.ExpectTotalCount(
@@ -871,6 +875,8 @@ TEST_F(AudioProcessorHandlerTest,
   handler.reset();
   run_loop.Run();
 
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.Capture.VoiceIsolation.CreationResult", 0);
   histogram_tester.ExpectUniqueSample(
       "Media.Audio.Capture.VoiceIsolation.StartupResult",
       VoiceIsolationStartupResult::kAborted, 1);
@@ -888,8 +894,8 @@ TEST_F(AudioProcessorHandlerTest,
 //    sequence.
 // 3. A diagnostic log message containing the failure error code is emitted.
 // 4. The handler remains in an uninitialized state.
-// 5. UMA histograms record a failed startup and failure duration without
-//    success.
+// 5. UMA histograms record the creation failure reason, a failed startup and
+//    the failure duration, and no success samples.
 TEST_F(AudioProcessorHandlerTest,
        VoiceIsolationAsyncStartupFailureInvalidatesModelThenReportsError) {
   base::HistogramTester histogram_tester;
@@ -939,7 +945,10 @@ TEST_F(AudioProcessorHandlerTest,
   // uninitialized.
   EXPECT_FALSE(handler->IsInitializedForTesting());
 
-  // Verify UMA startup result and failure duration metrics.
+  // Verify UMA creation result, startup result and failure duration metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Media.Audio.Capture.VoiceIsolation.CreationResult",
+      media::VoiceIsolationCreationResult::kInterpreterCreationFailed, 1);
   histogram_tester.ExpectUniqueSample(
       "Media.Audio.Capture.VoiceIsolation.StartupResult",
       VoiceIsolationStartupResult::kFailed, 1);

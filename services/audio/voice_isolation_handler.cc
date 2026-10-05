@@ -5,6 +5,7 @@
 #include "services/audio/voice_isolation_handler.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -93,10 +94,22 @@ class VoiceIsolationHandler::StartupMetricsLogger {
   StartupMetricsLogger& operator=(const StartupMetricsLogger&) = delete;
   ~StartupMetricsLogger() {
     TRACE_EVENT_END("audio", trace_track_);
+    if (creation_result_) {
+      base::UmaHistogramEnumeration(
+          "Media.Audio.Capture.VoiceIsolation.CreationResult",
+          *creation_result_);
+    }
+    const StartupResult result =
+        !creation_result_
+            ? StartupResult::kAborted
+            : (*creation_result_ ==
+                       media::VoiceIsolationCreationResult::kSuccess
+                   ? StartupResult::kSuccess
+                   : StartupResult::kFailed);
     base::UmaHistogramEnumeration(
-        "Media.Audio.Capture.VoiceIsolation.StartupResult", result_);
+        "Media.Audio.Capture.VoiceIsolation.StartupResult", result);
     const base::TimeDelta duration = base::TimeTicks::Now() - start_time_;
-    switch (result_) {
+    switch (result) {
       case StartupResult::kSuccess:
         base::UmaHistogramTimes(
             "Media.Audio.Capture.VoiceIsolation.StartupDuration.Success",
@@ -112,12 +125,14 @@ class VoiceIsolationHandler::StartupMetricsLogger {
     }
   }
 
-  void SetResult(StartupResult result) { result_ = result; }
+  void SetCreationResult(media::VoiceIsolationCreationResult result) {
+    creation_result_ = result;
+  }
 
  private:
   const perfetto::NamedTrack trace_track_;
   const base::TimeTicks start_time_;
-  StartupResult result_{StartupResult::kAborted};
+  std::optional<media::VoiceIsolationCreationResult> creation_result_;
 };
 
 VoiceIsolationHandler::VoiceIsolationHandler(
@@ -224,12 +239,11 @@ void VoiceIsolationHandler::OnComponentCreated(
   TRACE_EVENT("audio", "VoiceIsolationHandler::OnComponentCreated");
   CHECK(startup_metrics_logger_);
 
-  const bool success = component_or_error.has_value();
-  startup_metrics_logger_->SetResult(success ? StartupResult::kSuccess
-                                             : StartupResult::kFailed);
+  startup_metrics_logger_->SetCreationResult(component_or_error.error_or(
+      media::VoiceIsolationCreationResult::kSuccess));
   startup_metrics_logger_.reset();
 
-  if (!success) {
+  if (!component_or_error.has_value()) {
     const auto error = component_or_error.error();
     const char* error_name = VoiceIsolationCreationResultToString(error);
     SendLogMessage(base::StringPrintf("%s({success=false, error=%s})", __func__,

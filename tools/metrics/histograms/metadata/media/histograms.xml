@@ -1382,6 +1382,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.VoiceIsolation.CreationResult"
+    enum="VoiceIsolationCreationResult" expires_after="2027-03-01">
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Result of creating the Voice Isolation component. Logged on the audio
+    service sequence when asynchronous component creation finishes either
+    successfully or with an error reason, once per audio capture stream that
+    requests voice isolation. Not recorded if startup is aborted before
+    completion.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.Audio.Capture.VoiceIsolation.ProcessingAudioFifo.MaxUsage"
     units="buffers" expires_after="2027-01-17">

@@ -12,11 +12,12 @@
 namespace media {
 
 // Result of attempting to initialize VoiceIsolation / VoiceIsolationComponent.
-//
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
 // Note: `kSuccess` is never returned as an error.
+//
+// LINT.IfChange(VoiceIsolationCreationResult)
 enum class VoiceIsolationCreationResult {
   kSuccess = 0,
   kInterpreterCreationFailed = 1,
@@ -26,6 +27,7 @@ enum class VoiceIsolationCreationResult {
   kWarmupFailed = 5,
   kMaxValue = kWarmupFailed,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:VoiceIsolationCreationResult)
 
 // A stage of the voice isolation pipeline. The outermost component, returned
 // by VoiceIsolation::CreateComponent() or passed to VoiceIsolation::Create(),
