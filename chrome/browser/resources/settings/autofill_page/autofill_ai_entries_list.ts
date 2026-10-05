@@ -10,17 +10,13 @@
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
-import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 import './autofill_ai_add_or_edit_dialog.js';
-import './autofill_shared.css.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
@@ -28,26 +24,27 @@ import '../internal/icons.html.js';
 
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
-import {PrefServiceObserverMixin} from '/shared/settings/prefs2/pref_service_observer_mixin.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AiEnterpriseFeaturePrefName, ModelExecutionEnterprisePolicyValue} from '../ai_page/constants.js';
 import {EntityTypeName} from '../autofill_ai_enums.mojom-webui.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
-import {getTemplate} from './autofill_ai_entries_list.html.js';
+import {getCss} from './autofill_ai_entries_list.css.js';
+import {getHtml} from './autofill_ai_entries_list.html.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from './entity_data_manager_proxy.js';
 import {EntityDataManagerProxyImpl} from './entity_data_manager_proxy.js';
 
@@ -57,13 +54,14 @@ type EntityType = chrome.autofillPrivate.EntityType;
 
 export interface SettingsAutofillAiEntriesListElement {
   $: {
-    actionMenu: CrLazyRenderElement<CrActionMenuElement>,
-    addMenu: CrLazyRenderElement<CrActionMenuElement>,
+    actionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
+    addMenu: CrLazyRenderLitElement<CrActionMenuElement>,
   };
 }
 
-const SettingsAutofillAiEntriesListElementBase = SettingsViewMixin(
-    WebUiListenerMixin(I18nMixin(PrefServiceObserverMixin(PolymerElement))));
+const SettingsAutofillAiEntriesListElementBase =
+    SettingsViewMixinLit(WebUiListenerMixinLit(
+        I18nMixinLit(PrefServiceObserverMixinLit(CrLitElement))));
 
 export class SettingsAutofillAiEntriesListElement extends
     SettingsAutofillAiEntriesListElementBase {
@@ -71,45 +69,31 @@ export class SettingsAutofillAiEntriesListElement extends
     return 'settings-autofill-ai-entries-list';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-
-
       /**
        Controls whether the user can use Autofill AI. For example this can be
        false if the extensions API disables the feature.
        Specifically in this file, it controls whether users can add new
        entities.
       */
-      canEnableOrDisableAutofillAi_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
-        },
-      },
+      canEnableOrDisableAutofillAi_: {type: Boolean},
 
-      allowedEntityTypes: {
-        type: Set,
-        value: null,
-      },
+      allowedEntityTypes: {type: Object},
 
-      listTitle: {
-        type: String,
-      },
+      listTitle: {type: String},
 
-      pageName: {
-        type: String,
-        value: '',
-      },
+      pageName: {type: String},
 
-      metricEntityTypes: {
-        type: Object,
-        value: null,
-      },
+      metricEntityTypes: {type: Object},
 
       /**
          Optional boolean preference used to determine the list's editability.
@@ -119,102 +103,66 @@ export class SettingsAutofillAiEntriesListElement extends
           * Even if preference is true the user may still be prevented from
             adding entries due to other eligibility checks.
           * We assume that the provided preference is controlled by the address
-            autofill policy and extension API. If allowNewEntitiesAdditionPref is provided
-            its value will be overridden by the address autofill preference when
-            it is enforced.
+            autofill policy and extension API. If allowNewEntitiesAdditionPref
+            is provided its value will be overridden by the address autofill
+            preference when it is enforced.
       */
-      allowNewEntitiesAdditionPref: {
-        type: Object,
-        value: null,
-      },
+      allowNewEntitiesAdditionPref: {type: Object},
 
-      allowNewEntitiesAddition_: {
-        type: Boolean,
-        value: false,
-      },
+      allowNewEntitiesAddition_: {type: Boolean},
 
       /**
          The corresponding `EntityInstance` model for any entity instance
          related action menus or dialogs.
        */
-      activeEntityInstance_: {
-        type: Object,
-        value: null,
-      },
+      activeEntityInstance_: {type: Object},
 
       /**
          Complete list of entity types that exist. When the user wants to add a
          new entity instance, this list is displayed.
        */
-      completeEntityTypesList_: {
-        type: Array,
-        value: () => [],
-      },
+      completeEntityTypesList_: {type: Array},
 
       /**
          The same dialog can be used for both adding and editing entity
          instances.
        */
-      showAddOrEditEntityInstanceDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      showAddOrEditEntityInstanceDialog_: {type: Boolean},
 
-      addOrEditEntityInstanceDialogTitle_: {
-        type: String,
-        value: '',
-      },
+      addOrEditEntityInstanceDialogTitle_: {type: String},
 
-      showRemoveEntityInstanceDialog_: {
-        type: Boolean,
-        value: false,
-      },
+      showRemoveEntityInstanceDialog_: {type: Boolean},
 
-      activeEntityInstanceDeleteTitle_: {
-        type: String,
-        value: '',
-      },
+      activeEntityInstanceDeleteTitle_: {type: String},
 
-      entityInstances_: {
-        type: Array,
-        value: () => [],
-      },
+      entityInstances_: {type: Array},
+
       /**
         If true, Autofill AI does not depend on whether Autofill for addresses
         is enabled.
       */
-      autofillSettingsEnterprisePolicyEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'AutofillSettingsEnterprisePolicyEnabled');
-        },
-      },
+      autofillSettingsEnterprisePolicyEnabled_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return [
-      'updateAllowNewEntitiesAddition_(allowNewEntitiesAdditionPref.*)',
-    ];
-  }
-
-
-  declare allowedEntityTypes: Set<EntityTypeName>|null;
-  declare listTitle: string;
-  declare pageName: string;
-  declare metricEntityTypes: Record<EntityTypeName, string>|null;
-  declare allowNewEntitiesAdditionPref: chrome.settingsPrivate.PrefObject<boolean>|null;
-  declare private allowNewEntitiesAddition_: boolean;
-  declare private completeEntityTypesList_: EntityType[];
-  declare private activeEntityInstance_: EntityInstance|null;
-  declare private showAddOrEditEntityInstanceDialog_: boolean;
-  declare private addOrEditEntityInstanceDialogTitle_: string;
-  declare private showRemoveEntityInstanceDialog_: boolean;
-  declare private activeEntityInstanceDeleteTitle_: string;
-  declare private entityInstances_: EntityInstanceWithLabels[];
-  declare private autofillSettingsEnterprisePolicyEnabled_: boolean;
-  declare private canEnableOrDisableAutofillAi_: boolean;
+  accessor allowedEntityTypes: Set<EntityTypeName>|null = null;
+  accessor listTitle: string = '';
+  accessor pageName: string = '';
+  accessor metricEntityTypes: Record<EntityTypeName, string>|null = null;
+  accessor allowNewEntitiesAdditionPref:
+      chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  protected accessor allowNewEntitiesAddition_: boolean = false;
+  protected accessor completeEntityTypesList_: EntityType[] = [];
+  protected accessor activeEntityInstance_: EntityInstance|null = null;
+  protected accessor showAddOrEditEntityInstanceDialog_: boolean = false;
+  protected accessor addOrEditEntityInstanceDialogTitle_: string = '';
+  protected accessor showRemoveEntityInstanceDialog_: boolean = false;
+  protected accessor activeEntityInstanceDeleteTitle_: string = '';
+  protected accessor entityInstances_: EntityInstanceWithLabels[] = [];
+  private accessor autofillSettingsEnterprisePolicyEnabled_: boolean =
+      loadTimeData.getBoolean('AutofillSettingsEnterprisePolicyEnabled');
+  private accessor canEnableOrDisableAutofillAi_: boolean =
+      loadTimeData.getBoolean('canEnableOrDisableAutofillAi');
   private activeEntityInstanceGuid_: string|null = null;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -269,6 +217,14 @@ export class SettingsAutofillAiEntriesListElement extends
     this.entityInstancesChangedListener_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('allowNewEntitiesAdditionPref')) {
+      this.updateAllowNewEntitiesAddition_();
+    }
+  }
+
   private updateEntityTypesList_(entityTypes: EntityType[]) {
     // Filter only if the filter was set
     const filteredEntities = this.allowedEntityTypes ?
@@ -313,8 +269,8 @@ export class SettingsAutofillAiEntriesListElement extends
   /**
    * Handles tapping on the "Add" entity instance button.
    */
-  private onAddEntityInstanceClick_(e: Event) {
-    const addButton = e.target as HTMLElement;
+  protected onAddEntityInstanceClick_(e: Event) {
+    const addButton = e.currentTarget as HTMLElement;
     this.$.addMenu.get().showAt(addButton, {
       anchorAlignmentX: AnchorAlignment.BEFORE_END,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
@@ -322,18 +278,21 @@ export class SettingsAutofillAiEntriesListElement extends
     });
   }
 
-  private onAddEntityInstanceFromDropdownClick_(e: DomRepeatEvent<EntityType>) {
+  protected onAddEntityInstanceFromDropdownClick_(e: Event) {
     e.preventDefault();
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const item = this.completeEntityTypesList_[index];
+    assert(item);
     if (this.pageName) {
-      this.metricsBrowserProxy_.recordAction(
-          `Settings.YourSavedInfo.${this.pageName}.Add.${
-              this.getMetricEntityTypeString_(
-                  e.model.item.typeName as EntityTypeName)}`);
+      this.metricsBrowserProxy_.recordAction(`Settings.YourSavedInfo.${
+          this.pageName}.Add.${
+          this.getMetricEntityTypeString_(item.typeName as EntityTypeName)}`);
     }
     // Create a new entity instance with no attribute instances and guid. A guid
     // will be assigned after saving, on the C++ side.
     this.activeEntityInstance_ = {
-      type: e.model.item,
+      type: item,
       attributeInstances: [],
       guid: '',
       nickname: '',
@@ -347,16 +306,19 @@ export class SettingsAutofillAiEntriesListElement extends
   /**
    * Open the action menu.
    */
-  private onMoreButtonClick_(e: DomRepeatEvent<EntityInstanceWithLabels>) {
-    const moreButton = e.target as HTMLElement;
-    this.activeEntityInstanceGuid_ = e.model.item.guid;
+  protected onMoreButtonClick_(e: Event) {
+    const moreButton = e.currentTarget as HTMLElement;
+    const index = Number(moreButton.dataset['index']);
+    const item = this.entityInstances_[index];
+    assert(item);
+    this.activeEntityInstanceGuid_ = item.guid;
     this.$.actionMenu.get().showAt(moreButton);
   }
 
   /**
    * Handles tapping on the "Edit" entity instance button in the action menu.
    */
-  private async onMenuEditEntityInstanceClick_(e: Event) {
+  protected async onMenuEditEntityInstanceClick_(e: Event) {
     e.preventDefault();
 
     const instanceWithLabels = this.entityInstances_.find(
@@ -386,7 +348,7 @@ export class SettingsAutofillAiEntriesListElement extends
   /**
    * Handles tapping on the "Delete" entity instance button in the action menu.
    */
-  private onMenuRemoveEntityInstanceClick_(e: Event) {
+  protected onMenuRemoveEntityInstanceClick_(e: Event) {
     e.preventDefault();
 
     const instanceWithLabels = this.entityInstances_.find(
@@ -409,7 +371,7 @@ export class SettingsAutofillAiEntriesListElement extends
     this.$.actionMenu.get().close();
   }
 
-  private onAutofillAiAddOrEditDone_(e: CustomEvent<EntityInstance>) {
+  protected onAutofillAiAddOrEditDone_(e: CustomEvent<EntityInstance>) {
     e.stopPropagation();
     // TODO(crbug.com/477845712): Remove this method once
     // `kAutofillAiWalletPrivatePasses` gets launched.
@@ -418,15 +380,15 @@ export class SettingsAutofillAiEntriesListElement extends
     }
   }
 
-  private onAddOrEditEntityInstanceDialogClose_(e: Event) {
+  protected onAddOrEditEntityInstanceDialogClose_(e: Event) {
     e.stopPropagation();
     this.showAddOrEditEntityInstanceDialog_ = false;
     this.activeEntityInstance_ = null;
   }
 
-  private onRemoveEntityInstanceDialogClose_() {
+  protected onRemoveEntityInstanceDialogClose_() {
     const wasDeletionConfirmed =
-        this.shadowRoot!
+        this.shadowRoot
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#removeEntityInstanceDialog')!.wasConfirmed();
     if (wasDeletionConfirmed) {
@@ -437,11 +399,14 @@ export class SettingsAutofillAiEntriesListElement extends
     this.activeEntityInstanceGuid_ = null;
   }
 
-  private onRemoteWalletPassesLinkClick_(
-      e: DomRepeatEvent<EntityInstanceWithLabels>) {
-    assert(e.model.item.storedInWallet);
-    assert(e.model.item.walletEntityUrl);
-    OpenWindowProxyImpl.getInstance().openUrl(e.model.item.walletEntityUrl);
+  protected onRemoteWalletPassesLinkClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const item = this.entityInstances_[index];
+    assert(item);
+    assert(item.storedInWallet);
+    assert(item.walletEntityUrl);
+    OpenWindowProxyImpl.getInstance().openUrl(item.walletEntityUrl);
   }
 
   private async updateAllowNewEntitiesAddition_(): Promise<void> {
@@ -478,7 +443,7 @@ export class SettingsAutofillAiEntriesListElement extends
     return this.allowNewEntitiesAdditionPref?.value ?? true;
   }
 
-  private typeNameToIconName_(name: EntityTypeName): string|undefined {
+  protected typeNameToIconName_(name: EntityTypeName): string|undefined {
     switch (name) {
       case EntityTypeName.kDriversLicense:
         return 'settings20:id-card';
@@ -503,6 +468,8 @@ export class SettingsAutofillAiEntriesListElement extends
     }
   }
 }
+
+export type AutofillAiEntriesListElement = SettingsAutofillAiEntriesListElement;
 
 declare global {
   interface HTMLElementTagNameMap {

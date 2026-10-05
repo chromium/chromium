@@ -6,12 +6,11 @@
 import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertGE, assertTrue, assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
 import {ModelExecutionEnterprisePolicyValue, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsAutofillAiEntriesListElement, SettingsSimpleConfirmationDialogElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
@@ -114,7 +113,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     const entriesList: SettingsAutofillAiEntriesListElement =
         document.createElement('settings-autofill-ai-entries-list');
     document.body.appendChild(entriesList);
-    await flushTasks();
+    await microtasksFinished();
     return entriesList;
   }
 
@@ -124,14 +123,14 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   // `entityDataManager.getOptInStatusResponse`. To force an opt-in status
   test('AddButtonEnabledByDefault', async function() {
     const entriesList = await createEntriesList();
-    await flushTasks();
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
-    assertTrue(isVisible(entriesList.shadowRoot!.querySelector('#entries')));
+    assertTrue(isVisible(entriesList.shadowRoot.querySelector('#entries')));
   });
 
   // canEnableOrDisableAutofillAi can be false in the case where
@@ -142,8 +141,8 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         /*eligibleUser=*/ true,
         /*autofillSettingsEnterprisePolicyEnabled=*/ false,
         /*canEnableOrDisableAutofillAi=*/ false);
-    await flushTasks();
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    await microtasksFinished();
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertTrue(addButton.disabled);
@@ -151,9 +150,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
 
   test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
     const entriesList = await createEntriesList();
-    await flushTasks();
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
@@ -161,7 +160,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     // Check that when the autofill pref is off, the add button becomes
     // disabled, which essentially means the feature is off.
     prefService.setPrefValue('autofill.profile_enabled', false);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(addButton.disabled);
   });
@@ -172,25 +171,24 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
         const entriesList = await createEntriesList(
             /*userEligible=*/ true,
             /*autofillSettingsEnterprisePolicyEnabled=*/ true);
-        await flushTasks();
+        await microtasksFinished();
 
-        const addButton =
-            entriesList.shadowRoot!.querySelector<CrButtonElement>(
-                '#addEntityInstance');
+        const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
+            '#addEntityInstance');
         assertTrue(!!addButton);
         assertFalse(addButton.disabled);
 
         prefService.setPrefValue('autofill.profile_enabled', false);
-        await flushTasks();
+        await microtasksFinished();
         assertFalse(addButton.disabled);
       });
 
   test('AddButtonEnabledByDefaultWhenAllowNewEntitiesAdditionPrefUnset', async function() {
     const entriesList = await createEntriesList();
-    entriesList.allowNewEntitiesAdditionPref = null; // Explicitly unset
-    await flushTasks();
+    entriesList.allowNewEntitiesAdditionPref = undefined;  // Explicitly unset
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
@@ -203,15 +201,18 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     };
-    await flushTasks();
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
-    entriesList.set('allowNewEntitiesAdditionPref.value', false);
-    await flushTasks();
+    entriesList.allowNewEntitiesAdditionPref = {
+      ...entriesList.allowNewEntitiesAdditionPref,
+      value: false,
+    };
+    await microtasksFinished();
 
     assertTrue(addButton.disabled);
   });
@@ -224,15 +225,15 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
       value: true,
     };
     prefService.setPrefValue('autofill.profile_enabled', true);
-    await flushTasks();
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
 
     prefService.setPrefValue('autofill.profile_enabled', false);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(addButton.disabled);
   });
@@ -247,9 +248,9 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     prefService.setPrefValue(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI,
         ModelExecutionEnterprisePolicyValue.ALLOW);
-    await flushTasks();
+    await microtasksFinished();
 
-    const addButton = entriesList.shadowRoot!.querySelector<CrButtonElement>(
+    const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
         '#addEntityInstance');
     assertTrue(!!addButton);
     assertFalse(addButton.disabled);
@@ -257,7 +258,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
     prefService.setPrefValue(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI,
         ModelExecutionEnterprisePolicyValue.DISABLE);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(addButton.disabled);
   });
@@ -272,11 +273,10 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           value: false,  // Editing is disabled
         };
         prefService.setPrefValue('autofill.profile_enabled', true);
-        await flushTasks();
+        await microtasksFinished();
 
-        const addButton =
-            entriesList.shadowRoot!.querySelector<CrButtonElement>(
-                '#addEntityInstance');
+        const addButton = entriesList.shadowRoot.querySelector<CrButtonElement>(
+            '#addEntityInstance');
         assertTrue(!!addButton);
         assertTrue(addButton.disabled);
 
@@ -285,7 +285,7 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           value: true,
         }]);
-        await flushTasks();
+        await microtasksFinished();
 
         assertTrue(addButton.disabled);
       });
@@ -421,14 +421,14 @@ suite('AutofillAiEntriesListUiTest', function() {
     entriesList = document.createElement('settings-autofill-ai-entries-list');
     entriesList.allowedEntityTypes = allowedEntityTypes;
     document.body.appendChild(entriesList);
-    await flushTasks();
+    await microtasksFinished();
 
     const entityInstancesQueried =
-        entriesList.shadowRoot!.querySelector<HTMLElement>('#entries');
+        entriesList.shadowRoot.querySelector<HTMLElement>('#entries');
     assertTrue(!!entityInstancesQueried);
     entityInstancesListElement = entityInstancesQueried;
 
-    assertTrue(!!entriesList.shadowRoot!.querySelector('#entriesHeader'));
+    assertTrue(!!entriesList.shadowRoot.querySelector('#entriesHeader'));
     await entityDataManager.whenCalled('loadEntityInstances');
   }
 
@@ -529,17 +529,17 @@ suite('AutofillAiEntriesListUiTest', function() {
                 '#moreButton');
         assertTrue(!!actionMenuButton);
         actionMenuButton.click();
-        await flushTasks();
+        await microtasksFinished();
 
-        const deleteButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+        const deleteButton = entriesList.shadowRoot.querySelector<HTMLElement>(
             '#menuRemoveEntityInstance');
 
         assertTrue(!!deleteButton);
         deleteButton.click();
-        await flushTasks();
+        await microtasksFinished();
 
         const removeEntityInstanceDialog =
-            entriesList.shadowRoot!
+            entriesList.shadowRoot
                 .querySelector<SettingsSimpleConfirmationDialogElement>(
                     '#removeEntityInstanceDialog');
         assertTrue(!!removeEntityInstanceDialog);
@@ -550,14 +550,14 @@ suite('AutofillAiEntriesListUiTest', function() {
           removeEntityInstanceDialog.$.confirm.click();
           const guid =
               await entityDataManager.whenCalled('removeEntityInstance');
-          await flushTasks();
+          await microtasksFinished();
 
           assertEquals(
               1, entityDataManager.getCallCount('removeEntityInstance'));
           assertEquals('d70b5bb7-49a6-4276-b4b7-b014dacdc9e6', guid);
         } else {
           removeEntityInstanceDialog.$.cancel.click();
-          await flushTasks();
+          await microtasksFinished();
 
           assertEquals(
               0, entityDataManager.getCallCount('removeEntityInstance'));
@@ -582,18 +582,18 @@ suite('AutofillAiEntriesListUiTest', function() {
         await createEntriesList();
         if (params.add) {
           // Open the add entity instance dialog.
-          const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+          const addButton = entriesList.shadowRoot.querySelector<HTMLElement>(
               '#addEntityInstance');
           assertTrue(!!addButton);
           addButton.click();
-          await flushTasks();
+          await microtasksFinished();
 
           const addSpecificEntityTypeButton =
-              entriesList.shadowRoot!.querySelector<HTMLElement>(
+              entriesList.shadowRoot.querySelector<HTMLElement>(
                   '#addSpecificEntityType');
           assertTrue(!!addSpecificEntityTypeButton);
           addSpecificEntityTypeButton.click();
-          await flushTasks();
+          await microtasksFinished();
         } else {
           // Open the edit entity instance dialog.
           entityDataManager.setGetEntityInstanceByGuidResponse(
@@ -604,20 +604,20 @@ suite('AutofillAiEntriesListUiTest', function() {
                   '#moreButton');
           assertTrue(!!actionMenuButton);
           actionMenuButton.click();
-          await flushTasks();
+          await microtasksFinished();
 
-          const editButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+          const editButton = entriesList.shadowRoot.querySelector<HTMLElement>(
               '#menuEditEntityInstance');
 
           assertTrue(!!editButton);
           editButton.click();
-          await flushTasks();
+          await microtasksFinished();
         }
 
         // Check that the dialog is populated with the correct entity instance
         // information.
         const addOrEditEntityInstanceDialog =
-            entriesList.shadowRoot!
+            entriesList.shadowRoot
                 .querySelector<SettingsAutofillAiAddOrEditDialogElement>(
                     '#addOrEditEntityInstanceDialog');
         assertTrue(!!addOrEditEntityInstanceDialog);
@@ -629,7 +629,7 @@ suite('AutofillAiEntriesListUiTest', function() {
               0,
               addOrEditEntityInstanceDialog.entityInstance!.attributeInstances
                   .length);
-          await flushTasks();
+          await microtasksFinished();
         } else {
           assertDeepEquals(
               testEntityInstance, addOrEditEntityInstanceDialog.entityInstance);
@@ -639,19 +639,19 @@ suite('AutofillAiEntriesListUiTest', function() {
         addOrEditEntityInstanceDialog.fire(
             'autofill-ai-add-or-edit-done', testEntityInstance);
 
-        await flushTasks();
+        await microtasksFinished();
       }));
 
   test('AddButtonShowsEntityInstancesList', async function() {
     await createEntriesList();
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
+    const addButton =
+        entriesList.shadowRoot.querySelector<HTMLElement>('#addEntityInstance');
     assertTrue(!!addButton);
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const addSpecificEntityTypeButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+        entriesList.shadowRoot.querySelectorAll<HTMLElement>(
             '#addSpecificEntityType');
     assertEquals(testEntityTypes.length, addSpecificEntityTypeButtons.length);
     for (const index in testEntityTypes) {
@@ -670,14 +670,14 @@ suite('AutofillAiEntriesListUiTest', function() {
     await createEntriesList(
         new Set<number>(allowedEntityTypes.map((type) => type.typeName)));
 
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
+    const addButton =
+        entriesList.shadowRoot.querySelector<HTMLElement>('#addEntityInstance');
     assertTrue(!!addButton);
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const addSpecificEntityTypeButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+        entriesList.shadowRoot.querySelectorAll<HTMLElement>(
             '#addSpecificEntityType');
     assertEquals(
         allowedEntityTypes.length, addSpecificEntityTypeButtons.length);
@@ -697,7 +697,7 @@ suite('AutofillAiEntriesListUiTest', function() {
           {
             guid: 'a521fc41-d672-4947-ab39-8bc9d49b08d2',
             type: testEntityTypes.find(
-                (type) => type.typeNameAsString === 'Password')!,
+                (type) => type.typeNameAsString === 'Passport')!,
             entityInstanceLabel: 'Tom Clark',
             entityInstanceSubLabel: 'Passport',
             storedInWallet: false,
@@ -721,7 +721,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
         entityDataManager.callEntityInstancesChangedListener(
             newTestEntityInstancesWithLabels);
-        await flushTasks();
+        await microtasksFinished();
 
         const listItems =
             entityInstancesListElement.querySelectorAll<HTMLElement>(
@@ -779,7 +779,7 @@ suite('AutofillAiEntriesListUiTest', function() {
 
         entityDataManager.callEntityInstancesChangedListener(
             newTestEntityInstancesWithLabels);
-        await flushTasks();
+        await microtasksFinished();
 
         const listItems =
             entityInstancesListElement.querySelectorAll<HTMLElement>(
@@ -791,23 +791,21 @@ suite('AutofillAiEntriesListUiTest', function() {
         assertFalse(isVisible(listItems[1]!));
       });
 
-
-
   test('EntityTypesAreFilteredOnPersonalDataChangeCallback', async function() {
     await createEntriesList(new Set([
       0,  // Passport
     ]));
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
+    const addButton =
+        entriesList.shadowRoot.querySelector<HTMLElement>('#addEntityInstance');
     assertTrue(!!addButton);
 
     webUIListenerCallback('sync-status-changed');
-    await flushTasks();
+    await microtasksFinished();
 
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
     const addEntityButtons =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>(
+        entriesList.shadowRoot.querySelectorAll<HTMLElement>(
             '#addSpecificEntityType');
     assertEquals(1, addEntityButtons.length);
   });
@@ -884,7 +882,7 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
     entriesList.metricEntityTypes = metricEntityTypes;
     entriesList.pageName = pageName;
     document.body.appendChild(entriesList);
-    await flushTasks();
+    await microtasksFinished();
   }
 
   test('LogsAddUserAction', async function() {
@@ -897,18 +895,18 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
           6: 'FlightReservation',
         });
 
-    const addButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
-        '#addEntityInstance');
+    const addButton =
+        entriesList.shadowRoot.querySelector<HTMLElement>('#addEntityInstance');
     assertTrue(!!addButton);
     addButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const addSpecificEntityTypeButton =
-        entriesList.shadowRoot!.querySelector<HTMLElement>(
+        entriesList.shadowRoot.querySelector<HTMLElement>(
             '#addSpecificEntityType');
     assertTrue(!!addSpecificEntityTypeButton);
     addSpecificEntityTypeButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const userAction = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
@@ -937,16 +935,16 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
     entityDataManager.setGetEntityInstanceByGuidResponse(testEntityInstance);
 
     const actionMenuButton =
-        entriesList.shadowRoot!.querySelector<HTMLElement>('#moreButton');
+        entriesList.shadowRoot.querySelector<HTMLElement>('#moreButton');
     assertTrue(!!actionMenuButton);
     actionMenuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const editButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+    const editButton = entriesList.shadowRoot.querySelector<HTMLElement>(
         '#menuEditEntityInstance');
     assertTrue(!!editButton);
     editButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const userAction = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
@@ -974,16 +972,16 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
         });
 
     const actionMenuButton =
-        entriesList.shadowRoot!.querySelector<HTMLElement>('#moreButton');
+        entriesList.shadowRoot.querySelector<HTMLElement>('#moreButton');
     assertTrue(!!actionMenuButton);
     actionMenuButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
-    const deleteButton = entriesList.shadowRoot!.querySelector<HTMLElement>(
+    const deleteButton = entriesList.shadowRoot.querySelector<HTMLElement>(
         '#menuRemoveEntityInstance');
     assertTrue(!!deleteButton);
     deleteButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     const userAction = await metricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
@@ -1056,21 +1054,21 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
     entityDataManager.setLoadEntityInstancesResponse(
         testEntityInstancesWithLabels);
 
-    await flushTasks();
+    await microtasksFinished();
   });
 
   async function createEntriesList() {
     entriesList = document.createElement('settings-autofill-ai-entries-list');
     document.body.appendChild(entriesList);
 
-    await flushTasks();
+    await microtasksFinished();
   }
 
   test('LongLabelsHaveHiddenOverflow', async function() {
     await createEntriesList();
     // Contains all labels and sublabels, in order.
     const labels =
-        entriesList.shadowRoot!.querySelectorAll<HTMLElement>('.ellipses');
+        entriesList.shadowRoot.querySelectorAll<HTMLElement>('.ellipses');
 
     assertEquals(6, labels.length, '3 labels + 3 sublabels should be loaded');
 
