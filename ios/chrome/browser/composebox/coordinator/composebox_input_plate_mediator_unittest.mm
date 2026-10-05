@@ -1690,4 +1690,163 @@ TEST_F(ComposeboxInputPlateMediatorTest, ImageAttachmentUploadIndex) {
   EXPECT_EQ(consumer_.items[1].uploadIndex, 2);
 }
 
+// Test that removing or invalidating an attachment item whose server upload has
+// not started (`serverToken` is empty) does not call `DeleteFile`.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemovingOrInvalidatingItemWithEmptyServerTokenDoesNotCallDeleteFile) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+  // Return a file for the empty token so that calling `DeleteFile` with an
+  // empty `serverToken` would reach `mock_controller.DeleteFile`.
+  contextual_search::FileInfo empty_token_file_info;
+  ON_CALL(mock_controller, GetFileInfo(testing::Eq(base::UnguessableToken())))
+      .WillByDefault(testing::Return(&empty_token_file_info));
+
+  EXPECT_CALL(mock_controller, DeleteFile(testing::_)).Times(0);
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:std::move(mock_session)
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1. Removing an item with an empty `serverToken` via `removeItem:` must not
+  // call `DeleteFile`.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  ASSERT_TRUE(item.serverToken.is_empty());
+
+  [mediator removeItem:item];
+  EXPECT_EQ(consumer.items.count, 0U);
+
+  // 2. Invalidating an item with an empty `serverToken` on mode change must not
+  // call `DeleteFile`.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* invalidated_item = consumer.items.firstObject;
+  ASSERT_TRUE(invalidated_item.serverToken.is_empty());
+
+  [mediator inputStateManager:nil
+                didChangeMode:ComposeboxMode::kImageGeneration
+       invalidatedAttachments:@[ invalidated_item ]];
+  EXPECT_EQ(consumer.items.count, 0U);
+}
+
+// Test that removing or invalidating an attachment item with a non-empty
+// `serverToken` calls `DeleteFile`.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       RemovingOrInvalidatingItemWithServerTokenCallsDeleteFile) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:std::move(mock_session)
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1. Removing an item with a non-empty `serverToken` via `removeItem:` calls
+  // `DeleteFile`.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  base::UnguessableToken server_token_1 = base::UnguessableToken::Create();
+  item.serverToken = server_token_1;
+
+  contextual_search::FileInfo file_info_1;
+  file_info_1.file_token = server_token_1;
+  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token_1)))
+      .WillByDefault(testing::Return(&file_info_1));
+  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token_1)))
+      .Times(1);
+
+  [mediator removeItem:item];
+  EXPECT_EQ(consumer.items.count, 0U);
+
+  // 2. Invalidating an item with a non-empty `serverToken` on mode change calls
+  // `DeleteFile`.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* invalidated_item = consumer.items.firstObject;
+  base::UnguessableToken server_token_2 = base::UnguessableToken::Create();
+  invalidated_item.serverToken = server_token_2;
+
+  contextual_search::FileInfo file_info_2;
+  file_info_2.file_token = server_token_2;
+  ON_CALL(mock_controller, GetFileInfo(testing::Eq(server_token_2)))
+      .WillByDefault(testing::Return(&file_info_2));
+  EXPECT_CALL(mock_controller, DeleteFile(testing::Eq(server_token_2)))
+      .Times(1);
+
+  [mediator inputStateManager:nil
+                didChangeMode:ComposeboxMode::kImageGeneration
+       invalidatedAttachments:@[ invalidated_item ]];
+  EXPECT_EQ(consumer.items.count, 0U);
+}
+
 }  // namespace

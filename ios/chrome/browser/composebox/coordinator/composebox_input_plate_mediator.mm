@@ -771,7 +771,11 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [_items removeItem:item];
 
   if (_contextualSearchSession) {
-    _contextualSearchSession->DeleteFile(item.serverToken);
+    // Attachments removed before their server upload starts have no server
+    // token, and so no server-side file to delete.
+    if (!item.serverToken.is_empty()) {
+      _contextualSearchSession->DeleteFile(item.serverToken);
+    }
     [self reloadSuggestions];
   }
 
@@ -2455,7 +2459,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
   for (ComposeboxInputItem* item in invalidatedItems) {
-    if (_contextualSearchSession) {
+    if (_contextualSearchSession && !item.serverToken.is_empty()) {
       _contextualSearchSession->DeleteFile(item.serverToken);
     }
   }
