@@ -19,7 +19,7 @@
 
 // static
 void WebRtcLogUtil::DeleteOldWebRtcLogFilesForAllProfiles() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::vector<ProfileAttributesEntry*> entries =
       g_browser_process->profile_manager()->GetProfileAttributesStorage().

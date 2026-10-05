@@ -29,7 +29,7 @@ static size_t g_ongoing_rtp_dumps = 0;
 void FireGenericDoneCallback(WebRtcRtpDumpHandler::GenericDoneCallback callback,
                              bool success,
                              const std::string& error_message) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success, error_message));
@@ -177,7 +177,7 @@ bool WebRtcRtpDumpHandler::ReadyToRelease() const {
 
 WebRtcRtpDumpHandler::ReleasedDumps WebRtcRtpDumpHandler::ReleaseDumps() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
-  DCHECK(ReadyToRelease());
+  CHECK(ReadyToRelease(), base::NotFatalUntil::M161);
 
   base::FilePath incoming_dump, outgoing_dump;
 
@@ -214,7 +214,7 @@ void WebRtcRtpDumpHandler::OnRtpPacket(const uint8_t* packet_header,
 
 void WebRtcRtpDumpHandler::StopOngoingDumps(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   // No ongoing dumps, return directly.
   if ((incoming_state_ == STATE_NONE || incoming_state_ == STATE_STOPPED) &&
@@ -282,7 +282,7 @@ void WebRtcRtpDumpHandler::OnDumpEnded(base::OnceClosure callback,
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_);
 
   if (DumpTypeContainsIncoming(ended_type)) {
-    DCHECK_EQ(STATE_STOPPING, incoming_state_);
+    CHECK_EQ(STATE_STOPPING, incoming_state_, base::NotFatalUntil::M161);
     incoming_state_ = STATE_STOPPED;
 
     if (!incoming_success) {
@@ -297,7 +297,7 @@ void WebRtcRtpDumpHandler::OnDumpEnded(base::OnceClosure callback,
   }
 
   if (DumpTypeContainsOutgoing(ended_type)) {
-    DCHECK_EQ(STATE_STOPPING, outgoing_state_);
+    CHECK_EQ(STATE_STOPPING, outgoing_state_, base::NotFatalUntil::M161);
     outgoing_state_ = STATE_STOPPED;
 
     if (!outgoing_success) {

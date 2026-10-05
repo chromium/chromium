@@ -31,8 +31,9 @@ const int kDefaultDesktopMediaListUpdatePeriod = 500;
 DesktopMediaListAsh::DesktopMediaListAsh(DesktopMediaList::Type type)
     : DesktopMediaListBase(
           base::Milliseconds(kDefaultDesktopMediaListUpdatePeriod)) {
-  DCHECK(type == DesktopMediaList::Type::kScreen ||
-         type == DesktopMediaList::Type::kWindow);
+  CHECK(type == DesktopMediaList::Type::kScreen ||
+            type == DesktopMediaList::Type::kWindow,
+        base::NotFatalUntil::M161);
   type_ = type;
 }
 
@@ -41,9 +42,9 @@ DesktopMediaListAsh::~DesktopMediaListAsh() {
 }
 
 void DesktopMediaListAsh::Refresh(bool update_thumbnails) {
-  DCHECK(can_refresh());
+  CHECK(can_refresh(), base::NotFatalUntil::M161);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(pending_window_capture_requests_, 0);
+  CHECK_EQ(pending_window_capture_requests_, 0, base::NotFatalUntil::M161);
 
   std::vector<SourceDescription> new_sources;
   EnumerateSources(&new_sources, update_thumbnails);
@@ -161,7 +162,7 @@ void DesktopMediaListAsh::OnThumbnailCaptured(content::DesktopMediaID id,
   UpdateSourceThumbnail(id, image.AsImageSkia());
 
   --pending_window_capture_requests_;
-  DCHECK_GE(pending_window_capture_requests_, 0);
+  CHECK_GE(pending_window_capture_requests_, 0, base::NotFatalUntil::M161);
 
   OnRefreshMaybeComplete();
 }

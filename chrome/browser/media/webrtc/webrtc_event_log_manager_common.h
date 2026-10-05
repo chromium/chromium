@@ -198,12 +198,14 @@ struct WebRtcEventLogPeerConnectionKey {
 
   bool operator==(const WebRtcEventLogPeerConnectionKey& other) const {
     // Each RPH is associated with exactly one BrowserContext.
-    DCHECK(render_process_id != other.render_process_id ||
-           browser_context_id == other.browser_context_id);
+    CHECK(render_process_id != other.render_process_id ||
+              browser_context_id == other.browser_context_id,
+          base::NotFatalUntil::M161);
     // If render_process_id and lid are the same, then render_frame_id is also
     // the same.
-    DCHECK(render_process_id != other.render_process_id || lid != other.lid ||
-           render_frame_id == other.render_frame_id);
+    CHECK(render_process_id != other.render_process_id || lid != other.lid ||
+              render_frame_id == other.render_frame_id,
+          base::NotFatalUntil::M161);
 
     const bool equal = std::tie(render_process_id, lid) ==
                        std::tie(other.render_process_id, other.lid);
@@ -213,12 +215,14 @@ struct WebRtcEventLogPeerConnectionKey {
 
   bool operator<(const WebRtcEventLogPeerConnectionKey& other) const {
     // Each RPH is associated with exactly one BrowserContext.
-    DCHECK(render_process_id != other.render_process_id ||
-           browser_context_id == other.browser_context_id);
+    CHECK(render_process_id != other.render_process_id ||
+              browser_context_id == other.browser_context_id,
+          base::NotFatalUntil::M161);
     // If render_process_id and lid are the same, then render_frame_id is also
     // the same.
-    DCHECK(render_process_id != other.render_process_id || lid != other.lid ||
-           render_frame_id == other.render_frame_id);
+    CHECK(render_process_id != other.render_process_id || lid != other.lid ||
+              render_frame_id == other.render_frame_id,
+          base::NotFatalUntil::M161);
 
     return std::tie(render_process_id, lid) <
            std::tie(other.render_process_id, other.lid);

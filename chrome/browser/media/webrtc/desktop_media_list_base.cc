@@ -21,13 +21,13 @@ using content::DesktopMediaID;
 
 DesktopMediaListBase::DesktopMediaListBase(base::TimeDelta update_period)
     : update_period_(update_period) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 DesktopMediaListBase::DesktopMediaListBase(base::TimeDelta update_period,
                                            DesktopMediaListObserver* observer)
     : update_period_(update_period), observer_(observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 DesktopMediaListBase::~DesktopMediaListBase() = default;

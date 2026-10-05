@@ -64,7 +64,7 @@ bool ChromeCameraPanTiltZoomPermissionContextDelegate::
 
   extensions::KioskDelegate* const kiosk_delegate =
       extensions::ExtensionsBrowserClient::Get()->GetKioskDelegate();
-  DCHECK(kiosk_delegate);
+  CHECK(kiosk_delegate, base::NotFatalUntil::M161);
 
   if (!extension ||
       !extension->permissions_data()->HasAPIPermission(

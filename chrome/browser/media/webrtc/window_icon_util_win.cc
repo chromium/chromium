@@ -10,7 +10,8 @@
 #include "ui/gfx/win/icon_util.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
-  DCHECK(id.type == content::DesktopMediaID::TYPE_WINDOW);
+  CHECK(id.type == content::DesktopMediaID::TYPE_WINDOW,
+        base::NotFatalUntil::M161);
 
   HWND hwnd = reinterpret_cast<HWND>(id.id);
   HICON icon_handle = 0;

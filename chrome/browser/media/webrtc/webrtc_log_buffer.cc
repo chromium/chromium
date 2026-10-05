@@ -15,13 +15,14 @@ WebRtcLogBuffer::WebRtcLogBuffer()
 
 WebRtcLogBuffer::~WebRtcLogBuffer() {
 #if DCHECK_IS_ON()
-  DCHECK(read_only_ || sequence_checker_.CalledOnValidSequence());
+  CHECK(read_only_ || sequence_checker_.CalledOnValidSequence(),
+        base::NotFatalUntil::M161);
 #endif
 }
 
 void WebRtcLogBuffer::Log(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!read_only_);
+  CHECK(!read_only_, base::NotFatalUntil::M161);
   circular_.Write(base::as_bytes(base::span(message)));
   const char eol = '\n';
   circular_.Write(base::as_bytes(base::span_from_ref(eol)));
@@ -29,7 +30,7 @@ void WebRtcLogBuffer::Log(const std::string& message) {
 
 webrtc_logging::PartialCircularBuffer WebRtcLogBuffer::Read() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(read_only_);
+  CHECK(read_only_, base::NotFatalUntil::M161);
   return webrtc_logging::PartialCircularBuffer(buffer_);
 }
 

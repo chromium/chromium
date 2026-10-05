@@ -92,7 +92,7 @@ class WebRtcRtpDumpWriter::FileWorker {
                               15 + 16,
                               8,  // memLevel = 8 is default.
                               Z_DEFAULT_STRATEGY);
-    DCHECK_EQ(Z_OK, result);
+    CHECK_EQ(Z_OK, result, base::NotFatalUntil::M161);
   }
 
   FileWorker(const FileWorker&) = delete;
@@ -117,7 +117,7 @@ class WebRtcRtpDumpWriter::FileWorker {
 
     // This is called either when the in-memory buffer is full or the dump
     // should be ended.
-    DCHECK(!buffer->empty() || end_stream);
+    CHECK(!buffer->empty() || end_stream, base::NotFatalUntil::M161);
 
     *result = FLUSH_RESULT_SUCCESS;
     *bytes_written = 0;
@@ -142,7 +142,7 @@ class WebRtcRtpDumpWriter::FileWorker {
   size_t CompressAndWriteBufferToFile(std::vector<uint8_t>* buffer,
                                       FlushResult* result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(buffer->size());
+    CHECK(buffer->size(), base::NotFatalUntil::M161);
 
     *result = FLUSH_RESULT_SUCCESS;
 
@@ -182,8 +182,8 @@ class WebRtcRtpDumpWriter::FileWorker {
     stream_.avail_out = output->size();
 
     result = deflate(&stream_, Z_SYNC_FLUSH);
-    DCHECK_EQ(Z_OK, result);
-    DCHECK_EQ(0U, stream_.avail_in);
+    CHECK_EQ(Z_OK, result, base::NotFatalUntil::M161);
+    CHECK_EQ(0U, stream_.avail_in, base::NotFatalUntil::M161);
 
     output->resize(output->size() - stream_.avail_out);
 
@@ -206,16 +206,16 @@ class WebRtcRtpDumpWriter::FileWorker {
     stream_.avail_out = output_buffer.size();
 
     int result = deflate(&stream_, Z_FINISH);
-    DCHECK_EQ(Z_STREAM_END, result);
+    CHECK_EQ(Z_STREAM_END, result, base::NotFatalUntil::M161);
 
     result = deflateEnd(&stream_);
-    DCHECK_EQ(Z_OK, result);
+    CHECK_EQ(Z_OK, result, base::NotFatalUntil::M161);
 
     output_buffer.resize(output_buffer.size() - stream_.avail_out);
 
     stream_ = {};
 
-    DCHECK(!output_buffer.empty());
+    CHECK(!output_buffer.empty(), base::NotFatalUntil::M161);
     return base::AppendToFile(dump_path_, output_buffer);
   }
 
@@ -245,11 +245,11 @@ WebRtcRtpDumpWriter::~WebRtcRtpDumpWriter() {
 
   bool success = background_task_runner_->DeleteSoon(
       FROM_HERE, incoming_file_thread_worker_.release());
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
 
   success = background_task_runner_->DeleteSoon(
       FROM_HERE, outgoing_file_thread_worker_.release());
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
 }
 
 void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
@@ -296,8 +296,10 @@ void WebRtcRtpDumpWriter::WriteRtpPacket(const uint8_t* packet_header,
 void WebRtcRtpDumpWriter::EndDump(RtpDumpType type,
                                   EndDumpCallback finished_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(type == RTP_DUMP_OUTGOING || incoming_file_thread_worker_ != nullptr);
-  DCHECK(type == RTP_DUMP_INCOMING || outgoing_file_thread_worker_ != nullptr);
+  CHECK(type == RTP_DUMP_OUTGOING || incoming_file_thread_worker_ != nullptr,
+        base::NotFatalUntil::M161);
+  CHECK(type == RTP_DUMP_INCOMING || outgoing_file_thread_worker_ != nullptr,
+        base::NotFatalUntil::M161);
 
   bool incoming = (type == RTP_DUMP_BOTH || type == RTP_DUMP_INCOMING);
   EndDumpContext context(type, std::move(finished_callback));
@@ -371,7 +373,7 @@ void WebRtcRtpDumpWriter::FlushBuffer(bool incoming,
     bool success = background_task_runner_->DeleteSoon(
         FROM_HERE, incoming ? incoming_file_thread_worker_.release()
                             : outgoing_file_thread_worker_.release());
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
   }
 }
 

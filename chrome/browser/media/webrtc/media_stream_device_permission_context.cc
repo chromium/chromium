@@ -53,7 +53,8 @@ network::mojom::PermissionsPolicyFeature GetPermissionsPolicyFeature(
     return network::mojom::PermissionsPolicyFeature::kMicrophone;
   }
 
-  DCHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type);
+  CHECK_EQ(ContentSettingsType::MEDIASTREAM_CAMERA, type,
+           base::NotFatalUntil::M161);
   return network::mojom::PermissionsPolicyFeature::kCamera;
 }
 
@@ -67,8 +68,9 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
           content_settings_type,
           GetPermissionsPolicyFeature(content_settings_type)),
       content_settings_type_(content_settings_type) {
-  DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC ||
-         content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
+  CHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC ||
+            content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA,
+        base::NotFatalUntil::M161);
 }
 
 MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() =
@@ -87,7 +89,8 @@ MediaStreamDevicePermissionContext::GetContentSettingStatusInternal(
     policy_name = prefs::kAudioCaptureAllowed;
     urls_policy_name = prefs::kAudioCaptureAllowedUrls;
   } else {
-    DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA);
+    CHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA,
+          base::NotFatalUntil::M161);
     policy_name = prefs::kVideoCaptureAllowed;
     urls_policy_name = prefs::kVideoCaptureAllowedUrls;
   }
@@ -109,7 +112,7 @@ MediaStreamDevicePermissionContext::GetContentSettingStatusInternal(
     case ALWAYS_ALLOW:
       return CONTENT_SETTING_ALLOW;
     default:
-      DCHECK_EQ(POLICY_NOT_SET, policy);
+      CHECK_EQ(POLICY_NOT_SET, policy, base::NotFatalUntil::M161);
   }
 
   // Check the content setting. TODO(raymes): currently mic/camera permission
@@ -137,7 +140,7 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
     bool persist,
     const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
-  DCHECK(decision.is_final);
+  CHECK(decision.is_final, base::NotFatalUntil::M161);
 
   // For Android, we need to customize the ContentSettingPermissionContextBase's
   // behavior if the permission was granted. We will:
@@ -164,8 +167,9 @@ void MediaStreamDevicePermissionContext::NotifyPermissionSet(
   // implementation for `UpdateTabContext()` - if it did, we'd need to stop
   // calling into base class with the parameter not matching user's answer.
 
-  DCHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||
-         content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC);
+  CHECK(content_settings_type_ == ContentSettingsType::MEDIASTREAM_CAMERA ||
+            content_settings_type_ == ContentSettingsType::MEDIASTREAM_MIC,
+        base::NotFatalUntil::M161);
 
   // Camera and Microphone need to check for additional permissions, but only if
   // they were actually allowed:

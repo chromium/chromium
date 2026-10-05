@@ -14,7 +14,8 @@
 #include "ui/gfx/image/image_skia.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
-  DCHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type);
+  CHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type,
+           base::NotFatalUntil::M161);
 
   // CGWindowListCreateDescriptionFromArray takes a CFArray that contains raw
   // CGWindowID values (not NS/CFNumbers), so create an array that has null

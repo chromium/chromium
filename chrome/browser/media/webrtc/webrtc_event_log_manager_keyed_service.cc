@@ -14,7 +14,7 @@ namespace webrtc_event_logging {
 WebRtcEventLogManagerKeyedService::WebRtcEventLogManagerKeyedService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  DCHECK(!browser_context_->IsOffTheRecord());
+  CHECK(!browser_context_->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   WebRtcEventLogManager* manager = WebRtcEventLogManager::GetInstance();
   if (manager) {

@@ -10,7 +10,8 @@
 #include "ui/ozone/public/platform_utils.h"
 
 gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
-  DCHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type);
+  CHECK_EQ(content::DesktopMediaID::TYPE_WINDOW, id.type,
+           base::NotFatalUntil::M161);
   if (auto* platform_utils =
           ui::OzonePlatform::GetInstance()->GetPlatformUtils()) {
     return platform_utils->GetNativeWindowIcon(id.id);

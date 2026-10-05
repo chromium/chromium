@@ -42,7 +42,7 @@ bool WebRtcEventLogManagerKeyedServiceFactory::
 std::unique_ptr<KeyedService>
   WebRtcEventLogManagerKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M161);
   return std::make_unique<WebRtcEventLogManagerKeyedService>(context);
 }
 
