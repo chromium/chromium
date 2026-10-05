@@ -108,7 +108,6 @@ android_resources("java_resources") {
     "java/res/layout/language_ask_prompt_row_separator.xml",
     "java/res/layout/language_list_with_add_button.xml",
     "java/res/layout/languages_preference.xml",
-    "java/res/layout/preference_category_no_title_or_padding.xml",
     "java/res/menu/languages_action_bar_menu.xml",
     "java/res/xml/languages_detailed_preferences.xml",
     "java/res/xml/languages_preferences.xml",

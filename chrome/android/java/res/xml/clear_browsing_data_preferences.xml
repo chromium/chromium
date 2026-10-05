@@ -53,9 +53,6 @@ found in the LICENSE file.
         android:persistent="false"
         android:title="@string/prefs_site_settings" />
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
-        android:layout="@layout/preference_category_no_title_or_padding" />
-
     <org.chromium.chrome.browser.browsing_data.ClearBrowsingDataExpandablePreferenceCategory
         android:key="manage_other_google_data_expandable"
         android:title="@string/clear_browsing_data_manage_other_google_data_expandable_title" >
