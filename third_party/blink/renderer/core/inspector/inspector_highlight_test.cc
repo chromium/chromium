@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -1019,6 +1020,7 @@ TEST_F(InspectorHighlightTest, ShapeOutsideHighlightScalesAfterTranslation) {
 
 TEST_F(InspectorHighlightTest, CanvasInlineChildHighlight) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+  GetDocument().GetSettings()->SetScriptEnabled(true);
 
   PageTestBase::LoadAhem(*GetDocument().GetFrame());
 

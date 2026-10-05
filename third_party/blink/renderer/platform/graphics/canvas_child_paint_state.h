@@ -18,6 +18,8 @@ class Vector2dF;
 
 namespace blink {
 
+// TODO(crbug.com/565840014): Rename CanvasChildPaintState and related
+// "CanvasChild" types/methods to refer to drawable canvas descendants.
 struct PLATFORM_EXPORT CanvasChildPaintState {
   bool operator==(const CanvasChildPaintState&) const;
 

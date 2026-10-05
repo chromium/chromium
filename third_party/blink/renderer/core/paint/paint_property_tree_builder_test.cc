@@ -8335,6 +8335,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ScrollAxisLockPropagatesToCc) {
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, ElementCanvasTransformPropertyTree) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <canvas content=drawable id="canvas">
       <div id="target" drawable style="translate: 10px 20px"></div>

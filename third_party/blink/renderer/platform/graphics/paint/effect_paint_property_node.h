@@ -311,6 +311,10 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   bool IsInTaintedSubtree() const { return state_.is_in_tainted_subtree; }
 
+  // True if this effect belongs to a `[drawable]` element or its subtree
+  // within a `<canvas content=drawable>`. This is false for canvas
+  // descendants outside of a `[drawable]` subtree (including after a nested
+  // `<canvas>` resets the state) and for elements rendered in the top layer.
   bool IsInDrawableCanvasSubtree() const {
     return state_.is_in_drawable_canvas_subtree;
   }

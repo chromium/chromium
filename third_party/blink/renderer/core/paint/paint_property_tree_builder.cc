@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -607,17 +608,9 @@ static bool NeedsAnchorPositionScrollTranslation(const LayoutObject& object) {
 }
 
 static bool NeedsElementCanvasTransform(const LayoutObject& object) {
-  // TODO(crbug.com/532229486): Support element canvas transform for SVG.
-  if (object.IsText() || object.IsSVGChild() || !object.IsBoxModelObject()) {
-    return false;
-  }
-  const auto* element = DynamicTo<Element>(object.GetNode());
-  if (!element || !element->IsInCanvasSubtree()) {
-    return false;
-  }
   // Note: Create a canvas transform node even if no canvas element transform
   // is set to avoid paint invalidation from adding a canvas element transform.
-  return element->CanvasForDrawing();
+  return object.CanvasForDrawingLayoutObject();
 }
 
 static bool NeedsElementCanvasClip(const LayoutObject& object) {
@@ -642,22 +635,19 @@ static bool NeedsPaintOffsetTranslation(
   if (object.IsSVGChild())
     return false;
 
+  if (NeedsElementCanvasTransform(object)) {
+    // The object's ElementCanvasTransform resets paint offset and roots the
+    // transform at the canvas's ContentsTransform, so PaintOffsetTranslation
+    // is not needed.
+    return false;
+  }
+
   const auto& box_model = To<LayoutBoxModelObject>(object);
 
   if (IsA<LayoutView>(box_model)) {
     // A translation node for LayoutView is always created to ensure fixed and
     // absolute contexts use the correct transform space.
     return true;
-  }
-
-  // TODO(crbug.com/349835587): Should Element or LayoutObject have a public
-  // IsCanvasDrawElementImage() function?
-  if (auto* element = DynamicTo<Element>(object.GetNode())) {
-    if (element->CanvasForDrawing()) {
-      // The object may be drawn with drawElementImage and should ignore the
-      // paint offset.
-      return true;
-    }
   }
 
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(
@@ -1129,8 +1119,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateAnchorPositionScrollTranslation() {
 
 void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
   DCHECK(properties_);
+  const LayoutObject* canvas_for_drawing =
+      object_.CanvasForDrawingLayoutObject();
   if (NeedsPaintPropertyUpdate()) {
     if (NeedsElementCanvasTransform(object_)) {
+      CHECK(canvas_for_drawing);
       const auto& element = *To<Element>(object_.GetNode());
       gfx::Transform transform;
       if (const auto* canvas_transform = element.GetUsedCanvasTransform()) {
@@ -1146,14 +1139,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
       state.rendering_context_id = context_.rendering_context_id;
       state.compositor_element_id = GetCompositorElementId(
           CompositorElementIdNamespace::kElementCanvasTransform);
-      const TransformPaintPropertyNodeOrAlias* parent_transform =
-          context_.current.transform;
-      if (auto* canvas_for_drawing = object_.CanvasForDrawingLayoutObject()) {
-        parent_transform = &canvas_for_drawing->FirstFragment()
-                                .ContentsProperties()
-                                .Transform();
-      }
-      auto change = properties_->UpdateElementCanvasTransform(*parent_transform,
+      const auto& parent_transform =
+          canvas_for_drawing->FirstFragment().ContentsProperties().Transform();
+      auto change = properties_->UpdateElementCanvasTransform(parent_transform,
                                                               std::move(state));
       // Do not call `OnUpdateTransform()` here because canvas transform changes
       // do not affect the element's rendering and should not trigger a paint
@@ -1171,10 +1159,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateElementCanvasTransform() {
 
   if (properties_->ElementCanvasTransform()) {
     context_.current.transform = properties_->ElementCanvasTransform();
-    if (auto* canvas_for_drawing = object_.CanvasForDrawingLayoutObject()) {
-      context_.current.clip =
-          &canvas_for_drawing->FirstFragment().ContentsProperties().Clip();
+    CHECK(canvas_for_drawing);
+    const auto& canvas_contents =
+        canvas_for_drawing->FirstFragment().ContentsProperties();
+    context_.current.clip = &canvas_contents.Clip();
+    // Reparent the drawable element's effect to the nearest drawable
+    // ancestor's effect, or the canvas's contents effect, skipping any
+    // effects from intermediate non-drawable ancestors. Note that a nested
+    // drawable still paints with the canvas's contents effect (via
+    // `CanvasChildState::content_effect`), not the ancestor drawable's effect;
+    // parenting to the ancestor drawable's effect keeps the nested drawable as
+    // a subgroup in `PaintArtifactCompositor::Layerizer::LayerizeGroup()` so
+    // the ancestor drawable's effect group is not exited early.
+    const auto* effect = &context_.current_effect->Unalias();
+    while (effect && effect != &canvas_contents.Effect() &&
+           !effect->HasCanvasChildState()) {
+      effect = effect->UnaliasedParent();
     }
+    context_.current_effect = effect ? effect : &canvas_contents.Effect();
   }
 }
 
@@ -2090,12 +2092,11 @@ static void PopulateCanvasChildState(
     const LayoutObject& object,
     EffectPaintPropertyNode::State& state,
     const TransformPaintPropertyNodeOrAlias& current_transform) {
-  CHECK(IsA<LayoutBoxModelObject>(object));
-  CHECK(object.GetNode());
-  HTMLCanvasElement* canvas = To<Element>(object.GetNode())->CanvasForDrawing();
-  CHECK(canvas && canvas->GetLayoutObject());
+  LayoutObject* canvas_object = object.CanvasForDrawingLayoutObject();
+  CHECK(canvas_object);
+  auto* canvas = To<HTMLCanvasElement>(canvas_object->GetNode());
 
-  auto& canvas_fragment = canvas->GetLayoutObject()->FirstFragment();
+  auto& canvas_fragment = canvas_object->FirstFragment();
 
   PaintLayer* layer = To<LayoutBoxModelObject>(object).Layer();
   CHECK(layer);
@@ -4218,7 +4219,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
       box.HasMask() || box.HasClipPath() ||
       // Backdrop-filter's bounds use the border box rect.
       !box.StyleRef().BackdropFilter().IsEmpty() ||
-      // Canvas drawable elements cache box size and transform origin.
+      // Canvas drawable elements cache box size.
       box.CanvasForDrawingLayoutObject()) {
     box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
   }
@@ -4234,15 +4235,9 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
           object_.GetDocument().GetExecutionContext())) {
     const auto* canvas = DynamicTo<HTMLCanvasElement>(object_.GetNode());
     if (canvas && canvas->IsContentDrawable()) {
-      // Invalidate the child's paint properties so that its cached
-      // CanvasChildPaintState is updated with the new canvas size.
-      for (LayoutObject* child = object_.SlowFirstChild(); child;
-           child = child->NextSibling()) {
-        if (auto* child_box = DynamicTo<LayoutBox>(child)) {
-          child_box->GetMutableForPainting()
-              .SetOnlyThisNeedsPaintPropertyUpdate();
-        }
-      }
+      // Invalidate the canvas descendants' paint properties so that their
+      // cached CanvasChildPaintState is updated with the new canvas size.
+      box.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     }
   }
 }
@@ -4252,7 +4247,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
     PhysicalOffset& pixel_snap_offset) {
   context_.old_paint_offset = fragment_data_.PaintOffset();
   UpdatePaintOffset();
-  UpdateForPaintOffsetTranslation(paint_offset_translation);
+  if (NeedsElementCanvasTransform(object_)) {
+    ResetPaintOffset();
+    context_.current.directly_composited_container_paint_offset_subpixel_delta =
+        PhysicalOffset();
+    context_.current.paint_offset_root = &To<LayoutBoxModelObject>(object_);
+  } else {
+    UpdateForPaintOffsetTranslation(paint_offset_translation);
+  }
 
   if (NeedsStickyTranslation(object_)) {
     const auto& box_model = To<LayoutBoxModelObject>(object_);
@@ -4505,6 +4507,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
     UpdateTransformIsolationNode();
     UpdateEffectIsolationNode();
     UpdateClipIsolationNode();
+  }
+  if (object_.IsCanvas()) {
+    context_.is_in_drawable_canvas_subtree = false;
+    // Reset `current_effect` so non-drawable descendants of a canvas nested
+    // inside a drawable subtree do not inherit the outer drawable's effect
+    // (where `IsInDrawableCanvasSubtree()` is true). Drawable descendants will
+    // reparent their effect to the canvas in `UpdateElementCanvasTransform()`.
+    context_.current_effect = &EffectPaintPropertyNode::Root();
   }
   UpdateOutOfFlowContext();
 

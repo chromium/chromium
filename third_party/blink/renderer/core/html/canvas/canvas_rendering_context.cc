@@ -113,11 +113,12 @@ CanvasRenderingContext::GetEnclosingContextForDrawElement(
     Element* element,
     const String& func_name,
     ExceptionState& exception_state) {
-  auto* canvas = DynamicTo<HTMLCanvasElement>(element->parentNode());
+  auto* canvas = element->CanvasForDrawing();
   if (!canvas) {
-    exception_state.ThrowTypeError(StrCat(
-        {"Only immediate children of the <canvas> element can be passed to ",
-         func_name, "."}));
+    exception_state.ThrowTypeError(
+        StrCat({"Only drawable descendants of the <canvas> element can be "
+                "passed to ",
+                func_name, "."}));
     return nullptr;
   }
   CanvasRenderingContext* context = canvas->RenderingContext();

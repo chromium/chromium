@@ -227,7 +227,6 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
     get_canvas_snapshot_callback_ = std::move(callback);
   }
 
-  bool HasCanvasChildPaintRecord(DOMNodeId child_id) const;
   std::optional<CanvasChildPaintRecord> GetCanvasChildPaintRecord(
       DOMNodeId child_id) const;
   const CanvasChildPaintState* GetCanvasChildPaintState(

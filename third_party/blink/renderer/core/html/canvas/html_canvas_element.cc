@@ -67,7 +67,6 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1003,25 +1002,18 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     return false;
   }
 
-  const Element* parent =
-      LayoutTreeBuilderTraversal::LayoutParentElement(*element);
-  bool is_direct_child = parent == this;
-  if (!is_direct_child && element->CanvasForDrawing() != this) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The element can only be drawn into its nearest ancestor <canvas>.");
-    return false;
-  }
-
-  // TODO(paint-dev): The check for `drawable` purposely skips immediate
-  // canvas children, to ease migration. Ultimately it must apply to
-  // immediate children as well.
-  if (!is_direct_child &&
-      !element->FastHasAttribute(html_names::kDrawableAttr)) {
+  if (!element->FastHasAttribute(html_names::kDrawableAttr)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Descendants passed to " + func_name +
             " must have the 'drawable' attribute.");
+    return false;
+  }
+
+  if (element->CanvasForDrawing() != this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The element can only be drawn into its nearest ancestor <canvas>.");
     return false;
   }
 
@@ -1939,11 +1931,6 @@ void HTMLCanvasElement::RemovedFrom(ContainerNode& insertion_point) {
   ColorSchemeMayHaveChanged();
 }
 
-bool HTMLCanvasElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
-  return RuntimeEnabledFeatures::CanvasDrawElementEnabled(
-      GetExecutionContext());
-}
-
 void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   if (hasChildren()) {
@@ -1954,30 +1941,6 @@ void HTMLCanvasElement::ChildrenChanged(const ChildrenChange& change) {
     }
     if (accessibility_manager_) {
       accessibility_manager_->UpdateHasFallbackElementContent();
-    }
-  }
-
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled(GetExecutionContext())) {
-    if (change.type == ChildrenChangeType::kElementRemoved) {
-      if (auto* element = DynamicTo<Element>(change.sibling_changed)) {
-        ChildElementRemoved(*element);
-      }
-    } else if (change.type == ChildrenChangeType::kAllChildrenRemoved) {
-      for (Node* node : change.removed_nodes) {
-        if (auto* element = DynamicTo<Element>(node)) {
-          ChildElementRemoved(*element);
-        }
-      }
-    }
-  }
-}
-
-void HTMLCanvasElement::ChildElementRemoved(Element& child) {
-  if (auto* view = GetDocument().View()) {
-    if (auto* pac = view->GetPaintArtifactCompositor()) {
-      if (pac->HasCanvasChildPaintRecord(child.GetDomNodeId())) {
-        requestPaint();
-      }
     }
   }
 }

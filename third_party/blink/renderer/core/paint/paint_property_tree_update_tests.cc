@@ -2428,7 +2428,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasScriptsDisabled) {
 
   SetBodyInnerHTML(R"HTML(
     <canvas content=drawable style="display: inline;">
-      <div id="target">Hello</div>
+      <div id="target" drawable>Hello</div>
     </canvas>
   )HTML");
   UpdateAllLifecyclePhasesForTest();

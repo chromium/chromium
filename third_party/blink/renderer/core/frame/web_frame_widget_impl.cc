@@ -135,6 +135,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -1605,14 +1606,16 @@ void WebFrameWidgetImpl::UpdateAnimatedImageState(
   for (auto id : commit_data.advanced_image_animation_clients) {
     if (Element* client = DynamicTo<Element>(
             DOMNodeIds::NodeForId(DOMNodeIdFromCompositorElementId(id)))) {
-      if (auto* canvas = DynamicTo<HTMLCanvasElement>(client->parentNode())) {
-        if (auto* layout_object = client->GetLayoutObject()) {
-          // The canvas child element needs to update
+      if (auto* layout_object = client->GetLayoutObject()) {
+        if (auto* canvas_object =
+                layout_object->CanvasForDrawingLayoutObject()) {
+          // The canvas drawable element needs to update
           // animated_image_frame_index_map in paint_property_tree_builder.cc
           layout_object->SetNeedsPaintPropertyUpdate();
-        }
-        if (auto* view = canvas->GetDocument().View()) {
-          view->RequestCanvasOnpaint(*canvas, client);
+          auto* canvas = To<HTMLCanvasElement>(canvas_object->GetNode());
+          if (auto* view = canvas->GetDocument().View()) {
+            view->RequestCanvasOnpaint(*canvas, client);
+          }
         }
       }
     }

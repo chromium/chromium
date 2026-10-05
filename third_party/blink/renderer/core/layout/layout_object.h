@@ -89,6 +89,7 @@ class HitTestRequest;
 class HitTestResult;
 class LayoutBlock;
 class LayoutBlockFlow;
+class LayoutHTMLCanvas;
 class LayoutView;
 class LocalFrameView;
 class PaintLayer;
@@ -1977,9 +1978,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // which is already marked for subtree recalc.
   void InvalidateSubtreePositionTry(bool mark_style_dirty);
 
-  // Equivalent to Element's corresponding functions if GetNode() is an
-  // Element, or returns the result of the nearest ancestor (across frame
-  // boundaries) whose GetNode() is an Element.
+  // Delegates to `Element::IsCanvasOrInCanvasSubtree()` / `IsInCanvasSubtree()`
+  // for the nearest `Element` (walking up the layout tree and across local
+  // frames if needed).
+  // Warning: This delegates to the DOM tree and can be true for objects that
+  // do not draw into a canvas (e.g., objects in a <canvas> without
+  // `content=drawable`, objects outside a `[drawable]` subtree, or top-layer
+  // elements). See also `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()`.
   bool IsCanvasOrInCanvasSubtree() const;
   bool IsInCanvasSubtree() const;
 
@@ -2759,7 +2764,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                   MapCoordinatesFlags) const;
 
   bool ShouldUseTransformFromContainer(const LayoutObject* container) const;
-  LayoutObject* CanvasForDrawingLayoutObject() const;
+  // If this object is a non-SVG box model object, returns the
+  // `LayoutHTMLCanvas` for its element's `CanvasForDrawing()`.
+  // Warning: This delegates to `Element::CanvasForDrawing()` and can be
+  // non-null for elements that escape their canvas into the top layer. See
+  // also `EffectPaintPropertyNode::HasCanvasChildState()` and
+  // `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()`.
+  LayoutHTMLCanvas* CanvasForDrawingLayoutObject() const;
 
   // The optional |size| parameter is used if the size of the object isn't
   // correct yet. If |fragment_transform| is provided, we'll use that instead of

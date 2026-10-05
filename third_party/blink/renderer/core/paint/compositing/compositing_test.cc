@@ -4471,10 +4471,7 @@ TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
   // Non-drawable elements (even with will-change: transform) should not have
   // layers because their content is merged into the layer for their nearest
   // drawable ancestor.
-
-  // TODO(paint-dev): Uncomment this check when we stop treating immediate
-  // children of canvas as implicitly drawable.
-  // EXPECT_FALSE(CcLayerByDOMElementId("a"));
+  EXPECT_FALSE(CcLayerByDOMElementId("a"));
   EXPECT_FALSE(CcLayerByDOMElementId("aaa"));
   EXPECT_FALSE(CcLayerByDOMElementId("aaba"));
   EXPECT_FALSE(CcLayerByDOMElementId("aac"));
@@ -4506,11 +4503,8 @@ TEST_P(CompositingSimTest, CanvasDrawDescendantsLayers) {
       el->GetDomNodeId()));
 
   // Verify non-drawable elements do not have paint records of their own.
-
-  // TODO(paint-dev): Uncomment this check when we stop treating immediate
-  // children of canvas as implicitly drawable.
-  // EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
-  //    GetElementById("a")->GetDomNodeId()));
+  EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
+      GetElementById("a")->GetDomNodeId()));
   EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(
       GetElementById("aaa")->GetDomNodeId()));
   EXPECT_FALSE(paint_artifact_compositor()->GetCanvasChildPaintRecord(

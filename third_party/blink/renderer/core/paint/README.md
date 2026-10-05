@@ -543,28 +543,35 @@ Custom scrollbars are still painted into drawing display items directly.
 ## HTML-in-Canvas
 
 HTML-in-Canvas is a feature (enabled via the `CanvasDrawElement` runtime enabled
-feature flag) that allows rendering a DOM subtree (descendant of a `<canvas>`)
-into a canvas with the `content=drawable` attribute using `drawElementImage()`
-(or the similar WebGL/WebGPU APIs), while still supporting browser features
-like layout, hit testing, accessibility, etc. See the
-[explainer](https://github.com/WICG/html-in-canvas) for more information.
+feature flag) that allows rendering a DOM subtree (a descendant of a `<canvas>`
+with the `drawable` attribute) into a canvas with the `content=drawable`
+attribute using `drawElementImage()` (or the similar WebGL/WebGPU APIs), while
+still supporting browser features like layout, hit testing, accessibility, etc.
+See the [explainer](https://github.com/WICG/html-in-canvas) for more
+information.
 
 ### Stacking and layout
 *   **Layout subtree**: Specifying the `content=drawable` attribute on a `<canvas>`
     element opts in its descendants to layout. Direct children of the canvas
     are blockified and given static position in
     `StyleAdjuster::AdjustStyleForDisplay`. Descendants with the `drawable`
-    attribute (and direct children during migration) imply `isolation: isolate`
-    in `StyleAdjuster::AdjustComputedStyle`, and establish a containing block for
-    fixed and absolute positioned descendants via
+    attribute imply `isolation: isolate`
+    in `StyleAdjuster::AdjustComputedStyle`. Both direct children of the canvas
+    and descendants with the `drawable` attribute establish a containing block
+    for fixed and absolute positioned descendants via
     `LayoutObject::ComputeIsFixedContainer`.
-*   **Element helpers**: The DOM `Element` class provides helpers
-    `IsCanvasOrInCanvasSubtree()` and `IsInCanvasSubtree()` to easily identify
-    elements participating in this feature, as well as `CanvasForDrawing()` to
-    retrieve the associated canvas for drawable elements.
+*   **Element and LayoutObject helpers**: `Element` and `LayoutObject` provide
+    DOM-based helpers `IsCanvasOrInCanvasSubtree()` and `IsInCanvasSubtree()`
+    (true for any flat-tree descendant of a `<canvas>`, including non-drawable
+    and top-layer elements), as well as `Element::CanvasForDrawing()` and
+    `LayoutObject::CanvasForDrawingLayoutObject()` to retrieve the target
+    `<canvas content=drawable>` for `[drawable]` elements. During PrePaint and
+    paint, `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()` tracks
+    whether an object is actually within a painted `[drawable]` subtree
+    (excluding non-drawable canvas subtrees and top-layer elements).
 
 ### Canvas Transform
-*   **Canvas transform**: `getElementTransform()` on `HTMLCanvasElement` returns
+*   **Canvas transform**: `getElementTransform()` on `CanvasRenderingContext2D` returns
     the transform applied to an element mapping its border box, before CSS
     transforms, to the canvas coordinate space. Canvas transforms are set via
     `canvas.updateElementGeometry(element, { canvasTransform })` (or automatically
@@ -572,8 +579,12 @@ like layout, hit testing, accessibility, etc. See the
 *   **PaintLayer transform**: When present, the canvas transform is
     pre-concatenated before CSS transforms in `PaintLayer::UpdateTransform()`.
 *   **Property tree node**: An `ElementCanvasTransform` node is inserted
-    between `AnchorPositionScrollTranslation` and `Translate` so canvas
-    transforms apply before CSS transforms in `GeometryMapper`.
+    between `AnchorPositionScrollTranslation` and `Translate` (parented to the
+    canvas's `ContentsTransform`, resetting paint offset) so canvas transforms
+    apply before CSS transforms in `GeometryMapper`. `UpdateElementCanvasTransform`
+    also resets the clip to the canvas's `ContentsClip` and reparents the effect
+    to the nearest drawable ancestor's effect (or the canvas's `ContentsEffect`),
+    skipping effects from intermediate non-drawable ancestors.
 
 ### Painting
 *   **Special paint flags**: When painting the children of a `content=drawable`
@@ -583,6 +594,12 @@ like layout, hit testing, accessibility, etc. See the
         sensitive information (such as cross-origin iframe/image data, visited
         links, spelling markers, or system themes) is exposed during canvas
         drawing or invalidations.
+*   **Non-drawable subtrees**: In `PaintLayerPainter::Paint`, self-painting
+    layers inside a canvas subtree that are not in a `[drawable]` subtree
+    (`!Effect().Unalias().IsInDrawableCanvasSubtree()`) skip painting their own
+    content (`should_paint_content = false`), while still recursing into
+    `PaintChildren` (without cull-rect early-out) so nested `[drawable]`
+    descendants are reached and painted.
 *   **Fallback content prevention**: If `content=drawable` is not specified,
     `PaintLayerPainter::PaintChildren` returns early, preventing canvas
     fallback content from being rendered.
@@ -598,28 +615,32 @@ like layout, hit testing, accessibility, etc. See the
     canvas are given the direct compositing reason
     `CompositingReason::kCanvasChild` in
     `CompositingReasonFinder::DirectReasonsForPaintProperties`. This forces the
-    creation of an `EffectPaintPropertyNode` for the child (see
+    creation of an `EffectPaintPropertyNode` for the element (see
     `EffectPaintPropertyNode::RequiresCompositingForCanvasChild()`), and
-    ultimately forces a `cc::Layer` to be created for each canvas child. This
+    ultimately forces a `cc::Layer` to be created for each drawable element. This
     cc::Layer has `DrawsContent()` set to false so that it participates in hit
     testing but does not render.
 *   **Compositing disabled for other descendants**: Composited layers are
-    disabled for content *below* drawable elements in the canvas (with the
-    exception of direct children of nested `content=drawable` canvases; see below).
-    This ensures the full content is available in the canvas child's
+    disabled for non-drawable elements in the canvas (while drawable descendants,
+    including nested `[drawable]` elements and those in nested `content=drawable`
+    canvases, are composited; see below).
+    This ensures the full content is available in the drawable element's
     `cc::Layer`, which is used via
     `ContentLayerClientImpl::GetCanvasChildPaintRecord`. This also ensures the
     content does not create additional layers which could render.
 
 ### Nested HTML-in-Canvas
-HTML-in-Canvas supports nesting `content=drawable` canvases within other
+HTML-in-Canvas supports nesting `[drawable]` elements within other `[drawable]`
+elements, as well as nesting `content=drawable` canvases within other
 `content=drawable` canvases. This requires coordination across compositing,
 painting, and event dispatch:
 *   **Compositing for nested children**: While compositing is generally
-    suppressed for descendants of a canvas child, direct children of a *nested*
-    `content=drawable` canvas are still given the `CompositingReason::kCanvasChild`
-    direct compositing reason, while compositing for the nested canvas element
-    itself is suppressed.
+    suppressed for non-drawable descendants of a drawable element, nested
+    `[drawable]` descendants (including those inside a *nested*
+    `content=drawable` canvas) are still given the
+    `CompositingReason::kCanvasChild` direct compositing reason, while
+    compositing for a nested canvas element itself is suppressed unless it also
+    has the `drawable` attribute.
 *   **Paint event ordering**: To ensure nested canvases are updated before their
     parent canvases draw them, `RunCanvasOnpaintSteps` fires `paint` events in
     reverse document order across frames, and in reverse tree order within each

@@ -390,14 +390,10 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
 
   if (element && element->IsInCanvasSubtree() &&
       !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
-    if (IsA<LayoutBoxModelObject>(object)) {
-      if (auto* canvas = element->CanvasForDrawing()) {
-        if (auto* canvas_layout_object = canvas->GetLayoutObject()) {
-          if (canvas_layout_object->IsCanvas()) {
-            reasons.Put(CompositingReason::kCanvasChild);
-          }
-        }
-      }
+    if (object.CanvasForDrawingLayoutObject()) {
+      // TODO(crbug.com/565840014): Rename kCanvasChild to
+      // kCanvasDrawableElement.
+      reasons.Put(CompositingReason::kCanvasChild);
     }
     // In canvas subtrees, only drawable elements can have a compositing
     // reason (kCanvasChild), and no other compositing reasons apply.

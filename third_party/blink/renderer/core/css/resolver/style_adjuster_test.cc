@@ -417,9 +417,7 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
     </canvas>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  // TODO(paint-dev): Uncomment this check when we stop treating direct children
-  // of a canvas as implicitly `drawable`.
-  // EXPECT_FALSE(GetLayoutObjectByElementId("a")->IsStackingContext());
+  EXPECT_FALSE(GetLayoutObjectByElementId("a")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("aa")->IsStackingContext());
   EXPECT_FALSE(GetLayoutObjectByElementId("aaa")->IsStackingContext());
   EXPECT_TRUE(GetLayoutObjectByElementId("aab")->IsStackingContext());
@@ -440,13 +438,13 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
   EXPECT_TRUE(GetLayoutObjectByElementId("nested_span")
                   ->CanContainFixedPositionObjects());
   EXPECT_TRUE(
+      GetLayoutObjectByElementId("a")->CanContainFixedPositionObjects());
+  EXPECT_TRUE(
       GetLayoutObjectByElementId("aa")->CanContainFixedPositionObjects());
   EXPECT_FALSE(
       GetLayoutObjectByElementId("aaa")->CanContainFixedPositionObjects());
 
-  // TODO(paint-dev): Update this to kAuto when direct children are no longer
-  // implicitly drawable.
-  EXPECT_EQ(EIsolation::kIsolate,
+  EXPECT_EQ(EIsolation::kAuto,
             GetLayoutObjectByElementId("a")->StyleRef().Isolation());
   EXPECT_EQ(EIsolation::kIsolate,
             GetLayoutObjectByElementId("aa")->StyleRef().Isolation());

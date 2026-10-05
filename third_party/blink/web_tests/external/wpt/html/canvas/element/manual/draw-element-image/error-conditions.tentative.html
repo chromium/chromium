@@ -66,13 +66,13 @@ promise_test(async () => {
     () => canvaswithoutlayout.getElementTransform(child2, new DOMMatrix()),
     "Can't get element transform if content=drawable is not specified.");
 
-  // Also test wrong children exceptions
+  // Also test non-drawable descendants exceptions
   assert_throws_dom("InvalidStateError",
     () => canvas.captureElementImage(grandchild),
-    "Can't capture non-direct children.");
+    "Can't capture non-drawable descendants.");
   assert_throws_dom("InvalidStateError",
     () => canvas.getElementTransform(grandchild, new DOMMatrix()),
-    "Can't get transform for non-direct children.");
+    "Can't get transform for non-drawable descendants.");
 });
 </script>
 </html>

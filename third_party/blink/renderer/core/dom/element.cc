@@ -124,6 +124,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element_animation_trigger_data.h"
 #include "third_party/blink/renderer/core/dom/element_data_cache.h"
@@ -305,6 +306,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
@@ -3936,10 +3938,22 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(name));
   } else if (name == html_names::kDrawableAttr) {
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::FromAttribute(name));
-    if (auto* layout_object = GetLayoutObject()) {
-      layout_object->SetNeedsPaintPropertyUpdate();
+    if (params.old_value.IsNull() != params.new_value.IsNull()) {
+      // TODO(crbug.com/565840014): If the element already has `isolation:
+      // isolate` in author CSS, `ComputedStyle` will not change and
+      // `LayoutObject::UpdateFromStyle()` will be skipped, leaving
+      // `CanContainFixedPositionObjects()` /
+      // `CanContainAbsolutePositionObjects()` stale. Update those container
+      // bits here or track drawable state on `ComputedStyle`.
+      SetNeedsStyleRecalc(kLocalStyleChange,
+                          StyleChangeReasonForTracing::FromAttribute(name));
+      if (auto* layout_object = GetLayoutObject()) {
+        layout_object->SetNeedsPaintPropertyUpdate();
+        layout_object->SetSubtreeShouldDoFullPaintInvalidation();
+      }
+      if (params.new_value.IsNull() && IsInCanvasSubtree()) {
+        RequestCanvasPaintOnDrawableRemoved();
+      }
     }
   } else if (IsStyledElement()) {
     if (name == html_names::kStyleAttr) {
@@ -10722,23 +10736,36 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
     return nullptr;
   }
 
-  // TODO(paint-dev): The check for `drawable` purposely skips immediate
-  // canvas children, to ease migration. Ultimately it must apply to
-  // immediate children as well.
-  Element* ancestor = LayoutTreeBuilderTraversal::LayoutParentElement(*this);
-  if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
-    return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
-  }
   if (!FastHasAttribute(html_names::kDrawableAttr)) {
     return nullptr;
   }
-  while (ancestor) {
-    ancestor = FlatTreeTraversal::ParentElement(*ancestor);
+
+  for (Element* ancestor = FlatTreeTraversal::ParentElement(*this); ancestor;
+       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
     if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
       return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
     }
   }
   return nullptr;
+}
+
+void Element::RequestCanvasPaintOnDrawableRemoved() {
+  if (!GetDocument().IsActive()) {
+    return;
+  }
+  if (DOMNodeId dom_node_id = DOMNodeIds::ExistingIdForNode(this)) {
+    if (auto* view = GetDocument().View()) {
+      if (auto* pac = view->GetPaintArtifactCompositor()) {
+        if (const auto* state = pac->GetCanvasChildPaintState(dom_node_id)) {
+          if (auto* canvas = DynamicTo<HTMLCanvasElement>(
+                  DOMNodeIds::NodeForId(state->canvas_node_id));
+              canvas && canvas->IsContentDrawable()) {
+            canvas->requestPaint();
+          }
+        }
+      }
+    }
+  }
 }
 
 AtomicString Element::ComputeInheritedLanguage() const {

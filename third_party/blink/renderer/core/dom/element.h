@@ -1172,8 +1172,12 @@ class CORE_EXPORT Element : public ContainerNode {
 
   // Recursively sets the IsInCanvasSubtree bit for the element and its subtree.
   void SetIsInCanvasSubtree(bool value);
-  // Is in the flat subtree of a canvas element, but not the canvas element
-  // itself.
+  // True if this element has a flat-tree DOM ancestor <canvas> (including
+  // across local frame boundaries).
+  // Warning: This is a pure DOM check; it is true regardless of
+  // `content=drawable` or `drawable`, and remains true for elements that
+  // escape their canvas into the top layer (e.g., modal <dialog> or popover).
+  // See also `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()`.
   bool IsInCanvasSubtree() const {
     return HasElementFlag(ElementFlags::kIsInCanvasSubtree);
   }
@@ -1185,11 +1189,15 @@ class CORE_EXPORT Element : public ContainerNode {
   void VerifySubtreeIsInCanvas(bool value);
 #endif
 
-  // Returns the nearest ancestor <canvas content=drawable> if this element is
-  // eligible for drawing into it (i.e. is connected, is in a canvas subtree,
-  // is not a pseudo-element, and is an immediate child of the canvas or has
-  // the 'drawable' attribute). Returns nullptr otherwise.
+  // If this is a connected, non-pseudo element with the `drawable` attribute,
+  // returns the nearest flat-tree DOM ancestor <canvas> (in the same document)
+  // if that <canvas> has `content=drawable`; returns nullptr otherwise.
+  // Warning: This is a DOM check and does not check whether the element has a
+  // drawable LayoutObject or escapes its canvas into the top layer. See also
+  // `LayoutObject::CanvasForDrawingLayoutObject()` and
+  // `EffectPaintPropertyNode::IsInDrawableCanvasSubtree()`.
   HTMLCanvasElement* CanvasForDrawing() const;
+  void RequestCanvasPaintOnDrawableRemoved();
 
   // Returns the transform that should be used for mapping the border-box,
   // before CSS transforms, to the canvas coordinate space. When the element
