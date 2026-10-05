@@ -633,6 +633,12 @@ PageSpecificContentSettings::PendingUpdates::PendingUpdates() = default;
 
 PageSpecificContentSettings::PendingUpdates::~PendingUpdates() = default;
 
+PageSpecificContentSettings::ContentSettingsStatus::ContentSettingsStatus() =
+    default;
+
+PageSpecificContentSettings::ContentSettingsStatus::~ContentSettingsStatus() =
+    default;
+
 PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
                                                          Delegate* delegate)
     : content::PageUserData<PageSpecificContentSettings>(page),
@@ -652,14 +658,17 @@ PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
 }
 
 PageSpecificContentSettings::~PageSpecificContentSettings() {
-  for (auto last_used_entry : last_used_time_) {
-    switch (last_used_entry.first) {
+  for (const auto& [type, status] : content_settings_status_) {
+    if (!status.last_used_time.has_value()) {
+      continue;
+    }
+    switch (type) {
       case ContentSettingsType::MEDIASTREAM_MIC:
       case ContentSettingsType::MEDIASTREAM_CAMERA:
       case ContentSettingsType::SMART_CARD_GUARD:
         map_->UpdateLastUsedTime(media_stream_access_origin_,
-                                 media_stream_access_origin_,
-                                 last_used_entry.first, last_used_entry.second);
+                                 media_stream_access_origin_, type,
+                                 *status.last_used_time);
         break;
       default:
         // Currently, only camera and mic permissions are supported.
@@ -794,7 +803,7 @@ void PageSpecificContentSettings::StorageAccessed(
 // static
 void PageSpecificContentSettings::BrowsingDataAccessed(
     content::RenderFrameHost* rfh,
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type,
     bool blocked) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -943,7 +952,7 @@ bool PageSpecificContentSettings::IsContentAllowed(
 std::map<net::SchemefulSite, /*is_allowed*/ bool>
 PageSpecificContentSettings::GetTwoSiteRequests(
     ContentSettingsType content_type) {
-  return content_settings_two_site_requests_[content_type];
+  return content_settings_status_[content_type].two_site_requests;
 }
 
 void PageSpecificContentSettings::
@@ -1043,11 +1052,11 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
 
 void PageSpecificContentSettings::OnTwoSitePermissionChanged(
     ContentSettingsType type,
-    net::SchemefulSite requesting_site,
+    const net::SchemefulSite& requesting_site,
     ContentSetting content_setting) {
   bool access_changed = false;
 
-  auto& site_map = content_settings_two_site_requests_[type];
+  auto& site_map = content_settings_status_[type].two_site_requests;
 
   switch (content_setting) {
     case CONTENT_SETTING_ASK:
@@ -1176,7 +1185,7 @@ void PageSpecificContentSettings::OnTrustTokenAccessed(
 }
 
 void PageSpecificContentSettings::OnBrowsingDataAccessed(
-    BrowsingDataModel::DataKey data_key,
+    const BrowsingDataModel::DataKey& data_key,
     BrowsingDataModel::StorageType storage_type,
     bool blocked,
     content::Page* originating_page) {
@@ -1464,8 +1473,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
       }
       // Only forward updates for sites which we are already tracking.
       net::SchemefulSite requesting_site(requesting_url);
-      if (!content_settings_two_site_requests_[content_type].contains(
-              requesting_site)) {
+      if (!status.two_site_requests.contains(requesting_site)) {
         return;
       }
 
@@ -1480,7 +1488,9 @@ void PageSpecificContentSettings::OnContentSettingChanged(
 }
 
 void PageSpecificContentSettings::ClearContentSettingsChangedViaPageInfo() {
-  content_settings_changed_via_page_info_.clear();
+  for (auto& [type, status] : content_settings_status_) {
+    status.changed_via_page_info = false;
+  }
 }
 
 void PageSpecificContentSettings::BlockAllContentForTesting() {
@@ -1510,13 +1520,14 @@ void PageSpecificContentSettings::SetIgnoreBlockedMediaIndicatorTimerForTesting(
 
 void PageSpecificContentSettings::ContentSettingChangedViaPageInfo(
     ContentSettingsType type) {
-  content_settings_changed_via_page_info_.insert(type);
+  content_settings_status_[type].changed_via_page_info = true;
 }
 
 bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
     ContentSettingsType type) const {
-  return content_settings_changed_via_page_info_.find(type) !=
-         content_settings_changed_via_page_info_.end();
+  auto it = content_settings_status_.find(type);
+  return it != content_settings_status_.end() &&
+         it->second.changed_via_page_info;
 }
 
 bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {
@@ -1579,7 +1590,7 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
   } else {
     // When audio/video capturing is over, save a time so it can be stored in
     // HCSM.
-    last_used_time_[type] = base::Time::Now();
+    content_settings_status_[type].last_used_time = base::Time::Now();
 
     // Add a delay before the media indicator disappears.
     if ((type == ContentSettingsType::MEDIASTREAM_CAMERA &&
@@ -1625,8 +1636,9 @@ void PageSpecificContentSettings::OnCapturingStateChanged(
 void PageSpecificContentSettings::OnDeviceUsed(ContentSettingsType type) {
   // For now, only smart card permissions are supported.
   CHECK_EQ(ContentSettingsType::SMART_CARD_GUARD, type);
-  last_used_time_[type] = base::Time::Now();
-  if (in_use_.insert(type).second) {
+  ContentSettingsStatus& status = content_settings_status_[type];
+  status.last_used_time = base::Time::Now();
+  if (!std::exchange(status.in_use, true)) {
     MaybeUpdateLocationBar();
   }
 }
@@ -1635,7 +1647,7 @@ void PageSpecificContentSettings::OnLastDeviceConnectionLost(
     ContentSettingsType type) {
   // For now, only smart card permissions are supported.
   CHECK_EQ(mojom::ContentSettingsType::SMART_CARD_GUARD, type);
-  in_use_.erase(type);
+  content_settings_status_[type].in_use = false;
 
   // The indicator should remain for `kDeviceInUseIndicatorHideDelay` seconds
   // after the connection has died in order to also make user aware of very
@@ -1649,7 +1661,8 @@ void PageSpecificContentSettings::OnLastDeviceConnectionLost(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool PageSpecificContentSettings::IsInUse(ContentSettingsType type) const {
-  return in_use_.contains(type);
+  auto it = content_settings_status_.find(type);
+  return it != content_settings_status_.end() && it->second.in_use;
 }
 
 void PageSpecificContentSettings::SetRequestedSensorIsAvailable(
@@ -1702,7 +1715,7 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
 
   if (is_capturing) {
     microphone_camera_state_.Put(state);
-    in_use_.insert(type);
+    content_settings_status_[type].in_use = true;
 
     // Camera and Microphone share the same activity indicator view. If one of
     // them is in use, reset a blocked state for another as we cannot display
@@ -1718,7 +1731,7 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
     }
   } else {
     microphone_camera_state_.Remove(state);
-    in_use_.erase(type);
+    content_settings_status_[type].in_use = false;
   }
 
   // If `kMicrophoneAccessed` and `kCameraAccessed` not set, reset
@@ -1734,11 +1747,12 @@ void PageSpecificContentSettings::OnCapturingStateChangedInternal(
 
 const base::Time PageSpecificContentSettings::GetLastUsedTime(
     ContentSettingsType type) const {
-  auto it = last_used_time_.find(type);
-  if (it != last_used_time_.end()) {
+  auto it = content_settings_status_.find(type);
+  if (it != content_settings_status_.end() &&
+      it->second.last_used_time.has_value()) {
     // After a recent usage HCSM will not have an updated last used time. HCSM
     // will be update in PSCS dtor.
-    return it->second;
+    return *it->second.last_used_time;
   }
 
   content_settings::SettingInfo info;
@@ -1779,24 +1793,26 @@ void PageSpecificContentSettings::OnActivityIndicatorBubbleClosed(
 
 bool PageSpecificContentSettings::IsIndicatorVisible(
     ContentSettingsType type) const {
-  return visible_indicators_.contains(type);
+  auto it = content_settings_status_.find(type);
+  return it != content_settings_status_.end() &&
+         it->second.is_indicator_visible;
 }
 
 bool PageSpecificContentSettings::IsAnyIndicatorVisible(
     base::span<const ContentSettingsType> types) const {
   return std::ranges::any_of(types, [this](ContentSettingsType type) {
-    return visible_indicators_.contains(type);
+    return IsIndicatorVisible(type);
   });
 }
 
 void PageSpecificContentSettings::OnPermissionIndicatorShown(
     ContentSettingsType type) {
-  visible_indicators_.insert(type);
+  content_settings_status_[type].is_indicator_visible = true;
 }
 
 void PageSpecificContentSettings::OnPermissionIndicatorHidden(
     ContentSettingsType type) {
-  visible_indicators_.erase(type);
+  content_settings_status_[type].is_indicator_visible = false;
 }
 
 void PageSpecificContentSettings::StartBlockedIndicatorTimer(

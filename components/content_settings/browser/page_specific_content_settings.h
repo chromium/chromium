@@ -275,7 +275,7 @@ class PageSpecificContentSettings
       bool blocked_by_policy);
 
   static void BrowsingDataAccessed(content::RenderFrameHost* rfh,
-                                   BrowsingDataModel::DataKey data_key,
+                                   const BrowsingDataModel::DataKey& data_key,
                                    BrowsingDataModel::StorageType storage_type,
                                    bool blocked);
 
@@ -402,12 +402,12 @@ class PageSpecificContentSettings
   // Call when a two-site permission was prompted or modified in order to
   // display a ContentSettingsImageModel icon.
   void OnTwoSitePermissionChanged(ContentSettingsType type,
-                                  net::SchemefulSite requesting_site,
+                                  const net::SchemefulSite& requesting_site,
                                   ContentSetting content_setting);
   void OnInterestGroupJoined(const url::Origin& api_origin,
                              bool blocked_by_policy);
   void OnTrustTokenAccessed(const url::Origin& api_origin, bool blocked);
-  void OnBrowsingDataAccessed(BrowsingDataModel::DataKey data_key,
+  void OnBrowsingDataAccessed(const BrowsingDataModel::DataKey& data_key,
                               BrowsingDataModel::StorageType storage_type,
                               bool blocked,
                               content::Page* originating_page = nullptr);
@@ -519,7 +519,7 @@ class PageSpecificContentSettings
 
   void set_last_used_time_for_testing(ContentSettingsType type,
                                       base::Time time) {
-    last_used_time_[type] = time;
+    content_settings_status_[type].last_used_time = time;
   }
 
   std::map<ContentSettingsType, base::OneShotTimer>&
@@ -569,7 +569,7 @@ class PageSpecificContentSettings
   // prerendering until the page is activated; directly calls the method
   // otherwise.
   template <typename DelegateMethod, typename... Args>
-  void NotifyDelegate(DelegateMethod method, Args... args) {
+  void NotifyDelegate(DelegateMethod method, const Args&... args) {
     if (IsEmbeddedPage()) {
       return;
     }
@@ -583,7 +583,7 @@ class PageSpecificContentSettings
   }
   // Used to notify the parent page's PSCS of a content access.
   template <typename PSCSMethod, typename... Args>
-  void MaybeUpdateParent(PSCSMethod method, Args... args) {
+  void MaybeUpdateParent(PSCSMethod method, const Args&... args) {
     if (IsEmbeddedPage()) {
       PageSpecificContentSettings* pscs =
           PageSpecificContentSettings::GetForFrame(
@@ -625,16 +625,27 @@ class PageSpecificContentSettings
   raw_ptr<Delegate> delegate_;
 
   struct ContentSettingsStatus {
-    bool blocked;
-    bool allowed;
-  };
-  // Stores which content setting types actually have blocked content.
-  std::map<ContentSettingsType, ContentSettingsStatus> content_settings_status_;
+    ContentSettingsStatus();
+    ~ContentSettingsStatus();
 
-  // Stores embedded sites that requested a permission. Only applies to
-  // permissions that are scoped to two sites, e.g. StorageAccess.
-  std::map<ContentSettingsType, std::map<net::SchemefulSite, bool>>
-      content_settings_two_site_requests_;
+    bool blocked = false;
+    bool allowed = false;
+    // Whether the `ContentSettingsType` is currently used by a page.
+    bool in_use = false;
+    // Whether the `ContentSettingsType` indicator is currently displaying
+    // (used for Left-Hand Side indicators).
+    bool is_indicator_visible = false;
+    // Whether the content setting was changed by the user via page info since
+    // the last navigation.
+    bool changed_via_page_info = false;
+    // Last used time when a permission-gated feature is no longer in use.
+    std::optional<base::Time> last_used_time;
+    // Embedded sites that requested a permission scoped to two sites (e.g.
+    // StorageAccess).
+    std::map<net::SchemefulSite, bool> two_site_requests;
+  };
+  // Stores per-ContentSettingsType status, usage, and indicator state.
+  std::map<ContentSettingsType, ContentSettingsStatus> content_settings_status_;
 
   // Profile-bound, this will outlive this class (which is WebContents bound).
   raw_ptr<HostContentSettingsMap> map_;
@@ -676,18 +687,10 @@ class PageSpecificContentSettings
   // Stores timers for delaying hiding an activity indicators.
   std::map<ContentSettingsType, base::OneShotTimer>
       indicators_hiding_delay_timer_;
-  // Stores last used time when a permission-gate feature is no longer in use.
-  std::map<ContentSettingsType, base::Time> last_used_time_;
-  // Stores `ContentSettingsType` that is currently used by a page.
-  std::set<ContentSettingsType> in_use_;
 
   // A timer to removed a blocked media indicator.
   std::map<ContentSettingsType, base::OneShotTimer>
       media_blocked_indicator_timer_;
-
-  // Stores `ContentSettingsType` that is currently displaying. It is used only
-  // for the Left-Hand Side indicators.
-  std::set<ContentSettingsType> visible_indicators_;
 
   // True if at least one sensor requested by the page is available.
   // We use a single boolean instead of a map because the UI
@@ -699,10 +702,6 @@ class PageSpecificContentSettings
   // Observer to watch for content settings changed.
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       observation_{this};
-
-  // Stores content settings changed by the user via page info since the last
-  // navigation. Used to determine whether to display the settings in page info.
-  std::set<ContentSettingsType> content_settings_changed_via_page_info_;
 
   // Calls to |delegate_| and SiteDataObservers that have been queued up while
   // the page is prerendering. These calls are run when the page is activated.
