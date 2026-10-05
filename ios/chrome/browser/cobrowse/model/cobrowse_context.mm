@@ -94,6 +94,9 @@ const char kGoogleSearchAppStateValue[] = "4";
     if (net::GetValueForKeyInQuery(_url, kThreadIDKey, &value)) {
       _serverID = base::SysUTF8ToNSString(value);
     }
+    if (net::GetValueForKeyInQuery(_url, kStateTokenKey, &value)) {
+      _turnID = base::SysUTF8ToNSString(value);
+    }
   }
   return self;
 }
@@ -119,13 +122,18 @@ const char kGoogleSearchAppStateValue[] = "4";
   }
   CobrowseContext* otherContext = (CobrowseContext*)other;
   return self.url.EqualsIgnoringRef(otherContext.url) &&
-         [self.searchQuery isEqual:otherContext.searchQuery] &&
-         [self.serverID isEqual:otherContext.serverID] &&
-         [self.attachedItems isEqual:otherContext.attachedItems];
+         (self.searchQuery == otherContext.searchQuery ||
+          [self.searchQuery isEqualToString:otherContext.searchQuery]) &&
+         (self.serverID == otherContext.serverID ||
+          [self.serverID isEqualToString:otherContext.serverID]) &&
+         (self.turnID == otherContext.turnID ||
+          [self.turnID isEqualToString:otherContext.turnID]) &&
+         (self.attachedItems == otherContext.attachedItems ||
+          [self.attachedItems isEqual:otherContext.attachedItems]);
 }
 
 - (NSUInteger)hash {
-  return [self.searchQuery hash] ^ [self.serverID hash] ^
+  return [self.searchQuery hash] ^ [self.serverID hash] ^ [self.turnID hash] ^
          [self.attachedItems hash];
 }
 

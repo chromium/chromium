@@ -94,4 +94,26 @@ TEST_F(CobrowseContextTest, CobrowseContextWithSearchQuery) {
   EXPECT_EQ(value, "test query");
 }
 
+// Test that `serverID` (`mtid`) and `turnID` (`mstk`) are extracted from the
+// URL and compared in `isEqual:`.
+TEST_F(CobrowseContextTest, ExtractsServerIDAndTurnID) {
+  GURL url(
+      "https://www.google.com/search?udm=50&q=hello&mtid=thread_1&mstk=turn_2");
+  CobrowseContext* context = [[CobrowseContext alloc] initWithURL:url];
+
+  EXPECT_NSEQ(context.searchQuery, @"hello");
+  EXPECT_NSEQ(context.serverID, @"thread_1");
+  EXPECT_NSEQ(context.turnID, @"turn_2");
+  EXPECT_TRUE(context.hasServerSessionTokens);
+
+  CobrowseContext* same_context = [[CobrowseContext alloc] initWithURL:url];
+  EXPECT_TRUE([context isEqual:same_context]);
+
+  GURL different_turn_url(
+      "https://www.google.com/search?udm=50&q=hello&mtid=thread_1&mstk=turn_3");
+  CobrowseContext* different_turn_context =
+      [[CobrowseContext alloc] initWithURL:different_turn_url];
+  EXPECT_NSNE(context, different_turn_context);
+}
+
 }  // namespace

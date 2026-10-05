@@ -21,9 +21,30 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "net/base/url_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
+
+namespace {
+
+base::DictValue CreateSessionPrefDict(std::string_view server_id,
+                                      std::string_view turn_id,
+                                      std::string_view query = "") {
+  base::DictValue dict;
+  dict.Set("mtid", server_id);
+  if (!turn_id.empty()) {
+    dict.Set("mstk", turn_id);
+  }
+  if (!query.empty()) {
+    dict.Set("q", query);
+  }
+  return dict;
+}
+
+}  // namespace
 
 class CobrowseBrowserAgentTest : public PlatformTest {
  protected:
@@ -77,10 +98,14 @@ class CobrowseBrowserAgentTest : public PlatformTest {
   FakeSceneState* scene_state_;
 };
 
+// Test that `CobrowseBrowserAgent` restores the conversation URL with `q`,
+// `mstk`, and `mtid` from prefs.
 TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefs) {
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
-  update->Set("test_session_id", "my_server_id_123");
+  update->Set(
+      "test_session_id",
+      CreateSessionPrefDict("my_server_id_123", "my_turn_id_456", "my query"));
 
   CobrowseBrowserAgent::CreateForBrowser(browser_.get());
   CobrowseBrowserAgent* agent =
@@ -90,7 +115,74 @@ TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefs) {
 
   CobrowseContext* context = agent->GetCobrowseContext();
   ASSERT_TRUE(context != nil);
-  EXPECT_TRUE([context.serverID isEqualToString:@"my_server_id_123"]);
+  EXPECT_NSEQ(context.searchQuery, @"my query");
+  EXPECT_NSEQ(context.serverID, @"my_server_id_123");
+  EXPECT_NSEQ(context.turnID, @"my_turn_id_456");
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "q", &value));
+  EXPECT_EQ(value, "my query");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "mstk", &value));
+  EXPECT_EQ(value, "my_turn_id_456");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "mtid", &value));
+  EXPECT_EQ(value, "my_server_id_123");
+}
+
+// Test that `CobrowseBrowserAgent` restores the conversation URL when `q` is
+// absent from prefs.
+TEST_F(CobrowseBrowserAgentTest, RestoresContextFromPrefsWithoutQuery) {
+  ScopedDictPrefUpdate update(profile_->GetPrefs(),
+                              prefs::kCobrowseSessionActiveMap);
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id"));
+
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  EXPECT_TRUE(agent->IsSessionActive());
+
+  CobrowseContext* context = agent->GetCobrowseContext();
+  ASSERT_TRUE(context != nil);
+  EXPECT_NSEQ(context.searchQuery, @"");
+  EXPECT_NSEQ(context.serverID, @"my_server_id_123");
+  EXPECT_NSEQ(context.turnID, @"my_turn_id");
+
+  std::string value;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "q", &value));
+  EXPECT_EQ(value, "");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "mstk", &value));
+  EXPECT_EQ(value, "my_turn_id");
+  EXPECT_TRUE(net::GetValueForKeyInQuery(context.url, "mtid", &value));
+  EXPECT_EQ(value, "my_server_id_123");
+}
+
+// Test that loading a conversation stores `q`, `mtid`, and `mstk` into prefs.
+TEST_F(CobrowseBrowserAgentTest, StoresQueryServerIDAndTurnIDInPrefs) {
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+
+  agent->SetSessionActive(true);
+  GURL loaded_url("https://www.google.com/"
+                  "search?udm=50&q=hello&mtid=server_99&mstk=turn_88");
+  CobrowseContext* loaded_context =
+      [[CobrowseContext alloc] initWithURL:loaded_url];
+  agent->SetCobrowseContext(loaded_context);
+
+  const base::DictValue& active_map =
+      profile_->GetPrefs()->GetDict(prefs::kCobrowseSessionActiveMap);
+  const base::DictValue* session_dict = active_map.FindDict("test_session_id");
+  ASSERT_NE(session_dict, nullptr);
+  const std::string* stored_query = session_dict->FindString("q");
+  const std::string* stored_mtid = session_dict->FindString("mtid");
+  const std::string* stored_mstk = session_dict->FindString("mstk");
+  ASSERT_NE(stored_query, nullptr);
+  ASSERT_NE(stored_mtid, nullptr);
+  ASSERT_NE(stored_mstk, nullptr);
+  EXPECT_EQ(*stored_query, "hello");
+  EXPECT_EQ(*stored_mtid, "server_99");
+  EXPECT_EQ(*stored_mstk, "turn_88");
 }
 
 TEST_F(CobrowseBrowserAgentTest, NoActiveSessionInPrefs) {
@@ -111,7 +203,8 @@ TEST_F(CobrowseBrowserAgentTest,
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
-  update->Set("test_session_id", "my_server_id_123");
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
 
   CobrowseBrowserAgent::CreateForBrowser(browser_.get());
   CobrowseBrowserAgent* agent =
@@ -128,7 +221,8 @@ TEST_F(CobrowseBrowserAgentTest,
 TEST_F(CobrowseBrowserAgentTest, TerminateSessionClearsStateAndContext) {
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
-  update->Set("test_session_id", "my_server_id_123");
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
 
   CobrowseBrowserAgent::CreateForBrowser(browser_.get());
   CobrowseBrowserAgent* agent =
@@ -152,7 +246,8 @@ TEST_F(CobrowseBrowserAgentTest,
        TerminatesSessionOnForegroundActiveWhenStartSurfaceShouldBeShown) {
   ScopedDictPrefUpdate update(profile_->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
-  update->Set("test_session_id", "my_server_id_123");
+  update->Set("test_session_id",
+              CreateSessionPrefDict("my_server_id_123", "my_turn_id_456"));
 
   CobrowseBrowserAgent::CreateForBrowser(browser_.get());
   CobrowseBrowserAgent* agent =

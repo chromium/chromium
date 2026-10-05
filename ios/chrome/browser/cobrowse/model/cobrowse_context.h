@@ -24,6 +24,10 @@ class GURL;
 // Corresponds to the "mtid" query parameter.
 @property(nonatomic, copy, readonly) NSString* serverID;
 
+// The turn ID (state token) of the conversation.
+// Corresponds to the "mstk" query parameter.
+@property(nonatomic, copy, readonly) NSString* turnID;
+
 // The items attached from the composebox.
 @property(nonatomic, copy) NSArray<ComposeboxInputItem*>* attachedItems;
 

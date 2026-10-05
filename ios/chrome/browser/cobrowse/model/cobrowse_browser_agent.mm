@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
+#import <string_view>
+
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -28,6 +30,34 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/url_util.h"
+
+namespace {
+
+// Query parameter and preference dictionary keys for the Cobrowse session.
+constexpr std::string_view kQueryParam = "q";
+constexpr std::string_view kServerIDParam = "mtid";
+constexpr std::string_view kTurnIDParam = "mstk";
+
+// Returns a dictionary containing the conversation query (`q`) and identifiers
+// (`mtid` and `mstk`) extracted from `context`.
+base::DictValue BuildSessionPrefDict(CobrowseContext* context) {
+  base::DictValue session_dict;
+  if (!context) {
+    return session_dict;
+  }
+  if (context.searchQuery.length > 0) {
+    session_dict.Set(kQueryParam, base::SysNSStringToUTF8(context.searchQuery));
+  }
+  if (context.serverID.length > 0) {
+    session_dict.Set(kServerIDParam, base::SysNSStringToUTF8(context.serverID));
+  }
+  if (context.turnID.length > 0) {
+    session_dict.Set(kTurnIDParam, base::SysNSStringToUTF8(context.turnID));
+  }
+  return session_dict;
+}
+
+}  // namespace
 
 // Observes SceneState transitions to terminate cobrowse when returning to the
 // foreground after the Start Surface inactivity timeout.
@@ -99,9 +129,16 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
 
   const auto& map = browser_->GetProfile()->GetPrefs()->GetDict(
       prefs::kCobrowseSessionActiveMap);
-  const std::string* server_id = map.FindString(scene_state.sceneSessionID);
+  const base::DictValue* session_dict =
+      map.FindDict(scene_state.sceneSessionID);
+  if (!session_dict) {
+    is_session_active_ = false;
+    return;
+  }
 
-  if (!server_id || server_id->empty()) {
+  const std::string* server_id = session_dict->FindString(kServerIDParam);
+  const std::string* turn_id = session_dict->FindString(kTurnIDParam);
+  if (!server_id || server_id->empty() || !turn_id || turn_id->empty()) {
     is_session_active_ = false;
     return;
   }
@@ -114,8 +151,15 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
   }
 
   CobrowseContext* default_context = [CobrowseContext defaultContext];
-  GURL url = net::AppendOrReplaceQueryParameter(default_context.url, "mtid",
-                                                *server_id);
+  GURL url = default_context.url;
+  // Attach the query, thread ID, and the most recent turn ID to the URL. A
+  // query parameter needs to be present for continued threads and populates
+  // the assistant header title.
+  const std::string* query = session_dict->FindString(kQueryParam);
+  url =
+      net::AppendOrReplaceQueryParameter(url, kQueryParam, query ? *query : "");
+  url = net::AppendOrReplaceQueryParameter(url, kTurnIDParam, *turn_id);
+  url = net::AppendOrReplaceQueryParameter(url, kServerIDParam, *server_id);
   context_ = [[CobrowseContext alloc] initWithURL:url];
 }
 
@@ -196,11 +240,7 @@ void CobrowseBrowserAgent::SetCobrowseContext(CobrowseContext* context) {
 
   ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
                               prefs::kCobrowseSessionActiveMap);
-  std::string server_id = "";
-  if (context_ && context_.serverID) {
-    server_id = base::SysNSStringToUTF8(context_.serverID);
-  }
-  update->Set(scene_state.sceneSessionID, server_id);
+  update->Set(scene_state.sceneSessionID, BuildSessionPrefDict(context_));
   browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
 }
 
@@ -303,11 +343,7 @@ void CobrowseBrowserAgent::SetSessionActive(bool active) {
     return;
   }
 
-  std::string server_id = "";
-  if (context_ && context_.serverID) {
-    server_id = base::SysNSStringToUTF8(context_.serverID);
-  }
-  update->Set(scene_state.sceneSessionID, server_id);
+  update->Set(scene_state.sceneSessionID, BuildSessionPrefDict(context_));
   browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
 }
 

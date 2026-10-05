@@ -286,7 +286,8 @@ void RemoveSharedTab(NSString* title) {
 }
 
 - (GURL)simulatedAimURLForQuery:(const std::string&)query {
-  std::string relativeURL = "/search?udm=50&mtid=dummy_server_id&q=" + query;
+  std::string relativeURL =
+      "/search?udm=50&mtid=dummy_server_id&mstk=dummy_turn_id&q=" + query;
   return self.testServer->GetURL("localhost", relativeURL);
 }
 
