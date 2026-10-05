@@ -67,11 +67,6 @@ const gfx::Size kOverlaySize(kDefaultMode.hdisplay / 2,
                              kDefaultMode.vdisplay / 2);
 const gfx::SizeF kDefaultModeSizeF(1.0, 1.0);
 
-const std::string kGpuCrashLogTimeout =
-    "Failed to modeset within " +
-    base::NumberToString(kWaitForModesetTimeout.InSeconds()) +
-    " s of the first page flip failure. Crashing GPU process.";
-
 SkBitmap CreateBitmap(int width, int height) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
@@ -955,9 +950,12 @@ TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithNoSavingModeset) {
 
   // Since no modeset event was detected, death occurs after
   // |kWaitForModesetTimeout| seconds.
+  const std::string expected_log =
+      "Failed to modeset within " +
+      base::NumberToString(kWaitForModesetTimeout.InSeconds()) +
+      " s of the first page flip failure. Crashing GPU process.";
   EXPECT_DEATH_IF_SUPPORTED(
-      task_environment_.FastForwardBy(kWaitForModesetTimeout),
-      kGpuCrashLogTimeout);
+      task_environment_.FastForwardBy(kWaitForModesetTimeout), expected_log);
 }
 
 TEST_F(HardwareDisplayControllerTest, FailPageFlippingWithSavingModeset) {

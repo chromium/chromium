@@ -49,11 +49,6 @@ using testing::IsEmpty;
 using testing::Return;
 using testing::SizeIs;
 
-// TODO(crbug.com/40945652): These tests should not use a single-point
-// curve as the non-empty value (it is arguably not a valid input).
-const display::GammaCurve kNonemptyGammaCurve({{0, 0, 0}});
-const display::GammaCurve kEmptyGammaCurve;
-
 const gfx::Size kDefaultBufferSize(2, 2);
 // Create a basic mode for a 6x4 screen.
 drmModeModeInfo kDefaultMode = {.hdisplay = 6, .vdisplay = 4};

@@ -5,6 +5,8 @@
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 
 #include <algorithm>
+#include <array>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -31,61 +33,67 @@ constexpr uint32_t kCommitModesetFlags = DRM_MODE_ATOMIC_ALLOW_MODESET;
 // pageflip, or other atomic property changes that do not require modesetting.
 constexpr uint32_t kSeamlessModesetFlags = 0;
 
-const std::vector<uint32_t> kBlobPropertyIds = {kEdidBlobPropId};
+constexpr auto kBlobPropertyIds = std::to_array<uint32_t>({kEdidBlobPropId});
 
 const ResolutionAndRefreshRate kStandardMode =
     ResolutionAndRefreshRate{gfx::Size(1920, 1080), 60u};
 
-const std::map<uint32_t, std::string> kCrtcRequiredPropertyNames = {
-    {kActivePropId, "ACTIVE"},
-    {kModePropId, "MODE_ID"},
-};
+constexpr auto kCrtcRequiredPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        {kActivePropId, "ACTIVE"},
+        {kModePropId, "MODE_ID"},
+    });
 
-const std::map<uint32_t, std::string> kCrtcOptionalPropertyNames = {
-    {kBackgroundColorPropId, "BACKGROUND_COLOR"},
-    {kCtmPropId, "CTM"},
-    {kGammaLutPropId, "GAMMA_LUT"},
-    {kGammaLutSizePropId, "GAMMA_LUT_SIZE"},
-    {kDegammaLutPropId, "DEGAMMA_LUT"},
-    {kDegammaLutSizePropId, "DEGAMMA_LUT_SIZE"},
-    {kOutFencePtrPropId, "OUT_FENCE_PTR"},
-    {kVrrEnabledPropId, "VRR_ENABLED"},
-};
+constexpr auto kCrtcOptionalPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        {kBackgroundColorPropId, "BACKGROUND_COLOR"},
+        {kCtmPropId, "CTM"},
+        {kGammaLutPropId, "GAMMA_LUT"},
+        {kGammaLutSizePropId, "GAMMA_LUT_SIZE"},
+        {kDegammaLutPropId, "DEGAMMA_LUT"},
+        {kDegammaLutSizePropId, "DEGAMMA_LUT_SIZE"},
+        {kOutFencePtrPropId, "OUT_FENCE_PTR"},
+        {kVrrEnabledPropId, "VRR_ENABLED"},
+    });
 
-const std::map<uint32_t, std::string> kConnectorRequiredPropertyNames = {
-    {kCrtcIdPropId, "CRTC_ID"},
-    {kLinkStatusPropId, "link-status"},
-    {kEdidBlobPropId, "EDID"},
-};
+constexpr auto kConnectorRequiredPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        {kCrtcIdPropId, "CRTC_ID"},
+        {kLinkStatusPropId, "link-status"},
+        {kEdidBlobPropId, "EDID"},
+    });
 
-const std::map<uint32_t, std::string> kConnectorOptionalPropertyNames = {
-    {kTileBlobPropId, "TILE"},
-    {kVrrCapablePropId, "vrr_capable"},
-};
+constexpr auto kConnectorOptionalPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        {kTileBlobPropId, "TILE"},
+        {kVrrCapablePropId, "vrr_capable"},
+    });
 
-const std::map<uint32_t, std::string> kPlaneRequiredPropertyNames = {
-    // Add all required properties.
-    {kPlaneCrtcId, "CRTC_ID"},
-    {kCrtcX, "CRTC_X"},
-    {kCrtcY, "CRTC_Y"},
-    {kCrtcW, "CRTC_W"},
-    {kCrtcH, "CRTC_H"},
-    {kPlaneFbId, "FB_ID"},
-    {kSrcX, "SRC_X"},
-    {kSrcY, "SRC_Y"},
-    {kSrcW, "SRC_W"},
-    {kSrcH, "SRC_H"},
-    {kInFencePropId, "IN_FENCE_FD"},
-    {kTypePropId, "type"},
-    {kInFormatsPropId, "IN_FORMATS"},
-    {kRotationPropId, "rotation"},
-};
+constexpr auto kPlaneRequiredPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        // Add all required properties.
+        {kPlaneCrtcId, "CRTC_ID"},
+        {kCrtcX, "CRTC_X"},
+        {kCrtcY, "CRTC_Y"},
+        {kCrtcW, "CRTC_W"},
+        {kCrtcH, "CRTC_H"},
+        {kPlaneFbId, "FB_ID"},
+        {kSrcX, "SRC_X"},
+        {kSrcY, "SRC_Y"},
+        {kSrcW, "SRC_W"},
+        {kSrcH, "SRC_H"},
+        {kInFencePropId, "IN_FENCE_FD"},
+        {kTypePropId, "type"},
+        {kInFormatsPropId, "IN_FORMATS"},
+        {kRotationPropId, "rotation"},
+    });
 
-const std::map<uint32_t, std::string> kPlaneOptionalPropertyNames = {
-    {kColorEncodingPropId, "COLOR_ENCODING"},
-    {kColorRangePropId, "COLOR_RANGE"},
-    {kSizeHintsPropId, "SIZE_HINTS"},
-};
+constexpr auto kPlaneOptionalPropertyNames =
+    std::to_array<std::pair<uint32_t, std::string_view>>({
+        {kColorEncodingPropId, "COLOR_ENCODING"},
+        {kColorRangePropId, "COLOR_RANGE"},
+        {kSizeHintsPropId, "SIZE_HINTS"},
+    });
 
 template <class T>
 uint32_t GetNextId(const std::vector<T>& collection, uint32_t base) {
