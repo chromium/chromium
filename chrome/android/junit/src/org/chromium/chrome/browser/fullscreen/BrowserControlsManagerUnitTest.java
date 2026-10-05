@@ -13,6 +13,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Handler;
@@ -1228,5 +1230,139 @@ public class BrowserControlsManagerUnitTest {
         mControlsDelegate.set(BrowserControlsState.SHOWN);
         ShadowLooper.idleMainLooper();
         verify(mContainerView).requestLayout();
+    }
+
+    @Test
+    public void testConstraintsShown_cancelsInFlightHideAnimation() {
+        remakeWithoutSpy();
+
+        // Set position to BOTTOM, top heights to 0, bottom height to TOOLBAR_HEIGHT
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 0, 0);
+
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        // Start hiding controls with animation
+        mBrowserControlsManager.hideAndroidControls(true);
+
+        // Animator should be initialized and running
+        assertNotNull(
+                "Animator should be initialized.",
+                mBrowserControlsManager.getControlsAnimatorForTesting());
+        assertTrue(mBrowserControlsManager.offsetOverridden());
+
+        // Lock controls SHOWN persistently (e.g. bottom sheet opened).
+        mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
+        ShadowLooper.idleMainLooper();
+
+        assertNull(
+                "Animator should be cancelled when constraints become SHOWN.",
+                mBrowserControlsManager.getControlsAnimatorForTesting());
+        assertFalse(mBrowserControlsManager.offsetOverridden());
+        assertEquals(
+                "Bottom control offset should be 0.",
+                0,
+                mBrowserControlsManager.getBottomControlOffset());
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(
+                "Bottom control offset should remain 0 after tasks finish.",
+                0,
+                mBrowserControlsManager.getBottomControlOffset());
+    }
+
+    @Test
+    public void testHideAndroidControls_whileConstraintsShown_doesNotHide() {
+        remakeWithoutSpy();
+
+        // Set position to BOTTOM, top heights to 0, bottom height to TOOLBAR_HEIGHT
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 0, 0);
+
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        // Lock controls SHOWN persistently.
+        mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
+        ShadowLooper.idleMainLooper();
+
+        // Attempt to hide controls with animation.
+        mBrowserControlsManager.hideAndroidControls(/* animate= */ true);
+
+        assertNull(
+                "Hide animator should not start when controls are locked SHOWN.",
+                mBrowserControlsManager.getControlsAnimatorForTesting());
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+    }
+
+    @Test
+    public void testHideAndroidControlsNoAnimation_whileConstraintsShown_doesNotHide() {
+        remakeWithoutSpy();
+
+        // Set position to BOTTOM, top heights to 0, bottom height to TOOLBAR_HEIGHT
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 0, 0);
+
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        // Lock controls SHOWN persistently.
+        mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
+        ShadowLooper.idleMainLooper();
+
+        // Attempt to hide controls without animation.
+        mBrowserControlsManager.hideAndroidControls(/* animate= */ false);
+
+        assertEquals(0, mBrowserControlsManager.getBottomControlOffset());
+    }
+
+    @Test
+    public void testShowAndroidControls_cancelsHideAnimatorAndClearsReference() {
+        remakeWithoutSpy();
+
+        // Set position to BOTTOM, top heights to 0, bottom height to TOOLBAR_HEIGHT
+        mBrowserControlsManager.setControlsPosition(
+                ControlsPosition.BOTTOM, 0, 0, 0, TOOLBAR_HEIGHT, 0, 0);
+
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        mBrowserControlsManager.hideAndroidControls(/* animate= */ true);
+        assertNotNull(mBrowserControlsManager.getBrowserDrivenHideAnimatorForTesting());
+
+        mBrowserControlsManager.showAndroidControls(/* animate= */ true);
+        assertNull(mBrowserControlsManager.getBrowserDrivenHideAnimatorForTesting());
+    }
+
+    @Test
+    public void testConstraintsShown_doesNotCancelHeightChangeAnimation() {
+        // Simulate that we can't animate native browser controls so browser-driven animation runs.
+        when(mBrowserControlsManager.getTab()).thenReturn(null);
+        mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
+
+        mBrowserControlsManager.setBottomControlsHeight(TOOLBAR_HEIGHT + 10, 10);
+        assertTrue(
+                "Bottom controls should be animating.",
+                mBrowserControlsManager.hasBottomControlsHeightAnimation());
+
+        ValueAnimator animator = mBrowserControlsManager.getControlsAnimatorForTesting();
+        assertNotNull("Height-change animator should be running.", animator);
+
+        // Lock controls SHOWN persistently (e.g. bottom sheet opened).
+        mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
+        assertSame(
+                "Height-change animator should not be cancelled when constraints become SHOWN.",
+                animator,
+                mBrowserControlsManager.getControlsAnimatorForTesting());
+        assertTrue(
+                "Bottom controls should still be animating.",
+                mBrowserControlsManager.hasBottomControlsHeightAnimation());
+
+        // In Robolectric PAUSED looper mode, idling the looper runs Choreographer frames to
+        // animation completion unless paused. Pausing ensures idleMainLooper verifies that
+        // looper tasks do not abort the animator.
+        animator.pause();
+        ShadowLooper.idleMainLooper();
+        assertSame(
+                "Height-change animator should remain active after idling main looper.",
+                animator,
+                mBrowserControlsManager.getControlsAnimatorForTesting());
     }
 }

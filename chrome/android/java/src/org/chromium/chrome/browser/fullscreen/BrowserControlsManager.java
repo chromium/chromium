@@ -113,6 +113,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     /** The animator for the Android browser controls. */
     private @Nullable ValueAnimator mControlsAnimator;
+    private @Nullable ValueAnimator mBrowserDrivenHideAnimator;
 
     private boolean mIsAnimatingToShow;
 
@@ -1025,6 +1026,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             boolean renderDrivenShowConstraint =
                     canAnimateNativeBrowserControls() && hasNonZeroRendererOffsets();
             if (!renderDrivenShowConstraint) {
+                // Cancel any in-flight hide animation to prevent it from continuing to
+                // interpolate or snapping offsets to hidden after we restore them.
+                cancelBrowserDrivenHideAnimation();
                 setPositionsForTabToNonFullscreen();
             }
 
@@ -1207,8 +1211,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     /** Helper method to cancel overridden offset on Android browser controls. */
     private void resetControlsOffsetOverridden() {
         if (!offsetOverridden()) return;
-        if (mControlsAnimator != null) mControlsAnimator.cancel();
-        setOffsetOverridden(false);
+        if (mControlsAnimator != null) {
+            mControlsAnimator.cancel();
+            mBrowserDrivenHideAnimator = null;
+        }
+        setOffsetOverridden(/* flag= */ false);
     }
 
     private void runBrowserDrivenShowAnimation() {
@@ -1217,6 +1224,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             mControlsAnimator.removeAllListeners();
             mControlsAnimator.cancel();
             mControlsAnimator = null;
+            mBrowserDrivenHideAnimator = null;
         }
         mIsAnimatingToShow = true;
 
@@ -1305,6 +1313,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
 
         mControlsAnimator = ValueAnimator.ofFloat(0.f, 1.f);
+        mBrowserDrivenHideAnimator = mControlsAnimator;
         mControlsAnimator.setDuration(
                 (long) Math.abs((1.f - hiddenRatio) * CONTROLS_ANIMATION_DURATION_MS));
         mControlsAnimator.addListener(
@@ -1312,6 +1321,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mControlsAnimator = null;
+                        mBrowserDrivenHideAnimator = null;
                     }
 
                     @Override
@@ -1346,6 +1356,18 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mControlsAnimator.start();
     }
 
+    private void cancelBrowserDrivenHideAnimation() {
+        if (mControlsAnimator != null && mControlsAnimator == mBrowserDrivenHideAnimator) {
+            // Cancel the in-flight hide animation without notifying listeners so
+            // onAnimationCancel does not snap the offsets back to the hidden target.
+            mControlsAnimator.removeAllListeners();
+            mControlsAnimator.cancel();
+            mControlsAnimator = null;
+            mBrowserDrivenHideAnimator = null;
+            setOffsetOverridden(/* flag= */ false);
+        }
+    }
+
     /**
      * Hides the Android browser controls view.
      *
@@ -1353,6 +1375,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      */
     @Override
     public void hideAndroidControls(boolean animate) {
+        // Do not hide controls if they are persistently locked in the SHOWN state.
+        if (assumeNonNull(mBrowserVisibilityDelegate.get()) == BrowserControlsState.SHOWN) {
+            return;
+        }
+
         if (animate) {
             runBrowserDrivenHideAnimation();
         } else {
@@ -1556,6 +1583,11 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     @NullUnmarked
     ValueAnimator getControlsAnimatorForTesting() {
         return mControlsAnimator;
+    }
+
+    @NullUnmarked
+    ValueAnimator getBrowserDrivenHideAnimatorForTesting() {
+        return mBrowserDrivenHideAnimator;
     }
 
     int getControlsAnimationDurationMsForTesting() {
