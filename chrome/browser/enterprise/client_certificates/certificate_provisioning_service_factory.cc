@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
@@ -25,6 +26,7 @@
 #include "components/enterprise/client_certificates/core/key_upload_client.h"
 #include "components/enterprise/client_certificates/core/profile_cloud_management_delegate.h"
 #include "components/enterprise/core/dependency_factory.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -57,8 +59,14 @@ CertificateProvisioningServiceFactory::GetForProfile(Profile* profile) {
 }
 
 CertificateProvisioningServiceFactory::CertificateProvisioningServiceFactory()
-    : ProfileKeyedServiceFactory("CertificateProvisioningService",
-                                 ProfileSelections::BuildForRegularProfile()) {
+    : ProfileKeyedServiceFactory(
+          "CertificateProvisioningService",
+          base::FeatureList::IsEnabled(
+              enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2)
+              ? ProfileSelections::Builder()
+                    .WithIsolatedMode(ProfileSelection::kRedirectedToOriginal)
+                    .Build()
+              : ProfileSelections::BuildForRegularProfile()) {
   DependsOn(CertificateStoreFactory::GetInstance());
   DependsOn(enterprise::ProfileIdServiceFactory::GetInstance());
 }
