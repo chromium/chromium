@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -57,6 +58,7 @@
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/tabs/dragging/window_finder.h"
@@ -106,6 +108,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_activation_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -1049,6 +1052,118 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
             TabDragController::Liveness::kDeleted);
   EXPECT_TRUE(ended_during_activate);
   EXPECT_FALSE(TabDragController::IsActive());
+}
+
+// Enables the full WebUI omnibox popup, which is hosted in its own native
+// window. The transparent top margin of that window overlaps the bottom of the
+// tab strip.
+class TabDragControllerWebUIOmniboxPopupTest : public TabDragControllerTest {
+ public:
+  TabDragControllerWebUIOmniboxPopupTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{omnibox::internal::kWebUIOmniboxFullPopup},
+        /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup});
+    // On Windows, the omnibox popup opened at startup is an Aura child of the
+    // browser HWND and takes activation while the HWND stays foreground, so
+    // `BringBrowserWindowToFront()` would hang. Activate the browser first.
+    set_global_browser_set_up_function(
+        [](const BrowserWindowInterface* browser) {
+          BrowserView::GetBrowserViewForBrowser(browser)->Activate();
+          return ui_test_utils::BringBrowserWindowToFront(browser);
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that a tab dragged along its own strip, through the area that the
+// omnibox popup's window overlaps, stays attached instead of tearing off.
+IN_PROC_BROWSER_TEST_F(TabDragControllerWebUIOmniboxPopupTest,
+                       DragAlongTabStripUnderOmniboxPopupDoesNotDetach) {
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  views::Widget* browser_widget = tab_strip->GetWidget();
+
+  // A stand-in for the popup, tagged the same way as the real one. It is never
+  // shown, because the window finder below decides what lies under the cursor.
+  auto popup_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_POPUP);
+  params.parent = browser_widget->GetNativeView();
+  params.bounds = tab_strip->GetBoundsInScreen();
+  popup_widget->Init(std::move(params));
+  popup_widget->SetNativeWindowProperty(
+      views::kWidgetIdentifierKey,
+      const_cast<void*>(omnibox::kOmniboxWebUIPopupWidgetId));
+
+  Tab* tab1 = tab_strip->tab_at(1);
+  const gfx::Point tab_0_center =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  const gfx::Point tab_1_center = GetCenterInScreenCoordinates(tab1);
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed,
+                             tab1->GetLocalBounds().CenterPoint(), tab_1_center,
+                             base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip->MaybeStartDrag(tab1, press_event, tab_strip->GetSelectionModel());
+  ASSERT_TRUE(TabDragController::IsActive());
+
+  TabDragController* controller =
+      tab_strip->GetDragContext()->GetDragController();
+  ASSERT_NE(controller, nullptr);
+
+  // Reports the popup as the topmost window at every point, with the browser
+  // directly beneath it.
+  class PopupOverBrowserWindowFinder : public WindowFinder {
+   public:
+    PopupOverBrowserWindowFinder(gfx::NativeWindow popup,
+                                 gfx::NativeWindow browser)
+        : popup_(popup), browser_(browser) {}
+
+    gfx::NativeWindow GetLocalProcessWindowAtPoint(
+        const gfx::Point& screen_point,
+        const std::set<gfx::NativeWindow>& ignore) override {
+      if (!ignore.contains(popup_)) {
+        return popup_;
+      }
+      return ignore.contains(browser_) ? gfx::NativeWindow() : browser_;
+    }
+
+   private:
+    gfx::NativeWindow popup_;
+    gfx::NativeWindow browser_;
+  };
+  SetWindowFinderForTabStrip(
+      tab_strip,
+      std::make_unique<PopupOverBrowserWindowFinder>(
+          popup_widget->GetNativeWindow(), browser_widget->GetNativeWindow()));
+
+  // If the tab tears off, end the drag as soon as the new browser shows. The
+  // test then fails below instead of hanging in the window move loop.
+  bool detached = false;
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        if (!detached && widget != browser_widget &&
+            BrowserView::GetBrowserViewForNativeWindow(
+                widget->GetNativeWindow())) {
+          detached = true;
+          controller->EndDrag(EndDragReason::kCaptureLost);
+        }
+      }));
+
+  ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
+            TabDragController::Liveness::kAlive);
+  ASSERT_EQ(controller->Drag(tab_0_center),
+            TabDragController::Liveness::kAlive);
+  ASSERT_FALSE(detached);
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+
+  controller->EndDrag(EndDragReason::kComplete);
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ("1 0", IDString(browser()->GetTabStripModel()));
 }
 
 class DetachToBrowserTabDragControllerTest

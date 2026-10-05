@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_target.h"
@@ -84,6 +86,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
+#include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -123,6 +126,17 @@ namespace {
 // creation and makes it easier to drag tabs out of a restored window that had
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
+
+// Returns true if `window` hosts a WebUI omnibox popup.
+bool IsWebUIOmniboxPopupWindow(gfx::NativeWindow window) {
+  if (!window) {
+    return false;
+  }
+  views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
+  return widget &&
+         widget->GetNativeWindowProperty(views::kWidgetIdentifierKey) ==
+             omnibox::kOmniboxWebUIPopupWidgetId;
+}
 
 class VisibilityWaiter : public views::WidgetObserver {
  public:
@@ -2982,6 +2996,19 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   *window = window_finder_->GetLocalProcessWindowAtPoint(screen_point, exclude);
+
+  // Look through a WebUI omnibox popup to whatever lies beneath it. The popup
+  // is hosted in its own native window, and its transparent top margin overlaps
+  // the bottom of the browser's tab strip. For points in that margin,
+  // `GetLocalProcessWindowAtPoint()` returns the popup instead of the browser,
+  // and `CanAttachTo()` rejects it. Without this, a tab dragged along its own
+  // strip tears off, and a dragged browser held over a strip cannot reattach.
+  if (ref && omnibox::internal::IsWebUIOmniboxFullPopupEnabled() &&
+      IsWebUIOmniboxPopupWindow(*window)) {
+    exclude.insert(*window);
+    *window =
+        window_finder_->GetLocalProcessWindowAtPoint(screen_point, exclude);
+  }
   return ref ? Liveness::kAlive : Liveness::kDeleted;
 }
 
