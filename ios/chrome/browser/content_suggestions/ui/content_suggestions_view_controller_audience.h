@@ -36,6 +36,9 @@ enum class TipIdentifier;
 // Indicates that the user has tapped the Default Browser promo.
 - (void)didTapDefaultBrowserPromo;
 
+// Notifies the audience that the content suggestions size has been updated.
+- (void)contentSuggestionsWasUpdated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_CONTENT_SUGGESTIONS_VIEW_CONTROLLER_AUDIENCE_H_

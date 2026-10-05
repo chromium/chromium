@@ -55,6 +55,7 @@ NSCollectionLayoutSection* GetSectionForMostVisitedTilesCollectionView(
     /// Allow peeking the first off-screen element.
     group_width -= PeekInsetForCollectionView(trait_collection);
   }
+  group_width = MAX(0.0, group_width);
   NSCollectionLayoutDimension* group_width_dimension =
       [NSCollectionLayoutDimension absoluteDimension:group_width];
   NSCollectionLayoutGroup* group = [NSCollectionLayoutGroup

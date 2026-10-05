@@ -1315,15 +1315,22 @@ using ntp_tiles::AimButtonRefactorArm;
 #pragma mark - ContentSuggestionsDelegate
 
 - (void)contentSuggestionsWasUpdated {
-  if (!IsNTPRedesignEnabled()) {
-    // Force a layout to make sure the frame height is successfully updated,
-    // before updating height above the feed.
-    UIView* contentSuggestionsView =
-        self.NTPViewController.contentSuggestionsViewController.view;
-    [contentSuggestionsView setNeedsLayout];
-    [contentSuggestionsView layoutIfNeeded];
-    [self.NTPViewController updateHeightAboveFeed];
+  if (IsNTPRedesignEnabled()) {
+    return;
   }
+  UIView* contentSuggestionsView =
+      self.NTPViewController.contentSuggestionsViewController.view;
+  if (!contentSuggestionsView.superview ||
+      self.NTPViewController.view.bounds.size.width <= 0) {
+    return;
+  }
+  // Force a layout on the superview so `contentSuggestionsView` and its
+  // subviews are laid out and `contentSuggestionsView.frame` reflects the
+  // updated height before updating the height above the feed.
+  [contentSuggestionsView setNeedsLayout];
+  [contentSuggestionsView.superview setNeedsLayout];
+  [contentSuggestionsView.superview layoutIfNeeded];
+  [self.NTPViewController updateHeightAboveFeed];
 }
 
 - (void)shareURL:(const GURL&)URL

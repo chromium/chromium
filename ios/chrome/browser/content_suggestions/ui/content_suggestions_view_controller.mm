@@ -167,6 +167,10 @@ constexpr CGFloat kStackViewSpacing = 12.0;
   collectionView.maxVisibleItems =
       MostVisitedMaximumVisibleItemsOnScreen(/*aim_available=*/_isAIMAllowed);
   _mostVisitedCollectionView = collectionView;
+  __weak __typeof(self) weakSelf = self;
+  collectionView.onContentSizeChanged = ^(CGSize) {
+    [weakSelf.audience contentSuggestionsWasUpdated];
+  };
 
   _mostVisitedView =
       [self createContainerForContentSuggestionsModule:collectionView];
@@ -197,10 +201,6 @@ constexpr CGFloat kStackViewSpacing = 12.0;
     }
   }
   [_contentSuggestionsModuleStackView addArrangedSubview:_mostVisitedView];
-
-  // Force layout to make sure the subviews correctly calculates its frame size.
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
 }
 
 // Creates a horizontal stack view for content suggestions modules.

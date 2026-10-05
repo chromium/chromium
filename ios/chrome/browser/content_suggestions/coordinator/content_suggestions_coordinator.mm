@@ -697,6 +697,10 @@ using segmentation_platform::TipIdentifier;
       ->SetIsShownOnStartSurface(false);
 }
 
+- (void)contentSuggestionsWasUpdated {
+  [self.delegate contentSuggestionsWasUpdated];
+}
+
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
   CHECK(_tipsMediator);
 
