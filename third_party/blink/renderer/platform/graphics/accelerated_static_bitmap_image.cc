@@ -135,8 +135,7 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   draw_callback(recorder.getRecordingCanvas());
   if (recorder.HasReleasableDrawOps()) {
     cc::ImageDecodeCache* cache_f16 = nullptr;
-    if (resource_provider->GetSharedImageFormat() ==
-        viz::SinglePlaneFormat::kRGBA_F16) {
+    if (shared_image->format() == viz::SinglePlaneFormat::kRGBA_F16) {
       cache_f16 = context_provider_wrapper->ContextProvider().ImageDecodeCache(
           kRGBA_F16_SkColorType);
     }
@@ -144,8 +143,7 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
         context_provider_wrapper->ContextProvider().ImageDecodeCache(
             kN32_SkColorType);
     CanvasImageProvider image_provider(
-        cache_rgba8, cache_f16, color_space,
-        resource_provider->GetSharedImageFormat(),
+        cache_rgba8, cache_f16, color_space, shared_image->format(),
         cc::PlaybackImageProvider::RasterMode::kGpu, context_provider_wrapper);
     if (animated_image_frame_index_map) {
       image_provider.SetAnimatedImageFrameIndexes(
