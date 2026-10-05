@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -76,7 +79,7 @@ public class NavigationObserverUnitTest {
         mNavigationObserver =
                 new NavigationObserver(mTabModelSelector, mTabGroupSyncService, mNavigationTracker);
         mSavedTabGroup = new SavedTabGroup();
-        mSavedTabGroup.collaborationId = "colab";
+        mSavedTabGroup.collaborationId = null;
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_TAB_GROUP_ID_1);
         when(mTabGroupSyncUtilsJni.isSaveableNavigation(anyBoolean(), anyLong())).thenReturn(true);
     }
@@ -308,5 +311,218 @@ public class NavigationObserverUnitTest {
         verifyNoMoreInteractions(mTabGroupSyncService);
         verify(mTabGroupSyncUtilsJni)
                 .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+    }
+
+    @Test
+    public void testOnTitleUpdatedBasic() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = "Old Title";
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq(mTestTitle),
+                        eq(mTestUrl),
+                        eq(-1));
+    }
+
+    @Test
+    public void testOnTitleUpdatedDisabledObserver() {
+        mNavigationObserver.enableObservers(false);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testOnTitleUpdatedIncognito() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ true,
+                /* isGrouped= */ true);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testOnTitleUpdatedNotGrouped() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                null,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ false);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testOnTitleUpdatedFrozenTab() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        when(mTab.isFrozen()).thenReturn(true);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testOnTitleUpdatedUnsaveableUrl() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                CHROME_HISTORY_URL,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verifyNoInteractions(mTabGroupSyncService);
+    }
+
+    @Test
+    public void testOnTitleUpdated_SharedTabGroup_Ignored() {
+        mNavigationObserver.enableObservers(true);
+        mSavedTabGroup.collaborationId = "colab";
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                "New Title",
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = mTestTitle;
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService, never()).updateTab(any(), anyInt(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOnTitleUpdated_DifferentUrl_Ignored() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                "New Title",
+                mTestUrl2,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = mTestTitle;
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService, never()).updateTab(any(), anyInt(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOnTitleUpdated_TabNotFound_Ignored() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService, never()).updateTab(any(), anyInt(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOnTitleUpdatedEmptyTitle() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(TAB_ID_1, TOKEN_1, "", mTestUrl, /* isIncognito= */ false, /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = mTestTitle;
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService)
+                .updateTab(eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), eq(""), eq(mTestUrl), eq(-1));
+    }
+
+    @Test
+    public void testOnTitleUpdatedDeltaSuppression() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                mTestTitle,
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = mTestTitle;
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService, never()).updateTab(any(), anyInt(), any(), any(), anyInt());
+    }
+
+    @Test
+    public void testOnTitleUpdatedUrlMatchesDifferentTitle() {
+        mNavigationObserver.enableObservers(true);
+        mockTab(
+                TAB_ID_1,
+                TOKEN_1,
+                "New Title",
+                mTestUrl,
+                /* isIncognito= */ false,
+                /* isGrouped= */ true);
+        SavedTabGroupTab savedTab = new SavedTabGroupTab();
+        savedTab.localId = TAB_ID_1;
+        savedTab.title = mTestTitle;
+        savedTab.url = mTestUrl;
+        mSavedTabGroup.savedTabs.add(savedTab);
+
+        mNavigationObserver.onTitleUpdated(mTab);
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(TAB_ID_1),
+                        eq("New Title"),
+                        eq(mTestUrl),
+                        eq(-1));
     }
 }
