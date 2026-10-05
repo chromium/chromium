@@ -396,8 +396,7 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
 }
 
 void AuthenticationService::SignOut(
-    signin_metrics::ProfileSignout signout_source,
-    ProceduralBlock completion) {
+    signin_metrics::ProfileSignout signout_source) {
   ProfileManagerIOS* profile_manager =
       GetApplicationContext()->GetProfileManager();
   if (!profile_manager) {
@@ -410,10 +409,6 @@ void AuthenticationService::SignOut(
     CHECK(IsPersonalProfile());
   }
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    if (completion) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(completion));
-    }
     return;
   }
 
@@ -432,18 +427,6 @@ void AuthenticationService::SignOut(
   // ClearPrimaryAccount() removed all the accounts from IdentityManager.
   // Populate them again.
   ReloadCredentialsFromIdentities();
-
-  // TODO(crbug.com/407498240): Remove the `completion` param since SignOut() is
-  // always synchronous.
-  if (completion) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(completion));
-  }
-}
-
-void AuthenticationService::SignOut(
-    signin_metrics::ProfileSignout signout_source) {
-  SignOut(signout_source, nil);
 }
 
 AuthenticationService::ProfileInitializationOutcome
