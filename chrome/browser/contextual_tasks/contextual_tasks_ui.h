@@ -219,6 +219,12 @@ class ContextualTasksUI
   void RemoveObserver(contextual_tasks::ContextualTasksUIInterface::Observer*
                           observer) override;
 
+  // Returns whether the user was signed in to the browser with valid
+  // credentials as of the most recent primary page load. This is a snapshot,
+  // refreshed on every primary page change, so that mid-session sign-in state
+  // changes can be detected and the user prompted to reload.
+  bool IsSignedInOnPageLoad() const { return is_signed_in_on_page_load_; }
+
   void ClearContextualSessionHandle();
 
   std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel()
@@ -431,6 +437,7 @@ class ContextualTasksUI
   bool is_lens_overlay_showing_ = false;
   bool are_tab_inputs_supported_on_init_ = false;
   bool is_contextual_tasks_eligible_on_init_ = false;
+  bool is_signed_in_on_page_load_ = false;
   bool is_history_thread_loading_ = false;
 
   // Scoped observation for contextual_tasks_service_.
