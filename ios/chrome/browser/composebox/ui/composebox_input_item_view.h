@@ -23,6 +23,10 @@
 // Returns the size required to display `item`.
 + (CGSize)sizeWithItem:(ComposeboxInputItem*)item;
 
+/// Returns the accessibility label of the image `item`, with its index. Image
+/// chips have no text, so their Large Content Viewer shows it too.
++ (NSString*)accessibilityLabelForImageItem:(ComposeboxInputItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_ITEM_VIEW_H_

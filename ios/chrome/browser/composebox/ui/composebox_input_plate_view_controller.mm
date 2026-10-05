@@ -339,6 +339,7 @@ UIImage* SendButtonImage(BOOL highlighted,
   _deepSearchButton = [self createDeepSearchButton];
   _askAboutThisPageButton = [self createAskAboutThisPageButton];
   _plusButtonContainer = [self createPlusButtonContainer];
+  [self setupLargeContentViewer];
 
   [self updatePlusButtonItems];
   [self setupCarouselContainer];
@@ -1358,6 +1359,23 @@ UIImage* SendButtonImage(BOOL highlighted,
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
   return container;
+}
+
+/// Shows the Large Content Viewer when long pressing the Plus button or a mode
+/// pill, as they don't grow with Dynamic Type to fit in the input plate.
+- (void)setupLargeContentViewer {
+  // The Plus button only has an image. The pills get their title and image
+  // from their configuration.
+  _plusButton.largeContentTitle = _plusButton.accessibilityLabel;
+  NSArray<UIButton*>* buttons = @[
+    _plusButton, _aimButton, _imageGenerationButton, _canvasButton,
+    _deepSearchButton, _askAboutThisPageButton
+  ];
+  for (UIButton* button in buttons) {
+    button.showsLargeContentViewer = YES;
+    [button addInteraction:[[UILargeContentViewerInteraction alloc]
+                               initWithDelegate:nil]];
+  }
 }
 
 /// Rebuilds the tab accordion stack view based on the current tabs.

@@ -4,12 +4,19 @@
 
 #import "ios/chrome/browser/composebox/ui/composebox_input_item_view.h"
 
+#import <string>
+
+#import "base/i18n/message_formatter.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/lens/lens_features.h"
 #import "ios/chrome/browser/composebox/public/composebox_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 // The input item padding.
@@ -28,6 +35,26 @@ const CGFloat kLabelFontSize = 13.0;
 const CGFloat kFadeViewWidth = 20.0f;
 /// The close button trailing.
 const CGFloat kTrailingMargin = 36.0;
+
+// Returns the SF Symbol to display in the Large Content Viewer for `type`.
+// `UILargeContentViewer` renders `largeContentImage` as a monochrome mask,
+// which turns bitmap images (such as photo previews or favicons) into solid
+// gray rectangles. Use an SF Symbol for each item type instead.
+UIImage* LargeContentSymbol(ComposeboxInputItemType type) {
+  switch (type) {
+    case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
+      return SymbolWithPointSize(SymbolPhoto, kLeadingIconSize);
+    case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
+      return SymbolWithPointSize(SymbolPDFFill, kLeadingIconSize);
+    case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile:
+      return SymbolWithPointSize(SymbolPaperclip, kLeadingIconSize);
+    case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
+      return SymbolWithPointSize(SymbolGlobeAmericas, kLeadingIconSize);
+    case ComposeboxInputItemType::kComposeboxInputItemTypeDrive:
+      return SymbolWithPointSize(SymbolMyDrive, kLeadingIconSize);
+  }
+  NOTREACHED();
+}
 }  // namespace
 
 @implementation ComposeboxInputItemView {
@@ -126,6 +153,12 @@ const CGFloat kTrailingMargin = 36.0;
       _titleLabel.text = item.title;
     } break;
   }
+  // Image chips have no text, so show their accessibility label instead.
+  self.largeContentTitle =
+      isImageItem
+          ? [ComposeboxInputItemView accessibilityLabelForImageItem:item]
+          : item.title;
+  self.largeContentImage = LargeContentSymbol(item.type);
   [self updateFadeViewVisibility];
 }
 
@@ -143,6 +176,8 @@ const CGFloat kTrailingMargin = 36.0;
   _leadingIconImageView.image = nil;
   _previewImageView.image = nil;
   _titleLabel.text = nil;
+  self.largeContentTitle = nil;
+  self.largeContentImage = nil;
 }
 
 - (void)setupViews {
@@ -190,6 +225,13 @@ const CGFloat kTrailingMargin = 36.0;
   self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
   self.layer.cornerRadius = composeboxAttachments::kAttachmentCornerRadius;
   self.clipsToBounds = YES;
+
+  // The chip doesn't grow with Dynamic Type, so show its content in the Large
+  // Content Viewer on long press. `-configureWithItem:theme:` sets the content.
+  self.showsLargeContentViewer = YES;
+  self.scalesLargeContentImage = YES;
+  [self addInteraction:[[UILargeContentViewerInteraction alloc]
+                           initWithDelegate:nil]];
 }
 
 - (void)setupConstraints {
@@ -273,6 +315,14 @@ const CGFloat kTrailingMargin = 36.0;
       MIN(contentWidth, composeboxAttachments::kTabFileInputItemSize.width);
   CGFloat height = composeboxAttachments::kTabFileInputItemSize.height;
   return CGSizeMake(width, height);
+}
+
++ (NSString*)accessibilityLabelForImageItem:(ComposeboxInputItem*)item {
+  std::u16string pattern = l10n_util::GetStringUTF16(
+      IDS_IOS_COMPOSEBOX_ATTACHMENT_IMAGE_INDEXED_ACCESSIBILITY_LABEL);
+  std::u16string message = base::i18n::MessageFormatter::FormatWithNamedArgs(
+      pattern, "index", static_cast<int>(item.uploadIndex + 1));
+  return base::SysUTF16ToNSString(message);
 }
 
 @end
