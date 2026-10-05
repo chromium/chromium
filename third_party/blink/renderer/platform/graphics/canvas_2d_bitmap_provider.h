@@ -5,19 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_BITMAP_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_BITMAP_PROVIDER_H_
 
-#include <memory>
-
-#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "ui/gfx/color_space.h"
 
 class SkSurface;
-
-namespace gfx {
-class Size;
-}  // namespace gfx
 
 namespace blink {
 
@@ -27,20 +18,12 @@ namespace blink {
 // Canvas2DResourceProvider.
 class PLATFORM_EXPORT Canvas2DBitmapProvider final {
  public:
-  // The returned instance will have been cleared at creation.
-  static std::unique_ptr<Canvas2DBitmapProvider> CreateWithClear(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space);
-
+  explicit Canvas2DBitmapProvider(sk_sp<SkSurface> surface);
   ~Canvas2DBitmapProvider();
 
   SkSurface* surface() const { return surface_.get(); }
 
  private:
-  explicit Canvas2DBitmapProvider(sk_sp<SkSurface> surface);
-
   const sk_sp<SkSurface> surface_;
 };
 

@@ -40,6 +40,7 @@
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
@@ -123,6 +124,9 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -243,15 +247,30 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
 }
 
 void BaseRenderingContext2D::CreateBitmapProvider() {
-  bitmap_provider_ = Canvas2DBitmapProvider::CreateWithClear(
-      Host()->Size(), color_params_.GetSharedImageFormat(),
-      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace());
-  if (bitmap_provider_) {
-    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-    sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
-    sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
-    sw_snapshot_sk_image_id_ = 0u;
+  const gfx::Size size = Host()->Size();
+  const viz::SharedImageFormat format = color_params_.GetSharedImageFormat();
+  const SkAlphaType alpha_type = color_params_.GetAlphaType();
+  const gfx::ColorSpace color_space = color_params_.GetGfxColorSpace();
+  const auto info = SkImageInfo::Make(
+      size.width(), size.height(), viz::ToClosestSkColorType(format),
+      kPremul_SkAlphaType, color_space.ToSkColorSpace());
+  const bool can_use_lcd_text = alpha_type == kOpaque_SkAlphaType;
+  const auto props =
+      skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+  sk_sp<SkSurface> surface = SkSurfaces::Raster(info, &props);
+  if (!surface) {
+    bitmap_provider_.reset();
+    return;
   }
+  surface->getCanvas()->clear(alpha_type == kOpaque_SkAlphaType
+                                  ? SkColors::kBlack
+                                  : SkColors::kTransparent);
+  bitmap_provider_ =
+      std::make_unique<Canvas2DBitmapProvider>(std::move(surface));
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
+  sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
+  sw_snapshot_sk_image_id_ = 0u;
 }
 
 void BaseRenderingContext2D::OnMemoryDump(
