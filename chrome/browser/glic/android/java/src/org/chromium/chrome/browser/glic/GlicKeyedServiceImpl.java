@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.glic;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -49,7 +51,8 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         return new GlicKeyedServiceImpl(nativePtr);
     }
 
-    private GlicKeyedServiceImpl(long nativePtr) {
+    @VisibleForTesting
+    GlicKeyedServiceImpl(long nativePtr) {
         mNativePtr = nativePtr;
     }
 
@@ -215,7 +218,8 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     }
 
     @CalledByNative
-    private void onNativeDestroyed() {
+    @VisibleForTesting
+    void onNativeDestroyed() {
         mNativePtr = 0;
     }
 
