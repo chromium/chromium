@@ -32,8 +32,6 @@ mojom::ActionResultCode ToActionResultCode(int code) {
       return mojom::ActionResultCode::kTypeTargetNotElement;
     case TypeToolResultCode::kTypeTargetNotFocusable:
       return mojom::ActionResultCode::kTypeTargetNotFocusable;
-    case TypeToolResultCode::kTypeKeyDownSuppressed:
-      return mojom::ActionResultCode::kTypeKeyDownSuppressed;
     case TypeToolResultCode::kInvalidArguments:
       return mojom::ActionResultCode::kArgumentsInvalid;
     case TypeToolResultCode::kElementDisabled:

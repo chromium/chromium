@@ -326,7 +326,6 @@ optimize_ts("type_tool_ts") {
 
   deps = [
     ":actor_tool_utils_ts",
-    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
     "//ios/web/public/js_messaging:gcrweb",
   ]

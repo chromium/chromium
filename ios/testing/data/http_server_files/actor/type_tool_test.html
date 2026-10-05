@@ -24,6 +24,7 @@
                       document.querySelector("textArea"),
                       document.querySelector("div[contenteditable='true']")];
       inputs.forEach(input => {
+        input.addEventListener('beforeinput', recordEvent);
         input.addEventListener('input', recordEvent);
         input.addEventListener('change', recordEvent);
         input.addEventListener('keydown', recordEvent);

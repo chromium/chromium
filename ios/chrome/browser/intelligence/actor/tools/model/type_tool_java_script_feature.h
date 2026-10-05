@@ -31,12 +31,10 @@ enum class TypeToolResultCode {
   kTypeTargetNotElement = 3,
   // The target element is not focusable.
   kTypeTargetNotFocusable = 4,
-  // The page did not allow the keydown or related events.
-  kTypeKeyDownSuppressed = 5,
   // A general invalid arguments error.
-  kInvalidArguments = 6,
+  kInvalidArguments = 5,
   // The target element was disabled.
-  kElementDisabled = 7,
+  kElementDisabled = 6,
 };
 // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/resources/type_tool.ts:TypeToolResultCode)
 
