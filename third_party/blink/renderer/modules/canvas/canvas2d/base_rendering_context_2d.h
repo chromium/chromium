@@ -39,12 +39,14 @@
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
 class SkCanvas;
 class SkPixmap;
+class SkSurface;
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -58,7 +60,6 @@ class Vector2d;
 namespace blink {
 
 class Canvas2DResourceProvider;
-class Canvas2DBitmapProvider;
 class CanvasContextCreationAttributesCore;
 class CanvasImageProvider;
 class CanvasRenderingContext2DSettings;
@@ -295,9 +296,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   void SetRestoreFailedCallbackForTesting(base::RepeatingClosure callback) {
     on_restore_failed_callback_for_testing_ = std::move(callback);
   }
-  Canvas2DBitmapProvider* GetBitmapProviderForTesting() const {
-    return bitmap_provider_.get();
-  }
+  SkSurface* GetSoftwareSurfaceForTesting() const { return surface_.get(); }
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
@@ -399,13 +398,13 @@ class MODULES_EXPORT BaseRenderingContext2D
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
-  void RasterRecordToBitmapProvider(cc::PaintRecord last_recording);
+  void RasterRecordToSoftwareSurface(cc::PaintRecord last_recording);
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
-  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
+  sk_sp<SkSurface> surface_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
-  // Even when using a software bitmap provider, it may be called upon to
+  // Even when using a software surface, it may be called upon to
   // rasterize a texture-backed resource, and that resource must be bound to a
   // gpu context for the current thread.
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;

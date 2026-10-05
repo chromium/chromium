@@ -691,9 +691,9 @@ TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
     Context2D()->fillRect(3, 3, 1, 1);
     EXPECT_EQ(provider, Context2D()->GetSharedImageProvider());
   } else {
-    auto* provider = Context2D()->GetBitmapProviderForTesting();
+    auto* surface = Context2D()->GetSoftwareSurfaceForTesting();
     Context2D()->fillRect(3, 3, 1, 1);
-    EXPECT_EQ(provider, Context2D()->GetBitmapProviderForTesting());
+    EXPECT_EQ(surface, Context2D()->GetSoftwareSurfaceForTesting());
   }
 }
 
