@@ -719,8 +719,6 @@ public abstract class ChromeFeatureList {
     public static final String PERSIST_ACROSS_REBOOTS_DEBUG_LOGS = "PersistAcrossRebootsDebugLogs";
     public static final String PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID =
             "PictureInPictureMovesToolbarAndroid";
-    public static final String POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND =
-            "PowerSavingModeBroadcastReceiverInBackground";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
     public static final String PREPOPULATED_ENGINES_SHADOW_VARIANTS =
             "PrepopulatedEnginesShadowVariants";
@@ -1350,8 +1348,6 @@ public abstract class ChromeFeatureList {
                     PICTURE_IN_PICTURE_MOVES_TOOLBAR_ANDROID,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sPowerSavingModeBroadcastReceiverInBackground =
-            newCachedFlag(POWER_SAVING_MODE_BROADCAST_RECEIVER_IN_BACKGROUND, true);
     public static final CachedFlag sPriceChangeModule = newCachedFlag(PRICE_CHANGE_MODULE, true);
     public static final CachedFlag sProtectRecentlyVisibleTab =
             newCachedFlag(PROTECT_RECENTLY_VISIBLE_TAB, false);
@@ -1649,7 +1645,6 @@ public abstract class ChromeFeatureList {
                     sPersistAcrossReboots,
                     sPersistAcrossRebootsDebugLogs,
                     sPictureInPictureMovesToolbarAndroid,
-                    sPowerSavingModeBroadcastReceiverInBackground,
                     sPriceChangeModule,
                     sProtectRecentlyVisibleTab,
                     sQueuedCompositorWebContentsUpdates,
