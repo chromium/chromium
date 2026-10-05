@@ -231,7 +231,7 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetExpires(cookie.ExpiryDate().is_null()
                           ? -1
                           : cookie.ExpiryDate().InSecondsFSinceUnixEpoch())
-          .SetSize(cookie.Name().length() + cookie.Value().length())
+          .SetSize(net::cookie_util::NameValueSizeBytes(cookie))
           .SetHttpOnly(cookie.IsHttpOnly())
           .SetSecure(cookie.SecureAttribute())
           .SetSession(!cookie.IsPersistent())

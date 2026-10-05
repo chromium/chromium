@@ -2253,6 +2253,15 @@ TEST(CookieUtilTest, IsCookieAccessResultInclude) {
   EXPECT_TRUE(cookie_util::IsCookieAccessResultInclude(CookieAccessResult()));
 }
 
+TEST(CookieUtilTest, NameValueSizeBytes) {
+  auto cookie = CanonicalCookie::CreateUnsafeCookieForTesting(
+      "name", "value123", "www.example.com", "/", base::Time::Now(),
+      base::Time(), base::Time(), base::Time(), /*secure=*/true,
+      /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther);
+  EXPECT_EQ(12u, cookie_util::NameValueSizeBytes(*cookie));
+}
+
 }  // namespace
 
 }  // namespace net

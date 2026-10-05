@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_UTIL_H_
 #define NET_COOKIES_COOKIE_UTIL_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -390,6 +391,9 @@ NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
     const GURL& url,
     StorageAccessApiStatus api_status,
     base::optional_ref<const url::Origin> request_initiator);
+
+// Returns the combined size in bytes of `cc`'s name and value.
+NET_EXPORT size_t NameValueSizeBytes(const CanonicalCookie& cc);
 
 }  // namespace cookie_util
 

@@ -50,6 +50,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
@@ -841,6 +842,13 @@ std::string CanonicalCookie::Value() const {
     return std::string();
   }
   return value_->value();
+}
+
+base::ByteSize CanonicalCookie::ValueSize() const {
+  if (!value_.has_value()) {
+    return base::ByteSize(0);
+  }
+  return base::ByteSize(value_->size());
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(

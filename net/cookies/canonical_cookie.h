@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -281,6 +282,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
 
   // Note: May be expensive because it must decrypt the cookie.
   std::string Value() const;
+  base::ByteSize ValueSize() const;
   base::Time ExpiryDate() const { return expiry_date_; }
   base::Time LastAccessDate() const { return last_access_date_; }
   base::Time LastUpdateDate() const { return last_update_date_; }

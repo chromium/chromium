@@ -175,20 +175,13 @@ bool IncludeUnpartitionedCookies(
       &net::CookiePartitionKey::ForbidsUnpartitionedCookieAccess);
 }
 
-size_t NameValueSizeBytes(const net::CanonicalCookie& cc) {
-  base::CheckedNumeric<size_t> name_value_pair_size = cc.Name().size();
-  name_value_pair_size += cc.Value().size();
-  DCHECK(name_value_pair_size.IsValid());
-  return name_value_pair_size.ValueOrDie();
-}
-
 size_t NumBytesInCookieMapForKey(
     const net::CookieMonster::CookieMap& cookie_map,
     const std::string& key) {
   size_t result = 0;
   auto range = cookie_map.equal_range(key);
   for (auto it = range.first; it != range.second; ++it) {
-    result += NameValueSizeBytes(*it->second);
+    result += net::cookie_util::NameValueSizeBytes(*it->second);
   }
   return result;
 }
@@ -197,7 +190,7 @@ size_t NumBytesInCookieItVector(
     const net::CookieMonster::CookieItVector& cookie_its) {
   size_t result = 0;
   for (const auto& it : cookie_its) {
-    result += NameValueSizeBytes(*it->second);
+    result += net::cookie_util::NameValueSizeBytes(*it->second);
   }
   return result;
 }
@@ -1660,7 +1653,7 @@ CookieMonster::InternalInsertCookie(const std::string& key,
   if (cc->IsPartitioned()) {
     const CookiePartitionKey& partition_key = cc->PartitionKey().value();
 
-    size_t n_bytes = NameValueSizeBytes(*cc);
+    size_t n_bytes = cookie_util::NameValueSizeBytes(*cc);
     num_partitioned_cookies_bytes_ += n_bytes;
     bytes_per_cookie_partition_[partition_key] += n_bytes;
     if (partition_key.nonce()) {
@@ -1800,7 +1793,7 @@ void CookieMonster::SetCanonicalCookie(
         << "SetCookie() key: " << key << " cc: " << cc->DebugString();
 
     if (cc->IsEffectivelySameSiteNone() && collect_metrics) {
-      size_t cookie_size = NameValueSizeBytes(*cc);
+      size_t cookie_size = cookie_util::NameValueSizeBytes(*cc);
       base::UmaHistogramCounts10000("Cookie.SameSiteNoneSizeBytes.Subsampled",
                                     cookie_size);
       if (cc->IsPartitioned()) {
@@ -2055,7 +2048,7 @@ void CookieMonster::InternalDeletePartitionedCookie(
           mapping.cause),
       mapping.notify);
 
-  size_t n_bytes = NameValueSizeBytes(*cc);
+  size_t n_bytes = cookie_util::NameValueSizeBytes(*cc);
   num_partitioned_cookies_bytes_ -= n_bytes;
   bytes_per_cookie_partition_[*cc->PartitionKey()] -= n_bytes;
   if (CookiePartitionKey::HasNonce(cc->PartitionKey())) {
@@ -2323,7 +2316,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
           auto cookies_list_it = *domain_list_it;
           auto cookie_map_it = *cookies_list_it;
 
-          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
+          bytes_used -= cookie_util::NameValueSizeBytes(*cookie_map_it->second);
 
           // Delete from the cookie store.
           InternalDeletePartitionedCookie(
@@ -2348,7 +2341,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
           auto cookies_list_it = *host_list_it;
           auto cookie_map_it = *cookies_list_it;
 
-          bytes_used -= NameValueSizeBytes(*cookie_map_it->second);
+          bytes_used -= cookie_util::NameValueSizeBytes(*cookie_map_it->second);
 
           // Delete from the cookie store.
           InternalDeletePartitionedCookie(
@@ -2366,7 +2359,8 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
              bytes_used > kPerPartitionDomainMaxCookieBytes ||
              non_expired_cookie_its.size() - i > kPerPartitionDomainMaxCookies;
              ++i) {
-          bytes_used -= NameValueSizeBytes(*non_expired_cookie_its[i]->second);
+          bytes_used -= cookie_util::NameValueSizeBytes(
+              *non_expired_cookie_its[i]->second);
           InternalDeletePartitionedCookie(
               cookie_partition_it, non_expired_cookie_its[i], true,
               DELETE_COOKIE_EVICTED_PER_PARTITION_DOMAIN);
@@ -2840,7 +2834,7 @@ bool CookieMonster::DoRecordPeriodicStats() {
   std::map<std::string, size_t> n_bytes_per_key;
 
   for (const auto& [host_key, host_cookie] : cookies_) {
-    size_t cookie_n_bytes = NameValueSizeBytes(*host_cookie);
+    size_t cookie_n_bytes = cookie_util::NameValueSizeBytes(*host_cookie);
     n_bytes += cookie_n_bytes;
     n_bytes_per_key[host_key] += cookie_n_bytes;
 

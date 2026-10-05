@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -58,6 +59,9 @@ using testing::Property;
 TEST(CanonicalCookieTest, Constructor) {
   base::Time current_time = base::Time::Now();
 
+  CanonicalCookie default_cookie;
+  EXPECT_EQ(base::ByteSize(0), default_cookie.ValueSize());
+
   // CreateUnsafeCookieForTesting just forwards to the constructor.
   auto cookie1 = CanonicalCookie::CreateUnsafeCookieForTesting(
       "A", "2", "www.example.com", "/test", current_time, base::Time(),
@@ -66,6 +70,7 @@ TEST(CanonicalCookieTest, Constructor) {
       CookieSourceScheme::kSecure, 443);
   EXPECT_EQ("A", cookie1->Name());
   EXPECT_EQ("2", cookie1->Value());
+  EXPECT_EQ(base::ByteSize(1), cookie1->ValueSize());
   EXPECT_EQ("www.example.com", cookie1->Domain());
   EXPECT_EQ("/test", cookie1->Path());
   EXPECT_FALSE(cookie1->SecureAttribute());

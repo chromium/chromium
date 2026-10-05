@@ -19,6 +19,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -1180,6 +1181,13 @@ bool ShouldAddInitialStorageAccessApiOverride(
     base::optional_ref<const url::Origin> request_initiator) {
   return api_status == StorageAccessApiStatus::kAccessViaAPI &&
          request_initiator && request_initiator->IsSameOriginWith(url);
+}
+
+size_t NameValueSizeBytes(const CanonicalCookie& cc) {
+  base::CheckedNumeric<size_t> name_value_pair_size = cc.Name().size();
+  name_value_pair_size += cc.ValueSize().InBytes();
+  DCHECK(name_value_pair_size.IsValid());
+  return name_value_pair_size.ValueOrDie();
 }
 
 }  // namespace net::cookie_util
