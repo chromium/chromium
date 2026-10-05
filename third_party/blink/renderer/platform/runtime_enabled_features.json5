@@ -4491,7 +4491,7 @@
       // https://chromestatus.com/feature/5054329641893888
       // streamHTML, appendHTML, etc.
       name: "NewHTMLSettingMethods",
-      status: "experimental",
+      status: "stable",
       depends_on: ["SetHTMLCanRunScripts", "StreamingSanitizer", "TrustedTypesCreateParserOptions"]
     },
     {
@@ -6766,7 +6766,7 @@
       // For example, it can enforce that any HTML setter would go through a
       // sanitizer. See https://github.com/w3c/trusted-types/issues/594
       name: "TrustedTypesCreateParserOptions",
-      status: "experimental",
+      status: "stable",
       depends_on: ["SanitizerAPI", "SetHTMLCanRunScripts"],
     },
     {
