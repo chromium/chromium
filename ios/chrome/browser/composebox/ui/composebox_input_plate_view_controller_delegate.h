@@ -94,6 +94,10 @@ enum class FuseboxAttachmentButtonType;
             (ComposeboxInputPlateViewController*)composeboxViewController
                 didTapSendButton:(UIButton*)button;
 
+// Returns the menu to be shown in by the plus button.
+- (UIMenu*)composeboxViewControllerPlusButtonMenu:
+    (ComposeboxInputPlateViewController*)composeboxViewController;
+
 /// Informs the delegate that a file attachment did fail due to exceeding the
 /// attachment limit.
 - (void)didFailToAttachDueToIneligibleAttachments:

@@ -183,7 +183,7 @@ CGFloat const kSheetTopPadding = 40.0f;
              metricsRecorder:_metricsRecorder];
   _mediator.delegate = self;
 
-  if (IsPlusButtonMenuInFakeboxEnabled()) {
+  if (!IsComposeboxPlusButtonBottomSheet()) {
     [self createPickerPresenter];
     [self createMenuBuilder];
   }
@@ -205,7 +205,6 @@ CGFloat const kSheetTopPadding = 40.0f;
 }
 
 - (UIMenu*)createMenu {
-  CHECK(IsPlusButtonMenuInFakeboxEnabled());
   return [_menuBuilder createMenu];
 }
 

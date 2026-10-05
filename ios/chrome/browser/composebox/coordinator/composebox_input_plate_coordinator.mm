@@ -357,10 +357,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)hideComposeboxMenu {
-  if (_entrypoint == ComposeboxEntrypoint::kCobrowse ||
-      IsComposeboxPlusButtonBottomSheet()) {
-    [_menuCoorinator stop];
-    _menuCoorinator = nil;
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [_menuCoorinator dismissMenu];
   } else {
     [_viewController dismissContextMenu];
   }
@@ -489,16 +487,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                                           button:(UIButton*)button {
   if (_entrypoint == ComposeboxEntrypoint::kCobrowse ||
       IsComposeboxPlusButtonBottomSheet()) {
-    _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
-        initWithBaseViewController:_viewController
-                           browser:self.browser
-            preselectedAttachments:_mediator.currentAttachmentSelection
-                        inputState:state
-                   metricsRecorder:_metricsRecorder
-                        entrypoint:_entrypoint];
-    _menuCoorinator.inputPlateDelegate = self;
-    _menuCoorinator.delegate = self;
-    [_menuCoorinator start];
+    [self createMenuCoordinatorForInputState:state];
     [_menuCoorinator presentBottomSheetMenu];
 
     // Hide the input plate when the bottom sheet modal is open.
@@ -585,6 +574,13 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
       return;
   }
   NOTREACHED();
+}
+
+- (UIMenu*)composeboxViewControllerPlusButtonMenu:
+    (ComposeboxInputPlateViewController*)composeboxViewController {
+  ComposeboxUIInputState* state = [_mediator currentUIInputState];
+  [self createMenuCoordinatorForInputState:state];
+  return [_menuCoorinator createMenu];
 }
 
 - (BOOL)tabExistsOnCurrentProfile:(TabInfo*)tabInfo {
@@ -778,6 +774,23 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   }
   _snackbarPresenter =
       [[ComposeboxSnackbarPresenter alloc] initWithBrowser:self.browser];
+}
+
+// Creates a new menu coordinator for the given input state.
+- (void)createMenuCoordinatorForInputState:(ComposeboxUIInputState*)state {
+  if (_menuCoorinator) {
+    [_menuCoorinator stop];
+  }
+  _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+          preselectedAttachments:_mediator.currentAttachmentSelection
+                      inputState:state
+                 metricsRecorder:_metricsRecorder
+                      entrypoint:_entrypoint];
+  _menuCoorinator.inputPlateDelegate = self;
+  _menuCoorinator.delegate = self;
+  [_menuCoorinator start];
 }
 
 #pragma mark - ComposeboxPickerPresenterDelegate
