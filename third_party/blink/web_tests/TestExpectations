@@ -5580,6 +5580,9 @@ crbug.com/40814447 virtual/threaded/http/tests/devtools/isolated-code-cache/same
 # Temporarily disabled to land https://crrev.com/c/8498574
 crbug.com/535451658 http/tests/devtools/console/shadow-element.js [ Failure Pass ]
 
+# Temporarily disabled to land https://crrev.com/c/8460005
+crbug.com/545412300 http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Failure Pass ]
+crbug.com/545412300 http/tests/devtools/sources/debugger/debugger-scope-resolve-this.js [ Failure Pass ]
 
 # These tests expose issues with host defined options. The way in which they expose those issues is changing
 crbug.com/409953792 external/wpt/html/semantics/scripting-1/the-script-element/module/dynamic-import/code-cache-nonce.html [ Failure Pass ]
@@ -7095,7 +7098,6 @@ crbug.com/40777750 fast/peerconnection/RTCPeerConnection-undelivered-events-gc.h
 [ Debug Mac14-arm64 ] external/wpt/webtransport/streams-close.https.any.html [ Failure Pass ]
 crbug.com/40261737 [ Mac14-arm64 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure Pass ]
 crbug.com/40261737 [ Mac14-arm64 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure Pass ]
-crbug.com/40912755 [ Mac14-arm64 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Failure Pass ]
 crbug.com/41493566 [ Mac14-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-top-navigation-after-postMessage.html [ Failure Pass ]
 
 crbug.com/446116790 [ Linux ] external/wpt/pointerevents/persistentDeviceId/get-persistendeviceid-from-pointer-event.tentative.html [ Failure Pass ]
