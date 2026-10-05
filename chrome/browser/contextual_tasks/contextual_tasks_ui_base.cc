@@ -255,7 +255,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       aim_eligibility_service && aim_eligibility_service->IsAimEligible();
   dict.Set("isAimEligible", is_aim_eligible);
 
-  dict.Set("darkMode", false);
+  dict.Set("darkMode", contextual_tasks::ShouldUseDarkMode(profile));
   dict.Set("isAiPage", false);
   dict.Set("isSignedIn", false);
   dict.Set("expandButtonEnabled", false);

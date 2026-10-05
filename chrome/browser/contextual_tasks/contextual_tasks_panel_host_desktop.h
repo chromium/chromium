@@ -79,8 +79,17 @@ class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
   // Shows side panel, transitioning from active tab content's bounds.
   void ShowFromTab();
 
+  // Lazily creates the persistent toolbar and ghost loader WebContents when
+  // side panel rearchitecture is enabled.
+  void EnsureWebUiWebContentsCreated();
+
   // Browser window of the current panel.
   const raw_ptr<BrowserWindowInterface> browser_window_;
+
+  // Persistent WebContents for the toolbar and ghost loader across side panel
+  // view recreations (e.g. when switching tabs).
+  std::unique_ptr<content::WebContents> toolbar_web_contents_;
+  std::unique_ptr<content::WebContents> ghost_loader_web_contents_;
 
   // WebView of the current panel.
   base::WeakPtr<ContextualTasksWebView> web_view_ = nullptr;

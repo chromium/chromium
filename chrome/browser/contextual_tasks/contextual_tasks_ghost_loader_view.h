@@ -10,7 +10,8 @@
 
 namespace content {
 class BrowserContext;
-}
+class WebContents;
+}  // namespace content
 
 namespace contextual_tasks {
 
@@ -22,7 +23,8 @@ class ContextualTasksGhostLoaderView : public views::WebView {
 
  public:
   explicit ContextualTasksGhostLoaderView(
-      content::BrowserContext* browser_context);
+      content::BrowserContext* browser_context,
+      content::WebContents* web_contents = nullptr);
   ContextualTasksGhostLoaderView(const ContextualTasksGhostLoaderView&) =
       delete;
   ContextualTasksGhostLoaderView& operator=(

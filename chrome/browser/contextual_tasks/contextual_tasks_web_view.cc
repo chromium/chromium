@@ -52,8 +52,12 @@ constexpr SkColor kDarkModeBackgroundColor = SkColorSetRGB(16, 18, 23);
 }  // namespace
 
 ContextualTasksWebView::ContextualTasksWebView(
-    BrowserWindowInterface* browser_window)
-    : browser_window_(browser_window) {
+    BrowserWindowInterface* browser_window,
+    content::WebContents* toolbar_web_contents,
+    content::WebContents* ghost_loader_web_contents)
+    : browser_window_(browser_window),
+      owns_toolbar_web_contents_(toolbar_web_contents == nullptr),
+      owns_ghost_loader_web_contents_(ghost_loader_web_contents == nullptr) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksSidePanelWebViewElementId);
 
@@ -70,6 +74,9 @@ ContextualTasksWebView::ContextualTasksWebView(
 
     toolbar_web_view_ = AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
+    if (toolbar_web_contents) {
+      toolbar_web_view_->SetWebContents(toolbar_web_contents);
+    }
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         toolbar_web_view_->GetWebContents(), SK_ColorTRANSPARENT);
     toolbar_web_view_->GetWebContents()->SetPageBaseBackgroundColor(
@@ -82,8 +89,10 @@ ContextualTasksWebView::ContextualTasksWebView(
     toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
 
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 46));
-    toolbar_web_view_->LoadInitialURL(
-        GURL(chrome::kChromeUIContextualTasksToolbarURL));
+    if (owns_toolbar_web_contents_) {
+      toolbar_web_view_->LoadInitialURL(
+          GURL(chrome::kChromeUIContextualTasksToolbarURL));
+    }
     webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
                                      browser_window);
 
@@ -97,7 +106,7 @@ ContextualTasksWebView::ContextualTasksWebView(
 
     ghost_loader_view_ = content_container->AddChildView(
         std::make_unique<ContextualTasksGhostLoaderView>(
-            browser_window->GetProfile()));
+            browser_window->GetProfile(), ghost_loader_web_contents));
     views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
         ghost_loader_view_->GetWebContents(), background_color);
     ghost_loader_view_->GetWebContents()->SetPageBaseBackgroundColor(
@@ -119,12 +128,20 @@ ContextualTasksWebView::ContextualTasksWebView(
 ContextualTasksWebView::~ContextualTasksWebView() {
   Observe(nullptr);
   if (toolbar_web_view_ && toolbar_web_view_->web_contents()) {
-    webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
-                                     nullptr);
+    if (owns_toolbar_web_contents_) {
+      webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
+                                       nullptr);
+    } else {
+      toolbar_web_view_->SetWebContents(nullptr);
+    }
   }
   if (ghost_loader_view_ && ghost_loader_view_->web_contents()) {
-    webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
-                                     nullptr);
+    if (owns_ghost_loader_web_contents_) {
+      webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
+                                       nullptr);
+    } else {
+      ghost_loader_view_->SetWebContents(nullptr);
+    }
   }
   SetWebContents(nullptr);
 }

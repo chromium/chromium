@@ -14,11 +14,16 @@
 namespace contextual_tasks {
 
 ContextualTasksGhostLoaderView::ContextualTasksGhostLoaderView(
-    content::BrowserContext* browser_context)
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents)
     : views::WebView(browser_context) {
   SetProperty(views::kElementIdentifierKey,
               kContextualTasksGhostLoaderViewElementId);
-  LoadInitialURL(GURL(chrome::kChromeUIContextualTasksGhostLoaderURL));
+  if (web_contents) {
+    SetWebContents(web_contents);
+  } else {
+    LoadInitialURL(GURL(chrome::kChromeUIContextualTasksGhostLoaderURL));
+  }
 }
 
 ContextualTasksGhostLoaderView::~ContextualTasksGhostLoaderView() = default;
