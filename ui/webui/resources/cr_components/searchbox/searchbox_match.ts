@@ -587,46 +587,22 @@ export class SearchboxMatchElement extends CrLitElement {
     return container;
   }
 
+  // `contents` and `description` are already swapped in the browser when
+  // needed, so `contents` is always the primary text.
   private getMatchContents_(): string {
-    if (!this.match) {
-      return '';
-    }
-
-    const match = this.match;
-    const matchContents = match.contents;
-    const matchDescription = match.description;
-
-    return match.swapContentsAndDescription ? matchDescription : matchContents;
+    return this.match ? this.match.contents : '';
   }
 
   private getMatchDescription_(): string {
-    if (!this.match) {
-      return '';
-    }
-
-    const match = this.match;
-    const matchContents = match.contents;
-    const matchDescription = match.description;
-
-    return match.swapContentsAndDescription ? matchContents : matchDescription;
+    return this.match ? this.match.description : '';
   }
 
   private getMatchContentsClassifications_(): ACMatchClassification[] {
-    if (!this.match) {
-      return [];
-    }
-    const match = this.match;
-    return match.swapContentsAndDescription ? match.descriptionClass :
-                                              match.contentsClass;
+    return this.match ? this.match.contentsClass : [];
   }
 
   private getMatchDescriptionClassifications_(): ACMatchClassification[] {
-    if (!this.match) {
-      return [];
-    }
-    const match = this.match;
-    return match.swapContentsAndDescription ? match.contentsClass :
-                                              match.descriptionClass;
+    return this.match ? this.match.descriptionClass : [];
   }
 
   protected getFocusIndicatorCssClass_(): string {

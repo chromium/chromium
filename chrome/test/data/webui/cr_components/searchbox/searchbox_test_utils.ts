@@ -125,7 +125,6 @@ export function createClipboardEvent(name: string): ClipboardEvent {
 export function createUrlMatch(modifiers: Partial<AutocompleteMatch> = {}):
     AutocompleteMatch {
   return createAutocompleteMatch({
-    swapContentsAndDescription: true,
     contents: 'helloworld.com',
     contentsClass: [{offset: 0, style: 1}],
     destinationUrl: 'https://helloworld.com/',
