@@ -32,6 +32,8 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     web_contents_ = CreateTestWebContents(GetBrowserContext());
+    web_contents_->GetPrimaryMainFrame()->GetView()->SetBounds(
+        gfx::Rect(0, 0, 800, 600));
   }
 
   void TearDown() override {

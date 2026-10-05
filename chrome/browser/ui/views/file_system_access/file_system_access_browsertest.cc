@@ -1563,6 +1563,46 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
   ASSERT_EQ("AbortError", content::EvalJs(first_tab, "window.p"));
 }
 
+// Test that resizing a window below minimum dimensions while the dialog is
+// showing closes the dialog.
+IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
+                       ShowOpenFileThenResizeSmall) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+  content::WebContents* first_tab =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Open the dialog and wait until it's created.
+  content::SelectFileDialogRecorder recorder;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::ObservableSelectFileDialogFactory>(
+          recorder.GetWeakPtr()));
+  EXPECT_EQ(42,
+            content::EvalJs(
+                first_tab,
+                "window.p = self.showOpenFilePicker().catch(e => e.name); 42"));
+  EXPECT_TRUE(base::test::RunUntil([&recorder]() {
+    return recorder.state != content::SelectFileDialogRecorder::kNotCreated;
+  }));
+
+  // Narrowing only the WebContents (e.g. when opening a side panel or split
+  // view) while the top-level browser window remains large should NOT cancel
+  // the dialog.
+  first_tab->Resize(gfx::Rect(0, 0, 200, 600));
+  EXPECT_NE(recorder.state, content::SelectFileDialogRecorder::kDestroyed);
+
+  // Resize the top-level window below the minimum dimension threshold.
+  BrowserView::GetBrowserViewForBrowser(browser())->SetBounds(
+      gfx::Rect(0, 0, 100, 100));
+  first_tab->Resize(gfx::Rect(0, 0, 100, 100));
+  EXPECT_TRUE(base::test::RunUntil([&recorder]() {
+    return recorder.state == content::SelectFileDialogRecorder::kDestroyed;
+  }));
+
+  // Check that the dialog was closed.
+  EXPECT_EQ("AbortError", content::EvalJs(first_tab, "window.p"));
+}
+
 class FileSystemAccessBrowserTestForWebUI : public InProcessBrowserTest {
  public:
   FileSystemAccessBrowserTestForWebUI() {

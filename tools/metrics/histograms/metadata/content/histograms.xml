@@ -60,6 +60,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Content.FileChooser.CancelledByWindowResize" enum="Boolean"
+    expires_after="2026-12-25">
+  <owner>elkurin@chromium.org</owner>
+  <owner>content-owners@chromium.org</owner>
+  <summary>
+    Records true when an active file chooser dialog or directory enumeration is
+    cancelled because the top-level window was dynamically resized smaller than
+    the minimum required size (400x300).
+  </summary>
+</histogram>
+
+<histogram name="Content.FileChooser.SuppressedByWindowSize" enum="Boolean"
+    expires_after="2026-12-25">
+  <owner>elkurin@chromium.org</owner>
+  <owner>content-owners@chromium.org</owner>
+  <summary>
+    Records whether an initial file chooser dialog or directory enumeration
+    request was suppressed at open because the top-level window dimensions were
+    smaller than the minimum required size (400x300).
+  </summary>
+</histogram>
+
+<histogram name="Content.FileChooser.SuppressedWindowHeight" units="px"
+    expires_after="2026-12-25">
+  <owner>elkurin@chromium.org</owner>
+  <owner>content-owners@chromium.org</owner>
+  <summary>
+    Records the height in DIPs of the top-level window when a file chooser
+    dialog is suppressed or cancelled due to the window size being smaller than
+    the minimum required threshold.
+  </summary>
+</histogram>
+
+<histogram name="Content.FileChooser.SuppressedWindowWidth" units="px"
+    expires_after="2026-12-25">
+  <owner>elkurin@chromium.org</owner>
+  <owner>content-owners@chromium.org</owner>
+  <summary>
+    Records the width in DIPs of the top-level window when a file chooser dialog
+    is suppressed or cancelled due to the window size being smaller than the
+    minimum required threshold.
+  </summary>
+</histogram>
+
 <histogram name="Content.SharedWorker.CreationContextTypeMismatch"
     enum="SharedWorkerCreationContextTypeMismatch" expires_after="2027-02-28">
   <owner>yyanagisawa@chromium.org</owner>

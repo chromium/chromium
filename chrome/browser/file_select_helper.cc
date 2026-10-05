@@ -11,10 +11,12 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,8 +42,11 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -71,6 +76,54 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
+// The minimum size of the top-level window to safely show a file chooser
+// dialog without occlusion risk (See crbug.com/479258455).
+constexpr gfx::Size kMinFileChooserWindowSize(400, 300);
+
+gfx::Size GetMinFileChooserWindowSize() {
+  if (!base::FeatureList::IsEnabled(features::kFileChooserMinWindowSize)) {
+    return gfx::Size();
+  }
+  return kMinFileChooserWindowSize;
+}
+
+void LogFileChooserWindowTooSmallDetails(content::WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  const gfx::Size size =
+      content::WebContentsBasedCanceller::GetTopLevelWindowSize(web_contents);
+  if (!size.IsEmpty()) {
+    base::UmaHistogramCounts10000("Content.FileChooser.SuppressedWindowWidth",
+                                  size.width());
+    base::UmaHistogramCounts10000("Content.FileChooser.SuppressedWindowHeight",
+                                  size.height());
+  }
+  if (content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame()) {
+    rfh->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "File chooser dialog was suppressed because the top-level window "
+        "size is smaller than the minimum required size (400x300).");
+  }
+}
+
+void LogFileChooserSuppressedByWindowSize(content::WebContents* web_contents,
+                                          bool suppressed) {
+  base::UmaHistogramBoolean("Content.FileChooser.SuppressedByWindowSize",
+                            suppressed);
+  if (suppressed) {
+    LogFileChooserWindowTooSmallDetails(web_contents);
+  }
+}
+
+void LogFileChooserCancelledByWindowResize(content::WebContents* web_contents) {
+  base::UmaHistogramBoolean("Content.FileChooser.CancelledByWindowResize",
+                            true);
+  LogFileChooserWindowTooSmallDetails(web_contents);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void DeleteFiles(std::vector<base::FilePath> paths) {
   for (auto& file_path : paths)
     base::DeleteFile(file_path);
@@ -82,8 +135,9 @@ bool IsValidProfile(Profile* profile) {
     return false;
   }
   // No profile manager in unit tests.
-  if (!g_browser_process->profile_manager())
+  if (!g_browser_process->profile_manager()) {
     return true;
+  }
   return g_browser_process->profile_manager()->IsValidProfile(profile);
 }
 
@@ -252,6 +306,7 @@ void FileSelectHelper::OnListDone(int error) {
   std::unique_ptr<ActiveDirectoryEnumeration> entry =
       std::move(directory_enumeration_);
   if (error) {
+    entry.reset();
     FileSelectionCanceled();
     return;
   }
@@ -269,6 +324,7 @@ void FileSelectHelper::OnListDone(int error) {
                        this));
     chrome::ShowTabModal(std::move(model), web_contents_);
   } else {
+    entry.reset();
     listener_->FileSelected(std::move(chooser_files), base_dir_,
                             FileChooserParams::Mode::kUploadFolder);
     listener_.reset();
@@ -698,6 +754,24 @@ void FileSelectHelper::RunFileChooserOnUIThread(
     RunFileChooserEnd();
     return;
   }
+  if (web_contents_->GetVisibility() != content::Visibility::VISIBLE) {
+    RunFileChooserEnd();
+    return;
+  }
+  content::RenderFrameHost* rfh = render_frame_host_
+                                      ? render_frame_host_.get()
+                                      : web_contents_->GetPrimaryMainFrame();
+  web_contents_based_canceller_ = content::WebContentsBasedCanceller::Create(
+      rfh, content::WebContentsBasedCanceller::CancelCondition::kWindowSize,
+      GetMinFileChooserWindowSize());
+  LogFileChooserSuppressedByWindowSize(
+      web_contents_, /*suppressed=*/!web_contents_based_canceller_);
+  if (!web_contents_based_canceller_) {
+    RunFileChooserEnd();
+    return;
+  }
+  web_contents_based_canceller_->SetCancelCallback(base::BindOnce(
+      &FileSelectHelper::OnCancelledByWindowSize, base::Unretained(this)));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   select_file_dialog_ = ui::SelectFileDialog::Create(
@@ -764,6 +838,7 @@ void FileSelectHelper::RunFileChooserEnd() {
   scoped_tuck_picture_in_picture_.reset();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  web_contents_based_canceller_.reset();
   tab_deactivated_subscription_ = {};
   directory_enumeration_.reset();
 
@@ -805,6 +880,20 @@ void FileSelectHelper::EnumerateDirectoryImpl(
   // we return to the caller, until the last callback is received from the
   // enumeration code. At that point, we must call EnumerateDirectoryEnd().
   self_ptr_ = this;
+#if !BUILDFLAG(IS_ANDROID)
+  web_contents_based_canceller_ = content::WebContentsBasedCanceller::Create(
+      web_contents_->GetPrimaryMainFrame(),
+      content::WebContentsBasedCanceller::CancelCondition::kWindowSize,
+      GetMinFileChooserWindowSize());
+  LogFileChooserSuppressedByWindowSize(
+      web_contents_, /*suppressed=*/!web_contents_based_canceller_);
+  if (!web_contents_based_canceller_) {
+    EnumerateDirectoryEnd();
+    return;
+  }
+  web_contents_based_canceller_->SetCancelCallback(base::BindOnce(
+      &FileSelectHelper::OnCancelledByWindowSize, base::Unretained(this)));
+#endif
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -850,6 +939,23 @@ void FileSelectHelper::WebContentsDestroyed() {
   CleanUp();
 }
 
+void FileSelectHelper::OnVisibilityChanged(content::Visibility visibility) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!web_contents_) {
+    return;
+  }
+  // `SELECT_NONE` indicates a non-chooser directory enumeration (started via
+  // `EnumerateDirectory()`). Cancel the enumeration if the WebContents becomes
+  // hidden or occluded. Active file chooser dialogs (`dialog_type_ !=
+  // SELECT_NONE`) are intentionally not dismissed here because opening the
+  // native OS file chooser window itself can occlude the browser window.
+  if (visibility != content::Visibility::VISIBLE &&
+      dialog_type_ == ui::SelectFileDialog::SELECT_NONE) {
+    EnumerateDirectoryEnd();
+  }
+#endif
+}
+
 void FileSelectHelper::InitLifecycleObserver(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
@@ -865,6 +971,13 @@ void FileSelectHelper::InitLifecycleObserver(
 }
 
 void FileSelectHelper::OnTabDeactivated(tabs::TabInterface* tab) {
+  RunFileChooserEnd();
+}
+
+void FileSelectHelper::OnCancelledByWindowSize() {
+#if !BUILDFLAG(IS_ANDROID)
+  LogFileChooserCancelledByWindowResize(web_contents_);
+#endif
   RunFileChooserEnd();
 }
 

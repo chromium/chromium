@@ -9976,3 +9976,14 @@ bool ChromeContentBrowserClient::ShouldAllowSystemUiPopups(
   return !(tab_interface && actor_service->IsActiveOnTab(*tab_interface));
 }
 #endif
+
+bool ChromeContentBrowserClient::IsExemptFromWindowSizeCheck(const GURL& url) {
+  if (ContentBrowserClient::IsExemptFromWindowSizeCheck(url)) {
+    return true;
+  }
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return url.SchemeIs(extensions::kExtensionScheme);
+#else
+  return false;
+#endif
+}

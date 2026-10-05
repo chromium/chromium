@@ -40,6 +40,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/size.h"
@@ -531,6 +532,13 @@ void ContextualTasksWebView::RunFileChooser(
   // The default `WebContentsDelegate` implementation cancels the request.
   FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
                                    params);
+}
+
+std::optional<gfx::Rect> ContextualTasksWebView::GetWindowBoundsInScreen() {
+  if (browser_window_ && browser_window_->GetWindow()) {
+    return browser_window_->GetWindow()->GetBounds();
+  }
+  return std::nullopt;
 }
 
 web_modal::WebContentsModalDialogHost*

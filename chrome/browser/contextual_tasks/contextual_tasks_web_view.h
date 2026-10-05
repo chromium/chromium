@@ -90,6 +90,7 @@ class ContextualTasksWebView
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(

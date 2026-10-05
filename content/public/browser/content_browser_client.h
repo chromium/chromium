@@ -3407,6 +3407,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool OriginSupportsConcreteCrossOriginIsolation(
       content::BrowserContext* browser_context,
       const url::Origin& origin);
+
+  // Returns true if `url` belongs to a privileged or trusted scheme (such as
+  // WebUI, DevTools, or an embedder-specific extension scheme) that should be
+  // exempt from top-level window size checks in `WebContentsBasedCanceller`.
+  virtual bool IsExemptFromWindowSizeCheck(const GURL& url);
 };
 
 }  // namespace content

@@ -495,6 +495,10 @@ BASE_FEATURE(kFedCmNativeIdPs, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables browser-side focus verification when crossing fenced boundaries.
 BASE_FEATURE(kFencedFramesEnforceFocus, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enforces a minimum top-level window size for file chooser dialogs to mitigate
+// UI occlusion spoofing (see crbug.com/479258455).
+BASE_FEATURE(kFileChooserMinWindowSize, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This is a kill switch for focusing the RenderWidgetHostViewAndroid on
 // ActionDown on every touch sequence if not focused already, please see
 // crbug.com/381820236. The root view, RWHVA, is always focused in Chrome,

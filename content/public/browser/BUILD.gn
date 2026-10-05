@@ -498,6 +498,7 @@ source_set("browser_sources") {
     "web_authentication_request_proxy.h",
     "web_contents.cc",
     "web_contents.h",
+    "web_contents_based_canceller.h",
     "web_contents_capability_type.h",
     "web_contents_delegate.cc",
     "web_contents_delegate.h",

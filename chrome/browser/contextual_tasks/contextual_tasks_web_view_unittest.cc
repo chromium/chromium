@@ -37,6 +37,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -427,6 +428,8 @@ TEST_F(ContextualTasksWebViewTest, RunFileChooserOpensFileDialog) {
   web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_contents->GetPrimaryMainFrame()->GetView()->SetBounds(
+      gfx::Rect(0, 0, 800, 600));
   web_view_->SetWebContents(web_contents.get());
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents.get(), GURL("https://www.google.com/search?q=test"));

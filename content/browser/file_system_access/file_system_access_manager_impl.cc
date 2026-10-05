@@ -230,7 +230,7 @@ void ShowFilePickerOnUIThread(
 
   if (!web_contents ||
       (base::FeatureList::IsEnabled(features::kFileSystemAccessCheckHidden) &&
-       web_contents->GetVisibility() == Visibility::HIDDEN) ||
+       web_contents->GetVisibility() != Visibility::VISIBLE) ||
       !outermost_rfh || !outermost_rfh->IsActive()) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationAborted),

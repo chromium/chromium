@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -17,6 +18,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents_based_canceller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
@@ -153,9 +155,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                               content::RenderFrameHost* new_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
 
   void InitLifecycleObserver(content::WebContents* web_contents);
   void OnTabDeactivated(tabs::TabInterface* tab);
+  void OnCancelledByWindowSize();
 
   void EnumerateDirectoryImpl(
       content::WebContents* tab,
@@ -344,6 +348,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   bool abort_on_missing_web_contents_in_tests_ = true;
 
   base::CallbackListSubscription tab_deactivated_subscription_;
+
+  std::unique_ptr<content::WebContentsBasedCanceller>
+      web_contents_based_canceller_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // When not null, this prevents picture-in-picture windows from opening.

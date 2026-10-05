@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -21,10 +23,13 @@
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "net/base/mime_util.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -48,6 +53,53 @@ constexpr int kMaxDescriptionLength = 64;
 // allowed to be. Any longer extensions will be stripped. This value should be
 // kept in sync with the extension length checks in the renderer.
 constexpr int kMaxExtensionLength = 16;
+// The minimum size of the top-level window to safely show a file chooser
+// dialog without occlusion risk (See crbug.com/479258455).
+constexpr gfx::Size kMinWindowSize(400, 300);
+
+gfx::Size GetMinFileChooserWindowSize() {
+  if (!base::FeatureList::IsEnabled(features::kFileChooserMinWindowSize)) {
+    return gfx::Size();
+  }
+  return kMinWindowSize;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void LogFileChooserWindowTooSmallDetails(WebContents* web_contents) {
+  if (!web_contents) {
+    return;
+  }
+  const gfx::Size size =
+      WebContentsBasedCanceller::GetTopLevelWindowSize(web_contents);
+  if (!size.IsEmpty()) {
+    base::UmaHistogramCounts10000("Content.FileChooser.SuppressedWindowWidth",
+                                  size.width());
+    base::UmaHistogramCounts10000("Content.FileChooser.SuppressedWindowHeight",
+                                  size.height());
+  }
+  if (RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame()) {
+    rfh->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "File chooser dialog was suppressed because the top-level window "
+        "size is smaller than the minimum required size (400x300).");
+  }
+}
+
+void LogFileChooserSuppressedByWindowSize(WebContents* web_contents,
+                                          bool suppressed) {
+  base::UmaHistogramBoolean("Content.FileChooser.SuppressedByWindowSize",
+                            suppressed);
+  if (suppressed) {
+    LogFileChooserWindowTooSmallDetails(web_contents);
+  }
+}
+
+void LogFileChooserCancelledByWindowResize(WebContents* web_contents) {
+  base::UmaHistogramBoolean("Content.FileChooser.CancelledByWindowResize",
+                            true);
+  LogFileChooserWindowTooSmallDetails(web_contents);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Similar to base::FilePath::FinalExtension, but operates with the
 // understanding that the StringType passed in is an extension, not a path.
@@ -330,15 +382,26 @@ void FileSystemChooser::CreateAndShow(
       WebContents::FromRenderFrameHost(render_frame_host);
   VLOG(1) << "Requested chooser with visibility: "
           << static_cast<int>(web_contents->GetVisibility());
+  const gfx::Size min_window_size = GetMinFileChooserWindowSize();
   std::unique_ptr<WebContentsBasedCanceller> canceller =
       WebContentsBasedCanceller::Create(
           render_frame_host,
-          WebContentsBasedCanceller::CancelCondition::kVisibility);
+          WebContentsBasedCanceller::CancelCondition::kVisibility,
+          min_window_size);
   if (!canceller) {
+#if !BUILDFLAG(IS_ANDROID)
+    if (WebContentsBasedCanceller::IsWindowTooSmall(web_contents,
+                                                    min_window_size)) {
+      LogFileChooserSuppressedByWindowSize(web_contents, /*suppressed=*/true);
+    }
+#endif
     VLOG(1) << "Not showing chooser";
     AbortedCallback(std::move(callback));
     return;
   }
+#if !BUILDFLAG(IS_ANDROID)
+  LogFileChooserSuppressedByWindowSize(web_contents, /*suppressed=*/false);
+#endif
   // `listener` deletes itself.
   auto* listener =
       new FileSystemChooser(options.type(), std::move(callback),
@@ -421,7 +484,7 @@ FileSystemChooser::FileSystemChooser(
   // `this` owns `canceller_` which owns the callback, so `Unretained` is OK
   // here.
   canceller_->SetCancelCallback(base::BindOnce(
-      &FileSystemChooser::FileSelectionCanceled, base::Unretained(this)));
+      &FileSystemChooser::OnCancelledByWebContents, base::Unretained(this)));
 }
 
 FileSystemChooser::~FileSystemChooser() {
@@ -456,6 +519,18 @@ void FileSystemChooser::FileSelectionCanceled() {
   VLOG(1) << "Cancelling chooser";
   AbortedCallback(std::move(callback_));
   delete this;
+}
+
+void FileSystemChooser::OnCancelledByWebContents() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#if !BUILDFLAG(IS_ANDROID)
+  if (canceller_ &&
+      WebContentsBasedCanceller::IsWindowTooSmall(
+          canceller_->web_contents(), GetMinFileChooserWindowSize())) {
+    LogFileChooserCancelledByWindowResize(canceller_->web_contents());
+  }
+#endif
+  FileSelectionCanceled();
 }
 
 }  // namespace content

@@ -14,9 +14,9 @@
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
-#include "content/browser/web_contents_based_canceller.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/web_contents_based_canceller.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -116,6 +116,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
   void MultiFilesSelected(
       const std::vector<ui::SelectedFileInfo>& files) override;
   void FileSelectionCanceled() override;
+
+  void OnCancelledByWebContents();
 
   SEQUENCE_CHECKER(sequence_checker_);
 
