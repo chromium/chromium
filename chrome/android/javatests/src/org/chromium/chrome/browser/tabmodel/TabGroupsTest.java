@@ -196,9 +196,7 @@ public class TabGroupsTest {
                     mTabModel
                             .getTabRemover()
                             .closeTabs(
-                                    TabClosureParams.closeAllTabs()
-                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
-                                            .build(),
+                                    TabClosureParams.closeAllTabs().build(),
                                     /* allowDialog= */ false);
                 });
 

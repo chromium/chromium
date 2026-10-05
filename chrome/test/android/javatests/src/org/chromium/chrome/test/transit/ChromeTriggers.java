@@ -12,7 +12,6 @@ import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.util.MenuUtils;
 
@@ -47,10 +46,7 @@ public class ChromeTriggers {
                                 .getCurrentTabModel()
                                 .getTabRemover()
                                 .closeTabs(
-                                        TabClosureParams.closeAllTabs()
-                                                .tabClosingSource(
-                                                        TabClosingSource.GRID_TAB_SWITCHER)
-                                                .build(),
+                                        TabClosureParams.closeAllTabs().build(),
                                         /* allowDialog= */ false));
     }
 }

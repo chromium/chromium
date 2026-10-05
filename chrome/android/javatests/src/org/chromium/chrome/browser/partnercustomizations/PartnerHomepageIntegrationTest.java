@@ -207,10 +207,7 @@ public class PartnerHomepageIntegrationTest {
                                 }
                             });
                     TabClosureParams params =
-                            TabClosureParams.closeAllTabs()
-                                    .uponExit(false)
-                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
-                                    .build();
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
                     TabModelSelector selector =
                             mActivityTestRule.getActivity().getTabModelSelector();
                     selector.getModel(false)

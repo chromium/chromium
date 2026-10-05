@@ -781,7 +781,7 @@ public class TabRemoverImplUnitTest {
                 TabClosureParams.closeAllTabs()
                         .hideTabGroups(true)
                         .saveToTabRestoreService(false)
-                        .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                        .tabClosingSource(TabClosingSource.TABLET_TAB_STRIP)
                         .build();
 
         TabClosureParams newParams =
@@ -793,7 +793,7 @@ public class TabRemoverImplUnitTest {
         assertFalse("Should not save to tab restore service", newParams.saveToTabRestoreService);
         assertEquals(
                 "Tab closing source should carry over",
-                TabClosingSource.GRID_TAB_SWITCHER,
+                TabClosingSource.TABLET_TAB_STRIP,
                 newParams.tabClosingSource);
     }
 
