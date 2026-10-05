@@ -65,15 +65,17 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
          url_.type() == storage::kFileSystemTypeTest)
       << url_.type();
 
+  if (auto* rfh = RenderFrameHost::FromID(context_.frame_id)) {
+    outermost_main_frame_id_ = rfh->GetOutermostMainFrame()->GetGlobalId();
+    web_contents_ = WebContents::FromRenderFrameHost(rfh)->GetWeakPtr();
+  }
+
   if (ShouldTrackUsage(url_)) {
     DCHECK(url_.mount_type() == storage::kFileSystemTypeLocal ||
            url_.mount_type() == storage::kFileSystemTypeExternal)
         << url_.mount_type();
 
-    WebContents* web_contents =
-        WebContentsImpl::FromRenderFrameHostID(context_.frame_id);
-    if (web_contents) {
-      web_contents_ = web_contents->GetWeakPtr();
+    if (web_contents_) {
       static_cast<WebContentsImpl*>(web_contents_.get())
           ->IncrementFileSystemAccessHandleCount();
     }
@@ -723,7 +725,8 @@ void FileSystemAccessHandleBase::DoPerformMoveOperation(
           manager()->AsWeakPtr(), context(), url(), destination_url,
           storage::FileSystemOperation::CopyOrMoveOptionSet(),
           GetContentClient()->browser()->GetQuarantineConnectionCallback(),
-          has_transient_user_activation);
+          has_transient_user_activation, web_contents(),
+          outermost_main_frame_id());
   // Allows the unique pointer to be bound to the callback so the helper stays
   // alive until the operation completes.
   FileSystemAccessSafeMoveHelper* raw_helper =

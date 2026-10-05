@@ -764,6 +764,7 @@ bool IsPathOrDescendantIgnoreCase(
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void DoSafeBrowsingCheckOnUIThread(
+    base::WeakPtr<ChromeFileSystemAccessPermissionContext> permission_context,
     content::GlobalRenderFrameHostId frame_id,
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     safe_browsing::CheckDownloadCallback callback) {
@@ -778,13 +779,17 @@ void DoSafeBrowsingCheckOnUIThread(
   }
 
   if (!item->browser_context) {
-    content::RenderProcessHost* rph =
-        content::RenderProcessHost::FromID(frame_id.child_id);
-    if (!rph) {
-      std::move(callback).Run(safe_browsing::DownloadCheckResult::UNKNOWN);
+    if (permission_context) {
+      item->browser_context = permission_context->profile();
+    } else if (content::RenderProcessHost* rph =
+                   content::RenderProcessHost::FromID(frame_id.child_id)) {
+      item->browser_context = rph->GetBrowserContext();
+    }
+    if (!item->browser_context) {
+      std::move(callback).Run(
+          safe_browsing::DownloadCheckResult::BLOCKED_SCAN_FAILED);
       return;
     }
-    item->browser_context = rph->GetBrowserContext();
   }
 
   if (!item->web_contents) {
@@ -2467,7 +2472,8 @@ void ChromeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &DoSafeBrowsingCheckOnUIThread, frame_id, std::move(item),
+          &DoSafeBrowsingCheckOnUIThread, weak_factory_.GetWeakPtr(), frame_id,
+          std::move(item),
           base::BindOnce(
               [](scoped_refptr<base::TaskRunner> task_runner,
                  base::OnceCallback<void(AfterWriteCheckResult result)>

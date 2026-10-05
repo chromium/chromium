@@ -165,6 +165,7 @@ source_set("unit_tests") {
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
+    "//chrome/test/base:testing_browser_process",
     "//components/content_settings/core/browser",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",

@@ -90,6 +90,14 @@
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#include "chrome/browser/safe_browsing/services_delegate.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "content/public/browser/file_system_access_write_item.h"
+#endif
+
 using content::BrowserContext;
 using content::PathInfo;
 using content::PathType;
@@ -5540,3 +5548,138 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       SensitiveDirectoryResult::kAllowed);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+namespace {
+
+class MockDownloadProtectionService
+    : public safe_browsing::DownloadProtectionService {
+ public:
+  explicit MockDownloadProtectionService(
+      safe_browsing::SafeBrowsingServiceImpl* sb_service)
+      : safe_browsing::DownloadProtectionService(sb_service) {
+    SetEnabled(true);
+  }
+
+  MOCK_METHOD(void,
+              CheckFileSystemAccessWrite,
+              (std::unique_ptr<content::FileSystemAccessWriteItem> item,
+               safe_browsing::CheckDownloadCallback callback),
+              (override));
+};
+
+class SafeBrowsingServiceWithMockDownloadProtection
+    : public safe_browsing::TestSafeBrowsingService {
+ public:
+  SafeBrowsingServiceWithMockDownloadProtection() {
+    services_delegate_ =
+        safe_browsing::ServicesDelegate::CreateForTest(this, this);
+  }
+
+  MockDownloadProtectionService* mock_download_protection_service() const {
+    return mock_download_protection_service_;
+  }
+
+  void ShutDown() {
+    mock_download_protection_service_ = nullptr;
+    safe_browsing::TestSafeBrowsingService::ShutDown();
+  }
+
+ protected:
+  ~SafeBrowsingServiceWithMockDownloadProtection() override = default;
+
+  bool CanCreateDownloadProtectionService() override { return true; }
+
+  safe_browsing::DownloadProtectionService* CreateDownloadProtectionService()
+      override {
+    auto* service = new MockDownloadProtectionService(this);
+    mock_download_protection_service_ = service;
+    return service;
+  }
+
+ private:
+  raw_ptr<MockDownloadProtectionService> mock_download_protection_service_ =
+      nullptr;
+};
+
+}  // namespace
+
+// Regression test for b/503201581.
+// Verifies that when the initiating RenderProcessHost is already destroyed
+// (e.g. popup teardown during close), PerformAfterWriteChecks still populates
+// item->browser_context from the permission context's profile and runs the
+// Safe Browsing download check instead of failing open with UNKNOWN.
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       PerformAfterWriteChecks_MissingRenderProcessHost) {
+  auto sb_service =
+      base::MakeRefCounted<SafeBrowsingServiceWithMockDownloadProtection>();
+  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(sb_service.get());
+  sb_service->Initialize();
+  ASSERT_TRUE(sb_service->mock_download_protection_service());
+
+  auto item = std::make_unique<content::FileSystemAccessWriteItem>();
+  item->target_file_path = temp_dir_.GetPath().AppendASCII("test.exe");
+  item->full_path = temp_dir_.GetPath().AppendASCII("test.exe.crswap");
+  item->sha256_hash = "hash";
+  item->size = 100;
+  item->frame_url = GURL("https://example.com/popup");
+  // Use a non-existent child process ID so RenderProcessHost::FromID returns
+  // nullptr, simulating popup renderer teardown.
+  const content::GlobalRenderFrameHostId kDeadFrameId(999999, 999999);
+  item->initiating_frame_id = kDeadFrameId;
+
+  EXPECT_CALL(*sb_service->mock_download_protection_service(),
+              CheckFileSystemAccessWrite(testing::_, testing::_))
+      .WillOnce([&](std::unique_ptr<content::FileSystemAccessWriteItem> item,
+                    safe_browsing::CheckDownloadCallback callback) {
+        EXPECT_EQ(item->browser_context, profile());
+        std::move(callback).Run(safe_browsing::DownloadCheckResult::DANGEROUS);
+      });
+
+  base::test::TestFuture<
+      ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult>
+      future;
+  permission_context()->PerformAfterWriteChecks(std::move(item), kDeadFrameId,
+                                                future.GetCallback());
+
+  EXPECT_EQ(
+      future.Get(),
+      ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock);
+
+  sb_service->ShutDown();
+  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       PerformAfterWriteChecks_DestroyedPermissionContextFailsClosed) {
+  auto sb_service =
+      base::MakeRefCounted<SafeBrowsingServiceWithMockDownloadProtection>();
+  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(sb_service.get());
+  sb_service->Initialize();
+  ASSERT_TRUE(sb_service->mock_download_protection_service());
+
+  auto temp_permission_context =
+      std::make_unique<ChromeFileSystemAccessPermissionContext>(profile());
+
+  auto item = std::make_unique<content::FileSystemAccessWriteItem>();
+  item->target_file_path = temp_dir_.GetPath().AppendASCII("test.exe");
+  item->full_path = temp_dir_.GetPath().AppendASCII("test.exe.crswap");
+  const content::GlobalRenderFrameHostId kDeadFrameId(999999, 999999);
+
+  base::test::TestFuture<
+      ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult>
+      future;
+  temp_permission_context->PerformAfterWriteChecks(
+      std::move(item), kDeadFrameId, future.GetCallback());
+
+  // Destroy the permission context before the posted UI thread task runs.
+  temp_permission_context.reset();
+
+  EXPECT_EQ(
+      future.Get(),
+      ChromeFileSystemAccessPermissionContext::AfterWriteCheckResult::kBlock);
+
+  sb_service->ShutDown();
+  TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(nullptr);
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

@@ -65,6 +65,14 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
   const BindingContext& context() const { return context_; }
+  base::WeakPtr<WebContents> web_contents() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return web_contents_;
+  }
+  GlobalRenderFrameHostId outermost_main_frame_id() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return outermost_main_frame_id_;
+  }
   FileSystemAccessManagerImpl* manager() const { return manager_; }
   storage::FileSystemContext* file_system_context() const {
     return manager()->context();
@@ -290,6 +298,8 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   const raw_ptr<FileSystemAccessManagerImpl, DanglingUntriaged> manager_ =
       nullptr;
   base::WeakPtr<WebContents> web_contents_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  GlobalRenderFrameHostId outermost_main_frame_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
   const BindingContext context_;
   storage::FileSystemURL url_ GUARDED_BY_CONTEXT(sequence_checker_);

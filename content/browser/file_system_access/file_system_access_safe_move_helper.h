@@ -34,7 +34,10 @@ class CONTENT_EXPORT FileSystemAccessSafeMoveHelper {
       const storage::FileSystemURL& dest_url,
       storage::FileSystemOperation::CopyOrMoveOptionSet options,
       download::QuarantineConnectionCallback quarantine_connection_callback,
-      bool has_transient_user_activation);
+      bool has_transient_user_activation,
+      base::WeakPtr<WebContents> web_contents = nullptr,
+      GlobalRenderFrameHostId outermost_main_frame_id =
+          GlobalRenderFrameHostId());
   FileSystemAccessSafeMoveHelper(const FileSystemAccessSafeMoveHelper&) =
       delete;
   FileSystemAccessSafeMoveHelper& operator=(
@@ -88,6 +91,10 @@ class CONTENT_EXPORT FileSystemAccessSafeMoveHelper {
   base::WeakPtr<FileSystemAccessManagerImpl> manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
   FileSystemAccessManagerImpl::BindingContext context_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtr<WebContents> web_contents_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  GlobalRenderFrameHostId outermost_main_frame_id_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   const storage::FileSystemURL source_url_;

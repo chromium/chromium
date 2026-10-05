@@ -634,4 +634,35 @@ TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
       file_system_context_.get(), dest_url, 3));
 }
 
+TEST_F(FileSystemAccessSafeMoveHelperAfterWriteChecksTest,
+       PreservesOutermostMainFrameId) {
+  EXPECT_TRUE(base::WriteFile(test_source_url_.path(), "abc"));
+
+  const GlobalRenderFrameHostId kOutermostFrameId(42, 42);
+  helper_ = std::make_unique<FileSystemAccessSafeMoveHelper>(
+      manager_->AsWeakPtr(),
+      FileSystemAccessManagerImpl::BindingContext(kTestStorageKey, kTestURL,
+                                                  kFrameId),
+      test_source_url_, test_dest_url_,
+      storage::FileSystemOperation::CopyOrMoveOptionSet(), quarantine_callback_,
+      /*has_transient_user_activation=*/false,
+      /*web_contents=*/nullptr, kOutermostFrameId);
+
+  EXPECT_CALL(permission_context_,
+              PerformAfterWriteChecks_(
+                  Field(&FileSystemAccessWriteItem::outermost_main_frame_id,
+                        Eq(kOutermostFrameId)),
+                  kFrameId, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
+
+  base::RunLoop loop;
+  helper_->Start(base::BindLambdaForTesting(
+      [&](blink::mojom::FileSystemAccessErrorPtr result) {
+        EXPECT_EQ(result->status, FileSystemAccessStatus::kOk);
+        loop.Quit();
+      }));
+  loop.Run();
+}
+
 }  // namespace content

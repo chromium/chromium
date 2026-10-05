@@ -281,7 +281,8 @@ void FileSystemAccessFileWriterImpl::MaybeStartClose() {
               {FileSystemOperation::CopyOrMoveOption::
                    kPreserveDestinationPermissions}),
           std::move(quarantine_connection_callback_),
-          has_transient_user_activation_);
+          has_transient_user_activation_, web_contents(),
+          outermost_main_frame_id());
   // Allows the unique pointer to be bound to the callback so the helper stays
   // alive until the operation completes.
   FileSystemAccessSafeMoveHelper* raw_helper =
