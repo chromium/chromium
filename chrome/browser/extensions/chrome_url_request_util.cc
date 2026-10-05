@@ -63,7 +63,8 @@ void DetermineCharset(const std::string& mime_type,
                        base::CompareCase::INSENSITIVE_ASCII)) {
     // All of our HTML files should be UTF-8 and for other resource types
     // (like images), charset doesn't matter.
-    DCHECK(base::IsStringUTF8(base::as_string_view(*data)));
+    CHECK(base::IsStringUTF8(base::as_string_view(*data)),
+          base::NotFatalUntil::M161);
     *out_charset = "utf-8";
   }
 }
@@ -104,7 +105,7 @@ scoped_refptr<base::RefCountedMemory> GetResource(
   if (replacements && IsHtmlMimeType(mime_type)) {
     temp_str = ui::ReplaceTemplateExpressions(base::as_string_view(*bytes),
                                               *replacements);
-    DCHECK(!temp_str.empty());
+    CHECK(!temp_str.empty(), base::NotFatalUntil::M161);
     return base::MakeRefCounted<base::RefCountedString>(std::move(temp_str));
   } else if (replacements && IsJavaScriptMimeType(mime_type)) {
     CHECK(ui::ReplaceTemplateExpressionsInJS(base::as_string_view(*bytes),
@@ -333,7 +334,7 @@ base::FilePath GetBundleResourcePath(
           extension_resources_path, request_relative_path, resource_id)) {
     return base::FilePath();
   }
-  DCHECK_NE(0, *resource_id);
+  CHECK_NE(0, *resource_id, base::NotFatalUntil::M161);
 
   return request_relative_path;
 }
@@ -346,7 +347,7 @@ void LoadResourceFromResourceBundle(
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     content::BrowserContext* browser_context) {
-  DCHECK(!resource_relative_path.empty());
+  CHECK(!resource_relative_path.empty(), base::NotFatalUntil::M161);
   ResourceBundleFileLoader::CreateAndStart(
       request, std::move(loader), std::move(client), resource_relative_path,
       resource_id, std::move(headers), browser_context);

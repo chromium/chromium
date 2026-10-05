@@ -58,7 +58,7 @@ static base::android::ScopedJavaLocalRef<jintArray>
 JNI_FeedProcessScopeDependencyProvider_GetExperimentIds(JNIEnv* env) {
   auto* variations_ids_provider =
       variations::VariationsIdsProvider::GetInstance();
-  DCHECK(variations_ids_provider != nullptr);
+  CHECK(variations_ids_provider != nullptr, base::NotFatalUntil::M161);
 
   // Include the experiment IDs from Finch.
   std::vector<int> experiment_ids =

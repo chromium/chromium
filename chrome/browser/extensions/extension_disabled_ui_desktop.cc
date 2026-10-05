@@ -299,7 +299,8 @@ void ExtensionDisabledGlobalError::OnExtensionWillBeInstalled(
 }
 
 void ExtensionDisabledGlobalError::OnShutdown(ExtensionRegistry* registry) {
-  DCHECK_EQ(ExtensionRegistry::Get(profile_), registry);
+  CHECK_EQ(ExtensionRegistry::Get(profile_), registry,
+           base::NotFatalUntil::M161);
   registry_observation_.Reset();
 }
 

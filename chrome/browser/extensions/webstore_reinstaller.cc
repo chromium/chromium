@@ -33,9 +33,9 @@ WebstoreReinstaller::WebstoreReinstaller(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()),
           std::move(callback)),
       content::WebContentsObserver(web_contents) {
-  DCHECK(
-      ExtensionPrefs::Get(web_contents->GetBrowserContext())
-          ->HasDisableReason(extension_id, disable_reason::DISABLE_CORRUPTED));
+  CHECK(ExtensionPrefs::Get(web_contents->GetBrowserContext())
+            ->HasDisableReason(extension_id, disable_reason::DISABLE_CORRUPTED),
+        base::NotFatalUntil::M161);
 }
 
 WebstoreReinstaller::~WebstoreReinstaller() = default;
@@ -75,8 +75,9 @@ void WebstoreReinstaller::WebContentsDestroyed() {
 void WebstoreReinstaller::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
   // This dialog doesn't support the "withhold permissions" checkbox.
-  DCHECK_NE(payload.result,
-            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
+  CHECK_NE(payload.result,
+           ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS,
+           base::NotFatalUntil::M161);
 
   if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
     WebstoreStandaloneInstaller::OnInstallPromptDone(std::move(payload));

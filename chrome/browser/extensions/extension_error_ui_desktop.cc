@@ -231,7 +231,7 @@ bool ExtensionErrorUIDesktop::ShowErrorInBubbleView() {
 }
 
 void ExtensionErrorUIDesktop::ShowExtensions() {
-  DCHECK(browser_);
+  CHECK(browser_, base::NotFatalUntil::M161);
   chrome::ShowExtensions(browser_);
 }
 

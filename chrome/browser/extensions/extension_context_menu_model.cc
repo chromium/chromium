@@ -451,7 +451,8 @@ bool ExtensionContextMenuModel::IsCommandIdEnabled(int command_id) const {
     case OPTIONS:
       // Options is always enabled since it will only be visible if it has an
       // options page.
-      DCHECK(OptionsPageInfo::HasOptionsPage(extension));
+      CHECK(OptionsPageInfo::HasOptionsPage(extension),
+            base::NotFatalUntil::M161);
       return true;
     case INSPECT_POPUP: {
       content::WebContents* web_contents = GetActiveWebContents();
@@ -522,7 +523,7 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
     return;
 
   if (ContextMenuMatcher::IsExtensionsCustomCommandId(command_id)) {
-    DCHECK(extension_items_);
+    CHECK(extension_items_, base::NotFatalUntil::M161);
     extension_items_->ExecuteCommand(command_id, GetActiveWebContents(),
                                      nullptr, content::ContextMenuParams());
     action_taken_ = ContextMenuAction::kCustomCommand;
@@ -537,7 +538,8 @@ void ExtensionContextMenuModel::ExecuteCommand(int command_id,
       break;
     }
     case OPTIONS:
-      DCHECK(OptionsPageInfo::HasOptionsPage(extension));
+      CHECK(OptionsPageInfo::HasOptionsPage(extension),
+            base::NotFatalUntil::M161);
       ExtensionTabUtil::OpenOptionsPageFromWebContents(extension,
                                                        GetActiveWebContents());
       break;
@@ -736,9 +738,10 @@ ExtensionContextMenuModel::~ExtensionContextMenuModel() = default;
 void ExtensionContextMenuModel::InitMenuWithFeature(
     const Extension* extension,
     bool can_show_icon_in_toolbar) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
-  DCHECK(extension);
+  CHECK(base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M161);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   extension_action_ =
       ExtensionActionManager::Get(profile_)->GetExtensionAction(*extension);
@@ -946,7 +949,7 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
 
 void ExtensionContextMenuModel::InitMenu(const Extension* extension,
                                          bool can_show_icon_in_toolbar) {
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   std::optional<ActionInfo::Type> action_type;
   extension_action_ =
@@ -1005,7 +1008,7 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
       source_ == ContextMenuSource::kToolbarAction) {
     int visibility_string_id =
         GetVisibilityStringId(profile_, extension, is_pinned_);
-    DCHECK_NE(-1, visibility_string_id);
+    CHECK_NE(-1, visibility_string_id, base::NotFatalUntil::M161);
     AddItemWithStringId(TOGGLE_VISIBILITY, visibility_string_id);
     if (IsExtensionForcePinned(*extension, profile_)) {
       size_t toggle_visibility_index =
@@ -1092,8 +1095,9 @@ void ExtensionContextMenuModel::AppendExtensionItems() {
 void ExtensionContextMenuModel::CreatePageAccessItems(
     const Extension* extension,
     content::WebContents* web_contents) {
-  DCHECK(!base::FeatureList::IsEnabled(
-      extensions_features::kExtensionsMenuAccessControl));
+  CHECK(!base::FeatureList::IsEnabled(
+            extensions_features::kExtensionsMenuAccessControl),
+        base::NotFatalUntil::M161);
 
   const GURL& url = web_contents->GetLastCommittedURL();
   auto* permissions_manager = PermissionsManager::Get(profile_);

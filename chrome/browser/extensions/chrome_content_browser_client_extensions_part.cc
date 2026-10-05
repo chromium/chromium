@@ -227,7 +227,7 @@ std::optional<GURL> ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
     Profile* profile,
     const GURL& url) {
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
 
   // If the URL is part of a hosted app's web extent, convert it to the app's
   // extension URL. I.e., the effective URL becomes a chrome-extension: URL
@@ -385,7 +385,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host,
     const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Enforce that extension URLs commit in the correct extension process where
   // possible, accounting for many exceptions to the rule.
@@ -442,7 +442,7 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     bool found_owner = WebViewRendererState::GetInstance()->GetOwnerInfo(
         process_host->GetDeprecatedID(), &owner_process_id,
         &owner_extension_id);
-    DCHECK(found_owner);
+    CHECK(found_owner, base::NotFatalUntil::M161);
     return extension->is_platform_app() &&
            extension->permissions_data()->HasAPIPermission(
                mojom::APIPermissionID::kWebView) &&
@@ -459,7 +459,7 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
     Profile* profile,
     content::RenderProcessHost* process_host,
     const content::SecurityPrincipal& security_principal) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
   ProcessMap* process_map = ProcessMap::Get(profile);
@@ -519,7 +519,8 @@ ChromeContentBrowserClientExtensionsPart::GetProcessCountToIgnoreForLimit() {
 bool ChromeContentBrowserClientExtensionsPart::
     ShouldEmbeddedFramesTryToReuseExistingProcess(
         content::RenderFrameHost* outermost_main_frame) {
-  DCHECK(!outermost_main_frame->GetParentOrOuterDocument());
+  CHECK(!outermost_main_frame->GetParentOrOuterDocument(),
+        base::NotFatalUntil::M161);
 
   // Most out-of-process embedded frames aggressively look for a random
   // same-site process to reuse if possible, to keep the process count low. Skip

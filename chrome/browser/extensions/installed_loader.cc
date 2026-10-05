@@ -332,7 +332,8 @@ void InstalledLoader::Load(const ExtensionPrefs::InstallRecord& info,
     // remain so.
     disable_reason::DisableReason disable_reason = disable_reason::DISABLE_NONE;
     if (policy->MustRemainDisabled(extension.get(), &disable_reason)) {
-      DCHECK_NE(disable_reason, disable_reason::DISABLE_NONE);
+      CHECK_NE(disable_reason, disable_reason::DISABLE_NONE,
+               base::NotFatalUntil::M161);
       extension_prefs_->AddDisableReason(extension->id(), disable_reason);
     }
   }
@@ -349,7 +350,7 @@ void InstalledLoader::LoadAllExtensions() {
 }
 
 void InstalledLoader::LoadAllExtensions(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   TRACE_EVENT("browser,startup", "InstalledLoader::LoadAllExtensions");
 
   bool is_user_profile =
@@ -424,7 +425,8 @@ void InstalledLoader::RecordPermissionMessagesHistogram(
     const Extension* extension,
     const char* histogram_basename,
     Profile* profile) {
-  DCHECK(profile_util::ProfileCanUseNonComponentExtensions(profile));
+  CHECK(profile_util::ProfileCanUseNonComponentExtensions(profile),
+        base::NotFatalUntil::M161);
 
   PermissionIDSet permissions =
       PermissionMessageProvider::Get()->GetAllPermissionIDs(
@@ -455,7 +457,8 @@ void InstalledLoader::RecordExtensionsIncrementedMetricsForTesting(
 // TODO(crbug.com/40739895): Separate out Webstore/Offstore metrics.
 void InstalledLoader::RecordExtensionsMetrics(Profile* profile) {
   TRACE_EVENT("browser,startup", "RecordExtensionsMetrics");
-  DCHECK(profile_util::ProfileCanUseNonComponentExtensions(profile));
+  CHECK(profile_util::ProfileCanUseNonComponentExtensions(profile),
+        base::NotFatalUntil::M161);
 
   int app_user_count = 0;
   int app_external_count = 0;

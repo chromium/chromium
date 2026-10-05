@@ -198,8 +198,8 @@ ExternalInstallBubbleAlert::ExternalInstallBubbleAlert(
     ExternalInstallError* error,
     InstallPromptData* prompt)
     : error_(error), prompt_(prompt) {
-  DCHECK(error_);
-  DCHECK(prompt_);
+  CHECK(error_, base::NotFatalUntil::M161);
+  CHECK(prompt_, base::NotFatalUntil::M161);
 }
 
 ExternalInstallBubbleAlert::~ExternalInstallBubbleAlert() = default;
@@ -399,9 +399,9 @@ void ExternalInstallErrorDesktop::DidCloseBubbleView() {
 }
 
 void ExternalInstallErrorDesktop::ShowDialog(BrowserWindowInterface* browser) {
-  DCHECK(install_ui_.get());
-  DCHECK(prompt_.get());
-  DCHECK(browser);
+  CHECK(install_ui_.get(), base::NotFatalUntil::M161);
+  CHECK(prompt_.get(), base::NotFatalUntil::M161);
+  CHECK(browser, base::NotFatalUntil::M161);
   content::WebContents* web_contents = nullptr;
   web_contents = browser->GetTabStripModel()->GetActiveWebContents();
   manager_->DidChangeInstallAlertVisibility(this, true);
@@ -494,7 +494,7 @@ void ExternalInstallErrorDesktop::OnDialogReady(
       }
     }
   } else {
-    DCHECK(alert_type_ == MENU_ALERT);
+    CHECK(alert_type_ == MENU_ALERT, base::NotFatalUntil::M161);
     global_error_ = std::make_unique<ExternalInstallMenuAlert>(this);
     error_service_->AddUnownedGlobalError(global_error_.get());
   }

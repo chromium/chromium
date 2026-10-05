@@ -104,7 +104,7 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
   std::vector<double> numbers;
   base::android::JavaDoubleArrayToDoubleVector(
       env, Java_FeedServiceBridge_getDisplayMetrics(env), &numbers);
-  DCHECK_EQ(3UL, numbers.size());
+  CHECK_EQ(3UL, numbers.size(), base::NotFatalUntil::M161);
   DisplayMetrics result;
   result.density = numbers[0];
   result.width_pixels = numbers[1];

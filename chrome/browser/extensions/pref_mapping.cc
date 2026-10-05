@@ -231,8 +231,9 @@ PrefMapping::PrefMapping() {
     event_mapping_[pref.browser_pref] =
         PrefMapData(event_name, pref.read_permission, pref.write_permission);
   }
-  DCHECK_EQ(std::size(kMappings), mapping_.size());
-  DCHECK_EQ(std::size(kMappings), event_mapping_.size());
+  CHECK_EQ(std::size(kMappings), mapping_.size(), base::NotFatalUntil::M161);
+  CHECK_EQ(std::size(kMappings), event_mapping_.size(),
+           base::NotFatalUntil::M161);
 }
 
 PrefMapping::~PrefMapping() = default;

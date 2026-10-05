@@ -154,7 +154,8 @@ ChromeComponentExtensionResourceManager::Data::Data() {
         base::FilePath("file_manager").AppendASCII(resource.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!path_to_resource_id_.contains(resource_path));
+    CHECK(!path_to_resource_id_.contains(resource_path),
+          base::NotFatalUntil::M161);
     path_to_resource_id_[resource_path] = resource.id;
   }
 
@@ -198,7 +199,8 @@ void ChromeComponentExtensionResourceManager::Data::AddComponentResourceEntries(
     base::FilePath resource_path = base::FilePath().AppendASCII(entry.path);
     resource_path = resource_path.NormalizePathSeparators();
 
-    DCHECK(!path_to_resource_id_.contains(resource_path));
+    CHECK(!path_to_resource_id_.contains(resource_path),
+          base::NotFatalUntil::M161);
     path_to_resource_id_[resource_path] = entry.id;
   }
 }
@@ -213,7 +215,7 @@ bool ChromeComponentExtensionResourceManager::IsComponentExtensionResource(
     const base::FilePath& extension_path,
     const base::FilePath& resource_path,
     int* resource_id) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   base::FilePath directory_path = extension_path;
   base::FilePath resources_dir;
@@ -239,7 +241,7 @@ const ui::TemplateReplacements*
 ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
     const ExtensionId& extension_id,
     content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   LazyInitData();
 
@@ -265,7 +267,7 @@ ChromeComponentExtensionResourceManager::GetTemplateReplacementsForExtension(
 }
 
 void ChromeComponentExtensionResourceManager::LazyInitData() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!data_)
     data_ = std::make_unique<Data>();

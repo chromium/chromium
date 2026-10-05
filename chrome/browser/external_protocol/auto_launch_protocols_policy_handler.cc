@@ -79,7 +79,7 @@ bool AutoLaunchProtocolsPolicyHandler::CheckPolicySettings(
     // If the protocol is invalid mark it as an error.
     const std::string* protocol = protocol_origins_map.FindString(
         policy::external_protocol::kProtocolNameKey);
-    DCHECK(protocol);
+    CHECK(protocol, base::NotFatalUntil::M161);
     if (!IsValidProtocol(*protocol)) {
       errors->AddError(policy::key::kAutoLaunchProtocolsFromOrigins,
                        IDS_POLICY_INVALID_PROTOCOL_ERROR, PolicyErrorPath{i});
@@ -119,7 +119,7 @@ void AutoLaunchProtocolsPolicyHandler::ApplyPolicySettings(
     base::DictValue& protocol_origins_dict = protocol_origins_map.GetDict();
     const std::string* protocol = protocol_origins_dict.FindString(
         policy::external_protocol::kProtocolNameKey);
-    DCHECK(protocol);
+    CHECK(protocol, base::NotFatalUntil::M161);
     if (!IsValidProtocol(*protocol))
       continue;
 

@@ -18,7 +18,7 @@ namespace feed {
 RefreshTaskSchedulerImpl::RefreshTaskSchedulerImpl(
     background_task::BackgroundTaskScheduler* scheduler)
     : scheduler_(scheduler) {
-  DCHECK(scheduler_);
+  CHECK(scheduler_, base::NotFatalUntil::M161);
 }
 RefreshTaskSchedulerImpl::~RefreshTaskSchedulerImpl() = default;
 

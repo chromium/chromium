@@ -86,12 +86,13 @@ AppTabHelper* AppTabHelper::FromWebContents(
 }
 
 void AppTabHelper::SetExtensionApp(const Extension* extension) {
-  DCHECK(!extension || AppLaunchInfo::GetFullLaunchURL(extension).is_valid());
+  CHECK(!extension || AppLaunchInfo::GetFullLaunchURL(extension).is_valid(),
+        base::NotFatalUntil::M161);
   if (extension_app_ == extension) {
     return;
   }
 
-  DCHECK(!extension || extension->is_app());
+  CHECK(!extension || extension->is_app(), base::NotFatalUntil::M161);
 
   extension_app_ = extension;
 
@@ -153,7 +154,7 @@ void AppTabHelper::DidFinishNavigation(
         registry->GetInstalledExtension(web_app::GetAppIdFromApplicationName(
             BrowserInitState::From(browser)->create_params().app_name));
     if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid()) {
-      DCHECK(extension->is_app());
+      CHECK(extension->is_app(), base::NotFatalUntil::M161);
       SetExtensionApp(extension);
     }
   } else {

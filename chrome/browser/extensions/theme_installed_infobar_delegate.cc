@@ -126,7 +126,7 @@ int ThemeInstalledInfoBarDelegate::GetButtons() const {
 
 std::u16string ThemeInstalledInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  DCHECK_EQ(BUTTON_CANCEL, button);
+  CHECK_EQ(BUTTON_CANCEL, button, base::NotFatalUntil::M161);
   return l10n_util::GetStringUTF16(IDS_THEME_INSTALL_INFOBAR_UNDO_BUTTON);
 }
 

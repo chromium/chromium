@@ -187,7 +187,8 @@ std::optional<base::DictValue> LoadManifestOnFileThread(
     const base::FilePath& root_directory,
     const base::FilePath::CharType* manifest_filename,
     bool localize_manifest) {
-  DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   std::string error;
   std::optional<base::DictValue> manifest(
       file_util::LoadManifest(root_directory, manifest_filename, &error));
@@ -685,7 +686,7 @@ void ComponentLoader::AddDefaultComponentExtensions(
 
   AddKeyboardApp();
 #else   // BUILDFLAG(IS_CHROMEOS)
-  DCHECK(!skip_session_components);
+  CHECK(!skip_session_components, base::NotFatalUntil::M161);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (!skip_session_components) {
@@ -840,7 +841,7 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const base::FilePath::CharType* guest_manifest_file_name,
     base::OnceClosure done_cb,
     base::OnceClosure error_cb) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   CHECK(!IsPendingAdd(extension_id));
   pending_extension_ids_.emplace(extension_id);
@@ -866,7 +867,7 @@ void ComponentLoader::FinishAddComponentFromDir(
     base::OnceClosure done_cb,
     base::OnceClosure error_cb,
     std::optional<base::DictValue> manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Extension is removed during loading. Skip adding in this case.
   if (!IsPendingAdd(extension_id)) {

@@ -30,13 +30,14 @@
 namespace extensions {
 
 ChromeProcessManagerDelegate::ChromeProcessManagerDelegate() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
   // The profile manager can be null in unit tests.
   if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
     // All profiles must be observed, so make sure none have been created
     // that we missed.
-    DCHECK_EQ(0U, profile_manager->GetLoadedProfiles().size());
+    CHECK_EQ(0U, profile_manager->GetLoadedProfiles().size(),
+             base::NotFatalUntil::M161);
   }
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());
@@ -107,7 +108,7 @@ bool ChromeProcessManagerDelegate::DeferCreatingStartupBackgroundHosts(
 void ChromeProcessManagerDelegate::OnBrowserCreated(
     BrowserWindowInterface* browser) {
   Profile* profile = browser->GetProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // Inform the process manager for this profile that the window is ready.
   // We continue to observe the notification in case browser windows open for

@@ -67,7 +67,7 @@ class ExtensionAssetsManagerHelper {
       delete;
 
   static ExtensionAssetsManagerHelper* GetInstance() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     return base::Singleton<ExtensionAssetsManagerHelper>::get();
   }
 
@@ -208,7 +208,7 @@ bool ExtensionAssetsManagerChromeOS::IsSharedInstall(
 // static
 bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
     std::multimap<std::string, base::FilePath>* live_extension_paths) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   PrefService* local_state = g_browser_process->local_state();
   // It happens in many unit tests.
@@ -241,7 +241,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
 // static
 void ExtensionAssetsManagerChromeOS::SetSharedInstallDirForTesting(
     const base::FilePath& install_dir) {
-  DCHECK(!g_shared_install_dir_override);
+  CHECK(!g_shared_install_dir_override, base::NotFatalUntil::M161);
   g_shared_install_dir_override = new base::FilePath(install_dir);
 }
 
@@ -275,7 +275,7 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
     const base::FilePath& local_install_dir,
     Profile* profile,
     InstallExtensionCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   const std::string& user_id = profile->GetProfileUserName();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
@@ -362,7 +362,7 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
     const std::string& id,
     const std::string& version,
     const base::FilePath& shared_version_dir) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   ExtensionAssetsManagerHelper* helper =
       ExtensionAssetsManagerHelper::GetInstance();
@@ -421,7 +421,7 @@ void ExtensionAssetsManagerChromeOS::InstallLocalExtension(
 void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
     const std::string& id,
     const std::string& profile_user_name) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   PrefService* local_state = g_browser_process->local_state();
   ScopedDictPrefUpdate shared_extensions(local_state, kSharedExtensions);
@@ -518,7 +518,7 @@ bool ExtensionAssetsManagerChromeOS::CleanUpExtension(
         // For logged in user also check that this path is actually used as
         // installed extension or as delayed install.
         Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-        DCHECK(profile);
+        CHECK(profile, base::NotFatalUntil::M161);
         ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile);
         if (!extension_prefs || extension_prefs->pref_service()->ReadOnly())
           return false;

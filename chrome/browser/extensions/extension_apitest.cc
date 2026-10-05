@@ -149,7 +149,8 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
   GURL url_to_open;
   if (run_options.page_url) {
     url_to_open = GURL(run_options.page_url);
-    DCHECK(url_to_open.has_scheme() && url_to_open.has_host());
+    CHECK(url_to_open.has_scheme() && url_to_open.has_host(),
+          base::NotFatalUntil::M161);
     // Note: We use is_valid() here in the expectation that the provided url
     // may lack a scheme & host and thus be a relative url within the loaded
     // extension.
@@ -163,7 +164,8 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
       }
     }
   } else if (run_options.extension_url) {
-    DCHECK(!url_to_open.has_scheme() && !url_to_open.has_host());
+    CHECK(!url_to_open.has_scheme() && !url_to_open.has_host(),
+          base::NotFatalUntil::M161);
     url_to_open = extension->GetResourceURL(run_options.extension_url);
     if (!url_to_open.is_valid()) {
       message_ = "Invalid extension URL.";
@@ -212,7 +214,7 @@ void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
 }
 
 bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M161);
 
   ResultCatcher catcher;
 

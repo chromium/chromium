@@ -40,7 +40,7 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 void GetNextDialog(javascript_dialogs::AppModalDialogView** view) {
-  DCHECK(view);
+  CHECK(view, base::NotFatalUntil::M161);
   *view = nullptr;
   javascript_dialogs::AppModalDialogController* dialog =
       ui_test_utils::WaitForAppModalDialog();

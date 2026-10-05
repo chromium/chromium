@@ -88,8 +88,9 @@ void NavigationExtensionEnabler::PromptToEnableExtensionIfNecessary(
 void NavigationExtensionEnabler::OnInstallPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
   // This dialog doesn't support the "withhold permissions" checkbox.
-  DCHECK_NE(payload.result,
-            ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS);
+  CHECK_NE(payload.result,
+           ExtensionInstallPrompt::Result::ACCEPTED_WITH_WITHHELD_PERMISSIONS,
+           base::NotFatalUntil::M161);
 
   // The extension was already uninstalled.
   if (in_progress_prompt_extension_id_.empty()) {

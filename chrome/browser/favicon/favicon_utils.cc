@@ -65,7 +65,7 @@ gfx::Image GetDefaultFaviconForColorScheme(bool is_dark) {
 
 void CreateContentFaviconDriverForWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   if (ContentFaviconDriver::FromWebContents(web_contents))
     return;
 

@@ -198,8 +198,8 @@ void TabHelper::InvokeForContentRulesRegistries(const Func& func) {
       // spanning extensions in incognito profiles, so invoke it also.
       RulesRegistryService* original_profile_rules_registry_service =
           RulesRegistryService::Get(profile_->GetOriginalProfile());
-      DCHECK_NE(rules_registry_service,
-                original_profile_rules_registry_service);
+      CHECK_NE(rules_registry_service, original_profile_rules_registry_service,
+               base::NotFatalUntil::M161);
       if (original_profile_rules_registry_service) {
         if (ContentRulesRegistry* original_content_rules_registry =
                 original_profile_rules_registry_service

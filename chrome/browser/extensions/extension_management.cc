@@ -311,7 +311,7 @@ bool ExtensionManagement::HasAllowlistedExtension() {
     auto extension_id = *deferred_ids_.begin();
     // This will remove the entry from |deferred_ids_|.
     LoadDeferredExtensionSetting(extension_id);
-    DCHECK(!deferred_ids_.contains(extension_id));
+    CHECK(!deferred_ids_.contains(extension_id), base::NotFatalUntil::M161);
     if (AccessById(extension_id)->installation_mode ==
         ManagedInstallationMode::kAllowed) {
       NotifyExtensionManagementPrefChanged();
@@ -335,7 +335,7 @@ GURL ExtensionManagement::GetEffectiveUpdateURL(const Extension& extension) {
         << "Update URL should not be overridden for default-installed "
            "extensions!";
     auto* setting = GetSettingsForId(extension.id());
-    DCHECK(setting);
+    CHECK(setting, base::NotFatalUntil::M161);
     const GURL update_url(setting->update_url);
     // It's important that we never override a non-webstore update URL to be
     // the webstore URL. Otherwise, a policy may inadvertently cause
@@ -974,7 +974,7 @@ internal::IndividualSettings* ExtensionManagement::GetSettingsForId(
 
 void ExtensionManagement::LoadDeferredExtensionSetting(
     const std::string& extension_id) {
-  DCHECK(deferred_ids_.contains(extension_id));
+  CHECK(deferred_ids_.contains(extension_id), base::NotFatalUntil::M161);
 
   // No need to check again later.
   deferred_ids_.erase(extension_id);
@@ -1071,8 +1071,9 @@ base::DictValue ExtensionManagement::GetInstallListByMode(
     ManagedInstallationMode installation_mode) const {
   // This is only meaningful if we 've loaded the extensions for the given
   // installation mode.
-  DCHECK(installation_mode == ManagedInstallationMode::kForced ||
-         installation_mode == ManagedInstallationMode::kRecommended);
+  CHECK(installation_mode == ManagedInstallationMode::kForced ||
+            installation_mode == ManagedInstallationMode::kRecommended,
+        base::NotFatalUntil::M161);
 
   base::DictValue extension_dict;
   for (const auto& [id, settings] : settings_by_id_) {

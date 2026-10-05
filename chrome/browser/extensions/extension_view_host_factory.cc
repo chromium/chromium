@@ -41,7 +41,7 @@ class ExtensionViewHostBrowserDelegate : public ExtensionViewHost::Delegate {
  public:
   explicit ExtensionViewHostBrowserDelegate(BrowserWindowInterface* browser)
       : browser_(browser) {
-    DCHECK(browser_);
+    CHECK(browser_, base::NotFatalUntil::M161);
   }
   ExtensionViewHostBrowserDelegate(const ExtensionViewHostBrowserDelegate&) =
       delete;
@@ -83,7 +83,7 @@ class ExtensionViewHostTabDelegate : public ExtensionViewHost::Delegate {
  public:
   explicit ExtensionViewHostTabDelegate(content::WebContents* web_contents)
       : web_contents_(web_contents) {
-    DCHECK(web_contents_);
+    CHECK(web_contents_, base::NotFatalUntil::M161);
   }
   ExtensionViewHostTabDelegate(const ExtensionViewHostTabDelegate&) = delete;
   ExtensionViewHostTabDelegate& operator=(const ExtensionViewHostTabDelegate&) =
@@ -200,7 +200,7 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForExtension(
     Profile* profile,
     mojom::ViewType view_type,
     std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return std::make_unique<ExtensionViewHost>(extension, profile, url, view_type,
                                              std::move(delegate));
 }
@@ -214,8 +214,8 @@ std::unique_ptr<ExtensionViewHost> CreateViewHostForIncognito(
     Profile* profile,
     mojom::ViewType view_type,
     std::unique_ptr<ExtensionViewHost::Delegate> delegate) {
-  DCHECK(extension);
-  DCHECK(profile->IsOffTheRecord());
+  CHECK(extension, base::NotFatalUntil::M161);
+  CHECK(profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   // Callers must ensure the extension is allowed to run in incognito before
   // attempting to create a host. Note that even in spanning mode (!IsSplitMode)
@@ -261,7 +261,7 @@ std::unique_ptr<ExtensionViewHost> ExtensionViewHostFactory::CreatePopupHost(
     const Extension& extension,
     const GURL& url,
     BrowserWindowInterface* browser) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M161);
 
 #if !BUILDFLAG(IS_ANDROID)
   auto delegate = std::make_unique<ExtensionViewHostBrowserDelegate>(browser);
@@ -281,7 +281,8 @@ ExtensionViewHostFactory::CreateSidePanelHost(
     const GURL& url,
     BrowserWindowInterface* browser,
     tabs::TabInterface* tab_interface) {
-  DCHECK(browser == nullptr ^ tab_interface == nullptr);
+  CHECK(browser == nullptr ^ tab_interface == nullptr,
+        base::NotFatalUntil::M161);
 
   Profile* profile =
       browser ? browser->GetProfile()

@@ -41,8 +41,8 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
     content::WebContents* contents)
     : profile_(Profile::FromBrowserContext(contents->GetBrowserContext())),
       parent_web_contents_(contents->GetWeakPtr()) {
-  DCHECK(profile_);
-  DCHECK(parent_web_contents_);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(parent_web_contents_, base::NotFatalUntil::M161);
 
   if (!parent_web_contents_->GetTopLevelNativeWindow()) {
     // WebContents were created without a top-level window. This can happen when
@@ -60,7 +60,7 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
     : profile_(profile),
       parent_web_contents_(nullptr),
       parent_window_(parent_window) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (parent_window_) {
     native_window_tracker_ = ui::NativeWindowTracker::Create(parent_window_);
   }
@@ -114,14 +114,14 @@ ScopedDisableRootChecking::ScopedDisableRootChecking() {
 #if defined(USE_AURA)
   // There should be no need to support multiple ScopedDisableRootCheckings
   // at a time.
-  DCHECK(g_root_checking_enabled);
+  CHECK(g_root_checking_enabled, base::NotFatalUntil::M161);
   g_root_checking_enabled = false;
 #endif
 }
 
 ScopedDisableRootChecking::~ScopedDisableRootChecking() {
 #if defined(USE_AURA)
-  DCHECK(!g_root_checking_enabled);
+  CHECK(!g_root_checking_enabled, base::NotFatalUntil::M161);
   g_root_checking_enabled = true;
 #endif
 }

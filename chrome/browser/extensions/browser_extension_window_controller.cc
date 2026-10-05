@@ -296,7 +296,7 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
     const Extension* extension,
     const GURL& url,
     bool open_in_tab) {
-  DCHECK(OptionsPageInfo::HasOptionsPage(extension));
+  CHECK(OptionsPageInfo::HasOptionsPage(extension), base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_ANDROID)
   // On Android, we just open the options page in a new tab.

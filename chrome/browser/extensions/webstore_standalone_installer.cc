@@ -90,7 +90,7 @@ WebstoreStandaloneInstaller::~WebstoreStandaloneInstaller() = default;
 void WebstoreStandaloneInstaller::RunCallback(bool success,
                                               const std::string& error,
                                               webstore_install::Result result) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M161);
   std::move(callback_).Run(success, error, result);
 }
 
@@ -109,7 +109,7 @@ bool WebstoreStandaloneInstaller::EnsureUniqueInstall(
     std::string* error) {
   InstallTracker* tracker =
       InstallTrackerFactory::GetForBrowserContext(profile_);
-  DCHECK(tracker);
+  CHECK(tracker, base::NotFatalUntil::M161);
 
   const ActiveInstallData* existing_install_data =
       tracker->GetActiveInstall(id_);
@@ -148,7 +148,7 @@ void WebstoreStandaloneInstaller::ProceedWithInstallPrompt() {
 scoped_refptr<const Extension>
 WebstoreStandaloneInstaller::GetLocalizedExtensionForDisplay() {
   if (!localized_extension_for_display_.get()) {
-    DCHECK(manifest_.has_value());
+    CHECK(manifest_.has_value(), base::NotFatalUntil::M161);
     if (!manifest_.has_value())
       return nullptr;
 
@@ -195,7 +195,8 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     return;
   }
 
-  DCHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
+  CHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED,
+        base::NotFatalUntil::M161);
 
   std::unique_ptr<InstallApproval> approval = CreateApproval();
 
@@ -335,7 +336,7 @@ void WebstoreStandaloneInstaller::OnExtensionInstallFailure(
 }
 
 void WebstoreStandaloneInstaller::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK(profile == profile_);
+  CHECK(profile == profile_, base::NotFatalUntil::M161);
 
   if (!callback_.is_null())
     RunCallback(false, kProfileShuttingDown, webstore_install::ABORTED);

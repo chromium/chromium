@@ -57,7 +57,7 @@ namespace {
 
 bool IsBlockedByPolicy(const Extension* app, content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   return app->id() == extensions::kWebStoreAppId &&
          profile->GetPrefs()->GetBoolean(

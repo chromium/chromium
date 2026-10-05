@@ -122,7 +122,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
     : public syncer::SyncServiceObserver {
  public:
   explicit PrioritySyncReadyWaiter(Profile* profile) : profile_(profile) {
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M161);
   }
 
   PrioritySyncReadyWaiter(const PrioritySyncReadyWaiter&) = delete;
@@ -137,7 +137,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
       // Note: |this| is deleted here.
       return;
     }
-    DCHECK(!done_closure_);
+    CHECK(!done_closure_, base::NotFatalUntil::M161);
     done_closure_ = std::move(done_closure);
     sync_service_observation_.Observe(service);
   }
@@ -158,7 +158,8 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   }
 
   void OnSyncShutdown(syncer::SyncService* sync) override {
-    DCHECK(sync_service_observation_.IsObservingSource(sync));
+    CHECK(sync_service_observation_.IsObservingSource(sync),
+          base::NotFatalUntil::M161);
     sync_service_observation_.Reset();
   }
 
@@ -180,20 +181,20 @@ ExternalPrefLoader::ExternalPrefLoader(int base_path_id,
       options_(options),
       profile_(profile),
       user_type_(profile ? apps::DetermineUserType(profile) : std::string()) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 ExternalPrefLoader::~ExternalPrefLoader() = default;
 
 const base::FilePath ExternalPrefLoader::GetBaseCrxFilePath() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // |base_path_| was set in LoadOnFileThread().
   return base_path_;
 }
 
 void ExternalPrefLoader::StartLoading() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(IS_CHROMEOS)
   if ((options_ & DELAY_LOAD_UNTIL_PRIORITY_SYNC) &&
       (profile_ && SyncServiceFactory::IsSyncAllowed(profile_))) {

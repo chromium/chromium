@@ -35,8 +35,9 @@ ExtensionViewHost::ExtensionViewHost(
                     host_type),
       delegate_(std::move(delegate)) {
   // Not used for panels, see PanelHost.
-  DCHECK(host_type == mojom::ViewType::kExtensionPopup ||
-         host_type == mojom::ViewType::kExtensionSidePanel);
+  CHECK(host_type == mojom::ViewType::kExtensionPopup ||
+            host_type == mojom::ViewType::kExtensionSidePanel,
+        base::NotFatalUntil::M161);
 
   // Attach WebContents helpers. Extension tabs automatically get them attached
   // in TabHelpers::AttachTabHelpers, but popups don't.
@@ -200,7 +201,7 @@ WindowController* ExtensionViewHost::GetExtensionWindowController() {
 void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
     content::BrowserContext* host_browser_context,
     ExtensionHost* extension_host) {
-  DCHECK(extension_host->extension());
+  CHECK(extension_host->extension(), base::NotFatalUntil::M161);
   if (host_browser_context != browser_context() ||
       extension_host->extension() != extension() ||
       extension_host->extension_host_type() !=
@@ -208,9 +209,10 @@ void ExtensionViewHost::OnExtensionHostDocumentElementAvailable(
     return;
   }
 
-  DCHECK_EQ(process_util::PersistentBackgroundPageState::kReady,
-            process_util::GetPersistentBackgroundPageState(*extension(),
-                                                           browser_context()));
+  CHECK_EQ(process_util::PersistentBackgroundPageState::kReady,
+           process_util::GetPersistentBackgroundPageState(*extension(),
+                                                          browser_context()),
+           base::NotFatalUntil::M161);
   // We only needed to wait for the background page to load, so stop observing.
   host_registry_observation_.Reset();
   LoadInitialURL();

@@ -101,12 +101,12 @@ int ErrorBadge::GetMenuItemCommandID() {
 }  // namespace
 
 WarningBadgeService::WarningBadgeService(Profile* profile) : profile_(profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   warning_service_observation_.Observe(WarningService::Get(profile_));
 }
 
 WarningBadgeService::~WarningBadgeService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 // static
@@ -116,7 +116,7 @@ WarningBadgeService* WarningBadgeService::Get(
 }
 
 void WarningBadgeService::SuppressCurrentWarnings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   size_t old_size = suppressed_warnings_.size();
 
   const WarningSet& warnings = GetCurrentWarnings();
@@ -132,7 +132,7 @@ const WarningSet& WarningBadgeService::GetCurrentWarnings() const {
 
 void WarningBadgeService::ExtensionWarningsChanged(
     const ExtensionIdSet& affected_extensions) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   UpdateBadgeStatus();
 }
 

@@ -800,7 +800,7 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
         extension_id_(extension_id),
         event_(std::move(event)),
         listener_("PASS") {
-    DCHECK(browser_context_);
+    CHECK(browser_context_, base::NotFatalUntil::M161);
     listener_.set_failure_message("FAIL");
     event_router_->RegisterObserver(this, event_->event_name);
   }

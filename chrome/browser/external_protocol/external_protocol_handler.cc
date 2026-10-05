@@ -141,7 +141,7 @@ void RunExternalProtocolDialogWithDelegate(
     content::WeakDocumentPtr initiator_document,
     const std::u16string& program_name,
     ExternalProtocolHandler::Delegate* delegate) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   if (delegate) {
     delegate->RunExternalProtocolDialog(url, web_contents, page_transition,
                                         has_user_gesture, initiating_origin,
@@ -229,7 +229,7 @@ void OnDefaultSchemeClientWorkerFinished(
     ExternalProtocolHandler::Delegate* delegate,
     shell_integration::DefaultWebClientState state,
     const std::u16string& program_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (delegate)
     delegate->FinishedProcessingCheck();
@@ -308,7 +308,7 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
     const base::DictValue& protocol_origins_map = entry.GetDict();
     const std::string* protocol = protocol_origins_map.FindString(
         policy::external_protocol::kProtocolNameKey);
-    DCHECK(protocol);
+    CHECK(protocol, base::NotFatalUntil::M161);
     if (*protocol == scheme) {
       origin_patterns = protocol_origins_map.FindList(
           policy::external_protocol::kOriginListKey);
@@ -391,7 +391,7 @@ ExternalProtocolHandler::BlockState ExternalProtocolHandler::GetBlockState(
     const std::string& scheme,
     const url::Origin* initiating_origin,
     Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   LogRequestForScheme(scheme);
 
@@ -473,7 +473,7 @@ void ExternalProtocolHandler::SetBlockState(
     BlockState state,
     Profile* profile) {
   // Setting the state to BLOCK is no longer supported through the UI.
-  DCHECK_NE(state, BLOCK);
+  CHECK_NE(state, BLOCK, base::NotFatalUntil::M161);
 
   // Set in the stored prefs.
   if (MayRememberAllowDecisionsForThisOrigin(&initiating_origin)) {
@@ -522,7 +522,7 @@ void ExternalProtocolHandler::LaunchUrl(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory
 #endif
 ) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Disable anti-flood protection if the user is invoking a bookmark or
   // navigating directly using the omnibox.
@@ -632,7 +632,7 @@ void ExternalProtocolHandler::LaunchUrlWithoutSecurityCheck(
 
 // static
 void ExternalProtocolHandler::PermitLaunchUrl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   g_accept_requests = true;
 }
@@ -652,7 +652,8 @@ void ExternalProtocolHandler::RecordHandleStateMetrics(bool checkbox_selected,
     case UNKNOWN:
       NOTREACHED();
   }
-  DCHECK_NE(CHECKED_DONT_LAUNCH_DEPRECATED, handle_state);
+  CHECK_NE(CHECKED_DONT_LAUNCH_DEPRECATED, handle_state,
+           base::NotFatalUntil::M161);
   UMA_HISTOGRAM_ENUMERATION(kHandleStateMetric, handle_state,
                             HANDLE_STATE_LAST);
 }

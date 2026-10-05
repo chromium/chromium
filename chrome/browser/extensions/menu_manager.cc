@@ -260,7 +260,7 @@ base::DictValue MenuItem::ToValue() const {
   base::DictValue value;
   // Should only be called for extensions with event pages, which only have
   // string IDs for items.
-  DCHECK_EQ(0, id_.uid);
+  CHECK_EQ(0, id_.uid, base::NotFatalUntil::M161);
   value.Set(kStringUIDKey, id_.string_uid);
   value.Set(kMenuManagerIncognitoKey, id_.incognito);
   value.Set(kMenuManagerTypeKey, type_);
@@ -272,7 +272,7 @@ base::DictValue MenuItem::ToValue() const {
   value.Set(kVisibleKey, visible_);
   value.Set(kContextsKey, contexts_.ToValue());
   if (parent_id_) {
-    DCHECK_EQ(0, parent_id_->uid);
+    CHECK_EQ(0, parent_id_->uid, base::NotFatalUntil::M161);
     value.Set(kParentUIDKey, parent_id_->string_uid);
   }
   value.Set(kDocumentURLPatternsKey, document_url_patterns_.ToValue());
@@ -435,7 +435,7 @@ bool MenuManager::AddContextItem(const Extension* extension,
   }
 
   const std::string& extension_id = extension ? extension->id() : "";
-  DCHECK_EQ(extension_id, key.extension_id);
+  CHECK_EQ(extension_id, key.extension_id, base::NotFatalUntil::M161);
 
   bool first_item = !context_items_.contains(key);
   context_items_[key].push_back(std::move(item));
@@ -479,7 +479,8 @@ bool MenuManager::DescendantOf(MenuItem* item,
   // Work our way up the tree until we find the ancestor or null.
   MenuItem::Id* id = item->parent_id();
   while (id != nullptr) {
-    DCHECK(*id != item->id());  // Catch circular graphs.
+    CHECK(*id != item->id(),
+          base::NotFatalUntil::M161);  // Catch circular graphs.
     if (*id == ancestor_id)
       return true;
     MenuItem* next = GetItemById(*id);
@@ -511,7 +512,7 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
       NOTREACHED();
     }
     child = old_parent->ReleaseChild(child_id, false /* non-recursive search*/);
-    DCHECK(child.get() == child_ptr);
+    CHECK(child.get() == child_ptr, base::NotFatalUntil::M161);
     SanitizeRadioListsInMenu(old_parent->children());
   } else {
     // This is a top-level item, so we need to pull it out of our list of
@@ -550,7 +551,7 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
   }
 
   MenuItem* menu_item = GetItemById(id);
-  DCHECK(menu_item);
+  CHECK(menu_item, base::NotFatalUntil::M161);
   const MenuItem::ExtensionKey extension_key = id.extension_key;
   auto i = context_items_.find(extension_key);
   if (i == context_items_.end()) {
@@ -583,7 +584,8 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
       }
     }
   }
-  DCHECK(result);  // The check at the very top should have prevented this.
+  CHECK(result, base::NotFatalUntil::M161);  // The check at the very top should
+                                             // have prevented this.
 
   // Clear entries from the items_by_id_ map.
   for (auto removed_iter = items_removed.begin();
@@ -877,7 +879,7 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
   }
 
   MenuItem* menu_item = GetItemById(id);
-  DCHECK(menu_item);
+  CHECK(menu_item, base::NotFatalUntil::M161);
 
   if (!menu_item->parent_id()) {
     auto i = context_items_.find(menu_item->id().extension_key);
@@ -903,7 +905,7 @@ void MenuManager::WriteToStorage(const Extension* extension,
   // Test |BackgroundInfo::HasLazyContext()| after checking
   // |webview_instance_id| to be an invalid ID. It's possible for |extension| to
   // be null in the case that |webview_instance_id| is valid.
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
   if (!BackgroundInfo::HasLazyContext(extension)) {
     return;
   }
@@ -923,7 +925,8 @@ void MenuManager::WriteToStorageInternal(
   MenuItem::List all_items;
   if (top_items) {
     for (auto i = top_items->begin(); i != top_items->end(); ++i) {
-      DCHECK(!(*i)->id().extension_key.webview_instance_id);
+      CHECK(!(*i)->id().extension_key.webview_instance_id,
+            base::NotFatalUntil::M161);
       (*i)->GetFlattenedSubtree(&all_items);
     }
   }
@@ -1035,7 +1038,8 @@ MenuIconLoader* MenuManager::GetMenuIconLoader(
   if (!webview_menu_icon_loaders_.contains(extension_key)) {
     return extension_menu_icon_loader_.get();
   }
-  DCHECK(webview_menu_icon_loaders_.contains(extension_key));
+  CHECK(webview_menu_icon_loaders_.contains(extension_key),
+        base::NotFatalUntil::M161);
   return webview_menu_icon_loaders_[extension_key].get();
 }
 
@@ -1052,7 +1056,7 @@ MenuItem::ExtensionKey::ExtensionKey(const std::string& extension_id)
       webview_embedder_process_id(ChildProcessHost::kInvalidUniqueID),
       webview_embedder_frame_id(IPC::mojom::kRoutingIdNone),
       webview_instance_id(kInstanceIDNone) {
-  DCHECK(!extension_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M161);
 }
 
 MenuItem::ExtensionKey::ExtensionKey(const std::string& extension_id,
@@ -1063,8 +1067,9 @@ MenuItem::ExtensionKey::ExtensionKey(const std::string& extension_id,
       webview_embedder_process_id(webview_embedder_process_id),
       webview_embedder_frame_id(webview_embedder_frame_id),
       webview_instance_id(webview_instance_id) {
-  DCHECK(webview_embedder_process_id != ChildProcessHost::kInvalidUniqueID &&
-         webview_instance_id != kInstanceIDNone);
+  CHECK(webview_embedder_process_id != ChildProcessHost::kInvalidUniqueID &&
+            webview_instance_id != kInstanceIDNone,
+        base::NotFatalUntil::M161);
 }
 
 bool MenuItem::ExtensionKey::operator==(const ExtensionKey& other) const {

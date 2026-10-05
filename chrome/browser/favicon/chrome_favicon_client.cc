@@ -70,7 +70,7 @@ bool ChromeFaviconClient::IsReaderModeURL(const GURL& url) {
 
 const GURL ChromeFaviconClient::GetOriginalUrlFromReaderModeUrl(
     const GURL& url) {
-  DCHECK(IsReaderModeURL(url));
+  CHECK(IsReaderModeURL(url), base::NotFatalUntil::M161);
   return dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
 }
 
@@ -80,8 +80,8 @@ ChromeFaviconClient::GetFaviconForNativeApplicationURL(
     const std::vector<int>& desired_sizes_in_pixel,
     favicon_base::FaviconResultsCallback callback,
     base::CancelableTaskTracker* tracker) {
-  DCHECK(tracker);
-  DCHECK(IsNativeApplicationURL(url));
+  CHECK(tracker, base::NotFatalUntil::M161);
+  CHECK(IsNativeApplicationURL(url), base::NotFatalUntil::M161);
   base::CancelableTaskTracker::IsCanceledCallback is_canceled_cb;
   base::CancelableTaskTracker::TaskId task_id =
       tracker->NewTrackedTaskId(&is_canceled_cb);

@@ -73,7 +73,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
     gfx::NativeWindow parent,
     ExtensionUninstallDialog::Delegate* delegate)
     : profile_(profile), parent_(parent), delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
   if (parent)
     parent_window_tracker_ = ui::NativeWindowTracker::Create(parent);
   profile_observation_.Observe(profile_.get());
@@ -94,7 +94,7 @@ void ExtensionUninstallDialog::ConfirmUninstall(
     const scoped_refptr<const Extension>& extension,
     UninstallReason reason,
     UninstallSource source) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
 
   UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallSource", source,
                             NUM_UNINSTALL_SOURCES);
@@ -119,7 +119,7 @@ void ExtensionUninstallDialog::ConfirmUninstall(
   registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 
   // Dialog will be shown once icon is loaded.
-  DCHECK(!dialog_shown_);
+  CHECK(!dialog_shown_, base::NotFatalUntil::M161);
   icon_ = ChromeAppIconService::Get(profile_)->CreateIcon(this, extension->id(),
                                                           kIconSize);
   icon_->image_skia().GetRepresentation(GetScaleFactor(parent_));
@@ -129,7 +129,7 @@ void ExtensionUninstallDialog::OnIconUpdated(ChromeAppIcon* icon) {
   // Ignore initial update.
   if (!icon_ || dialog_shown_)
     return;
-  DCHECK_EQ(icon, icon_.get());
+  CHECK_EQ(icon, icon_.get(), base::NotFatalUntil::M161);
 
   dialog_shown_ = true;
 
@@ -172,7 +172,7 @@ void ExtensionUninstallDialog::OnExtensionUninstalled(
 }
 
 void ExtensionUninstallDialog::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_EQ(profile_, profile);
+  CHECK_EQ(profile_, profile, base::NotFatalUntil::M161);
   profile_ = nullptr;
   profile_observation_.Reset();
   OnDialogClosed(CLOSE_ACTION_CANCELED);
@@ -191,7 +191,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   std::u16string error;
   switch (action) {
     case CLOSE_ACTION_UNINSTALL_AND_CHECKBOX_CHECKED:
-      DCHECK(profile_);
+      CHECK(profile_, base::NotFatalUntil::M161);
       success = Uninstall(&error);
       base::RecordAction(base::UserMetricsAction(
           "Extensions.UninstallDialogReportAbuseChecked"));
@@ -222,7 +222,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
 }
 
 bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   const Extension* current_extension =
       ExtensionRegistry::Get(profile_)->GetExtensionById(
           extension_->id(), ExtensionRegistry::EVERYTHING);
@@ -240,7 +240,7 @@ bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
 }
 
 void ExtensionUninstallDialog::HandleReportAbuse() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   NavigateParams params(
       profile_,
       extension_urls::GetWebstoreReportAbuseUrl(extension_->id(), kReferrerId),

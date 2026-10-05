@@ -161,7 +161,7 @@ ExtensionGarbageCollector::ExtensionGarbageCollector(
     content::BrowserContext* context)
     : context_(context), crx_installs_in_progress_(0) {
   ExtensionSystem* extension_system = ExtensionSystem::Get(context_);
-  DCHECK(extension_system);
+  CHECK(extension_system, base::NotFatalUntil::M161);
 
   extension_system->ready().PostDelayed(
       FROM_HERE,
@@ -214,10 +214,10 @@ void ExtensionGarbageCollector::GarbageCollectExtensionsOnFileThread(
 }
 
 void ExtensionGarbageCollector::GarbageCollectExtensions() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context_);
-  DCHECK(extension_prefs);
+  CHECK(extension_prefs, base::NotFatalUntil::M161);
 
   if (extension_prefs->pref_service()->ReadOnly())
     return;
@@ -302,7 +302,7 @@ void ExtensionGarbageCollector::GarbageCollectExtensions() {
 void ExtensionGarbageCollector::OnDeletedUnpackedExtensionsIdentified(
     std::vector<std::pair<ExtensionId, mojom::ManifestLocation>>
         deleted_extensions) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (deleted_extensions.empty()) {
     return;
   }
