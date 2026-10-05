@@ -28,9 +28,9 @@ features:
   cloud_only: true
 supported_on:
 - chrome.*:147-
+- chrome_os:157-
 future_on:
 - android
-- chrome_os
 - ios
 owners:
 - janzarzycki@google.com

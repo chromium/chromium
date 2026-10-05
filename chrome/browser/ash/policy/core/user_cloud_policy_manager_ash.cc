@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_cleanup.h"
 #include "chrome/browser/enterprise/reporting/report_scheduler_desktop.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-#include "chrome/browser/enterprise/reporting/saas_usage/saas_usage_reporting_delegate_factory_impl.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/cloud/user_fm_registration_token_uploader_factory.h"
@@ -44,8 +43,6 @@
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#include "components/enterprise/browser/reporting/reporting_features.h"
-#include "components/enterprise/browser/reporting/saas_usage/saas_usage_report_scheduler.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -339,7 +336,6 @@ void UserCloudPolicyManagerAsh::Shutdown() {
   local_files_cleanup_.reset();
 
   report_scheduler_.reset();
-  saas_usage_report_scheduler_.reset();
   observed_cloud_policy_client_.Reset();
   observed_cloud_policy_service_.Reset();
   token_fetcher_.reset();
@@ -767,14 +763,6 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
 
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
       std::move(params));
-
-  if (base::FeatureList::IsEnabled(enterprise_reporting::kSaasUsageReporting)) {
-    auto saas_usage_reporting_delegate_factory = enterprise_reporting::
-        SaasUsageReportingDelegateFactoryImpl::CreateForProfile(profile_);
-    saas_usage_report_scheduler_ =
-        enterprise_reporting::SaasUsageReportScheduler::Create(
-            "profile", saas_usage_reporting_delegate_factory.get());
-  }
 
   report_scheduler_->OnDMTokenUpdated();
 }

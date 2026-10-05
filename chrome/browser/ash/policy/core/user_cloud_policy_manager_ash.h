@@ -43,7 +43,6 @@ class SharedURLLoaderFactory;
 
 namespace enterprise_reporting {
 class ReportScheduler;
-class SaasUsageReportScheduler;
 }
 
 namespace policy {
@@ -275,10 +274,6 @@ class UserCloudPolicyManagerAsh
 
   // Scheduler used to report usage data to DM server periodically.
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
-
-  // Scheduler used to report saas usage data to reporting API periodically.
-  std::unique_ptr<enterprise_reporting::SaasUsageReportScheduler>
-      saas_usage_report_scheduler_;
 
   // Username for the wildcard login check if applicable, empty otherwise.
   std::string wildcard_username_;
