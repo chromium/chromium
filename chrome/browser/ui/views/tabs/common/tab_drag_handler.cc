@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_link_drop_handler.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
@@ -803,7 +804,12 @@ void TabDragHandlerImpl::StoppedDragging() {
   for (auto& [_, slot_view] : slot_views_) {
     views::View* dragged_view = ViewFromTabSlot(slot_view);
     CHECK(dragged_view);
-    dragged_view->DestroyLayer();
+    // If the dragged view's parent is animating, its animating layout manager
+    // will be responsible for destroying the layer once the animation finishes.
+    if (!TabCollectionAnimatingLayoutManager::IsViewAnimating(
+            dragged_view->parent())) {
+      dragged_view->DestroyLayer();
+    }
     dragged_view->ClearProperty(kOffsetAtTabDragStart);
   }
 

@@ -162,6 +162,10 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase {
   // current animations complete.
   gfx::Size GetTargetPreferredSize() const;
 
+  // Returns whether `view` has an animating
+  // TabCollectionAnimatingLayoutManager.
+  static bool IsViewAnimating(views::View* view);
+
   bool is_animating() const { return is_animating_; }
   AnimationCoordinator& animation_coordinator() {
     return *animation_coordinator_;

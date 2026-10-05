@@ -295,6 +295,14 @@ gfx::Size TabCollectionAnimatingLayoutManager::GetTargetPreferredSize() const {
   return target_layout_manager_->GetPreferredSize(host_view());
 }
 
+// static
+bool TabCollectionAnimatingLayoutManager::IsViewAnimating(views::View* view) {
+  return view && view->GetProperty(kHasAnimatingLayoutManagerKey) &&
+         static_cast<TabCollectionAnimatingLayoutManager*>(
+             view->GetLayoutManager())
+             ->is_animating();
+}
+
 gfx::Size TabCollectionAnimatingLayoutManager::GetMinimumSize(
     const views::View* host) const {
   return target_layout_manager_->GetMinimumSize(host);
