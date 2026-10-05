@@ -1822,7 +1822,7 @@ void PermissionUmaUtil::RecordPageInfoCameraMicPermissionChange(
       GetPermissionRequestString(PermissionUtil::GetUmaValueForRequestType(
           ContentSettingsTypeToRequestType(type)));
   std::string histogram_name =
-      "Permissions.PageInfo.Changed." + permission_type;
+      "Permissions.PageInfo.OnChanged." + permission_type;
 
   if (is_subscribed_to_permission_change_event) {
     histogram_name = histogram_name + ".ReloadInfobarNotShown";

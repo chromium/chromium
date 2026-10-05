@@ -1565,10 +1565,10 @@ TEST_F(PageInfoTest, ShowInfobarWhenMediaChanged) {
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.VideoCapture.ReloadInfobarShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.AudioCapture.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.AudioCapture.ReloadInfobarShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
 }
 
@@ -1603,10 +1603,10 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToBlock) {
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.VideoCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.AudioCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.AudioCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
 }
 
@@ -1641,11 +1641,11 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToAllow) {
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.VideoCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.AudioCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.AudioCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
 }
 
@@ -1682,11 +1682,11 @@ TEST_F(PageInfoTest, SuppressInfobarWhenMediaChangedToDefault) {
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.VideoCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::RESET_FROM_DENIED, 1);
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.AudioCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.AudioCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::RESET_FROM_DENIED, 1);
 }
 
@@ -1722,7 +1722,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToAllow) {
   page_info()->OnUIClosing(nullptr);
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::REALLOWED, 0);
 }
 
@@ -1751,7 +1751,7 @@ TEST_F(PageInfoTest, NotSuppressedInfobarWhenGeolocationChangedToBlock) {
   page_info()->OnUIClosing(nullptr);
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::REVOKED, 0);
 }
 
@@ -1773,7 +1773,7 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationChangedToDefault) {
   page_info()->OnUIClosing(nullptr);
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::RESET_FROM_ALLOWED, 0);
 }
 
@@ -1818,13 +1818,13 @@ TEST_F(PageInfoTest, ShowInfobarWhenGeolocationAndMediaChangedToBlock) {
   EXPECT_EQ(1u, infobar_manager()->infobars().size());
 
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.Geolocation.ReloadInfobarShown",
+      "Permissions.PageInfo.OnChanged.Geolocation.ReloadInfobarShown",
       permissions::PermissionChangeAction::REVOKED, 0);
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.VideoCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.VideoCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
   histograms.ExpectUniqueSample(
-      "Permissions.PageInfo.Changed.AudioCapture.ReloadInfobarNotShown",
+      "Permissions.PageInfo.OnChanged.AudioCapture.ReloadInfobarNotShown",
       permissions::PermissionChangeAction::REALLOWED, 1);
 }
 
