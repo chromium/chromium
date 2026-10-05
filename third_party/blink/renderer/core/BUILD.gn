@@ -407,6 +407,7 @@ component("core") {
   deps = [
     ":font_resource",
     ":generate_eventhandler_names",
+    ":ift_custom_font_data",
     ":make_deprecation_info",
     ":xml_ffi",
     "//base",
@@ -463,6 +464,7 @@ component("core") {
   allow_circular_includes_from = [
     ":core_generated",
     ":core_hot",
+    ":ift_custom_font_data",
     "//third_party/blink/renderer/core/animation",
     "//third_party/blink/renderer/core/exported",
     "//third_party/blink/renderer/core/probe",
@@ -499,6 +501,22 @@ blink_core_sources("font_resource") {
 
   deps = [
     ":buildflags",
+    ":font_resource_header",
+    "//third_party/blink/public/common",
+    "//third_party/blink/renderer/platform:font_rust_headers",
+  ]
+}
+
+# Like ":font_resource", css/ift_custom_font_data.cc includes
+# //third_party/blink/renderer/platform:font_rust_headers, so it is kept on a
+# headerless target. Its header (in core's sources) only forward declares the
+# Crubit-backed types. It includes core headers, so ":core" lists it in
+# allow_circular_includes_from.
+blink_core_sources("ift_custom_font_data") {
+  public = []
+  sources = [ "css/ift_custom_font_data.cc" ]
+
+  deps = [
     ":font_resource_header",
     "//third_party/blink/public/common",
     "//third_party/blink/renderer/platform:font_rust_headers",
@@ -1702,6 +1720,9 @@ group("unit_tests_data") {
   data = [
     # Used by core/loader/resource/font_resource_test.cc.
     "//third_party/blink/renderer/platform/testing/data/roboto-ift.woff2",
+
+    # Used by core/css/ift_custom_font_data_test.cc.
+    "//third_party/blink/renderer/platform/testing/data/roboto-ift.ttf",
     "//third_party/blink/web_tests/svg/animations/path-animation.svg",
     "//third_party/blink/web_tests/svg/stroke/zero-length-path-linecap-rendering.svg",
     "//third_party/blink/web_tests/svg/foreignObject/fixed-position.svg",

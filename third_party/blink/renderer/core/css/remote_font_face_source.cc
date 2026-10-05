@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_font_data.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
+#include "third_party/blink/renderer/core/css/ift_custom_font_data.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -215,6 +216,9 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   DCHECK(!custom_font_data_);
   if (resource->PassedIntegrityChecks() || !check_integrity) {
     custom_font_data_ = font->GetCustomFontData();
+    if (RuntimeEnabledFeatures::IncrementalFontTransferEnabled()) {
+      ift_custom_font_data_ = IftCustomFontData::MaybeCreate(*font);
+    }
   }
   url_ = resource->Url().GetString();
 
@@ -342,6 +346,9 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
 
   histograms_.RecordFallbackTime();
 
+  CustomFontData* custom_font_data =
+      ift_custom_font_data_ ? ift_custom_font_data_.Get()
+                            : MakeGarbageCollected<CustomFontData>();
   return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
@@ -358,7 +365,7 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
           font_description.ResolveFontFeatures(),
           font_description.Orientation(), font_description.VariationSettings(),
           font_description.GetFontPalette()),
-      MakeGarbageCollected<CustomFontData>());
+      custom_font_data);
 }
 
 const SimpleFontData* RemoteFontFaceSource::CreateLoadingFallbackFontData(
@@ -441,6 +448,7 @@ void RemoteFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
   visitor->Trace(custom_font_data_);
+  visitor->Trace(ift_custom_font_data_);
   CSSFontFaceSource::Trace(visitor);
   FontResourceClient::Trace(visitor);
 }
