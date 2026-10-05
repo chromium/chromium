@@ -33,7 +33,6 @@ group("api_implementations") {
     "//chrome/browser/extensions/api/commands",
     "//chrome/browser/extensions/api/content_settings",
     "//chrome/browser/extensions/api/context_menus",
-    "//chrome/browser/extensions/api/cookies",
     "//chrome/browser/extensions/api/debugger",
     "//chrome/browser/extensions/api/desktop_capture",
     "//chrome/browser/extensions/api/downloads_internal",

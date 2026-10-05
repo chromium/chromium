@@ -8,10 +8,28 @@ assert(enable_extensions_core,
        "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("cookies") {
-  sources = [ "cookies_api_delegate.h" ]
+  sources = [
+    "cookies_api.cc",
+    "cookies_api.h",
+    "cookies_api_delegate.h",
+    "cookies_helpers.cc",
+    "cookies_helpers.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",
+    "//content/public/browser",
     "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
   ]
+
+  deps = [ "//extensions/browser/api:extensions_api_client" ]
 }

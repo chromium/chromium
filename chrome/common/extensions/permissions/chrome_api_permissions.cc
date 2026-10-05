@@ -72,7 +72,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kContextualTasksPrivate, "contextualTasksPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
-    {APIPermissionID::kCookie, "cookies"},
     {APIPermissionID::kEnterpriseDeviceAttributes,
      "enterprise.deviceAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},

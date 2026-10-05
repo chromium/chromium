@@ -31,6 +31,7 @@ group("api_implementations") {
   public_deps = [
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/content_settings",
+    "//extensions/browser/api/cookies",
     "//extensions/browser/api/declarative_net_request",
     "//extensions/browser/api/dns",
     "//extensions/browser/api/file_handlers",

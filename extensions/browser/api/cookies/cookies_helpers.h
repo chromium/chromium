@@ -4,11 +4,11 @@
 
 // Defines common functionality used by the implementation of the Chrome
 // Extensions Cookies API implemented in
-// chrome/browser/extensions/api/cookies/cookies_api.cc. This separate interface
+// extensions/browser/api/cookies/cookies_api.cc. This separate interface
 // exposes pieces of the API implementation mainly for unit testing purposes.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_HELPERS_H_
-#define CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_HELPERS_H_
+#ifndef EXTENSIONS_BROWSER_API_COOKIES_COOKIES_HELPERS_H_
+#define EXTENSIONS_BROWSER_API_COOKIES_COOKIES_HELPERS_H_
 
 #include <memory>
 #include <string>
@@ -17,7 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/cookies.h"
+#include "extensions/common/api/cookies.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -76,8 +76,7 @@ void GetAllCookiesFromManager(
 // a cookie against the extension's host permissions. The Secure
 // property of the cookie defines the URL scheme, and the cookie's
 // domain becomes the URL host.
-GURL GetURLFromCanonicalCookie(
-    const net::CanonicalCookie& cookie);
+GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie);
 
 // Looks through all cookies in the given cookie store, and appends to the
 // match vector all the cookies that both match the given URL and cookie details
@@ -184,4 +183,4 @@ class MatchFilter {
 }  // namespace cookies_helpers
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_HELPERS_H_
+#endif  // EXTENSIONS_BROWSER_API_COOKIES_COOKIES_HELPERS_H_

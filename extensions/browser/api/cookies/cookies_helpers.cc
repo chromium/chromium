@@ -4,7 +4,7 @@
 
 // Implements common functionality for the Chrome Extensions Cookies API.
 
-#include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
+#include "extensions/browser/api/cookies/cookies_helpers.h"
 
 #include <stddef.h>
 
@@ -17,9 +17,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/cookies.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/api/cookies.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -452,8 +452,7 @@ MatchFilter::MatchFilter(GetAll::Params::Details* details) : details_(details) {
   DCHECK(details_);
 }
 
-bool MatchFilter::MatchesCookie(
-    const net::CanonicalCookie& cookie) {
+bool MatchFilter::MatchesCookie(const net::CanonicalCookie& cookie) {
   if (!CookieMatchesPartitionKeyCollection(cookie_partition_key_collection_,
                                            cookie)) {
     return false;

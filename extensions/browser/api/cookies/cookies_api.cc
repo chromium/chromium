@@ -4,7 +4,7 @@
 
 // Implements the Chrome Extensions Cookies API.
 
-#include "chrome/browser/extensions/api/cookies/cookies_api.h"
+#include "extensions/browser/api/cookies/cookies_api.h"
 
 #include <memory>
 #include <utility>
@@ -14,14 +14,11 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/time/time.h"
-#include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/common/extensions/api/cookies.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/api/cookies/cookies_api_delegate.h"
+#include "extensions/browser/api/cookies/cookies_helpers.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/browser_context_lifetime_tracker.h"
 #include "extensions/browser/event_router.h"
@@ -29,6 +26,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/safe_browsing_delegate.h"
+#include "extensions/common/api/cookies.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -777,8 +775,11 @@ ExtensionFunction::ResponseAction CookiesGetPartitionKeyFunction::Run() {
       return RespondNow(Error("Invalid `documentId`."));
     }
 
-    if ((tab_id.has_value() &&
-         ExtensionTabUtil::GetTabId(web_contents) != tab_id.value()) ||
+    int web_contents_tab_id = -1;
+    int unused_window_id = -1;
+    ExtensionsBrowserClient::Get()->GetTabAndWindowIdForWebContents(
+        web_contents, &web_contents_tab_id, &unused_window_id);
+    if ((tab_id.has_value() && web_contents_tab_id != tab_id.value()) ||
         (frame_id.has_value() && ExtensionApiFrameIdMap::GetFrameId(
                                      render_frame_host) != frame_id.value())) {
       return RespondNow(
@@ -790,9 +791,9 @@ ExtensionFunction::ResponseAction CookiesGetPartitionKeyFunction::Run() {
       frame_id = 0;
     }
 
-    if (!ExtensionTabUtil::GetTabById(tab_id.value(), browser_context(),
-                                      include_incognito_information(),
-                                      &web_contents) ||
+    if (!ExtensionsBrowserClient::Get()->IsValidTabId(
+            browser_context(), tab_id.value(), include_incognito_information(),
+            &web_contents) ||
         !web_contents) {
       return RespondNow(Error("Invalid `tabId`."));
     }

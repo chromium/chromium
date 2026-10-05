@@ -5,8 +5,8 @@
 // Defines the Chrome Extensions Cookies API functions for accessing internet
 // cookies, as specified in the extension API JSON.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_API_H_
-#define CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_API_H_
+#ifndef EXTENSIONS_BROWSER_API_COOKIES_COOKIES_API_H_
+#define EXTENSIONS_BROWSER_API_COOKIES_COOKIES_API_H_
 
 #include <memory>
 #include <optional>
@@ -15,11 +15,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/common/extensions/api/cookies.h"
+#include "extensions/browser/api/cookies/cookies_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/browser_context_lifetime_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/common/api/cookies.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -263,9 +264,7 @@ class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
   raw_ptr<content::BrowserContext> browser_context_;
 
   // BrowserContextKeyedAPI implementation.
-  static const char* service_name() {
-    return "CookiesAPI";
-  }
+  static const char* service_name() { return "CookiesAPI"; }
   static const bool kServiceIsNULLWhileTesting = true;
 
   // Created lazily upon OnListenerAdded.
@@ -274,4 +273,4 @@ class CookiesAPI : public BrowserContextKeyedAPI, public EventRouter::Observer {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_API_COOKIES_COOKIES_API_H_
+#endif  // EXTENSIONS_BROWSER_API_COOKIES_COOKIES_API_H_

@@ -25,6 +25,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/extensions_api_permissions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -52,6 +53,14 @@ class PermissionsBasedManagementPolicyProviderTest : public testing::Test {
   // Get API permissions name for |id|, we cannot use arbitrary strings since
   // they will be ignored by ExtensionManagementService.
   std::string GetAPIPermissionName(APIPermissionID id) {
+    // Try to find the permission registered in //extensions first,
+    // then fall back to //chrome.
+    for (const auto& perm : api_permissions::GetPermissionInfos()) {
+      if (perm.id == id) {
+        return perm.name;
+      }
+    }
+
     for (const auto& perm : chrome_api_permissions::GetPermissionInfos()) {
       if (perm.id == id) {
         return perm.name;

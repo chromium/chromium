@@ -16,7 +16,6 @@ schema_sources_ = [
   "bookmarks.json",
   "content_settings.json",
   "context_menus.json",
-  "cookies.json",
   "debugger.json",
   "desktop_capture.json",
   "developer_private.webidl",
