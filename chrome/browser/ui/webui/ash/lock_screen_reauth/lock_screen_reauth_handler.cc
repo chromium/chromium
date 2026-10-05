@@ -247,15 +247,15 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("doSamlRedirect", do_saml_redirect);
 
   // Path without the leading slash, as expected by authenticator.js.
-  const std::string default_gaia_path =
-      gaia_urls.embedded_setup_chromeos_url().GetPath().substr(1);
+  std::string_view default_gaia_path =
+      gaia_urls.embedded_setup_chromeos_url().path().substr(1);
   params.Set("fallbackGaiaPath", default_gaia_path);
   if (do_saml_redirect) {
     params.Set("gaiaPath",
-               gaia_urls.saml_redirect_chromeos_url().GetPath().substr(1));
+               gaia_urls.saml_redirect_chromeos_url().path().substr(1));
   } else if (!context.email.empty()) {
     params.Set("gaiaPath",
-               gaia_urls.embedded_reauth_chromeos_url().GetPath().substr(1));
+               gaia_urls.embedded_reauth_chromeos_url().path().substr(1));
   } else {
     params.Set("gaiaPath", default_gaia_path);
   }
