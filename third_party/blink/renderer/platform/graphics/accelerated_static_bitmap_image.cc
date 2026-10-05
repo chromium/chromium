@@ -150,9 +150,12 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
           std::move(animated_image_frame_index_map));
     }
 
-    sync_token = resource_provider->RasterInterface()->RasterSharedImage(
-        shared_image, sync_token, recorder.ReleaseMainRecording(),
-        &image_provider, /*needs_clear=*/true);
+    sync_token = context_provider_wrapper->ContextProvider()
+                     .RasterInterface()
+                     ->RasterSharedImage(
+                         shared_image, sync_token,
+                         recorder.ReleaseMainRecording(), &image_provider,
+                         /*needs_clear=*/true);
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();
   }
