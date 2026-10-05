@@ -769,14 +769,7 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             'the related functions in base/i18n/number_formatting.h.',
         ),
         True,
-        [
-            # TODO(crbug.com/335672557): Please do not add to this list. Existing
-            # uses should removed.
-            'third_party/blink/renderer/core/css/parser/css_proto_converter.cc',
-            'third_party/blink/renderer/core/editing/ime/edit_context.cc',
-            'third_party/blink/renderer/platform/graphics/bitmap_image_test.cc',
-            _THIRD_PARTY_EXCEPT_BLINK
-        ],
+        [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
     ),
     BanRule(
         r'/#include <(cctype|ctype\.h|cwctype|wctype.h)>',

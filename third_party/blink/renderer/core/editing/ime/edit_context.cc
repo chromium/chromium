@@ -220,8 +220,8 @@ void EditContext::Blur() {
 void EditContext::updateSelection(uint32_t start,
                                   uint32_t end,
                                   ExceptionState& exception_state) {
-  TRACE_EVENT2("ime", "EditContext::updateSelection", "start",
-               std::to_string(start), "end", std::to_string(end));
+  TRACE_EVENT2("ime", "EditContext::updateSelection", "start", start, "end",
+               end);
 
   uint32_t bound_start = std::min(start, text_.length());
   uint32_t bound_end = std::min(end, text_.length());
@@ -264,9 +264,8 @@ void EditContext::updateCharacterBounds(
     const HeapVector<Member<DOMRect>>& character_bounds) {
   character_bounds_range_start_ = range_start;
 
-  TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "range_start, size",
-               std::to_string(range_start) + ", " +
-                   std::to_string(character_bounds.size()));
+  TRACE_EVENT2("ime", "EditContext::updateCharacterBounds", "range_start",
+               range_start, "size", character_bounds.size());
 
   if (range_start > text_.length() ||
       character_bounds.size() > text_.length() - range_start) {
@@ -347,9 +346,8 @@ void EditContext::updateText(uint32_t start,
                              uint32_t end,
                              const String& new_text,
                              ExceptionState& exception_state) {
-  TRACE_EVENT2("ime", "EditContext::updateText", "start, end",
-               std::to_string(start) + ", " + std::to_string(end), "new_text",
-               new_text);
+  TRACE_EVENT("ime", "EditContext::updateText", "start", start, "end", end,
+              "new_text", new_text);
   if (start > end) {
     std::swap(start, end);
   }
@@ -478,10 +476,8 @@ bool EditContext::SetComposition(
     int selection_start,
     int selection_end,
     mojom::blink::ImeState ime_state) {
-  TRACE_EVENT2(
-      "ime", "EditContext::SetComposition", "start, end",
-      std::to_string(selection_start) + ", " + std::to_string(selection_end),
-      "text", text.Utf8());
+  TRACE_EVENT("ime", "EditContext::SetComposition", "start", selection_start,
+              "end", selection_end, "text", text.Utf8());
 
   if (!text.IsEmpty() && !has_composition_) {
     if (!DispatchCompositionStartEvent(text))
@@ -565,10 +561,8 @@ bool EditContext::SetCompositionFromExistingText(
     int composition_start,
     int composition_end,
     const std::vector<ui::ImeTextSpan>& ime_text_spans) {
-  TRACE_EVENT1("ime", "EditContext::SetCompositionFromExistingText",
-               "start, end",
-               std::to_string(composition_start) + ", " +
-                   std::to_string(composition_end));
+  TRACE_EVENT2("ime", "EditContext::SetCompositionFromExistingText", "start",
+               composition_start, "end", composition_end);
 
   if (composition_start < 0 || composition_end < 0)
     return false;
@@ -740,11 +734,10 @@ bool EditContext::CommitText(const WebString& text,
                              const std::vector<ui::ImeTextSpan>& ime_text_spans,
                              const WebRange& replacement_range,
                              int relative_caret_position) {
-  TRACE_EVENT2("ime", "EditContext::CommitText", "range, ralative_caret",
-               "(" + std::to_string(replacement_range.StartOffset()) + "," +
-                   std::to_string(replacement_range.EndOffset()) + ")" + ", " +
-                   std::to_string(relative_caret_position),
-               "text", text.Utf8());
+  TRACE_EVENT("ime", "EditContext::CommitText", "range_start",
+              replacement_range.StartOffset(), "range_end",
+              replacement_range.EndOffset(), "relative_caret_position",
+              relative_caret_position, "text", text.Utf8());
 
   // Fire textupdate and textformatupdate events to JS.
   // ime_text_spans can have multiple format updates so loop through and fire
@@ -813,8 +806,8 @@ bool EditContext::FinishComposingText(
 }
 
 void EditContext::ExtendSelectionAndDelete(int before, int after) {
-  TRACE_EVENT1("ime", "EditContext::ExtendSelectionAndDelete", "before, after",
-               std::to_string(before) + ", " + std::to_string(after));
+  TRACE_EVENT2("ime", "EditContext::ExtendSelectionAndDelete", "before", before,
+               "after", after);
   before = std::min(before, static_cast<int>(OrderedSelectionStart()));
   after = std::min(after, static_cast<int>(text_.length()));
   text_ = StrCat({text_.subview(0, OrderedSelectionStart() - before),
@@ -828,8 +821,8 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
 }
 
 void EditContext::DeleteSurroundingText(int before, int after) {
-  TRACE_EVENT1("ime", "EditContext::DeleteSurroundingText", "before, after",
-               std::to_string(before) + ", " + std::to_string(after));
+  TRACE_EVENT2("ime", "EditContext::DeleteSurroundingText", "before", before,
+               "after", after);
   const bool is_backwards_selection = selection_start_ > selection_end_;
 
   // Safe clamping to avoid unsigned underflow and negative before / after.
@@ -863,9 +856,8 @@ void EditContext::DeleteSurroundingText(int before, int after) {
 }
 
 void EditContext::DeleteSurroundingTextInCodePoints(int before, int after) {
-  TRACE_EVENT1("ime", "EditContext::DeleteSurroundingTextInCodePoints",
-               "before, after",
-               std::to_string(before) + ", " + std::to_string(after));
+  TRACE_EVENT2("ime", "EditContext::DeleteSurroundingTextInCodePoints",
+               "before", before, "after", after);
   DCHECK_GE(before, 0);
   DCHECK_GE(after, 0);
 
@@ -895,8 +887,7 @@ void EditContext::SetSelection(int start,
                                int end,
                                bool sync_selection,
                                bool dispatch_text_update_event) {
-  TRACE_EVENT1("ime", "EditContext::SetSelection", "start, end",
-               std::to_string(start) + ", " + std::to_string(end));
+  TRACE_EVENT2("ime", "EditContext::SetSelection", "start", start, "end", end);
 
   if (start == base::saturated_cast<int>(selection_start_) &&
       end == base::saturated_cast<int>(selection_end_)) {
@@ -985,7 +976,7 @@ bool EditContext::GetCompositionCharacterBounds(
   }
 
   TRACE_EVENT1("ime", "EditContext::GetCompositionCharacterBounds", "size",
-               std::to_string(character_bounds_.size()));
+               character_bounds_.size());
 
   bounds.clear();
   std::ranges::for_each(

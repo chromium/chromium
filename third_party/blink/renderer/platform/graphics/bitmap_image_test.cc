@@ -35,6 +35,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -639,7 +640,7 @@ TEST_F(BitmapImageTest, GifDecoderMultiThreaded) {
   };
   for (int i = 0; i < 4; ++i) {
     decodes[i].thread =
-        std::make_unique<base::Thread>("Decode" + std::to_string(i));
+        std::make_unique<base::Thread>("Decode" + base::NumberToString(i));
     decodes[i].client_id = cc::PaintImage::GetNextGeneratorClientId();
 
     decodes[i].thread->StartAndWaitForTesting();

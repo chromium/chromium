@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/parser/css.pb.h"
+#include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // TODO(bikineev): "IN" comes as a macro from <windows.h>. It conflicts with
@@ -337,9 +338,9 @@ void Converter::Visit(const Ident& ident) {
 
 void Converter::Visit(const Num& num) {
   if (num.has_float_value()) {
-    string_ += std::to_string(num.float_value());
+    string_ += blink::Format("{:.6f}", num.float_value()).Latin1();
   } else {
-    string_ += std::to_string(num.signed_int_value());
+    string_ += blink::String::Number(num.signed_int_value()).Ascii();
   }
 }
 
