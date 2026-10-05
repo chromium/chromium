@@ -5885,7 +5885,6 @@ crbug.com/1370307 external/wpt/encoding-detection/zh-GBK-late.tentative.html [ F
 
 # Disable top flakes trigger step failure on builders
 crbug.com/1194961 [ Debug Linux ] fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Failure Pass ]
-crbug.com/1378078 [ Debug Linux ] media/controls/slow-doubletap.html [ Failure ]
 crbug.com/1385491 [ Win ] external/wpt/selection/user-select-on-input-and-contenteditable.html [ Skip Timeout ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-018-2.html [ Skip Timeout ]
 crbug.com/1385919 [ Win ] external/wpt/css/selectors/focus-visible-002.html [ Skip Timeout ]
@@ -5904,7 +5903,6 @@ crbug.com/1406896 [ Debug Linux ] http/tests/inspector-protocol/cpu-profiler/rec
 crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-move-to-document-pip.html [ Failure ]
 crbug.com/1434123 media/video-source-type.html [ Failure Pass Timeout ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
-crbug.com/1418393 [ Debug Linux ] external/wpt/performance-timeline/not-restored-reasons/performance-navigation-timing-attributes.tentative.window.html [ Failure ]
 crbug.com/1445674 [ Linux ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
 crbug.com/1407279 [ Win ] external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
 crbug.com/1407279 [ Mac ] external/wpt/fullscreen/api/element-request-fullscreen-cross-origin.sub.html [ Failure ]
@@ -8629,7 +8627,6 @@ crbug.com/474158153 external/wpt/xml/xslt/large-cdata.html [ Crash Failure Pass 
 
 # Gardener 2026-01-12
 crbug.com/475047610 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse.py [ Failure ]
-crbug.com/475126745 [ Debug Linux ] external/wpt/mathml/presentation-markup/scripts/underover-stretchy-003.html [ Failure ]
 
 # linux-blink-leak-rel failure
 crbug.com/476257809 [ Linux ] external/wpt/fedcm/fedcm-storage-access-api-autogrant.tentative.https.sub.html [ Failure Pass Skip ]
@@ -8764,7 +8761,6 @@ crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.
 
 
 # Gardener 2026-05-05
-crbug.com/509675206 [ Debug Linux ] webaudio/OfflineAudioContext/onstatechange.html [ Failure ]
 crbug.com/466779939 [ Debug Linux ] http/tests/inspector-protocol/tracing/user-marks.js [ Failure Pass ]
 
 # Gardener 2026-05-06
