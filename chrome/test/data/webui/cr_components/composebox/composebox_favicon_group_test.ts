@@ -209,4 +209,28 @@ suite('ComposeboxFaviconGroupTest', () => {
     assertEquals(
         null, element.shadowRoot.querySelector('.favicon-item.loading'));
   });
+
+  test('Favicon coin uses 16px content box with 2px border', async () => {
+    element.tabs = [
+      createTab({url: 'https://google.com'}),
+      createTab({url: 'https://youtube.com'}),
+    ];
+    await element.updateComplete;
+
+    const item = element.shadowRoot.querySelector<HTMLElement>('.favicon-item');
+    assertTrue(!!item);
+
+    const style = getComputedStyle(item);
+    assertEquals('content-box', style.boxSizing);
+    assertEquals(2, Math.round(parseFloat(style.borderTopWidth)));
+    assertEquals('solid', style.borderTopStyle);
+    assertEquals('none', style.outlineStyle);
+
+    // Inner content-box is 16x16 matching the 16px favicon background-size,
+    // with a 2px border on each side for a 20x20 outer box.
+    assertEquals(20, item.offsetWidth);
+    assertEquals(20, item.offsetHeight);
+    assertEquals(16, item.clientWidth);
+    assertEquals(16, item.clientHeight);
+  });
 });
