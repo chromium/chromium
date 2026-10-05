@@ -347,6 +347,7 @@ source_set("unit_tests") {
     "permission_indicators_tab_data_unittest.cc",
     "permission_request_data_unittest.cc",
     "permission_request_queue_unittest.cc",
+    "permission_request_unittest.cc",
     "resolvers/geolocation_permission_resolver_unittest.cc",
   ]
   if (!is_ios) {

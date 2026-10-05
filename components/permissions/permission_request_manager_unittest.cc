@@ -834,6 +834,96 @@ TEST_F(PermissionRequestManagerTest, DuplicateRequest) {
   }
 }
 
+TEST_F(PermissionRequestManagerTest,
+       GeolocationDifferentPromptTypeNotCoalesced) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      content_settings::features::kApproximateGeolocationPermission);
+
+  MockPermissionRequest::MockPermissionRequestState request_approximate_state;
+  MockPermissionRequest::MockPermissionRequestState request_upgrade_state;
+
+  auto request_approximate = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kApproximateOnly,
+      request_approximate_state.GetWeakPtr());
+  auto request_upgrade = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kUpgradeToPrecise,
+      request_upgrade_state.GetWeakPtr());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request_approximate));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+
+  // A precise/upgrade request must not be coalesced into duplicate_requests_
+  // of an approximate-only request
+  // (https://issues.chromium.org/issues/569012366).
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request_upgrade));
+  EXPECT_FALSE(request_approximate_state.finished);
+  EXPECT_FALSE(request_upgrade_state.finished);
+
+  // Accept the approximate prompt. Only the approximate request should finish.
+  Accept();
+  EXPECT_TRUE(request_approximate_state.finished);
+  EXPECT_TRUE(request_approximate_state.granted);
+  EXPECT_FALSE(request_upgrade_state.finished);
+
+  // The upgrade request must be shown as its own separate prompt.
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+
+  // Accept the upgrade prompt.
+  Accept();
+  EXPECT_TRUE(request_upgrade_state.finished);
+  EXPECT_TRUE(request_upgrade_state.granted);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+}
+
+TEST_F(PermissionRequestManagerTest, GeolocationSamePromptTypeCoalesced) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      content_settings::features::kApproximateGeolocationPermission);
+
+  MockPermissionRequest::MockPermissionRequestState request1_state;
+  MockPermissionRequest::MockPermissionRequestState request2_state;
+
+  auto request1 = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kApproximateOnly, request1_state.GetWeakPtr());
+  auto request2 = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kApproximateOnly, request2_state.GetWeakPtr());
+
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request1));
+  WaitForBubbleToBeShown();
+  EXPECT_TRUE(prompt_factory_->is_visible());
+  EXPECT_EQ(prompt_factory_->request_count(), 1);
+
+  // A request with the same prompt type should be coalesced as a duplicate.
+  manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                       std::move(request2));
+  EXPECT_FALSE(request1_state.finished);
+  EXPECT_FALSE(request2_state.finished);
+
+  // Accepting the visible prompt resolves both requests simultaneously.
+  Accept();
+  EXPECT_TRUE(request1_state.finished);
+  EXPECT_TRUE(request1_state.granted);
+  EXPECT_TRUE(request2_state.finished);
+  EXPECT_TRUE(request2_state.granted);
+  EXPECT_FALSE(prompt_factory_->is_visible());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Requests from iframes
 ////////////////////////////////////////////////////////////////////////////////

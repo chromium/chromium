@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/permissions/permission_request_queue.h"
+
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 
@@ -12,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_request_queue.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -143,6 +146,30 @@ TEST_F(PermissionRequestQueueTest, ShouldNotFindDuplicateIfNotPresent) {
 
   EXPECT_EQ(nullptr, permission_request_queue_.FindDuplicate(
                          CreateRequest(request_normal2_).get()));
+}
+
+TEST_F(PermissionRequestQueueTest,
+       ShouldNotFindDuplicateWithDifferentGeolocationPromptType) {
+  auto request_approximate = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kApproximateOnly);
+  auto request_upgrade = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kUpgradeToPrecise);
+  auto request_approximate_dupe = std::make_unique<MockPermissionRequest>(
+      GURL(MockPermissionRequest::kDefaultOrigin), RequestType::kGeolocation,
+      PermissionRequestGestureType::GESTURE,
+      GeolocationPromptType::kApproximateOnly);
+
+  auto* request_approximate_ptr = request_approximate.get();
+  permission_request_queue_.Push(std::move(request_approximate));
+
+  EXPECT_EQ(nullptr,
+            permission_request_queue_.FindDuplicate(request_upgrade.get()));
+  EXPECT_EQ(request_approximate_ptr, permission_request_queue_.FindDuplicate(
+                                         request_approximate_dupe.get()));
 }
 
 TEST_F(PermissionRequestQueueTest, PeekedElementIsNextPoppedElement) {

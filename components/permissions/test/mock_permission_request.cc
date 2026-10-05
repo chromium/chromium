@@ -187,7 +187,8 @@ std::unique_ptr<MockPermissionRequest>
 MockPermissionRequest::CreateDuplicateRequest(
     base::WeakPtr<MockPermissionRequestState> request_state) const {
   return std::make_unique<MockPermissionRequest>(
-      requesting_origin(), request_type(), GetGestureType(), request_state);
+      requesting_origin(), request_type(), GetGestureType(),
+      GetGeolocationPromptType(), request_state);
 }
 
 }  // namespace permissions

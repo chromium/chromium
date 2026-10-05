@@ -60,7 +60,9 @@ RequestType PermissionRequest::request_type() const {
 
 bool PermissionRequest::IsDuplicateOf(PermissionRequest* other_request) const {
   return request_type() == other_request->request_type() &&
-         requesting_origin() == other_request->requesting_origin();
+         requesting_origin() == other_request->requesting_origin() &&
+         GetGeolocationPromptType() ==
+             other_request->GetGeolocationPromptType();
 }
 
 base::SafeRef<PermissionRequest> PermissionRequest::GetSafeRef() {
