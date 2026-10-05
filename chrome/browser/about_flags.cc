@@ -13234,11 +13234,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImportExportFlagsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kImportExportFlags)},
 
-    {"use-persistent-cache-for-code-cache",
-     flag_descriptions::kUsePersistentCacheForCodeCacheName,
-     flag_descriptions::kUsePersistentCacheForCodeCacheDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kUsePersistentCacheForCodeCache)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enforce-incognito-isolation",
      flag_descriptions::kEnforceIncognitoIsolationName,

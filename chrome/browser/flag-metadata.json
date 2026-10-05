@@ -9971,13 +9971,6 @@
     "expiry_milestone": 156
   },
   {
-    "name": "use-persistent-cache-for-code-cache",
-    "owners": [
-      "//components/persistent_cache/OWNERS"
-    ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "use-sc-content-sharing-picker",
     "owners": [ "agpalak@chromium.org", "tovep@chromium.org", "eladalon@chromium.org"],
     "expiry_milestone": 160

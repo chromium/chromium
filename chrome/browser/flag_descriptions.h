@@ -5205,12 +5205,6 @@ inline constexpr char kUsePassthroughCommandDecoderDescription[] =
     "Use chrome passthrough command decoder instead of validating command "
     "decoder.";
 
-inline constexpr char kUsePersistentCacheForCodeCacheName[] =
-    "Use PersistentCache for Code Cache";
-inline constexpr char kUsePersistentCacheForCodeCacheDescription[] =
-    "Use PersistentCache backend for code cache for JavaScript and "
-    "WebAssembly.";
-
 inline constexpr char kUsePLinkInHelpName[] =
     "Use P-links for Google Help Pages";
 inline constexpr char kUsePLinkInHelpDescription[] =
