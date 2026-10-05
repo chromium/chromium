@@ -167,6 +167,16 @@ interface WebTestRenderFrame {
   //   process that about:blank committed in.
   ResetRendererAfterWebTest();
 
+  // Resets the process-wide TestRunner state (e.g. whether
+  // testRunner.notifyDone() has been called, runtime flags, loading frames).
+  // Sent the first time a renderer process is seen during a test, before
+  // SetTestConfiguration() or SetupRendererProcessForNonTestWindow() and
+  // ReplicateWebTestRuntimeFlagsChanges(). This is needed because a renderer
+  // process that hosted only out-of-process iframes (or other secondary
+  // windows) in the previous test can be kept alive and reused, and such a
+  // process never receives ResetRendererAfterWebTest().
+  ResetTestRunnerForNewWebTest();
+
   // Processes a work item. This is called for the process with the main
   // window's main frame.
   ProcessWorkItem(WorkItem work_item);

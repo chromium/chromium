@@ -1225,6 +1225,23 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   RenderProcessHost* process_host = frame->GetProcess();
   RenderViewHost* view_host = frame->GetRenderViewHost();
 
+  // Is this a previously unknown renderer process_host (for this test)?
+  const bool new_process_host =
+      !render_process_host_observations_.IsObservingSource(process_host);
+
+  // A renderer process that is seen for the first time during this test may
+  // still be a process that was reused from a previous test, e.g. a process
+  // that hosted an out-of-process iframe and was kept alive to be reused for
+  // same-site navigations. Only the process hosting the main window's main
+  // frame receives ResetRendererAfterWebTest() between tests, so any other
+  // reused process still carries the TestRunner state of the previous test
+  // (such as |did_notify_done_|), which could end the new test prematurely.
+  // Reset that state now, before configuring the renderer for this test below.
+  // The main frame's process is reset again here, which is harmless.
+  if (new_process_host) {
+    GetWebTestRenderFrameRemote(frame)->ResetTestRunnerForNewWebTest();
+  }
+
   // If this the first time this renderer contains parts of the main test
   // window, we need to make sure that it gets configured correctly (including
   // letting it know that it's part of the main test window).
@@ -1266,7 +1283,7 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
   }
 
   // Is this a previously unknown renderer process_host?
-  if (!render_process_host_observations_.IsObservingSource(process_host)) {
+  if (new_process_host) {
     render_process_host_observations_.AddObservation(process_host);
     all_observed_render_process_hosts_.insert(process_host);
 

@@ -116,6 +116,7 @@ class WebFrameTestProxy : public RenderFrameImpl,
   void ReplicateWebTestRuntimeFlagsChanges(
       base::DictValue changed_layout_test_runtime_flags) override;
   void ResetRendererAfterWebTest() override;
+  void ResetTestRunnerForNewWebTest() override;
 
   mojom::WebTestControlHost* GetWebTestControlHostRemote();
 
