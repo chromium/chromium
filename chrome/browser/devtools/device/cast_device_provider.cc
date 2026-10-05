@@ -106,7 +106,7 @@ class CastDeviceProvider::DeviceListerDelegate final
   void StartDiscovery() {
     // This must be called on the UI thread; ServiceDiscoverySharedClient and
     // ServiceDiscoveryDeviceLister are thread protected.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (device_lister_)
       return;
     service_discovery_client_ = ServiceDiscoverySharedClient::GetInstance();

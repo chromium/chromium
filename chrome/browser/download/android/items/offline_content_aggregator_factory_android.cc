@@ -21,7 +21,7 @@ using base::android::JavaRef;
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_OfflineContentAggregatorFactory_GetOfflineContentAggregator(JNIEnv* env) {
   ProfileKey* profile_key = ::android::GetLastUsedRegularProfileKey();
-  DCHECK(profile_key);
+  CHECK(profile_key, base::NotFatalUntil::M161);
   offline_items_collection::OfflineContentAggregator* aggregator =
       OfflineContentAggregatorFactory::GetInstance()->GetForKey(profile_key);
   return offline_items_collection::android::OfflineContentAggregatorBridge::

@@ -33,7 +33,7 @@ DevToolsConnectionDialog::DevToolsConnectionDialog(
     BrowserWindowInterface* browser,
     DevToolsConnectionDialog::AcceptCallback callback)
     : browser_(browser), callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!browser) {
     RunCallbackAndDie(
         content::DevToolsManagerDelegate::AcceptConnectionResult::kDeny);

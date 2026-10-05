@@ -149,7 +149,7 @@ void DownloadStatusUpdater::UpdateProfileKeepAlive(
   }
 
   Profile* profile = Profile::FromBrowserContext(manager->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (profile->IsOffTheRecord())
     return;
 

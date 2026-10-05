@@ -49,13 +49,13 @@ const base::FilePath::StringViewType kSnapshotsDir(
     FILE_PATH_LITERAL("Snapshots"));
 
 base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir) {
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
   return user_data_dir.Append(kDowngradeLastVersionFile);
 }
 
 std::optional<base::Version> GetLastVersion(
     const base::FilePath& user_data_dir) {
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
   std::string last_version_str;
   if (base::ReadFileToString(GetLastVersionFile(user_data_dir),
                              &last_version_str)) {
@@ -100,7 +100,7 @@ std::vector<base::FilePath> GetInvalidSnapshots(
 std::optional<base::Version> GetSnapshotToRestore(
     const base::Version& version,
     const base::FilePath& user_data_dir) {
-  DCHECK(version.IsValid());
+  CHECK(version.IsValid(), base::NotFatalUntil::M161);
   base::FilePath top_snapshot_dir = user_data_dir.Append(kSnapshotsDir);
   auto available_snapshots = GetAvailableSnapshots(top_snapshot_dir);
 

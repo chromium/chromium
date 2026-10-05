@@ -25,7 +25,7 @@ namespace android {
 
 BackgroundDownloadService* GetDownloadService(const JavaRef<jobject>& jkey) {
   ProfileKey* key = ProfileKeyAndroid::FromProfileKeyAndroid(jkey);
-  DCHECK(key);
+  CHECK(key, base::NotFatalUntil::M161);
   return BackgroundDownloadServiceFactory::GetForKey(key);
 }
 

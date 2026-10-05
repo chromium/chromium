@@ -263,7 +263,8 @@ DevToolsFileWatcher::DevToolsFileWatcher(
 }
 
 DevToolsFileWatcher::~DevToolsFileWatcher() {
-  DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(impl_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   shared_watcher_->RemoveListener(this);
 }
 

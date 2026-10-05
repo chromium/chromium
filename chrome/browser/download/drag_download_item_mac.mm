@@ -18,8 +18,9 @@
 void DragDownloadItem(const download::DownloadItem* download,
                       const gfx::Image* icon,
                       gfx::NativeView native_view) {
-  DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
-  DCHECK(native_view);
+  CHECK_EQ(download::DownloadItem::COMPLETE, download->GetState(),
+           base::NotFatalUntil::M161);
+  CHECK(native_view, base::NotFatalUntil::M161);
 
   NSView* view = native_view.GetNativeNSView();
   NSPoint mouse_location = view.window.mouseLocationOutsideOfEventStream;

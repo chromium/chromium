@@ -12,7 +12,7 @@ PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          protocol::UberDispatcher* dispatcher,
                          bool is_trusted)
     : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
-  DCHECK(is_trusted);
+  CHECK(is_trusted, base::NotFatalUntil::M161);
   protocol::Page::Dispatcher::wire(dispatcher, this);
 }
 

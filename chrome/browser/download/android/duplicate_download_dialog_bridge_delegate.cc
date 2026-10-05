@@ -45,7 +45,7 @@ void DuplicateDownloadDialogBridgeDelegate::CreateDialog(
     content::WebContents* web_contents,
     DownloadTargetDeterminerDelegate::ConfirmationCallback
         file_selected_callback) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   // Don't shown duplicate dialog again if it is already showing.
   if (std::ranges::contains(download_items_, download_item)) {
     return;

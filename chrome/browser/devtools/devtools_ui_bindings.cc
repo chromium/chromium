@@ -278,7 +278,7 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
   }
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser->GetProfile());
-  DCHECK(url_service);
+  CHECK(url_service, base::NotFatalUntil::M161);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
   content::OpenURLParams params =
@@ -944,7 +944,7 @@ void DevToolsUIBindings::HandleMessageFromDevToolsFrontend(
 void DevToolsUIBindings::DispatchProtocolMessage(
     content::DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
-  DCHECK(agent_host == agent_host_.get());
+  CHECK(agent_host == agent_host_.get(), base::NotFatalUntil::M161);
   if (!frontend_host_) {
     return;
   }
@@ -972,7 +972,7 @@ void DevToolsUIBindings::DispatchProtocolMessage(
 
 void DevToolsUIBindings::AgentHostClosed(
     content::DevToolsAgentHost* agent_host) {
-  DCHECK(agent_host == agent_host_.get());
+  CHECK(agent_host == agent_host_.get(), base::NotFatalUntil::M161);
   agent_host_.reset();
   delegate_->InspectedContentsClosing();
 }
@@ -998,7 +998,7 @@ void DevToolsUIBindings::SendMessageAck(int request_id,
 }
 
 void DevToolsUIBindings::InnerAttach() {
-  DCHECK(agent_host_.get());
+  CHECK(agent_host_.get(), base::NotFatalUntil::M161);
   // TODO(dgozman): handle return value of AttachClient.
   agent_host_->AttachClient(this);
 }
@@ -1534,7 +1534,7 @@ void DevToolsUIBindings::ConnectAutomaticFileSystem(
     const std::string& file_system_path,
     const std::string& file_system_uuid,
     bool add_if_missing) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
   if (!is_local_frontend_) {
@@ -1569,7 +1569,7 @@ void DevToolsUIBindings::ConnectAutomaticFileSystemDone(
 
 void DevToolsUIBindings::DisconnectAutomaticFileSystem(
     const std::string& file_system_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
   if (!is_local_frontend_) {
@@ -1582,7 +1582,7 @@ void DevToolsUIBindings::IndexPath(
     int index_request_id,
     const std::string& file_system_path,
     const std::string& excluded_folders_message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
   if (!is_local_frontend_) {
@@ -1623,7 +1623,7 @@ void DevToolsUIBindings::IndexPath(
 }
 
 void DevToolsUIBindings::StopIndexing(int index_request_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = indexing_jobs_.find(index_request_id);
   if (it == indexing_jobs_.end()) {
     return;
@@ -1635,7 +1635,7 @@ void DevToolsUIBindings::StopIndexing(int index_request_id) {
 void DevToolsUIBindings::SearchInPath(int search_request_id,
                                       const std::string& file_system_path,
                                       const std::string& query) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(IsValidFrontendURL(web_contents_->GetLastCommittedURL()) &&
         frontend_host_);
   if (!is_local_frontend_) {
@@ -2419,8 +2419,8 @@ void DevToolsUIBindings::RecordCountHistogram(const std::string& name,
   // We've changed this to a DCHECK and instead clamp the value for counts,
   // because it doesn't really make sense to crash if the histogram is out
   // of range.
-  DCHECK_GE(sample, min);
-  DCHECK_LT(sample, exclusive_max);
+  CHECK_GE(sample, min, base::NotFatalUntil::M161);
+  CHECK_LT(sample, exclusive_max, base::NotFatalUntil::M161);
 
   if (sample < min) {
     sample = 0;
@@ -2438,10 +2438,10 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
     return;
   }
 
-  DCHECK_GE(boundary_value, 0);
-  DCHECK_LT(boundary_value, 1000);
-  DCHECK_GE(sample, 0);
-  DCHECK_LT(sample, boundary_value);
+  CHECK_GE(boundary_value, 0, base::NotFatalUntil::M161);
+  CHECK_LT(boundary_value, 1000, base::NotFatalUntil::M161);
+  CHECK_GE(sample, 0, base::NotFatalUntil::M161);
+  CHECK_LT(sample, boundary_value, base::NotFatalUntil::M161);
   if (!(boundary_value >= 0 && boundary_value <= 1000 && sample >= 0 &&
         sample < boundary_value)) {
     // We should have DCHECK'd in debug builds; for release builds, if we're
@@ -2450,9 +2450,9 @@ void DevToolsUIBindings::RecordEnumeratedHistogram(const std::string& name,
   }
 
   const std::string kDevToolsHistogramPrefix = "DevTools.";
-  DCHECK_EQ(name.compare(0, kDevToolsHistogramPrefix.size(),
-                         kDevToolsHistogramPrefix),
-            0);
+  CHECK_EQ(name.compare(0, kDevToolsHistogramPrefix.size(),
+                        kDevToolsHistogramPrefix),
+           0, base::NotFatalUntil::M161);
   base::UmaHistogramExactLinear(name, sample, boundary_value);
 }
 
@@ -2797,7 +2797,7 @@ void DevToolsUIBindings::IndexingTotalWorkCalculated(
     int request_id,
     const std::string& file_system_path,
     int total_work) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CallClientMethod("DevToolsAPI", "indexingTotalWorkCalculated",
                    base::Value(request_id), base::Value(file_system_path),
                    base::Value(total_work));
@@ -2806,7 +2806,7 @@ void DevToolsUIBindings::IndexingTotalWorkCalculated(
 void DevToolsUIBindings::IndexingWorked(int request_id,
                                         const std::string& file_system_path,
                                         int worked) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CallClientMethod("DevToolsAPI", "indexingWorked", base::Value(request_id),
                    base::Value(file_system_path), base::Value(worked));
 }
@@ -2814,7 +2814,7 @@ void DevToolsUIBindings::IndexingWorked(int request_id,
 void DevToolsUIBindings::IndexingDone(int request_id,
                                       const std::string& file_system_path) {
   indexing_jobs_.erase(request_id);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   CallClientMethod("DevToolsAPI", "indexingDone", base::Value(request_id),
                    base::Value(file_system_path));
 }
@@ -2823,7 +2823,7 @@ void DevToolsUIBindings::SearchCompleted(
     int request_id,
     const std::string& file_system_path,
     const std::vector<std::string>& file_paths) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   base::ListValue file_paths_value;
   for (auto const& file_path : file_paths) {
     file_paths_value.Append(file_path);
@@ -2890,7 +2890,7 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 void DevToolsUIBindings::ShowDirectoryPermissionDialog(
     const std::string& directory_path,
     DevToolsInfoBarDelegate::Callback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   auto accept_callback = base::BindOnce(std::move(split_callback.first), true);
@@ -3156,8 +3156,9 @@ void DevToolsUIBindings::AttachTo(
 
 void DevToolsUIBindings::AttachViaBrowserTarget(
     const scoped_refptr<content::DevToolsAgentHost>& agent_host) {
-  DCHECK(!agent_host_ ||
-         agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser);
+  CHECK(!agent_host_ ||
+            agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser,
+        base::NotFatalUntil::M161);
   if (!agent_host_) {
     agent_host_ = content::DevToolsAgentHost::CreateForBrowser(
         nullptr /* tethering_task_runner */,

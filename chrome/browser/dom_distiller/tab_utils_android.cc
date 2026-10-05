@@ -84,7 +84,7 @@ static void JNI_DomDistillerTabUtils_SetInterceptNavigationDelegate(
     const JavaRef<jobject>& j_web_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   navigation_interception::InterceptNavigationDelegate::Associate(
       web_contents,
       std::make_unique<navigation_interception::InterceptNavigationDelegate>(

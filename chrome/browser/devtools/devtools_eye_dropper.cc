@@ -49,12 +49,12 @@ DevToolsEyeDropper::~DevToolsEyeDropper() {
 }
 
 void DevToolsEyeDropper::AttachToHost(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameLive());
+  CHECK(frame_host->IsRenderFrameLive(), base::NotFatalUntil::M161);
   // Historically, (see https://crbug.com/41391521) this code handled the
   // RenderWidgetHostView being null, but now it is listening to creation of the
   // frame which includes creation of the widget so it is implied that
   // RenderWidgetHostView exists.
-  DCHECK(frame_host->GetView());
+  CHECK(frame_host->GetView(), base::NotFatalUntil::M161);
 
   host_ = frame_host->GetView()->GetRenderWidgetHost();
   host_->AddMouseEventCallback(mouse_event_callback_);
@@ -88,7 +88,7 @@ void DevToolsEyeDropper::RenderFrameCreated(
   // Only handle the initial main frame, not speculative ones.
   if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
-  DCHECK(!host_);
+  CHECK(!host_, base::NotFatalUntil::M161);
 
   AttachToHost(frame_host);
 }
@@ -98,8 +98,8 @@ void DevToolsEyeDropper::RenderFrameDeleted(
   // Only handle the active main frame, not speculative ones.
   if (frame_host != web_contents()->GetPrimaryMainFrame())
     return;
-  DCHECK(host_);
-  DCHECK_EQ(host_, frame_host->GetRenderWidgetHost());
+  CHECK(host_, base::NotFatalUntil::M161);
+  CHECK_EQ(host_, frame_host->GetRenderWidgetHost(), base::NotFatalUntil::M161);
 
   DetachFromHost();
   ResetFrame();
@@ -119,11 +119,11 @@ void DevToolsEyeDropper::RenderFrameHostChanged(
     // has its renderer frame. Since `old_host` is null only when this observer
     // method is called at startup, it should be before the renderer frame is
     // created.
-    DCHECK(!new_host->IsRenderFrameLive());
+    CHECK(!new_host->IsRenderFrameLive(), base::NotFatalUntil::M161);
     return;
   }
-  DCHECK(host_);
-  DCHECK_EQ(host_, old_host->GetRenderWidgetHost());
+  CHECK(host_, base::NotFatalUntil::M161);
+  CHECK_EQ(host_, old_host->GetRenderWidgetHost(), base::NotFatalUntil::M161);
 
   DetachFromHost();
   AttachToHost(new_host);
@@ -162,7 +162,7 @@ bool DevToolsEyeDropper::HandleMouseEvent(const blink::WebMouseEvent& event) {
         SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kUnpremul_SkAlphaType,
                           SkColorSpace::MakeSRGB()),
         rgba_color, sizeof(rgba_color));
-    DCHECK(ok);
+    CHECK(ok, base::NotFatalUntil::M161);
 
     callback_.Run(rgba_color[0], rgba_color[1], rgba_color[2], rgba_color[3]);
   }
@@ -306,7 +306,7 @@ void DevToolsEyeDropper::OnFrameCaptured(
   // the same type, with null check being equivalent to IsValid() check. Given
   // the above, we should never be able to receive a read only shmem region that
   // is not valid - mojo will enforce it for us.
-  DCHECK(shmem_region.IsValid());
+  CHECK(shmem_region.IsValid(), base::NotFatalUntil::M161);
 
   base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {

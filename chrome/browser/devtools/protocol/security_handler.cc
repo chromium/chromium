@@ -164,7 +164,7 @@ std::unique_ptr<protocol::Security::SafetyTipInfo> CreateSafetyTipInfo(
 
 std::unique_ptr<protocol::Security::VisibleSecurityState>
 CreateVisibleSecurityState(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   auto state = chrome_security_state::GetVisibleSecurityState(web_contents);
   std::string security_state = SecurityLevelToProtocolSecurityState(
       chrome_security_state::GetSecurityLevel(web_contents));
@@ -249,7 +249,7 @@ CreateVisibleSecurityState(content::WebContents* web_contents) {
 SecurityHandler::SecurityHandler(content::WebContents* web_contents,
                                  protocol::UberDispatcher* dispatcher)
     : content::WebContentsObserver(web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   frontend_ =
       std::make_unique<protocol::Security::Frontend>(dispatcher->channel());
   protocol::Security::Dispatcher::wire(dispatcher, this);

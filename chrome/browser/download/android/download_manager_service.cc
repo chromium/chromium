@@ -73,7 +73,7 @@ static ScopedJavaLocalRef<jobject>
 JNI_DownloadManagerService_CreateJavaDownloadItem(
     JNIEnv* env,
     download::DownloadItem* item) {
-  DCHECK(!item->IsTransient());
+  CHECK(!item->IsTransient(), base::NotFatalUntil::M161);
   return Java_DownloadItem_createDownloadItem(
       env, DownloadManagerService::CreateJavaDownloadInfo(env, item),
       item->GetStartTime().InMillisecondsSinceUnixEpoch(),
@@ -603,7 +603,7 @@ void DownloadManagerService::UpdateCoordinator(
 
 download::SimpleDownloadManagerCoordinator*
 DownloadManagerService::GetCoordinator(ProfileKey* profile_key) {
-  DCHECK(coordinators_.contains(profile_key));
+  CHECK(coordinators_.contains(profile_key), base::NotFatalUntil::M161);
   return coordinators_[profile_key];
 }
 

@@ -229,7 +229,7 @@ void DownloadController::ScheduleRemoveDownloadItem(
 static void JNI_DownloadController_CancelDownload(
     Profile* profile,
     const std::string& download_guid) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   DownloadManager* download_manager = profile->GetDownloadManager();
   if (download_manager) {
@@ -243,7 +243,7 @@ static void JNI_DownloadController_CancelDownload(
 static void JNI_DownloadController_DownloadUrl(
     const std::string& url,
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents) {
     return;
@@ -342,7 +342,7 @@ void DownloadController::CreateAndroidDownload(
 void DownloadController::StartAndroidDownload(
     const content::WebContents::Getter& wc_getter,
     const DownloadInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   std::u16string file_name =

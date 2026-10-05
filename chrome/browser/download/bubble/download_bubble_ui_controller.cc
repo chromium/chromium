@@ -359,7 +359,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
 void DownloadBubbleUIController::RetryDownload(
     DownloadUIModel* model,
     DownloadCommands::Command command) {
-  DCHECK(command == DownloadCommands::RETRY);
+  CHECK(command == DownloadCommands::RETRY, base::NotFatalUntil::M161);
   display_controller_->HideBubble();
   content::DownloadManager* download_manager = profile_->GetDownloadManager();
   if (!download_manager) {

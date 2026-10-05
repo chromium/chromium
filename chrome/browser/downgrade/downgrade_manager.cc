@@ -158,8 +158,8 @@ bool IsAdministratorDrivenDowngrade(uint16_t current_milestone) {
 bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
     const base::FilePath& user_data_dir,
     DowngradeManagerDelegate* delegate) {
-  DCHECK_EQ(type_, Type::kNone);
-  DCHECK(!user_data_dir.empty());
+  CHECK_EQ(type_, Type::kNone, base::NotFatalUntil::M161);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
 
   auto& command_line = *base::CommandLine::ForCurrentProcess();
   // Ensure extensions are repaired only the first time the browser starts
@@ -194,7 +194,8 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
       return false;  // Same version or upgrade.
 
     type_ = GetDowngradeType(user_data_dir, current_version, *last_version);
-    DCHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kUnsupported);
+    CHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kUnsupported,
+          base::NotFatalUntil::M161);
     return type_ == Type::kAdministrativeWipe;
   }
 
@@ -228,8 +229,8 @@ bool DowngradeManager::PrepareUserDataDirectoryForCurrentVersion(
 }
 
 void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
-  DCHECK(!user_data_dir.empty());
-  DCHECK_NE(type_, Type::kAdministrativeWipe);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
+  CHECK_NE(type_, Type::kAdministrativeWipe, base::NotFatalUntil::M161);
   const std::string_view version = version_info::GetVersionNumber();
   base::WriteFile(GetLastVersionFile(user_data_dir), version);
 }
@@ -237,7 +238,7 @@ void DowngradeManager::UpdateLastVersion(const base::FilePath& user_data_dir) {
 void DowngradeManager::DeleteMovedUserDataSoon(
     const base::FilePath& user_data_dir,
     DowngradeManagerDelegate* delegate) {
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
   // IWYU note: base/location.h and base/task/task_traits.h are guaranteed to be
   // available via base/task/thread_pool.h.
   content::BrowserThread::PostBestEffortTask(
@@ -251,8 +252,9 @@ void DowngradeManager::DeleteMovedUserDataSoon(
 
 void DowngradeManager::ProcessDowngrade(const base::FilePath& user_data_dir,
                                         DowngradeManagerDelegate* delegate) {
-  DCHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kSnapshotRestore);
-  DCHECK(!user_data_dir.empty());
+  CHECK(type_ == Type::kAdministrativeWipe || type_ == Type::kSnapshotRestore,
+        base::NotFatalUntil::M161);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
 
   const base::FilePath disk_cache_dir(delegate->GetDiskCacheDir());
   if (!disk_cache_dir.empty())
@@ -295,8 +297,8 @@ DowngradeManager::Type DowngradeManager::GetDowngradeType(
     const base::FilePath& user_data_dir,
     const base::Version& current_version,
     const base::Version& last_version) {
-  DCHECK(!user_data_dir.empty());
-  DCHECK_LT(current_version, last_version);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
+  CHECK_LT(current_version, last_version, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_WIN)
   // Move User Data aside for a clean launch if it follows an
@@ -312,8 +314,8 @@ DowngradeManager::Type DowngradeManager::GetDowngradeTypeWithSnapshot(
     const base::FilePath& user_data_dir,
     const base::Version& current_version,
     const base::Version& last_version) {
-  DCHECK(!user_data_dir.empty());
-  DCHECK_LT(current_version, last_version);
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
+  CHECK_LT(current_version, last_version, base::NotFatalUntil::M161);
 
   const uint16_t milestone = current_version.components()[0];
 

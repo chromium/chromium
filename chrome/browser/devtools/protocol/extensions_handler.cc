@@ -234,7 +234,7 @@ void ExtensionsHandler::LoadUnpacked(
 
   content::BrowserContext* context =
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
   scoped_refptr<extensions::UnpackedInstaller> installer(
       extensions::UnpackedInstaller::Create(context));
   installer->set_be_noisy_on_failure(false);
@@ -314,7 +314,7 @@ void ExtensionsHandler::Uninstall(const protocol::String& id,
 
   content::BrowserContext* context =
       DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(context);
   const extensions::Extension* extension = registry->GetInstalledExtension(id);

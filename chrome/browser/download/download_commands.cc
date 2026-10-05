@@ -62,7 +62,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
       : file_path_(std::move(file_path)),
         file_name_to_report_user_(std::move(file_name_to_report_user)) {
     // Constructor must be called in the UI thread.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     task_runner->PostTask(
         FROM_HERE, base::BindOnce(&ImageClipboardCopyManager::StartDecoding,
@@ -94,7 +94,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
   void OnImageDecoded(const SkBitmap& decoded_image) override {
     // This method is called on the same thread as constructor (the UI thread).
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
     scw.Reset();
@@ -110,7 +110,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
   void OnDecodeImageFailed() override {
     // This method is called on the same thread as constructor (the UI thread).
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     delete this;
   }
@@ -129,7 +129,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
 
 DownloadCommands::DownloadCommands(base::WeakPtr<DownloadUIModel> model)
     : model_(model) {
-  DCHECK(model_);
+  CHECK(model_, base::NotFatalUntil::M161);
 }
 
 DownloadCommands::~DownloadCommands() = default;
@@ -179,7 +179,8 @@ BrowserWindowInterface* DownloadCommands::GetBrowser() const {
     return nullptr;
 
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(model_->profile());
-  DCHECK(browser_displayer.browser_window_interface());
+  CHECK(browser_displayer.browser_window_interface(),
+        base::NotFatalUntil::M161);
   return browser_displayer.browser_window_interface();
 }
 

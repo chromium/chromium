@@ -132,7 +132,7 @@ void DomDistillerServiceFactory::UpdateDistilledPagePrefsDefaultFontScaling(
     content::BrowserContext* context) const {
   DomDistillerContextKeyedService* service =
       DomDistillerServiceFactory::GetForBrowserContext(context);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   DistilledPagePrefs* distilled_page_prefs = service->GetDistilledPagePrefs();
 
   Profile* profile = Profile::FromBrowserContext(context);

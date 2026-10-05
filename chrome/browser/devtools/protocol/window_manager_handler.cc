@@ -16,7 +16,7 @@ WindowManagerHandler::WindowManagerHandler(
 WindowManagerHandler::~WindowManagerHandler() = default;
 
 protocol::Response WindowManagerHandler::EnterOverviewMode() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bool success = ash::Shell::Get()->overview_controller()->StartOverview(
       ash::OverviewStartAction::kDevTools);
   return success ? protocol::Response::Success()
@@ -24,7 +24,7 @@ protocol::Response WindowManagerHandler::EnterOverviewMode() {
 }
 
 protocol::Response WindowManagerHandler::ExitOverviewMode() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bool success = ash::Shell::Get()->overview_controller()->EndOverview(
       ash::OverviewEndAction::kDevTools);
   return success ? protocol::Response::Success()

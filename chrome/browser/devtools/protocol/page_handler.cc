@@ -51,7 +51,7 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
                              std::optional<bool> generate_tagged_pdf,
                              std::optional<bool> generate_document_outline,
                              std::unique_ptr<PrintToPDFCallback> callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(ENABLE_PRINTING)
   if (!web_contents_) {
@@ -73,8 +73,9 @@ void PageHandler::PrintToPDF(std::optional<bool> landscape,
     return;
   }
 
-  DCHECK(std::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
-      print_pages_params));
+  CHECK(std::holds_alternative<printing::mojom::PrintPagesParamsPtr>(
+            print_pages_params),
+        base::NotFatalUntil::M161);
 
   bool return_as_stream =
       transfer_mode.value_or("") ==

@@ -139,7 +139,7 @@ SnapshotManager::~SnapshotManager() = default;
 
 void SnapshotManager::TakeSnapshot(const base::Version& version) {
   TRACE_EVENT0("browser", "SnapshotManager::TakeSnapshot");
-  DCHECK(version.IsValid());
+  CHECK(version.IsValid(), base::NotFatalUntil::M161);
   base::FilePath snapshot_dir =
       user_data_dir_.Append(kSnapshotsDir).AppendASCII(version.GetString());
 
@@ -189,7 +189,7 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
 
 void SnapshotManager::RestoreSnapshot(const base::Version& version) {
   TRACE_EVENT0("browser", "SnapshotManager::RestoreSnapshot");
-  DCHECK(version.IsValid());
+  CHECK(version.IsValid(), base::NotFatalUntil::M161);
   auto snapshot_version = GetSnapshotToRestore(version, user_data_dir_);
   if (!snapshot_version)
     return;

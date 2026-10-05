@@ -28,9 +28,9 @@ namespace {
 static const char kRootName[] = "<root>";
 
 IsolatedContext* isolated_context() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   IsolatedContext* isolated_context = IsolatedContext::GetInstance();
-  DCHECK(isolated_context);
+  CHECK(isolated_context, base::NotFatalUntil::M161);
   return isolated_context;
 }
 

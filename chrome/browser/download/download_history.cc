@@ -232,7 +232,7 @@ ShouldUpdateHistoryResult ShouldUpdateHistory(
 // the result into |file_path_count|.
 void CountFilePathOccurences(const std::vector<history::DownloadRow>& rows,
                              std::map<std::string, int>* file_path_count) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!base::FeatureList::IsEnabled(
           download::features::kDeleteOverwrittenDownloads)) {
@@ -253,7 +253,7 @@ void CountFilePathOccurences(const std::vector<history::DownloadRow>& rows,
 // the number of times the same target file path appears in |file_path_count|.
 bool ShouldSkipLoadingDownload(const history::DownloadRow& row,
                                std::map<std::string, int>* file_path_count) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!base::FeatureList::IsEnabled(
           download::features::kDeleteOverwrittenDownloads)) {
@@ -318,7 +318,7 @@ DownloadHistory::DownloadHistory(content::DownloadManager* manager,
       history_(std::move(history)),
       loading_id_(download::DownloadItem::kInvalidId),
       initial_history_query_complete_(false) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   download::SimpleDownloadManager::DownloadVector items;
   notifier_.GetManager()->GetAllDownloads(&items);
   for (download::DownloadItem* item : items) {
@@ -329,14 +329,14 @@ DownloadHistory::DownloadHistory(content::DownloadManager* manager,
 }
 
 DownloadHistory::~DownloadHistory() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   for (Observer& observer : observers_)
     observer.OnDownloadHistoryDestroyed();
   observers_.Clear();
 }
 
 void DownloadHistory::AddObserver(DownloadHistory::Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observers_.AddObserver(observer);
 
   if (initial_history_query_complete_)
@@ -344,7 +344,7 @@ void DownloadHistory::AddObserver(DownloadHistory::Observer* observer) {
 }
 
 void DownloadHistory::RemoveObserver(DownloadHistory::Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observers_.RemoveObserver(observer);
 }
 

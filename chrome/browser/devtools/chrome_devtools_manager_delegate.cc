@@ -185,7 +185,7 @@ ChromeDevToolsManagerDelegate* ChromeDevToolsManagerDelegate::GetInstance() {
 }
 
 ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M161);
   g_instance = this;
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -221,7 +221,7 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
 }
 
 ChromeDevToolsManagerDelegate::~ChromeDevToolsManagerDelegate() {
-  DCHECK(g_instance == this);
+  CHECK(g_instance == this, base::NotFatalUntil::M161);
   g_instance = nullptr;
   if (infobar_) {
     infobar_->Close();
@@ -423,7 +423,7 @@ bool ChromeDevToolsManagerDelegate::AllowInspectingTarget(
 
 void ChromeDevToolsManagerDelegate::ClientAttached(
     content::DevToolsAgentHostClientChannel* channel) {
-  DCHECK(sessions_.find(channel) == sessions_.end());
+  CHECK(sessions_.find(channel) == sessions_.end(), base::NotFatalUntil::M161);
   sessions_.emplace(channel, std::make_unique<ChromeDevToolsSession>(channel));
 }
 

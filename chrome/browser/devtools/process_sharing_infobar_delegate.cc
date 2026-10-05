@@ -26,7 +26,7 @@ int ProcessSharingInfobarDelegate::GetButtons() const {
 
 std::u16string ProcessSharingInfobarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  DCHECK_EQ(BUTTON_OK, button);
+  CHECK_EQ(BUTTON_OK, button, base::NotFatalUntil::M161);
   return l10n_util::GetStringUTF16(
       IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_OPT_OUT);
 }

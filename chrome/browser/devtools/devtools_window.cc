@@ -225,7 +225,7 @@ content::WebContents* DevToolsToolboxDelegate::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  DCHECK(source == web_contents());
+  CHECK(source == web_contents(), base::NotFatalUntil::M161);
   if (!params.url.SchemeIs(content::kChromeDevToolsScheme)) {
     return nullptr;
   }
@@ -471,7 +471,7 @@ class DevToolsWindow::OwnedMainWebContents {
 #endif
         web_contents_(std::move(web_contents)) {
     Profile* profile = GetProfileForDevToolsWindow(web_contents_.get());
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
     if (!profile->IsOffTheRecord()) {
       // ScopedProfileKeepAlive does not support OTR profiles.
       profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -1053,13 +1053,13 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
   OverrideAndSyncDevToolsRendererPrefs();
 #else
   if (is_docked_) {
-    DCHECK(can_dock_);
+    CHECK(can_dock_, base::NotFatalUntil::M161);
     content::WebContents* inspected_web_contents = GetInspectedWebContents();
-    DCHECK(inspected_web_contents);
+    CHECK(inspected_web_contents, base::NotFatalUntil::M161);
     BrowserWindowInterface* inspected_browser =
         GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
             inspected_web_contents);
-    DCHECK(inspected_browser);
+    CHECK(inspected_browser, base::NotFatalUntil::M161);
 
     RegisterModalDialogManager(inspected_browser);
 
@@ -1536,7 +1536,7 @@ WebContents* DevToolsWindow::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  DCHECK(source == main_web_contents_);
+  CHECK(source == main_web_contents_, base::NotFatalUntil::M161);
   if (!params.url.SchemeIs(content::kChromeDevToolsScheme)) {
     // TODO(https://crbug.com/40275094): Plumb the `navigation_handle_callback`.
     return OpenURLFromInspectedTab(params);
@@ -1663,7 +1663,7 @@ void DevToolsWindow::CloseContents(WebContents* source) {
 }
 
 void DevToolsWindow::ContentsZoomChange(bool zoom_in) {
-  DCHECK(is_docked_);
+  CHECK(is_docked_, base::NotFatalUntil::M161);
   zoom::PageZoom::Zoom(main_web_contents_, zoom_in ? content::PAGE_ZOOM_IN
                                                    : content::PAGE_ZOOM_OUT);
 }
@@ -1686,7 +1686,7 @@ void DevToolsWindow::BeforeUnloadFired(WebContents* tab,
       bool should_proceed;
       inspected_web_contents->GetDelegate()->BeforeUnloadFired(
           inspected_web_contents, false, &should_proceed);
-      DCHECK(!should_proceed);
+      CHECK(!should_proceed, base::NotFatalUntil::M161);
     }
     *proceed_to_fire_unload = false;
   }
@@ -1735,7 +1735,7 @@ void DevToolsWindow::CloseWindow() {
 }
 
 void DevToolsWindow::Close(DevToolsClosedByAction closed_by) {
-  DCHECK(is_docked_);
+  CHECK(is_docked_, base::NotFatalUntil::M161);
   life_stage_ = kClosing;
   main_web_contents_->DispatchBeforeUnload(false /* auto_cancel */);
   closed_by_ = closed_by;
@@ -1779,7 +1779,7 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     return;
   }
 
-  DCHECK(can_dock_ || !dock_requested);
+  CHECK(can_dock_ || !dock_requested, base::NotFatalUntil::M161);
   if (!can_dock_) {
     dock_requested = false;
   }
@@ -1807,7 +1807,7 @@ void DevToolsWindow::SetIsDocked(bool dock_requested) {
     // Detach window from the external devtools browser. It will lead to
     // the browser object's close and delete. Remove observer first.
     TabStripModel* const tab_strip_model = browser_->GetTabStripModel();
-    DCHECK(!owned_main_web_contents_);
+    CHECK(!owned_main_web_contents_, base::NotFatalUntil::M161);
 
     // Removing the only WebContents from the tab strip of browser_ will
     // eventually lead to the destruction of browser_ as well, which is why it's
@@ -1900,7 +1900,7 @@ void DevToolsWindow::OpenInNewTab(const std::string& url) {
 void DevToolsWindow::OpenSearchResultsInNewTab(const std::string& query) {
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
-  DCHECK(url_service);
+  CHECK(url_service, base::NotFatalUntil::M161);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
   OpenInNewTab(url);

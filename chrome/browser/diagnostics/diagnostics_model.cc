@@ -94,7 +94,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
   }
 
   bool GetTestInfo(int id, const TestInfo** result) const override {
-    DCHECK(id >= 0);
+    CHECK(id >= 0, base::NotFatalUntil::M161);
     for (const auto& test : tests_) {
       if (test->GetId() == id) {
         *result = test.get();

@@ -67,7 +67,7 @@ DevToolsPolicyDialog::GetCurrentDialogs() {
 
 // static
 void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   if (GetCurrentDialogs().count(web_contents)) {
     return;
   }
@@ -137,7 +137,7 @@ void DevToolsPolicyDialog::Show(content::WebContents* web_contents) {
 void DevToolsPolicyDialog::TestOnlyCloseDialog(
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_MAC)
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   if (!GetCurrentDialogs().count(web_contents)) {
     return;  // Dialog not recorded as open

@@ -28,7 +28,7 @@ void DownloadMessageBridge::ShowIncognitoDownloadMessage(
 
 void DownloadMessageBridge::ShowUnsupportedDownloadMessage(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
 

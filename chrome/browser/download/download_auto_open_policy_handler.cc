@@ -52,7 +52,7 @@ void DownloadAutoOpenPolicyHandler::ApplyPolicySettings(
   std::unique_ptr<base::Value> policy_value;
   if (!CheckAndGetValue(policies, nullptr, &policy_value) || !policy_value)
     return;
-  DCHECK(policy_value->is_list());
+  CHECK(policy_value->is_list(), base::NotFatalUntil::M161);
 
   base::ListValue pref_values;
   for (const auto& entry : policy_value->GetList()) {

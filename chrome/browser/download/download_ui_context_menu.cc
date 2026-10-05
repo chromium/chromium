@@ -30,7 +30,7 @@ DownloadUiContextMenu::~DownloadUiContextMenu() {
 DownloadUiContextMenu::DownloadUiContextMenu(
     base::WeakPtr<DownloadUIModel> download)
     : download_(download), download_commands_(new DownloadCommands(download)) {
-  DCHECK(download_);
+  CHECK(download_, base::NotFatalUntil::M161);
 }
 
 void DownloadUiContextMenu::RecordCommandsEnabled(ui::SimpleMenuModel* model) {

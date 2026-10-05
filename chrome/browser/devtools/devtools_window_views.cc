@@ -50,7 +50,8 @@ void DevToolsWindow::ToggleDevToolsWindow(BrowserWindowInterface* browser,
 // static
 bool DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(
     BrowserWindowInterface* browser) {
-  DCHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+  CHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS,
+        base::NotFatalUntil::M161);
   // When FastUnloadController is used, devtools frontend will be detached
   // from the browser window at this point which means we've already fired
   // beforeunload.
@@ -67,7 +68,8 @@ bool DevToolsWindow::HasFiredBeforeUnloadEventForDevToolsBrowser(
 // static
 DevToolsWindow* DevToolsWindow::AsDevToolsWindow(
     BrowserWindowInterface* browser) {
-  DCHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+  CHECK(browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS,
+        base::NotFatalUntil::M161);
   if (browser->GetTabStripModel()->empty()) {
     return nullptr;
   }

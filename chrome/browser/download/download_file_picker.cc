@@ -37,9 +37,9 @@ DownloadFilePicker::DownloadFilePicker(download::DownloadItem* item,
       download_item_(item) {
   const DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(
       content::DownloadItemUtils::GetBrowserContext(item));
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M161);
 
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M161);
   item->AddObserver(this);
   WebContents* web_contents = content::DownloadItemUtils::GetWebContents(item);
   // Extension download may not have associated webcontents.
@@ -145,6 +145,6 @@ void DownloadFilePicker::ShowFilePicker(DownloadItem* item,
 }
 
 void DownloadFilePicker::OnDownloadDestroyed(DownloadItem* download_item) {
-  DCHECK_EQ(download_item, download_item_);
+  CHECK_EQ(download_item, download_item_, base::NotFatalUntil::M161);
   download_item_ = nullptr;
 }

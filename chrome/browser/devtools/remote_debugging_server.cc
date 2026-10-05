@@ -269,7 +269,7 @@ void RemoteDebuggingServer::MaybeStartOrStopServerForPrefChange() {
   base::FilePath output_dir;
   {
     bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-    DCHECK(result);
+    CHECK(result, base::NotFatalUntil::M161);
   }
 
   is_http_server_being_started_ = true;
@@ -299,7 +299,7 @@ RemoteDebuggingServer::RemoteDebuggingServer() = default;
 RemoteDebuggingServer::~RemoteDebuggingServer() {
   // Ensure Profile is alive, because the whole DevTools subsystem
   // accesses it during shutdown.
-  DCHECK(g_browser_process->profile_manager());
+  CHECK(g_browser_process->profile_manager(), base::NotFatalUntil::M161);
   StopServer();
 }
 
@@ -369,7 +369,7 @@ RemoteDebuggingServer::GetInstance(PrefService* local_state) {
       // port to a well-known location in the profile directory to
       // bootstrap the connection process.
       bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
-      DCHECK(result);
+      CHECK(result, base::NotFatalUntil::M161);
     }
 
     base::FilePath debug_frontend_dir;

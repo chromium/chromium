@@ -152,7 +152,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   bool is_terminal_action = action == WarningAction::PROCEED ||
                             action == WarningAction::DISCARD ||
                             action == WarningAction::PROCEED_DEEP_SCAN;
-  DCHECK_NE(WarningAction::SHOWN, action);
+  CHECK_NE(WarningAction::SHOWN, action, base::NotFatalUntil::M161);
   data->action_events_.emplace_back(surface, action, action_latency,
                                     is_terminal_action);
   RecordAddWarningActionEventOutcome(

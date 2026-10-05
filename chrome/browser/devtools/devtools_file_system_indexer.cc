@@ -286,13 +286,13 @@ DevToolsFileSystemIndexer::FileSystemIndexingJob::~FileSystemIndexingJob() =
     default;
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::Start() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   impl_task_runner()->PostTask(
       FROM_HERE, BindOnce(&FileSystemIndexingJob::CollectFilesToIndex, this));
 }
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::Stop() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   impl_task_runner()->PostTask(
       FROM_HERE, BindOnce(&FileSystemIndexingJob::StopOnImplSequence, this));
 }
@@ -302,7 +302,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::StopOnImplSequence() {
 }
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
-  DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(impl_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   if (stopped_)
     return;
   if (!file_enumerator_) {
@@ -355,7 +356,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
 }
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::IndexFiles() {
-  DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(impl_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   if (stopped_)
     return;
   if (indexing_it_ == file_path_times_.end()) {
@@ -423,7 +425,8 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::ReadFromFile() {
 
 void DevToolsFileSystemIndexer::FileSystemIndexingJob::FinishFileIndexing(
     bool success) {
-  DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(impl_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   CloseFile();
   if (success) {
     FilePath file_path = indexing_it_->first;
@@ -481,7 +484,7 @@ DevToolsFileSystemIndexer::IndexPath(
     TotalWorkCallback total_work_callback,
     const WorkedCallback& worked_callback,
     DoneCallback done_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   vector<base::FilePath> paths;
   for (const string& path : excluded_folders) {
     paths.push_back(FilePath::FromUTF8Unsafe(path));
@@ -498,7 +501,7 @@ void DevToolsFileSystemIndexer::SearchInPath(
     const std::string& file_system_path,
     const std::string& query,
     SearchCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   impl_task_runner()->PostTask(
       FROM_HERE,
       BindOnce(&DevToolsFileSystemIndexer::SearchInPathOnImplSequence, this,
@@ -509,7 +512,8 @@ void DevToolsFileSystemIndexer::SearchInPathOnImplSequence(
     const std::string& file_system_path,
     const std::string& query,
     SearchCallback callback) {
-  DCHECK(impl_task_runner()->RunsTasksInCurrentSequence());
+  CHECK(impl_task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   vector<FilePath> file_paths = GetTrigramIndex().Search(query);
   vector<string> result;
   FilePath path = FilePath::FromUTF8Unsafe(file_system_path);

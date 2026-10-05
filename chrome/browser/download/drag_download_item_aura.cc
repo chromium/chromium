@@ -27,8 +27,9 @@
 void DragDownloadItem(const download::DownloadItem* download,
                       const gfx::Image* icon,
                       gfx::NativeView view) {
-  DCHECK(download);
-  DCHECK_EQ(download::DownloadItem::COMPLETE, download->GetState());
+  CHECK(download, base::NotFatalUntil::M161);
+  CHECK_EQ(download::DownloadItem::COMPLETE, download->GetState(),
+           base::NotFatalUntil::M161);
 
   aura::Window* root_window = view->GetRootWindow();
   if (!root_window || !aura::client::GetDragDropClient(root_window))

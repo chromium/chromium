@@ -87,7 +87,8 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
 
   // Include this download manager in the set monitored by the
   // global status updater.
-  DCHECK(g_browser_process->download_status_updater());
+  CHECK(g_browser_process->download_status_updater(),
+        base::NotFatalUntil::M161);
   g_browser_process->download_status_updater()->AddManager(manager);
 
   return manager_delegate_.get();
@@ -108,7 +109,7 @@ void DownloadCoreServiceImpl::InitializeHistory(
       return;
     }
   }
-  DCHECK(download_manager_created_);
+  CHECK(download_manager_created_, base::NotFatalUntil::M161);
   DownloadManager* manager = profile_->GetDownloadManager();
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile_, ServiceAccessType::EXPLICIT_ACCESS);

@@ -362,7 +362,7 @@ class TestServer {
 class TcpHttpTestServer : public TestServer {
  public:
   void Start(network::mojom::NetworkContext* network_context) override {
-    DCHECK(!test_server_);
+    CHECK(!test_server_, base::NotFatalUntil::M161);
     test_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTP);
     test_server_->AddDefaultHandlers();
@@ -372,7 +372,7 @@ class TcpHttpTestServer : public TestServer {
   void Stop() override { test_server_.reset(); }
 
   uint16_t port() const override {
-    DCHECK(test_server_);
+    CHECK(test_server_, base::NotFatalUntil::M161);
     return test_server_->port();
   }
 
@@ -383,7 +383,7 @@ class TcpHttpTestServer : public TestServer {
 class UdpEchoTestServer : public TestServer {
  public:
   void Start(network::mojom::NetworkContext* network_context) override {
-    DCHECK(!udp_echo_server_);
+    CHECK(!udp_echo_server_, base::NotFatalUntil::M161);
     udp_echo_server_ = std::make_unique<extensions::TestUdpEchoServer>();
     net::HostPortPair host_port_pair;
     ASSERT_TRUE(udp_echo_server_->Start(network_context, &host_port_pair));
@@ -395,7 +395,7 @@ class UdpEchoTestServer : public TestServer {
   void Stop() override { udp_echo_server_.reset(); }
 
   uint16_t port() const override {
-    DCHECK(port_);
+    CHECK(port_, base::NotFatalUntil::M161);
     return *port_;
   }
 
@@ -428,7 +428,7 @@ class ChromeDirectSocketsTest : public TestHarness {
   explicit ChromeDirectSocketsTest(std::unique_ptr<TestServer> test_server)
       : test_server_{std::move(test_server)} {}
   TestServer* test_server() const {
-    DCHECK(test_server_);
+    CHECK(test_server_, base::NotFatalUntil::M161);
     return test_server_.get();
   }
 

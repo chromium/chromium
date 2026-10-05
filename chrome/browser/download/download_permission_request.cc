@@ -42,9 +42,10 @@ DownloadPermissionRequest::~DownloadPermissionRequest() = default;
 void DownloadPermissionRequest::PermissionDecided(
     const permissions::PermissionPromptDecision& decision,
     const permissions::PermissionRequestData& request_data) {
-  DCHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
+  CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime,
+        base::NotFatalUntil::M161);
   CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
-  DCHECK(decision.is_final);
+  CHECK(decision.is_final, base::NotFatalUntil::M161);
   if (!host_)
     return;
 

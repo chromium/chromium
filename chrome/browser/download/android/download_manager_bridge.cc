@@ -16,7 +16,7 @@
 static void JNI_DownloadManagerBridge_OnAddCompletedDownloadDone(
     int64_t callback_id,
     int64_t download_id) {
-  DCHECK(callback_id);
+  CHECK(callback_id, base::NotFatalUntil::M161);
 
   // Convert java long long int to c++ pointer, take ownership.
   std::unique_ptr<AddCompletedDownloadCallback> cb(

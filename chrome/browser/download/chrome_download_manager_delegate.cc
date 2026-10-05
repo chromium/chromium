@@ -713,7 +713,7 @@ ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
 
 ChromeDownloadManagerDelegate::~ChromeDownloadManagerDelegate() {
   // If a DownloadManager was set for this, Shutdown() must be called.
-  DCHECK(!download_manager_);
+  CHECK(!download_manager_, base::NotFatalUntil::M161);
 }
 
 bool ChromeDownloadManagerDelegate::SupportsHistoryLoading() {
@@ -751,7 +751,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadDialog(
     DownloadLocationDialogType dialog_type,
     const base::FilePath& suggested_path,
     DownloadDialogBridge::DialogCallback callback) {
-  DCHECK(download_dialog_bridge_);
+  CHECK(download_dialog_bridge_, base::NotFatalUntil::M161);
   auto connection_type = net::NetworkChangeNotifier::GetConnectionType();
 
   download_dialog_bridge_->ShowDialog(
@@ -794,8 +794,8 @@ ChromeDownloadManagerDelegate::GetDownloadIdReceiverCallback() {
 }
 
 void ChromeDownloadManagerDelegate::SetNextId(uint32_t next_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   // |download::DownloadItem::kInvalidId| will be returned only when history
   // database failed to initialize.
@@ -815,7 +815,7 @@ void ChromeDownloadManagerDelegate::SetNextId(uint32_t next_id) {
 
 void ChromeDownloadManagerDelegate::GetNextId(
     content::DownloadIdCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (profile_->IsOffTheRecord()) {
     profile_->GetOriginalProfile()->GetDownloadManager()->GetNextId(
         std::move(callback));
@@ -840,8 +840,8 @@ void ChromeDownloadManagerDelegate::GetNextId(
 
 void ChromeDownloadManagerDelegate::ReturnNextId(
     content::DownloadIdCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M161);
   // kInvalidId is returned to indicate the error.
   std::move(callback).Run(next_download_id_);
   if (next_download_id_ != download::DownloadItem::kInvalidId) {
@@ -908,7 +908,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
 bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
     const GURL& url,
     const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (path.Extension().empty()) {
     return false;
   }
@@ -940,7 +940,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFile(
 bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFileByPolicy(
     const GURL& url,
     const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (path.Extension().empty()) {
     return false;
   }
@@ -957,7 +957,7 @@ bool ChromeDownloadManagerDelegate::ShouldAutomaticallyOpenFileByPolicy(
 
 // static
 void ChromeDownloadManagerDelegate::DisableSafeBrowsing(DownloadItem* item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   SafeBrowsingState* state = static_cast<SafeBrowsingState*>(
       item->GetUserData(&SafeBrowsingState::kSafeBrowsingUserDataKey));
@@ -987,7 +987,7 @@ bool ChromeDownloadManagerDelegate::IsDangerTypeBlocked(
 bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
     DownloadItem* item,
     base::OnceClosure internal_complete_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   if (item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
     // For obfuscated files, deobfuscate after validation.
@@ -1249,7 +1249,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
   }
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // For background service downloads we don't want offline pages backend to
   // intercept the download. |is_transient| flag is used to determine whether
   // the download corresponds to background service. Additionally we don't want
@@ -1319,7 +1319,7 @@ void ChromeDownloadManagerDelegate::GetSaveDir(
     base::FilePath* website_save_dir,
     base::FilePath* download_save_dir) {
   *website_save_dir = download_prefs_->SaveFilePath();
-  DCHECK(!website_save_dir->empty());
+  CHECK(!website_save_dir->empty(), base::NotFatalUntil::M161);
   *download_save_dir = download_prefs_->DownloadPath();
 }
 
@@ -1397,14 +1397,15 @@ void ChromeDownloadManagerDelegate::OpenDownloadUsingPlatformHandler(
     DownloadItem* download) {
   base::FilePath platform_path(
       GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
-  DCHECK(!platform_path.empty());
+  CHECK(!platform_path.empty(), base::NotFatalUntil::M161);
   platform_util::OpenItem(profile_, platform_path, platform_util::OPEN_FILE,
                           platform_util::OpenOperationCallback());
 }
 
 void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
-  DCHECK_EQ(DownloadItem::COMPLETE, download->GetState());
-  DCHECK(!download->GetTargetFilePath().empty());
+  CHECK_EQ(DownloadItem::COMPLETE, download->GetState(),
+           base::NotFatalUntil::M161);
+  CHECK(!download->GetTargetFilePath().empty(), base::NotFatalUntil::M161);
   if (!download->CanOpenDownload()) {
     return;
   }
@@ -1488,7 +1489,7 @@ void ChromeDownloadManagerDelegate::ShowDownloadInShell(
 
   base::FilePath platform_path(
       GetPlatformDownloadPath(download, PLATFORM_CURRENT_PATH));
-  DCHECK(!platform_path.empty());
+  CHECK(!platform_path.empty(), base::NotFatalUntil::M161);
   platform_util::ShowItemInFolder(profile_, platform_path);
 }
 
@@ -1500,7 +1501,7 @@ ChromeDownloadManagerDelegate::ApplicationClientIdForFileScanning() {
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 DownloadProtectionService*
 ChromeDownloadManagerDelegate::GetDownloadProtectionService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
   if (sb_service && sb_service->download_protection_service()) {
@@ -1515,7 +1516,7 @@ void ChromeDownloadManagerDelegate::GetInsecureDownloadStatus(
     download::DownloadItem* download,
     const base::FilePath& virtual_path,
     GetInsecureDownloadStatusCallback callback) {
-  DCHECK(download);
+  CHECK(download, base::NotFatalUntil::M161);
   DownloadItem::InsecureDownloadStatus status =
       GetInsecureDownloadStatusForDownload(profile_, virtual_path, download);
 #if BUILDFLAG(IS_ANDROID)
@@ -1536,8 +1537,8 @@ void ChromeDownloadManagerDelegate::NotifyExtensions(
     DownloadItem* download,
     const base::FilePath& virtual_path,
     NotifyExtensionsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!download->IsTransient());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!download->IsTransient(), base::NotFatalUntil::M161);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extensions::ExtensionDownloadsEventRouter* router =
@@ -1560,8 +1561,8 @@ void ChromeDownloadManagerDelegate::ReserveVirtualPath(
     DownloadPathReservationTracker::FilenameConflictAction conflict_action,
     const base::FilePath& containment_directory,
     DownloadTargetDeterminerDelegate::ReservedPathCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!virtual_path.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!virtual_path.empty(), base::NotFatalUntil::M161);
 
   base::FilePath document_dir;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &document_dir);
@@ -1591,8 +1592,8 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
     const base::FilePath& suggested_path,
     DownloadConfirmationReason reason,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!download->IsTransient());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!download->IsTransient(), base::NotFatalUntil::M161);
 
 // TODO(xingliu): We should abstract a DownloadFilePicker interface and make all
 // platform use it.
@@ -1805,7 +1806,7 @@ void ChromeDownloadManagerDelegate::ShowFilePickerForDownload(
     DownloadItem* download,
     const base::FilePath& suggested_path,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback) {
-  DCHECK(download);
+  CHECK(download, base::NotFatalUntil::M161);
   DownloadFilePicker::ShowFilePicker(
       download, suggested_path,
       base::BindOnce(
@@ -1821,7 +1822,7 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
     const base::FilePath& target_path) {
   // After a new, unique filename has been generated, display the error dialog
   // with the filename automatically set to be the unique filename.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (download::IsPathValidationSuccessful(result)) {
     download::DownloadItem* download =
         download_manager_->GetDownloadByGuid(download_guid);
@@ -1867,7 +1868,7 @@ void ChromeDownloadManagerDelegate::DetermineLocalPath(
     DownloadItem* download,
     const base::FilePath& virtual_path,
     download::LocalPathCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   if (enterprise_obfuscation::IsVirtualFilesystem(virtual_path) &&
       ShouldObfuscateDownload(download)) {
@@ -1930,7 +1931,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadUrl(
     DownloadItem* download,
     const base::FilePath& suggested_path,
     CheckDownloadUrlCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::DownloadProtectionService* service =
@@ -1955,7 +1956,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadUrl(
 void ChromeDownloadManagerDelegate::GetFileMimeType(
     const base::FilePath& path,
     GetFileMimeTypeCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetMimeType, path),
       std::move(callback));
@@ -2099,8 +2100,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         // https://crbug.com/40926583.
         return;
     }
-    DCHECK_NE(danger_type,
-              download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT);
+    CHECK_NE(danger_type,
+             download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+             base::NotFatalUntil::M161);
 
     if (item->GetState() == DownloadItem::COMPLETE &&
         (item->GetDangerType() ==
@@ -2257,7 +2259,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
     download::DownloadTargetCallback callback,
     download::DownloadTargetInfo target_info,
     safe_browsing::DownloadFileType::DangerLevel danger_level) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DownloadItem* item = download_manager_->GetDownload(download_id);
   if (item) {
     DownloadItemModel model(item);
@@ -2447,7 +2449,7 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     const std::string& mime_type,
     std::optional<ui::PageTransition> page_transition,
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
   // Don't download pdf if it is a file URL, as that might cause an infinite
@@ -2546,8 +2548,8 @@ void ChromeDownloadManagerDelegate::CheckSavePackageAllowed(
     download::DownloadItem* download_item,
     base::flat_map<base::FilePath, base::FilePath> save_package_files,
     content::SavePackageAllowedCallback callback) {
-  DCHECK(download_item);
-  DCHECK(download_item->IsSavePackageDownload());
+  CHECK(download_item, base::NotFatalUntil::M161);
+  CHECK(download_item->IsSavePackageDownload(), base::NotFatalUntil::M161);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::optional<enterprise_connectors::AnalysisSettings> settings =

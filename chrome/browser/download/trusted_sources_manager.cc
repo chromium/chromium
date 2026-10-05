@@ -9,7 +9,7 @@
 
 TrustedSourcesManager::TrustedSourcesManager() {
   base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
-  DCHECK(command_line);
+  CHECK(command_line, base::NotFatalUntil::M161);
   matcher_ = net::SchemeHostPortMatcher::FromRawString(
       command_line->GetSwitchValueASCII(switches::kTrustedDownloadSources));
 }
