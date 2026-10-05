@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
@@ -16,6 +17,11 @@ export type EntityInstancesChangedListener =
  * manager related methods.
  */
 export interface EntityDataManagerProxy {
+  /**
+   * Gets currently signed-in user account info, or undefined if not signed-in.
+   */
+  getAccountInfo(): Promise<AccountInfo|undefined>;
+
   /**
    * Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
    * the entity instance.
@@ -118,6 +124,10 @@ export interface EntityDataManagerProxy {
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
+  getAccountInfo(): Promise<AccountInfo|undefined> {
+    return chrome.autofillPrivate.getAccountInfo();
+  }
+
   addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {
     return chrome.autofillPrivate.addOrUpdateEntityInstance(entityInstance);
   }

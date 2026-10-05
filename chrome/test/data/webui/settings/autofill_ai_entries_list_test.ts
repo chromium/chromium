@@ -636,12 +636,8 @@ suite('AutofillAiEntriesListUiTest', function() {
         }
 
         // Simulate the dialog was confirmed.
-        addOrEditEntityInstanceDialog.dispatchEvent(
-            new CustomEvent('autofill-ai-add-or-edit-done', {
-              bubbles: true,
-              composed: true,
-              detail: testEntityInstance,
-            }));
+        addOrEditEntityInstanceDialog.fire(
+            'autofill-ai-add-or-edit-done', testEntityInstance);
 
         await flushTasks();
       }));

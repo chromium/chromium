@@ -5,12 +5,11 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrButtonElement, CrInputElement, SettingsAutofillAiAddOrEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestEntityDataManagerProxy} from './test_entity_data_manager_proxy.js';
 // clang-format on
@@ -172,28 +171,29 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
           entityDataManager.whenCalled(
               'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
         ]);
-        await flushTasks();
+        await microtasksFinished();
 
         // Verify that the dialog title is correct.
         const dialogTitle =
-            dialog.shadowRoot!.querySelector<HTMLElement>('div[slot="title"]');
+            dialog.shadowRoot.querySelector<HTMLElement>('div[slot="title"]');
         assertTrue(
             dialogTitle!.textContent.includes(
                 params.add ? 'Add vehicle' : 'Edit vehicle'));
 
         // Edit first field.
         const firstAttributeInstanceField =
-            dialog.shadowRoot!.querySelector<CrInputElement>(
+            dialog.shadowRoot.querySelector<CrInputElement>(
                 '#attribute-instance-field');
         assertTrue(!!firstAttributeInstanceField);
         firstAttributeInstanceField.value = newAttributeInstanceValue;
-        await flushTasks();
+        await microtasksFinished();
 
         if (params.confirmed) {
           // Verify that the entity instance was changed.
           const saveButton =
-              dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+              dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
           assertTrue(!!saveButton);
 
           // Expect storedInWallet to be set if supportsWalletStorage is true
@@ -208,14 +208,14 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
           saveButton.click();
 
           const dialogConfirmedEvent = await dialogConfirmedPromise;
-          await flushTasks();
+          await microtasksFinished();
 
           assertFalse(dialog.$.dialog.getNative().open);
           assertDeepEquals(expectedEntityInstance, dialogConfirmedEvent.detail);
         } else {
           // Verify that the entity instance was not changed.
           const cancelButton =
-              dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button');
+              dialog.shadowRoot.querySelector<HTMLElement>('.cancel-button');
           assertTrue(!!cancelButton);
           const dialogCancelledPromise =
               eventToPromise('cancel', dialog.$.dialog);
@@ -233,15 +233,16 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
+        dialog.shadowRoot.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
-        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
     assertTrue(!!saveButton);
     assertFalse(isVisible(validationError));
@@ -250,15 +251,15 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     // Simulate that the user writes only one whitespace (' ') character in all
     // fields.
     const attributeInstanceFields =
-        dialog.shadowRoot!.querySelectorAll<CrInputElement>(
+        dialog.shadowRoot.querySelectorAll<CrInputElement>(
             '#attribute-instance-field');
     assertTrue(!!attributeInstanceFields);
     attributeInstanceFields.forEach(
         (attributeInstanceField: CrInputElement) =>
             attributeInstanceField.value = ' ');
-    await flushTasks();
+    await microtasksFinished();
     attributeInstanceFields[0]!.dispatchEvent(new Event('input'));
-    await flushTasks();
+    await microtasksFinished();
 
     // All fields are empty, but the save button was not clicked yet, so there
     // is no validation error.
@@ -266,16 +267,16 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertFalse(saveButton.disabled);
 
     saveButton.click();
-    await flushTasks();
+    await microtasksFinished();
     // All fields are empty and the save button was clicked, so the validation
     // error should be visible and the save button should be disabled.
     assertTrue(isVisible(validationError));
     assertTrue(saveButton.disabled);
 
     attributeInstanceFields[0]!.value = 'something';
-    await flushTasks();
+    await microtasksFinished();
     attributeInstanceFields[0]!.dispatchEvent(new Event('input'));
-    await flushTasks();
+    await microtasksFinished();
 
     // One field is not empty, so the validation error should not be visible
     // anymore and the save button should be enabled.
@@ -303,14 +304,15 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     const saveButton =
-        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
-    const inputs = dialog.shadowRoot!.querySelectorAll<CrInputElement>(
+        dialog.shadowRoot.querySelector<HTMLElement>('#validation-error-top');
+    const inputs = dialog.shadowRoot.querySelectorAll<CrInputElement>(
         '#attribute-instance-field');
 
     // Helper to simulate input.
@@ -319,12 +321,12 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       input.value = value;
       input.fire('value-changed', {value: value});
       input.dispatchEvent(new Event('input', {bubbles: true, composed: true}));
-      await flushTasks();
+      await microtasksFinished();
     };
 
     // Empty Form.
     saveButton!.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Both required fields are empty.
     assertTrue(
@@ -363,79 +365,70 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
 
   test('FooterVisibleForEligibleEntityWithEmail', async function() {
     const userEmail = 'test@example.com';
-    const originalGetAccountInfo = chrome.autofillPrivate.getAccountInfo;
-    chrome.autofillPrivate.getAccountInfo = () => Promise.resolve({
+    entityDataManager.setGetAccountInfoResponse({
       email: userEmail,
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
-      isAutofillSyncToggleEnabled: true,
-      isAutofillSyncToggleAvailable: true,
     });
 
-    try {
-      // Use an eligible private pass entity to test the generic wallet notice.
-      const newEntity = structuredClone(testEntityInstance);
-      newEntity.guid = '';
-      newEntity.type.typeName = 0;
-      newEntity.type.passType =
-          chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
-      dialog.entityInstance = newEntity;
-      loadTimeData.overrideValues({
-        saveInfoToWalletAccountNotice: 'Save to $1 using $2',
-        googleWalletTitle: 'Google Wallet',
-      });
+    // Use an eligible private pass entity to test the generic wallet notice.
+    const newEntity = structuredClone(testEntityInstance);
+    newEntity.guid = '';
+    newEntity.type.typeName = 0;
+    newEntity.type.passType =
+        chrome.autofillPrivate.EntityPassType.PRIVATE_PASS;
+    dialog.entityInstance = newEntity;
+    loadTimeData.overrideValues({
+      saveInfoToWalletAccountNotice: 'Save to $1 using $2',
+      googleWalletTitle: 'Google Wallet',
+    });
 
-      document.body.appendChild(dialog);
-      await entityDataManager.whenCalled(
-          'getAllAttributeTypesForEntityTypeName');
-      await flushTasks();
+    document.body.appendChild(dialog);
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
 
-      const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
-      assertTrue(!!footer);
-      assertFalse(
-          footer.hidden, 'Footer should be visible for eligible entity');
-    } finally {
-      // Restore to its original state so that it doesn't affect other tests.
-      chrome.autofillPrivate.getAccountInfo = originalGetAccountInfo;
-    }
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertFalse(footer.hidden, 'Footer should be visible for eligible entity');
   });
 
   test('FooterVisibleForIneligibleEntity', async function() {
-    const originalGetAccountInfo = chrome.autofillPrivate.getAccountInfo;
-    chrome.autofillPrivate.getAccountInfo = () => Promise.resolve({
+    entityDataManager.setGetAccountInfoResponse({
       email: 'test@example.com',
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
-      isAutofillSyncToggleEnabled: true,
-      isAutofillSyncToggleAvailable: true,
     });
 
-    try {
-      // Create ineligible entity.
-      const ineligibleEntity = structuredClone(testEntityInstance);
-      ineligibleEntity.type.supportsWalletStorage = false;
-      ineligibleEntity.guid = '';
+    // Create ineligible entity.
+    const ineligibleEntity = structuredClone(testEntityInstance);
+    ineligibleEntity.type.supportsWalletStorage = false;
+    ineligibleEntity.guid = '';
 
-      dialog.entityInstance = ineligibleEntity;
-      loadTimeData.overrideValues({
-        autofillAiSaveOrUpdateLocalEntitySourceNotice:
-            'Your info is saved to your device',
-      });
+    dialog.entityInstance = ineligibleEntity;
+    loadTimeData.overrideValues({
+      autofillAiSaveOrUpdateLocalEntitySourceNotice:
+          'Your info is saved to your device',
+    });
 
-      document.body.appendChild(dialog);
-      await entityDataManager.whenCalled(
-          'getAllAttributeTypesForEntityTypeName');
-      await flushTasks();
+    document.body.appendChild(dialog);
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
 
-      const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
-      assertTrue(!!footer);
-      assertFalse(
-          footer.hidden, 'Footer should be visible for ineligible entity');
-      assertTrue(
-          footer.innerText.includes('Your info is saved to your device'));
-    } finally {
-      chrome.autofillPrivate.getAccountInfo = originalGetAccountInfo;
-    }
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
+    assertTrue(!!footer);
+    assertFalse(
+        footer.hidden, 'Footer should be visible for ineligible entity');
+    assertTrue(footer.innerText.includes('Your info is saved to your device'));
   });
 
   test('AsyncSave_ShowsSpinnerAndDisablesButton', async function() {
@@ -460,12 +453,13 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     const saveButton =
-        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
-    const spinner = dialog.shadowRoot!.querySelector<HTMLElement>('.spinner');
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
+    const spinner = dialog.shadowRoot.querySelector<HTMLElement>('.spinner');
 
     assertTrue(!!saveButton);
     assertTrue(!!spinner);
@@ -474,7 +468,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     assertTrue(saveButton.innerText.includes('Save'));
 
     saveButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // The proxy should hold the promise in pending state.
     assertTrue(isVisible(spinner));
@@ -482,7 +476,7 @@ suite('AutofillAiAddOrEditDialogUiTest', function() {
     entityDataManager.resolveSave();
 
     // Verify Dialog closes.
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dialog.$.dialog.getNative().open);
   });
 });
@@ -499,7 +493,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
       countrySelect: HTMLSelectElement, newCountryCode: string) {
     countrySelect.value = newCountryCode;
     countrySelect.dispatchEvent(new CustomEvent('change'));
-    await flushTasks();
+    await microtasksFinished();
   }
 
   function simulateSelectChange(select: HTMLSelectElement, value: string) {
@@ -513,7 +507,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     simulateSelectChange(monthSelect, newDate.month);
     simulateSelectChange(daySelect, newDate.day);
     simulateSelectChange(yearSelect, newDate.year);
-    return flushTasks();
+    return microtasksFinished();
   }
 
   setup(function() {
@@ -624,12 +618,13 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
           entityDataManager.whenCalled(
               'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
         ]);
-        await flushTasks();
+        await microtasksFinished();
 
         // Retrieve the country selector.
         const countrySelect =
-            dialog.shadowRoot!.querySelector<HTMLSelectElement>(
+            dialog.shadowRoot.querySelector<HTMLSelectElement>(
                 '#country-select');
         assertTrue(!!countrySelect);
         if (params.add) {
@@ -646,7 +641,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
         // Confirm the dialog and verify that the new country code is saved.
         const saveButton =
-            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
@@ -655,7 +650,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         saveButton.click();
 
         const dialogConfirmedEvent = await dialogConfirmedPromise;
-        await flushTasks();
+        await microtasksFinished();
 
         const expectedEntityInstance = structuredClone(testEntityInstance);
         expectedEntityInstance.attributeInstances = [{
@@ -714,16 +709,17 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
           entityDataManager.whenCalled(
               'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
         ]);
-        await flushTasks();
+        await microtasksFinished();
 
         // Retrieve the date selectors.
-        const monthSelect = dialog.shadowRoot!.querySelector<HTMLSelectElement>(
-            '#month-select');
+        const monthSelect =
+            dialog.shadowRoot.querySelector<HTMLSelectElement>('#month-select');
         const daySelect =
-            dialog.shadowRoot!.querySelector<HTMLSelectElement>('#day-select');
+            dialog.shadowRoot.querySelector<HTMLSelectElement>('#day-select');
         const yearSelect =
-            dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+            dialog.shadowRoot.querySelector<HTMLSelectElement>('#year-select');
         assertTrue(!!monthSelect);
         assertTrue(!!daySelect);
         assertTrue(!!yearSelect);
@@ -750,7 +746,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
         // Confirm the dialog and verify that the new date is saved.
         const saveButton =
-            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
@@ -759,7 +755,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
         saveButton.click();
 
         const dialogConfirmedEvent = await dialogConfirmedPromise;
-        await flushTasks();
+        await microtasksFinished();
 
         const expectedEntityInstance = structuredClone(testEntityInstance);
         expectedEntityInstance.attributeInstances = [{
@@ -784,25 +780,26 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     // Retrieve the year selector.
     const yearSelect =
-        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+        dialog.shadowRoot.querySelector<HTMLSelectElement>('#year-select');
     assertTrue(!!yearSelect);
 
     // Check that the out of bounds year is pre-selected.
     assertEquals('1800', yearSelect.value);
     // Simulate that changing to a year that is in bounds works.
     simulateSelectChange(yearSelect, '2000');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('2000', yearSelect.value);
 
     // Simulate that changing back to the already existing year (that is out of
     // bounds) works.
     simulateSelectChange(yearSelect, '1800');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals('1800', yearSelect.value);
   });
 
@@ -814,15 +811,16 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     // The validation error should not be visible yet and the save button
     // should be enabled.
     const validationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
+        dialog.shadowRoot.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
-        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!validationError);
     assertTrue(!!saveButton);
     assertFalse(isVisible(validationError));
@@ -830,7 +828,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
 
     // Simulate that the user clears the country field.
     const countrySelect =
-        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#country-select');
+        dialog.shadowRoot.querySelector<HTMLSelectElement>('#country-select');
     assertTrue(!!countrySelect);
     await simulateCountryChange(countrySelect, '');
 
@@ -840,7 +838,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertFalse(saveButton.disabled);
 
     saveButton.click();
-    await flushTasks();
+    await microtasksFinished();
     // All fields are empty and the save button was clicked, so the validation
     // error should be visible and the save button should be disabled.
     assertTrue(isVisible(validationError));
@@ -862,22 +860,22 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
       entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
       entityDataManager.whenCalled(
           'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
     ]);
-    await flushTasks();
+    await microtasksFinished();
 
     // The invalid label and validation errors should not be visible yet, and
     // the save button should be enabled.
     const dateSelectLabel =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#date-select-label');
-    const invalidDateSelectLabel =
-        dialog.shadowRoot!.querySelector<HTMLElement>(
-            '#invalid-date-select-label');
+        dialog.shadowRoot.querySelector<HTMLElement>('#date-select-label');
+    const invalidDateSelectLabel = dialog.shadowRoot.querySelector<HTMLElement>(
+        '#invalid-date-select-label');
     const dateValidationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#date-validation-error');
+        dialog.shadowRoot.querySelector<HTMLElement>('#date-validation-error');
     const regularValidationError =
-        dialog.shadowRoot!.querySelector<HTMLElement>('#validation-error-top');
+        dialog.shadowRoot.querySelector<HTMLElement>('#validation-error-top');
     const saveButton =
-        dialog.shadowRoot!.querySelector<CrButtonElement>('.action-button');
+        dialog.shadowRoot.querySelector<CrButtonElement>('.action-button');
     assertTrue(!!dateSelectLabel);
     assertTrue(!!invalidDateSelectLabel);
     assertTrue(!!dateValidationError);
@@ -891,11 +889,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     // Simulate that the user introduces an invalid date (30th of February).
     const invalidDate = {month: '2', day: '30', year: '2022'};
     const monthSelect =
-        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#month-select');
+        dialog.shadowRoot.querySelector<HTMLSelectElement>('#month-select');
     const daySelect =
-        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#day-select');
+        dialog.shadowRoot.querySelector<HTMLSelectElement>('#day-select');
     const yearSelect =
-        dialog.shadowRoot!.querySelector<HTMLSelectElement>('#year-select');
+        dialog.shadowRoot.querySelector<HTMLSelectElement>('#year-select');
     assertTrue(!!monthSelect);
     assertTrue(!!daySelect);
     assertTrue(!!yearSelect);
@@ -922,7 +920,7 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertFalse(saveButton.disabled);
 
     saveButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // All fields are empty and the save button was clicked, so the regular
     // validation error should be visible and the save button should be
@@ -947,11 +945,11 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
     assertFalse(saveButton.disabled);
 
     // Populate the name field and completely clear the date field.
-    const nameField = dialog.shadowRoot!.querySelector<CrInputElement>(
+    const nameField = dialog.shadowRoot.querySelector<CrInputElement>(
         '#attribute-instance-field');
     assertTrue(!!nameField);
     nameField.value = 'John Doe';
-    await flushTasks();
+    await microtasksFinished();
     await simulateDateChange(
         monthSelect, daySelect, yearSelect, {month: '', day: '', year: ''});
 
@@ -1076,11 +1074,12 @@ suite('AutofillAiAddOrEditDialogSelectElementUiTest', function() {
           entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
           entityDataManager.whenCalled(
               'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
         ]);
-        await flushTasks();
+        await microtasksFinished();
 
         const allSelectorOptions =
-            dialog.shadowRoot!.querySelectorAll<HTMLElement>('option');
+            dialog.shadowRoot.querySelectorAll<HTMLElement>('option');
         const firstOptionInTheMonthSelectorIndex =
             Array.from(allSelectorOptions)
                 .findIndex(
@@ -1159,12 +1158,10 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
       },
     ]);
 
-    chrome.autofillPrivate.getAccountInfo = () => Promise.resolve({
+    entityDataManager.setGetAccountInfoResponse({
       email: 'test@example.com',
       isSyncEnabledForAutofillProfiles: true,
       isEligibleForAddressAccountStorage: true,
-      isAutofillSyncToggleEnabled: true,
-      isAutofillSyncToggleAvailable: true,
     });
 
     loadTimeData.overrideValues({
@@ -1189,11 +1186,15 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         dialog.entityInstance = structuredClone(vehicleEntity);
         dialog.upsertPassDetails = mockUpsertPassDetails;
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
-        await flushTasks();
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
 
-        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
         assertTrue(!!footer);
         assertFalse(footer.hidden);
         assertTrue(footer.innerText.includes('test@example.com'));
@@ -1220,11 +1221,15 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         dialog.entityInstance = structuredClone(vehicleEntity);
         dialog.upsertPassDetails = null;
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
-        await flushTasks();
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
 
-        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
         assertTrue(!!footer);
         assertFalse(footer.hidden);
         assertTrue(
@@ -1238,10 +1243,15 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     dialog.entityInstance = existingVehicle;
     dialog.upsertPassDetails = mockUpsertPassDetails;
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
-    await flushTasks();
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
 
-    const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
     assertTrue(!!footer);
     assertFalse(footer.hidden);
     assertTrue(footer.innerText.includes('Your info is saved to your device'));
@@ -1254,12 +1264,16 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         dialog.entityInstance = structuredClone(vehicleEntity);
         dialog.upsertPassDetails = mockUpsertPassDetails;
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
-        await flushTasks();
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
 
         const saveButton =
-            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
@@ -1278,11 +1292,16 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     dialog.entityInstance = structuredClone(vehicleEntity);
     dialog.upsertPassDetails = null;
     document.body.appendChild(dialog);
-    await entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName');
-    await flushTasks();
+    await Promise.all([
+      entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled(
+          'getRequiredAttributeTypesForEntityTypeName'),
+      entityDataManager.whenCalled('getAccountInfo'),
+    ]);
+    await microtasksFinished();
 
     const saveButton =
-        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
     assertTrue(!!saveButton);
 
     const dialogConfirmedPromise =
@@ -1303,11 +1322,15 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         dialog.entityInstance = localPublicPass;
         dialog.upsertPassDetails = mockUpsertPassDetails;
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
-        await flushTasks();
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
 
-        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
         assertTrue(!!footer);
         assertFalse(footer.hidden);
         assertTrue(
@@ -1315,7 +1338,7 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         assertEquals(0, footer.querySelectorAll('a').length);
 
         const saveButton =
-            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =
@@ -1336,10 +1359,10 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
         dialog.entityInstance = structuredClone(vehicleEntity);
         document.body.appendChild(dialog);
         await entityDataManager.whenCalled('getDetailsForUpsertPass');
-        await flushTasks();
+        await microtasksFinished();
 
         assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
-        const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+        const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
         assertTrue(!!footer);
         assertFalse(footer.hidden);
         const links = footer.querySelectorAll<HTMLAnchorElement>('a');
@@ -1351,14 +1374,14 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
     dialog.entityInstance = structuredClone(vehicleEntity);
     document.body.appendChild(dialog);
     await entityDataManager.whenCalled('getDetailsForUpsertPass');
-    await flushTasks();
+    await microtasksFinished();
 
     // 1. Details are fetched and assigned.
     assertEquals(mockUpsertPassDetails, dialog.upsertPassDetails);
 
     // 2. Static Wallet notice and legal message lines/links are rendered in
     // the footer.
-    const footer = dialog.shadowRoot!.querySelector<HTMLElement>('#footer');
+    const footer = dialog.shadowRoot.querySelector<HTMLElement>('#footer');
     assertTrue(!!footer);
     assertFalse(footer.hidden);
     const links = footer.querySelectorAll<HTMLAnchorElement>('a');
@@ -1369,7 +1392,7 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
 
     // 3. Save button is clicked and entity is saved to Wallet with token.
     const saveButton =
-        dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+        dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
     assertTrue(!!saveButton);
 
     const dialogConfirmedPromise =
@@ -1393,9 +1416,13 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
             document.createElement('settings-autofill-ai-add-or-edit-dialog');
         dialog.entityInstance = structuredClone(vehicleEntity);
         document.body.appendChild(dialog);
-        await entityDataManager.whenCalled(
-            'getAllAttributeTypesForEntityTypeName');
-        await flushTasks();
+        await Promise.all([
+          entityDataManager.whenCalled('getAllAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled(
+              'getRequiredAttributeTypesForEntityTypeName'),
+          entityDataManager.whenCalled('getAccountInfo'),
+        ]);
+        await microtasksFinished();
 
         // getDetailsForUpsertPass should not be called when feature is
         // disabled.
@@ -1404,7 +1431,7 @@ suite('AutofillAiAddOrEditDialogVehiclePublicPassTest', function() {
 
         // Save button is clicked and entity is saved to Wallet as before.
         const saveButton =
-            dialog.shadowRoot!.querySelector<HTMLElement>('.action-button');
+            dialog.shadowRoot.querySelector<HTMLElement>('.action-button');
         assertTrue(!!saveButton);
 
         const dialogConfirmedPromise =

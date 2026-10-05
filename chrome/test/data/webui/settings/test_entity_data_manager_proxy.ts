@@ -7,6 +7,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {EntityDataManagerProxy, EntityInstancesChangedListener} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
+type AccountInfo = chrome.autofillPrivate.AccountInfo;
 type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
@@ -15,6 +16,7 @@ type UpsertPassDetails = chrome.autofillPrivate.UpsertPassDetails;
 
 export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     EntityDataManagerProxy {
+  private accountInfo_: AccountInfo|undefined;
   private entityInstancesWithLabels_: EntityInstanceWithLabels[] = [];
   private attributeTypes_: AttributeType[] = [];
   private requiredAttributeTypes_: AttributeType[] = [];
@@ -36,6 +38,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'addEntityInstancesChangedListener',
       'addOrUpdateEntityInstance',
       'authenticateUserBeforeViewingEntityData',
+      'getAccountInfo',
       'getAllAttributeTypesForEntityTypeName',
       'getRequiredAttributeTypesForEntityTypeName',
       'getEntityInstanceByGuid',
@@ -51,6 +54,10 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
       'setWalletablePassDetectionOptInStatus',
       'toggleAutofillAiReauthRequirement',
     ]);
+  }
+
+  setGetAccountInfoResponse(accountInfo: AccountInfo|undefined): void {
+    this.accountInfo_ = accountInfo;
   }
 
   setLoadEntityInstancesResponse(
@@ -117,6 +124,11 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
    */
   setAutoResolveSave(autoResolve: boolean) {
     this.autoResolveSave_ = autoResolve;
+  }
+
+  getAccountInfo(): Promise<AccountInfo|undefined> {
+    this.methodCalled('getAccountInfo');
+    return Promise.resolve(structuredClone(this.accountInfo_));
   }
 
   addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {

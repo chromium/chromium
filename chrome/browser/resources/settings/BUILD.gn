@@ -581,6 +581,7 @@ build_webui("build") {
     "appearance_page/appearance_page.css",
     "appearance_page/appearance_page_index.css",
     "appearance_page/home_url_input.css",
+    "autofill_page/autofill_ai_add_or_edit_dialog.css",
     "autofill_page/autofill_shared.css",
     "autofill_page/autofill_shared_lit.css",
     "autofill_page/contact_info/address_edit_dialog.css",

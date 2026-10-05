@@ -1,0 +1,115 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=../settings_shared_lit.css.js
+ * #include=cr-shared-style-lit settings-shared-lit md-select-lit cr-spinner-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  white-space: nowrap;
+}
+
+.cr-form-field-label {
+  color: var(--cr-input-label-color);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+#country-select {
+  --md-select-width: var(--cr-input-width, 100%);
+  margin-bottom: var(--cr-form-field-bottom-spacing);
+}
+
+.md-select + .md-select {
+  margin-inline-start: 8px;
+}
+
+.date-field {
+  margin-bottom: var(--cr-form-field-bottom-spacing);
+}
+
+#month-select,
+#day-select {
+  --md-select-width: 70px;
+}
+
+#year-select {
+  --md-select-width: 100px;
+}
+
+#dialog::part(body-container) {
+  max-height: 550px;
+}
+
+@media all and (max-height: 714px) {
+  #dialog::part(body-container) {
+    max-height: 270px;
+  }
+}
+
+#date-validation-error {
+  margin-top: 8px;
+}
+
+#validation-error,
+#date-validation-error,
+#invalid-date-select-label {
+  color: var(--cr-fallback-color-error);
+}
+
+#footer {
+  margin-top: 8px;
+  white-space: initial;
+}
+
+#footer > div + div {
+  margin-top: 8px;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.title-icon-container {
+  display: flex;
+  align-items: center;
+}
+
+.title-icon-container img {
+  height: 18px;
+  width: auto;
+  display: block;
+}
+
+.title-icon-container-standalone {
+  display: flex;
+  align-items: center;
+}
+
+.title-icon-container-standalone img {
+  height: 24px;
+  width: 24px;
+  display: block;
+}
+
+#validation-error-top {
+  color: var(--cr-fallback-color-error);
+  margin-bottom: 16px;
+}
+
+.spinner {
+  --cr-spinner-color: white;
+  --cr-spinner-size: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
