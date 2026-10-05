@@ -637,8 +637,10 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
 }
 
 + (NSUInteger)windowCount [[nodiscard]] {
-  // If the scene API is in use, return the count of open sessions.
-  return UIApplication.sharedApplication.openSessions.count;
+  // If the scene API is in use, return the count of open sessions and
+  // connected scenes.
+  return std::max(UIApplication.sharedApplication.openSessions.count,
+                  UIApplication.sharedApplication.connectedScenes.count);
 }
 
 + (NSUInteger)foregroundWindowCount [[nodiscard]] {

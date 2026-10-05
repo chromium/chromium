@@ -241,6 +241,9 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
         ]
       ),
     ]
+    mock_test_runner = mock.MagicMock(
+      spec=xcodebuild_runner.DeviceXcodeTestRunner
+    )
     launch_command = xcodebuild_runner.LaunchCommand(
       egtests,
       _DESTINATION,
@@ -248,7 +251,7 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
       retries=3,
       readline_timeout=180,
       exception_checker=None,
-      test_runner=mock.MagicMock(),
+      test_runner=mock_test_runner,
     )
     overall_result = launch_command.launch()
     self.assertFalse(overall_result.crashed)
@@ -257,6 +260,7 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
       overall_result.expected_tests(),
       set(['Class1/passedTest1', 'Class1/passedTest2']),
     )
+    mock_test_runner.uninstall_apps.assert_called_once_with()
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def testLaunchCommand_notRestartPassedTest(self, mock_collect_results):
@@ -270,6 +274,9 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
       ]
     )
     mock_collect_results.side_effect = [collection]
+    mock_test_runner = mock.MagicMock(
+      spec=xcodebuild_runner.DeviceXcodeTestRunner
+    )
     launch_command = xcodebuild_runner.LaunchCommand(
       egtests,
       _DESTINATION,
@@ -277,7 +284,7 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
       retries=3,
       readline_timeout=180,
       exception_checker=None,
-      test_runner=mock.MagicMock(),
+      test_runner=mock_test_runner,
     )
     launch_command.launch()
     xcodebuild_runner.LaunchCommand(
@@ -290,6 +297,7 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
       test_runner=mock.MagicMock(),
     )
     self.assertEqual(1, len(mock_collect_results.mock_calls))
+    mock_test_runner.uninstall_apps.assert_not_called()
 
   @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
   def test_launch_command_restart_failed_attempt(self, mock_collect_results):

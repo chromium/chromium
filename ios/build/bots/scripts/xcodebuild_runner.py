@@ -183,6 +183,11 @@ class LaunchCommand(object):
         # ideally this should be the last step before running tests, because
         # it boots the simulator.
         iossim_util.disable_simulator_keyboard_tutorial(self.udid)
+      elif attempt > 0 and isinstance(self.test_runner, DeviceXcodeTestRunner):
+        # Uninstall apps on physical devices before retrying to terminate any
+        # orphaned runner or host app processes left behind by a previous hung
+        # xcodebuild attempt.
+        self.test_runner.uninstall_apps()
 
       outdir_attempt = os.path.join(self.out_dir, 'attempt_%d' % attempt)
       cmd_list = self.egtests_app.command(

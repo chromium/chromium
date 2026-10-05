@@ -1398,6 +1398,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // officially 1 in the app, otherwise we may start a new test while the
   // removed window is still partly registered.
   [self waitForForegroundWindowCount:1];
+
+  // `waitForForegroundWindowCount:1` returns as soon as the closing scene
+  // transitions to the background (`sceneDidEnterBackground:`). Also wait for
+  // the extra scene and session to fully disconnect (`sceneDidDisconnect:`).
+  GREYCondition* windowCountCheck = [GREYCondition
+      conditionWithName:@"Waiting for extra windows to disconnect"
+                  block:^{
+                    return [ChromeEarlGreyAppInterface windowCount] == 1;
+                  }];
+  bool extraWindowsClosed =
+      [windowCountCheck waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(extraWindowsClosed,
+                             @"Failed waiting for extra windows to disconnect");
 }
 
 - (void)waitForForegroundWindowCount:(NSUInteger)count {
