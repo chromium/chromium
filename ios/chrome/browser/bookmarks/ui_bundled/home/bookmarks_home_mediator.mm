@@ -433,7 +433,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     }
 
     signinPromoItem.delegate = signinPromoViewMediator;
-    [signinPromoViewMediator signingPromoDidBecomeVisible];
+    [signinPromoViewMediator signinPromoDidBecomeVisible];
 
     [self.consumer.tableViewModel addItem:signinPromoItem
                   toSectionWithIdentifier:BookmarksHomeSectionIdentifierPromo];

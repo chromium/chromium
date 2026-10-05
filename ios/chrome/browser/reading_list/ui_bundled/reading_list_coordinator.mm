@@ -690,7 +690,7 @@
                                 promoDelegate:_signinPromoViewMediator
                                     promoText:[self promoTextForPromoAction]];
   if (shouldShowSignInPromo) {
-    [_signinPromoViewMediator signingPromoDidBecomeVisible];
+    [_signinPromoViewMediator signinPromoDidBecomeVisible];
   } else {
     [_signinPromoViewMediator signinPromoViewIsHidden];
   }

@@ -34,8 +34,11 @@
 // Creates and returns a configurator for the sign-in promo view.
 - (SigninPromoViewConfigurator*)createConfigurator;
 
-// Notifies that the sign-in promo view is visible.
-- (void)signingPromoDidBecomeVisible;
+// Notifies that the sign-in promo view is visible for the purpose of logging
+// promo impression. It’s up to the owner to decide what "visible" means. It is
+// possible for a part of the view to be visible, and hence buttons to be
+// tapped, before this method is called.
+- (void)signinPromoDidBecomeVisible;
 
 @end
 

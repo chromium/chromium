@@ -188,7 +188,7 @@ using base::UserMetricsAction;
     return;
   }
   if (visible) {
-    [self.signinPromoMediator signingPromoDidBecomeVisible];
+    [self.signinPromoMediator signinPromoDidBecomeVisible];
   } else {
     [self.signinPromoMediator signinPromoViewIsHidden];
   }

@@ -164,8 +164,10 @@ enum class SigninPromoAction {
                                           changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
 
-// Called when the sign-in promo view is hidden. If the sign-in promo view has
-// never been shown, or it is already hidden, this method does nothing.
+// Called when the sign-in promo view is hidden for the purpose of logging promo
+// impression. If the sign-in promo view has never been shown, or it is already
+// hidden, this method does nothing. This may be called while a small part of
+// the view still appears, and so it’s possible for the buttons to be tapped.
 - (void)signinPromoViewIsHidden;
 
 // Disconnects the mediator, this method needs to be called when the sign-in

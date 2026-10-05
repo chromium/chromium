@@ -877,7 +877,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   // If SigninPromo will be shown, `self.signinPromoViewDelegate` must know.
   if (itemTypeSelected == ItemTypeOtherDevicesSigninPromo) {
-    [self.signinPromoViewDelegate signingPromoDidBecomeVisible];
+    [self.signinPromoViewDelegate signinPromoDidBecomeVisible];
     TableViewSigninPromoCell* signinPromoCell =
         base::apple::ObjCCastStrict<TableViewSigninPromoCell>(cell);
     TableViewSigninPromoItem* signinPromoItem =

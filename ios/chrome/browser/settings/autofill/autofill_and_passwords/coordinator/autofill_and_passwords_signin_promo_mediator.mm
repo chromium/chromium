@@ -106,7 +106,7 @@
   }
 
   [self configureSigninPromoWithShouldShow:YES];
-  [_signinPromoViewMediator signingPromoDidBecomeVisible];
+  [_signinPromoViewMediator signinPromoDidBecomeVisible];
 }
 
 - (void)updateSignInPromoVisibility {
@@ -237,7 +237,7 @@
 
   [self configureSigninPromoWithShouldShow:shouldShowSignInPromo];
   if (shouldShowSignInPromo) {
-    [_signinPromoViewMediator signingPromoDidBecomeVisible];
+    [_signinPromoViewMediator signinPromoDidBecomeVisible];
   } else {
     [_signinPromoViewMediator signinPromoViewIsHidden];
   }
