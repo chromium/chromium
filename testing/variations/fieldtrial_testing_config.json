@@ -3745,6 +3745,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "MigratedBadFlags": "true",
                         "MigratedChromeForTesting": "true",
                         "MigratedCollectedCookies": "true",
                         "MigratedDevToolsConfirm": "true",
