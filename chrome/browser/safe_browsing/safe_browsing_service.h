@@ -397,20 +397,32 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // Accessed on UI thread.
   bool enabled_by_prefs_;
 
-  // Tracks existing PrefServices, and the safe browsing preference on each.
-  // This is used to determine if any profile is currently using the safe
-  // browsing service, and to start it up or shut it down accordingly.
-  // Accessed on UI thread.
-  std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>> prefs_map_;
+  struct ProfileState {
+    ProfileState();
+    ProfileState(const ProfileState&) = delete;
+    ProfileState& operator=(const ProfileState&) = delete;
+    ~ProfileState();
 
-  // Tracks existing PrefServices. This is used to clear the cached user
-  // population whenever a relevant pref is changed.
-  std::map<PrefService*, std::unique_ptr<PrefChangeRegistrar>>
-      user_population_prefs_;
+    // Tracks the safe browsing preference on this profile's PrefService.
+    std::unique_ptr<PrefChangeRegistrar> prefs_registrar;
 
-  // Maps each profile to the time that real-time URL lookups are enabled.
-  std::map<Profile*, std::optional<base::Time>>
-      min_allowed_time_for_referrer_chains_;
+    // Tracks preferences that require clearing the cached user population.
+    std::unique_ptr<PrefChangeRegistrar> user_population_prefs_registrar;
+
+    // The time that real-time URL lookups are enabled for this profile.
+    std::optional<base::Time> min_allowed_time_for_referrer_chains;
+
+    // Manages preference change handling and UI notifications for this profile.
+    // TODO(crbug.com/502649234): Remove after bundled settings is launched.
+    std::unique_ptr<SafeBrowsingPrefChangeHandler> pref_change_handler;
+
+    // Manages bundled settings preference changes for this profile.
+    std::unique_ptr<SecuritySettingsBundlePrefChangeHandler>
+        bundled_settings_pref_change_handler;
+  };
+
+  // Per-profile SafeBrowsing state. Accessed on UI thread.
+  std::map<Profile*, ProfileState> profile_states_;
 
   // Callbacks when SafeBrowsing state might have changed.
   // Should only be accessed on the UI thread.
@@ -429,16 +441,6 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;
-
-  // Manages the logic for handling preference changes, including displaying
-  // specific UI elements in response to certain preference changes.
-  // TODO(crbug.com/502649234): Remove after bundled settings is launched.
-  std::map<Profile*, std::unique_ptr<SafeBrowsingPrefChangeHandler>>
-      pref_change_handlers_map_;
-
-  // Manages the logic for handling bundled settings preference changes.
-  std::map<Profile*, std::unique_ptr<SecuritySettingsBundlePrefChangeHandler>>
-      bundled_settings_pref_change_handlers_map_;
 };
 
 // TODO(crbug.com/41437292): Remove this once dependencies are using the

@@ -571,7 +571,8 @@ TEST_F(SafeBrowsingServiceTest, EnhancedProtectionPrefChange_SingleProfile) {
               MaybeShowEnhancedProtectionSettingChangeNotification(testing::_));
 
   // 4. Add the mock handler to the map.
-  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
+  sb_service_->profile_states_[profile1].pref_change_handler =
+      std::move(mock_handler1);
 
   // 5. Call the method under test.
   sb_service_->EnhancedProtectionPrefChange(profile1);
@@ -588,7 +589,7 @@ TEST_F(
   EXPECT_CALL(*mock_handler1,
               MaybeShowEnhancedBundleSettingChangeNotification());
 
-  sb_service_->bundled_settings_pref_change_handlers_map_[profile1] =
+  sb_service_->profile_states_[profile1].bundled_settings_pref_change_handler =
       std::move(mock_handler1);
   sb_service_->SecuritySettingsBundlePrefChange(profile1);
 }
@@ -614,8 +615,9 @@ TEST_F(SafeBrowsingServiceTest,
               MaybeShowEnhancedProtectionSettingChangeNotification(testing::_));
 
   // 4. Add the mock handlers to the map, associating them with their profiles.
-  sb_service_->pref_change_handlers_map_[profile1] = std::move(mock_handler1);
-  sb_service_->pref_change_handlers_map_[profile2_ptr] =
+  sb_service_->profile_states_[profile1].pref_change_handler =
+      std::move(mock_handler1);
+  sb_service_->profile_states_[profile2_ptr].pref_change_handler =
       std::move(mock_handler2);
 
   // 5. Call the method under test for each profile.
@@ -640,10 +642,10 @@ TEST_F(
   EXPECT_CALL(*mock_handler2.get(),
               MaybeShowEnhancedBundleSettingChangeNotification());
 
-  sb_service_->bundled_settings_pref_change_handlers_map_[profile1] =
+  sb_service_->profile_states_[profile1].bundled_settings_pref_change_handler =
       std::move(mock_handler1);
-  sb_service_->bundled_settings_pref_change_handlers_map_[profile2_ptr] =
-      std::move(mock_handler2);
+  sb_service_->profile_states_[profile2_ptr]
+      .bundled_settings_pref_change_handler = std::move(mock_handler2);
   sb_service_->SecuritySettingsBundlePrefChange(profile1);
   sb_service_->SecuritySettingsBundlePrefChange(profile2_ptr);
 }
