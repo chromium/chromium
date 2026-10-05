@@ -142,7 +142,7 @@ actions::ActionItem* AppMenuSearchController::Search(
   }
 
   const std::vector<FuzzySearchResult> matches =
-      fuzzy_finder_->FuzzyFind(query, kMaxGlobalCandidates);
+      fuzzy_finder_->FuzzyFind(trimmed_query, kMaxGlobalCandidates);
 
   return BuildSearchResultsTree(ProcessSearchResults(matches));
 }
