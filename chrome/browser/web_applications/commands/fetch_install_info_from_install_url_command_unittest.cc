@@ -94,7 +94,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, RetrievesCorrectly) {
       CreateAndRunCommand(app_url(), manifest_id(), parent_manifest_id());
   EXPECT_TRUE(command_result);
   histogram_tester.ExpectUniqueSample(
-      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      "WebApp.FetchInstallInfoFromInstallUrl.Result",
       FetchInstallInfoResult::kAppInfoObtained, 1);
 }
 
@@ -105,7 +105,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest,
       CreateAndRunCommand(app_url(), manifest_id(), std::nullopt);
   EXPECT_TRUE(command_result);
   histogram_tester.ExpectUniqueSample(
-      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      "WebApp.FetchInstallInfoFromInstallUrl.Result",
       FetchInstallInfoResult::kAppInfoObtained, 1);
 }
 
@@ -117,7 +117,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, UrlLoadingFailure) {
       webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded);
   EXPECT_FALSE(command_result);
   histogram_tester.ExpectUniqueSample(
-      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      "WebApp.FetchInstallInfoFromInstallUrl.Result",
       FetchInstallInfoResult::kUrlLoadingFailure, 1);
 }
 
@@ -129,7 +129,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, NoValidManifest) {
                           /*valid_manifest=*/false);
   EXPECT_FALSE(command_result);
   histogram_tester.ExpectUniqueSample(
-      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      "WebApp.FetchInstallInfoFromInstallUrl.Result",
       FetchInstallInfoResult::kNoValidManifest, 1);
 }
 
@@ -140,7 +140,7 @@ TEST_F(FetchInstallInfoFromInstallUrlCommandTest, WebAppInfoNotFound) {
                           /*disable_web_app_info=*/true);
   EXPECT_FALSE(command_result);
   histogram_tester.ExpectUniqueSample(
-      "WebApp.Install.FetchInstallInfoFromInstallUrlResult",
+      "WebApp.FetchInstallInfoFromInstallUrl.Result",
       FetchInstallInfoResult::kFailure, 1);
 }
 

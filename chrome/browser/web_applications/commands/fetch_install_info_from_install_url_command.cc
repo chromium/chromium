@@ -44,7 +44,7 @@ FetchInstallInfoFromInstallUrlCommand::FetchInstallInfoFromInstallUrlCommand(
           base::BindOnce([](FetchInstallInfoResult result,
                             std::unique_ptr<WebAppInstallInfo> install_info) {
             base::UmaHistogramEnumeration(
-                "WebApp.Install.FetchInstallInfoFromInstallUrlResult", result);
+                "WebApp.FetchInstallInfoFromInstallUrl.Result", result);
             return install_info;
           }).Then(std::move(callback)),
           /*args_for_shutdown=*/

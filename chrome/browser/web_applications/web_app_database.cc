@@ -824,7 +824,6 @@ void WebAppDatabase::OnAllDataAndMetadataRead(
   Registry registry;
   for (const auto& [app_id, app_proto] : state.apps) {
     std::unique_ptr<WebApp> web_app = ParseWebAppProto(app_proto, app_id);
-    base::UmaHistogramBoolean("WebApp.Database.ValidProto", web_app != nullptr);
     if (!web_app) {
       // TODO(https://crbug.com/40224498): Have ParseWebAppProto return a string
       // or the error enum to output here.

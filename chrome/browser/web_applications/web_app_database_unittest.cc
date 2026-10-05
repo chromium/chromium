@@ -279,8 +279,8 @@ TEST_F(WebAppDatabaseTest, OpenDatabaseAndReadRegistry) {
   Registry registry =
       WriteWebApps(kNumApps, /*exclude_fields_with_side_effects=*/true);
   test::AwaitStartWebAppProviderAndSubsystems(profile());
-  histogram_tester.ExpectBucketCount("WebApp.Database.ValidProto", true,
-                                     kNumApps);
+  histogram_tester.ExpectBucketCount("WebAppProto.Parse.Result",
+                                     ProtoParseResult::kSuccess, kNumApps);
   fake_provider().command_manager().AwaitAllCommandsCompleteForTesting();
   EXPECT_TRUE(IsRegistryEqual(mutable_registrar().registry(), registry,
                               /*exclude_current_os_integration=*/true));
