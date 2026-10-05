@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/policy/model/reporting/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
 namespace enterprise_reporting {
 
@@ -51,14 +50,6 @@ GetUnaffiliatedReason(ProfileIOS* profile) {
 }
 
 std::string SanitizeProfilePath(std::string_view profile_name) {
-  if (!base::FeatureList::IsEnabled(kSanitizeProfilePaths)) {
-    // Kill-switch active, use the raw profile path like the old code.
-    ProfileIOS* profile =
-        GetApplicationContext()->GetProfileManager()->GetProfileWithName(
-            profile_name);
-    CHECK(profile);
-    return profile->GetStatePath().AsUTF8Unsafe();
-  }
   return base::StrCat({"/Profile/", profile_name});
 }
 
