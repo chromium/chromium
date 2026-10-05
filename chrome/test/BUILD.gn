@@ -2029,6 +2029,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/autofill/popup:browser_tests",
       "//chrome/browser/ui/views/bookmarks:test_support",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/bubble:browser_tests",
       "//chrome/browser/ui/views/data_sharing",
       "//chrome/browser/ui/views/data_sharing:browser_tests",
       "//chrome/browser/ui/views/digital_credentials:browser_tests",
@@ -3286,8 +3287,6 @@ if (!is_android) {
         "../browser/ui/views/autofill/autofill_ai/entity_suppression_dialog_view_browsertest.cc",
         "../browser/ui/views/autofill/autofill_field_promo_view_impl_browsertest.cc",
         "../browser/ui/views/autofill/one_time_tokens/gmail_otp_opt_in_bubble_view_browsertest.cc",
-        "../browser/ui/views/bubble/bubble_frame_view_browsertest.cc",
-        "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
       ]
@@ -6059,6 +6058,7 @@ test("unit_tests") {
       "//chrome/browser/ui/toasts:unit_tests",
       "//chrome/browser/ui/toasts/api:unit_tests",
       "//chrome/browser/ui/views/bubble",
+      "//chrome/browser/ui/views/bubble:unit_tests",
       "//chrome/browser/ui/views/download",
       "//chrome/browser/ui/views/download:unit_tests",
       "//chrome/browser/ui/views/picture_in_picture:unit_tests",
@@ -7057,9 +7057,6 @@ test("unit_tests") {
       "../../ui/views/controls/webview/unhandled_keyboard_event_handler_unittest.cc",
       "../../ui/views/controls/webview/web_dialog_view_unittest.cc",
       "../../ui/views/controls/webview/webview_unittest.cc",
-      "../browser/ui/views/bubble/webui_bubble_dialog_view_unittest.cc",
-      "../browser/ui/views/bubble/webui_bubble_manager_unittest.cc",
-      "../browser/ui/views/bubble/webui_bubble_reopen_suppressor_unittest.cc",
       "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
       "../browser/ui/views/location_bar/selected_keyword_view_unittest.cc",
       "../browser/ui/views/location_bar/webui_location_bar_unittest.cc",
@@ -7100,11 +7097,6 @@ test("unit_tests") {
       ]
     }
     if (use_aura) {
-      sources += [
-        "../browser/ui/views/bubble/webui_bubble_event_handler_aura_unittest.cc",
-        # Get this compiling on Mac - see http://crbug.com/41282103.
-      ]
-
       deps += [
         "//chrome/browser/ui/views/apps:unit_tests",
         "//ui/aura:test_support",
