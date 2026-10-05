@@ -9382,7 +9382,6 @@
                 {
                     "name": "Enabled_20260821",
                     "enable_features": [
-                        "MenuSimplification",
                         "RoundedIcons",
                         "TabStripDeclutter",
                         "ToolbarGlowUp",
