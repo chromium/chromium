@@ -20,6 +20,7 @@
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_context_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/frame_types.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/testing/mock_web_audio_device.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
@@ -53,8 +55,8 @@ class AudioContextTestPlatform : public TestingPlatformSupport {
       const WebAudioLatencyHint& latency_hint,
       std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
-    return std::make_unique<MockWebAudioDevice>(
-        AudioHardwareSampleRate(), AudioHardwareBufferSize());
+    return std::make_unique<MockWebAudioDevice>(AudioHardwareSampleRate(),
+                                                AudioHardwareBufferSize());
   }
 
   double AudioHardwareSampleRate() override { return 44100; }
@@ -76,8 +78,8 @@ class MediaStreamAudioDestinationHandlerTest : public testing::Test {
     AudioContext* audio_context = AudioContext::Create(
         page->GetFrame().DomWindow(), AudioContextOptions::Create(),
         ASSERT_NO_EXCEPTION);
-    node_ = MediaStreamAudioDestinationNode::Create(
-        *audio_context, 2, ASSERT_NO_EXCEPTION);
+    node_ = MediaStreamAudioDestinationNode::Create(*audio_context, 2,
+                                                    ASSERT_NO_EXCEPTION);
     bus_ = AudioBus::Create(2, 10);
     consumer_ =
         base::MakeRefCounted<StrictMock<MockWebAudioDestinationConsumer>>();
@@ -97,11 +99,9 @@ class MediaStreamAudioDestinationHandlerTest : public testing::Test {
     Handler().SetConsumer(std::move(consumer), num_channels, sample_rate);
   }
 
-  bool CallRemoveDestinationConsumer() {
-    return Handler().RemoveConsumer();
-  }
+  bool CallRemoveDestinationConsumer() { return Handler().RemoveConsumer(); }
 
-  void CallConsumeAudio(AudioBus *bus, int number_of_frames) {
+  void CallConsumeAudio(AudioBus* bus, int number_of_frames) {
     Handler().ConsumeAudio(bus, number_of_frames);
   }
 
@@ -203,6 +203,55 @@ TEST_F(MediaStreamAudioDestinationHandlerTest, AudioConsumerStressTest) {
 
   stop_requested.store(true, std::memory_order_relaxed);
   done_event.Wait();
+}
+
+TEST_F(MediaStreamAudioDestinationHandlerTest,
+       SetChannelCountUpdatesConsumerFormat) {
+  EXPECT_CALL(*consumer_, SetFormat(2, 44100));
+  CallSetDestinationConsumer(consumer_, 2, 44100);
+
+  // Updating the channel count on the node/handler must update the consumer.
+  EXPECT_CALL(*consumer_, SetFormat(6, 44100));
+  node_->setChannelCount(6, ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(node_->channelCount(), 6u);
+
+  // Setting the same channel count again is a no-op and must not reset format.
+  EXPECT_CALL(*consumer_, SetFormat(_, _)).Times(0);
+  node_->setChannelCount(6, ASSERT_NO_EXCEPTION);
+}
+
+TEST_F(MediaStreamAudioDestinationHandlerTest, CreateWithOptionsChannelCount) {
+  auto page = std::make_unique<DummyPageHolder>();
+  AudioContext* audio_context =
+      AudioContext::Create(page->GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  auto* options = AudioNodeOptions::Create();
+  options->setChannelCount(6);
+  auto* dest = MediaStreamAudioDestinationNode::Create(audio_context, options,
+                                                       ASSERT_NO_EXCEPTION);
+  ASSERT_NE(dest, nullptr);
+  EXPECT_EQ(dest->channelCount(), 6u);
+  auto* audio_source = MediaStreamAudioSource::From(dest->source());
+  ASSERT_NE(audio_source, nullptr);
+  EXPECT_EQ(audio_source->GetAudioParameters().channels(), 6);
+}
+
+TEST_F(MediaStreamAudioDestinationHandlerTest,
+       CreateWithInvalidChannelCountThrows) {
+  auto page = std::make_unique<DummyPageHolder>();
+  AudioContext* audio_context =
+      AudioContext::Create(page->GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  auto* options = AudioNodeOptions::Create();
+  options->setChannelCount(9);
+  DummyExceptionStateForTesting exception_state;
+  MediaStreamAudioDestinationNode* dest =
+      MediaStreamAudioDestinationNode::Create(audio_context, options,
+                                              exception_state);
+  EXPECT_EQ(dest, nullptr);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.Code(),
+            static_cast<int>(DOMExceptionCode::kNotSupportedError));
 }
 
 }  // namespace blink

@@ -26,6 +26,11 @@ class WebAudioDestinationConsumer;
 class MODULES_EXPORT MediaStreamAudioDestinationHandler final
     : public AudioHandler {
  public:
+  // Channel counts greater than 8 are ignored by some audio tracks/sinks (see
+  // WebAudioMediaStreamSource), so we set a limit here to avoid anything that
+  // could cause a crash.
+  static constexpr uint32_t kMaxChannelCountSupported = 8;
+
   static scoped_refptr<MediaStreamAudioDestinationHandler> Create(
       AudioNode&,
       uint32_t number_of_channels,
@@ -82,8 +87,8 @@ class MODULES_EXPORT MediaStreamAudioDestinationHandler final
   // thread-safe bridge between the AudioHandler on the real-time audio thread
   // and the WebAudioMediaStreamSource on the main thread. It handles proper
   // synchronization to prevent Use-After-Free issues during garbage collection.
-  scoped_refptr<WebAudioDestinationConsumer>
-      destination_consumer_ GUARDED_BY(consumer_lock_);
+  scoped_refptr<WebAudioDestinationConsumer> destination_consumer_
+      GUARDED_BY(consumer_lock_);
   Vector<const float*> consumer_bus_wrapper_ GUARDED_BY(consumer_lock_);
 
   // This synchronizes dynamic changes to the channel count with

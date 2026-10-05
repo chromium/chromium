@@ -21,15 +21,6 @@
 
 namespace blink {
 
-namespace {
-
-// Channel counts greater than 8 are ignored by some audio tracks/sinks (see
-// WebAudioMediaStreamSource), so we set a limit here to avoid anything that
-// could cause a crash.
-constexpr uint32_t kMaxChannelCountSupported = 8;
-
-}  // namespace
-
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
     uint32_t number_of_channels,
@@ -44,20 +35,20 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
 
   AddInput();
   consumer_bus_wrapper_.ReserveInitialCapacity(kMaxChannelCountSupported);
-  SetConsumer(webaudio_consumer,
-              static_cast<int>(number_of_channels),
+  SetConsumer(webaudio_consumer, static_cast<int>(number_of_channels),
               node.context()->sampleRate());
+  channel_count_ = number_of_channels;
   SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   Initialize();
 }
 
 scoped_refptr<MediaStreamAudioDestinationHandler>
 MediaStreamAudioDestinationHandler::Create(
-    AudioNode& node, uint32_t number_of_channels,
+    AudioNode& node,
+    uint32_t number_of_channels,
     scoped_refptr<WebAudioDestinationConsumer> webaudio_consumer) {
-  return base::AdoptRef(
-      new MediaStreamAudioDestinationHandler(
-          node, number_of_channels, std::move(webaudio_consumer)));
+  return base::AdoptRef(new MediaStreamAudioDestinationHandler(
+      node, number_of_channels, std::move(webaudio_consumer)));
 }
 
 MediaStreamAudioDestinationHandler::~MediaStreamAudioDestinationHandler() {
@@ -69,39 +60,14 @@ void MediaStreamAudioDestinationHandler::Process(uint32_t number_of_frames) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                "MediaStreamAudioDestinationHandler::Process");
 
+  // Synchronize with possible dynamic changes to the channel count.
+  base::AutoTryLock try_locker(process_lock_);
+  if (!try_locker.is_acquired()) {
+    return;
+  }
+
   // Conform the input bus into the internal mix bus, which represents
   // MediaStreamDestination's channel count.
-
-  const unsigned old_channel_count = mix_bus_->NumberOfChannels();
-  unsigned new_channel_count = old_channel_count;
-  {
-    // Synchronize with possible dynamic changes to the channel count.
-    base::AutoTryLock try_locker(process_lock_);
-
-    // If we can get the lock, we can process normally by updating the
-    // mix bus to a new channel count, if needed.  If not, just use the
-    // old mix bus to do the mixing; we'll update the bus next time
-    // around.
-    if (try_locker.is_acquired()) {
-      new_channel_count = ChannelCount();
-    }
-  }
-
-  if (new_channel_count != old_channel_count) {
-    mix_bus_ = AudioBus::Create(new_channel_count,
-                                GetDeferredTaskHandler().RenderQuantumFrames());
-    {
-      base::AutoLock consumer_locker(consumer_lock_);
-      if (destination_consumer_) {
-        TRACE_EVENT2("webaudio", "MediaStreamAudioDestinationHandler::Process",
-                     "old_channel_count", old_channel_count,
-                     "new_channel_count", new_channel_count);
-        destination_consumer_->SetFormat(new_channel_count,
-                                         Context()->sampleRate());
-      }
-    }
-  }
-
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   const AudioBus* bus_to_consume = input_bus.get();
 
@@ -138,7 +104,16 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   // needs to update mix_bus_.
   base::AutoLock locker(process_lock_);
 
+  const unsigned old_channel_count = ChannelCount();
   AudioHandler::SetChannelCount(channel_count, exception_state);
+  if (ChannelCount() != old_channel_count && !exception_state.HadException()) {
+    base::AutoLock consumer_locker(consumer_lock_);
+    mix_bus_ = AudioBus::Create(ChannelCount(),
+                                GetDeferredTaskHandler().RenderQuantumFrames());
+    if (destination_consumer_) {
+      destination_consumer_->SetFormat(ChannelCount(), Context()->sampleRate());
+    }
+  }
 }
 
 void MediaStreamAudioDestinationHandler::PullInputs(

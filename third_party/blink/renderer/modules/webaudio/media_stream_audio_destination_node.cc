@@ -56,7 +56,7 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
       ActiveScriptWrappable<MediaStreamAudioDestinationNode>({}) {
   DVLOG(1) << "Creating WebAudio media stream source.";
   auto audio_source = std::make_unique<WebAudioMediaStreamSource>(
-    context.GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
+      context.GetExecutionContext()->GetTaskRunner(TaskType::kInternalMedia));
   WebAudioMediaStreamSource* audio_source_ptr = audio_source.get();
 
   String source_id = StrCat({"WebAudio-", CreateCanonicalUuidString()});
@@ -70,8 +70,7 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
   capabilities.voice_isolation = Vector<bool>({false});
   capabilities.sample_size = {
       media::SampleFormatToBitsPerChannel(media::kSampleFormatS16),
-      media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)
-  };
+      media::SampleFormatToBitsPerChannel(media::kSampleFormatS16)};
 
   source_ = MakeGarbageCollected<MediaStreamSource>(
       source_id, MediaStreamSource::kTypeAudio,
@@ -81,12 +80,10 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
   stream_ = MediaStream::Create(
       context.GetExecutionContext(),
       MediaStreamTrackVector({MediaStreamUtils::CreateLocalAudioTrack(
-          context.GetExecutionContext(),
-          source_)}));
+          context.GetExecutionContext(), source_)}));
 
-  SetHandler(
-      MediaStreamAudioDestinationHandler::Create(
-          *this, number_of_channels, audio_source_ptr->Consumer()));
+  SetHandler(MediaStreamAudioDestinationHandler::Create(
+      *this, number_of_channels, audio_source_ptr->Consumer()));
 
   SendLogMessage(
       __func__,
@@ -123,17 +120,26 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
   if (!context->CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
   }
-  MediaStreamAudioDestinationNode* node =
-      MakeGarbageCollected<MediaStreamAudioDestinationNode>(
-          *context, kDefaultNumberOfChannels);
-
-  // Need to handle channelCount here ourselves because the upper
-  // limit is different from the normal AudioNode::setChannelCount
-  // limit of 32.  Error messages will sometimes show the wrong
-  // limits.
+  uint32_t number_of_channels = kDefaultNumberOfChannels;
   if (options->hasChannelCount()) {
-    node->setChannelCount(options->channelCount(), exception_state);
+    number_of_channels = options->channelCount();
+    if (number_of_channels < 1 ||
+        number_of_channels >
+            MediaStreamAudioDestinationHandler::kMaxChannelCountSupported) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          ExceptionMessages::IndexOutsideRange<unsigned>(
+              "channel count", number_of_channels, 1,
+              ExceptionMessages::kInclusiveBound,
+              MediaStreamAudioDestinationHandler::kMaxChannelCountSupported,
+              ExceptionMessages::kInclusiveBound));
+      return nullptr;
+    }
   }
+
+  MediaStreamAudioDestinationNode* node =
+      MakeGarbageCollected<MediaStreamAudioDestinationNode>(*context,
+                                                            number_of_channels);
 
   node->HandleChannelOptions(options, exception_state);
 
