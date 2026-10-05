@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -16,6 +17,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_source_checker.h"
 #include "ui/aura/window.h"
+#include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
@@ -59,6 +61,19 @@ class AXAuraObjCacheTest : public WidgetTest {
     ui::AXNodeData data;
     wrapper->Serialize(&data);
     return data;
+  }
+
+ protected:
+  std::unique_ptr<Widget> CreateTopLevelWindowWidget() {
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(0, 0, 200, 200);
+    params.activatable = Widget::InitParams::Activatable::kYes;
+    widget->Init(std::move(params));
+    widget->Show();
+    return widget;
   }
 };
 
@@ -237,13 +252,7 @@ TEST_F(AXAuraObjCacheTest, ValidTree) {
 
 TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   AXAuraObjCache cache;
-  auto widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  params.bounds = gfx::Rect(0, 0, 200, 200);
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-  widget->Init(std::move(params));
-  widget->Show();
+  auto widget = CreateTopLevelWindowWidget();
 
   // Note that AXAuraObjCache::GetFocusedView has some logic to force focus on
   // the first child of the client view when one cannot be found from the
@@ -366,13 +375,7 @@ TEST_F(AXAuraObjCacheTest, DoNotCreateWidgetWrapperOnDestroyed) {
 
 TEST_F(AXAuraObjCacheTest, VirtualViews) {
   AXAuraObjCache cache;
-  auto widget = std::make_unique<Widget>();
-  Widget::InitParams params = CreateParams(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  params.bounds = gfx::Rect(0, 0, 200, 200);
-  params.activatable = views::Widget::InitParams::Activatable::kYes;
-  widget->Init(std::move(params));
-  widget->Show();
+  auto widget = CreateTopLevelWindowWidget();
 
   auto* parent = widget->GetRootView()->AddChildView(std::make_unique<View>());
   auto virtual_label = std::make_unique<AXVirtualView>();
@@ -389,5 +392,119 @@ TEST_F(AXAuraObjCacheTest, VirtualViews) {
   parent->GetViewAccessibility().RemoveVirtualChildView(virtual_label_ptr);
   EXPECT_EQ(nullptr, cache.Get(id));
 }
+
+// Linux and Windows build with both USE_AURA and HAS_NATIVE_ACCESSIBILITY,
+// meaning they would run these tests but they use ViewAXPlatformNodeDelegate
+// for popup focus overrides, which doesn't use AXAuraObjCache, so these tests
+// would fail.
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
+class AXAuraObjCachePopupFocusOverrideTest : public AXAuraObjCacheTest {
+ public:
+  AXAuraObjCachePopupFocusOverrideTest() = default;
+  ~AXAuraObjCachePopupFocusOverrideTest() override = default;
+
+  void SetUp() override {
+    AXAuraObjCacheTest::SetUp();
+    widget_ = CreateTopLevelWindowWidget();
+    cache_.OnRootWindowObjCreated(widget_->GetNativeWindow());
+    focused_view_ = AddFocusedChildView(widget_.get());
+  }
+
+  void TearDown() override {
+    cache_.OnRootWindowObjDestroyed(widget_->GetNativeWindow());
+    focused_view_ = nullptr;
+    widget_.reset();
+    AXAuraObjCacheTest::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<Widget> CreateChildPopupWidget(aura::Window* parent) {
+    auto popup_widget = std::make_unique<Widget>();
+    Widget::InitParams popup_params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+    popup_params.bounds = gfx::Rect(50, 50, 100, 100);
+    popup_params.parent = parent;
+    popup_widget->Init(std::move(popup_params));
+    popup_widget->Show();
+    return popup_widget;
+  }
+
+  View* AddFocusedChildView(Widget* widget) {
+    auto* view = widget->GetRootView()->AddChildView(std::make_unique<View>());
+    view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+    view->RequestFocus();
+    return view;
+  }
+
+  View* AddPopupOverrideChildView(Widget* widget) {
+    auto* view = widget->GetRootView()->AddChildView(std::make_unique<View>());
+    view->GetViewAccessibility().SetPopupFocusOverride();
+    return view;
+  }
+
+  AXAuraObjCache cache_;
+  std::unique_ptr<Widget> widget_;
+  raw_ptr<View> focused_view_ = nullptr;
+};
+
+TEST_F(AXAuraObjCachePopupFocusOverrideTest, ExplicitRelease) {
+  EXPECT_EQ(cache_.GetOrCreate(focused_view_), cache_.GetFocus());
+  EXPECT_TRUE(focused_view_->GetViewAccessibility().IsFocusedForTesting());
+
+  View* popup_container =
+      widget_->GetRootView()->AddChildView(std::make_unique<View>());
+  View* popup_item = popup_container->AddChildView(std::make_unique<View>());
+  popup_item->GetViewAccessibility().SetPopupFocusOverride();
+  EXPECT_EQ(popup_item, AXAuraObjCache::GetPopupFocusOverride());
+  EXPECT_EQ(cache_.GetOrCreate(popup_item), cache_.GetFocus());
+  EXPECT_TRUE(popup_item->GetViewAccessibility().IsFocusedForTesting());
+  EXPECT_FALSE(focused_view_->GetViewAccessibility().IsFocusedForTesting());
+
+  // Calling EndPopupFocusOverride() on the container view (as PopupBaseView and
+  // SubmenuView do) clears the active popup focus override.
+  popup_container->GetViewAccessibility().EndPopupFocusOverride();
+  EXPECT_EQ(nullptr, AXAuraObjCache::GetPopupFocusOverride());
+  EXPECT_EQ(cache_.GetOrCreate(focused_view_), cache_.GetFocus());
+  EXPECT_FALSE(popup_item->GetViewAccessibility().IsFocusedForTesting());
+  EXPECT_TRUE(focused_view_->GetViewAccessibility().IsFocusedForTesting());
+}
+
+TEST_F(AXAuraObjCachePopupFocusOverrideTest, ClearedOnViewDestruction) {
+  View* popup_view = AddPopupOverrideChildView(widget_.get());
+  View* other_view =
+      widget_->GetRootView()->AddChildView(std::make_unique<View>());
+  EXPECT_EQ(popup_view, AXAuraObjCache::GetPopupFocusOverride());
+  EXPECT_EQ(cache_.GetOrCreate(popup_view), cache_.GetFocus());
+
+  // Destroying an unrelated view must not clear the active override.
+  widget_->GetRootView()->RemoveChildViewT(other_view);
+  EXPECT_EQ(popup_view, AXAuraObjCache::GetPopupFocusOverride());
+  EXPECT_EQ(cache_.GetOrCreate(popup_view), cache_.GetFocus());
+
+  // Destroying the overridden view clears the override and restores focus.
+  widget_->GetRootView()->RemoveChildViewT(popup_view);
+  EXPECT_EQ(nullptr, AXAuraObjCache::GetPopupFocusOverride());
+  EXPECT_EQ(cache_.GetOrCreate(focused_view_), cache_.GetFocus());
+}
+
+TEST_F(AXAuraObjCachePopupFocusOverrideTest, WidgetVisibilityAndClosure) {
+  auto popup_widget = CreateChildPopupWidget(widget_->GetNativeWindow());
+  View* popup_view = AddPopupOverrideChildView(popup_widget.get());
+  EXPECT_EQ(cache_.GetOrCreate(popup_view), cache_.GetFocus());
+
+  popup_widget->Hide();
+  EXPECT_EQ(cache_.GetOrCreate(focused_view_), cache_.GetFocus());
+
+  popup_widget->Show();
+  EXPECT_EQ(cache_.GetOrCreate(popup_view), cache_.GetFocus());
+
+  popup_widget->Close();
+  EXPECT_TRUE(popup_widget->IsClosed());
+  EXPECT_EQ(cache_.GetOrCreate(focused_view_), cache_.GetFocus());
+
+  popup_widget.reset();
+  EXPECT_EQ(nullptr, AXAuraObjCache::GetPopupFocusOverride());
+}
+#endif  // !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 
 }  // namespace views::test

@@ -128,7 +128,16 @@ ViewAccessibility::ViewAccessibility(View* view) : view_(view) {
   CHECK(data_.id != ui::kInvalidAXNodeID);
 }
 
-ViewAccessibility::~ViewAccessibility() = default;
+ViewAccessibility::~ViewAccessibility() {
+#if defined(USE_AURA)
+  // On Aura, `AXAuraObjCache` tracks the `View*` popup focus override.
+  // Platforms using `ViewAXPlatformNodeDelegate` clear their override in
+  // `~ViewAXPlatformNodeDelegate()`.
+  if (AXAuraObjCache::GetPopupFocusOverride() == view_) {
+    AXAuraObjCache::SetPopupFocusOverride(nullptr);
+  }
+#endif
+}
 
 void ViewAccessibility::AddVirtualChildView(
     std::unique_ptr<AXVirtualView> virtual_view) {
@@ -307,16 +316,31 @@ bool ViewAccessibility::IsAccessibilityFocusable() const {
 }
 
 bool ViewAccessibility::IsFocusedForTesting() const {
+#if defined(USE_AURA)
+  // Transient popups take accessibility focus without taking FocusManager focus
+  // (`HasFocus()`), so only the overridden view is considered focused.
+  if (AXAuraObjCache::GetPopupFocusOverride()) {
+    return AXAuraObjCache::GetPopupFocusOverride() == view_;
+  }
+#endif
   return view_->HasFocus() &&
          !data_.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
 }
 
 void ViewAccessibility::SetPopupFocusOverride() {
+#if defined(USE_AURA)
+  AXAuraObjCache::SetPopupFocusOverride(view_);
+#else
   NOTIMPLEMENTED();
+#endif
 }
 
 void ViewAccessibility::EndPopupFocusOverride() {
+#if defined(USE_AURA)
+  AXAuraObjCache::SetPopupFocusOverride(nullptr);
+#else
   NOTIMPLEMENTED();
+#endif
 }
 
 void ViewAccessibility::FireFocusAfterMenuClose() {

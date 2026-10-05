@@ -29,6 +29,11 @@
 namespace views {
 namespace {
 
+// Active popup focus override view, if any. Cleared when the popup closes via
+// `EndPopupFocusOverride()`, or on view teardown via `~ViewAccessibility()`
+// and `AXAuraObjCache::Remove()`.
+View* g_popup_focus_override = nullptr;
+
 aura::client::FocusClient* GetFocusClient(aura::Window* root_window) {
   if (!root_window) {
     return nullptr;
@@ -72,6 +77,16 @@ class AXAuraObjCache::A11yOverrideWindowObserver : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
+
+// static
+void AXAuraObjCache::SetPopupFocusOverride(View* view) {
+  g_popup_focus_override = view;
+}
+
+// static
+View* AXAuraObjCache::GetPopupFocusOverride() {
+  return g_popup_focus_override;
+}
 
 AXAuraObjWrapper* AXAuraObjCache::GetOrCreate(View* view) {
   // Avoid problems with transient focus events. https://crbug.com/729449
@@ -124,6 +139,9 @@ int32_t AXAuraObjCache::GetID(aura::Window* window) const {
 }
 
 void AXAuraObjCache::Remove(View* view) {
+  if (g_popup_focus_override == view) {
+    g_popup_focus_override = nullptr;
+  }
   RemoveInternal(view, &view_to_id_map_);
 }
 
@@ -175,6 +193,16 @@ void AXAuraObjCache::GetTopLevelWindows(
 }
 
 AXAuraObjWrapper* AXAuraObjCache::GetFocus() {
+  if (View* popup_override = GetPopupFocusOverride();
+      popup_override &&
+      popup_override->life_cycle_state() == View::LifeCycleState::kAlive) {
+    if (Widget* popup_widget = popup_override->GetWidget();
+        popup_widget && !popup_widget->IsClosed() &&
+        popup_widget->IsVisible()) {
+      return GetOrCreate(popup_override);
+    }
+  }
+
   View* focused_view = GetFocusedView();
   while (focused_view &&
          (focused_view->GetViewAccessibility().GetIsIgnored() ||

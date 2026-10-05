@@ -45,6 +45,11 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
                          ax::mojom::Event event_type) = 0;
   };
 
+  // Sets or clears a focused View override for transient popups (e.g. Autofill,
+  // menus). Pass nullptr to clear.
+  static void SetPopupFocusOverride(View* view);
+  static View* GetPopupFocusOverride();
+
   // Get or create an entry in the cache. May return null if the View is not
   // associated with a Widget.
   AXAuraObjWrapper* GetOrCreate(View* view);
