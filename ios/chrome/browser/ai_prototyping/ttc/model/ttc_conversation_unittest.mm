@@ -380,8 +380,8 @@ TEST_F(TTCConversationTest, TestAudioControllerExternalStopCapture) {
   EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
 }
 
-// Tests that disconnect stops capture and playback, clears delegates, and is
-// idempotent.
+// Tests that disconnect stops capture and playback, disconnects the audio
+// controller, clears delegates, and is idempotent.
 TEST_F(TTCConversationTest, TestDisconnect) {
   [conversation_ start];
   EXPECT_EQ(conversation_.state, TTCConversationState::kListening);
@@ -391,6 +391,7 @@ TEST_F(TTCConversationTest, TestDisconnect) {
   EXPECT_EQ(conversation_.state, TTCConversationState::kStopped);
   EXPECT_TRUE(fake_audio_controller_.didStopCapture);
   EXPECT_TRUE(fake_audio_controller_.didStopPlayback);
+  EXPECT_TRUE(fake_audio_controller_.didDisconnect);
   EXPECT_EQ(conversation_.delegate, nil);
   EXPECT_EQ(fake_audio_controller_.delegate, nil);
 

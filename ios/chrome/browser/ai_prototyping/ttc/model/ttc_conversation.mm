@@ -89,6 +89,7 @@ NSString* const kTTCConversationErrorDomain = @"TTCConversationErrorDomain";
 - (void)disconnect {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [self stop];
+  [_audioController disconnect];
   _audioController.delegate = nil;
   _backend.delegate = nil;
   self.delegate = nil;
