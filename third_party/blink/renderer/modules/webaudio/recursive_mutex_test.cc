@@ -26,9 +26,9 @@ class LambdaThreadDelegate : public base::PlatformThread::Delegate {
 
 TEST(RecursiveMutexTest, LockUnlock) {
   RecursiveMutex mutex;
-  mutex.lock();
+  mutex.Acquire();
   mutex.AssertAcquired();
-  mutex.unlock();
+  mutex.Release();
 }
 
 // NO_THREAD_SAFTEY_ANALYSIS: The thread checker (rightfully so) doesn't like
@@ -37,12 +37,12 @@ TEST(RecursiveMutexTest, LockUnlock) {
 // locking cases from being added.
 TEST(RecursiveMutexTest, LockUnlockRecursive) NO_THREAD_SAFETY_ANALYSIS {
   RecursiveMutex mutex;
-  mutex.lock();
-  mutex.lock();
+  mutex.Acquire();
+  mutex.Acquire();
   mutex.AssertAcquired();
-  mutex.unlock();
+  mutex.Release();
   mutex.AssertAcquired();
-  mutex.unlock();
+  mutex.Release();
 
   EXPECT_EQ(mutex.owner_, base::kInvalidThreadId);
 }
@@ -55,34 +55,34 @@ TEST(RecursiveMutexTest, LockUnlockThreads) NO_THREAD_SAFETY_ANALYSIS {
 
   LambdaThreadDelegate delegate{
       base::BindLambdaForTesting([&]() NO_THREAD_SAFETY_ANALYSIS {
-        mutex.lock();
+        mutex.Acquire();
         locked_mutex.store(true);
         while (!can_proceed.load()) {
         }
         can_proceed.store(false);
-        mutex.lock();
+        mutex.Acquire();
         locked_mutex_recursively.store(true);
         while (!can_proceed.load()) {
         }
 
-        mutex.unlock();
-        mutex.unlock();
+        mutex.Release();
+        mutex.Release();
       })};
   base::PlatformThreadHandle handle;
   base::PlatformThread::Create(0, &delegate, &handle);
 
   while (!locked_mutex.load()) {
   }
-  EXPECT_FALSE(mutex.TryLock());
+  EXPECT_FALSE(mutex.Try());
   can_proceed.store(true);
   while (!locked_mutex_recursively.load()) {
   }
-  EXPECT_FALSE(mutex.TryLock());
+  EXPECT_FALSE(mutex.Try());
   can_proceed.store(true);
 
   base::PlatformThread::Join(handle);
-  EXPECT_TRUE(mutex.TryLock());
-  mutex.unlock();
+  EXPECT_TRUE(mutex.Try());
+  mutex.Release();
 }
 
 }  // namespace blink

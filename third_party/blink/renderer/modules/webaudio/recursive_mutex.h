@@ -46,19 +46,17 @@ namespace blink {
 class DeferredTaskHandler;
 
 // RecursiveMutex is deprecated AND WILL BE REMOVED.
-// https://crbug.com/856641
+// https://crbug.com/568822832
 class LOCKABLE MODULES_EXPORT RecursiveMutex {
  public:
-  // Overridden solely for the purpose of annotating them.
-  // The compiler is expected to optimize the calls away.
-  void lock() EXCLUSIVE_LOCK_FUNCTION();
-  void unlock() UNLOCK_FUNCTION();
+  void Acquire() EXCLUSIVE_LOCK_FUNCTION();
+  void Release() UNLOCK_FUNCTION();
   void AssertAcquired() const ASSERT_EXCLUSIVE_LOCK() {
     // TS_UNCHECKED_READ: Either we are the owner and then the value can be
     // read, or we aren't, and we are guaranteed to not see our own thread ID.
     DCHECK_EQ(TS_UNCHECKED_READ(owner_), base::PlatformThread::CurrentId());
   }
-  bool TryLock() EXCLUSIVE_TRYLOCK_FUNCTION(true);
+  bool Try() EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
  private:
   // Private constructor to ensure that no new users appear. This class will be

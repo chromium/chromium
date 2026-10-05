@@ -9,7 +9,7 @@
 
 namespace blink {
 
-void RecursiveMutex::lock() {
+void RecursiveMutex::Acquire() {
   auto thread_id = base::PlatformThread::CurrentId();
   // Even though the thread checker doesn't complain, we are not guaranteed to
   // hold the lock here. However, reading |owner_| is fine because it is only
@@ -30,7 +30,7 @@ void RecursiveMutex::lock() {
   UpdateStateAfterLockAcquired(thread_id);
 }
 
-void RecursiveMutex::unlock() {
+void RecursiveMutex::Release() {
   AssertAcquired();
   CHECK_GT(lock_depth_, 0u);  // No underflow.
   lock_depth_--;
@@ -40,7 +40,7 @@ void RecursiveMutex::unlock() {
   }
 }
 
-bool RecursiveMutex::TryLock() {
+bool RecursiveMutex::Try() {
   auto thread_id = base::PlatformThread::CurrentId();
   // See comment above about reading |owner_|.
   if ((owner_.load(std::memory_order_relaxed) == thread_id) || lock_.Try()) {
