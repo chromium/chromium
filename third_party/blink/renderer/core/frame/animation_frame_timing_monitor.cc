@@ -79,7 +79,11 @@ AnimationFrameTimingMonitor::AnimationFrameTimingMonitor(Client& client,
 
 void AnimationFrameTimingMonitor::Shutdown() {
   enabled_ = false;
+  current_frame_timing_info_.Clear();
+  current_scripts_.clear();
+  congestion_scripts_.clear();
   frame_handling_input_ = nullptr;
+  task_attributed_window_ = nullptr;
   if (probe_sink_) {
     probe_sink_->RemoveAnimationFrameTimingMonitor(this);
     probe_sink_ = nullptr;
@@ -310,6 +314,9 @@ void AnimationFrameTimingMonitor::OnWorkerTaskCompleted(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
     base::TimeTicks desired_execution_time) {
+  if (!enabled_) {
+    return;
+  }
   entry_point_depth_ = 0;
   pending_script_info_ = std::nullopt;
   current_task_start_ = base::TimeTicks();
