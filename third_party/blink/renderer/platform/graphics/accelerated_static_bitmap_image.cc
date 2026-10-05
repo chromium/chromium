@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -21,10 +22,11 @@
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/canvas_utils.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -211,18 +213,43 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
   }
 #endif
 
-  auto resource_provider = std::make_unique<CanvasNon2DResourceProvider>(
-      size, format, alpha_type, color_space, hdr_metadata,
-      context_provider_wrapper, shared_image_usage_flags,
-      /*delegate=*/nullptr, /*create_initial_resource=*/false);
-  if (!resource_provider->IsValid()) {
-    return nullptr;
+  // These SharedImages are both read and written by the raster interface
+  // (both occur, for example, when copying canvas resources between
+  // canvases). Additionally, these SharedImages can be put into
+  // AcceleratedStaticBitmapImages (via Bitmap()) that are then copied into
+  // GL textures by WebGL (via
+  // AcceleratedStaticBitmapImage::CopyToTexture()).
+  shared_image_usage_flags =
+      shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  // Add WEBGPU_READ usage to allow importing into WebGPU without a copy.
+  if (base::FeatureList::IsEnabled(kCanvasResourceIsWebGPUCompatible)) {
+    shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
   }
 
-  if (!resource_provider->image_pool()) {
+  gpu::ImageInfo image_info(size, format, shared_image_usage_flags, color_space,
+                            kTopLeft_GrSurfaceOrigin, alpha_type,
+                            /*buffer_usage=*/std::nullopt,
+                            /*is_software=*/false);
+
+  std::optional<base::TimeDelta> expiration_time =
+      (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
+          ? std::make_optional(
+                Canvas2DResourceProvider::kUnusedResourceExpirationTime)
+          : std::nullopt;
+  bool is_single_buffered = shared_image_usage_flags.Has(
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
+  constexpr int kMaxRecycledCanvasResources = 3;
+
+  auto image_pool = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
+      image_info,
+      context_provider_wrapper->ContextProvider().SharedImageInterface(),
+      "CanvasResourceRaster",
+      is_single_buffered ? 0 : kMaxRecycledCanvasResources, expiration_time);
+  if (!image_pool) {
     return nullptr;
   }
-  auto resource = resource_provider->image_pool()->GetImage();
+  auto resource = image_pool->GetImage();
   if (!resource) {
     return nullptr;
   }
