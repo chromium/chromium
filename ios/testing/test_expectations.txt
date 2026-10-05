@@ -224,3 +224,6 @@ crbug.com/568721949 [ Simulator ] FileUploadPanelTestCase/testPhotoPickerSingleS
 crbug.com/568722287 [ iPhone Simulator ] AdaptiveToolbarBottomOmniboxTestCase/testMoveAddressBarContextAction [ Pass Failure ]
 crbug.com/568721888 [ iPhone Simulator ] IncognitoLockSettingTestCase/testChangeIncognitoLockSettingSelection [ Pass Failure ]
 crbug.com/568721511 [ iPad Simulator ] SaveProfileEGTest/testUserData_LocalUpdate [ Pass Failure ]
+
+# Gardening suppression 2026-10-05
+crbug.com/570028794 [ Device ] WebDragDropTestCase [ Pass Failure ]
