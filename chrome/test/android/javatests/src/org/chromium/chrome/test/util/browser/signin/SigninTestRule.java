@@ -129,7 +129,6 @@ public class SigninTestRule implements TestRule {
     }
 
     public void tearDownRule() {
-        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
         if (mAutomaticCleanupsEnabled) {
             cleanUpAccountsAndSignOut();
         }

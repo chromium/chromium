@@ -238,7 +238,6 @@ public class BottomSheetSigninAndHistorySyncIntegrationTest {
         }
         ThreadUtils.runOnUiThreadBlocking(() -> mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, true));
         HistorySyncHelper.setInstanceForTesting(null);
-        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
     }
 
     @Test

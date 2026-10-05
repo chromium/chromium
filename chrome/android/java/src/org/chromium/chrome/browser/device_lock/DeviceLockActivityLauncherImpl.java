@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.device_lock;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
@@ -45,7 +46,9 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
         windowAndroid.showIntent(intent, callback, null);
     }
 
-    public static void setInstanceForTesting(DeviceLockActivityLauncher launcher) {
+    public static void setInstanceForTesting(@Nullable DeviceLockActivityLauncher launcher) {
+        var oldValue = sLauncher;
         sLauncher = launcher;
+        ResettersForTesting.register(() -> sLauncher = oldValue);
     }
 }

@@ -32,7 +32,6 @@ import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -143,10 +142,6 @@ public class NewTabPageSigninPromoTest {
                 .thenReturn(false);
     }
 
-    @After
-    public void tearDown() {
-        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
-    }
 
     private void openNewTabPage() {
         if (!mIsActivityStarted) {
