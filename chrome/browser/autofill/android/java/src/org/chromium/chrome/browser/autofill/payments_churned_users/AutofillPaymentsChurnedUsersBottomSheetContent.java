@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.payments_churned_users;
 
+import android.content.res.Resources;
 import android.view.View;
 
 import androidx.annotation.StringRes;
@@ -69,18 +70,16 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
     @Override
     public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         assert false : "This method will not be called.";
-        return R.string.ok;
+        return Resources.ID_NULL;
     }
 
     @Override
     public @StringRes int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/558880203): Add dedicated churned users accessibility strings.
-        return R.string.ok;
+        return R.string.autofill_churned_users_bottom_sheet_full_height;
     }
 
     @Override
     public @StringRes int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/558880203): Add dedicated churned users accessibility strings.
-        return R.string.ok;
+        return R.string.autofill_churned_users_bottom_sheet_closed;
     }
 }

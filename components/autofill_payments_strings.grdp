@@ -1493,6 +1493,14 @@
       Turning on autofill
     </message>
   </if>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_CHURNED_USERS_BOTTOM_SHEET_FULL_HEIGHT" desc="The accessibility announcement when the Autofill payments churned users bottom sheet is opened at full height." formatter_data="android_java">
+      Enable Payments Autofill opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_CHURNED_USERS_BOTTOM_SHEET_CLOSED" desc="The accessibility announcement when the Autofill payments churned users bottom sheet is closed." formatter_data="android_java">
+      Enable Payments Autofill closed.
+    </message>
+  </if>
 
   <!-- Autofill IBAN preferences -->
   <if expr="is_android">
