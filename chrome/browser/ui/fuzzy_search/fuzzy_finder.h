@@ -90,7 +90,6 @@ class FuzzyFinder {
   // Scratch buffers instantiated once upon FuzzyFinder construction and reused
   // across candidate alignments to eliminate dynamic heap allocations during
   // searches.
-  std::vector<bool> word_boundaries_;
   std::vector<int> score_matrix_;
   std::vector<int> consecutive_matrix_;
   // Match steps (e.g. exact match, transposition, substitution, skip)

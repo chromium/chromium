@@ -85,6 +85,12 @@ enum class MatchStep : uint8_t {
   kSubstitution,
 };
 
+// Returns true if index `i` of `text` is the start of the string or immediately
+// follows a whitespace delimiter.
+bool IsWordBoundary(std::u16string_view text, size_t i) {
+  return i == 0 || base::IsUnicodeWhitespace(text[i - 1]);
+}
+
 }  // namespace
 
 FuzzyFinder::FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items)
@@ -291,17 +297,6 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
     return 0.0;
   }
 
-  // Precompute word boundaries across the candidate string ahead of time.
-  // A character at index `i` is a boundary if it is the start of the string or
-  // immediately follows a whitespace delimiter. Precomputing this in O(N)
-  // enables O(1) lookups in the inner alignment loop instead of repeatedly
-  // scanning preceding characters.
-  word_boundaries_.assign(n, false);
-  word_boundaries_[0] = true;
-  for (size_t i = 1; i < n; ++i) {
-    word_boundaries_[i] = base::IsUnicodeWhitespace(candidate[i - 1]);
-  }
-
   // Flattened 2D matrices of size M * N:
   // - `score_matrix_[j * n + i]`: Optimal score aligning query prefix 0..j with
   //   candidate prefix 0..i.
@@ -325,7 +320,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
 
     if (query[0] == candidate[i]) {
       const int match_score =
-          kMatchScore + (word_boundaries_[i] ? kInitialBoundaryBonus : 0);
+          kMatchScore +
+          (IsWordBoundary(candidate, i) ? kInitialBoundaryBonus : 0);
       if (left_score > match_score) {
         score_matrix_[i] = left_score;
         consecutive_matrix_[i] = 0;
@@ -380,7 +376,7 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
       if (is_exact_match) {
         if (score_matrix_[diag_idx] > 0) {
           diagonal_score = score_matrix_[diag_idx] + kMatchScore;
-          if (word_boundaries_[i]) {
+          if (IsWordBoundary(candidate, i)) {
             diagonal_score += kBoundaryBonus;
             consecutive = 1;
           } else {
