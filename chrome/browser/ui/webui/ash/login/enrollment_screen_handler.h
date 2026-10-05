@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -104,7 +103,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void HandleGetDeviceId(const std::string& callback_id);
 
   // Shows a given enrollment step.
-  void ShowStep(std::string_view step);
+  void ShowStep(const std::string& step);
 
   // Display the given i18n resource as error message.
   void ShowError(int message_id, bool retry);
@@ -114,7 +113,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void ShowErrorForDevice(int message_id, bool retry);
 
   // Display the given string as error message.
-  void ShowErrorMessage(std::string_view message, bool retry);
+  void ShowErrorMessage(const std::string& message, bool retry);
 
   // Display the given i18n string as a progress message.
   void ShowWorking(int message_id);
