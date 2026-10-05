@@ -45,7 +45,7 @@ class DOMAgentMac : public DOMAgentViews, public views::WidgetObserver {
  private:
   void InitializeRootsFromOpenWindows();
 
-  std::vector<views::Widget*> roots_;
+  std::vector<raw_ptr<views::Widget>> roots_;
 
   // Called whenever a |NativeWidgetMac| is created.
   base::CallbackListSubscription init_native_widget_subscription_;
