@@ -131,7 +131,7 @@ void OnReceivedTabContextForDrag(
     base::expected<glic::mojom::GetContextResultPtr,
                    page_content_annotations::FetchPageContextErrorDetails>
         result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!target_web_contents) {
     base::UmaHistogramEnumeration(
@@ -261,7 +261,7 @@ bool IsGlicWebDrag(const content::DropData& drop_data) {
 //    package the payload and activate Glic.
 void StartDragAndDropInvoke(content::WebContents* target_web_contents,
                             const content::DropData& drop_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!IsGlicWebDrag(drop_data)) {
     return;

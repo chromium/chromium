@@ -24,7 +24,7 @@ base::CallbackListSubscription AddAppTerminatingCallback(
 }
 
 void NotifyAppTerminating() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   static bool notified = false;
   if (notified) {
     return;

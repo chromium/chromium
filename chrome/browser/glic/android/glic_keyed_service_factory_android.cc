@@ -15,7 +15,7 @@ namespace glic {
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_GlicKeyedServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   if (!service) {

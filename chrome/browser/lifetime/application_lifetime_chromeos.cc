@@ -33,7 +33,7 @@ namespace {
 ash::UpdateEngineClient* GetUpdateEngineClient() {
   ash::UpdateEngineClient* update_engine_client =
       ash::UpdateEngineClient::Get();
-  DCHECK(update_engine_client);
+  CHECK(update_engine_client, base::NotFatalUntil::M161);
   return update_engine_client;
 }
 
@@ -123,7 +123,7 @@ void RelaunchIgnoreUnloadHandlers() {
 }
 
 void RelaunchForUpdate() {
-  DCHECK(UpdatePending());
+  CHECK(UpdatePending(), base::NotFatalUntil::M161);
   GetUpdateEngineClient()->RebootAfterUpdate();
 }
 
@@ -165,7 +165,7 @@ bool SetLocaleForNextStart(PrefService* local_state) {
 }
 
 void StopSession() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // Only call this function once.
   static bool notified = false;
   if (notified) {

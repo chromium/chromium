@@ -100,7 +100,7 @@ bool RequiresTrustedVaultRetrieval(
 autofill::UserInfo TranslateCredentials(const UiCredential& credential,
                                         const url::Origin& frame_origin,
                                         bool current_field_is_password) {
-  DCHECK(!credential.origin().opaque());
+  CHECK(!credential.origin().opaque(), base::NotFatalUntil::M161);
 
   UserInfo user_info(
       credential.origin().Serialize(),
@@ -316,7 +316,7 @@ void PasswordAccessoryControllerImpl::CreateForWebContents(
     content::WebContents* web_contents,
     CredentialCache* credential_cache) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
-  DCHECK(credential_cache);
+  CHECK(credential_cache, base::NotFatalUntil::M161);
 
   if (!FromWebContents(web_contents)) {
     web_contents->SetUserData(
@@ -343,8 +343,8 @@ void PasswordAccessoryControllerImpl::CreateForWebContentsForTesting(
         password_manager_error_message_helper_bridge) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(manual_filling_controller);
-  DCHECK(password_client);
+  CHECK(manual_filling_controller, base::NotFatalUntil::M161);
+  CHECK(password_client, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(
       UserDataKey(),
@@ -487,7 +487,7 @@ void PasswordAccessoryControllerImpl::OnGenerationRequested(
   PasswordGenerationController* pwd_generation_controller =
       PasswordGenerationController::GetIfExisting(&GetWebContents());
 
-  DCHECK(pwd_generation_controller);
+  CHECK(pwd_generation_controller, base::NotFatalUntil::M161);
   pwd_generation_controller->OnGenerationRequested(type);
 }
 
@@ -683,7 +683,7 @@ PasswordAccessoryControllerImpl::GetManualFillingController() {
     manual_filling_controller_ =
         ManualFillingController::GetOrCreate(&GetWebContents());
   }
-  DCHECK(manual_filling_controller_);
+  CHECK(manual_filling_controller_, base::NotFatalUntil::M161);
   return manual_filling_controller_;
 }
 

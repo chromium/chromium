@@ -61,7 +61,7 @@ void EndpointResolver::DomainResolveComplete(
   if (!address.IsValid())
     address = address_ipv6;
 
-  DCHECK(address.IsValid());
+  CHECK(address.IsValid(), base::NotFatalUntil::M161);
 
   std::move(callback).Run(net::IPEndPoint(address, port));
 }

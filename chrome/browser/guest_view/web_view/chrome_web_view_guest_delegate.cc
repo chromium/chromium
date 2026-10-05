@@ -58,8 +58,9 @@ bool ChromeWebViewGuestDelegate::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   content::WebContents* web_contents = web_view_guest()->web_contents();
-  DCHECK_EQ(web_contents,
-            content::WebContents::FromRenderFrameHost(&render_frame_host));
+  CHECK_EQ(web_contents,
+           content::WebContents::FromRenderFrameHost(&render_frame_host),
+           base::NotFatalUntil::M161);
 
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);

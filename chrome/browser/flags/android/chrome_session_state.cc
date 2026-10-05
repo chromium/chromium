@@ -58,8 +58,8 @@ void SetInitialActivityTypeForTesting(ActivityType type) {
 }
 
 void SetActivityType(PrefService* local_state, ActivityType type) {
-  DCHECK(local_state);
-  DCHECK_NE(type, ActivityType::kPreFirstTab);
+  CHECK(local_state, base::NotFatalUntil::M161);
+  CHECK_NE(type, ActivityType::kPreFirstTab, base::NotFatalUntil::M161);
 
   ActivityType prev_activity_type = activity_type;
   activity_type = type;
@@ -92,7 +92,7 @@ void EmitActivityTypeHistograms(ActivityType type) {
 }
 
 void RegisterActivityTypePrefs(PrefRegistrySimple* registry) {
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   // Register with a default value of -1 which is not a valid enum value.
   registry->RegisterIntegerPref(kLastActivityTypePref, -1);
 }
@@ -124,8 +124,8 @@ MultipleUserProfilesState GetMultipleUserProfilesState() {
 }  // namespace chrome
 
 static void JNI_ChromeSessionState_SetActivityType(JNIEnv* env, int32_t type) {
-  DCHECK(g_browser_process);
-  DCHECK(g_browser_process->local_state());
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
+  CHECK(g_browser_process->local_state(), base::NotFatalUntil::M161);
   chrome::android::SetActivityType(g_browser_process->local_state(),
                                    static_cast<ActivityType>(type));
 }

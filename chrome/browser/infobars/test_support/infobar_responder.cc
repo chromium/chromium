@@ -24,7 +24,7 @@ void InfoBarResponder::OnInfoBarAdded(infobars::InfoBar* infobar) {
   infobar_scoped_observation_.Reset();
   ConfirmInfoBarDelegate* delegate =
       infobar->delegate()->AsConfirmInfoBarDelegate();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InfoBarResponder::Respond,

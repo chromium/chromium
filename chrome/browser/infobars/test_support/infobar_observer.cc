@@ -39,7 +39,8 @@ void InfoBarObserver::OnManagerWillBeDestroyed(
   if (run_loop_.running()) {
     run_loop_.Quit();
   }
-  DCHECK(infobar_observation_.IsObservingSource(manager));
+  CHECK(infobar_observation_.IsObservingSource(manager),
+        base::NotFatalUntil::M161);
   infobar_observation_.Reset();
 }
 

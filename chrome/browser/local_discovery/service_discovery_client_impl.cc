@@ -68,7 +68,7 @@ ServiceWatcherImpl::ServiceWatcherImpl(const std::string& service_type,
       mdns_client_(mdns_client) {}
 
 void ServiceWatcherImpl::Start() {
-  DCHECK(!started_);
+  CHECK(!started_, base::NotFatalUntil::M161);
   listener_ = mdns_client_->CreateListener(
       net::dns_protocol::kTypePTR, service_type_, this);
   started_ = listener_->Start();
@@ -79,13 +79,13 @@ void ServiceWatcherImpl::Start() {
 ServiceWatcherImpl::~ServiceWatcherImpl() = default;
 
 void ServiceWatcherImpl::DiscoverNewServices() {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   SendQuery(kInitialRequeryTimeSeconds);
 }
 
 void ServiceWatcherImpl::SetActivelyRefreshServices(
     bool actively_refresh_services) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   actively_refresh_services_ = actively_refresh_services;
 
   for (auto& it : services_)
@@ -93,7 +93,7 @@ void ServiceWatcherImpl::SetActivelyRefreshServices(
 }
 
 void ServiceWatcherImpl::ReadCachedServices() {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   CreateTransaction(false /*network*/, true /*cache*/, &transaction_cache_);
 }
 
@@ -126,9 +126,9 @@ std::string ServiceWatcherImpl::GetServiceType() const {
 void ServiceWatcherImpl::OnRecordUpdate(
     net::MDnsListener::UpdateType update,
     const net::RecordParsed* record) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   if (record->type() == net::dns_protocol::kTypePTR) {
-    DCHECK(record->name() == GetServiceType());
+    CHECK(record->name() == GetServiceType(), base::NotFatalUntil::M161);
     const net::PtrRecordRdata* rdata = record->rdata<net::PtrRecordRdata>();
 
     switch (update) {
@@ -148,8 +148,9 @@ void ServiceWatcherImpl::OnRecordUpdate(
     return;
   }
 
-  DCHECK(record->type() == net::dns_protocol::kTypeSRV ||
-         record->type() == net::dns_protocol::kTypeTXT);
+  CHECK(record->type() == net::dns_protocol::kTypeSRV ||
+            record->type() == net::dns_protocol::kTypeTXT,
+        base::NotFatalUntil::M161);
   if (record->type() == net::dns_protocol::kTypeSRV) {
     if (update == net::MDnsListener::RECORD_REMOVED)
       RemoveSRV(record->name());
@@ -173,7 +174,7 @@ void ServiceWatcherImpl::OnTransactionResponse(
     std::unique_ptr<net::MDnsTransaction>* transaction,
     net::MDnsTransaction::Result result,
     const net::RecordParsed* record) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   if (result == net::MDnsTransaction::RESULT_RECORD) {
     AddService(record->rdata<net::PtrRecordRdata>()->ptrdomain());
   } else if (result == net::MDnsTransaction::RESULT_DONE) {
@@ -207,7 +208,7 @@ void ServiceWatcherImpl::ServiceListeners::SetActiveRefresh(
   srv_listener_->SetActiveRefresh(active_refresh);
 
   if (active_refresh && !has_srv_) {
-    DCHECK(has_ptr_);
+    CHECK(has_ptr_, base::NotFatalUntil::M161);
     srv_transaction_ = mdns_client_->CreateTransaction(
         net::dns_protocol::kTypeSRV, service_name_,
         net::MDnsTransaction::SINGLE_RESULT |
@@ -233,13 +234,13 @@ void ServiceWatcherImpl::ServiceListeners::set_has_srv(bool has_srv) {
 }
 
 void ServiceWatcherImpl::AddService(const std::string& service) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
 
   std::unique_ptr<ServiceListeners>& listener = services_[service];
   if (!listener) {
     listener = std::make_unique<ServiceListeners>(service, this, mdns_client_);
     bool success = listener->Start();
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M161);
     listener->SetActiveRefresh(actively_refresh_services_);
     DeferUpdate(UPDATE_ADDED, service);
   }
@@ -247,7 +248,7 @@ void ServiceWatcherImpl::AddService(const std::string& service) {
 }
 
 void ServiceWatcherImpl::AddSRV(const std::string& service) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
 
   auto it = services_.find(service);
   if (it != services_.end())
@@ -277,7 +278,7 @@ void ServiceWatcherImpl::DeliverDeferredUpdate(
 }
 
 void ServiceWatcherImpl::RemovePTR(const std::string& service) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
 
   auto it = services_.find(service);
   if (it != services_.end()) {
@@ -291,7 +292,7 @@ void ServiceWatcherImpl::RemovePTR(const std::string& service) {
 }
 
 void ServiceWatcherImpl::RemoveSRV(const std::string& service) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
 
   auto it = services_.find(service);
   if (it != services_.end()) {
@@ -390,7 +391,7 @@ void ServiceResolverImpl::SrvRecordTransactionResponse(
     return;
   }
 
-  DCHECK(record);
+  CHECK(record, base::NotFatalUntil::M161);
   service_staging_.address = RecordToAddress(record);
   service_staging_.last_seen = record->time_created();
   CreateATransaction();
@@ -400,7 +401,7 @@ void ServiceResolverImpl::TxtRecordTransactionResponse(
     net::MDnsTransaction::Result status, const net::RecordParsed* record) {
   txt_transaction_.reset();
   if (status == net::MDnsTransaction::RESULT_RECORD) {
-    DCHECK(record);
+    CHECK(record, base::NotFatalUntil::M161);
     service_staging_.metadata = RecordToMetadata(record);
   } else {
     service_staging_.metadata.clear();
@@ -415,7 +416,7 @@ void ServiceResolverImpl::ARecordTransactionResponse(
   a_transaction_.reset();
 
   if (status == net::MDnsTransaction::RESULT_RECORD) {
-    DCHECK(record);
+    CHECK(record, base::NotFatalUntil::M161);
     service_staging_.ip_address = RecordToIPAddress(record);
   } else {
     service_staging_.ip_address = net::IPAddress();
@@ -461,20 +462,22 @@ ServiceResolver::RequestStatus ServiceResolverImpl::MDnsStatusToRequestStatus(
 
 const std::vector<std::string>& ServiceResolverImpl::RecordToMetadata(
     const net::RecordParsed* record) const {
-  DCHECK(record->type() == net::dns_protocol::kTypeTXT);
+  CHECK(record->type() == net::dns_protocol::kTypeTXT,
+        base::NotFatalUntil::M161);
   return record->rdata<net::TxtRecordRdata>()->texts();
 }
 
 net::HostPortPair ServiceResolverImpl::RecordToAddress(
     const net::RecordParsed* record) const {
-  DCHECK(record->type() == net::dns_protocol::kTypeSRV);
+  CHECK(record->type() == net::dns_protocol::kTypeSRV,
+        base::NotFatalUntil::M161);
   const net::SrvRecordRdata* srv_rdata = record->rdata<net::SrvRecordRdata>();
   return net::HostPortPair(srv_rdata->target(), srv_rdata->port());
 }
 
 net::IPAddress ServiceResolverImpl::RecordToIPAddress(
     const net::RecordParsed* record) const {
-  DCHECK(record->type() == net::dns_protocol::kTypeA);
+  CHECK(record->type() == net::dns_protocol::kTypeA, base::NotFatalUntil::M161);
   return record->rdata<net::ARecordRdata>()->address();
 }
 
@@ -525,7 +528,8 @@ void LocalDomainResolverImpl::OnTransactionComplete(
     if (record->type() == net::dns_protocol::kTypeA) {
       address_ipv4_ = record->rdata<net::ARecordRdata>()->address();
     } else {
-      DCHECK_EQ(net::dns_protocol::kTypeAAAA, record->type());
+      CHECK_EQ(net::dns_protocol::kTypeAAAA, record->type(),
+               base::NotFatalUntil::M161);
       address_ipv6_ = record->rdata<net::AAAARecordRdata>()->address();
     }
   }

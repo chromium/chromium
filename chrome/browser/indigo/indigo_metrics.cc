@@ -143,7 +143,7 @@ void RecordTransformationResult(IndigoTransformationResult result) {
 
 void RecordTransformationResultCannotGenerateImage(
     const CombinedEligibility& eligibility) {
-  DCHECK(!eligibility.CanGenerateImage());
+  CHECK(!eligibility.CanGenerateImage(), base::NotFatalUntil::M161);
   IndigoTransformationResult result = IndigoTransformationResult::kUnknown;
 
   switch (eligibility.local_eligibility) {

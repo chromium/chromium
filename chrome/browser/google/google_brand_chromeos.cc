@@ -59,16 +59,18 @@ bool g_brand_empty = false;
 }  // namespace
 
 void ClearBrandForCurrentSession() {
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
   g_brand_empty = true;
 }
 
 std::string GetBrand() {
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
   if (g_brand_empty) {
     return std::string();
   }

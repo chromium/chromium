@@ -97,7 +97,7 @@ GCMProfileServiceFactory::GlobalTestingFactory& GetTestingFactory() {
 
 GCMProfileServiceFactory::ScopedTestingFactoryInstaller::
     ScopedTestingFactoryInstaller(GlobalTestingFactory testing_factory) {
-  DCHECK(!GetTestingFactory());
+  CHECK(!GetTestingFactory(), base::NotFatalUntil::M161);
   GetTestingFactory() = std::move(testing_factory);
 }
 
@@ -153,9 +153,9 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  DCHECK(!profile->IsIncognitoProfile());
+  CHECK(!profile->IsIncognitoProfile(), base::NotFatalUntil::M161);
 #else
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 #endif
 
   if (GlobalTestingFactory& testing_factory = GetTestingFactory()) {

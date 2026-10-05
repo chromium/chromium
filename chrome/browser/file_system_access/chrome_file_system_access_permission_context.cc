@@ -214,7 +214,7 @@ void ShowFileSystemAccessRestrictedDirectoryDialogOnUIThread(
     base::OnceCallback<
         void(ChromeFileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsActive()) {
     // Requested from a no longer valid RenderFrameHost.
@@ -244,7 +244,7 @@ void ShowFileSystemAccessDangerousFileDialogOnUIThread(
     base::OnceCallback<
         void(ChromeFileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
   if (!rfh || !rfh->IsActive()) {
     // Requested from a no longer valid RenderFrameHost.
@@ -613,8 +613,8 @@ bool ShouldBlockAccessToPath(
         extra_rules,
     ChromeFileSystemAccessPermissionContext::BlockPathRules block_path_rules,
     base::FilePath profile_path) {
-  DCHECK(!path.empty());
-  DCHECK(path.IsAbsolute());
+  CHECK(!path.empty(), base::NotFatalUntil::M161);
+  CHECK(path.IsAbsolute(), base::NotFatalUntil::M161);
 
   path = NormalizeFilePathForBlocklist(path, should_normalize_file_path);
   profile_path =
@@ -768,7 +768,7 @@ void DoSafeBrowsingCheckOnUIThread(
     content::GlobalRenderFrameHostId frame_id,
     std::unique_ptr<content::FileSystemAccessWriteItem> item,
     safe_browsing::CheckDownloadCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   safe_browsing::SafeBrowsingService* sb_service =
       g_browser_process->safe_browsing_service();
@@ -795,8 +795,9 @@ void DoSafeBrowsingCheckOnUIThread(
   if (!item->web_contents) {
     content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
     if (rfh) {
-      DCHECK_NE(rfh->GetLifecycleState(),
-                content::RenderFrameHost::LifecycleState::kPrerendering);
+      CHECK_NE(rfh->GetLifecycleState(),
+               content::RenderFrameHost::LifecycleState::kPrerendering,
+               base::NotFatalUntil::M161);
       item->web_contents =
           content::WebContents::FromRenderFrameHost(rfh)->GetWeakPtr();
     }
@@ -1302,7 +1303,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       const content::PathInfo& old_path,
       const content::PathInfo& new_path,
       bool allow_overwrite) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     auto old_path_it =
         std::ranges::find_if(grants, [&old_path](const auto& entry) {
           return entry.first == old_path.path;
@@ -2173,7 +2174,7 @@ std::string ChromeFileSystemAccessPermissionContext::GetKeyForObject(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.Find(kPermissionPathKey));
-  DCHECK(optional_path);
+  CHECK(optional_path, base::NotFatalUntil::M161);
   return std::string(PathAsPermissionKey(optional_path.value()));
 }
 
@@ -2205,7 +2206,7 @@ std::u16string ChromeFileSystemAccessPermissionContext::GetObjectDisplayName(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto optional_path =
       base::ValueToFilePath(object.Find(kPermissionPathKey));
-  DCHECK(optional_path);
+  CHECK(optional_path, base::NotFatalUntil::M161);
   return optional_path->LossyDisplayName();
 }
 
@@ -2232,7 +2233,7 @@ ChromeFileSystemAccessPermissionContext::GetGrantedPaths(
     const url::Origin& origin) {
   return base::ToVector(GetGrantedObjects(origin), [](const auto& object) {
     const auto* path = object->value.Find(kPermissionPathKey);
-    DCHECK(path);
+    CHECK(path, base::NotFatalUntil::M161);
     return base::ValueToFilePath(path).value();
   });
 }
@@ -2654,7 +2655,7 @@ void ChromeFileSystemAccessPermissionContext::MaybeEvictEntries(
 
   for (const auto& entry : oldest_entries) {
     bool did_remove_entry = dict.Remove(entry.second);
-    DCHECK(did_remove_entry);
+    CHECK(did_remove_entry, base::NotFatalUntil::M161);
   }
 }
 
@@ -3805,7 +3806,7 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
            WebAppInstallStatus::kInstalled;
   }
   // No cached value for web app install status. Retrieve the install status.
-  DCHECK(profile());
+  CHECK(profile(), base::NotFatalUntil::M161);
   auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile()));
   if (!web_app_provider) {
@@ -3955,7 +3956,8 @@ void ChromeFileSystemAccessPermissionContext::PermissionGrantDestroyed(
   // be granted but won't be visible in any UI because the permission context
   // isn't tracking them anymore.
   if (grant_it == grants.end()) {
-    DCHECK_EQ(PermissionStatus::DENIED, grant->GetActivePermissionStatus());
+    CHECK_EQ(PermissionStatus::DENIED, grant->GetActivePermissionStatus(),
+             base::NotFatalUntil::M161);
     return;
   }
 

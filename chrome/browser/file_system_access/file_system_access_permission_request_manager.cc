@@ -90,7 +90,7 @@ void FileSystemAccessPermissionRequestManager::AddRequest(
     base::OnceCallback<void(permissions::PermissionAction result)> callback,
     base::ScopedClosureRunner fullscreen_block) {
   if (data.request_type == RequestType::kNewPermission) {
-    DCHECK(data.file_request_data.size() == 1);
+    CHECK(data.file_request_data.size() == 1, base::NotFatalUntil::M161);
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -199,7 +199,7 @@ void FileSystemAccessPermissionRequestManager::
 
 void FileSystemAccessPermissionRequestManager::OnPermissionDialogResult(
     permissions::PermissionAction result) {
-  DCHECK(current_request_);
+  CHECK(current_request_, base::NotFatalUntil::M161);
   for (auto& callback : current_request_->callbacks)
     std::move(callback).Run(result);
   current_request_ = nullptr;

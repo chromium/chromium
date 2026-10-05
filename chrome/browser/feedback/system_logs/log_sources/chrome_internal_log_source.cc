@@ -219,10 +219,10 @@ std::string GetDisplayInfoString(const ash::DisplayUnitInfo& display_info) {
 void PopulateEntriesAsync(std::unique_ptr<SystemLogsResponse> response,
                           SysLogsSourceCallback callback) {
   auto populate_entries = [](SystemLogsResponse* response) {
-    DCHECK(response);
+    CHECK(response, base::NotFatalUntil::M161);
 
     auto* stats = ash::system::StatisticsProvider::GetInstance();
-    DCHECK(stats);
+    CHECK(stats, base::NotFatalUntil::M161);
 
     // Get the HWID.
     std::optional<std::string_view> hwid =
@@ -423,8 +423,8 @@ ChromeInternalLogSource::ChromeInternalLogSource()
 ChromeInternalLogSource::~ChromeInternalLogSource() = default;
 
 void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   auto response = std::make_unique<SystemLogsResponse>();
   response->emplace(kChromeVersionTag, GetChromeVersionString());

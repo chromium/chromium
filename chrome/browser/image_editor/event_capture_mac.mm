@@ -114,7 +114,7 @@ EventCaptureMac::EventCaptureMac(ui::EventHandler* event_handler,
 void EventCaptureMac::CreateKeyDownLocalMonitor(
     ui::EventHandler* event_handler,
     gfx::NativeWindow target_native_window) {
-  DCHECK(event_handler);
+  CHECK(event_handler, base::NotFatalUntil::M161);
   NSWindow* target_window = target_native_window.GetNativeNSWindow();
 
   // Capture a WeakPtr. This allows the block to detect another event monitor

@@ -40,7 +40,7 @@
 namespace {
 
 bool IsPageInTabGroup(content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M161);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (BrowserWindowInterface* browser =
@@ -66,8 +66,8 @@ bool IsPageInTabGroup(content::WebContents* contents) {
 // Pass in a separate `url` parameter to ensure that we check the same URL that
 // is being logged in History.
 bool IsPageBookmarked(content::WebContents* contents, const GURL& url) {
-  DCHECK(contents);
-  DCHECK(contents->GetBrowserContext());
+  CHECK(contents, base::NotFatalUntil::M161);
+  CHECK(contents->GetBrowserContext(), base::NotFatalUntil::M161);
 
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(contents->GetBrowserContext());
@@ -169,8 +169,8 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
                history_clusters::IncompleteVisitContextAnnotations&
                    incomplete_visit_context_annotations,
                history::QueryURLAndVisitsResult result) {
-              DCHECK(history_clusters_tab_helper);
-              DCHECK(history_clusters_service);
+              CHECK(history_clusters_tab_helper, base::NotFatalUntil::M161);
+              CHECK(history_clusters_service, base::NotFatalUntil::M161);
               // visit being added to the DB, e.g. navigations to
               // "chrome://" URLs.
               if (!result.success || result.visits.empty()) {
@@ -178,9 +178,10 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
               }
               const history::URLRow& url_row = result.row;
               const history::VisitVector& visits = result.visits;
-              DCHECK(url_row.id());
-              DCHECK(visits[0].visit_id);
-              DCHECK_EQ(url_row.id(), visits[0].url_id);
+              CHECK(url_row.id(), base::NotFatalUntil::M161);
+              CHECK(visits[0].visit_id, base::NotFatalUntil::M161);
+              CHECK_EQ(url_row.id(), visits[0].url_id,
+                       base::NotFatalUntil::M161);
               // Make sure the visit we got actually corresponds to the
               // navigation by comparing the timestamps.
               if (visits[0].visit_time != timestamp) {
@@ -208,8 +209,9 @@ void HistoryClustersTabHelper::OnUpdatedHistoryForNavigation(
               incomplete_visit_context_annotations.status.history_rows = true;
               if (incomplete_visit_context_annotations.status
                       .navigation_ended) {
-                DCHECK(!incomplete_visit_context_annotations.status
-                            .navigation_end_signals);
+                CHECK(!incomplete_visit_context_annotations.status
+                           .navigation_end_signals,
+                      base::NotFatalUntil::M161);
                 history_clusters_tab_helper->RecordPageEndMetricsIfNeeded(
                     navigation_id);
               }
@@ -259,8 +261,8 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
   // `CompleteVisitContextAnnotationsIfReady()`.
   auto context_annotations_copy =
       incomplete_visit_context_annotations.context_annotations;
-  DCHECK(
-      incomplete_visit_context_annotations.status.expect_ukm_page_end_signals);
+  CHECK(incomplete_visit_context_annotations.status.expect_ukm_page_end_signals,
+        base::NotFatalUntil::M161);
   incomplete_visit_context_annotations.status.ukm_page_end_signals = true;
   history_clusters_service->CompleteVisitContextAnnotationsIfReady(
       navigation_id);
@@ -402,7 +404,8 @@ void HistoryClustersTabHelper::RecordPageEndMetricsIfNeeded(
       history_clusters_service->GetIncompleteVisitContextAnnotations(
           navigation_id);
   if (incomplete_visit_context_annotations.status.navigation_end_signals) {
-    DCHECK(incomplete_visit_context_annotations.status.navigation_ended);
+    CHECK(incomplete_visit_context_annotations.status.navigation_ended,
+          base::NotFatalUntil::M161);
     return;
   }
   incomplete_visit_context_annotations.status.navigation_ended = true;

@@ -27,7 +27,7 @@ void ProcessHeadlessCommands(
     content::BrowserContext* browser_context,
     const GURL& target_url,
     HeadlessCommandHandler::DoneCallback done_callback) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   // Ensure lazy loaded content is being captured by the commands.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

@@ -267,8 +267,8 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers,
   KeepAliveRegistry::GetInstance()->SetRestarting();
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(
-      !ash::SessionTerminationManager::IsSendingStopRequestToSessionManager());
+  CHECK(!ash::SessionTerminationManager::IsSendingStopRequestToSessionManager(),
+        base::NotFatalUntil::M161);
 
   ash::BootTimesRecorder::Get()->set_restart_requested();
   ash::SessionTerminationManager::SetSendStopRequestToSessionManager(false);

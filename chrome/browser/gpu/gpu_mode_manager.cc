@@ -20,13 +20,13 @@ namespace {
 
 bool GetPreviousGpuModePref() {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   return service->GetBoolean(prefs::kHardwareAccelerationModePrevious);
 }
 
 void SetPreviousGpuModePref(bool enabled) {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   service->SetBoolean(prefs::kHardwareAccelerationModePrevious, enabled);
 }
 
@@ -63,7 +63,7 @@ GpuModeManager::GpuModeManager()
     if (!initial_gpu_mode_pref_) {
       content::GpuDataManager* gpu_data_manager =
           content::GpuDataManager::GetInstance();
-      DCHECK(gpu_data_manager);
+      CHECK(gpu_data_manager, base::NotFatalUntil::M161);
       gpu_data_manager->DisableHardwareAcceleration();
     }
   }
@@ -78,7 +78,7 @@ bool GpuModeManager::initial_gpu_mode_pref() const {
 // static
 bool GpuModeManager::IsGpuModePrefEnabled() {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   return service->GetBoolean(
       prefs::kHardwareAccelerationModeEnabled);
 }

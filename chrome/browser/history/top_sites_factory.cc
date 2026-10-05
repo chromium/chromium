@@ -64,7 +64,7 @@ void InitializePrepopulatedPageList(
     Profile* profile,
     history::PrepopulatedPageList* prepopulated_pages) {
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK(prepopulated_pages);
+  CHECK(prepopulated_pages, base::NotFatalUntil::M161);
   PrefService* pref_service = profile->GetPrefs();
   bool hide_web_store_icon =
       pref_service->GetBoolean(policy::policy_prefs::kHideWebStoreIcon);

@@ -131,7 +131,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value) {
     const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
-    DCHECK(urls_value);
+    CHECK(urls_value, base::NotFatalUntil::M161);
 
     std::vector<url::Origin> urls;
     for (const auto& url_value : *urls_value) {
@@ -145,11 +145,11 @@ void HidPolicyAllowedDevices::LoadAllowDevicesForUrlsPolicy() {
 
     const base::ListValue* devices_value =
         item.GetDict().FindList(kPrefDevicesKey);
-    DCHECK(devices_value);
+    CHECK(devices_value, base::NotFatalUntil::M161);
     for (const auto& device_value : *devices_value) {
       const std::optional<int> vendor_id_value =
           device_value.GetDict().FindInt(kPrefVendorIdKey);
-      DCHECK(vendor_id_value);
+      CHECK(vendor_id_value, base::NotFatalUntil::M161);
 
       const std::optional<int> product_id_value =
           device_value.GetDict().FindInt(kPrefProductIdKey);
@@ -176,7 +176,7 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
   // safe to assume that |pref_value| follows the policy template.
   for (const auto& item : pref_value) {
     const base::ListValue* urls_value = item.GetDict().FindList(kPrefUrlsKey);
-    DCHECK(urls_value);
+    CHECK(urls_value, base::NotFatalUntil::M161);
 
     std::vector<url::Origin> urls;
     for (const auto& url_value : *urls_value) {
@@ -192,11 +192,11 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
 
     const base::ListValue* usages_value =
         item.GetDict().FindList(kPrefUsagesKey);
-    DCHECK(usages_value);
+    CHECK(usages_value, base::NotFatalUntil::M161);
     for (const auto& usage_and_page_value : *usages_value) {
       const std::optional<int> usage_page_value =
           usage_and_page_value.GetDict().FindInt(kPrefUsagePageKey);
-      DCHECK(usage_page_value);
+      CHECK(usage_page_value, base::NotFatalUntil::M161);
 
       const std::optional<int> usage_value =
           usage_and_page_value.GetDict().FindInt(kPrefUsageKey);

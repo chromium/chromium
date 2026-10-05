@@ -33,7 +33,7 @@ std::string ReadSvgOnFileThread(base::FilePath svg_path) {
 
 void SaveIconOnFileThread(const base::FilePath& icon_path,
                           const std::string& content) {
-  DCHECK(!content.empty());
+  CHECK(!content.empty(), base::NotFatalUntil::M161);
 
   base::File::Error file_error;
   if (!base::CreateDirectoryAndGetError(icon_path.DirName(), &file_error)) {

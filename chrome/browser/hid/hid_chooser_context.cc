@@ -65,7 +65,7 @@ base::DictValue VendorAndProductIdsToValue(uint16_t vendor_id,
                  IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID_AND_PRODUCT_ID,
                  base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id)),
                  base::ASCIIToUTF16(base::StringPrintf("%04X", product_id))));
-  DCHECK(IsPolicyGrantedObject(object));
+  CHECK(IsPolicyGrantedObject(object), base::NotFatalUntil::M161);
   return object;
 }
 
@@ -75,7 +75,7 @@ base::DictValue VendorIdToValue(uint16_t vendor_id) {
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_VENDOR_ID,
                  base::ASCIIToUTF16(base::StringPrintf("%04X", vendor_id))));
-  DCHECK(IsPolicyGrantedObject(object));
+  CHECK(IsPolicyGrantedObject(object), base::NotFatalUntil::M161);
   return object;
 }
 
@@ -86,7 +86,7 @@ base::DictValue UsagePageAndUsageToValue(uint16_t usage_page, uint16_t usage) {
                  IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_AND_USAGE_PAGE,
                  base::ASCIIToUTF16(base::StringPrintf("%04X", usage)),
                  base::ASCIIToUTF16(base::StringPrintf("%04X", usage_page))));
-  DCHECK(IsPolicyGrantedObject(object));
+  CHECK(IsPolicyGrantedObject(object), base::NotFatalUntil::M161);
   return object;
 }
 
@@ -96,7 +96,7 @@ base::DictValue UsagePageToValue(uint16_t usage_page) {
              l10n_util::GetStringFUTF16(
                  IDS_HID_POLICY_DESCRIPTION_FOR_USAGE_PAGE,
                  base::ASCIIToUTF16(base::StringPrintf("%04X", usage_page))));
-  DCHECK(IsPolicyGrantedObject(object));
+  CHECK(IsPolicyGrantedObject(object), base::NotFatalUntil::M161);
   return object;
 }
 
@@ -119,7 +119,7 @@ HidChooserContext::HidChooserContext(Profile* profile)
           ContentSettingsType::HID_CHOOSER_DATA,
           HostContentSettingsMapFactory::GetForProfile(profile)),
       profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 }
 
 HidChooserContext::~HidChooserContext() {
@@ -127,12 +127,13 @@ HidChooserContext::~HidChooserContext() {
   // Observers must remove themselves from the observer lists.
   for (auto& observer : device_observer_list_) {
     observer.OnHidChooserContextShutdown();
-    DCHECK(!device_observer_list_.HasObserver(&observer));
+    CHECK(!device_observer_list_.HasObserver(&observer),
+          base::NotFatalUntil::M161);
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   web_view_chooser_context_.OnHidChooserContextShutdown();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-  DCHECK(permission_observer_list_.empty());
+  CHECK(permission_observer_list_.empty(), base::NotFatalUntil::M161);
 }
 
 // static
@@ -154,7 +155,7 @@ base::DictValue HidChooserContext::DeviceInfoToValue(
     // and must be granted again each time the device is connected.
     value.Set(kHidGuidKey, device.guid);
   }
-  DCHECK(!IsPolicyGrantedObject(value));
+  CHECK(!IsPolicyGrantedObject(value), base::NotFatalUntil::M161);
   return value;
 }
 
@@ -179,7 +180,7 @@ bool HidChooserContext::CanStorePersistentEntry(
 std::u16string HidChooserContext::GetObjectDisplayName(
     const base::DictValue& object) {
   const std::string* name = object.FindString(kHidDeviceNameKey);
-  DCHECK(name);
+  CHECK(name, base::NotFatalUntil::M161);
   return base::UTF8ToUTF16(*name);
 }
 
@@ -232,7 +233,7 @@ HidChooserContext::GetGrantedObjects(const url::Origin& origin) {
         // always be called after device initialization in HidChooserController
         // which always returns after the device list initialization in this
         // class.
-        DCHECK(devices_.contains(guid));
+        CHECK(devices_.contains(guid), base::NotFatalUntil::M161);
         objects.push_back(std::make_unique<Object>(
             origin, DeviceInfoToValue(*devices_[guid]),
             content_settings::SettingSource::kUser, IsOffTheRecord()));
@@ -309,7 +310,7 @@ HidChooserContext::GetAllGrantedObjects() {
       continue;
 
     for (const auto& guid : map_entry.second) {
-      DCHECK(devices_.contains(guid));
+      CHECK(devices_.contains(guid), base::NotFatalUntil::M161);
       objects.push_back(
           std::make_unique<Object>(origin, DeviceInfoToValue(*devices_[guid]),
                                    SettingSource::kUser, IsOffTheRecord()));
@@ -379,7 +380,7 @@ void HidChooserContext::RevokeObjectPermission(const url::Origin& origin,
   if (it != ephemeral_devices_.end()) {
     std::set<std::string>& devices = it->second;
 
-    DCHECK(IsValidObject(object));
+    CHECK(IsValidObject(object), base::NotFatalUntil::M161);
     devices.erase(*guid);
     if (devices.empty())
       ephemeral_devices_.erase(it);
@@ -460,7 +461,7 @@ void HidChooserContext::RevokePersistentDevicePermission(
   std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
   for (const auto& object : object_list) {
     const base::DictValue& device_value = object->value;
-    DCHECK(IsValidObject(device_value));
+    CHECK(IsValidObject(device_value), base::NotFatalUntil::M161);
 
     const auto* serial_number = device_value.FindString(kHidSerialNumberKey);
     if (device.vendor_id == *device_value.FindInt(kHidVendorIdKey) &&
@@ -544,7 +545,7 @@ bool HidChooserContext::HasDevicePermission(
     const base::DictValue& device_value = object->value;
 
     // Objects provided by the parent class can be assumed valid.
-    DCHECK(IsValidObject(device_value));
+    CHECK(IsValidObject(device_value), base::NotFatalUntil::M161);
 
     if (device.vendor_id != *device_value.FindInt(kHidVendorIdKey) ||
         device.product_id != *device_value.FindInt(kHidProductIdKey)) {
@@ -602,7 +603,7 @@ void HidChooserContext::GetDevices(
 
 const device::mojom::HidDeviceInfo* HidChooserContext::GetDeviceInfo(
     const std::string& guid) {
-  DCHECK(is_initialized_);
+  CHECK(is_initialized_, base::NotFatalUntil::M161);
   auto it = devices_.find(guid);
   return it == devices_.end() ? nullptr : it->second.get();
 }
@@ -628,8 +629,8 @@ void HidChooserContext::SetHidManagerForTesting(
 void HidChooserContext::OnHidManagerInitializedForTesting(
     device::mojom::HidManager::GetDevicesCallback callback,
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
-  DCHECK(devices.empty());
-  DCHECK(pending_get_devices_requests_.empty());
+  CHECK(devices.empty(), base::NotFatalUntil::M161);
+  CHECK(pending_get_devices_requests_.empty(), base::NotFatalUntil::M161);
   is_initialized_ = true;
   std::move(callback).Run({});
 }
@@ -653,7 +654,7 @@ void HidChooserContext::Shutdown() {
 }
 
 void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
-  DCHECK(device);
+  CHECK(device, base::NotFatalUntil::M161);
 
   // Update the device list.
   if (!devices_.contains(device->guid)) {
@@ -666,8 +667,8 @@ void HidChooserContext::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
 }
 
 void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
-  DCHECK(device);
-  DCHECK(devices_.contains(device->guid));
+  CHECK(device, base::NotFatalUntil::M161);
+  CHECK(devices_.contains(device->guid), base::NotFatalUntil::M161);
 
   // Update the device list.
   devices_.erase(device->guid);
@@ -700,8 +701,8 @@ void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
 }
 
 void HidChooserContext::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
-  DCHECK(device);
-  DCHECK(devices_.contains(device->guid));
+  CHECK(device, base::NotFatalUntil::M161);
+  CHECK(devices_.contains(device->guid), base::NotFatalUntil::M161);
 
   // Update the device list.
   devices_[device->guid] = device->Clone();
@@ -779,7 +780,7 @@ void HidChooserContext::OnHidManagerConnectionError() {
 bool HidChooserContext::CanApplyPolicy() {
 #if BUILDFLAG(IS_CHROMEOS)
   auto* profile_helper = ash::ProfileHelper::Get();
-  DCHECK(profile_helper);
+  CHECK(profile_helper, base::NotFatalUntil::M161);
   user_manager::User* user = profile_helper->GetUserByProfile(profile_);
   return !user || user->IsAffiliated();
 #else

@@ -543,14 +543,14 @@ void IndigoPageActionController::DidFinishNavigation(
 }
 
 void IndigoPageActionController::TabWillBecomeHidden(tabs::TabInterface* tab) {
-  DCHECK_EQ(tab, &this->tab());
+  CHECK_EQ(tab, &this->tab(), base::NotFatalUntil::M161);
   if (toolbar_) {
     toolbar_->TabWillBecomeHidden();
   }
 }
 
 void IndigoPageActionController::TabDidBecomeVisible(tabs::TabInterface* tab) {
-  DCHECK_EQ(tab, &this->tab());
+  CHECK_EQ(tab, &this->tab(), base::NotFatalUntil::M161);
   if (!toolbar_) {
     return;
   }

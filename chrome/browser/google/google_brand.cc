@@ -162,7 +162,7 @@ bool IsEnterprise(const std::string& brand) {
 // BrandForTesting ------------------------------------------------------------
 
 BrandForTesting::BrandForTesting(const std::string& brand) : brand_(brand) {
-  DCHECK(g_brand_for_testing == nullptr);
+  CHECK(g_brand_for_testing == nullptr, base::NotFatalUntil::M161);
   g_brand_for_testing = brand_.c_str();
 }
 

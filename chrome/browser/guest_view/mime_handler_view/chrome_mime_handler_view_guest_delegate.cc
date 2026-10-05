@@ -31,7 +31,7 @@ bool ChromeMimeHandlerViewGuestDelegate::HandleContextMenu(
       content::WebContents::FromRenderFrameHost(&render_frame_host);
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);
-  DCHECK(menu_delegate);
+  CHECK(menu_delegate, base::NotFatalUntil::M161);
 
   std::unique_ptr<RenderViewContextMenuBase> menu = menu_delegate->BuildMenu(
       render_frame_host,

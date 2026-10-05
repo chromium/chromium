@@ -46,8 +46,8 @@ void ExternalProcessImporterHost::StartImportSettings(
     uint16_t items,
     ProfileWriter* writer) {
   // We really only support importing from one host at a time.
-  DCHECK(!profile_);
-  DCHECK(target_profile);
+  CHECK(!profile_, base::NotFatalUntil::M161);
+  CHECK(target_profile, base::NotFatalUntil::M161);
 
   profile_ = target_profile;
   writer_ = writer;
@@ -82,7 +82,7 @@ void ExternalProcessImporterHost::NotifyImportItemEnded(
 }
 
 void ExternalProcessImporterHost::NotifyImportEnded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   firefox_lock_.reset();
   if (observer_)
     observer_->ImportEnded();
@@ -129,7 +129,7 @@ void ExternalProcessImporterHost::OnTemplateURLServiceLoaded() {
 }
 
 void ExternalProcessImporterHost::ShowWarningDialog() {
-  DCHECK(!headless_);
+  CHECK(!headless_, base::NotFatalUntil::M161);
   importer::ShowImportLockDialog(
       parent_window_,
       base::BindOnce(&ExternalProcessImporterHost::OnImportLockDialogEnd,
@@ -159,7 +159,7 @@ bool ExternalProcessImporterHost::CheckForFirefoxLock(
     return true;
   }
 
-  DCHECK(!firefox_lock_.get());
+  CHECK(!firefox_lock_.get(), base::NotFatalUntil::M161);
   firefox_lock_ =
       std::make_unique<FirefoxProfileLock>(source_profile.source_path);
   if (firefox_lock_->HasAcquired())
@@ -178,7 +178,7 @@ bool ExternalProcessImporterHost::CheckForFirefoxLock(
 
 void ExternalProcessImporterHost::CheckForLoadedModels(uint16_t items) {
   // A target profile must be loaded by StartImportSettings().
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 
   // BookmarkModel should be loaded before adding IE favorites. So we observe
   // the BookmarkModel if needed, and start the task after it has been loaded.

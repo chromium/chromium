@@ -90,7 +90,7 @@ bool ProfileWriter::TemplateURLServiceIsLoaded() const {
 
 void ProfileWriter::AddPasswordForm(
     const password_manager::PasswordForm& form) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 
   if (profile_->GetPrefs()->GetBoolean(
           password_manager::prefs::kCredentialsEnableService)) {
@@ -110,7 +110,7 @@ void ProfileWriter::AddHistoryPage(const history::URLRows& page,
 }
 
 void ProfileWriter::AddHomepage(const GURL& home_page) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 
   PrefService* prefs = profile_->GetPrefs();
   // NOTE: We set the kHomePage value, but keep the NewTab page as the homepage.
@@ -127,7 +127,7 @@ void ProfileWriter::AddBookmarks(
     return;
 
   BookmarkModel* model = BookmarkModelFactory::GetForBrowserContext(profile_);
-  DCHECK(model->loaded());
+  CHECK(model->loaded(), base::NotFatalUntil::M161);
 
   // If the bookmark bar is currently empty, we should import directly to it.
   // Otherwise, we should import everything to a subfolder.

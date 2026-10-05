@@ -95,7 +95,7 @@ void ExitIgnoreUnloadHandlers() {
   // windows to make shutdown faster. Note that the occlusion tracking is
   // paused indefinitely. It is okay do so on Chrome OS because there is
   // no way to abort shutdown and go back to user sessions at this point.
-  DCHECK(aura::Env::HasInstance());
+  CHECK(aura::Env::HasInstance(), base::NotFatalUntil::M161);
   aura::Env::GetInstance()->PauseWindowOcclusionTracking();
 
   // On ChromeOS ExitIgnoreUnloadHandlers() is used to handle SIGTERM.

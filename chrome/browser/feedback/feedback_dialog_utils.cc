@@ -56,7 +56,7 @@ Profile* GetFeedbackProfile(BrowserWindowInterface* bwi) {
 
   // We do not want to launch on an OTR profile.
   profile = profile->GetOriginalProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Obtains the display profile ID on which the Feedback window should show.

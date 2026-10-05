@@ -37,7 +37,7 @@ class ServiceDiscoveryClientMdns::Proxy {
   using WeakPtr = base::WeakPtr<Proxy>;
 
   explicit Proxy(ServiceDiscoveryClientMdns* client) : client_(client) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     client_->proxies_.AddObserver(this);
   }
 
@@ -45,7 +45,7 @@ class ServiceDiscoveryClientMdns::Proxy {
   Proxy& operator=(const Proxy&) = delete;
 
   virtual ~Proxy() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     client_->proxies_.RemoveObserver(this);
   }
 
@@ -57,7 +57,7 @@ class ServiceDiscoveryClientMdns::Proxy {
 
   // Notifies proxies that new mDNS instance is ready.
   virtual void OnNewMdnsReady() {
-    DCHECK(!client_->need_delay_mdns_tasks_);
+    CHECK(!client_->need_delay_mdns_tasks_, base::NotFatalUntil::M161);
     if (IsValid()) {
       for (auto& task : delayed_tasks_)
         client_->mdns_runner_->PostTask(FROM_HERE, std::move(task));
@@ -68,13 +68,13 @@ class ServiceDiscoveryClientMdns::Proxy {
   // Runs callback using this method to abort callback if instance of |Proxy|
   // is deleted.
   void RunCallback(base::OnceClosure callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     std::move(callback).Run();
   }
 
  protected:
   void PostToMdnsThread(base::OnceClosure task) {
-    DCHECK(IsValid());
+    CHECK(IsValid(), base::NotFatalUntil::M161);
     // The first task on the IO thread for each |mdns_| instance must be
     // InitMdns(). OnInterfaceListReady() could be delayed by
     // GetMDnsInterfacesToBind() running on a background task runner, so
@@ -135,8 +135,9 @@ class SocketFactory : public net::MDnsSocketFactory {
   void CreateSockets(std::vector<std::unique_ptr<net::DatagramServerSocket>>*
                          sockets) override {
     for (size_t i = 0; i < interfaces_.size(); ++i) {
-      DCHECK(interfaces_[i].second == net::ADDRESS_FAMILY_IPV4 ||
-             interfaces_[i].second == net::ADDRESS_FAMILY_IPV6);
+      CHECK(interfaces_[i].second == net::ADDRESS_FAMILY_IPV4 ||
+                interfaces_[i].second == net::ADDRESS_FAMILY_IPV6,
+            base::NotFatalUntil::M161);
       std::unique_ptr<net::DatagramServerSocket> socket(CreateAndBindMDnsSocket(
           interfaces_[i].second, interfaces_[i].first, nullptr /* net_log */));
       if (socket)
@@ -248,7 +249,8 @@ class ServiceWatcherProxy : public ProxyBase<ServiceWatcher> {
                          ServiceWatcher::UpdatedCallback callback,
                          UpdateType a1,
                          const std::string& a2) {
-    DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+          base::NotFatalUntil::M161);
     PostToUIThread(base::BindOnce(&Base::RunCallback, proxy,
                                   base::BindOnce(std::move(callback), a1, a2)));
   }
@@ -287,7 +289,8 @@ class ServiceResolverProxy : public ProxyBase<ServiceResolver> {
                          ServiceResolver::ResolveCompleteCallback callback,
                          RequestStatus a1,
                          const ServiceDescription& a2) {
-    DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+          base::NotFatalUntil::M161);
     PostToUIThread(base::BindOnce(&Base::RunCallback, proxy,
                                   base::BindOnce(std::move(callback), a1, a2)));
   }
@@ -327,7 +330,8 @@ class LocalDomainResolverProxy : public ProxyBase<LocalDomainResolver> {
                          bool a1,
                          const net::IPAddress& a2,
                          const net::IPAddress& a3) {
-    DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+          base::NotFatalUntil::M161);
     PostToUIThread(
         base::BindOnce(&Base::RunCallback, proxy,
                        base::BindOnce(std::move(callback), a1, a2, a3)));

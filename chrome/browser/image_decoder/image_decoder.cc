@@ -140,8 +140,8 @@ void ImageDecoder::StartWithOptionsImpl(
     ImageCodec image_codec,
     bool shrink_to_fit,
     const gfx::Size& desired_image_frame_size) {
-  DCHECK(image_request);
-  DCHECK(image_request->task_runner());
+  CHECK(image_request, base::NotFatalUntil::M161);
+  CHECK(image_request->task_runner(), base::NotFatalUntil::M161);
 
   int request_id;
   {
@@ -184,7 +184,7 @@ template void ImageDecoder::StartWithOptionsImpl(ImageRequest*,
 
 // static
 void ImageDecoder::Cancel(ImageRequest* image_request) {
-  DCHECK(image_request);
+  CHECK(image_request, base::NotFatalUntil::M161);
   ImageDecoder::GetInstance()->CancelImpl(image_request);
 }
 
@@ -212,7 +212,8 @@ void ImageDecoder::OnDecodeImageSucceeded(const SkBitmap& decoded_image,
     image_request_id_map_.erase(it);
   }
 
-  DCHECK(image_request->task_runner()->RunsTasksInCurrentSequence());
+  CHECK(image_request->task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   image_request->OnImageDecoded(decoded_image);
 }
 
@@ -227,6 +228,7 @@ void ImageDecoder::OnDecodeImageFailed(int request_id) {
     image_request_id_map_.erase(it);
   }
 
-  DCHECK(image_request->task_runner()->RunsTasksInCurrentSequence());
+  CHECK(image_request->task_runner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   image_request->OnDecodeImageFailed();
 }

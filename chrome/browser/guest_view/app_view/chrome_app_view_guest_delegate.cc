@@ -23,7 +23,7 @@ bool ChromeAppViewGuestDelegate::HandleContextMenu(
     const content::ContextMenuParams& params) {
   ContextMenuDelegate* menu_delegate = ContextMenuDelegate::FromWebContents(
       content::WebContents::FromRenderFrameHost(&render_frame_host));
-  DCHECK(menu_delegate);
+  CHECK(menu_delegate, base::NotFatalUntil::M161);
 
   std::unique_ptr<RenderViewContextMenuBase> menu =
       menu_delegate->BuildMenu(render_frame_host, params);
@@ -34,7 +34,7 @@ bool ChromeAppViewGuestDelegate::HandleContextMenu(
 AppDelegate* ChromeAppViewGuestDelegate::CreateAppDelegate(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return new ChromeAppDelegate(profile, true);
 }
 

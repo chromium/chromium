@@ -224,7 +224,7 @@ void ImporterList::DetectSourceProfiles(
 
 const user_data_importer::SourceProfile& ImporterList::GetSourceProfileAt(
     size_t index) const {
-  DCHECK_LT(index, count());
+  CHECK_LT(index, count(), base::NotFatalUntil::M161);
   return source_profiles_[index];
 }
 

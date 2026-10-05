@@ -45,7 +45,7 @@ CrashIdsSource::CrashIdsSource()
 CrashIdsSource::~CrashIdsSource() = default;
 
 void CrashIdsSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Unretained since we own this callback.
   pending_requests_.emplace_back(

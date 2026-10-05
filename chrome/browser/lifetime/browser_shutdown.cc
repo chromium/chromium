@@ -103,9 +103,10 @@ const char* ToShutdownTypeString(ShutdownType type) {
 void CheckAccessedOnCorrectThread() {
   // Some APIs below are accessed after UI thread has been torn down, so cater
   // for both situations here.
-  DCHECK(
-      content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
-      !content::BrowserThread::IsThreadInitialized(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI) ||
+            !content::BrowserThread::IsThreadInitialized(
+                content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 }
 
 }  // namespace
@@ -129,7 +130,7 @@ void OnShutdownStarting(ShutdownType type) {
   // since we can't safely count the number of plugin processes from this
   // thread, and we'd really like to avoid anything which might add further
   // delays to shutdown time.
-  DCHECK(!g_shutdown_started);
+  CHECK(!g_shutdown_started, base::NotFatalUntil::M161);
   g_shutdown_started = new base::Time(base::Time::Now());
 
   // TODO(crbug.com/469788783):  Coverage builds appear to work without this. Check
@@ -228,7 +229,7 @@ void RecordShutdownMetrics() {
       time_metric_name = "Shutdown.OtherExit.Time2";
       break;
   }
-  DCHECK(time_metric_name);
+  CHECK(time_metric_name, base::NotFatalUntil::M161);
 
   if (g_shutdown_started) {
     base::TimeDelta shutdown_delta = base::Time::Now() - *g_shutdown_started;

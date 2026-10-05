@@ -47,7 +47,7 @@ ProcessIdFeedbackSource::~ProcessIdFeedbackSource() = default;
 void ProcessIdFeedbackSource::PrepareProcessIds() {
   // Browser child process info needs accessing on IO thread, while renderer
   // process info on UI thread.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   for (content::RenderProcessHost::iterator it(
            content::RenderProcessHost::AllHostsIterator());
@@ -68,7 +68,7 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  DCHECK(!obj.is_null());
+  CHECK(!obj.is_null(), base::NotFatalUntil::M161);
   Java_ProcessIdFeedbackSource_prepareCompleted(
       env, obj, reinterpret_cast<intptr_t>(this));
 }

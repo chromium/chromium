@@ -55,7 +55,7 @@ HeadlessChromeAction GetHeadlessChromeAction() {
 }  // namespace
 
 void ReportHeadlessActionMetrics() {
-  DCHECK(IsHeadlessMode());
+  CHECK(IsHeadlessMode(), base::NotFatalUntil::M161);
 
   HeadlessChromeAction action = GetHeadlessChromeAction();
   base::UmaHistogramEnumeration("Chrome.Headless.Action", action);

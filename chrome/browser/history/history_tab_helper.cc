@@ -82,7 +82,8 @@ bool ShouldConsiderForNtpMostVisited(
 #if BUILDFLAG(IS_ANDROID)
   // Clicks on content suggestions on the NTP should not contribute to the
   // Most Visited tiles in the NTP.
-  DCHECK(!navigation_handle->GetRedirectChain().empty());
+  CHECK(!navigation_handle->GetRedirectChain().empty(),
+        base::NotFatalUntil::M161);
   if (ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
       IsNavigationFromFeed(web_contents,
@@ -543,7 +544,8 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
-  DCHECK(navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary());
+  CHECK(navigation_handle->GetRenderFrameHost()->GetPage().IsPrimary(),
+        base::NotFatalUntil::M161);
 
   // Most of the time, the displayURL matches the loaded URL, but for about:
   // URLs, we use a data: URL as the real value.  We actually want to save the
@@ -601,7 +603,8 @@ void HistoryTabHelper::DidOpenRequestedURL(
   }
 
   // This should only be set once on a new tab helper.
-  DCHECK(!new_history_tab_helper->opener_web_contents_);
+  CHECK(!new_history_tab_helper->opener_web_contents_,
+        base::NotFatalUntil::M161);
   new_history_tab_helper->opener_web_contents_ = web_contents()->GetWeakPtr();
 }
 

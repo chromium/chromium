@@ -59,8 +59,8 @@ PerformanceLogSource::PerformanceLogSource() : SystemLogsSource("Performance") {
 PerformanceLogSource::~PerformanceLogSource() = default;
 
 void PerformanceLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   auto response = std::make_unique<SystemLogsResponse>();
   CHECK(tuning_manager_);

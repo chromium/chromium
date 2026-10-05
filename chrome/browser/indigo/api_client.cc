@@ -460,8 +460,8 @@ ApiClient::ApiClient(
       generate_url_(features::kIndigoGenerateUrl.Get()),
       status_url_(features::kIndigoStatusUrl.Get()),
       delete_url_(features::kIndigoDeleteUrl.Get()) {
-  DCHECK(identity_manager);
-  DCHECK(url_loader_factory);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
+  CHECK(url_loader_factory, base::NotFatalUntil::M161);
 
   identity_manager_observation_.Observe(identity_manager_);
   ReconstructRequestSender();

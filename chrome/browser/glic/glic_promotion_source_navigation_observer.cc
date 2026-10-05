@@ -128,7 +128,7 @@ void GlicPromotionSourceNavigationObserver::MaybeRegisterPromotionSourceCohort(
 
 void GlicPromotionSourceNavigationObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||

@@ -195,12 +195,12 @@ std::unique_ptr<content::HidChooser> ChromeHidDelegate::RunChooser(
     std::vector<blink::mojom::HidDeviceFilterPtr> filters,
     std::vector<blink::mojom::HidDeviceFilterPtr> exclusion_filters,
     content::HidChooser::Callback callback) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host, base::NotFatalUntil::M161);
   auto* browser_context = render_frame_host->GetBrowserContext();
 
   // Start observing HidChooserContext for permission and device events.
   GetContextObserver(browser_context);
-  DCHECK(observations_.contains(browser_context));
+  CHECK(observations_.contains(browser_context), base::NotFatalUntil::M161);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If it's a webview, request permission to show chooser from the embedder.
@@ -297,7 +297,7 @@ void ChromeHidDelegate::RemoveObserver(
   if (!browser_context) {
     return;
   }
-  DCHECK(observations_.contains(browser_context));
+  CHECK(observations_.contains(browser_context), base::NotFatalUntil::M161);
   GetContextObserver(browser_context)->RemoveObserver(observer);
 }
 
@@ -339,7 +339,7 @@ bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
 
 ChromeHidDelegate::ContextObservation* ChromeHidDelegate::GetContextObserver(
     content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
   if (!observations_.contains(browser_context)) {
     observations_.emplace(browser_context, std::make_unique<ContextObservation>(
                                                this, browser_context));

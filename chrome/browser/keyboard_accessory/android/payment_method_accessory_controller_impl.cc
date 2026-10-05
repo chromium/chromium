@@ -106,7 +106,7 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
 // TODO(crbug.com/430575808): Consolidate `TranslateCard()` and
 // `TranslateCachedCard()` into one method.
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M161);
   UserInfo user_info(data->network(), GetCardArtUrl(*data));
 
   std::u16string obfuscated_number =
@@ -130,7 +130,7 @@ UserInfo TranslateCard(const CreditCard* data, bool enabled) {
 }
 
 UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M161);
 
   const CreditCard& card = data->card;
   UserInfo user_info(card.is_bnpl_card() ? card.issuer_id() : card.network(),
@@ -163,13 +163,14 @@ const CreditCard* UnwrapCardOrVirtualCard(
   if (std::holds_alternative<std::unique_ptr<CreditCard>>(card)) {
     return std::get<std::unique_ptr<CreditCard>>(card).get();
   }
-  DCHECK(std::holds_alternative<const CreditCard*>(card));
+  CHECK(std::holds_alternative<const CreditCard*>(card),
+        base::NotFatalUntil::M161);
   return std::get<const CreditCard*>(card);
 }
 
 PromoCodeInfo TranslateOffer(const AutofillOfferData* data) {
-  DCHECK(data);
-  DCHECK(!data->GetPromoCode().empty());
+  CHECK(data, base::NotFatalUntil::M161);
+  CHECK(!data->GetPromoCode().empty(), base::NotFatalUntil::M161);
 
   std::u16string promo_code = base::ASCIIToUTF16(data->GetPromoCode());
   std::u16string details_text =
@@ -376,7 +377,7 @@ void PaymentMethodAccessoryControllerImpl::ApplyToField(
     return;  // If frame isn't focused anymore, don't attempt to fill.
   }
 
-  DCHECK(GetDriver());
+  CHECK(GetDriver(), base::NotFatalUntil::M161);
 
   GetDriver()->ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                 mojom::ActionPersistence::kFill,
@@ -394,7 +395,7 @@ void PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
     AutofillDriver* af_driver) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(mf_controller);
+  CHECK(mf_controller, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(
       UserDataKey(),
@@ -528,12 +529,12 @@ base::WeakPtr<ManualFillingController>
 PaymentMethodAccessoryControllerImpl::GetManualFillingController() {
   if (!mf_controller_)
     mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
-  DCHECK(mf_controller_);
+  CHECK(mf_controller_, base::NotFatalUntil::M161);
   return mf_controller_;
 }
 
 AutofillDriver* PaymentMethodAccessoryControllerImpl::GetDriver() {
-  DCHECK(GetWebContents().GetFocusedFrame());
+  CHECK(GetWebContents().GetFocusedFrame(), base::NotFatalUntil::M161);
   return af_driver_for_testing_ ? af_driver_for_testing_.get()
                                 : ContentAutofillDriver::GetForRenderFrameHost(
                                       GetWebContents().GetFocusedFrame());
@@ -550,7 +551,7 @@ PaymentMethodAccessoryControllerImpl::GetAutofillManager() {
   if (browser_autofill_manager_) {
     return browser_autofill_manager_.get();
   } else {
-    DCHECK(GetWebContents().GetFocusedFrame());
+    CHECK(GetWebContents().GetFocusedFrame(), base::NotFatalUntil::M161);
     if (af_manager_for_testing_) {
       return af_manager_for_testing_;
     }

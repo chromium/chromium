@@ -29,9 +29,10 @@ bool ChromeExtensionOptionsGuestDelegate::HandleContextMenu(
       extension_options_guest()->web_contents();
   ContextMenuDelegate* menu_delegate =
       ContextMenuDelegate::FromWebContents(web_contents);
-  DCHECK(menu_delegate);
-  DCHECK_EQ(web_contents,
-            content::WebContents::FromRenderFrameHost(&render_frame_host));
+  CHECK(menu_delegate, base::NotFatalUntil::M161);
+  CHECK_EQ(web_contents,
+           content::WebContents::FromRenderFrameHost(&render_frame_host),
+           base::NotFatalUntil::M161);
 
   std::unique_ptr<RenderViewContextMenuBase> menu =
       menu_delegate->BuildMenu(render_frame_host, params);

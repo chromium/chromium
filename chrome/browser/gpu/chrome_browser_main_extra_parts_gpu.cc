@@ -41,7 +41,7 @@ void ChromeBrowserMainExtraPartsGpu::PreCreateThreads() {
   // It's unsafe to append the gpu command line switches to the global
   // CommandLine::ForCurrentProcess object after threads are created.
   // 2) Must be after other parts' PreCreateThreads to pick up chrome://flags.
-  DCHECK(!content::GpuDataManager::Initialized());
+  CHECK(!content::GpuDataManager::Initialized(), base::NotFatalUntil::M161);
   content::GpuDataManager* manager = content::GpuDataManager::GetInstance();
   manager->AddObserver(this);
 }

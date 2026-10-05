@@ -22,13 +22,13 @@ class SystemLogsMemoryHandler : public MemoryDetails {
   // Sends the data to the callback.
   // MemoryDetails override.
   void OnDetailsAvailable() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     auto response = std::make_unique<SystemLogsResponse>();
     (*response)["mem_usage"] = ToLogString(/*include_tab_title=*/false);
     (*response)[feedback::FeedbackReport::kMemUsageWithTabTitlesKey] =
         ToLogString(/*include_tab_title=*/true);
-    DCHECK(!callback_.is_null());
+    CHECK(!callback_.is_null(), base::NotFatalUntil::M161);
     std::move(callback_).Run(std::move(response));
   }
 
@@ -44,8 +44,8 @@ MemoryDetailsLogSource::MemoryDetailsLogSource()
 MemoryDetailsLogSource::~MemoryDetailsLogSource() = default;
 
 void MemoryDetailsLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   scoped_refptr<SystemLogsMemoryHandler> handler(
       new SystemLogsMemoryHandler(std::move(callback)));

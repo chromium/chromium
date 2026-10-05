@@ -138,7 +138,7 @@ FeedbackUploaderChrome::FeedbackUploaderChrome(content::BrowserContext* context)
                        base::BindOnce(&CreateURLLoaderFactoryForBrowserContext,
                                       base::Unretained(context))),
       context_(context) {
-  DCHECK(!context_->IsOffTheRecord());
+  CHECK(!context_->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   task_runner()->PostTask(
       FROM_HERE,
@@ -157,7 +157,7 @@ base::WeakPtr<FeedbackUploader> FeedbackUploaderChrome::AsWeakPtr() {
 void FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
-  DCHECK(primary_account_token_fetcher_);
+  CHECK(primary_account_token_fetcher_, base::NotFatalUntil::M161);
   primary_account_token_fetcher_.reset();
   AccessTokenAvailable(error, access_token_info.token);
 }
@@ -165,7 +165,7 @@ void FeedbackUploaderChrome::PrimaryAccountAccessTokenAvailable(
 #if BUILDFLAG(PLATFORM_CFM)
 void FeedbackUploaderChrome::ActiveAccountAccessTokenAvailable(
     base::expected<std::string, GoogleServiceAuthError> access_token) {
-  DCHECK(active_account_token_fetcher_);
+  CHECK(active_account_token_fetcher_, base::NotFatalUntil::M161);
   active_account_token_fetcher_.reset();
   AccessTokenAvailable(
       access_token.error_or(GoogleServiceAuthError::AuthErrorNone()),
@@ -176,7 +176,7 @@ void FeedbackUploaderChrome::ActiveAccountAccessTokenAvailable(
 void FeedbackUploaderChrome::AccessTokenAvailable(GoogleServiceAuthError error,
                                                   std::string token) {
   if (error.state() == GoogleServiceAuthError::NONE) {
-    DCHECK(!token.empty());
+    CHECK(!token.empty(), base::NotFatalUntil::M161);
     access_token_ = std::move(token);
   } else {
     LOG(ERROR) << "Failed to get the access token. "
@@ -196,7 +196,7 @@ void FeedbackUploaderChrome::StartDispatchingReport() {
   // profile, we should pass the IdentityManager to FeedbackUploaderChrome's
   // ctor.
   Profile* profile = Profile::FromBrowserContext(context_);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 

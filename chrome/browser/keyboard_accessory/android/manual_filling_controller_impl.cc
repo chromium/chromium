@@ -85,11 +85,11 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
     std::unique_ptr<ManualFillingViewInterface> view) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(pwd_controller);
-  DCHECK(address_controller);
-  DCHECK(payment_method_controller);
-  DCHECK(at_memory_controller);
-  DCHECK(view);
+  CHECK(pwd_controller, base::NotFatalUntil::M161);
+  CHECK(address_controller, base::NotFatalUntil::M161);
+  CHECK(payment_method_controller, base::NotFatalUntil::M161);
+  CHECK(at_memory_controller, base::NotFatalUntil::M161);
+  CHECK(view, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(
       UserDataKey(),
@@ -105,7 +105,7 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
 void ManualFillingControllerImpl::OnAccessoryActionAvailabilityChanged(
     ShouldShowAction shouldShowAction,
     autofill::AccessoryAction action) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
   view_->OnAccessoryActionAvailabilityChanged(shouldShowAction, action);
 }
 
@@ -291,19 +291,19 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
   pwd_controller_ = ChromePasswordManagerClient::FromWebContents(web_contents)
                         ->GetOrCreatePasswordAccessory()
                         ->AsWeakPtr();
-  DCHECK(pwd_controller_);
+  CHECK(pwd_controller_, base::NotFatalUntil::M161);
 
   address_controller_ =
       AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-  DCHECK(address_controller_);
+  CHECK(address_controller_, base::NotFatalUntil::M161);
 
   payment_method_controller_ =
       PaymentMethodAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-  DCHECK(payment_method_controller_);
+  CHECK(payment_method_controller_, base::NotFatalUntil::M161);
 
   at_memory_controller_ =
       AtMemoryAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-  DCHECK(at_memory_controller_);
+  CHECK(at_memory_controller_, base::NotFatalUntil::M161);
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(

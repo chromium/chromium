@@ -176,7 +176,7 @@ void AddressAccessoryControllerImpl::CreateForWebContentsForTesting(
     base::WeakPtr<ManualFillingController> mf_controller) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(mf_controller);
+  CHECK(mf_controller, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(UserDataKey(),
                             base::WrapUnique(new AddressAccessoryControllerImpl(
@@ -227,7 +227,7 @@ base::WeakPtr<ManualFillingController>
 AddressAccessoryControllerImpl::GetManualFillingController() {
   if (!mf_controller_)
     mf_controller_ = ManualFillingController::GetOrCreate(&GetWebContents());
-  DCHECK(mf_controller_);
+  CHECK(mf_controller_, base::NotFatalUntil::M161);
   return mf_controller_;
 }
 

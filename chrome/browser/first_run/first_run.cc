@@ -161,7 +161,7 @@ void ImportFromFile(Profile* profile,
 void ImportSettings(Profile* profile,
                     std::unique_ptr<ImporterList> importer_list,
                     uint16_t items_to_import) {
-  DCHECK(items_to_import);
+  CHECK(items_to_import, base::NotFatalUntil::M161);
   const user_data_importer::SourceProfile& source_profile =
       importer_list->GetSourceProfileAt(0);
 
@@ -416,7 +416,7 @@ ProcessInitialPreferencesResult ProcessInitialPreferences(
     const base::FilePath& user_data_dir,
     std::unique_ptr<installer::InitialPreferences> initial_prefs,
     MasterPrefs* out_prefs) {
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M161);
 
   if (initial_prefs.get()) {
     // Don't show EULA when running in headless mode since this would

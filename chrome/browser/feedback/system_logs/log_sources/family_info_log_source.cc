@@ -32,7 +32,7 @@ FamilyInfoLogSource::FamilyInfoLogSource(
 FamilyInfoLogSource::~FamilyInfoLogSource() = default;
 
 void FamilyInfoLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(callback);
 
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -74,7 +74,7 @@ void FamilyInfoLogSource::OnListMembersResponse(
     SysLogsSourceCallback callback,
     const supervised_user::ProtoFetcherStatus& status,
     std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(callback);
   list_members_response_timeout_.Stop();
 
@@ -93,7 +93,7 @@ void FamilyInfoLogSource::OnListMembersResponse(
 
 void FamilyInfoLogSource::OnListMembersResponseTimeout(
     SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   RecordFetchUma(FamilyInfoLogSource::FetchStatus::kTimeout,
                  fetch_timer_.Elapsed(), /*immediately_available=*/false);
   fetcher_.reset();

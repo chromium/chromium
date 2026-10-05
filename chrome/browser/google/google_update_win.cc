@@ -104,7 +104,8 @@ bool IsElevationRequiredForSystemLevelUpdates() {
 GoogleUpdateErrorCode CanUpdateCurrentChrome(
     const base::FilePath& chrome_exe_path,
     bool system_level_install) {
-  DCHECK_NE(InstallUtil::IsPerUserInstall(), system_level_install);
+  CHECK_NE(InstallUtil::IsPerUserInstall(), system_level_install,
+           base::NotFatalUntil::M161);
 
   // The currently-running browser can only be updated by Google Update if it
   // is running from the same directory as the currently-installed browser
@@ -437,10 +438,12 @@ UpdateCheckDriver::UpdateCheckDriver(
       status_(UPGRADE_ERROR) {}
 
 UpdateCheckDriver::~UpdateCheckDriver() {
-  DCHECK(result_runner_->RunsTasksInCurrentSequence());
+  CHECK(result_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   // If there is an error, then error_code must not be blank, and vice versa.
-  DCHECK_NE(status_ == UPGRADE_ERROR,
-            update_state_.error_code == GOOGLE_UPDATE_NO_ERROR);
+  CHECK_NE(status_ == UPGRADE_ERROR,
+           update_state_.error_code == GOOGLE_UPDATE_NO_ERROR,
+           base::NotFatalUntil::M161);
 
   *GetLastUpdateStateStorage() = update_state_;
 
@@ -476,14 +479,16 @@ UpdateCheckDriver::~UpdateCheckDriver() {
 
 void UpdateCheckDriver::AddDelegate(
     const base::WeakPtr<UpdateCheckDelegate>& delegate) {
-  DCHECK(result_runner_->RunsTasksInCurrentSequence());
+  CHECK(result_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   delegates_.push_back(delegate);
 }
 
 void UpdateCheckDriver::NotifyUpgradeProgress(
     int progress,
     const std::u16string& new_version) {
-  DCHECK(result_runner_->RunsTasksInCurrentSequence());
+  CHECK(result_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
 
   for (const auto& delegate : delegates_) {
     if (delegate) {
@@ -514,7 +519,7 @@ void UpdateCheckDriver::BeginUpdateCheck() {
     }
   }
 
-  DCHECK(FAILED(result.hresult));
+  CHECK(FAILED(result.hresult), base::NotFatalUntil::M161);
   OnUpgradeError(result, std::nullopt, std::u16string());
   result_runner_->DeleteSoon(FROM_HERE, this);
 }
@@ -598,8 +603,8 @@ UpdateCheckResult UpdateCheckDriver::BeginUpdateCheckInternal() {
   // Get a reference to the Chrome app in the bundle.
   if (!app_) {
     const wchar_t* app_guid = install_static::GetAppGuid();
-    DCHECK(app_guid);
-    DCHECK(*app_guid);
+    CHECK(app_guid, base::NotFatalUntil::M161);
+    CHECK(*app_guid, base::NotFatalUntil::M161);
 
     Microsoft::WRL::ComPtr<IDispatch> dispatch;
     // It is common for this call to fail with APP_USING_EXTERNAL_UPDATER if
@@ -751,7 +756,7 @@ bool UpdateCheckDriver::IsFinalState(
     return true;
   }
   if (state_value == STATE_INSTALL_COMPLETE) {
-    DCHECK(install_update_if_possible_);
+    CHECK(install_update_if_possible_, base::NotFatalUntil::M161);
     *upgrade_status = UPGRADE_SUCCESSFUL;
     return true;
   }
@@ -771,7 +776,8 @@ bool UpdateCheckDriver::IsIntermediateState(
   // NO_UPDATE will have been handled in IsFinalState if not doing an install,
   // as will STATE_INSTALL_COMPLETE when doing an install. All other states
   // following UPDATE_AVAILABLE will only happen when an install is to be done.
-  DCHECK(state_value < STATE_UPDATE_AVAILABLE || install_update_if_possible_);
+  CHECK(state_value < STATE_UPDATE_AVAILABLE || install_update_if_possible_,
+        base::NotFatalUntil::M161);
   *progress = 0;
 
   switch (state_value) {

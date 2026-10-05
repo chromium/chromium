@@ -93,7 +93,7 @@ void DidGetProvidedFilesystemMetada(
     content::ContentBrowserClient::GetCloudIdentifiersCallback callback,
     std::unique_ptr<ash::file_system_provider::EntryMetadata> metadata,
     base::File::Error result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (result != base::File::FILE_OK || !metadata ||
       !metadata->cloud_identifier || !metadata->is_directory.get() ||

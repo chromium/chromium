@@ -76,7 +76,7 @@ void ScopedIncomingMessageResultLogger::LogAndDisarm() {
   // kResultNotSet rather than dropping the sample, so the histogram records
   // exactly one sample per incoming message and instrumentation gaps are
   // visible in released builds instead of silently undercounting.
-  DCHECK(result_.has_value());
+  CHECK(result_.has_value(), base::NotFatalUntil::M161);
   base::UmaHistogramEnumeration(
       IncomingMessageResultHistogramName(channel_),
       result_.value_or(

@@ -18,8 +18,8 @@ DeviceEventLogSource::DeviceEventLogSource()
 DeviceEventLogSource::~DeviceEventLogSource() = default;
 
 void DeviceEventLogSource::Fetch(SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   auto response = std::make_unique<SystemLogsResponse>();
   const int kMaxDeviceEventsForAboutSystem = 4000;

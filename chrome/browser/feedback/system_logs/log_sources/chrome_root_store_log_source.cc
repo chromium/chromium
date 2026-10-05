@@ -60,12 +60,12 @@ ChromeRootStoreLogSource::~ChromeRootStoreLogSource() = default;
 
 void ChromeRootStoreLogSource::Fetch(
     system_logs::SysLogsSourceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!callback.is_null());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   cert_verifier::mojom::CertVerifierServiceFactory* factory =
       content::GetCertVerifierServiceFactory();
-  DCHECK(factory);
+  CHECK(factory, base::NotFatalUntil::M161);
   factory->GetChromeRootStoreInfo(
       base::BindOnce(&PopulateChromeRootStoreLogsAsync, std::move(callback)));
 }

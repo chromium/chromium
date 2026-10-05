@@ -39,7 +39,7 @@ GlicMarketingPageTabHelper::~GlicMarketingPageTabHelper() = default;
 
 void GlicMarketingPageTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!base::FeatureList::IsEnabled(features::kGlicMarketingAutoOpen)) {
     return;
