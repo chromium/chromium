@@ -78,8 +78,10 @@ bool CookieCache::CookieAndValueComparator::operator()(
   if (lhs.Name() != rhs.Name()) {
     return lhs.Name() < rhs.Name();
   }
-  if (lhs.Value() != rhs.Value()) {
-    return lhs.Value() < rhs.Value();
+  const std::string lhs_value = lhs.Value();
+  const std::string rhs_value = rhs.Value();
+  if (lhs_value != rhs_value) {
+    return lhs_value < rhs_value;
   }
   return false;
 }

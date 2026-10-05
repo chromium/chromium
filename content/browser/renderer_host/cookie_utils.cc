@@ -405,10 +405,19 @@ void EmitCookieWarningsAndMetrics(
     }
 
     if (cookie->cookie_or_line->is_cookie()) {
+      const net::CanonicalCookie& canonical_cookie =
+          cookie->cookie_or_line->get_cookie();
+      const std::string cookie_value = canonical_cookie.Value();
       PotentiallyRecordNonAsciiCookieNameValue(
-          rfh, cookie_details->type,
-          cookie->cookie_or_line->get_cookie().Name(),
-          cookie->cookie_or_line->get_cookie().Value());
+          rfh, cookie_details->type, canonical_cookie.Name(), cookie_value);
+
+      if (cookie_details->type == CookieAccessDetails::Type::kChange &&
+          canonical_cookie.Name().empty()) {
+        cookie_set_has_empty_name = true;
+        if (cookie_value.contains('=')) {
+          cookie_set_has_empty_name_and_ambiguous_value = true;
+        }
+      }
     }
 
     PotentiallyRecordCookieOriginMismatch(rfh, cookie_details->type, status);
@@ -432,15 +441,6 @@ void EmitCookieWarningsAndMetrics(
           days_since_refresh > 300 && days_since_refresh <= 350;
       cookie_has_not_been_refreshed_in_351_to_400_days |=
           days_since_refresh > 350 && days_since_refresh <= 400;
-    }
-
-    if (cookie_details->type == CookieAccessDetails::Type::kChange &&
-        cookie->cookie_or_line->is_cookie() &&
-        cookie->cookie_or_line->get_cookie().Name().empty()) {
-      cookie_set_has_empty_name = true;
-      if (cookie->cookie_or_line->get_cookie().Value().contains('=')) {
-        cookie_set_has_empty_name_and_ambiguous_value = true;
-      }
     }
   }
 
