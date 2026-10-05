@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/reporting/profile_report_generator_ios.h"
 
+#import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -38,6 +39,18 @@ std::optional<CoreAccountInfo> GetAccountInfo(ProfileIOS* profile) {
              : std::nullopt;
 }
 
+// Returns the profile name from `path`.
+std::string GetProfileNameFromPath(const base::FilePath& path) {
+  // The `path` used for the report on iOS is a sanitized name that
+  // use the format /Profile/{ProfileName}. Check this is the case,
+  // and then return the last component, or an empty string if not.
+  const std::vector<std::string> components = path.GetComponents();
+  CHECK_EQ(components.size(), 3u);
+  CHECK_EQ(components[0], FILE_PATH_LITERAL("/"));
+  CHECK_EQ(components[1], FILE_PATH_LITERAL("Profile"));
+  return components.back();
+}
+
 }  // namespace
 
 ProfileReportGeneratorIOS::ProfileReportGeneratorIOS() = default;
@@ -45,9 +58,11 @@ ProfileReportGeneratorIOS::ProfileReportGeneratorIOS() = default;
 ProfileReportGeneratorIOS::~ProfileReportGeneratorIOS() = default;
 
 bool ProfileReportGeneratorIOS::Init(const base::FilePath& path) {
-  // TODO(crbug.com/356050207): this API should not assume that the name of
-  // a Profile can be derived from its path.
-  const std::string name = path.BaseName().AsUTF8Unsafe();
+  const std::string name = GetProfileNameFromPath(path);
+  if (name.empty()) {
+    return false;
+  }
+
   profile_ =
       GetApplicationContext()->GetProfileManager()->GetProfileWithName(name);
   return profile_ != nullptr;
