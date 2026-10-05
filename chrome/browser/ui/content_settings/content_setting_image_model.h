@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
@@ -69,7 +70,7 @@ class ContentSettingImageModel {
   GenerateContentSettingImageModels();
 
   // Returns all element identifiers for all content setting image models.
-  static std::vector<ui::ElementIdentifier> GetAllElementIdentifiers();
+  static base::span<const ui::ElementIdentifier> GetAllElementIdentifiers();
 
   // Returns whether `image_type` is drawn as a left-hand-side activity
   // indicator by the permission dashboard, rather than as a right-hand-side

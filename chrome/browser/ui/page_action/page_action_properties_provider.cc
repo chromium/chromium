@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 
+#include <algorithm>
+#include <array>
+
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -392,15 +395,23 @@ bool PageActionPropertiesProvider::Contains(actions::ActionId action_id) const {
 }
 
 // static
-std::vector<ui::ElementIdentifier>
+base::span<const ui::ElementIdentifier>
 PageActionPropertiesProvider::GetAllElementIdentifiers() {
-  std::vector<ui::ElementIdentifier> result;
-  for (const auto& [action_id, properties] : kPageActionProperties) {
-    if (properties.element_identifier) {
-      result.push_back(properties.element_identifier);
+  static constexpr auto kElementIdentifiers = []() consteval {
+    constexpr size_t kCount =
+        std::ranges::count_if(kPageActionProperties, [](const auto& entry) {
+          return static_cast<bool>(entry.second.element_identifier);
+        });
+    std::array<ui::ElementIdentifier, kCount> result;
+    size_t index = 0;
+    for (const auto& [action_id, properties] : kPageActionProperties) {
+      if (properties.element_identifier) {
+        result[index++] = properties.element_identifier;
+      }
     }
-  }
-  return result;
+    return result;
+  }();
+  return kElementIdentifiers;
 }
 
 const PageActionProperties& PageActionPropertiesProvider::GetProperties(

@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/containers/span.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -19,7 +20,7 @@ namespace webui_toolbar {
 
 // Get the list of ElementIdentifiers for the WebUI-specific pinned toolbar
 // actions.
-std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds();
+base::span<const ui::ElementIdentifier> GetPinnedToolbarActionElementIds();
 
 // Convert Pinned Toolbar Action `action` into an ElementIdentifier.
 ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action);

@@ -6,8 +6,8 @@
 #define UI_WEBUI_TRACKED_ELEMENT_TRACKED_ELEMENT_HANDLER_DOCUMENT_SINGLETON_H_
 
 #include <optional>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -31,7 +31,7 @@ class TrackedElementHandlerDocumentSingleton {
   // This should be called by the WebUIController during its construction.
   // If `context_getter` is_null, the `controller` is used as the context.
   static void Register(content::WebUIController* controller,
-                       std::vector<ui::ElementIdentifier> identifiers,
+                       base::span<const ui::ElementIdentifier> identifiers,
                        ContextGetter context_getter = {});
 
   // Returns the TrackedElementHandler for the given `rfh`, creating it if

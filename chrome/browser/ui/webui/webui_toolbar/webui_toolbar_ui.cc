@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -583,48 +585,60 @@ WebUIToolbarUI::GetOrCreateContextualSessionHandle() {
   return session_handle_.get();
 }
 
-const std::vector<ui::ElementIdentifier>
+// static
+base::span<const ui::ElementIdentifier>
 WebUIToolbarUI::GetKnownElementIdentifiers() {
-  static const base::NoDestructor<std::vector<ui::ElementIdentifier>> ids(
-      {kLocationBarElementId,
-       kLocationIconElementId,
-       kOmniboxElementId,
-       kReloadButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId,
-       kToolbarHomeButtonElementId,
-       kToolbarBackButtonElementId,
-       kToolbarForwardButtonElementId,
-       kToolbarOverflowButtonElementId,
-       kSharedTabGroupFeedbackElementId,
-       kToolbarAppMenuButtonElementId,
-       kSharedTabGroupCommentsActionElementId,
-       kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
-       kPinnedToolbarActionShowSidePanelBookmarksElementId,
-       kPinnedToolbarActionShowSidePanelContextualTasksElementId,
-       kPinnedToolbarActionSendTabToSelfElementId,
-       kToolbarAvatarButtonElementId,
-       kGlicButtonElementId,
-       kToolbarPerformanceInterventionButtonElementId,
-       PermissionChipView::kPermissionRequestChipElementId,
-       PermissionChipView::kIndicatorChipElementId,
-       kToolbarBatterySaverButtonElementId,
-       kExtensionsMenuButtonElementId,
-       kToolbarActionViewElementId,
-       kExtensionsPinnedByDefaultElementId,
-       kToolbarMediaButtonElementId});
-  auto result = webui_toolbar::GetPinnedToolbarActionElementIds();
-  std::vector<ui::ElementIdentifier> content_setting_identifiers =
-      ContentSettingImageModel::GetAllElementIdentifiers();
-  std::vector<ui::ElementIdentifier> page_action_identifiers =
-      page_actions::PageActionPropertiesProvider::GetAllElementIdentifiers();
-  result.reserve(result.size() + ids->size() +
-                 content_setting_identifiers.size() +
-                 page_action_identifiers.size());
-  result.insert(result.end(), ids->begin(), ids->end());
-  result.insert(result.end(), content_setting_identifiers.begin(),
-                content_setting_identifiers.end());
-  result.insert(result.end(), page_action_identifiers.begin(),
-                page_action_identifiers.end());
+  static const base::NoDestructor<std::vector<ui::ElementIdentifier>>
+      kKnownElementIdentifiers([] {
+        constexpr auto kIds = std::to_array<ui::ElementIdentifier>({
+            kLocationBarElementId,
+            kLocationIconElementId,
+            kOmniboxElementId,
+            kReloadButtonElementId,
+            kToolbarSplitTabsToolbarButtonElementId,
+            kToolbarHomeButtonElementId,
+            kToolbarBackButtonElementId,
+            kToolbarForwardButtonElementId,
+            kToolbarOverflowButtonElementId,
+            kSharedTabGroupFeedbackElementId,
+            kToolbarAppMenuButtonElementId,
+            kSharedTabGroupCommentsActionElementId,
+            kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
+            kPinnedToolbarActionShowSidePanelBookmarksElementId,
+            kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+            kPinnedToolbarActionSendTabToSelfElementId,
+            kToolbarAvatarButtonElementId,
+            kGlicButtonElementId,
+            kToolbarPerformanceInterventionButtonElementId,
+            PermissionChipView::kPermissionRequestChipElementId,
+            PermissionChipView::kIndicatorChipElementId,
+            kToolbarBatterySaverButtonElementId,
+            kExtensionsMenuButtonElementId,
+            kToolbarActionViewElementId,
+            kExtensionsPinnedByDefaultElementId,
+            kToolbarMediaButtonElementId,
+        });
+        base::span<const ui::ElementIdentifier>
+            pinned_toolbar_action_identifiers =
+                webui_toolbar::GetPinnedToolbarActionElementIds();
+        base::span<const ui::ElementIdentifier> content_setting_identifiers =
+            ContentSettingImageModel::GetAllElementIdentifiers();
+        base::span<const ui::ElementIdentifier> page_action_identifiers =
+            page_actions::PageActionPropertiesProvider::
+                GetAllElementIdentifiers();
 
-  return result;
+        std::vector<ui::ElementIdentifier> result;
+        result.reserve(pinned_toolbar_action_identifiers.size() + kIds.size() +
+                       content_setting_identifiers.size() +
+                       page_action_identifiers.size());
+        result.insert(result.end(), pinned_toolbar_action_identifiers.begin(),
+                      pinned_toolbar_action_identifiers.end());
+        result.insert(result.end(), kIds.begin(), kIds.end());
+        result.insert(result.end(), content_setting_identifiers.begin(),
+                      content_setting_identifiers.end());
+        result.insert(result.end(), page_action_identifiers.begin(),
+                      page_action_identifiers.end());
+        return result;
+      }());
+  return *kKnownElementIdentifiers;
 }

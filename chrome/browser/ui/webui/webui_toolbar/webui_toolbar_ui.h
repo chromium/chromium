@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string_view>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -164,7 +164,7 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
   // UIs.
-  static const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers();
+  static base::span<const ui::ElementIdentifier> GetKnownElementIdentifiers();
 
   OmniboxController* omnibox_controller_for_testing() const {
     return omnibox_controller_;

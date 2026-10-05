@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 
+#include <array>
+
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -69,8 +71,10 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarSidePanelShowShoppingInsightsElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarTabSearchElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kToolbarTaskManagerElementId);
 
-std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
-  return {webui_toolbar::kToolbarClearBrowsingDataElementId,
+base::span<const ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
+  static constexpr auto kPinnedToolbarActionElementIds =
+      std::to_array<ui::ElementIdentifier>({
+          webui_toolbar::kToolbarClearBrowsingDataElementId,
           webui_toolbar::kToolbarCopyUrlElementId,
           webui_toolbar::kToolbarDevToolsElementId,
           webui_toolbar::kToolbarNewIncognitoWindowElementId,
@@ -92,7 +96,9 @@ std::vector<ui::ElementIdentifier> GetPinnedToolbarActionElementIds() {
           webui_toolbar::kToolbarSidePanelShowReadingListElementId,
           webui_toolbar::kToolbarSidePanelShowShoppingInsightsElementId,
           webui_toolbar::kToolbarTabSearchElementId,
-          webui_toolbar::kToolbarTaskManagerElementId};
+          webui_toolbar::kToolbarTaskManagerElementId,
+      });
+  return kPinnedToolbarActionElementIds;
 }
 
 ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action) {

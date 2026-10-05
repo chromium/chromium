@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <utility>
 
@@ -118,7 +119,7 @@ using ImageType = ContentSettingImageModel::ImageType;
 
 // The ordering of the models here influences the order in which icons are
 // shown in the omnibox.
-constexpr ImageType kContentSettingImageOrder[] = {
+constexpr auto kContentSettingImageOrder = std::to_array<ImageType>({
     ImageType::kCookies,
     ImageType::kImages,
     ImageType::kJavaScript,
@@ -142,9 +143,10 @@ constexpr ImageType kContentSettingImageOrder[] = {
 #if BUILDFLAG(IS_WIN)
     ImageType::kProtectedMediaIdentifier,
 #endif
-};
+});
 
-ui::ElementIdentifier GetElementIdentifierForType(ImageType image_type) {
+constexpr ui::ElementIdentifier GetElementIdentifierForType(
+    ImageType image_type) {
   switch (image_type) {
     case ImageType::kCookies:
       return ContentSettingImageModel::kCookiesIconElementId;
@@ -1596,15 +1598,15 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
 }
 
 // static
-std::vector<ui::ElementIdentifier>
+base::span<const ui::ElementIdentifier>
 ContentSettingImageModel::GetAllElementIdentifiers() {
-  std::vector<ui::ElementIdentifier> result;
-  result.reserve(std::size(kContentSettingImageOrder));
-  for (auto type : kContentSettingImageOrder) {
-    result.push_back(GetElementIdentifierForType(type));
-  }
-
-  return result;
+  static constexpr auto kAllElementIdentifiers = []() consteval {
+    std::array<ui::ElementIdentifier, kContentSettingImageOrder.size()> result;
+    std::ranges::transform(kContentSettingImageOrder, result.begin(),
+                           GetElementIdentifierForType);
+    return result;
+  }();
+  return kAllElementIdentifiers;
 }
 
 // static

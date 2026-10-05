@@ -10,6 +10,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/document_user_data.h"
@@ -53,9 +54,10 @@ class TrackedElementHandlerConfig
 
  private:
   friend class content::WebContentsUserData<TrackedElementHandlerConfig>;
-  TrackedElementHandlerConfig(content::WebContents* web_contents,
-                              ContextGetter context_getter,
-                              std::vector<ui::ElementIdentifier> identifiers)
+  TrackedElementHandlerConfig(
+      content::WebContents* web_contents,
+      ContextGetter context_getter,
+      base::span<const ui::ElementIdentifier> identifiers)
       : content::WebContentsUserData<TrackedElementHandlerConfig>(
             *web_contents),
         context_getter_(std::move(context_getter)) {
@@ -126,7 +128,7 @@ DOCUMENT_USER_DATA_KEY_IMPL(TrackedElementHandlerUserData);
 // static
 void TrackedElementHandlerDocumentSingleton::Register(
     content::WebUIController* controller,
-    std::vector<ui::ElementIdentifier> identifiers,
+    base::span<const ui::ElementIdentifier> identifiers,
     ContextGetter maybe_context_getter) {
   if (!controller || !controller->web_ui()) {
     return;
@@ -154,7 +156,7 @@ void TrackedElementHandlerDocumentSingleton::Register(
         [](ui::ElementContext context) { return context; }, std::move(context));
   }
   TrackedElementHandlerConfig::CreateForWebContents(
-      web_contents, std::move(maybe_context_getter), std::move(identifiers));
+      web_contents, std::move(maybe_context_getter), identifiers);
   const TrackedElementHandlerConfig* const config =
       TrackedElementHandlerConfig::FromWebContents(web_contents);
 
