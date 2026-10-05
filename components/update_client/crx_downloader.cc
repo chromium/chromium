@@ -243,6 +243,8 @@ std::ostream& operator<<(
       return os << "bits";
     case CrxDownloader::DownloadMetrics::kBackgroundMac:
       return os << "nsurlsession_background";
+    case CrxDownloader::DownloadMetrics::kDeliveryOptimization:
+      return os << "delivery_optimization";
   }
   return os << "unknown(" << std::to_underlying(downloader) << ")";
 }

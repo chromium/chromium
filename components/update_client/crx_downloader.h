@@ -34,7 +34,13 @@ namespace update_client {
 class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
  public:
   struct DownloadMetrics {
-    enum Downloader { kNone = 0, kUrlFetcher, kBits, kBackgroundMac };
+    enum Downloader {
+      kNone = 0,
+      kUrlFetcher,
+      kBits,
+      kBackgroundMac,
+      kDeliveryOptimization,
+    };
 
     GURL url;
 

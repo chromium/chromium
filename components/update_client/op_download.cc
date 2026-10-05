@@ -55,6 +55,8 @@ const char* DownloaderToString(CrxDownloader::DownloadMetrics::Downloader d) {
       return "bits";
     case CrxDownloader::DownloadMetrics::kBackgroundMac:
       return "nsurlsession_background";
+    case CrxDownloader::DownloadMetrics::kDeliveryOptimization:
+      return "delivery_optimization";
     default:
       return "unknown";
   }

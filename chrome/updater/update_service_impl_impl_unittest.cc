@@ -146,6 +146,13 @@ INSTANTIATE_TEST_SUITE_P(
              IDS_GENERIC_DOWNLOAD_ERROR_BASE,
              L"update_client::CrxDownloaderError::BITS_TOO_MANY_JOBS"))},
         {UpdateService::ErrorCategory::kDownload,
+         std::to_underlying(
+             update_client::CrxDownloaderError::DO_TOO_MANY_DOWNLOADS),
+         {},
+         base::WideToUTF8(GetLocalizedStringF(
+             IDS_GENERIC_DOWNLOAD_ERROR_BASE,
+             L"update_client::CrxDownloaderError::DO_TOO_MANY_DOWNLOADS"))},
+        {UpdateService::ErrorCategory::kDownload,
          std::to_underlying(update_client::CrxDownloaderError::GENERIC_ERROR),
          {},
          base::WideToUTF8(GetLocalizedStringF(

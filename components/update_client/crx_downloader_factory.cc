@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -19,6 +20,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
+#include "components/update_client/delivery_optimization_downloader_win.h"
 #elif BUILDFLAG(IS_MAC)
 #include "components/update_client/background_downloader_mac.h"
 #endif
@@ -71,8 +73,17 @@ scoped_refptr<CrxDownloader> CrxDownloaderFactoryChromium::MakeCrxDownloader(
         url_fetcher_downloader, background_downloader_shared_session_,
         background_sequence_);
 #elif BUILDFLAG(IS_WIN)
-    return base::MakeRefCounted<BackgroundDownloader>(url_fetcher_downloader,
-                                                      prod_id);
+    scoped_refptr<CrxDownloader> bits_downloader =
+        base::MakeRefCounted<BackgroundDownloader>(url_fetcher_downloader,
+                                                   prod_id);
+    if (base::FeatureList::IsEnabled(kDeliveryOptimizationDownloader)) {
+      // Delivery Optimization -> BITS -> URL fetcher. If DO is unavailable
+      // on the host, the DO downloader fails fast and the download falls
+      // through to BITS.
+      return base::MakeRefCounted<DeliveryOptimizationDownloader>(
+          bits_downloader, prod_id);
+    }
+    return bits_downloader;
 #endif
   }
 
