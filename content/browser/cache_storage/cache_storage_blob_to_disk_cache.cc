@@ -111,7 +111,9 @@ void CacheStorageBlobToDiskCache::RunCallback(bool success) {
 void CacheStorageBlobToDiskCache::OnDataPipeReadable(MojoResult unused) {
   // Get the handle_ from a previous read operation if we have one.
   if (pending_read_) {
-    CHECK(pending_read_->IsComplete(), base::NotFatalUntil::M158);
+    // TODO(crbug.com/569402984): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(pending_read_->IsComplete());
     consumer_handle_ = pending_read_->ReleaseHandle();
     pending_read_ = nullptr;
   }
