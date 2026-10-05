@@ -4,20 +4,13 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_bitmap_provider.h"
 
-#include <inttypes.h>
-
 #include <memory>
 #include <utility>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
@@ -30,37 +23,9 @@ namespace blink {
 Canvas2DBitmapProvider::Canvas2DBitmapProvider(sk_sp<SkSurface> surface)
     : surface_(std::move(surface)) {
   CHECK(surface_);
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
-Canvas2DBitmapProvider::~Canvas2DBitmapProvider() {
-  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-}
-
-void Canvas2DBitmapProvider::OnMemoryDump(
-    base::trace_event::ProcessMemoryDump* pmd) {
-  std::string dump_name =
-      base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(surface_.get()));
-  auto* dump = pmd->CreateAllocatorDump(dump_name);
-
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                  GetSize());
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                  base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
-
-  if (const char* system_allocator_name =
-          base::trace_event::MemoryDumpManager::GetInstance()
-              ->system_allocator_pool_name()) {
-    pmd->AddSuballocation(dump->guid(), system_allocator_name);
-  }
-}
-
-size_t Canvas2DBitmapProvider::GetSize() const {
-  SkImageInfo info = surface_->imageInfo();
-  return info.computeByteSize(info.minRowBytes());
-}
+Canvas2DBitmapProvider::~Canvas2DBitmapProvider() = default;
 
 std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
     gfx::Size size,

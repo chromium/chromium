@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/viz/common/resources/shared_image_format.h"
-#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -26,8 +25,7 @@ namespace blink {
 // supported : cannot be directly composited. For usage by (Offscreen)Canvas2D
 // as a last-case resort when it is not possible to create
 // Canvas2DResourceProvider.
-class PLATFORM_EXPORT Canvas2DBitmapProvider final
-    : public CanvasMemoryDumpClient {
+class PLATFORM_EXPORT Canvas2DBitmapProvider final {
  public:
   // The returned instance will have been cleared at creation.
   static std::unique_ptr<Canvas2DBitmapProvider> CreateWithClear(
@@ -42,10 +40,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
  private:
   explicit Canvas2DBitmapProvider(sk_sp<SkSurface> surface);
-
-  // CanvasMemoryDumpClient implementation.
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
-  size_t GetSize() const override;
 
   const sk_sp<SkSurface> surface_;
 };

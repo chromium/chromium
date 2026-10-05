@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.h"
 
+#include <inttypes.h>
+
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/byte_size.h"
@@ -22,8 +25,12 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
@@ -170,6 +177,9 @@ BaseRenderingContext2D::BaseRenderingContext2D(
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
+  if (bitmap_provider_) {
+    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+  }
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
@@ -192,7 +202,10 @@ bool BaseRenderingContext2D::IsResourceProviderValid() const {
 
 void BaseRenderingContext2D::ResetResourceProvider() {
   shared_image_provider_.reset();
-  bitmap_provider_.reset();
+  if (bitmap_provider_) {
+    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+    bitmap_provider_.reset();
+  }
   canvas_image_provider_.reset();
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
@@ -234,10 +247,42 @@ void BaseRenderingContext2D::CreateBitmapProvider() {
       Host()->Size(), color_params_.GetSharedImageFormat(),
       color_params_.GetAlphaType(), color_params_.GetGfxColorSpace());
   if (bitmap_provider_) {
+    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
     sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
     sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
     sw_snapshot_sk_image_id_ = 0u;
   }
+}
+
+void BaseRenderingContext2D::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
+  // while `bitmap_provider_` is non-null.
+  CHECK(bitmap_provider_);
+  std::string dump_name = base::StringPrintf(
+      "canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(bitmap_provider_->surface()));
+  auto* dump = pmd->CreateAllocatorDump(dump_name);
+
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  GetSize());
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                  base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
+
+  if (const char* system_allocator_name =
+          base::trace_event::MemoryDumpManager::GetInstance()
+              ->system_allocator_pool_name()) {
+    pmd->AddSuballocation(dump->guid(), system_allocator_name);
+  }
+}
+
+size_t BaseRenderingContext2D::GetSize() const {
+  // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
+  // while `bitmap_provider_` is non-null.
+  CHECK(bitmap_provider_);
+  SkImageInfo info = bitmap_provider_->surface()->imageInfo();
+  return info.computeByteSize(info.minRowBytes());
 }
 
 void BaseRenderingContext2D::OnContextDestroyed() {

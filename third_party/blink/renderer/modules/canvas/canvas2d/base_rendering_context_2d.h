@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -83,6 +84,7 @@ class MODULES_EXPORT BaseRenderingContext2D
       public Canvas2DRecorderContext,
       public MemoryManagedPaintRecorder::Client,
       public FlushForImageObserver,
+      public CanvasMemoryDumpClient,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
@@ -389,6 +391,10 @@ class MODULES_EXPORT BaseRenderingContext2D
   void WillUseCurrentFont() const;
 
   scoped_refptr<StaticBitmapImage> UnacceleratedSnapshot();
+
+  // CanvasMemoryDumpClient implementation.
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
+  size_t GetSize() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
