@@ -22,6 +22,23 @@
     <button id="second-btn">Second</button>
   </template>
 </div>
+<button id="before-btn">Before</button>
+<div id="outer-slot-host">
+  <template shadowrootmode="open">
+    <button id="outer-slot-before-btn">Before slot</button>
+    <slot></slot>
+    <button id="outer-slot-after-btn">After slot</button>
+  </template>
+  <div id="slotted-host">
+    <template shadowrootmode="open">
+      <div id="nested-slot-host">
+        <template shadowrootmode="open"><slot name="nested-slot"></slot></template>
+        <button id="slotted-host-btn" slot="nested-slot">Inside slotted host</button>
+      </div>
+    </template>
+  </div>
+</div>
+<button id="after-btn">After</button>
 
 <script>
 function assert_focusable(actual, { target = null, pseudoElement = null, shadowHost = null } = {}) {
@@ -42,6 +59,12 @@ const deepBtn = innerSR.appendChild(document.createElement("button"));
 const slotHost = document.getElementById("slot-host");
 const slotSR = slotHost.shadowRoot;
 const slottedBtn = document.getElementById("slotted-btn");
+
+const beforeBtn = document.getElementById("before-btn");
+const afterBtn = document.getElementById("after-btn");
+const outerSlotHost = document.getElementById("outer-slot-host");
+const slottedHost = document.getElementById("slotted-host");
+const slottedHostBtn = slottedHost.shadowRoot.getElementById("slotted-host-btn");
 
 test((t) => {
   t.add_cleanup(() => document.activeElement?.blur());
@@ -74,11 +97,45 @@ test((t) => {
   t.add_cleanup(() => slottedBtn.blur());
 
   slottedBtn.focus();
-  assert_focusable(document.activeFocusable, { target: slottedBtn });
+  assert_focusable(document.activeFocusable, { shadowHost: slotHost });
   assert_equals(document.activeElement, slottedBtn);
   assert_equals(slotSR.activeFocusable, null);
   assert_equals(slotSR.activeElement, null);
 }, "activeFocusable when a slotted light DOM element is focused");
+
+test((t) => {
+  t.add_cleanup(() => slottedHostBtn.blur());
+
+  // The focused button is inside the shadow tree of `slottedHost`, which is
+  // itself slotted into the shadow tree of `outerSlotHost`. `activeElement`
+  // is `slottedHost`, but `activeFocusable` exposes the outermost shadow host.
+  slottedHostBtn.focus();
+  assert_equals(document.activeElement, slottedHost);
+  assert_focusable(document.activeFocusable, { shadowHost: outerSlotHost });
+
+  // `outerSlotHost` is a single entry in the sequential focus order, so the
+  // buttons around the slot in its shadow tree are skipped.
+  assert_focusable(document.activeFocusable.nextFocusable(), { target: afterBtn });
+  assert_focusable(document.activeFocusable.previousFocusable(), { target: beforeBtn });
+}, "activeFocusable when focus is inside a shadow host slotted into another shadow tree");
+
+test((t) => {
+  t.add_cleanup(() => {
+    slottedHostBtn.slot = "nested-slot";
+    slottedHostBtn.blur();
+  });
+
+  slottedHostBtn.focus();
+  const focusable = document.activeFocusable;
+  assert_focusable(focusable, { shadowHost: outerSlotHost });
+
+  // Once the button is no longer slotted, it's not in the flat tree anymore,
+  // but it's still inside the shadow tree of `slottedHost`, so `outerSlotHost`
+  // is still skipped rather than returned again.
+  slottedHostBtn.slot = "no-such-slot";
+  assert_focusable(focusable.nextFocusable(), { target: afterBtn });
+  assert_focusable(focusable.previousFocusable(), { target: beforeBtn });
+}, "nextFocusable() and previousFocusable() after the focusable item leaves the flat tree");
 
 test((t) => {
   const delegatingHost = document.getElementById("delegating-host");

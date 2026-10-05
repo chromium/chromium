@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
@@ -17,6 +18,51 @@
 #include "third_party/blink/renderer/core/page/page.h"
 
 namespace blink {
+
+namespace {
+
+// Returns the outermost shadow host in (or above) `caller_scope` that contains
+// `element` (or the originating element of a pseudo-element) in a shadow tree
+// that is not exposed to `caller_scope`, i.e. `element` is inside the shadow
+// host's shadow tree, or slotted into it. Returns nullptr if `element` is
+// exposed to `caller_scope`.
+Element* ContainingShadowHost(const Element& element,
+                              const TreeScope& caller_scope) {
+  const Element* current = &element;
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(current)) {
+    current = &pseudo_element->UltimateOriginatingElement();
+  }
+  // Walk up the flat tree, so that this finds the shadow trees that `element`
+  // is slotted into as well (via the slots it's assigned to), and retarget the
+  // ancestors against `caller_scope`. The outermost ancestor that is not
+  // exposed to `caller_scope` is retargeted to the outermost shadow host.
+  Element* shadow_host = nullptr;
+  for (; current; current = FlatTreeTraversal::ParentElement(*current)) {
+    // User-Agent shadow trees (e.g. of <details>) shouldn't hide anything
+    // slotted into them. Built-in controls with focusable elements in their
+    // User-Agent shadow tree are exposed as the control itself instead (see
+    // `CreateFromElement()`).
+    if (current->IsInUserAgentShadowRoot()) {
+      continue;
+    }
+    Element* retargeted = &caller_scope.Retarget(*current);
+    if (retargeted != current) {
+      shadow_host = retargeted;
+      // The flat tree ancestors of `current` up to `shadow_host` are all inside
+      // its shadow tree too, so they would be retargeted to it as well. Skip
+      // straight to it. This is also needed if `current` isn't in the flat tree
+      // (e.g. if it isn't assigned to a slot), since walking up from it would
+      // stop right away, missing any shadow tree `shadow_host` is slotted into.
+      current = shadow_host;
+    }
+  }
+  // Since `caller_scope` is never inside a User-Agent shadow tree, nothing
+  // inside one is ever exposed as the shadow host.
+  DCHECK(!shadow_host || !shadow_host->IsInUserAgentShadowRoot());
+  return shadow_host;
+}
+
+}  // namespace
 
 // static
 Focusable* Focusable::Create(const V8UnionCSSPseudoElementOrElement* target) {
@@ -54,16 +100,14 @@ Focusable* Focusable::CreateFromElement(Element& element,
     pseudo_element = nullptr;
   }
 
-  // Retarget `originating_element` against `caller_scope` (walking up the
-  // shadow host chain to find the host in `caller_scope`, just like
-  // `DocumentOrShadowRoot.activeElement` does). If this yields another element,
-  // the focusable item lives inside a shadow tree whose inner nodes are not
-  // exposed to `caller_scope`, and the retargeted element is the outermost
-  // shadow host in `caller_scope`, which is exposed as `shadowHost` instead of
-  // `target` and `pseudoElement`.
-  Element& retargeted = caller_scope.Retarget(*originating_element);
+  // If the focusable item is inside a shadow tree whose inner nodes are not
+  // exposed to `caller_scope`, it's exposed as the outermost such shadow host
+  // in `caller_scope` (just like `DocumentOrShadowRoot.activeElement`) as
+  // `shadowHost`, instead of `target` and `pseudoElement`. Unlike
+  // `activeElement`, the same goes for a light DOM element that is slotted into
+  // such a shadow tree (see `shadow_host_`).
   Element* shadow_host =
-      &retargeted != originating_element ? &retargeted : nullptr;
+      ContainingShadowHost(*originating_element, caller_scope);
 
   // Track the pseudo-element through its CSSPseudoElement if possible (the
   // same cached one that `Event.pseudoTarget` exposes for focus events on it).
@@ -93,12 +137,26 @@ Focusable* Focusable::FindAdjacentFocusable(Element& start,
   if (!page) {
     return nullptr;
   }
-  Element* found =
-      page->GetFocusController().FindAdjacentFocusableElementFrom(start, type);
-  if (!found) {
-    return nullptr;
+  // A shadow host whose shadow tree is not exposed to `caller_scope` is a
+  // single entry in the sequential focus order: everything that is focusable
+  // inside its shadow tree, or slotted into it, is exposed as that shadow host
+  // once. So if `start` is part of such an entry, the rest of it is skipped,
+  // rather than returning the same shadow host again.
+  Element* start_shadow_host = ContainingShadowHost(start, caller_scope);
+  Element* current = &start;
+  while (true) {
+    Element* found =
+        page->GetFocusController().FindAdjacentFocusableElementFrom(*current,
+                                                                    type);
+    if (!found) {
+      return nullptr;
+    }
+    Focusable* focusable = CreateFromElement(*found, caller_scope);
+    if (!start_shadow_host || focusable->shadow_host_ != start_shadow_host) {
+      return focusable;
+    }
+    current = found;
   }
-  return CreateFromElement(*found, caller_scope);
 }
 
 Focusable::Focusable(base::PassKey<Focusable>,

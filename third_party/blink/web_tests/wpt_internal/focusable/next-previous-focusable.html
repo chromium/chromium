@@ -19,9 +19,11 @@
   <div id="sh-host">
     <template shadowrootmode="open">
       <button id="inner1">Inner 1</button>
+      <slot></slot>
       <button id="inner2">Inner 2</button>
       <span id="inner-last" tabindex="-1">Inner last</span>
     </template>
+    <button id="sh-slotted">Slotted</button>
   </div>
   <button id="sh-after">After</button>
 </div>
@@ -103,31 +105,23 @@ test((t) => {
   const shAfter = document.getElementById("sh-after");
   const sr = shHost.shadowRoot;
 
-  // Pure traversal from shBefore steps through inner1 and inner2 (retargeted to shHost)
-  // then shAfter, without changing active focus.
+  // The shadow host is a single entry (for its shadow tree and the light DOM
+  // slotted into it), without changing active focus.
   const f1 = shBefore.nextFocusable();
   assert_focusable(f1, { shadowHost: shHost });
   assert_equals(document.activeFocusable, null);
+  assert_focusable(f1.nextFocusable(), { target: shAfter });
 
-  const f2 = f1.nextFocusable();
-  assert_focusable(f2, { shadowHost: shHost });
-  assert_equals(document.activeFocusable, null);
-
-  const f3 = f2.nextFocusable();
-  assert_focusable(f3, { target: shAfter });
-  assert_equals(f3.nextFocusable(), null);
-
-  // Backward traversal from shAfter steps back through inner2, inner1, then shBefore
-  const b2 = shAfter.previousFocusable();
-  assert_focusable(b2, { shadowHost: shHost });
-  const b1 = b2.previousFocusable();
+  const b1 = shAfter.previousFocusable();
   assert_focusable(b1, { shadowHost: shHost });
   assert_focusable(b1.previousFocusable(), { target: shBefore });
 
-  // Calling focus() on f1 and f2 focuses the underlying inner shadow elements
+  // focus() focuses the first (or last) focusable element inside the host.
   f1.focus();
   assert_equals(sr.activeFocusable.target, sr.getElementById("inner1"));
-  f2.focus();
+  // Tab would move to the slotted button, but nextFocusable() skips the host.
+  assert_focusable(document.activeFocusable.nextFocusable(), { target: shAfter });
+  b1.focus();
   assert_equals(sr.activeFocusable.target, sr.getElementById("inner2"));
 }, "nextFocusable() and previousFocusable() across shadow DOM boundaries");
 

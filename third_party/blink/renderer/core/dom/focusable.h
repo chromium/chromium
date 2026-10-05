@@ -58,10 +58,19 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
 
   // Set if the focusable item is inside a shadow tree whose inner nodes are not
   // exposed to the caller's TreeScope (i.e. the DocumentOrShadowRoot whose
-  // `activeFocusable` created this Focusable). It is the outermost shadow host
-  // that is exposed, i.e. what `DocumentOrShadowRoot.activeElement` returns in
-  // that case. `target` and `pseudoElement` are null whenever this is set, so
-  // that nothing inside the shadow tree is exposed.
+  // `activeFocusable` created this Focusable), or slotted into one. It is the
+  // outermost shadow host that is exposed, i.e. what
+  // `DocumentOrShadowRoot.activeElement` returns for focus inside its shadow
+  // tree. `target` and `pseudoElement` are null whenever this is set, so that
+  // nothing inside the shadow tree (or slotted into it) is exposed.
+  //
+  // Note that `activeElement` does return a focused light DOM element that is
+  // slotted into such a shadow tree, since it's in the caller's TreeScope. It's
+  // still not exposed here, though, since the shadow tree determines where it
+  // is in the sequential focus order.
+  //
+  // Such a shadow host is a single entry in the sequential focus order:
+  // `nextFocusable()` and `previousFocusable()` skip everything else inside it.
   //
   // `element_` or `pseudo_element_` is still set in that case, since `focus()`
   // focuses the focusable item itself, not the shadow host. Focusing the shadow
