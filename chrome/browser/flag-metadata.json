@@ -6339,14 +6339,6 @@
     "expiry_milestone": 158
   },
   {
-    "name": "inline-script-cache",
-    "owners": [
-      "tnak@chromium.org",
-      "chrome-loading@google.com"
-    ],
-    "expiry_milestone": 153
-  },
-  {
     "name": "input-cursor-anchor-info-migration",
     "owners": [ "hdchuong@google.com" ],
     "expiry_milestone": 160

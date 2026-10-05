@@ -13239,10 +13239,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUsePersistentCacheForCodeCacheDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kUsePersistentCacheForCodeCache)},
 
-    {"inline-script-cache", flag_descriptions::kInlineScriptCacheName,
-     flag_descriptions::kInlineScriptCacheDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kInlineScriptCache)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"enforce-incognito-isolation",
      flag_descriptions::kEnforceIncognitoIsolationName,

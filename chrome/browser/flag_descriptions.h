@@ -3099,11 +3099,6 @@ inline constexpr char kInlinePdfV2IncognitoName[] = "Inline PDF V2 Incognito";
 inline constexpr char kInlinePdfV2IncognitoDescription[] =
     "Enables inline PDF V2 in Incognito mode.";
 
-inline constexpr char kInlineScriptCacheName[] = "Inline Script Cache";
-inline constexpr char kInlineScriptCacheDescription[] =
-    "Enables caching of inline scripts. This flag only works if "
-    "#use-persistent-cache-for-code-cache is enabled.";
-
 inline constexpr char kInProductHelpDemoModeChoiceName[] =
     "In-Product Help Demo Mode";
 inline constexpr char kInProductHelpDemoModeChoiceDescription[] =
