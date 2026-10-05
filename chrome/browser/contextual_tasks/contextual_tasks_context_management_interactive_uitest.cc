@@ -6,6 +6,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -50,6 +52,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -58,6 +61,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -101,7 +105,20 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kZeroStateChangedEvent);
 class ContextualTasksContextManagementInteractiveTestBase
     : public ContextualTasksInteractiveTestBase {
  public:
-  ContextualTasksContextManagementInteractiveTestBase() = default;
+  // `composebox_root` is the DeepQuery path to the composebox element hosting
+  // the shared `cr-composebox-contextual-entrypoint-and-menu`. It defaults to
+  // the side panel composebox; other surfaces that render the same component
+  // (e.g. the NTP realbox composebox) pass their own root so the sign-posting
+  // helpers below apply unchanged.
+  explicit ContextualTasksContextManagementInteractiveTestBase(
+      DeepQuery composebox_root = {"contextual-tasks-app", "#composebox",
+                                   "#composebox"})
+      : kComposeboxContainer(std::move(composebox_root)),
+        kContextEntrypoint(kComposeboxContainer + "#contextEntrypoint" +
+                           "#entrypointButton" + "#entrypoint"),
+        kContextMenu(kComposeboxContainer + "#contextEntrypoint" + "#menu"),
+        kShareTabsTrigger(kContextMenu + "#shareTabsTrigger"),
+        kShareTabsFlyout(kContextMenu + ".share-tabs-flyout") {}
   ~ContextualTasksContextManagementInteractiveTestBase() override = default;
 
   void SetUpFeatureList() override {
@@ -178,24 +195,16 @@ class ContextualTasksContextManagementInteractiveTestBase
 
  protected:
   // --- DeepQuery Paths ---
-  const DeepQuery kComposeboxContainer = {"contextual-tasks-app", "#composebox",
-                                          "#composebox"};
+  // Paths rooted at the composebox passed to the constructor. Everything
+  // under `#contextEntrypoint` belongs to the shared
+  // `cr-composebox-contextual-entrypoint-and-menu` component.
+  const DeepQuery kComposeboxContainer;
+  const DeepQuery kContextEntrypoint;
+  const DeepQuery kContextMenu;
+  const DeepQuery kShareTabsTrigger;
+  const DeepQuery kShareTabsFlyout;
 
-  const DeepQuery kContextEntrypoint = {
-      "contextual-tasks-app", "#composebox",       "#composebox",
-      "#contextEntrypoint",   "#entrypointButton", "#entrypoint"};
-
-  const DeepQuery kContextMenu = {"contextual-tasks-app", "#composebox",
-                                  "#composebox", "#contextEntrypoint", "#menu"};
-
-  const DeepQuery kShareTabsTrigger = {
-      "contextual-tasks-app", "#composebox", "#composebox",
-      "#contextEntrypoint",   "#menu",       "#shareTabsTrigger"};
-
-  const DeepQuery kShareTabsFlyout = {
-      "contextual-tasks-app", "#composebox", "#composebox",
-      "#contextEntrypoint",   "#menu",       ".share-tabs-flyout"};
-
+  // Side-panel-only paths.
   const DeepQuery kComposeboxInput = {"contextual-tasks-app", "#composebox",
                                       "#composebox", "#composeboxInput",
                                       "#input"};
@@ -1374,6 +1383,189 @@ IN_PROC_BROWSER_TEST_F(
       VerifyPlusButtonCoins(kSidePanelWebContentsId, 2));
 }
 
+// -----------------------------------------------------------------------------
+// NTP realbox-driven context management.
+//
+// The NTP composebox (`ntp-composebox`) renders the same WebUI
+// `cr-composebox-contextual-entrypoint-and-menu` as the side panel, so the
+// DeepQuery helpers above apply once rooted at `{"ntp-app", "#composebox"}`.
+//
+// Unlike `NtpRealboxUiTestBase`, this fixture keeps `kContextualTasks`
+// enabled: the tab-strip underline is driven by `ActiveTaskContextProvider`,
+// which is only attached to the browser window when the Contextual Tasks UI is
+// enabled. Without it the underline could never be asserted from the NTP.
+// -----------------------------------------------------------------------------
+class ContextualTasksNtpRealboxContextManagementInteractiveUiTest
+    : public ContextualTasksContextManagementInteractiveTestBase,
+      public testing::WithParamInterface<UserVariation> {
+ public:
+  ContextualTasksNtpRealboxContextManagementInteractiveUiTest()
+      : ContextualTasksContextManagementInteractiveTestBase(
+            {"ntp-app", "#composebox"}) {}
+  ~ContextualTasksNtpRealboxContextManagementInteractiveUiTest() override =
+      default;
+
+  UserVariation GetUserVariation() const override { return GetParam(); }
+
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetDefaultEnabledFeatures();
+    enabled_features.push_back({omnibox::kContextManagementInComposebox,
+                                {{"enable_tab_deselection", "true"}}});
+    enabled_features.push_back({omnibox::kTabFaviconChipsToCoins, {}});
+    // The realbox-next + composebox surface under test.
+    enabled_features.push_back({ntp_realbox::kNtpRealboxNext, {}});
+    enabled_features.push_back(
+        {ntp_composebox::kNtpComposebox,
+         {{ntp_composebox::kContextMenuEnableMultiTabSelection.name, "true"}}});
+    enabled_features.push_back({omnibox::kAimEnabled, {}});
+    // Lets `IsNtpComposeboxEnabled()` pass without a content-sharing pref.
+    enabled_features.push_back({omnibox::kAimUsePecApi, {}});
+
+    std::vector<base::test::FeatureRef> disabled_features =
+        GetDefaultDisabledFeatures();
+    // Eligibility is supplied by `MockAimEligibilityService`; don't let the
+    // real service race it.
+    disabled_features.push_back(omnibox::kAimServerEligibilityEnabled);
+    disabled_features.push_back(omnibox::kAimFuseboxEligibilityCheckEnabled);
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksContextManagementInteractiveTestBase::SetUpOnMainThread();
+
+    // The expanded composebox and its flyout need room; a default-sized window
+    // can clip the flyout off-screen.
+    browser()->GetWindow()->SetBounds(gfx::Rect(0, 0, 1280, 1024));
+
+    // `ContextualSearchboxHandler::AddTabContext()` bails unless content
+    // sharing is allowed.
+    browser()->GetProfile()->GetPrefs()->SetInteger(
+        contextual_search::kSearchContentSharingSettings,
+        static_cast<int>(
+            contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+    // `ntp_composebox::IsNtpComposeboxEnabled()` also requires Fusebox
+    // eligibility, which the base mock leaves unstubbed (and so false).
+    ON_CALL(*GetMockAimEligibilityService(browser()->GetProfile()),
+            IsFuseboxEligible())
+        .WillByDefault(testing::Return(true));
+  }
+
+ protected:
+  // --- NTP DeepQuery paths ---
+  const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox",
+                                    "#composeButton", "#composeButton"};
+  // Only stamped into the DOM while the composebox is expanded.
+  const DeepQuery kComposeboxDialog = {"ntp-app", "#composeboxDialog"};
+
+  // Opens an NTP in a new foreground tab instrumented as `contents_id` and
+  // expands the realbox into the composebox.
+  auto OpenNtpComposebox(const ui::ElementIdentifier& contents_id) {
+    return Steps(
+        AddInstrumentedTab(contents_id, chrome::ChromeUINewTabURLAsGURL()),
+        WaitForElementExists(contents_id, kComposeButton),
+        ExecuteJsAt(contents_id, kComposeButton, "el => el.click()"),
+        WaitForElementExists(contents_id, kComposeboxDialog),
+        WaitForElementExists(contents_id, kComposeboxContainer));
+  }
+};
+
+// Adding tabs from the NTP realbox composebox's "+" > "Add tabs" flyout
+// signposts each tab consistently, before anything is submitted, in all four
+// places: favicon coins on the "+" button, coins next to "Sharing n tabs" on
+// the menu trigger row, a checkmark on the tab's flyout row, and an underline
+// on the tab strip.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksNtpRealboxContextManagementInteractiveUiTest,
+    RealboxAddTabs_SignpostsConsistently) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      // Tabs 0 and 1 are the candidates. The NTP opens as tab 2 and is active;
+      // it is not itself shareable, so there is no auto-suggested active tab
+      // and the composebox starts empty.
+      InstrumentTab(kFirstTab, 0), NavigateWebContents(kFirstTab, kUrl1),
+      AddInstrumentedTab(kSecondTab, kUrl2), OpenNtpComposebox(kNtpTab),
+
+      // Nothing is shared before the user acts.
+      VerifyPlusButtonCoins(kNtpTab, 0), VerifyUnderlinedTabs({}),
+      OpenShareTabsFlyout(kNtpTab), VerifyMenuTriggerState(kNtpTab, 0),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", false),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", false),
+
+      // Add tab 0.
+      ToggleFlyoutTab(kNtpTab, "title1"),
+      WaitForFileUploadsComplete(kNtpTab, 1), VerifyPlusButtonCoins(kNtpTab, 1),
+      VerifyPlusButtonCoinTabs(kNtpTab, {"title1"}), VerifyUnderlinedTabs({0}),
+      OpenShareTabsFlyout(kNtpTab), VerifyMenuTriggerState(kNtpTab, 1),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", true),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", false),
+
+      // Add tab 1 on top.
+      ToggleFlyoutTab(kNtpTab, "title2"),
+      WaitForFileUploadsComplete(kNtpTab, 2), VerifyPlusButtonCoins(kNtpTab, 2),
+      VerifyPlusButtonCoinTabs(kNtpTab, {"title1", "title2"}),
+      VerifyUnderlinedTabs({0, 1}), OpenShareTabsFlyout(kNtpTab),
+      VerifyMenuTriggerState(kNtpTab, 2),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", true),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", true));
+}
+
+// Un-checking tabs from the NTP realbox composebox's "Add tabs" flyout clears
+// each tab's sign posting, and removing the last one returns every surface to
+// its empty state ("Add tabs" with no coins, no underlines).
+//
+// Note the NTP does not set `composeboxContextMenuEnableTabDeselection`; that
+// flag only gates un-checking tabs *restored* from a previous thread. Tabs
+// added in the current turn are deselectable whenever multi-tab selection is
+// on (`ContextualActionMenu.onTabClick_`), which this fixture enables.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksNtpRealboxContextManagementInteractiveUiTest,
+    RealboxRemoveTabs_ClearsSignposting) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNtpTab);
+
+  const GURL kUrl1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL kUrl2 = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab, 0), NavigateWebContents(kFirstTab, kUrl1),
+      AddInstrumentedTab(kSecondTab, kUrl2), OpenNtpComposebox(kNtpTab),
+
+      // Start from two shared tabs.
+      ToggleFlyoutTab(kNtpTab, "title1"),
+      WaitForFileUploadsComplete(kNtpTab, 1),
+      ToggleFlyoutTab(kNtpTab, "title2"),
+      WaitForFileUploadsComplete(kNtpTab, 2),
+      VerifyPlusButtonCoinTabs(kNtpTab, {"title1", "title2"}),
+      VerifyUnderlinedTabs({0, 1}),
+
+      // Un-check tab 0. Only tab 1 should remain signposted anywhere.
+      ToggleFlyoutTab(kNtpTab, "title1"),
+      WaitForFileUploadsComplete(kNtpTab, 1), VerifyPlusButtonCoins(kNtpTab, 1),
+      VerifyPlusButtonCoinTabs(kNtpTab, {"title2"}), VerifyUnderlinedTabs({1}),
+      OpenShareTabsFlyout(kNtpTab), VerifyMenuTriggerState(kNtpTab, 1),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", false),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", true),
+
+      // Un-check tab 1. Everything should be back to the empty state.
+      ToggleFlyoutTab(kNtpTab, "title2"),
+      WaitForFileUploadsComplete(kNtpTab, 0), VerifyPlusButtonCoins(kNtpTab, 0),
+      VerifyUnderlinedTabs({}), OpenShareTabsFlyout(kNtpTab),
+      VerifyMenuTriggerState(kNtpTab, 0),
+      VerifyFlyoutTabChecked(kNtpTab, "title1", false),
+      VerifyFlyoutTabChecked(kNtpTab, "title2", false));
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksContextManagementInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
@@ -1387,5 +1579,13 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
                          &UserVariationToString);
+
+// The incognito NTP does not host the realbox composebox, so only the regular
+// profile variations apply here.
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksNtpRealboxContextManagementInteractiveUiTest,
+    testing::Values(UserVariation::kSignedIn, UserVariation::kSignedOut),
+    &UserVariationToString);
 
 }  // namespace contextual_tasks
