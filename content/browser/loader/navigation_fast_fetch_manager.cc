@@ -101,16 +101,18 @@ std::unique_ptr<NavigationFastFetchManager> NavigationFastFetchManager::Create(
   base::ElapsedTimer eligibility_timer;
 
   EligibilityReason reason = CalculateEligibilityReason(request);
+  base::TimeTicks now;
   base::UmaHistogramMicrosecondsTimes(
       "Navigation.Experimental.FastFetch.EligibilityCheckDuration",
-      eligibility_timer.Elapsed());
-  return base::WrapUnique(new NavigationFastFetchManager(reason));
+      eligibility_timer.Elapsed(&now));
+  return base::WrapUnique(new NavigationFastFetchManager(reason, now));
 }
 
 NavigationFastFetchManager::NavigationFastFetchManager(
-    EligibilityReason eligibility_reason)
+    EligibilityReason eligibility_reason,
+    base::TimeTicks eligibility_check_time)
     : eligibility_reason_(eligibility_reason),
-      eligibility_check_time_(base::TimeTicks::Now()) {}
+      eligibility_check_time_(eligibility_check_time) {}
 
 NavigationFastFetchManager::~NavigationFastFetchManager() {
   if (should_record_eligibility_reason_) {

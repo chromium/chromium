@@ -96,7 +96,8 @@ class CONTENT_EXPORT NavigationFastFetchManager {
   }
 
  private:
-  explicit NavigationFastFetchManager(EligibilityReason eligibility_reason);
+  NavigationFastFetchManager(EligibilityReason eligibility_reason,
+                             base::TimeTicks eligibility_check_time);
 
   void RecordOutcome(NavigationOutcome outcome);
 
