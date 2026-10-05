@@ -45,9 +45,7 @@ VisualGuidedSetterControllerWin::VisualGuidedSetterControllerWin(
       is_continuous_docking_enabled_(
           default_browser::IsVisualGuidedSetterDockingEnabled()) {
   CHECK(parent_widget_);
-  if (is_continuous_docking_enabled_) {
-    widget_observation_.Observe(parent_widget_);
-  }
+  widget_observation_.Observe(parent_widget_);
 
   CHECK(parent_widget_->GetNativeWindow());
   chrome_hwnd_ = views::HWNDForNativeWindow(parent_widget_->GetNativeWindow());
@@ -70,7 +68,10 @@ void VisualGuidedSetterControllerWin::Start() {
   is_degraded_ = false;
   outcome_ = std::nullopt;
   last_applied_settings_rect_.reset();
+  settled_settings_rect_.reset();
   last_reported_docked_bounds_ = gfx::Rect();
+  last_known_chrome_bounds_ = gfx::Rect();
+  last_known_chrome_active_ = parent_widget_->IsActive();
 
   if (!overlay_) {
     overlay_ = std::make_unique<GuidedSetterOverlayWindowWin>(
@@ -189,7 +190,11 @@ void VisualGuidedSetterControllerWin::OnWidgetBoundsChanged(
   if (!is_running_) {
     return;
   }
-  UpdateDockedLayout();
+  if (is_continuous_docking_enabled_) {
+    UpdateDockedLayout();
+    return;
+  }
+  MaybeDegradeOnChromeWindowBoundsChanged(new_bounds);
 }
 
 void VisualGuidedSetterControllerWin::OnWidgetDestroyed(views::Widget* widget) {
@@ -210,6 +215,7 @@ void VisualGuidedSetterControllerWin::OnWidgetVisibilityChanged(
     return;
   }
   if (!visible) {
+    // Without continuous docking this degrades the flow.
     OnWebContentsHidden();
     return;
   }
@@ -232,6 +238,14 @@ void VisualGuidedSetterControllerWin::OnWidgetActivationChanged(
     return;
   }
   last_known_chrome_active_ = active;
+  if (active && !is_continuous_docking_enabled_) {
+    // Without continuous docking nothing re-asserts the Settings window's
+    // z-order, so activating Chrome brings it in front of the arrangement.
+    MaybeDegradeOnUserDisturbance(Outcome::kChromeWindowActivated);
+  }
+  // Re-applies the z-order: once Chrome loses focus, e.g. to the Settings
+  // window to press "Set default", Settings must stop being topmost. A no-op
+  // once the flow has degraded.
   UpdateDockedLayout();
 }
 
@@ -240,6 +254,12 @@ void VisualGuidedSetterControllerWin::OnWidgetShowStateChanged(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(widget, parent_widget_);
   if (!is_running_) {
+    return;
+  }
+  if (!is_continuous_docking_enabled_) {
+    // Minimize, maximize and restore all land here; the bounds tell which.
+    MaybeDegradeOnChromeWindowBoundsChanged(
+        parent_widget_->GetWindowBoundsInScreen());
     return;
   }
   UpdateDockedLayout();
@@ -384,6 +404,9 @@ void VisualGuidedSetterControllerWin::StopAllTimers() {
 
 void VisualGuidedSetterControllerWin::ResumeLayoutObservation() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (is_degraded_) {
+    return;
+  }
   if (is_continuous_docking_enabled_) {
     StartRuntimeTimers();
   }
@@ -415,16 +438,26 @@ void VisualGuidedSetterControllerWin::PauseLayoutObservation() {
 
 void VisualGuidedSetterControllerWin::OnWebContentsHidden() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const bool is_occluded = web_contents() && web_contents()->GetVisibility() ==
+                                                 content::Visibility::OCCLUDED;
+  if (!is_occluded) {
+    MaybeDegradeOnUserDisturbance(Outcome::kChromeWindowHidden);
+    if (!is_running_) {
+      // The Settings window turned out to be closed, which ended the flow.
+      return;
+    }
+  }
   HideOverlayArrow();
-  if (IsSettingsWindowAlive()) {
+  if (!is_degraded_ && IsSettingsWindowAlive()) {
     // Drop HWND_TOPMOST so the Settings window behaves like a normal floating
     // window and doesn't remain pinned on top of Chrome while viewing other
     // tabs. We avoid calling ::ShowWindow(SW_HIDE) because hiding external
     // UWP apps (SystemSettings.exe) suspends their UI thread and breaks input
     // control.
-    HWND insert_after = (chrome_hwnd_ && ::IsWindow(chrome_hwnd_))
-                            ? chrome_hwnd_
-                            : HWND_NOTOPMOST;
+    HWND insert_after =
+        (!is_occluded && chrome_hwnd_ && ::IsWindow(chrome_hwnd_))
+            ? chrome_hwnd_
+            : HWND_NOTOPMOST;
     ::SetWindowPos(
         settings_hwnd_, insert_after, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
@@ -445,6 +478,16 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
     outcome_ = Outcome::kSettingsWindowClosed;
     TearDownInternal();
     return;
+  }
+  if (ShouldDegradeOnUserDisturbance()) {
+    // Without continuous docking the guide places the window once and then
+    // only re-applies that placement, which would undo whatever the user did
+    // to the window (the layout restores a minimized or maximized window).
+    if (HasUserChangedSettingsWindow()) {
+      EnterDegradedFloating(Outcome::kSettingsWindowStateChanged);
+      return;
+    }
+    MaybeRecordSettledSettingsRect();
   }
   if (!IsSettingsWindowValid()) {
     // Reachable for a latched window that is not closed but is not showable
@@ -486,8 +529,13 @@ void VisualGuidedSetterControllerWin::UpdateDockedLayout() {
 
   NotifyErrorState(false);
 
+  if (last_applied_settings_rect_ != settings_target) {
+    // A new placement has to land before it can be compared against.
+    settled_settings_rect_.reset();
+  }
   ApplySettingsRectAndZOrder(settings_target, GetSettingsWindowInsertAfter());
   last_applied_settings_rect_ = settings_target;
+  last_known_chrome_bounds_ = parent_widget_->GetWindowBoundsInScreen();
   UpdateOverlay();
   ReportDockedSettingsBounds();
 }
@@ -530,6 +578,72 @@ void VisualGuidedSetterControllerWin::OnSettingsWindowMoveSize(
   }
   // The user has taken the window over, so stop docking it.
   EnterDegradedFloating(Outcome::kUserRepositioned);
+}
+
+bool VisualGuidedSetterControllerWin::ShouldDegradeOnUserDisturbance() const {
+  // With continuous docking the Settings window follows the Chrome window and
+  // re-asserts its z-order, so a disturbance is recoverable and must not tear
+  // the guide down. Before the first placement nothing has been arranged, and
+  // a degraded flow has already reported itself.
+  return !is_continuous_docking_enabled_ && is_running_ && !is_degraded_ &&
+         settings_hwnd_ && last_applied_settings_rect_.has_value();
+}
+
+void VisualGuidedSetterControllerWin::MaybeDegradeOnUserDisturbance(
+    Outcome reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ShouldDegradeOnUserDisturbance()) {
+    return;
+  }
+  if (IsSettingsWindowClosed()) {
+    outcome_ = Outcome::kSettingsWindowClosed;
+    TearDownInternal();
+    return;
+  }
+  if (HasUserChangedSettingsWindow()) {
+    EnterDegradedFloating(Outcome::kSettingsWindowStateChanged);
+    return;
+  }
+  EnterDegradedFloating(reason);
+}
+
+void VisualGuidedSetterControllerWin::MaybeDegradeOnChromeWindowBoundsChanged(
+    const gfx::Rect& new_bounds) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!ShouldDegradeOnUserDisturbance()) {
+    return;
+  }
+  if (IsWindowMinimized(chrome_hwnd_) || !parent_widget_->IsVisible()) {
+    MaybeDegradeOnUserDisturbance(Outcome::kChromeWindowHidden);
+    return;
+  }
+  if (new_bounds == last_known_chrome_bounds_) {
+    return;
+  }
+  MaybeDegradeOnUserDisturbance(Outcome::kChromeWindowRepositioned);
+}
+
+bool VisualGuidedSetterControllerWin::HasUserChangedSettingsWindow() const {
+  if (IsWindowMinimized(settings_hwnd_) || IsWindowMaximized(settings_hwnd_)) {
+    return true;
+  }
+  if (!settled_settings_rect_) {
+    return false;
+  }
+  std::optional<gfx::Rect> current = GetSettingsWindowScreenRect();
+  return current && *current != *settled_settings_rect_;
+}
+
+void VisualGuidedSetterControllerWin::MaybeRecordSettledSettingsRect() {
+  if (settled_settings_rect_ || !last_applied_settings_rect_) {
+    return;
+  }
+  // The origin is the tell that the placement has landed: Windows honors it
+  // even when the app's minimum size clamps the requested size.
+  std::optional<gfx::Rect> current = GetSettingsWindowScreenRect();
+  if (current && current->origin() == last_applied_settings_rect_->origin()) {
+    settled_settings_rect_ = current;
+  }
 }
 
 bool VisualGuidedSetterControllerWin::IsSettingsWindowAlive() const {
@@ -582,6 +696,10 @@ bool VisualGuidedSetterControllerWin::IsWindowMinimized(HWND hwnd) const {
   return ::IsIconic(hwnd);
 }
 
+bool VisualGuidedSetterControllerWin::IsWindowMaximized(HWND hwnd) const {
+  return ::IsZoomed(hwnd);
+}
+
 std::optional<gfx::Rect> VisualGuidedSetterControllerWin::GetAnchorRectScreen()
     const {
   if (!has_anchor_rect_ || !chrome_hwnd_ || !::IsWindow(chrome_hwnd_) ||
@@ -607,7 +725,7 @@ std::optional<gfx::Rect> VisualGuidedSetterControllerWin::GetAnchorRectScreen()
 void VisualGuidedSetterControllerWin::EnterDegradedFloating(Outcome reason) {
   outcome_ = reason;
   HideOverlayArrow();
-  if (IsSettingsWindowValid()) {
+  if (IsSettingsWindowAlive()) {
     ::SetWindowPos(
         settings_hwnd_, HWND_NOTOPMOST, 0, 0, 0, 0,
         SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_ASYNCWINDOWPOS);
@@ -634,7 +752,7 @@ void VisualGuidedSetterControllerWin::ApplySettingsRectAndZOrder(
   RECT current_rect;
   if (::GetWindowRect(settings_hwnd_, &current_rect)) {
     gfx::Rect current(current_rect);
-    if (current == target_rect) {
+    if (current == target_rect || current == settled_settings_rect_) {
       flags |= SWP_NOMOVE | SWP_NOSIZE;
     }
   }
@@ -806,6 +924,7 @@ void VisualGuidedSetterControllerWin::TearDownInternal() {
   settings_hwnd_ = nullptr;
   settings_pid_ = 0;
   last_applied_settings_rect_.reset();
+  settled_settings_rect_.reset();
 
   if (is_running_ && !is_degraded_) {
     base::UmaHistogramEnumeration(

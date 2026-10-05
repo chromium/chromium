@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace {
 
@@ -240,6 +241,23 @@ class TestVisualGuidedSetterControllerWin
   // rect wide enough for the "Default apps" page to lay out predictably.
   void set_docked_rect(const gfx::Rect& rect) { docked_rect_ = rect; }
 
+  // Fake ::IsIconic() / ::IsZoomed(), for the Chrome window and the latched
+  // Settings window.
+  void set_chrome_minimized(bool minimized) { chrome_minimized_ = minimized; }
+  void set_settings_minimized(bool minimized) {
+    settings_minimized_ = minimized;
+  }
+  void set_settings_maximized(bool maximized) {
+    settings_maximized_ = maximized;
+  }
+  bool IsWindowMinimized(HWND hwnd) const override {
+    return hwnd == settings_hwnd_for_testing() ? settings_minimized_
+                                               : chrome_minimized_;
+  }
+  bool IsWindowMaximized(HWND hwnd) const override {
+    return hwnd == settings_hwnd_for_testing() && settings_maximized_;
+  }
+
  private:
   int show_overlay_count_ = 0;
   int hide_overlay_count_ = 0;
@@ -251,6 +269,9 @@ class TestVisualGuidedSetterControllerWin
   bool dpi_compatible_ = true;
   bool close_settings_window_called_ = false;
   gfx::Rect docked_rect_ = kTestDockedRect;
+  bool chrome_minimized_ = false;
+  bool settings_minimized_ = false;
+  bool settings_maximized_ = false;
   std::optional<gfx::Rect> settings_window_rect_ =
       gfx::Rect(1000, 300, 800, 600);
   std::optional<gfx::Rect> settings_client_rect_;
@@ -704,6 +725,217 @@ TEST_F(VisualGuidedSetterControllerWinTest, RestartDocksAfterAUserMove) {
   controller_->Stop();
 }
 
+// The shipping configuration: continuous docking off. The guide places the
+// Settings window once, so once it has, anything that disturbs the
+// arrangement must surface the manual "Open Windows Settings" link instead.
+class VisualGuidedSetterControllerWinNoDockingTest
+    : public VisualGuidedSetterControllerWinTest {
+ protected:
+  VisualGuidedSetterControllerWinNoDockingTest() {
+    // Layered over the base fixture's list, which enables the feature.
+    no_docking_feature_list_.InitAndDisableFeature(
+        default_browser::kVisualGuidedSetterDocking);
+  }
+
+  // Runs the flow up to a placed Settings window, and clears the bookkeeping
+  // the placement left behind.
+  void StartAndFindSettingsWindow() {
+    controller_->Start();
+    controller_->test_finder()->TriggerFound(reinterpret_cast<HWND>(0x12345));
+    controller_->clear_applied_rects();
+    controller_->clear_overlay_counts();
+  }
+
+ private:
+  base::test::ScopedFeatureList no_docking_feature_list_;
+};
+
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       ChromeWindowMoveDegradesToFloating) {
+  base::HistogramTester histograms;
+  bool error_state = false;
+  controller_->SetErrorCallback(base::BindLambdaForTesting(
+      [&](bool is_error) { error_state = is_error; }));
+
+  StartAndFindSettingsWindow();
+
+  // Windows emits bounds changes that do not actually move the window.
+  controller_->OnWidgetBoundsChanged(widget_.get(),
+                                     widget_->GetWindowBoundsInScreen());
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  controller_->OnWidgetBoundsChanged(widget_.get(),
+                                     gfx::Rect(50, 60, 800, 600));
+  controller_->OnWidgetBoundsChanged(widget_.get(),
+                                     gfx::Rect(70, 80, 800, 600));
+
+  EXPECT_TRUE(error_state);
+  EXPECT_GT(controller_->hide_overlay_count(), 0);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kChromeWindowRepositioned,
+      1);
+
+  // The flow stays alive so the user can still finish in the Settings window,
+  // but it imposes no further geometry on it.
+  EXPECT_TRUE(controller_->is_running());
+  controller_->test_finder()->TriggerResized();
+  EXPECT_TRUE(controller_->applied_rects().empty());
+
+  controller_->Stop();
+}
+
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       ChromeWindowMinimizeDegrades) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+
+  controller_->set_chrome_minimized(true);
+  controller_->OnWidgetBoundsChanged(widget_.get(),
+                                     gfx::Rect(-32000, -32000, 160, 28));
+
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kChromeWindowHidden, 1);
+
+  controller_->Stop();
+}
+
+// Activating Chrome brings it in front of the Settings window the guide
+// placed. Deactivating it is the happy path: the user clicking into Settings,
+// which then stops being topmost.
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       ChromeWindowActivationDegrades) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+  ASSERT_FALSE(controller_->applied_z_orders().empty());
+  EXPECT_EQ(controller_->applied_z_orders().back(), HWND_TOPMOST);
+
+  controller_->SetChromeWindowActive(false);
+  controller_->OnWidgetActivationChanged(widget_.get(), false);
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+  EXPECT_EQ(controller_->applied_z_orders().back(), HWND_NOTOPMOST);
+
+  controller_->SetChromeWindowActive(true);
+  controller_->OnWidgetActivationChanged(widget_.get(), true);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kChromeWindowActivated, 1);
+  EXPECT_TRUE(controller_->is_running());
+
+  controller_->Stop();
+}
+
+// Nothing has been arranged before the Settings window is placed.
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       DisturbanceBeforeSettingsPlacedIsIgnored) {
+  base::HistogramTester histograms;
+
+  controller_->Start();
+  controller_->OnWidgetBoundsChanged(widget_.get(),
+                                     gfx::Rect(50, 60, 800, 600));
+  controller_->OnWidgetActivationChanged(widget_.get(), true);
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  controller_->test_finder()->TriggerFound(reinterpret_cast<HWND>(0x12345));
+  EXPECT_FALSE(controller_->applied_rects().empty());
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  controller_->Stop();
+}
+
+// Closing the Settings window hands activation back to Chrome. That is a
+// close, not the user bringing Chrome to the front.
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       ChromeWindowActivationAfterSettingsClosedRecordsClosed) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+
+  controller_->SetSettingsWindowClosed(true);
+  controller_->OnWidgetActivationChanged(widget_.get(), true);
+
+  EXPECT_FALSE(controller_->is_running());
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowClosed, 1);
+}
+
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       SettingsWindowMinimizeDegrades) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+
+  controller_->set_settings_minimized(true);
+  controller_->test_finder()->TriggerResized();
+
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowStateChanged,
+      1);
+  // The window is left as the user put it, not restored and re-docked.
+  EXPECT_TRUE(controller_->applied_rects().empty());
+
+  controller_->Stop();
+}
+
+// Snapping (e.g. Win+Left) moves the window without a drag loop, so it is
+// caught by comparing against where the placement landed.
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       SettingsWindowSnapDegrades) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+
+  // The guide's own asynchronous move has not landed yet: the window is still
+  // where Settings opened it.
+  controller_->test_finder()->TriggerResized();
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  // The move lands, taller than requested because of the app's minimum size.
+  controller_->set_settings_window_rect(gfx::Rect(1200, 300, 600, 500));
+  controller_->test_finder()->TriggerResized();
+  controller_->test_finder()->TriggerResized();
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  controller_->clear_applied_rects();
+  controller_->set_settings_window_rect(gfx::Rect(0, 0, 960, 1040));
+  controller_->test_finder()->TriggerResized();
+
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kSettingsWindowStateChanged,
+      1);
+  EXPECT_TRUE(controller_->applied_rects().empty());
+
+  controller_->Stop();
+}
+
+// Switching to a maximized app occludes the Chrome window without hiding the
+// tab or widget; that should pause observation and hide the guidance arrow
+// while covered and restore both when uncovered, without degrading the flow.
+TEST_F(VisualGuidedSetterControllerWinNoDockingTest,
+       ChromeWindowOcclusionDoesNotDegrade) {
+  base::HistogramTester histograms;
+
+  StartAndFindSettingsWindow();
+
+  web_contents_->WasOccluded();
+  EXPECT_EQ(controller_->hide_overlay_count(), 1);
+  EXPECT_EQ(controller_->test_finder()->stop_observing_called_count(), 1);
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  web_contents_->WasShown();
+  EXPECT_EQ(controller_->test_finder()->start_observing_called_count(), 2);
+  EXPECT_EQ(controller_->show_overlay_count(), 1);
+  histograms.ExpectTotalCount("DefaultBrowser.VisualGuide.Outcome", 0);
+
+  controller_->Stop();
+}
+
 TEST_F(VisualGuidedSetterControllerWinTest, ContinuousDockingDisabled) {
   // Disable the continuous docking feature for this test.
   base::test::ScopedFeatureList disabled_feature_list;
@@ -815,10 +1047,11 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   controller_->Stop();
 }
 
-// Verifies that location change observation stops when the tab is hidden and
-// restarts when returning to the tab (when continuous docking is disabled).
+// Verifies that, when continuous docking is disabled, hiding the tab after the
+// Settings window is placed degrades the flow and stops location observation,
+// and that returning to the tab does not re-dock.
 TEST_F(VisualGuidedSetterControllerWinTest,
-       OnVisibilityChangedHidesAndRestoresLayoutWhenContinuousDockingDisabled) {
+       OnVisibilityChangedDegradesWhenContinuousDockingDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       default_browser::kVisualGuidedSetterDocking);
@@ -830,6 +1063,7 @@ TEST_F(VisualGuidedSetterControllerWinTest,
   controller_->SetAnchorRect(anchor);
   controller_->SetAnchorRectInWebUi(gfx::Rect(0, 0, 600, 400));
 
+  base::HistogramTester histograms;
   HWND fake_hwnd = reinterpret_cast<HWND>(0x12345);
 
   controller_->Start();
@@ -838,9 +1072,13 @@ TEST_F(VisualGuidedSetterControllerWinTest,
 
   web_contents_->WasHidden();
   EXPECT_EQ(controller_->test_finder()->stop_observing_called_count(), 1);
+  histograms.ExpectUniqueSample(
+      "DefaultBrowser.VisualGuide.Outcome",
+      TestVisualGuidedSetterControllerWin::Outcome::kChromeWindowHidden, 1);
 
+  controller_->clear_applied_rects();
   web_contents_->WasShown();
-  EXPECT_EQ(controller_->test_finder()->start_observing_called_count(), 2);
+  EXPECT_TRUE(controller_->applied_rects().empty());
 
   controller_->Stop();
 }

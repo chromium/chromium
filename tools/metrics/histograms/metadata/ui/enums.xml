@@ -163,6 +163,15 @@ chromium-metrics-reviews@google.com.
       label="User moved or resized the Settings window (degraded to floating)"/>
   <int value="8"
       label="Settings page layout unpredictable (degraded to floating)"/>
+  <int value="9" label="Chrome window moved or resized (degraded to floating)"/>
+  <int value="10"
+      label="Chrome window activated in front of Settings (degraded to
+             floating)"/>
+  <int value="11"
+      label="Chrome window or guide tab hidden (degraded to floating)"/>
+  <int value="12"
+      label="Settings window minimized, maximized, or snapped (degraded to
+             floating)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/webui/default_browser/visual_guided_setter_controller_win.h:DefaultBrowserVisualGuideOutcome) -->
