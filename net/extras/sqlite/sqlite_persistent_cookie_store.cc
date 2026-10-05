@@ -183,7 +183,9 @@ namespace {
 // Version 24 - 2024/08/15 - https://crrev.com/c/5792044
 // Version 23 - 2024/04/10 - https://crrev.com/c/5169630
 //
-// Versions older than two years should be removed and marked as unsupported.
+// There should be at minimum two supported versions to ensure we retain
+// functional migration code, but additional versions more than two years old
+// should be removed and marked as unsupported.
 // This was last done in March 2026. https://crrev.com/c/7620217
 // Be sure to update SQLitePersistentCookieStoreTest.TestInvalidVersionRecovery
 // to test the latest unsupported version number.

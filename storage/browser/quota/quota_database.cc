@@ -41,9 +41,9 @@ static const int kStaleBucketCutoffInDays = 400;
 
 // Version number of the database schema.
 //
-// We support migrating the database schema from versions that are at most 2
-// years old. Older versions are unsupported, and will cause the database to get
-// razed.
+// There should be at minimum two supported versions to ensure we retain
+// functional migration code, but additional versions more than two years old
+// should be removed and marked as unsupported.
 //
 // Version 1 - 2011-03-17 - http://crrev.com/78521 (unsupported)
 // Version 2 - 2011-04-25 - http://crrev.com/82847 (unsupported)
