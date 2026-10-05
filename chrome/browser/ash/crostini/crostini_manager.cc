@@ -2753,8 +2753,9 @@ void CrostiniManager::OnStartTerminaVm(
 
   // Otherwise, record the vm start and run the callback after the VM
   // starts.
-  CHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING,
-           base::NotFatalUntil::M160);
+  // TODO(crbug.com/568430332): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(response->status(), vm_tools::concierge::VM_STATUS_STARTING);
   bool wait_for_tremplin = running_vms_.find(vm_name) == running_vms_.end();
 
   running_vms_[vm_name] =
