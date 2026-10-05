@@ -21,6 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -49,6 +50,7 @@
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -123,6 +125,39 @@ class ExampleObserver : public PageContentExtractionService::Observer {
  public:
   void OnPageContentExtracted(content::Page& page,
                               PageContent page_content) override {}
+};
+
+// Records each `OnPageContentReset()` call, and verifies that the reported page
+// is the primary page of `web_contents` at the time.
+class ResetObserver : public PageContentExtractionService::Observer {
+ public:
+  ResetObserver(content::WebContents* web_contents,
+                PageContentExtractionService& service)
+      : web_contents_(web_contents) {
+    observation_.Observe(&service);
+  }
+
+  void OnPageContentReset(content::Page& current_page,
+                          bool is_same_document) override {
+    EXPECT_EQ(&current_page, &web_contents_->GetPrimaryPage());
+    num_resets_++;
+    if (is_same_document) {
+      num_is_same_document_resets_++;
+    }
+  }
+
+  int num_resets() const { return num_resets_; }
+  int num_is_same_document_resets() const {
+    return num_is_same_document_resets_;
+  }
+
+ private:
+  raw_ptr<content::WebContents> web_contents_;
+  int num_resets_ = 0;
+  int num_is_same_document_resets_ = 0;
+  base::ScopedObservation<PageContentExtractionService,
+                          PageContentExtractionService::Observer>
+      observation_{this};
 };
 
 class AnnotatePageContentRequestTest
@@ -485,6 +520,80 @@ TEST_P(AnnotatePageContentRequestTest, SameDocumentNavigation) {
   WaitForExtraction();
 
   EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+// Every cross-document navigation resets, reporting the new primary page.
+TEST_P(AnnotatePageContentRequestTest, ResetObserver_CrossDocumentNavigation) {
+  ResetObserver observer(web_contents(), extraction_service());
+
+  SimulateNavigation(GURL("https://example.com/"));
+  EXPECT_EQ(observer.num_resets(), 1);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 0);
+
+  SimulateNavigation(GURL("https://example.com/2"));
+  EXPECT_EQ(observer.num_resets(), 2);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 0);
+}
+
+// Navigations that PCES does not extract for (e.g. about:blank) still
+// reset when cross-document, since the previous document is gone.
+TEST_P(AnnotatePageContentRequestTest, ResetObserver_AboutBlank) {
+  SimulateNavigation(GURL("https://example.com/"));
+
+  ResetObserver observer(web_contents(), extraction_service());
+
+  SimulateNavigation(GURL("about:blank"));
+  EXPECT_EQ(observer.num_resets(), 1);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 0);
+}
+
+// A same-document navigation that updates history resets.
+TEST_P(AnnotatePageContentRequestTest, ResetObserver_SameDocumentNavigation) {
+  SimulateNavigation(GURL("https://example.com/"));
+
+  ResetObserver observer(web_contents(), extraction_service());
+
+  auto same_doc_nav = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/#test"), web_contents()->GetPrimaryMainFrame());
+  same_doc_nav->SetTransition(ui::PAGE_TRANSITION_LINK);
+  same_doc_nav->CommitSameDocument();
+
+  EXPECT_EQ(observer.num_resets(), 1);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 1);
+}
+
+// A same-document navigation to the same URL without a user gesture (e.g.
+// `history.replaceState(state, '')`) does not update history, so PCES does not
+// re-extract and must not reset.
+TEST_P(AnnotatePageContentRequestTest,
+       ResetObserver_SameUrlSameDocumentNavigationWithoutGesture) {
+  const GURL url("https://example.com/");
+  SimulateNavigation(url);
+
+  ResetObserver observer(web_contents(), extraction_service());
+
+  auto same_doc_nav = content::NavigationSimulator::CreateRendererInitiated(
+      url, web_contents()->GetPrimaryMainFrame());
+  same_doc_nav->SetHasUserGesture(false);
+  same_doc_nav->CommitSameDocument();
+
+  EXPECT_EQ(observer.num_resets(), 0);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 0);
+}
+
+// Subframe navigations never reset.
+TEST_P(AnnotatePageContentRequestTest, ResetObserver_Subframe) {
+  SimulateNavigation(GURL("https://example.com/"));
+
+  ResetObserver observer(web_contents(), extraction_service());
+
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://example.com/subframe"), subframe);
+
+  EXPECT_EQ(observer.num_resets(), 0);
+  EXPECT_EQ(observer.num_is_same_document_resets(), 0);
 }
 
 TEST_P(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_FeatureDisabled) {
@@ -1794,7 +1903,6 @@ TEST_P(AnnotatePageContentRequestTest, AboutBlankNavigation_NoExtraction) {
   // Extraction should not be triggered for about:blank in either case.
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 }
-
 
 TEST_P(AnnotatePageContentRequestTest, OnHideFix_FeatureEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;

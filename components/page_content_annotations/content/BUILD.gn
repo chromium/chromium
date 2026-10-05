@@ -152,6 +152,7 @@ source_set("unit_tests") {
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base",
   ]
   if (enable_pdf) {
     deps += [

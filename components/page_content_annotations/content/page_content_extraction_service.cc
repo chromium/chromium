@@ -370,6 +370,11 @@ void PageContentExtractionService::OnNewNavigation(
         "OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation",
         std::distance(observers_.begin(), observers_.end()));
   }
+
+  content::Page& current_page = web_contents->GetPrimaryPage();
+  for (auto& observer : observers_) {
+    observer.OnPageContentReset(current_page, is_same_document);
+  }
 }
 
 void PageContentExtractionService::RunCleanUpTasksWithActiveTabs(

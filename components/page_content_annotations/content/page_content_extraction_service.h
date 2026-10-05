@@ -134,6 +134,24 @@ class PageContentExtractionService : public KeyedService,
     // for a PDF page.
     virtual void OnPageContentExtracted(content::Page& page,
                                         PageContent page_content) {}
+
+    // Invoked when a navigation of the primary main frame resets page content
+    // tracking for its tab (discarding any previously extracted content), i.e.
+    // whenever a new automatic extraction cycle begins. `current_page` is the
+    // new primary page if the primary page changed, or the existing primary
+    // page for a same-document navigation. This fires for every
+    // cross-document navigation, and for same-document navigations that are
+    // significant enough to trigger a new extraction (see
+    // `AnnotatedPageContentRequest`). A matching `OnPageContentExtracted()`
+    // for `current_page` follows if and when extraction succeeds, but is not
+    // guaranteed (e.g. `current_page` is not eligible, or is navigated away
+    // from first).
+    //
+    // By the time this is called, pending async requests for any discarded
+    // content have already resolved with `std::nullopt`. Observers must not
+    // synchronously call back into the service from this method.
+    virtual void OnPageContentReset(content::Page& current_page,
+                                    bool is_same_document) {}
   };
 
 #if BUILDFLAG(IS_ANDROID)
