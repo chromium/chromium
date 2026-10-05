@@ -131,14 +131,14 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
   }
 
   onLhsChipMousePressed(identifier: LhsChipIdentifier, isMiddleClick: boolean) {
-    this.methodCalled('onLhsChipMousePressed', [identifier, isMiddleClick]);
+    this.methodCalled('onLhsChipMousePressed', {identifier, isMiddleClick});
   }
 
   onLhsChipClicked(
       identifier: LhsChipIdentifier, isMouseInteraction: boolean,
       stateToken: number = 0) {
     this.methodCalled(
-        'onLhsChipClicked', [identifier, isMouseInteraction, stateToken]);
+        'onLhsChipClicked', {identifier, isMouseInteraction, stateToken});
   }
 
   onLhsChipPointerEntered(identifier: LhsChipIdentifier) {
