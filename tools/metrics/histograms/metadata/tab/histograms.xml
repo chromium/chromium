@@ -2430,19 +2430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tabs.PersistedTabData.Storage.Exists.File"
-    enum="BooleanSuccess" expires_after="2025-04-12">
-  <owner>yusufo@chromium.org</owner>
-  <owner>nyquist@chromium.org</owner>
-  <owner>dtrainor@chromium.org</owner>
-  <owner>davidjm@chromium.org</owner>
-  <summary>
-    FilePersistedTabData storage stores serialized PersistedTabData (metadata
-    persisted across restarts) in a file. This metric records if a delete
-    operation was found to have the file not existing.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount"
     units="keys" expires_after="2026-09-13">
   <owner>davidjm@chromium.org</owner>
