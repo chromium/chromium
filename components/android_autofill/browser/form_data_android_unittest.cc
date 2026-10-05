@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
@@ -110,14 +111,14 @@ class FormDataAndroidTest : public ::testing::Test {
   }
 
  protected:
-  const std::vector<MockFormFieldDataAndroidBridge*>& field_bridges() {
+  const std::vector<raw_ptr<MockFormFieldDataAndroidBridge>>& field_bridges() {
     return field_bridges_;
   }
   MockFormDataAndroidBridge& form_bridge() { return *form_bridge_; }
 
  private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-  std::vector<MockFormFieldDataAndroidBridge*> field_bridges_;
+  std::vector<raw_ptr<MockFormFieldDataAndroidBridge>> field_bridges_;
   raw_ptr<MockFormDataAndroidBridge> form_bridge_;
 };
 
