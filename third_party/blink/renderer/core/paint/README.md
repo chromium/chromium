@@ -611,9 +611,9 @@ information.
     intervening clips won't prevent the hit test from reaching the descendant.
 
 ### Compositing and layerization
-*   **Child direct compositing reason**: Drawable elements in a `content=drawable`
-    canvas are given the direct compositing reason
-    `CompositingReason::kCanvasChild` in
+*   **Drawable element direct compositing reason**: Drawable elements in a
+    `content=drawable` canvas are given the direct compositing reason
+    `CompositingReason::kCanvasDrawableElement` in
     `CompositingReasonFinder::DirectReasonsForPaintProperties`. This forces the
     creation of an `EffectPaintPropertyNode` for the element (see
     `EffectPaintPropertyNode::RequiresCompositingForCanvasChild()`), and
@@ -634,13 +634,13 @@ HTML-in-Canvas supports nesting `[drawable]` elements within other `[drawable]`
 elements, as well as nesting `content=drawable` canvases within other
 `content=drawable` canvases. This requires coordination across compositing,
 painting, and event dispatch:
-*   **Compositing for nested children**: While compositing is generally
-    suppressed for non-drawable descendants of a drawable element, nested
-    `[drawable]` descendants (including those inside a *nested*
+*   **Compositing for nested drawable elements**: While compositing is
+    generally suppressed for non-drawable descendants of a drawable element,
+    nested `[drawable]` descendants (including those inside a *nested*
     `content=drawable` canvas) are still given the
-    `CompositingReason::kCanvasChild` direct compositing reason, while
-    compositing for a nested canvas element itself is suppressed unless it also
-    has the `drawable` attribute.
+    `CompositingReason::kCanvasDrawableElement` direct compositing reason,
+    while compositing for a nested canvas element itself is suppressed unless
+    it also has the `drawable` attribute.
 *   **Paint event ordering**: To ensure nested canvases are updated before their
     parent canvases draw them, `RunCanvasOnpaintSteps` fires `paint` events in
     reverse document order across frames, and in reverse tree order within each

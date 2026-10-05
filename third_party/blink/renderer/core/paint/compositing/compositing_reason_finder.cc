@@ -391,12 +391,10 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   if (element && element->IsInCanvasSubtree() &&
       !object.StyleRef().IsRenderedInTopLayer(*element)) [[unlikely]] {
     if (object.CanvasForDrawingLayoutObject()) {
-      // TODO(crbug.com/565840014): Rename kCanvasChild to
-      // kCanvasDrawableElement.
-      reasons.Put(CompositingReason::kCanvasChild);
+      reasons.Put(CompositingReason::kCanvasDrawableElement);
     }
     // In canvas subtrees, only drawable elements can have a compositing
-    // reason (kCanvasChild), and no other compositing reasons apply.
+    // reason (kCanvasDrawableElement), and no other compositing reasons apply.
     return reasons;
   }
 

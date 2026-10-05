@@ -306,7 +306,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
   }
   bool RequiresCompositingForCanvasChild() const {
     return state_.direct_compositing_reasons.Has(
-        CompositingReason::kCanvasChild);
+        CompositingReason::kCanvasDrawableElement);
   }
 
   bool IsInTaintedSubtree() const { return state_.is_in_tainted_subtree; }

@@ -723,7 +723,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
   Element* child = GetElementById("child");
   ASSERT_TRUE(child);
   LayoutObject* child_layout_object = child->GetLayoutObject();
-  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasChild},
+  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasDrawableElement},
             CompositingReasonFinder::DirectReasonsForPaintProperties(
                 *child_layout_object));
 
@@ -749,7 +749,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildWithWillChange) {
 
   Element* child = GetElementById("child");
   LayoutObject* child_layout_object = child->GetLayoutObject();
-  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasChild},
+  EXPECT_EQ(CompositingReasons{CompositingReason::kCanvasDrawableElement},
             CompositingReasonFinder::DirectReasonsForPaintProperties(
                 *child_layout_object));
 
@@ -784,7 +784,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
   LayoutObject* layout_object = slotted->GetLayoutObject();
   ASSERT_TRUE(layout_object);
   EXPECT_EQ(
-      CompositingReasons{CompositingReason::kCanvasChild},
+      CompositingReasons{CompositingReason::kCanvasDrawableElement},
       CompositingReasonFinder::DirectReasonsForPaintProperties(*layout_object));
 
   Element* slot_child = GetElementById("slotchild");

@@ -2313,7 +2313,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             CompositorElementIdNamespace::kPrimaryEffect);
 
         if (state.direct_compositing_reasons.Has(
-                CompositingReason::kCanvasChild)) {
+                CompositingReason::kCanvasDrawableElement)) {
           PopulateCanvasChildState(object_, state, *context_.current.transform);
         }
       } else {
@@ -4386,7 +4386,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
 
   if (properties_) {
     if (full_context_.direct_compositing_reasons.Has(
-            CompositingReason::kCanvasChild)) {
+            CompositingReason::kCanvasDrawableElement)) {
       context_.is_in_drawable_canvas_subtree = true;
     }
     UpdateStickyTranslation(sticky_offset);

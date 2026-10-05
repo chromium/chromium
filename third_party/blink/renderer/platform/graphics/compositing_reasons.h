@@ -91,7 +91,7 @@ enum class CompositingReason {
   kCaret,
   kVideo,
   kCanvas,
-  kCanvasChild,
+  kCanvasDrawableElement,
   kPlugin,
   kScrollbar,
   kLinkHighlight,
@@ -123,7 +123,7 @@ class CompositingReasonCombos {
           kUndoOverscroll,
           kVideo,
           kCanvas,
-          kCanvasChild,
+          kCanvasDrawableElement,
           kPlugin,
           kIFrame,
           kAffectedBySafeAreaBottom,
@@ -168,7 +168,7 @@ class CompositingReasonCombos {
       kViewTransitionPseudoElement,
       kTransform3DSceneLeaf,
       kElementCapture,
-      kCanvasChild,
+      kCanvasDrawableElement,
       kUnboundedElement};
   static constexpr CompositingReasons kDirectReasonsForFilterProperty = {
       kActiveFilterAnimation, kWillChangeFilter};
