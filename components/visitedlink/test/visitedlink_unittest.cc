@@ -15,6 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -68,7 +69,7 @@ GURL TestURL(int i) {
   return GURL(base::StringPrintf("%s%d", kTestPrefix, i));
 }
 
-std::vector<VisitedLinkReader*> g_readers;
+std::vector<raw_ptr<VisitedLinkReader>> g_readers;
 
 class TestVisitedLinkDelegate : public VisitedLinkDelegate {
  public:
