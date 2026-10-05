@@ -777,6 +777,7 @@ Called by update_autofill_enums.py.-->
   <int value="11" label="OmniboxAutofill"/>
   <int value="12" label="PaymentsChurnedUsers"/>
   <int value="13" label="WalletReminderNotice"/>
+  <int value="14" label="GmailOtpOptIn"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/autofill/bubble_controller_base.h:BubbleType) -->

@@ -124,6 +124,7 @@ class BackToOpenerController;
 
 namespace autofill {
 class BubbleManager;
+class GmailOtpOptInBubbleController;
 class OmniboxAutofillBubbleController;
 class OmniboxAutofillPageActionController;
 class PaymentsChurnedUsersBubbleController;
@@ -777,6 +778,11 @@ class TabFeatures {
   // Responsible for managing the "Wallet Reminder Notice" page action.
   std::unique_ptr<autofill::WalletReminderNoticePageActionController>
       wallet_reminder_notice_page_action_controller_;
+
+  // Responsible for managing the bubble that asks the user to opt in to
+  // fetching one-time verification codes from Gmail.
+  std::unique_ptr<autofill::GmailOtpOptInBubbleController>
+      gmail_otp_opt_in_bubble_controller_;
 
   std::unique_ptr<AskBeforeHttpDialogController>
       ask_before_http_dialog_controller_;

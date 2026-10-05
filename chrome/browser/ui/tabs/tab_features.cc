@@ -82,6 +82,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
+#include "chrome/browser/ui/autofill/one_time_tokens/gmail_otp_opt_in_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/payments_churned_users_bubble_controller.h"
@@ -630,6 +631,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
                 tab, tab, tab.GetContents());
   }
+
+  gmail_otp_opt_in_bubble_controller_ =
+      GetUserDataFactory()
+          .CreateInstance<autofill::GmailOtpOptInBubbleController>(tab, tab);
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);

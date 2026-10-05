@@ -3506,6 +3506,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="BubbleType">
     <variant name="FilledCardInformation"
         summary="Filled card information bubble."/>
+    <variant name="GmailOtpOptIn" summary="Gmail OTP opt-in bubble."/>
     <variant name="MandatoryReauth" summary="Mandatory reauth bubble."/>
     <variant name="OfferNotification" summary="Offer notification bubble."/>
     <variant name="OmniboxAutofill" summary="Omnibox Autofill bubble."/>

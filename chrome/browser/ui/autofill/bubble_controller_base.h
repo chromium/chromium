@@ -41,7 +41,9 @@ enum class BubbleType {
   kPaymentsChurnedUsers = 12,
   // Denotes bubble for the Wallet reminder notice.
   kWalletReminderNotice = 13,
-  kMaxValue = kWalletReminderNotice
+  // Denotes bubble for Gmail OTP opt-in.
+  kGmailOtpOptIn = 14,
+  kMaxValue = kGmailOtpOptIn
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillBubbleType)
 

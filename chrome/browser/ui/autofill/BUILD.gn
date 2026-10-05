@@ -122,6 +122,7 @@ source_set("autofill") {
       "edit_address_profile_dialog_controller.h",
       "edit_address_profile_dialog_controller_impl.h",
       "edit_address_profile_view.h",
+      "one_time_tokens/gmail_otp_opt_in_bubble_controller.h",
       "save_address_bubble_controller.h",
       "update_address_bubble_controller.h",
     ]
@@ -134,6 +135,7 @@ source_set("autofill") {
       "//components/user_education/common",
       "//third_party/abseil-cpp:absl",
       "//ui/base/interaction",
+      "//ui/base/unowned_user_data",
       "//ui/menus",
       "//ui/views",
     ]
@@ -273,6 +275,7 @@ source_set("impl") {
       "bubble_manager_impl.cc",
       "delete_address_profile_dialog_controller_impl.cc",
       "edit_address_profile_dialog_controller_impl.cc",
+      "one_time_tokens/gmail_otp_opt_in_bubble_controller.cc",
       "save_address_bubble_controller.cc",
       "update_address_bubble_controller.cc",
     ]
@@ -297,8 +300,11 @@ source_set("impl") {
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/autofill/autofill_ai",
+      "//chrome/browser/ui/views/autofill/one_time_tokens",
       "//chrome/browser/ui/views/autofill/popup:popup_view_views",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webauthn",
       "//chrome/browser/ui/webui/signin:login_ui_service",
       "//components/autofill/core/browser",
@@ -423,6 +429,7 @@ source_set("unit_tests") {
       "autofill_popup_controller_impl_unittest.cc",
       "bubble_manager_impl_unittest.cc",
       "edit_address_profile_dialog_controller_impl_unittest.cc",
+      "one_time_tokens/gmail_otp_opt_in_bubble_controller_unittest.cc",
       "save_address_bubble_controller_unittest.cc",
       "update_address_bubble_controller_unittest.cc",
     ]
@@ -433,6 +440,7 @@ source_set("unit_tests") {
       "//chrome/browser/ui/user_education",
       "//chrome/test/user_education:impl",
       "//components/tabs:test_support",
+      "//ui/base/unowned_user_data",
     ]
   }
 

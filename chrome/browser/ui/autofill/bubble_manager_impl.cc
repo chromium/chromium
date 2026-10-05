@@ -27,26 +27,31 @@ constexpr base::TimeDelta kPendingRequestTimeout = base::Seconds(3600);
 int GetPriorityForBubbleType(BubbleType type) {
   switch (type) {
     case BubbleType::kOmniboxAutofill:
-      return 13;
+      return 14;
     case BubbleType::kFilledCardInformation:
-      return 12;
+      return 13;
     case BubbleType::kPassword:
-      return 11;
+      return 12;
     case BubbleType::kSaveUpdateAutofillAi:
-      return 10;
+      return 11;
     case BubbleType::kSaveUpdateCard:
-      return 9;
+      return 10;
     case BubbleType::kVirtualCardEnrollConfirmation:
-      return 8;
+      return 9;
     case BubbleType::kSaveIban:
-      return 7;
+      return 8;
     case BubbleType::kMandatoryReauth:
-      return 6;
+      return 7;
     case BubbleType::kSaveUpdateAddress:
-      return 5;
+      return 6;
     case BubbleType::kOfferNotification:
-      return 4;
+      return 5;
     case BubbleType::kPaymentsChurnedUsers:
+      return 4;
+    // Proactive Gmail OTP opt-in has lower priority than post-submission save
+    // flows (save-password, save-card, save-address) and sits alongside other
+    // feature opt-in consent prompts.
+    case BubbleType::kGmailOtpOptIn:
       return 3;
     case BubbleType::kWalletablePassConsent:
       return 2;
@@ -74,6 +79,7 @@ bool ShouldAlwaysPreemptSameType(BubbleType bubble_type) {
     case BubbleType::kMandatoryReauth:
     case BubbleType::kSaveUpdateAddress:
     case BubbleType::kOfferNotification:
+    case BubbleType::kGmailOtpOptIn:
     case BubbleType::kWalletablePassConsent:
     case BubbleType::kWalletablePassSave:
     case BubbleType::kWalletReminderNotice:
@@ -113,6 +119,8 @@ std::string_view BubbleTypeToMetricSuffix(BubbleType bubble_type) {
       return "WalletablePassSave";
     case BubbleType::kWalletReminderNotice:
       return "WalletReminderNotice";
+    case BubbleType::kGmailOtpOptIn:
+      return "GmailOtpOptIn";
   }
   NOTREACHED();
 }
