@@ -1033,6 +1033,10 @@ BASE_FEATURE(kPlusButtonMenuInFakebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Returns true if the plus button in NTP fakebox is enabled.
 bool IsPlusButtonInFakeboxEnabled() {
+  // Launched by default on phones.
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return true;
+  }
   return base::FeatureList::IsEnabled(kPlusButtonInFakebox);
 }
 
