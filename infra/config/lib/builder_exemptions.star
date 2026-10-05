@@ -310,6 +310,8 @@ mega_cq_excluded_gardener_rotations = [
 # This dict should NOT be added to. It contains a list of ci builders that are
 # already being mirrored in CQ but have no gardener rotation.
 exempted_gardened_mirrors_in_cq_builders = [
+    # TODO(crbug.com/564535071): Revert once the bug is fixed.
+    "ci/Linux ASan LSan Tests (1)",
     "ci/fuchsia-x64-accessibility-rel",
     "ci/linux-enterprise-companion-builder-dbg",
     "ci/linux-enterprise-companion-builder-rel",

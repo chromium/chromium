@@ -133,7 +133,6 @@ chromium/try/linux-x64-libfuzzer-msan-rel-tests
 chromium/try/linux-x64-libfuzzer-ubsan-rel-tests
 chromium/try/linux-x86-libfuzzer-asan-rel-tests
 chromium/try/linux_chromium_archive_rel_ng
-chromium/try/linux_chromium_asan_rel_ng
 chromium/try/linux_chromium_cfi_rel_ng
 chromium/try/linux_chromium_chromeos_asan_rel_ng
 chromium/try/linux_chromium_chromeos_msan_rel_ng

@@ -260,6 +260,8 @@ linux_memory_builder(
         },
     ),
     ssd = None,
+    # TODO(crbug.com/564535071): Revert once the bug is fixed.
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "linux|asan lsan",
         short_name = "tst",
