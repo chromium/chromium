@@ -725,6 +725,7 @@ std::string ControlToString(const T (&arr)[N][M], const std::string control) {
     s << ControlToString(base->control, #control); \
   } while (0)
 
+#if BUILDFLAG(USE_AV1_HW_DECODER)
 static std::string PrintStatelessAV1Control(
     const struct v4l2_ext_control* ext_ctrls) {
   std::ostringstream s;
@@ -856,6 +857,7 @@ static std::string PrintStatelessAV1Control(
   }
   return s.str();
 }
+#endif
 
 static std::string PrintStatelessVP8Control(
     const struct v4l2_ext_control* ext_ctrls) {
@@ -1199,11 +1201,13 @@ std::string V4L2ControlsToString(const struct v4l2_ext_controls* ctrls) {
 
   for (uint32_t i = 0; i < ctrls->count; ++i) {
     switch (ext_ctrls->id) {
+#if BUILDFLAG(USE_AV1_HW_DECODER)
       case V4L2_CID_STATELESS_AV1_SEQUENCE:
       case V4L2_CID_STATELESS_AV1_TILE_GROUP_ENTRY:
       case V4L2_CID_STATELESS_AV1_FRAME:
         s << PrintStatelessAV1Control(ext_ctrls);
         break;
+#endif
       case V4L2_CID_STATELESS_VP8_FRAME:
         s << PrintStatelessVP8Control(ext_ctrls);
         break;
