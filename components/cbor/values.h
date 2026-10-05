@@ -9,16 +9,12 @@
 
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <variant>
 #include <vector>
 
-#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/notreached.h"
-#include "base/strings/string_view_util.h"
 #include "components/cbor/cbor_export.h"
 
 namespace cbor {
@@ -27,76 +23,13 @@ namespace cbor {
 // This does not support indefinite-length encodings.
 class CBOR_EXPORT Value {
  public:
-  enum class Type;
-
-  struct Less {
+  struct CBOR_EXPORT Less {
     // Comparison predicate to order keys in a dictionary as required by the
     // CTAP2 canonical CBOR encoding form:
     // https://fidoalliance.org/specs/fido-v2.0-ps-20190130/fido-client-to-authenticator-protocol-v2.0-ps-20190130.html#ctap2-canonical-cbor-encoding-form
-    bool operator()(const Value& a, const Value& b) const {
-      // The current implementation only supports integer, text string, byte
-      // string and invalid UTF8 keys.
-      DCHECK((a.is_integer() || a.is_string() || a.is_bytestring() ||
-              a.is_invalid_utf8()) &&
-             (b.is_integer() || b.is_string() || b.is_bytestring() ||
-              b.is_invalid_utf8()));
-
-      // Per CTAP2 canonical CBOR encoding form:
-      // *  If the major types are different, the one with the lower value
-      //    in numerical order sorts earlier.
-      const Type a_type = MajorType(a);
-      const Type b_type = MajorType(b);
-      if (a_type != b_type) {
-        return a_type < b_type;
-      }
-
-      // *  If two keys have different lengths, the shorter one sorts
-      //    earlier;
-      // *  If two keys have the same length, the one with the lower value
-      //    in (byte-wise) lexical order sorts earlier.
-      switch (a_type) {
-        case Type::UNSIGNED:
-          // For unsigned integers, the smaller value has shorter length,
-          // and (byte-wise) lexical representation.
-          return a.GetInteger() < b.GetInteger();
-        case Type::NEGATIVE:
-          // For negative integers, the value closer to zero has shorter length,
-          // and (byte-wise) lexical representation.
-          return a.GetInteger() > b.GetInteger();
-        case Type::STRING: {
-          const std::string_view a_str = TextString(a);
-          const size_t a_length = a_str.size();
-          const std::string_view b_str = TextString(b);
-          const size_t b_length = b_str.size();
-          return std::tie(a_length, a_str) < std::tie(b_length, b_str);
-        }
-        case Type::BYTE_STRING: {
-          const auto& a_str = a.GetBytestring();
-          const size_t a_length = a_str.size();
-          const auto& b_str = b.GetBytestring();
-          const size_t b_length = b_str.size();
-          return std::tie(a_length, a_str) < std::tie(b_length, b_str);
-        }
-        default:
-          break;
-      }
-
-      NOTREACHED();
-    }
+    bool operator()(const Value& a, const Value& b) const;
 
     using is_transparent = void;
-
-   private:
-    // `Type::INVALID_UTF8` is encoded as a text string (major type 3), so it
-    // sorts with `Type::STRING` rather than by its negative enum value.
-    static Type MajorType(const Value& v) {
-      return v.is_invalid_utf8() ? Type::STRING : v.type();
-    }
-
-    static std::string_view TextString(const Value& v LIFETIME_BOUND) {
-      return v.is_string() ? std::string_view(v.GetString())
-                           : base::as_string_view(v.GetInvalidUTF8());
-    }
   };
 
   using BinaryValue = std::vector<uint8_t>;

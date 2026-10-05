@@ -11,6 +11,7 @@
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/notreached.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/cose.h"
 #include "crypto/keypair.h"
