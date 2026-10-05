@@ -26,7 +26,7 @@ class PLATFORM_EXPORT ImageToBufferCopier {
 
   // SyncToken will be completed after access to the buffer is finished by
   // GPU process.
-  std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
+  std::pair<scoped_refptr<gpu::ClientSharedImage>, gpu::SyncToken> CopyImage(
       const scoped_refptr<gpu::ClientSharedImage>& source_shared_image);
 
  private:

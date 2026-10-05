@@ -11,6 +11,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -38,7 +39,7 @@ class D3D11TextureHelper {
   bool CompositeToBackBuffer(
       const scoped_refptr<viz::ContextProvider>& context_provider);
 
-  void SetSourceTexture(base::win::ScopedHandle texture_handle,
+  void SetSourceTexture(scoped_refptr<gpu::ClientSharedImage> shared_image,
                         const gpu::SyncToken& sync_token,
                         gfx::RectF left,
                         gfx::RectF right);
@@ -71,6 +72,7 @@ class D3D11TextureHelper {
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shader_resource_;
     Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_;
     Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex_;
+    scoped_refptr<gpu::ClientSharedImage> shared_image_;
     gpu::SyncToken sync_token_;
     gfx::RectF left_;   // 0 to 1 in each direction
     gfx::RectF right_;  // 0 to 1 in each direction

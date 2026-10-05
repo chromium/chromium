@@ -4,6 +4,7 @@ include_rules = [
   "+components/viz/common/resources/shared_image_format.h",
   "+device/base/features.h",
   "+device/gamepad/public/cpp/gamepads.h",
+  "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/gles2_interface.h",
   "+gpu/command_buffer/common/constants.h",
   "+gpu/command_buffer/common/sync_token.h",

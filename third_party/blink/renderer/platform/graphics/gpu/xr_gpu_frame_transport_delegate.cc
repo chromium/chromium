@@ -48,7 +48,7 @@ void XrGpuFrameTransportDelegate::VerifySyncToken(gpu::SyncToken& sync_token) {
   webgpu->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
 }
 
-std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
+std::pair<scoped_refptr<gpu::ClientSharedImage>, gpu::SyncToken>
 XrGpuFrameTransportDelegate::CopyImage(SharedImageHolder* image,
                                        bool last_transfer_succeeded) {
   // CopyImage is only used with SUBMIT_AS_TEXTURE_HANDLE, which we don't

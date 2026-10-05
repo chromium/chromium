@@ -266,7 +266,7 @@ void OpenXrRenderLoop::SetStageParameters(
 #if BUILDFLAG(IS_WIN)
 void OpenXrRenderLoop::SubmitFrameWithTextureHandle(
     int16_t frame_index,
-    mojo::PlatformHandle texture_handle,
+    gpu::ExportedSharedImage exported_shared_image,
     const gpu::SyncToken& sync_token) {
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   TRACE_EVENT1("xr", "OpenXrRenderLoop::SubmitFrameWithTextureHandle",
@@ -275,8 +275,9 @@ void OpenXrRenderLoop::SubmitFrameWithTextureHandle(
     return;
   }
 
-  graphics_binding_->SetWebXrTexture(std::move(texture_handle), sync_token,
-                                     left_webxr_bounds_, right_webxr_bounds_);
+  graphics_binding_->SetWebXrTexture(
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)),
+      sync_token, left_webxr_bounds_, right_webxr_bounds_);
 
   // Regardless of success - try to composite what we have.
   MaybeCompositeAndSubmit();

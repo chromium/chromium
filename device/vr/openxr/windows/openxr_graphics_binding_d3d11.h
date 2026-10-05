@@ -40,7 +40,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                              gpu::SharedImageInterface* sii) override;
   void CleanupWithoutSubmit() override;
   void OnSetOverlayAndWebXrVisibility() override;
-  void SetWebXrTexture(mojo::PlatformHandle texture_handle,
+  void SetWebXrTexture(scoped_refptr<gpu::ClientSharedImage> shared_image,
                        const gpu::SyncToken& sync_token,
                        const gfx::RectF& left,
                        const gfx::RectF& right) override;

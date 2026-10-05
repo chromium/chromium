@@ -312,6 +312,14 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   bool IsSyncTokenSignaled(ContextSupport* context_support,
                            const SyncToken& resource_sync_token);
 
+  // Waits on the SyncToken(s) for this SharedImage and then calls gl->Finish().
+  // When the UseAutomaticSyncTokenManagement feature is enabled, this function
+  // waits on all tracked SyncTokens for this SharedImage, ignoring
+  // `sync_token`. When the feature is disabled, it waits on `sync_token` if
+  // valid.
+  void WaitSyncTokenAndFinish(gles2::GLES2Interface* gl,
+                              const SyncToken& sync_token);
+
   // When the UseAutomaticSyncTokenManagement feature is enabled, this function
   // returns all tracked SyncTokens for this SharedImage. When the feature is
   // disabled, this function returns a 1-element vector containing the input

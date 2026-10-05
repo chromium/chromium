@@ -50,7 +50,7 @@ bool ImageToBufferCopier::EnsureDestImage(const gfx::Size& size) {
   return true;
 }
 
-std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
+std::pair<scoped_refptr<gpu::ClientSharedImage>, gpu::SyncToken>
 ImageToBufferCopier::CopyImage(
     const scoped_refptr<gpu::ClientSharedImage>& source_shared_image) {
   CHECK(source_shared_image);
@@ -96,10 +96,7 @@ ImageToBufferCopier::CopyImage(
   dest_shared_image_->UpdateDestructionSyncToken(sync_token);
   dest_si_texture.reset();
 
-  return std::make_pair(dest_shared_image_
-                            ? dest_shared_image_->CloneGpuMemoryBufferHandle()
-                            : gfx::GpuMemoryBufferHandle(),
-                        sync_token);
+  return std::make_pair(dest_shared_image_, sync_token);
 }
 
 void ImageToBufferCopier::CleanupDestImage() {

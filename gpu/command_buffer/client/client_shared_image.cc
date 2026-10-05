@@ -1062,6 +1062,18 @@ void ClientSharedImage::RunOnTaskRunner(
                std::move(result_cb));
 }
 
+void ClientSharedImage::WaitSyncTokenAndFinish(gles2::GLES2Interface* gl,
+                                               const SyncToken& sync_token) {
+  CHECK(gl);
+  if (!base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement) &&
+      !sync_token.HasData()) {
+    return;
+  }
+  WaitSyncTokenInternal(gl, sync_token);
+  gl->Finish();
+}
+
 void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
                                               const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(

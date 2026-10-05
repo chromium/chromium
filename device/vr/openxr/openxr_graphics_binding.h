@@ -107,10 +107,11 @@ class OpenXrGraphicsBinding {
   // during the cycle. Since this third code-path only exists on Windows we
   // restrict this method to that platform.
 #if BUILDFLAG(IS_WIN)
-  virtual void SetWebXrTexture(mojo::PlatformHandle texture_handle,
-                               const gpu::SyncToken& sync_token,
-                               const gfx::RectF& left,
-                               const gfx::RectF& right) = 0;
+  virtual void SetWebXrTexture(
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
+      const gfx::RectF& left,
+      const gfx::RectF& right) = 0;
 #endif
 
   // Much like the `SetWebXrTexture` path above, the texture submitted here is

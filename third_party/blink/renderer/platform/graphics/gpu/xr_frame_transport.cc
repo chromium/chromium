@@ -112,14 +112,14 @@ bool XRFrameTransport::FrameSubmit(
     // TODO(crbug.com/359418629): This only works because we're restricted to a
     // single layer at the moment.
     CHECK_EQ(layers.size(), 1UL);
-    auto [gpu_memory_buffer_handle, sync_token] = delegate->CopyImage(
+    auto [copied_image, sync_token] = delegate->CopyImage(
         layers[0].current_frame_image.get(), last_transfer_succeeded_);
 
-    // We can fail to obtain a GMB handle if we don't have GPU support, or
+    // We can fail to obtain a shared image if we don't have GPU support, or
     // for some out-of-memory situations.
     // TODO(billorr): Consider whether we should just drop the frame or exit
     // presentation.
-    if (gpu_memory_buffer_handle.is_null()) {
+    if (!copied_image) {
       FrameSubmitMissing(vr_presentation_provider,
                          std::move(camera_export_result), vr_frame_id);
       // We didn't actually submit anything, so don't set
@@ -127,14 +127,8 @@ bool XRFrameTransport::FrameSubmit(
       return false;
     }
 
-    // We decompose the cloned handle, and use it to create a
-    // mojo::PlatformHandle which will own cleanup of the handle, and will be
-    // passed over IPC.
     vr_presentation_provider->SubmitFrameWithTextureHandle(
-        vr_frame_id,
-        mojo::PlatformHandle(std::move(gpu_memory_buffer_handle)
-                                 .dxgi_handle()
-                                 .TakeBufferHandle()),
+        vr_frame_id, copied_image->Export(/*with_buffer_handle=*/true),
         sync_token);
 #else
     NOTIMPLEMENTED();

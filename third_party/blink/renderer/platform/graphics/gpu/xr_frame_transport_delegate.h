@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_XR_FRAME_TRANSPORT_DELEGATE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -31,9 +32,8 @@ class PLATFORM_EXPORT XRFrameTransportDelegate
 
   virtual void WaitOnFence(gfx::GpuFence* fence) = 0;
   virtual void VerifySyncToken(gpu::SyncToken& sync_token) = 0;
-  virtual std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken> CopyImage(
-      SharedImageHolder* image,
-      bool last_transfer_succeeded) = 0;
+  virtual std::pair<scoped_refptr<gpu::ClientSharedImage>, gpu::SyncToken>
+  CopyImage(SharedImageHolder* image, bool last_transfer_succeeded) = 0;
   virtual bool IsContextLost() = 0;
 
   // GarbageCollected override

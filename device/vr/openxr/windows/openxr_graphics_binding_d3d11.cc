@@ -354,15 +354,11 @@ void OpenXrGraphicsBindingD3D11::OnSetOverlayAndWebXrVisibility() {
 }
 
 void OpenXrGraphicsBindingD3D11::SetWebXrTexture(
-    mojo::PlatformHandle texture_handle,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     const gfx::RectF& left,
     const gfx::RectF& right) {
-  base::win::ScopedHandle scoped_handle = texture_handle.is_valid()
-                                              ? texture_handle.TakeHandle()
-                                              : base::win::ScopedHandle();
-
-  texture_helper_->SetSourceTexture(std::move(scoped_handle), sync_token, left,
+  texture_helper_->SetSourceTexture(std::move(shared_image), sync_token, left,
                                     right);
 }
 

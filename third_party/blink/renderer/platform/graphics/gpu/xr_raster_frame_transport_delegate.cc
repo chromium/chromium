@@ -14,10 +14,10 @@ void XRRasterFrameTransportDelegate::WaitOnFence(gfx::GpuFence* fence) {}
 void XRRasterFrameTransportDelegate::VerifySyncToken(
     gpu::SyncToken& sync_token) {}
 
-std::pair<gfx::GpuMemoryBufferHandle, gpu::SyncToken>
+std::pair<scoped_refptr<gpu::ClientSharedImage>, gpu::SyncToken>
 XRRasterFrameTransportDelegate::CopyImage(SharedImageHolder* image,
                                           bool last_transfer_succeeded) {
-  return {gfx::GpuMemoryBufferHandle(), gpu::SyncToken()};
+  return {nullptr, gpu::SyncToken()};
 }
 
 bool XRRasterFrameTransportDelegate::IsContextLost() {

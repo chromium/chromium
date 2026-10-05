@@ -148,9 +148,10 @@ class OpenXrRenderLoop : public XRThread,
 
   // XRPresentationProvider overrides:
 #if BUILDFLAG(IS_WIN)
-  void SubmitFrameWithTextureHandle(int16_t frame_index,
-                                    mojo::PlatformHandle texture_handle,
-                                    const gpu::SyncToken& sync_token) override;
+  void SubmitFrameWithTextureHandle(
+      int16_t frame_index,
+      gpu::ExportedSharedImage exported_shared_image,
+      const gpu::SyncToken& sync_token) override;
 #endif
   void SubmitFrameMissing(
       int16_t frame_index,
