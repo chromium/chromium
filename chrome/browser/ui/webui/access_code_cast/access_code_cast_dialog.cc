@@ -112,7 +112,9 @@ AccessCodeCastDialog::AccessCodeCastDialog(
     std::unique_ptr<MediaRouteStarter> media_route_starter)
     : cast_mode_set_(cast_mode_set),
       media_route_starter_(std::move(media_route_starter)),
-      web_contents_(media_route_starter_->GetWebContents()),
+      web_contents_(media_route_starter_->GetWebContents()
+                        ? media_route_starter_->GetWebContents()->GetWeakPtr()
+                        : nullptr),
       context_(media_route_starter_->GetProfile()) {
   DCHECK(media_route_starter_) << "Must have a media route starter!";
   DCHECK(!cast_mode_set_.empty())
@@ -157,7 +159,7 @@ void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
 
   if (dialog_mode == AccessCodeCastDialogMode::kBrowserStandard &&
       web_contents_) {
-    UpdateDialogPosition(dialog_widget_, web_contents_);
+    UpdateDialogPosition(dialog_widget_, web_contents_.get());
   }
 }
 
@@ -210,7 +212,9 @@ views::Widget::InitParams AccessCodeCastDialog::CreateParams(
 }
 
 void AccessCodeCastDialog::CloseDialogWidget() {
-  dialog_widget_->Close();
+  if (dialog_widget_ && !closing_dialog_) {
+    dialog_widget_->Close();
+  }
 }
 
 base::WeakPtr<AccessCodeCastDialog> AccessCodeCastDialog::GetWeakPtr() {

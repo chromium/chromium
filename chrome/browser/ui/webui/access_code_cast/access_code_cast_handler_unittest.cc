@@ -583,4 +583,25 @@ TEST_F(AccessCodeCastHandlerTest, SuccessfulAddAndCastMetric) {
   histogram_tester.ExpectTotalCount(histogram, 1);
 }
 
+TEST_F(AccessCodeCastHandlerTest, InitiatorWebContentsDestroyed) {
+  CreateHandler({MediaCastMode::PRESENTATION, MediaCastMode::TAB_MIRROR});
+  handler()->SetIdentityManagerForTesting(identity_manager());
+  SignIn(signin::ConsentLevel::kSignin);
+
+  DeleteContents();
+  EXPECT_EQ(nullptr, media_route_starter()->GetWebContents());
+
+  MockAddSinkCallback mock_add_callback;
+  EXPECT_CALL(mock_add_callback, Run(AddSinkResultCode::UNKNOWN_ERROR));
+  EXPECT_CALL(*access_service(), DiscoverSink(_, _)).Times(0);
+  handler()->AddSink(
+      "foo_code",
+      access_code_cast::mojom::CastDiscoveryMethod::INPUT_ACCESS_CODE,
+      mock_add_callback.Get());
+
+  MockCastToSinkCallback mock_cast_callback;
+  EXPECT_CALL(mock_cast_callback, Run(RouteRequestResultCode::UNKNOWN_ERROR));
+  handler()->CastToSink(mock_cast_callback.Get());
+}
+
 }  // namespace media_router

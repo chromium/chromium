@@ -66,10 +66,26 @@ Profile* GetDefaultProfileForMediaRouteStarter() {
 #endif
 }
 
+Profile* GetInitialProfile(content::WebContents* initiator) {
+  return initiator && initiator->GetBrowserContext()
+             ? Profile::FromBrowserContext(initiator->GetBrowserContext())
+             : GetDefaultProfileForMediaRouteStarter();
+}
+
+bool IsValidRoute(MediaCastMode cast_mode, content::WebContents* web_contents) {
+  const bool is_desktop_cast = cast_mode == MediaCastMode::DESKTOP_MIRROR;
+  const bool have_valid_tab = web_contents != nullptr;
+  return is_desktop_cast || have_valid_tab;
+}
+
 }  // namespace
 
 MediaRouteStarter::MediaRouteStarter(MediaRouterUIParameters params)
-    : web_contents_(params.initiator),
+    : web_contents_(params.initiator ? params.initiator->GetWeakPtr()
+                                     : nullptr),
+      profile_(GetInitialProfile(params.initiator)
+                   ? GetInitialProfile(params.initiator)->GetWeakPtr()
+                   : nullptr),
       start_presentation_context_(std::move(params.start_presentation_context)),
       presentation_manager_(
           params.initiator
@@ -140,19 +156,22 @@ void MediaRouteStarter::RemoveMediaSinkWithCastModesObserver(
 }
 
 Profile* MediaRouteStarter::GetProfile() const {
-  return GetWebContents() && GetWebContents()->GetBrowserContext()
-             ? Profile::FromBrowserContext(
-                   GetWebContents()->GetBrowserContext())
-             : GetDefaultProfileForMediaRouteStarter();
+  return profile_.get();
 }
 
 MediaRouter* MediaRouteStarter::GetMediaRouter() const {
-  return MediaRouterFactory::GetApiForBrowserContext(GetProfile());
+  return GetProfile()
+             ? MediaRouterFactory::GetApiForBrowserContext(GetProfile())
+             : nullptr;
 }
 
 std::unique_ptr<RouteParameters> MediaRouteStarter::CreateRouteParameters(
     const MediaSink::Id& sink_id,
     MediaCastMode cast_mode) {
+  if (!IsValidRoute(cast_mode, GetWebContents())) {
+    return nullptr;
+  }
+
   std::unique_ptr<RouteParameters> params = std::make_unique<RouteParameters>();
 
   params->cast_mode = cast_mode;
@@ -196,6 +215,23 @@ void MediaRouteStarter::StartRoute(std::unique_ptr<RouteParameters> params) {
   DCHECK(params->request) << "Must have params->request!";
 
   MediaRouteResponseCallback presentation_callback;
+
+  if (!IsValidRoute(params->cast_mode, GetWebContents())) {
+    if (start_presentation_context_ &&
+        (params->cast_mode == MediaCastMode::PRESENTATION ||
+         params->cast_mode == MediaCastMode::REMOTE_PLAYBACK)) {
+      presentation_callback =
+          base::BindOnce(&StartPresentationContext::HandleRouteResponse,
+                         std::move(start_presentation_context_));
+    }
+    RunRouteResponseCallbacks(std::move(presentation_callback),
+                              std::move(params->route_result_callbacks),
+                              nullptr,
+                              *RouteRequestResult::FromError(
+                                  "The initiating tab was closed.",
+                                  mojom::RouteRequestResultCode::CANCELLED));
+    return;
+  }
 
   // There are two ways to initialize MediaRouterUI with Presentation cast mode
   // and each method requires different way to propagate route responses back to
@@ -256,6 +292,9 @@ std::u16string MediaRouteStarter::GetPresentationRequestSourceName() const {
 
 bool MediaRouteStarter::SinkSupportsCastMode(const MediaSink::Id& sink_id,
                                              MediaCastMode cast_mode) const {
+  if (!IsValidRoute(cast_mode, GetWebContents())) {
+    return false;
+  }
   return GetQueryResultManager()
       ->GetSourceForCastModeAndSink(cast_mode, sink_id)
       .get();
@@ -296,7 +335,7 @@ void MediaRouteStarter::InitPresentationSources(
                         .presentation_urls[0]);
     if (media_source.IsRemotePlaybackSource()) {
       media_source.AppendTabIdToRemotePlaybackUrlQuery(
-          sessions::SessionTabHelper::IdForTab(web_contents_).id());
+          sessions::SessionTabHelper::IdForTab(GetWebContents()).id());
       GetQueryResultManager()->SetSourcesForCastMode(
           MediaCastMode::REMOTE_PLAYBACK, {media_source},
           url::Origin::Create(GURL()));
@@ -323,7 +362,7 @@ void MediaRouteStarter::InitMirroringSources(const CastModeSet& initial_modes) {
 
   if (IsCastModeAvailable(initial_modes, MediaCastMode::TAB_MIRROR)) {
     SessionID::id_type tab_id =
-        sessions::SessionTabHelper::IdForTab(web_contents_).id();
+        sessions::SessionTabHelper::IdForTab(GetWebContents()).id();
     if (tab_id != -1) {
       MediaSource mirroring_source(MediaSource::ForTab(tab_id));
       GetQueryResultManager()->SetSourcesForCastMode(
@@ -345,7 +384,7 @@ void MediaRouteStarter::InitRemotePlaybackSources(
   // Use a placeholder URL as origin for Remote Playback.
   url::Origin origin = url::Origin::Create(GURL());
   SessionID::id_type tab_id =
-      sessions::SessionTabHelper::IdForTab(web_contents_).id();
+      sessions::SessionTabHelper::IdForTab(GetWebContents()).id();
   GetQueryResultManager()->SetSourcesForCastMode(
       MediaCastMode::REMOTE_PLAYBACK,
       {MediaSource::ForRemotePlayback(tab_id, video_codec, audio_codec)},
@@ -353,8 +392,7 @@ void MediaRouteStarter::InitRemotePlaybackSources(
 }
 
 content::BrowserContext* MediaRouteStarter::GetBrowserContext() const {
-  return GetWebContents() ? GetWebContents()->GetBrowserContext()
-                          : GetDefaultProfileForMediaRouteStarter();
+  return GetProfile();
 }
 
 url::Origin MediaRouteStarter::GetFrameOrigin() const {

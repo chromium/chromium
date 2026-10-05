@@ -102,8 +102,10 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   // use of the media_route_starter_ pointer after c'tor.
   std::unique_ptr<media_router::MediaRouteStarter> media_route_starter_;
 
-  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
-      web_contents_;
+  // The WebContents that initiated the dialog. Will be nullptr for
+  // desktop-only casting mode, or if the initiating tab is destroyed.
+  base::WeakPtr<content::WebContents> web_contents_;
+
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
   bool closing_dialog_ = false;

@@ -951,4 +951,37 @@ TEST_F(MediaRouteStarterTest,
   EXPECT_CALL(*this, RequestError(_));
 }
 
+TEST_F(MediaRouteStarterTest, InitiatorWebContentsDestroyed) {
+  presentation_manager()->SetDefaultPresentationRequest(
+      default_presentation_request());
+  CreateStarterForDefaultModes();
+  UpdateSinks({cast_sink().sink()}, std::vector<url::Origin>());
+
+  EXPECT_EQ(web_contents(), media_route_starter()->GetWebContents());
+  EXPECT_TRUE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::TAB_MIRROR));
+  EXPECT_TRUE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::DESKTOP_MIRROR));
+
+  DeleteContents();
+
+  EXPECT_EQ(nullptr, media_route_starter()->GetWebContents());
+  EXPECT_NE(nullptr, media_route_starter()->GetProfile());
+  EXPECT_NE(nullptr, media_route_starter()->GetMediaRouter());
+  EXPECT_FALSE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::TAB_MIRROR));
+  EXPECT_FALSE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::PRESENTATION));
+  EXPECT_EQ(nullptr, media_route_starter()->CreateRouteParameters(
+                         cast_sink().id(), MediaCastMode::TAB_MIRROR));
+  EXPECT_EQ(nullptr, media_route_starter()->CreateRouteParameters(
+                         cast_sink().id(), MediaCastMode::PRESENTATION));
+  EXPECT_TRUE(media_route_starter()->SinkSupportsCastMode(
+      cast_sink().id(), MediaCastMode::DESKTOP_MIRROR));
+  EXPECT_NE(nullptr, media_route_starter()->CreateRouteParameters(
+                         cast_sink().id(), MediaCastMode::DESKTOP_MIRROR));
+}
+
 }  // namespace media_router

@@ -56,7 +56,7 @@ class MediaRouteStarter : public content::PresentationObserver {
   void RemoveMediaSinkWithCastModesObserver(
       MediaSinkWithCastModesObserver* observer);
 
-  content::WebContents* GetWebContents() const { return web_contents_; }
+  content::WebContents* GetWebContents() const { return web_contents_.get(); }
 
   // Returns the profile associated with this casting attempt. Will either be
   // the profile associated with the browser containing the content being
@@ -144,17 +144,20 @@ class MediaRouteStarter : public content::PresentationObserver {
   // Component name used for media router logging.
   std::string component_ = "MediaRouteStarter";
 
-  // If set, this is the tab for which this casting request was initiated. May
-  // be null in the case of desktop tab casting.
-  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
-      web_contents_;
+  // The WebContents that initiated the cast session, or nullptr if initiated
+  // outside of a tab (e.g. system tray desktop mirroring).
+  base::WeakPtr<content::WebContents> web_contents_;
+
+  // The profile associated with this casting attempt.
+  base::WeakPtr<Profile> profile_;
 
   // If set, then the result of the next presentation route request will
   // be handled by this object instead of |presentation_manager_|
   std::unique_ptr<StartPresentationContext> start_presentation_context_;
 
   // |presentation_manager_| notifies |this| whenever there is an update to the
-  // default PresentationRequest or MediaRoutes associated with |web_contents_|.
+  // default PresentationRequest or MediaRoutes associated with
+  // |web_contents_|.
   base::WeakPtr<WebContentsPresentationManager> presentation_manager_;
 
   // Monitors and reports sink availability.
