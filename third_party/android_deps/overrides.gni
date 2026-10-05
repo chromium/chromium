@@ -1,0 +1,135 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Hand-written targets layered on top of the generated ones in BUILD.gn.
+# BUILD.gn is overwritten by the android_deps roller; edit this file instead.
+template("define_override_android_deps_targets") {
+  not_needed([
+               "invoker",
+               "target_name",
+             ])
+
+  if (!limit_android_deps) {
+    java_group("espresso_java") {
+      preferred_dep = true
+      testonly = true
+
+      proguard_configs = [ "//third_party/androidx/espresso_proguard.flags" ]
+
+      deps = [
+        ":com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java",
+        "//third_party/androidx:androidx_test_espresso_espresso_contrib_java",
+        "//third_party/androidx:androidx_test_espresso_espresso_core_java",
+        "//third_party/androidx:androidx_test_espresso_espresso_idling_resource_java",
+        "//third_party/androidx:androidx_test_espresso_espresso_intents_java",
+        "//third_party/androidx:androidx_test_espresso_espresso_web_java",
+        "//third_party/androidx:chromium_espresso_overrides_java",
+      ]
+    }
+
+    # TODO(agrieve): Delete this alias.
+    java_group("guava_android_java") {
+      deps = [ ":guava_java" ]
+    }
+
+    java_group("guava_java") {
+      preferred_dep = true
+      if (defined(guava_android_target)) {
+        deps = [ guava_android_target ]
+      } else {
+        deps = [ ":com_google_guava_guava_java" ]
+      }
+    }
+
+    java_group("robolectric_all_java") {
+      preferred_dep = true
+      testonly = true
+
+      deps = [
+        ":org_robolectric_annotations_java",
+        ":org_robolectric_junit_java",
+        ":org_robolectric_pluginapi_java",
+        ":org_robolectric_resources_java",
+        ":org_robolectric_robolectric_java",
+        ":org_robolectric_sandbox_java",
+        ":org_robolectric_shadowapi_java",
+        ":org_robolectric_shadows_framework_java",
+        ":org_robolectric_utils_java",
+        ":org_robolectric_utils_reflector_java",
+      ]
+    }
+
+    java_group("material_design_java") {
+      preferred_dep = true
+      if (defined(material_design_target)) {
+        deps = [ material_design_target ]
+      } else {
+        deps = [ "//third_party/android_deps:com_google_android_material_material_java" ]
+      }
+    }
+
+    java_group("protobuf_lite_runtime_java") {
+      preferred_dep = true
+      if (defined(android_proto_runtime)) {
+        deps = [ android_proto_runtime ]
+      } else if (is_cronet_for_aosp_build) {
+        # Note: This exists for Cronet in AOSP where we can't import prebuilts.
+        # We import the raw sources and compile them using a specialized
+        # pipeline. See crbug.com/419480317.
+        # TODO(https://crbug.com/425901872): Once we fix the proguard issue, also build Cronet in Chromium against raw sources to stay consistent.
+        deps = [ "//third_party/protobuf:proto_runtime_lite_java" ]
+      } else {
+        deps = [ ":com_google_protobuf_protobuf_javalite_java" ]
+      }
+    }
+
+    # Guard because some consumers may not have //base.
+    if (build_with_chromium) {
+      android_library("chromium_play_services_availability_java") {
+        sources =
+            [ "util/org/chromium/gms/ChromiumPlayServicesAvailability.java" ]
+        deps = [
+          "$google_play_services_package:google_play_services_base_java",
+          "$google_play_services_package:google_play_services_basement_java",
+          "//base:resetters_java",
+        ]
+      }
+    }
+
+    java_group("playcore_java") {
+      preferred_dep = true
+      if (defined(playcore_target)) {
+        deps = [ playcore_target ]
+      } else {
+        deps = [ "//third_party/android_deps:com_google_android_play_feature_delivery_java" ]
+      }
+    }
+
+    java_group("playcore_app_update_java") {
+      preferred_dep = true
+      if (defined(playcore_app_update_target)) {
+        deps = [ playcore_app_update_target ]
+      } else {
+        deps = [
+          "//third_party/android_deps:com_google_android_play_app_update_java",
+        ]
+      }
+    }
+
+    java_group("mlkit_java") {
+      preferred_dep = true
+      if (defined(mlkit_target)) {
+        deps = [ mlkit_target ]
+      } else {
+        deps = [
+          ":com_google_mlkit_common_java",
+          ":com_google_mlkit_genai_common_java",
+          ":com_google_mlkit_genai_prompt_java",
+        ]
+      }
+    }
+  }
+}
