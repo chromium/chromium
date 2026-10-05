@@ -433,11 +433,7 @@ TEST_F(ApnMigratorTest, AlreadyMigratedNetworks) {
 
   EXPECT_CALL(*managed_cellular_pref_handler(),
               ContainsApnMigratedIccid(Eq(kTestCellularIccid3)))
-#if DCHECK_IS_ON()
       .Times(2)
-#else
-      .Times(1)
-#endif  // DCHECK_IS_ON()
       .WillRepeatedly(Return(false));
 
   EXPECT_CALL(*managed_network_configuration_handler(),
