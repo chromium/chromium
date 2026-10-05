@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_PASSKEY_MODEL_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -102,7 +103,12 @@ class PasskeyModel : public KeyedService {
   // Returns true if there are no passkeys in the account.
   virtual bool IsEmpty() const = 0;
 
+  // Returns the sync IDs of all stored passkeys, including shadowed ones.
   virtual base::flat_set<std::string> GetAllSyncIds() const = 0;
+
+  // Returns the device authorization key versions that stored passkeys,
+  // including shadowed and hidden ones, are encrypted with.
+  virtual base::flat_set<int32_t> GetDeviceAuthorizationKeyVersions() const = 0;
 
   // Returns the list of all passkeys matching the provided criteria:
   // - `rp_id`: Either a specific Relying Party ID or any.

@@ -54,6 +54,19 @@ base::flat_set<std::string> TestPasskeyModel::GetAllSyncIds() const {
       [](const auto& credential) { return credential.sync_id(); });
 }
 
+base::flat_set<int32_t> TestPasskeyModel::GetDeviceAuthorizationKeyVersions()
+    const {
+  base::flat_set<int32_t> versions;
+  for (const sync_pb::WebauthnCredentialSpecifics& passkey : credentials_) {
+    if (passkey.encrypted_data_case() ==
+            sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted &&
+        passkey.has_device_authorization_key_version()) {
+      versions.insert(passkey.device_authorization_key_version());
+    }
+  }
+  return versions;
+}
+
 std::vector<sync_pb::WebauthnCredentialSpecifics> TestPasskeyModel::GetPasskeys(
     std::variant<AnyRp, std::string_view> rp_id,
     ShadowedCredentials shadowed_credentials) const {

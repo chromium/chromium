@@ -15,7 +15,6 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
-#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_features.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -163,7 +162,8 @@ void DeviceAuthorizationServiceImpl::OnCachedKeysFetched(
       cached_keys->cache_version() ==
           features::kDeviceAuthorizationKeyCacheVersion.Get() &&
       cached_keys->keys().keys_size() > 0 &&
-      CoversKeyVersions(cached_keys->keys(), GetRequiredKeyVersions())) {
+      CoversKeyVersions(cached_keys->keys(),
+                        passkey_model_->GetDeviceAuthorizationKeyVersions())) {
     NotifyPendingCallbacks(DeviceAuthFetchResult{cached_keys->keys()});
     return;
   }
@@ -200,8 +200,9 @@ void DeviceAuthorizationServiceImpl::OnFetchCompleted(
       return;
     }
 
-    if (!CoversKeyVersions(response->device_authorization_keys(),
-                           GetRequiredKeyVersions())) {
+    if (!CoversKeyVersions(
+            response->device_authorization_keys(),
+            passkey_model_->GetDeviceAuthorizationKeyVersions())) {
       DVLOG(1) << "Fetched keys miss a version required by stored passkeys.";
     }
 
@@ -254,22 +255,6 @@ void DeviceAuthorizationServiceImpl::NotifyPendingCallbacks(
   for (FetchDeviceAuthKeysCallback& callback : callbacks) {
     std::move(callback).Run(result);
   }
-}
-
-base::flat_set<int32_t> DeviceAuthorizationServiceImpl::GetRequiredKeyVersions()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::flat_set<int32_t> versions;
-  for (const sync_pb::WebauthnCredentialSpecifics& passkey :
-       passkey_model_->GetPasskeys(
-           PasskeyModel::AnyRp(),
-           PasskeyModel::ShadowedCredentials::kInclude)) {
-    if (passkey.encrypted_data_case() ==
-        sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted) {
-      versions.insert(passkey.device_authorization_key_version());
-    }
-  }
-  return versions;
 }
 
 }  // namespace webauthn

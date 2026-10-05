@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_SERVICE_IMPL_H_
 #define COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_SERVICE_IMPL_H_
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -97,10 +95,6 @@ class DeviceAuthorizationServiceImpl
 
   // Invokes all pending callbacks with `result` and clears them.
   void NotifyPendingCallbacks(const DeviceAuthFetchResult& result);
-
-  // Returns all device authorization key versions that stored passkeys are
-  // encrypted with.
-  base::flat_set<int32_t> GetRequiredKeyVersions() const;
 
   // Used to obtain the primary account and authenticate requests.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;

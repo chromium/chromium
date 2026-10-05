@@ -261,6 +261,19 @@ base::flat_set<std::string> PasskeySyncBridge::GetAllSyncIds() const {
   return base::flat_set<std::string>(base::sorted_unique, std::move(sync_ids));
 }
 
+base::flat_set<int32_t> PasskeySyncBridge::GetDeviceAuthorizationKeyVersions()
+    const {
+  base::flat_set<int32_t> versions;
+  for (const auto& [sync_id, passkey] : data_) {
+    if (passkey.encrypted_data_case() ==
+            sync_pb::WebauthnCredentialSpecifics::kSecurityDomainEncrypted &&
+        passkey.has_device_authorization_key_version()) {
+      versions.insert(passkey.device_authorization_key_version());
+    }
+  }
+  return versions;
+}
+
 std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetPasskeys(std::variant<AnyRp, std::string_view> rp_id,
                                ShadowedCredentials shadowed_credentials) const {

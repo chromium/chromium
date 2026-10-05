@@ -24,7 +24,6 @@ source_set("device_authorization") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
-    "//components/sync/protocol",
     "//components/version_info",
     "//components/webauthn/core/browser:passkey_model",
     "//google_apis",

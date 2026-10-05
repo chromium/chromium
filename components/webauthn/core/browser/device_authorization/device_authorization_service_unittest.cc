@@ -522,6 +522,27 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
 }
 
+// Test that a passkey without a device authorization key version does not
+// prevent cached keys from being returned.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestPasskeyWithoutKeyVersionDoesNotInvalidateCachedKeys) {
+  static constexpr char kPasskeyId[] = "passkey_without_key_version";
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  StoreCachedKeys(gaia_id, CreateCachedKeys(/*cache_version=*/1, kKeyBytes));
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(kPasskeyId);
+  passkey.set_credential_id(kPasskeyId);
+  passkey.set_rp_id(kRpId);
+  passkey.set_security_domain_encrypted(kEncryptedPasskeyData);
+  passkey_model_.AddNewPasskeyForTesting(std::move(passkey));
+
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kSuccess);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
+}
+
 // Test that cached keys missing a key version used by a stored passkey are not
 // returned, and that the fetched keys are cached instead.
 TEST_F(DeviceAuthorizationServiceImplTest,

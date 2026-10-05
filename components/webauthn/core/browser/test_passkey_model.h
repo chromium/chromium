@@ -31,6 +31,7 @@ class TestPasskeyModel : public PasskeyModel {
   bool IsReady() const override;
   bool IsEmpty() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;
+  base::flat_set<int32_t> GetDeviceAuthorizationKeyVersions() const override;
   std::vector<sync_pb::WebauthnCredentialSpecifics> GetPasskeys(
       std::variant<AnyRp, std::string_view> rp_id,
       ShadowedCredentials shadowed_credentials) const override;
