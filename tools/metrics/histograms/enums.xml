@@ -9191,6 +9191,7 @@ from previous Chrome versions.
   <int value="-1745844997" label="AvifGainmapHdrImages:enabled"/>
   <int value="-1745174236"
       label="GlicContextualCueV2ActiveUserBackoff:disabled"/>
+  <int value="-1744440138" label="CapabilityElementIconOnlyMode:enabled"/>
   <int value="-1744231895" label="CCTEphemeralMode:enabled"/>
   <int value="-1743234830" label="SubmenusTabContextMenuLffTabStrip:disabled"/>
   <int value="-1743214399" label="TrustSafetySentimentSurveyV2:disabled"/>
@@ -18195,6 +18196,7 @@ from previous Chrome versions.
   <int value="1001851711" label="BrowsingHistorySimilarVisitsGrouping:enabled"/>
   <int value="1002247842" label="WebGPUService:enabled"/>
   <int value="1002585107" label="emphasize-titles-in-omnibox-dropdown"/>
+  <int value="1002992304" label="CapabilityElementIconOnlyMode:disabled"/>
   <int value="1003002105" label="MaterialDesignBookmarks:disabled"/>
   <int value="1003006004" label="RichBubbleWithoutImage:disabled"/>
   <int value="1003081697" label="DesktopPWAsUnifiedInstall:enabled"/>

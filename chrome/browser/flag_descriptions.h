@@ -112,6 +112,11 @@ inline constexpr char kCapabilityDelegationDigitalCredentialsDescription[] =
     "credentials (via both create and get requests of the Digital Credentials "
     "API) to trusted cross-origin iframes.";
 
+inline constexpr char kCapabilityElementIconOnlyModeName[] =
+    "CapabilityElementIconOnlyMode";
+inline constexpr char kCapabilityElementIconOnlyModeDescription[] =
+    "Enables icon-only mode for capability elements.";
+
 inline constexpr char kCaptureHandleForStandalonePwasAndIwasName[] =
     "Capture Handle for Standalone PWAs and IWAs";
 inline constexpr char kCaptureHandleForStandalonePwasAndIwasDescription[] =

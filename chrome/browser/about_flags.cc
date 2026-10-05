@@ -14155,6 +14155,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kUseNewEtc1Decoder)},
 #endif
 
+    {"capability-element-icon-only-mode",
+     flag_descriptions::kCapabilityElementIconOnlyModeName,
+     flag_descriptions::kCapabilityElementIconOnlyModeDescription,
+     kOsMac | kOsWin | kOsLinux | kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kCapabilityElementIconOnlyMode)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

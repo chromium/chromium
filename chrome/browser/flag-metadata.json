@@ -1704,6 +1704,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "capability-element-icon-only-mode",
+    "owners": [ "ravjit@chromium.org", "tungnh@chromium.org" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "capture-handle-for-standalone-pwas-and-iwas",
     "owners": [ "paulinagacek@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 180
