@@ -73,7 +73,7 @@ BASE_FEATURE(kSecurePaymentConfirmationStoreCredentialsInOS,
 );
 
 BASE_FEATURE(kPaymentRequestRejectTooSmallWindows,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad,
 #if BUILDFLAG(IS_ANDROID)

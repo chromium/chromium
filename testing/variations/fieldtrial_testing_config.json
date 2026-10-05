@@ -14692,24 +14692,6 @@
             ]
         }
     ],
-    "PaymentRequestRejectTooSmallWindows": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PaymentRequestRejectTooSmallWindows"
-                    ]
-                }
-            ]
-        }
-    ],
     "PdfAccessibilityHeuristicEnhancements": [
         {
             "platforms": [
