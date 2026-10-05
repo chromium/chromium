@@ -61,11 +61,7 @@ bool IsUrlAllowed(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
-  if (url.DomainIs("googleapis.com")) {
-    return true;
-  }
-  if (g_allowed_directory_for_testing &&
-      (url.host() == "127.0.0.1" || url.DomainIs("localhost"))) {
+  if (url.DomainIs("googleapis.com") || url.DomainIs("m.google.com")) {
     return true;
   }
   return false;

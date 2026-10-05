@@ -226,9 +226,10 @@ class FakeOAuth2AccessTokenManagerDelegate
 
 class InterceptingURLLoaderFactory : public ::network::SharedURLLoaderFactory {
  public:
-  explicit InterceptingURLLoaderFactory(
-      scoped_refptr<::network::SharedURLLoaderFactory> impl)
-      : impl_(std::move(impl)) {}
+  InterceptingURLLoaderFactory(
+      scoped_refptr<::network::SharedURLLoaderFactory> impl,
+      const ::net::EmbeddedTestServer* test_server)
+      : impl_(std::move(impl)), test_server_(test_server) {}
 
   void CreateLoaderAndStart(
       ::mojo::PendingReceiver<::network::mojom::URLLoader> loader,
@@ -242,8 +243,11 @@ class InterceptingURLLoaderFactory : public ::network::SharedURLLoaderFactory {
       base::AutoLock auto_lock(lock_);
       intercepted_requests_.push_back(request);
     }
-    impl_->CreateLoaderAndStart(std::move(loader), request_id, options, request,
-                                std::move(client), traffic_annotation);
+    ::network::ResourceRequest forwarded_request = request;
+    forwarded_request.url = test_server_->GetURL(request.url.PathForRequest());
+    impl_->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                forwarded_request, std::move(client),
+                                traffic_annotation);
   }
 
   void Clone(::mojo::PendingReceiver<::network::mojom::URLLoaderFactory>
@@ -274,6 +278,7 @@ class InterceptingURLLoaderFactory : public ::network::SharedURLLoaderFactory {
   ~InterceptingURLLoaderFactory() override = default;
 
   scoped_refptr<::network::SharedURLLoaderFactory> impl_;
+  const raw_ptr<const ::net::EmbeddedTestServer> test_server_;
   base::Lock lock_;
   std::vector<::network::ResourceRequest> intercepted_requests_
       GUARDED_BY(lock_);
@@ -285,7 +290,7 @@ class FileUploadDelegateTest : public ::testing::Test {
   FileUploadDelegateTest() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
   const GURL GetServerURL(std::string_view relative_path) const {
-    return test_server_.GetURL(relative_path);
+    return GURL(base::StrCat({"https://m.google.com", relative_path}));
   }
 
   void SetUp() override {
@@ -293,7 +298,8 @@ class FileUploadDelegateTest : public ::testing::Test {
         base::MakeRefCounted<ResourceManager>(4u * 1024LLu * 1024LLu);  // 4 MiB
 
     url_loader_factory_ = base::MakeRefCounted<InterceptingURLLoaderFactory>(
-        base::MakeRefCounted<::network::TestSharedURLLoaderFactory>());
+        base::MakeRefCounted<::network::TestSharedURLLoaderFactory>(),
+        &test_server_);
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &FileUploadDelegateTest::HandlePostRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
