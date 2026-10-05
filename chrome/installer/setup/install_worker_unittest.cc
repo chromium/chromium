@@ -277,7 +277,6 @@ class InstallWorkerTest : public testing::Test {
 #if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
 TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
   const bool system_level = true;
-  NiceMock<MockWorkItemList> work_item_list;
 
   const HKEY kRegRoot = system_level ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
   static const wchar_t kRegKeyPath[] = L"Software\\Chromium\\test";
@@ -292,6 +291,8 @@ TEST_F(InstallWorkerTest, TestInstallChromeSystem) {
   std::unique_ptr<DeleteRegKeyWorkItem> delete_reg_key_work_item(
       WorkItem::CreateDeleteRegKeyWorkItem(kRegRoot, kRegKeyPath,
                                            WorkItem::kWow64Default));
+
+  NiceMock<MockWorkItemList> work_item_list;
 
   std::unique_ptr<InstallationState> installation_state(
       BuildChromeInstallationState(system_level, current_version_.get()));
@@ -697,3 +698,79 @@ TEST_F(ChromeWerDllRegistryTest, AddOldWerHelperRegistrationCleanupItems) {
     }
   }
 }
+
+#if !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
+class AddActiveSetupWorkItemsTest : public testing::Test {
+ protected:
+  AddActiveSetupWorkItemsTest()
+      : scoped_install_details_(/*system_level=*/true),
+        current_version_("1.0.0.0"),
+        new_version_("42.0.0.0"),
+        installation_state_(BuildChromeInstallationState(/*system_level=*/true,
+                                                         &current_version_)),
+        installer_state_(BuildChromeInstallerState(
+            /*system_install=*/true,
+            *installation_state_,
+            InstallerState::SINGLE_INSTALL_OR_UPDATE)) {}
+
+  void SetUp() override {
+    ASSERT_NO_FATAL_FAILURE(
+        registry_overrides_.OverrideRegistry(HKEY_LOCAL_MACHINE));
+  }
+
+  install_static::ScopedInstallDetails scoped_install_details_;
+  base::Version current_version_;
+  base::Version new_version_;
+  std::unique_ptr<InstallationState> installation_state_;
+  std::unique_ptr<InstallerState> installer_state_;
+  registry_util::RegistryOverrideManager registry_overrides_;
+};
+
+TEST_F(AddActiveSetupWorkItemsTest, Success) {
+  std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
+  installer::AddActiveSetupWorkItems(*installer_state_, new_version_,
+                                     work_item_list.get());
+  EXPECT_TRUE(work_item_list->Do());
+
+  base::win::RegKey key(HKEY_LOCAL_MACHINE,
+                        install_static::GetActiveSetupPath().c_str(),
+                        KEY_QUERY_VALUE | WorkItem::kWow64Default);
+  ASSERT_TRUE(key.Valid());
+  EXPECT_TRUE(key.HasValue(L""));
+  EXPECT_TRUE(key.HasValue(L"StubPath"));
+  EXPECT_TRUE(key.HasValue(L"Localized Name"));
+  EXPECT_TRUE(key.HasValue(L"IsInstalled"));
+  EXPECT_TRUE(key.HasValue(L"Version"));
+
+  work_item_list->Rollback();
+  EXPECT_EQ(
+      ERROR_FILE_NOT_FOUND,
+      key.Open(HKEY_LOCAL_MACHINE, install_static::GetActiveSetupPath().c_str(),
+               KEY_QUERY_VALUE | WorkItem::kWow64Default));
+}
+
+TEST_F(AddActiveSetupWorkItemsTest, CreateRegKeyFailureDoesNotFailInstall) {
+  // Create the parent key as volatile so that creating the non-volatile Active
+  // Setup subkey fails with ERROR_CHILD_MUST_BE_VOLATILE.
+  const std::wstring parent_path =
+      base::FilePath(install_static::GetActiveSetupPath()).DirName().value();
+  HKEY parent_hkey = nullptr;
+  ASSERT_EQ(
+      ERROR_SUCCESS,
+      ::RegCreateKeyEx(HKEY_LOCAL_MACHINE, parent_path.c_str(), 0, nullptr,
+                       REG_OPTION_VOLATILE, KEY_READ | WorkItem::kWow64Default,
+                       nullptr, &parent_hkey, nullptr));
+  ::RegCloseKey(parent_hkey);
+
+  std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
+  installer::AddActiveSetupWorkItems(*installer_state_, new_version_,
+                                     work_item_list.get());
+  EXPECT_TRUE(work_item_list->Do());
+
+  base::win::RegKey key;
+  EXPECT_EQ(
+      ERROR_FILE_NOT_FOUND,
+      key.Open(HKEY_LOCAL_MACHINE, install_static::GetActiveSetupPath().c_str(),
+               KEY_QUERY_VALUE | WorkItem::kWow64Default));
+}
+#endif  // !BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)

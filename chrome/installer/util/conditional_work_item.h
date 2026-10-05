@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/installer/util/work_item.h"
 
 // A WorkItem that permits conditionally executing one or another item based on
@@ -64,6 +65,22 @@ class ConditionFileInUse : public WorkItem::Condition {
 
  private:
   base::FilePath file_path_;
+};
+
+class ConditionWorkItemSucceeded : public WorkItem::Condition {
+ public:
+  explicit ConditionWorkItemSucceeded(const WorkItem& work_item)
+      : work_item_(work_item) {}
+  ConditionWorkItemSucceeded(const ConditionWorkItemSucceeded&) = delete;
+  ConditionWorkItemSucceeded& operator=(const ConditionWorkItemSucceeded&) =
+      delete;
+
+  // Returns true if the given WorkItem succeeded when its `Do()` method was
+  // run.
+  bool ShouldRun() const override;
+
+ private:
+  const raw_ref<const WorkItem> work_item_;
 };
 
 #endif  // CHROME_INSTALLER_UTIL_CONDITIONAL_WORK_ITEM_H_

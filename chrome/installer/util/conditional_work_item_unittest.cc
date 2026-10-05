@@ -159,6 +159,31 @@ TEST(ConditionalWorkItemTest, ConditionFileExists) {
                    .ShouldRun());
 }
 
+TEST(ConditionalWorkItemTest, ConditionWorkItemSucceeded) {
+  {
+    StrictMockWorkItem item;
+    ConditionWorkItemSucceeded condition(item);
+    EXPECT_CALL(item, DoImpl()).WillOnce(Return(true));
+    EXPECT_TRUE(item.Do());
+    EXPECT_TRUE(condition.ShouldRun());
+  }
+  {
+    StrictMockWorkItem item;
+    ConditionWorkItemSucceeded condition(item);
+    EXPECT_CALL(item, DoImpl()).WillOnce(Return(false));
+    EXPECT_FALSE(item.Do());
+    EXPECT_FALSE(condition.ShouldRun());
+  }
+  {
+    StrictMockWorkItem item;
+    item.set_best_effort(true);
+    ConditionWorkItemSucceeded condition(item);
+    EXPECT_CALL(item, DoImpl()).WillOnce(Return(false));
+    EXPECT_TRUE(item.Do());
+    EXPECT_FALSE(condition.ShouldRun());
+  }
+}
+
 // Tests that a non-existent file is not "in use".
 TEST(ConditionFileInUseTest, FileDoesNotExist) {
   base::ScopedTempDir temp_dir;

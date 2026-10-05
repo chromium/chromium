@@ -84,3 +84,7 @@ bool ConditionFileInUse::ShouldRun() const {
   // and shouldn't be replaced.
   return true;
 }
+
+bool ConditionWorkItemSucceeded::ShouldRun() const {
+  return work_item_->Succeeded();
+}

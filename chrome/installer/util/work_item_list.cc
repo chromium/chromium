@@ -4,6 +4,7 @@
 
 #include "chrome/installer/util/work_item_list.h"
 
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/installer/util/callback_work_item.h"
@@ -17,12 +18,12 @@
 #include "chrome/installer/util/set_reg_value_work_item.h"
 
 WorkItemList::~WorkItemList() {
-  for (WorkItemIterator itr = list_.begin(); itr != list_.end(); ++itr) {
-    delete (*itr);
+  // Delete the items in the opposite order of addition.
+  for (WorkItem* item : base::Reversed(list_)) {
+    delete item;
   }
-  for (WorkItemIterator itr = executed_list_.begin();
-       itr != executed_list_.end(); ++itr) {
-    delete (*itr);
+  for (WorkItem* item : executed_list_) {
+    delete item;
   }
 }
 

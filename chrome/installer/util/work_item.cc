@@ -134,9 +134,9 @@ WorkItem* WorkItem::CreateConditionalWorkItem(
 
 bool WorkItem::Do() {
   DCHECK_EQ(BEFORE_DO, state_);
-  const bool success = DoImpl();
+  succeeded_ = DoImpl();
   state_ = AFTER_DO;
-  return best_effort() ? true : success;
+  return best_effort() ? true : succeeded_;
 }
 
 void WorkItem::Rollback() {
@@ -144,6 +144,11 @@ void WorkItem::Rollback() {
   if (rollback_enabled())
     RollbackImpl();
   state_ = AFTER_ROLLBACK;
+}
+
+bool WorkItem::Succeeded() const {
+  DCHECK_NE(BEFORE_DO, state_);
+  return succeeded_;
 }
 
 void WorkItem::set_best_effort(bool best_effort) {

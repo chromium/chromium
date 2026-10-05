@@ -1193,11 +1193,25 @@ void AddActiveSetupWorkItems(const InstallerState& installer_state,
   const HKEY root = HKEY_LOCAL_MACHINE;
   const std::wstring active_setup_path(install_static::GetActiveSetupPath());
 
-  VLOG(1) << "Adding registration items for Active Setup.";
-  list->AddCreateRegKeyWorkItem(root, active_setup_path,
-                                WorkItem::kWow64Default);
-  list->AddSetRegValueWorkItem(root, active_setup_path, WorkItem::kWow64Default,
-                               L"", InstallUtil::GetDisplayName(), true);
+  // Creating the top-level registry key for Active Setup sometimes fails due to
+  // permissions issues. Since Active Setup integration isn't essential for a
+  // functioning browser:
+  // 1. Make key creation best-effort so its failure does not abort
+  //    installation.
+  // 2. Only run the remaining Active Setup configuration if key creation
+  //    actually succeeded (checked via ConditionWorkItemSucceeded /
+  //    Succeeded()).
+  // 3. Mark the dependent Active Setup items best-effort as well.
+  WorkItem* create_key_item = list->AddCreateRegKeyWorkItem(
+      root, active_setup_path, WorkItem::kWow64Default);
+  create_key_item->set_best_effort(true);
+
+  auto active_setup_items = base::WrapUnique(WorkItem::CreateWorkItemList());
+  active_setup_items->set_log_message("ActiveSetupWorkItemList");
+  active_setup_items->set_best_effort(true);
+  active_setup_items->AddSetRegValueWorkItem(
+      root, active_setup_path, WorkItem::kWow64Default, L"",
+      InstallUtil::GetDisplayName(), true);
 
   base::FilePath active_setup_exe(
       installer_state.GetInstallerDirectory(new_version)
@@ -1207,20 +1221,30 @@ void AddActiveSetupWorkItems(const InstallerState& installer_state,
   cmd.AppendSwitch(installer::switches::kVerboseLogging);
   cmd.AppendSwitch(installer::switches::kSystemLevel);
   InstallUtil::AppendModeAndChannelSwitches(&cmd);
-  list->AddSetRegValueWorkItem(root, active_setup_path, WorkItem::kWow64Default,
-                               L"StubPath", cmd.GetCommandLineString(), true);
+  active_setup_items->AddSetRegValueWorkItem(
+      root, active_setup_path, WorkItem::kWow64Default, L"StubPath",
+      cmd.GetCommandLineString(), true);
 
   // TODO(grt): http://crbug.com/41337274 Write a reference to a localized
   // resource.
-  list->AddSetRegValueWorkItem(root, active_setup_path, WorkItem::kWow64Default,
-                               L"Localized Name", InstallUtil::GetDisplayName(),
-                               true);
+  active_setup_items->AddSetRegValueWorkItem(
+      root, active_setup_path, WorkItem::kWow64Default, L"Localized Name",
+      InstallUtil::GetDisplayName(), true);
 
-  list->AddSetRegValueWorkItem(root, active_setup_path, WorkItem::kWow64Default,
-                               L"IsInstalled", static_cast<DWORD>(1U), true);
+  active_setup_items->AddSetRegValueWorkItem(
+      root, active_setup_path, WorkItem::kWow64Default, L"IsInstalled",
+      static_cast<DWORD>(1U), true);
 
-  list->AddWorkItem(new UpdateActiveSetupVersionWorkItem(
+  active_setup_items->AddWorkItem(new UpdateActiveSetupVersionWorkItem(
       active_setup_path, UpdateActiveSetupVersionWorkItem::UPDATE));
+
+  std::unique_ptr<WorkItem> conditional_item(
+      WorkItem::CreateConditionalWorkItem(
+          std::make_unique<ConditionWorkItemSucceeded>(*create_key_item),
+          /*if_item=*/std::move(active_setup_items),
+          /*else_item=*/nullptr));
+  conditional_item->set_log_message("ActiveSetupKeyCreated");
+  list->AddWorkItem(conditional_item.release());
 }
 
 void AppendUninstallCommandLineFlags(const InstallerState& installer_state,

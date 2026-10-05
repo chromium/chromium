@@ -196,6 +196,11 @@ class WorkItem {
   // returned.
   void Rollback();
 
+  // Returns true if Do() has been called and the underlying action actually
+  // succeeded (unlike Do(), which also returns true on failure if best_effort()
+  // is set).
+  bool Succeeded() const;
+
   void set_best_effort(bool best_effort);
   bool best_effort() const { return best_effort_; }
   void set_rollback_enabled(bool rollback_enabled);
@@ -235,6 +240,7 @@ class WorkItem {
   State state_ = BEFORE_DO;
   bool best_effort_ = false;
   bool rollback_enabled_ = true;
+  bool succeeded_ = false;
 };
 
 #endif  // CHROME_INSTALLER_UTIL_WORK_ITEM_H_
