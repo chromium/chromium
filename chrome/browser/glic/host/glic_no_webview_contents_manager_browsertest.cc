@@ -105,22 +105,26 @@ void ClickOverlayElement(content::WebContents* overlay_contents,
                          std::string_view query_selector) {
   ASSERT_TRUE(overlay_contents);
   ASSERT_TRUE(content::WaitForLoadStop(overlay_contents));
-  content::ExecuteScriptAsync(overlay_contents,
-                              base::StringPrintf(
-                                  R"js(
+  ASSERT_EQ(true, content::EvalJs(overlay_contents,
+                                  base::StringPrintf(
+                                      R"js(
         (async () => {
           const start = Date.now();
           while (Date.now() - start <= 10000) {
             const el = document.querySelector('%s');
             if (el && !el.hidden && !el.closest('.panel')?.hidden) {
-              el.click();
-              return;
+              return true;
             }
             await new Promise(r => setTimeout(r, 50));
           }
+          return false;
         })()
       )js",
-                                  std::string(query_selector).c_str()));
+                                      std::string(query_selector).c_str())));
+  content::ExecuteScriptAsync(
+      overlay_contents,
+      base::StringPrintf("document.querySelector('%s').click();",
+                         std::string(query_selector).c_str()));
 }
 
 class TestHostObserver : public Host::Observer {
@@ -665,13 +669,14 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   auto* manager = GetNoWebviewContentsManager(instance);
   ASSERT_TRUE(manager);
   ASSERT_TRUE(manager->overlay_contents());
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
 
   manager->SetErrorState(mojom::ErrorPanelType::kOffline,
                          ClientLoadErrorReason::kOffline);
   ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kOffline));
-  ASSERT_TRUE(content::WaitForLoadStop(manager->overlay_contents()));
 
   ClickOverlayElement(manager->overlay_contents(), "#retry");
+  ASSERT_OK(WaitForErrorPanelType(std::nullopt));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
@@ -760,8 +765,15 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   // Manager must display the kSignIn error panel.
   EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kSignIn);
 
-  // Clicking the "Verify it's you" button triggers the sign-in flow.
+  // Clicking the "Verify it's you" button triggers the sign-in flow. Flush the
+  // overlay page handler pipe so `OnSignInClicked` runs before the test exits
+  // (otherwise an in-flight `OnSignInClicked` IPC arriving during browser
+  // teardown can open a new browser window after `chrome::AttemptExit()`).
   ClickOverlayElement(manager->overlay_contents(), "#signInButton");
+  ASSERT_TRUE(content::ExecJs(
+      manager->overlay_contents(),
+      "document.querySelector('glic-overlay').browserProxy.handler.$."
+      "flushForTesting()"));
 
   // User re-authenticates.
   ReauthAccount(GetProfile());
