@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.ContactsPermissionProvider;
@@ -29,23 +30,22 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link AndroidContactsPermissionProviderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AndroidContactsPermissionProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Activity mActivity;
     @Mock private ContactsPermissionProvider.Callback mCallback;
 
+    private Activity mActivity;
     private AndroidContactsPermissionProviderImpl mProvider;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mActivity));
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
-        when(mActivity.getContentResolver()).thenReturn(null); // Not used in this path
 
         ContactsPickerFeatureMap.setSystemContactsPickerEnabledForTesting(true);
 
