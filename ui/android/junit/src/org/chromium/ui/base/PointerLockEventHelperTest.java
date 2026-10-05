@@ -216,6 +216,25 @@ public class PointerLockEventHelperTest {
         assertEquals(InputDevice.SOURCE_MOUSE, updatedEvent.getSource());
     }
 
+    @Test
+    @DisableFeatures(UiAndroidFeatures.POINTER_LOCK_MOUSE_DENSITY_COMPENSATION)
+    public void testCapturedRelativeMouseEventUsesLegacyScaleWhenDensityCompensationDisabled() {
+        mPointerLockEventHelper.onNonCapturedPointerEvent(100f, 200f, 150f, 250f);
+
+        MotionEvent event = createBatchedRelativeMouseEvent();
+        MotionEvent updatedEvent =
+                mPointerLockEventHelper.transformCapturedPointerEvent(event, Surface.ROTATION_0);
+
+        float scaleFactor = PointerLockEventHelper.LEGACY_MOUSE_MOVEMENT_SCALE_FACTOR;
+        float expectedDeltaX = (1 + 3 - 2) * scaleFactor;
+        float expectedDeltaY = (-2 + 4 + 5) * scaleFactor;
+        assertEquals(100f + expectedDeltaX, updatedEvent.getX(), 0.01);
+        assertEquals(200f + expectedDeltaY, updatedEvent.getY(), 0.01);
+        assertEquals(150f + expectedDeltaX, updatedEvent.getRawX(), 0.01);
+        assertEquals(250f + expectedDeltaY, updatedEvent.getRawY(), 0.01);
+        assertEquals(InputDevice.SOURCE_MOUSE, updatedEvent.getSource());
+    }
+
     private static MotionEvent createBatchedRelativeMouseEvent() {
         MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();
         properties.id = 0;

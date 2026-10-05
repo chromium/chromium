@@ -34,6 +34,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &ui::kDisablePhotoPickerForVideoCapture,
     &ui::kHasContentUri,
     &ui::kMaximumWindowForGestureNavDetection,
+    &ui::kPointerLockMouseDensityCompensation,
     &ui::kPointerLockMouseScaling,
     &ui::kRefactorMinWidthContextOverride,
     &ui::kReportBottomOverscrolls,
