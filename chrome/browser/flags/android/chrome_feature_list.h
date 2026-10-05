@@ -239,6 +239,7 @@ BASE_DECLARE_FEATURE(kLocationBarModelOptimizations);
 BASE_DECLARE_FEATURE(kLockTopControlsOnLargeTabletsV2);
 BASE_DECLARE_FEATURE(kLongScreenshotsLenientMemoryCheck);
 BASE_DECLARE_FEATURE(kLongScreenshotsNoMemoryCheck);
+BASE_DECLARE_FEATURE(kLongScreenshotsNumViewports);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
 BASE_DECLARE_FEATURE(kMostVisitedTilesReselect);

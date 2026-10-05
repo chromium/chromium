@@ -663,6 +663,7 @@ public abstract class ChromeFeatureList {
     public static final String LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK =
             "LongScreenshotsLenientMemoryCheck";
     public static final String LONG_SCREENSHOTS_NO_MEMORY_CHECK = "LongScreenshotsNoMemoryCheck";
+    public static final String LONG_SCREENSHOTS_NUM_VIEWPORTS = "LongScreenshotsNumViewports";
     public static final String LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI =
             "LookalikeUrlNavigationSuggestionsUI";
     public static final String LOW_END_MEMORY_EXPERIMENT = BaseFeatures.LOW_END_MEMORY_EXPERIMENT;
@@ -1787,6 +1788,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(INLINE_PDF_V2_INCOGNITO, false);
     public static final MutableFlagWithSafeDefault sLongScreenshotsNoMemoryCheck =
             newMutableFlagWithSafeDefault(LONG_SCREENSHOTS_NO_MEMORY_CHECK, false);
+    public static final MutableFlagWithSafeDefault sLongScreenshotsNumViewports =
+            newMutableFlagWithSafeDefault(LONG_SCREENSHOTS_NUM_VIEWPORTS, false);
     public static final MutableFlagWithSafeDefault sNoVisibleHintForDifferentTLD =
             newMutableFlagWithSafeDefault(ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD, true);
     public static final MutableFlagWithSafeDefault sOnDemandBackgroundTabContextCapture =
@@ -2486,6 +2489,10 @@ public abstract class ChromeFeatureList {
                             "remote_group_operations", false);
     public static final MutableBooleanParamWithSafeDefault sInlinePdfV2EnableFormFilling =
             sInlinePdfV2.newBooleanParam("enable_form_filling", false);
+    public static final MutableIntParamWithSafeDefault sLongScreenshotsNumViewportsCriticalMemory =
+            sLongScreenshotsNumViewports.newIntParam("num_viewports_critical_memory", 5);
+    public static final MutableIntParamWithSafeDefault sLongScreenshotsNumViewportsModerateMemory =
+            sLongScreenshotsNumViewports.newIntParam("num_viewports_moderate_memory", 7);
     public static final MutableBooleanParamWithSafeDefault
             sOnDemandBackgroundTabContextCaptureCancelLoadOnDeselection =
                     sOnDemandBackgroundTabContextCaptureOptimization.newBooleanParam(
