@@ -213,11 +213,19 @@ void AccountPreviewDataServiceImpl::UpdateExternalAppAccount(
     return;
   }
 
+  CHECK(identity_manager_);
+  if (!identity_manager_->AreRefreshTokensLoaded()) {
+    deferred_external_app_account_update_callback_ =
+        base::BindOnce(&AccountPreviewDataServiceImpl::UpdateExternalAppAccount,
+                       weak_ptr_factory_.GetWeakPtr(), email);
+    return;
+  }
+
   std::optional<GaiaId> current_external_account =
       ReadExternalAppAccountFromPrefs();
   std::optional<GaiaId> new_external_account;
 
-  if (email.has_value() && !email->empty() && identity_manager_) {
+  if (email.has_value() && !email->empty()) {
     AccountInfo account_info =
         identity_manager_->FindExtendedAccountInfoByEmailAddress(*email);
     if (!account_info.IsEmpty() && !account_info.GetGaiaId().empty()) {
@@ -352,6 +360,11 @@ void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
   if (deferred_fetch_on_loaded_tokens_callback_) {
     std::move(deferred_fetch_on_loaded_tokens_callback_).Run();
   }
+#if BUILDFLAG(IS_ANDROID)
+  if (deferred_external_app_account_update_callback_) {
+    std::move(deferred_external_app_account_update_callback_).Run();
+  }
+#endif
 }
 
 void AccountPreviewDataServiceImpl::OnIdentityManagerShutdown(
@@ -901,6 +914,9 @@ void AccountPreviewDataServiceImpl::ClearMemoryData() {
   batch_gaia_ids_.clear();
   account_id_to_gaia_id_.clear();
   deferred_fetch_on_loaded_tokens_callback_.Reset();
+#if BUILDFLAG(IS_ANDROID)
+  deferred_external_app_account_update_callback_.Reset();
+#endif
 }
 
 void AccountPreviewDataServiceImpl::ClearStoredResults() {

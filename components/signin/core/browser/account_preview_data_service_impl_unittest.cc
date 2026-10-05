@@ -2519,6 +2519,122 @@ TEST_F(AccountPreviewDataServiceTest,
               testing::Optional(testing::Field(
                   &AccountPreviewPreference::gaia_id, account2.GetGaiaId())));
 }
+
+TEST_F(AccountPreviewDataServiceTest,
+       UpdateExternalAppAccountDefersUntilTokensLoaded) {
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  // Simulate tokens not loaded yet.
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Set the timer last update pref to now, so the periodic timer does NOT fire
+  // on startup.
+  prefs_.SetTime(prefs::kAccountPreviewDataLastUpdatePref, base::Time::Now());
+
+  // Re-create the service.
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  // Call UpdateExternalAppAccount before tokens are loaded.
+  service_->UpdateExternalAppAccount("account2@gmail.com");
+
+  // Verify that the external app account was not stored yet and no fetch
+  // started.
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account1.GetGaiaId()));
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account2.GetGaiaId()));
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::HistogramTester histograms;
+  base::RunLoop all_data_available_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_available_loop.QuitClosure());
+
+  // Simulate tokens loaded. This should trigger the deferred external app
+  // account update and subsequent fetch.
+  identity_test_env_.ReloadAccountsFromDisk();
+  all_data_available_loop.Run();
+
+  EXPECT_EQ(service_->GetExternalAppAccountForTesting(), account2.GetGaiaId());
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.GetGaiaId())));
+  histograms.ExpectUniqueSample(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kExternalAppAccountUpdated,
+      1);
+}
+
+TEST_F(
+    AccountPreviewDataServiceTest,
+    UpdateExternalAppAccountDefersUntilTokensLoadedWithPendingPeriodicRefresh) {
+  network_delay_helper_ = nullptr;
+  service_.reset();
+
+  AccountInfo account1 =
+      identity_test_env_.MakeAccountAvailable("account1@gmail.com");
+  AccountInfo account2 =
+      identity_test_env_.MakeAccountAvailable("account2@gmail.com");
+
+  // Simulate tokens not loaded yet.
+  identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
+
+  // Clear the timer last update pref so that the recreated service's timer
+  // fires immediately on startup and defers a periodic refresh.
+  prefs_.ClearPref(prefs::kAccountPreviewDataLastUpdatePref);
+
+  // Re-create the service.
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
+  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
+      identity_test_env_.identity_manager(), &sync_service_, &local_state_,
+      &prefs_, test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN, &profile_metrics_service_);
+
+  // Call UpdateExternalAppAccount before tokens are loaded.
+  service_->UpdateExternalAppAccount("account2@gmail.com");
+
+  EXPECT_FALSE(service_->GetExternalAppAccountForTesting().has_value());
+
+  MockSuccessfulFetch(&test_url_loader_factory_);
+  MockSuccessfulFetch(&test_url_loader_factory_);
+
+  base::HistogramTester histograms;
+  base::RunLoop all_data_available_loop;
+  service_->SetAllDataAvailableCallbackForTesting(
+      all_data_available_loop.QuitClosure());
+
+  // Simulate tokens loaded.
+  identity_test_env_.ReloadAccountsFromDisk();
+  all_data_available_loop.Run();
+
+  EXPECT_EQ(service_->GetExternalAppAccountForTesting(), account2.GetGaiaId());
+  EXPECT_THAT(service_->GetPreferredAccountForPromo(),
+              testing::Optional(testing::Field(
+                  &AccountPreviewPreference::gaia_id, account2.GetGaiaId())));
+  histograms.ExpectTotalCount("Signin.AccountPreview.AllFetchTriggerCause", 2);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::kPeriodicRefresh, 1);
+  histograms.ExpectBucketCount(
+      "Signin.AccountPreview.AllFetchTriggerCause",
+      AccountPreviewDataServiceImpl::FetchTriggerCause::
+          kExternalAppAccountUpdated,
+      1);
+}
 #endif
 
 TEST_F(AccountPreviewDataServiceTest, RateLimitOn429SingleFetch) {

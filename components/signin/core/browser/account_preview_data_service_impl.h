@@ -178,6 +178,9 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
   std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
   base::OnceClosure deferred_fetch_on_loaded_tokens_callback_;
+#if BUILDFLAG(IS_ANDROID)
+  base::OnceClosure deferred_external_app_account_update_callback_;
+#endif
 
   base::OnceClosure fetch_complete_callback_for_testing_;
   base::OnceClosure all_data_available_callback_for_testing_;
