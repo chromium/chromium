@@ -1503,8 +1503,16 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 // TODO(b/568358562): Flakes on Windows on first out of 20 runs. Test setup
 // needs to be fixed somehow to allow this to run on Windows.
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+// TODO(crbug.com/569788689): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ReactivatingWindowFocusesWebContents \
+  DISABLED_ReactivatingWindowFocusesWebContents
+#else
+#define MAYBE_ReactivatingWindowFocusesWebContents \
+  ReactivatingWindowFocusesWebContents
+#endif
 IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       ReactivatingWindowFocusesWebContents) {
+                       MAYBE_ReactivatingWindowFocusesWebContents) {
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       WaitForWebUIInputValue("chrome://version"), WaitForOmniboxFocus(true),
@@ -1533,8 +1541,17 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
 
 // Verifies that reactivating a browser window with an unfocused draft keeps the
 // draft visible without stealing focus back to the omnibox.
-IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
-                       ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus) {
+// TODO(crbug.com/569788689): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus \
+  DISABLED_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus
+#else
+#define MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus \
+  ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus
+#endif
+IN_PROC_BROWSER_TEST_P(
+    FullWebUIOmniboxInteractiveTest,
+    MAYBE_ReactivatingWindowWithUnfocusedDraftDoesNotStealFocus) {
   RunTestSequence(
       OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
       InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
