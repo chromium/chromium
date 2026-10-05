@@ -56,8 +56,7 @@ DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 GLIC_FEATURES=Glic,TabstripComboButton,GlicUserStatusCheck,\
 ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,\
 GlicZeroStateSuggestions,FeatureManagementGlic,GlicMultiInstance,\
-GlicDefaultTabContextSetting,GlicUnifiedFreScreen,GlicDaisyChainNewTabs,\
-GlicLiveModeOnlyGlow
+GlicDefaultTabContextSetting,GlicUnifiedFreScreen,GlicDaisyChainNewTabs
 
 # Webium feature flags.
 WEBIUM_FEATURES=Webium,AttachUnownedInnerWebContents,\

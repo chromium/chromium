@@ -285,15 +285,9 @@ void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
 
 void GlicInstanceCoordinatorImpl::ComputeContentAccessIndicator() {
   if (active_instance_) {
-    if (base::FeatureList::IsEnabled(features::kGlicLiveModeOnlyGlow)) {
-      service_->SetContextAccessIndicator(
-          active_instance_->IsShowing() && active_instance_->IsLiveMode() &&
-          active_instance_->host().IsContextAccessIndicatorEnabled());
-    } else {
-      service_->SetContextAccessIndicator(
-          active_instance_->IsShowing() &&
-          active_instance_->host().IsContextAccessIndicatorEnabled());
-    }
+    service_->SetContextAccessIndicator(
+        active_instance_->IsShowing() && active_instance_->IsLiveMode() &&
+        active_instance_->host().IsContextAccessIndicatorEnabled());
   } else {
     service_->SetContextAccessIndicator(false);
   }
