@@ -529,4 +529,41 @@ TEST_F(ResourceMultiBufferDataProviderTest,
   loader->DidReceiveData(data_str);
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexStartViaReader) {
+  url_index_ = std::make_unique<UrlIndex>(
+      &fetch_context_, task_environment_.GetMainThreadTaskRunner());
+  url_ = KURL(kHttpUrl);
+  url_data_ =
+      url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
+
+  std::unique_ptr<MultiBufferReader> reader;
+  url_data_->OnRedirect(blink::BindOnce(
+      [](std::unique_ptr<MultiBufferReader>* reader_ptr,
+         const scoped_refptr<UrlData>& destination) {
+        EXPECT_FALSE(destination);
+        reader_ptr->reset();
+      },
+      Unretained(&reader)));
+
+  url_index_.reset();
+
+  // Creating a reader and calling SetPreload() invokes
+  // MultiBufferReader::UpdateInternalState() -> MultiBuffer::AddReader() ->
+  // ResourceMultiBuffer::CreateWriter() ->
+  // ResourceMultiBufferDataProvider::Start(). When `url_index_` is already
+  // destroyed, `Start()` must not synchronously run `url_data_->Fail()` and
+  // destroy `reader` while `AddReader()` and `UpdateInternalState()` are still
+  // on the stack.
+  reader = std::make_unique<MultiBufferReader>(
+      url_data_->multibuffer(), 0, 1024 * 1024,
+      /*is_client_audio_element=*/false, base::DoNothing(),
+      task_environment_.GetMainThreadTaskRunner());
+  reader->SetPinRange(0, 1024 * 1024);
+  reader->SetPreload(kDataSize, kDataSize);
+  ASSERT_TRUE(reader);
+
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_FALSE(reader);
+}
+
 }  // namespace blink

@@ -149,7 +149,8 @@ void ResourceMultiBufferDataProvider::Start() {
     active_loader_ = url_index->fetch_context()->CreateUrlLoader(options);
     active_loader_->LoadAsynchronously(request, this);
   } else {
-    url_data_->Fail();
+    task_runner_->PostTask(FROM_HERE,
+                           blink::BindOnce(&UrlData::Fail, url_data_));
   }
 }
 
