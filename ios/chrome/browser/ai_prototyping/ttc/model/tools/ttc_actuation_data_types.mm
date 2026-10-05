@@ -6,6 +6,8 @@
 
 @implementation TTCActuationRequest
 
+#pragma mark - Public
+
 - (instancetype)initWithActionProtos:(NSArray<NSData*>*)actionProtos
                           taskUpdate:(NSString*)taskUpdate
                              callIDs:(NSArray<NSString*>*)callIDs {
@@ -34,6 +36,8 @@
 @end
 
 @implementation TTCActuationResponse
+
+#pragma mark - Public
 
 - (instancetype)initWithResultCode:(actor::mojom::ActionResultCode)resultCode
                       errorMessage:(NSString*)errorMessage

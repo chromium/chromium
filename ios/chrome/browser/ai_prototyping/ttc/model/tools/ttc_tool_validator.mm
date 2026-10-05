@@ -15,6 +15,17 @@
 
 namespace {
 
+// Tool call dictionary and argument keys.
+NSString* const kNameKey = @"name";
+NSString* const kIdKey = @"id";
+NSString* const kArgsKey = @"args";
+NSString* const kUrlKey = @"url";
+NSString* const kNewTabKey = @"new_tab";
+
+// Task update strings.
+NSString* const kSingleToolTaskUpdate = @"Executing TTC tool";
+NSString* const kBatchToolTaskUpdate = @"Executing TTC tools";
+
 NSString* ToNSString(std::string_view str) {
   return base::SysUTF8ToNSString(str);
 }
@@ -39,6 +50,22 @@ std::optional<bool> ParseBooleanValue(id value) {
     }
   }
   return std::nullopt;
+}
+
+// Constructs an `optimization_guide::proto::Action` for a validated tool call.
+optimization_guide::proto::Action BuildActionProto(NSString* name,
+                                                   NSDictionary* arguments) {
+  optimization_guide::proto::Action action;
+  if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
+    NSString* urlString = arguments[kUrlKey];
+    GURL gurl(base::SysNSStringToUTF8(urlString));
+    action.mutable_navigate()->set_url(gurl.spec());
+  } else if ([name isEqualToString:ToNSString(ttc::kToolGoBack)]) {
+    action.mutable_back();
+  } else if ([name isEqualToString:ToNSString(ttc::kToolGoForward)]) {
+    action.mutable_forward();
+  }
+  return action;
 }
 
 // Serializes a protobuf action to NSData.
@@ -72,7 +99,7 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
   }
 
   if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
-    id urlValue = arguments ? arguments[@"url"] : nil;
+    id urlValue = arguments ? arguments[kUrlKey] : nil;
     if (!urlValue || ![urlValue isKindOfClass:[NSString class]] ||
         [urlValue length] == 0) {
       return base::unexpected(ToNSString(ttc::kErrorMessageInvalidArguments));
@@ -84,7 +111,7 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
       return base::unexpected(ToNSString(ttc::kErrorMessageInvalidUrl));
     }
 
-    id newTabValue = arguments ? arguments[@"new_tab"] : nil;
+    id newTabValue = arguments ? arguments[kNewTabKey] : nil;
     if (newTabValue) {
       auto parsedBool = ParseBooleanValue(newTabValue);
       if (!parsedBool.has_value() || *parsedBool) {
@@ -110,21 +137,10 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
     return base::unexpected(validation.error());
   }
 
-  optimization_guide::proto::Action action;
-  if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
-    NSString* urlString = arguments[@"url"];
-    GURL gurl(base::SysNSStringToUTF8(urlString));
-    action.mutable_navigate()->set_url(gurl.spec());
-  } else if ([name isEqualToString:ToNSString(ttc::kToolGoBack)]) {
-    action.mutable_back();
-  } else if ([name isEqualToString:ToNSString(ttc::kToolGoForward)]) {
-    action.mutable_forward();
-  }
-
-  NSData* actionData = SerializeActionProto(action);
+  NSData* actionData = SerializeActionProto(BuildActionProto(name, arguments));
   TTCActuationRequest* request =
       [[TTCActuationRequest alloc] initWithActionProtos:@[ actionData ]
-                                             taskUpdate:@"Executing TTC tool"
+                                             taskUpdate:kSingleToolTaskUpdate
                                                  callID:callID];
   return request;
 }
@@ -145,9 +161,9 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
     }
 
     NSDictionary* toolCall = (NSDictionary*)item;
-    NSString* name = toolCall[@"name"];
-    NSString* callID = toolCall[@"id"];
-    NSDictionary* args = toolCall[@"args"] ?: @{};
+    NSString* name = toolCall[kNameKey];
+    NSString* callID = toolCall[kIdKey];
+    NSDictionary* args = toolCall[kArgsKey] ?: @{};
 
     auto validation = [self validateToolName:name arguments:args callID:callID];
     if (!validation.has_value()) {
@@ -155,24 +171,12 @@ NSData* SerializeActionProto(const optimization_guide::proto::Action& action) {
     }
 
     [callIDs addObject:callID];
-
-    optimization_guide::proto::Action action;
-    if ([name isEqualToString:ToNSString(ttc::kToolOpenUrl)]) {
-      NSString* urlString = args[@"url"];
-      GURL gurl(base::SysNSStringToUTF8(urlString));
-      action.mutable_navigate()->set_url(gurl.spec());
-    } else if ([name isEqualToString:ToNSString(ttc::kToolGoBack)]) {
-      action.mutable_back();
-    } else if ([name isEqualToString:ToNSString(ttc::kToolGoForward)]) {
-      action.mutable_forward();
-    }
-
-    [actionProtos addObject:SerializeActionProto(action)];
+    [actionProtos addObject:SerializeActionProto(BuildActionProto(name, args))];
   }
 
   TTCActuationRequest* request =
       [[TTCActuationRequest alloc] initWithActionProtos:actionProtos
-                                             taskUpdate:@"Executing TTC tools"
+                                             taskUpdate:kBatchToolTaskUpdate
                                                 callIDs:callIDs];
   return request;
 }

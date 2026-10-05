@@ -31,7 +31,7 @@ inline constexpr std::string_view kErrorMessageUnknownTool =
 
 }  // namespace ttc
 
-// Validates incoming TalkToChrome function calls and acts as an adapter
+// Validates incoming TTC tool calls and acts as an adapter
 // constructing `TTCActuationRequest` payloads for `TTCActuationHandler`.
 // Note: Generated `Action` protobufs intentionally do not include `tab_id` or
 // `window_id`; these runtime session identifiers are injected downstream by

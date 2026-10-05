@@ -8,47 +8,65 @@
 
 namespace {
 
-// Note: All tool descriptions below are model-facing system instructions
-// passed to Gemini Live for function calling, not user-facing UI strings.
+// JSON schema and response envelope keys.
+NSString* const kNameKey = @"name";
+NSString* const kDescriptionKey = @"description";
+NSString* const kParametersKey = @"parameters";
+NSString* const kTypeKey = @"type";
+NSString* const kPropertiesKey = @"properties";
+NSString* const kRequiredKey = @"required";
+NSString* const kUrlKey = @"url";
+NSString* const kNewTabKey = @"new_tab";
+NSString* const kObjectType = @"OBJECT";
+NSString* const kStringType = @"STRING";
+NSString* const kBooleanType = @"BOOLEAN";
+NSString* const kOutputKey = @"output";
+NSString* const kIdKey = @"id";
+NSString* const kResponseKey = @"response";
+NSString* const kToolResponseKey = @"toolResponse";
+NSString* const kFunctionResponsesKey = @"functionResponses";
+
+// Note: All tool descriptions below are schema definitions passed to the
+// backend for function calling, not user-facing UI strings.
 // User-visible UI elements displaying tool activity must use l10n_util.
 
 // Builds the function declaration dictionary for `go_back`.
 NSDictionary* BuildGoBackDeclaration() {
   return @{
-    @"name" : base::SysUTF8ToNSString(ttc::kToolGoBack),
-    @"description" : @"Go back to the previous page in history.",
+    kNameKey : base::SysUTF8ToNSString(ttc::kToolGoBack),
+    kDescriptionKey : @"Go back to the previous page in history.",
   };
 }
 
 // Builds the function declaration dictionary for `go_forward`.
 NSDictionary* BuildGoForwardDeclaration() {
   return @{
-    @"name" : base::SysUTF8ToNSString(ttc::kToolGoForward),
-    @"description" : @"Go forward to the next page in history.",
+    kNameKey : base::SysUTF8ToNSString(ttc::kToolGoForward),
+    kDescriptionKey : @"Go forward to the next page in history.",
   };
 }
 
 // Builds the function declaration dictionary for `open_url`.
 NSDictionary* BuildOpenUrlDeclaration() {
   return @{
-    @"name" : base::SysUTF8ToNSString(ttc::kToolOpenUrl),
-    @"description" : @"Opens a URL in the browser.",
-    @"parameters" : @{
-      @"type" : @"OBJECT",
-      @"properties" : @{
-        @"url" : @{
-          @"type" : @"STRING",
-          @"description" :
+    kNameKey : base::SysUTF8ToNSString(ttc::kToolOpenUrl),
+    kDescriptionKey : @"Opens a URL in the browser.",
+    kParametersKey : @{
+      kTypeKey : kObjectType,
+      kPropertiesKey : @{
+        kUrlKey : @{
+          kTypeKey : kStringType,
+          kDescriptionKey :
               @"The complete URL to open (e.g. \"https://example.com\").",
         },
-        @"new_tab" : @{
-          @"type" : @"BOOLEAN",
-          @"description" :
+        kNewTabKey : @{
+          kTypeKey : kBooleanType,
+          kDescriptionKey :
               @"If true, opens the URL in a new tab; otherwise, navigates the "
               @"current tab.",
         },
       },
-      @"required" : @[ @"url", @"new_tab" ],
+      kRequiredKey : @[ kUrlKey, kNewTabKey ],
     },
   };
 }
@@ -72,7 +90,7 @@ NSDictionary* GetToolDeclarationByName(NSString* tool_name) {
     return nil;
   }
   for (NSDictionary* decl in GetDefaultToolDeclarations()) {
-    if ([decl[@"name"] isEqualToString:tool_name]) {
+    if ([decl[kNameKey] isEqualToString:tool_name]) {
       return decl;
     }
   }
@@ -92,25 +110,25 @@ NSData* CreateToolResponsePayload(NSString* call_id,
     return nil;
   }
 
-  // Gemini Live expects the function response envelope:
+  // The backend expects the function response envelope:
   // { "response": { "output": <result_object> } }
   // Preserve caller-provided "output" if already formatted; otherwise wrap it.
   NSDictionary* response_envelope = nil;
-  if (response_dict.count == 1 && response_dict[@"output"]) {
+  if (response_dict.count == 1 && response_dict[kOutputKey]) {
     response_envelope = response_dict;
   } else {
-    response_envelope = @{@"output" : response_dict ?: @{}};
+    response_envelope = @{kOutputKey : response_dict ?: @{}};
   }
 
   NSDictionary* function_response = @{
-    @"id" : call_id,
-    @"name" : tool_name,
-    @"response" : response_envelope,
+    kIdKey : call_id,
+    kNameKey : tool_name,
+    kResponseKey : response_envelope,
   };
 
   NSDictionary* tool_response_payload = @{
-    @"toolResponse" : @{
-      @"functionResponses" : @[ function_response ],
+    kToolResponseKey : @{
+      kFunctionResponsesKey : @[ function_response ],
     },
   };
 

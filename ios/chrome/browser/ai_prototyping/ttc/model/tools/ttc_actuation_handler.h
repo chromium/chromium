@@ -20,7 +20,7 @@ class ActorService;
 @class TTCActuationRequest;
 @class TTCActuationResponse;
 
-// The handler for TalkToChrome actuations, bridging incoming actuation
+// The handler for TTC actuations, bridging incoming actuation
 // requests to the Chromium Actor Service orchestration layer.
 @interface TTCActuationHandler : NSObject
 

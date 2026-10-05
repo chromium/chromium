@@ -9,7 +9,7 @@
 
 #import "components/actor/public/mojom/actor_types.mojom.h"
 
-// Represents an incoming actuation request dispatched from TalkToChrome,
+// Represents an incoming TTC actuation request,
 // containing serialized action protobufs to execute on controlled WebStates.
 @interface TTCActuationRequest : NSObject
 

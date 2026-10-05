@@ -17,11 +17,10 @@ inline constexpr std::string_view kToolGoBack = "go_back";
 inline constexpr std::string_view kToolGoForward = "go_forward";
 inline constexpr std::string_view kToolOpenUrl = "open_url";
 
-// Returns the array of function declaration dictionaries matching Gemini
-// Live's FunctionDeclaration OpenAPI schema for the default navigation toolset.
-// Descriptions are model-facing prompts and intentionally in English.
+// Returns the array of function declaration dictionaries matching the
+// backend's FunctionDeclaration schema for the default navigation toolset.
 //
-// @return An array of dictionaries conforming to Gemini's FunctionDeclaration
+// @return An array of dictionaries conforming to the FunctionDeclaration
 //         format.
 NSArray<NSDictionary*>* GetDefaultToolDeclarations();
 
@@ -32,11 +31,11 @@ NSArray<NSDictionary*>* GetDefaultToolDeclarations();
 //         `tool_name` is unrecognized or empty.
 NSDictionary* GetToolDeclarationByName(NSString* tool_name);
 
-// Serializes a `toolResponse` frame acknowledging a `toolCall` back to Gemini
-// Live. Matches the `toolResponse.functionResponses` envelope expected by
-// the bidirectional Live API.
+// Serializes a `toolResponse` frame acknowledging a `toolCall` back to the
+// backend. Matches the `toolResponse.functionResponses` envelope expected by
+// the streaming backend API.
 //
-// @param call_id Unique identifier of the tool call from Gemini Live.
+// @param call_id Unique identifier of the tool call from the backend.
 //                Must not be empty.
 // @param tool_name Canonical name of the executed tool. Must not be empty.
 // @param response_dict Output payload of the tool execution. Nested under
