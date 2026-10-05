@@ -5476,7 +5476,7 @@
     {
       name: "RTCDiagnosticLogging",
       origin_trial_feature_name: "RTCDiagnosticLogging",
-      status: "stable",
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "RTCEncodedAudioFrameConstructor",
