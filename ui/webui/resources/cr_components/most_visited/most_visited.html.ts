@@ -134,6 +134,11 @@ export function getHtml(this: MostVisitedElement) {
         @click="${this.onViewOrEditClick_}">
       ${this.actionMenuViewOrEditTitle_}
     </button>
+    ${this.shortcutsReorderEnabled ? html`
+      <button id="actionMenuReorder" class="dropdown-item">
+        ${this.i18n('shortcutReorder')}
+      </button>
+    ` : ''}
     <button id="actionMenuRemove" class="dropdown-item"
         @click="${this.onRemoveClick_}"
         ?disabled="${this.actionMenuRemoveDisabled_}">

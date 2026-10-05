@@ -181,6 +181,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       toastSource_: {type: Number, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},
+      shortcutsReorderEnabled: {type: Boolean, reflect: true},
       maxTilesInCollapsedState: {type: Number, reflect: true},
       maxShortcutsInExpandedState: {type: Number, reflect: true},
       maxMostVisitedTilesInExpandedState: {type: Number, reflect: true},
@@ -206,6 +207,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
   accessor expandableTilesEnabled: boolean = false;
+  accessor shortcutsReorderEnabled: boolean = false;
   accessor maxTilesInCollapsedState: number = 6;
   accessor maxShortcutsInExpandedState: number = 10;
   accessor maxMostVisitedTilesInExpandedState: number = 8;

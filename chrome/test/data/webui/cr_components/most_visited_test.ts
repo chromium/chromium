@@ -168,6 +168,7 @@ interface SetUpTestOptions {
   singleRow: boolean;
   reflowOnOverflow: boolean;
   expandableTilesEnabled: boolean;
+  shortcutsReorderEnabled: boolean;
   maxTilesInCollapsedState: number;
   maxShortcutsInExpandedState: number;
   maxMostVisitedTilesInExpandedState: number;
@@ -182,6 +183,7 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
     singleRow: false,
     reflowOnOverflow: false,
     expandableTilesEnabled: false,
+    shortcutsReorderEnabled: false,
     maxTilesInCollapsedState: 6,
     maxShortcutsInExpandedState: 10,
     maxMostVisitedTilesInExpandedState: 8,
@@ -201,6 +203,9 @@ function setUpTest(providedOptions: Partial<SetUpTestOptions> = {}) {
   mostVisited.reflowOnOverflow = options.reflowOnOverflow;
   if (options.expandableTilesEnabled) {
     mostVisited.setAttribute('expandable-tiles-enabled', '');
+  }
+  if (options.shortcutsReorderEnabled) {
+    mostVisited.setAttribute('shortcuts-reorder-enabled', '');
   }
   mostVisited.setAttribute(
       'max-tiles-in-collapsed-state',
@@ -2449,5 +2454,28 @@ suite('NonEditable', () => {
               'rgb(26, 115, 232) 0px 0px 0px 2px',
               getComputedStyle(tileIcon).boxShadow);
         });
+  });
+
+  [false, true].forEach(shortcutsReorderEnabled => {
+    test(`reorder menu option rendered when shortcutsReorderEnabled=${
+             shortcutsReorderEnabled}`,
+         async () => {
+           document.body.innerHTML = window.trustedTypes!.emptyHTML;
+           await setUpTest({shortcutsReorderEnabled});
+           await addTiles(1);
+           const tile = queryTiles()[0]!;
+           const actionMenuButton =
+               tile.querySelector<HTMLElement>('#actionMenuButton')!;
+           assertFalse(mostVisited.$.actionMenu.open);
+           actionMenuButton.click();
+           assertTrue(mostVisited.$.actionMenu.open);
+           const reorderButton =
+               $$<HTMLElement>(mostVisited, '#actionMenuReorder');
+           if (shortcutsReorderEnabled) {
+             assertTrue(!!reorderButton);
+           } else {
+             assertFalse(!!reorderButton);
+           }
+         });
   });
 });

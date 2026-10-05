@@ -251,6 +251,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("mostVisitedHighDpiFaviconsEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpMostVisitedHighDpiFavicons));
+  source->AddBoolean("ntpShortcutsReorderEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpShortcutsReorder));
 
   source->AddInteger("maxTilesInCollapsedState",
                      ntp_features::GetMaxTilesInCollapsedState());
@@ -388,6 +391,7 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       {"linkDone", IDS_NTP_CUSTOM_LINKS_DONE},
       {"linkEditedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_EDITED},
       {"linkRemove", IDS_NTP_CUSTOM_LINKS_REMOVE},
+      {"shortcutReorder", IDS_NTP_CUSTOM_LINKS_REORDER},
       {"linkRemoveA11y", IDS_NTP_MOST_VISITED_SITES_REMOVE},
       {"linkRemovedMsg", IDS_NTP_CONFIRM_MSG_SHORTCUT_REMOVED},
       {"shortcutMoreActions", IDS_NTP_CUSTOM_LINKS_MORE_ACTIONS},
