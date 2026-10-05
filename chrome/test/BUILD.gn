@@ -190,7 +190,7 @@ static_library("test_support") {
     public_deps += [ "//chrome/test/base:android_ui_test_utils" ]
   }
 
-  sources = [ "../app/startup_timestamps.h" ]
+  sources = []
 
   if (enable_guest_view) {
     public_deps += [ "//components/guest_view/browser:test_support" ]
@@ -1616,6 +1616,7 @@ if (!is_android) {
       "//chrome:packed_resources",
       "//chrome:resources",
       "//chrome:strings",
+      "//chrome/app:browser_tests",
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser",
@@ -2745,7 +2746,6 @@ if (!is_android) {
     sources = [
       "../../components/live_caption/views/caption_bubble_browsertest.cc",
       "../../components/record_replay/content/renderer/record_replay_agent_browsertest.cc",
-      "../app/chrome_main_delegate_browsertest.cc",
       "../browser/os_crypt/os_crypt_async_browsertest.cc",
       "../browser/ui/views/hats/hats_browsertest.cc",
       "../browser/ui/views/infobars/confirm_infobar_custom_layout_browsertest.cc",
@@ -4486,12 +4486,7 @@ test("unit_tests") {
     ]
   }
 
-  sources = [
-    # All unittests in browser, common, renderer and service.
-    "../app/llvm_profile_util.cc",
-    "../app/llvm_profile_util.h",
-    "../app/llvm_profile_util_unittest.cc",
-  ]
+  sources = []
 
   if (enable_webui_certificate_viewer) {
     sources += [ "../common/net/x509_certificate_model_unittest.cc" ]
@@ -4580,6 +4575,7 @@ test("unit_tests") {
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/app:command_ids",
+    "//chrome/app:unit_tests",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:active_use_util",

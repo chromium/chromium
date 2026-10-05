@@ -252,3 +252,37 @@ static_library("test_support") {
     deps += [ "//chrome/browser/chrome_for_testing:browser" ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_main_delegate_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//components/metrics:content",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//third_party/abseil-cpp:absl",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # llvm_profile_util.cc is otherwise only compiled directly into the chrome
+  # executable targets in //chrome/BUILD.gn, so compile it here too.
+  sources = [
+    "llvm_profile_util.cc",
+    "llvm_profile_util.h",
+    "llvm_profile_util_unittest.cc",
+  ]
+  deps = [
+    "//base",
+    "//build/config/compiler:compiler_buildflags",
+    "//testing/gtest",
+  ]
+}
