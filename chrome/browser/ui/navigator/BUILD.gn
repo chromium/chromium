@@ -160,6 +160,7 @@ if (!is_android) {
       "//chrome/browser/renderer_host",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",

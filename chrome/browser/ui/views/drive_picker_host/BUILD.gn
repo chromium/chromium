@@ -30,6 +30,7 @@ source_set("drive_picker_host") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views/interaction",

@@ -1391,6 +1391,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/push_messaging:service_impl_public",
     "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:browser_commands",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:simple_message_box_internal",
     "//chrome/browser/ui/navigator",

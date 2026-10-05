@@ -190,6 +190,7 @@ if (!is_android) {
       "//chrome/browser/search",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/search:test_support_ui",

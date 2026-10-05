@@ -231,6 +231,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/lens:test_support",

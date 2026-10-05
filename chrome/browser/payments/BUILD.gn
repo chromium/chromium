@@ -150,6 +150,7 @@ source_set("browser_tests") {
     ]
 
     deps += [
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/test:test_support_ui",
       "//components/payments/content:utils",
       "//components/payments/content/utility",

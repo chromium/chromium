@@ -413,6 +413,7 @@ if (!is_android && !is_chromeos_device) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser/ui",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",

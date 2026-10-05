@@ -633,6 +633,7 @@ if (!is_android) {
       "//chrome/browser/tab_list",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/interaction",
@@ -852,15 +853,6 @@ source_set("interactive_ui_tests") {
 
   sources = []
 
-  if (!is_android) {
-    sources += [
-      "contextual_tasks_context_management_interactive_uitest.cc",
-      "contextual_tasks_interactive_uitest.cc",
-      "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
-      "contextual_tasks_ui_service_interactive_uitest.cc",
-    ]
-  }
-
   deps = [
     ":contextual_tasks",
     ":impl",
@@ -888,20 +880,27 @@ source_set("interactive_ui_tests") {
   }
 
   if (!is_android) {
+    sources += [
+      "contextual_tasks_context_management_interactive_uitest.cc",
+      "contextual_tasks_interactive_uitest.cc",
+      "contextual_tasks_side_panel_coordinator_interactive_uitest.cc",
+      "contextual_tasks_ui_service_interactive_uitest.cc",
+    ]
     deps += [
       ":interactive_ui_test_support",
       ":ui",
       "//chrome/browser/extensions",
-      "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui/views/frame:browser_view_header",
 
       # TabUnderlineView currently resides under glic/browser_ui.
       "//chrome/browser/glic/browser_ui:glow",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui:browser_actions",
+      "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
+      "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/toolbar",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
       "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",

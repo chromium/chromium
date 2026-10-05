@@ -90,6 +90,7 @@ if (!is_android) {
     deps = [
       ":find_bar",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:ui_features",
@@ -126,6 +127,7 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac) {
       sources += [ "find_bar_platform_helper_mac_interactive_uitest.mm" ]
+      deps += [ "//chrome/browser/ui:browser_tabstrip" ]
     }
   }
 }

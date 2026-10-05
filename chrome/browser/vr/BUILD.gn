@@ -107,6 +107,7 @@ source_set("xr_browser_tests_common") {
       "//chrome/test:test_support_ui_android",
     ]
   } else {
+    deps += [ "//chrome/browser/ui:browser_tabstrip" ]
     public_deps += [ "//chrome/test:test_support_ui" ]
   }
 

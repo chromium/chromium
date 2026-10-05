@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:scoped_tabbed_browser_displayer",
     "//chrome/browser/ui:tab_modal_confirm_dialog",

@@ -650,16 +650,6 @@ source_set("browser_tests") {
     sources += [ "test/network_service_sandbox_enabled_browsertest.cc" ]
   }
 
-  if (!is_android) {
-    sources += [ "cloud/component_cloud_policy_browsertest.cc" ]
-
-    deps += [
-      "//chrome/browser/ui:browser_commands",
-      "//chrome/browser/ui:browser_window_header",
-      "//chrome/test:test_support",
-    ]
-  }
-
   if (!is_android && !is_chromeos) {
     sources += [
       "cloud/chrome_browser_cloud_management_browsertest_delegate_desktop.cc",
@@ -707,6 +697,7 @@ source_set("browser_tests") {
 
   if (!is_android) {
     sources += [
+      "cloud/component_cloud_policy_browsertest.cc",
       "cpu_performance_override_browsertest.cc",
       "policy_initialization_browsertest.cc",
       "test/cast_policy_browsertest.cc",
@@ -730,11 +721,15 @@ source_set("browser_tests") {
       "//chrome/browser/content_settings",
       "//chrome/browser/search_engines",
       "//chrome/browser/site_protection:utils",
+      "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_otr_state",
+      "//chrome/browser/ui:browser_tabstrip",
+      "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/search:test_support_ui",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/usb",
+      "//chrome/test:test_support",
       "//components/collaboration/public:prefs",
       "//components/history_clusters/core",
       "//device/bluetooth:mocks",

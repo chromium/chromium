@@ -122,6 +122,7 @@ if (!is_android) {
       "//chrome/browser/sync",
       "//chrome/browser/ui:browser_actions",
       "//chrome/browser/ui:browser_commands",
+      "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/page_action",

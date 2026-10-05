@@ -88,6 +88,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/infobars",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/user_education",
     "//chrome/test:test_support",
     "//components/headless/clipboard",

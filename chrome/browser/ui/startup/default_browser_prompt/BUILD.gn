@@ -142,6 +142,7 @@ source_set("browser_tests") {
     "//chrome/browser:browser_process",
     "//chrome/browser/infobars",
     "//chrome/browser/ui:browser_tab_strip",
+    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common:constants",
     "//chrome/test:test_support",
