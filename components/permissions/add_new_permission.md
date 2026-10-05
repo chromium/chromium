@@ -192,7 +192,7 @@ update histograms:
    [tools/metrics/histograms/metadata/permissions/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/permissions/histograms.xml)
    update:
    * `name="PermissionRequestTypes"`
-1. In [tools/metrics/histograms/metadata/content/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/content/histograms.xml) update `<token key="ContentSettingsType">`
+1. In [tools/metrics/histograms/metadata/content_settings/histograms.xml](https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/histograms/metadata/content_settings/histograms.xml) update `<token key="ContentSettingsType">`
 1. In [permission_uma_util.h](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h)
 updated enum
 [RequestTypeForUma](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_uma_util.h;l=41;drc=796b971e6e0d1b033bda58b31e9f24d397ad6178)

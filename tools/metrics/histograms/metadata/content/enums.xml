@@ -84,23 +84,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Promo was shown to the user"/>
 </enum>
 
-<enum name="ContentSettingBubbleAction">
-  <int value="1" label="kOpened"/>
-  <int value="2" label="kPermissionAllowed"/>
-  <int value="3" label="kPermissionBlocked"/>
-  <int value="4" label="KManageButtonClicked"/>
-</enum>
-
-<enum name="ContentSettingPopupAction">
-  <int value="0" label="Displayed popup-blocked icon in Omnibox"/>
-  <int value="1" label="Displayed bubble"/>
-  <int value="2" label="Clicked 'Always allow pop-ups from'"/>
-  <int value="3" label="Clicked one of the list items"/>
-  <int value="4" label="Clicked 'Manage pop-up blocking'"/>
-  <int value="5" label="Displayed popup-blocked infobar on mobile"/>
-  <int value="6" label="Clicked 'Always show on mobile'"/>
-</enum>
-
 <enum name="ContentSuggestionsDisplayStatus">
   <int value="0" label="Visible"/>
   <int value="1" label="Collapsed"/>
@@ -484,13 +467,6 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="ELM collection view containing feed header fixed"/>
 </enum>
 
-<enum name="PopupBlockerAction">
-  <int value="0" label="Popup initiated"/>
-  <int value="1" label="Popup blocked"/>
-  <int value="2" label="Popup clicked through (no gesture)"/>
-  <int value="3" label="Popup clicked through (abusive)"/>
-</enum>
-
 <!-- LINT.IfChange(SharedWorkerCreationContextTypeMismatch) -->
 
 <enum name="SharedWorkerCreationContextTypeMismatch">
@@ -512,14 +488,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/worker_host/shared_worker_host.cc:SharedWorkerHostDestructionSource) -->
-
-<enum name="StrongPopupBlockerAction">
-  <int value="0" label="Navigation commit"/>
-  <int value="1" label="Commit warn site"/>
-  <int value="2" label="Commit enforced site"/>
-  <int value="3" label="Popup considered"/>
-  <int value="4" label="Popup blocked"/>
-</enum>
 
 </enums>
 
