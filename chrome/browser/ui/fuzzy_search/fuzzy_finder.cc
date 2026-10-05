@@ -48,6 +48,10 @@ constexpr int kConsecutiveBonus = 6;
 // Penalty subtracted when a character does not match (substitution / typo).
 constexpr int kTypoPenalty = -12;
 
+// Substitutions (typos) are only allowed for queries longer than this many
+// characters. Shorter queries must match exactly or via transpositions.
+constexpr size_t kMaxQueryLengthWithoutSubstitution = 3;
+
 // Penalty subtracted when two adjacent characters are transposed (e.g. "teh"
 // -> "the").
 constexpr int kSwapPenalty = -6;
@@ -323,9 +327,9 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
             diag_step = MatchStep::kTransposition;
           }
         }
-      } else if (j > 0 && m > 3) {
+      } else if (j > 0 && m > kMaxQueryLengthWithoutSubstitution) {
         // Mismatch / substitution typo: disallowed entirely for short queries
-        // (m <= 3) and disallowed on the first character (j == 0).
+        // and disallowed on the first character (j == 0).
         const AlignmentCell& diag = alignment_matrix_[idx - n - 1];
         if (diag.score > 0) {
           diagonal_score = diag.score + kTypoPenalty;
