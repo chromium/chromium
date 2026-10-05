@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -79,7 +80,9 @@ FullscreenController::FullscreenController(
       browser_command_controller_(browser_command_controller),
       bookmark_bar_controller_(bookmark_bar_controller) {}
 
-FullscreenController::~FullscreenController() = default;
+FullscreenController::~FullscreenController() {
+  CHECK(!in_notify_tab_exclusive_access_lost_);
+}
 
 base::CallbackListSubscription
 FullscreenController::RegisterOnFullscreenStateChanged(
@@ -530,6 +533,8 @@ void FullscreenController::NotifyFullscreenChange() {
 
 void FullscreenController::NotifyTabExclusiveAccessLost() {
   if (exclusive_access_tab()) {
+    base::AutoReset<bool> in_notify(&in_notify_tab_exclusive_access_lost_,
+                                    true);
     WebContents* web_contents = exclusive_access_tab();
     SetTabWithExclusiveAccess(nullptr);
     requesting_origin_ = url::Origin();

@@ -7,14 +7,17 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller_state_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_browser_process_death_test_mixin.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -61,6 +64,9 @@ class FullscreenControllerTestWindow : public ExclusiveAccessContext,
     active_web_contents_ = web_contents;
   }
   void set_reentrant(bool reentrant) { reentrant_ = reentrant; }
+  void set_on_exit_fullscreen_mode_for_tab(base::OnceClosure closure) {
+    on_exit_fullscreen_mode_for_tab_ = std::move(closure);
+  }
 
   // ExclusiveAccessContext Interface:
   Profile* GetProfile() override { return profile_; }
@@ -118,6 +124,9 @@ class FullscreenControllerTestWindow : public ExclusiveAccessContext,
       exclusive_access_manager_->fullscreen_controller()
           ->ExitFullscreenModeForTab(web_contents);
     }
+    if (on_exit_fullscreen_mode_for_tab_) {
+      std::move(on_exit_fullscreen_mode_for_tab_).Run();
+    }
   }
 
   // Simulates the window changing state.
@@ -131,6 +140,7 @@ class FullscreenControllerTestWindow : public ExclusiveAccessContext,
   bool IsTransitionReentrant(bool new_fullscreen);
 
   WindowState state_ = kNormal;
+  base::OnceClosure on_exit_fullscreen_mode_for_tab_;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<content::WebContents> active_web_contents_ = nullptr;
   raw_ptr<ExclusiveAccessManager> exclusive_access_manager_ = nullptr;
@@ -992,3 +1002,41 @@ TEST_F(FullscreenControllerStateUnitTest,
             content::FullscreenMode::kWindowed);
   second_window.set_exclusive_access_manager(nullptr);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Creating a `TestingProfile` in a death test subprocess fails on ChromeOS
+// because `UnitTestTestSuite::Run()` initializes Blink before `TestSuite`
+// initializes ICU, causing `TimezoneSettingsStubImpl` to hit a DCHECK in
+// `timezone_settings_helper.cc`.
+class FullscreenControllerDeathTest
+    : public chrome_test_utils::TestingBrowserProcessDeathTestMixin,
+      public FullscreenControllerStateUnitTest {};
+
+// Tests that destroying FullscreenController reentrantly while
+// NotifyTabExclusiveAccessLost() is on the stack triggers a CHECK failure in
+// ~FullscreenController().
+TEST_F(FullscreenControllerDeathTest,
+       DestructionDuringNotifyTabExclusiveAccessLostChecks) {
+  content::WebContents* const tab = AddTab(GURL(url::kAboutBlankURL));
+  window_->set_reentrant(false);
+
+  // Enter tab fullscreen and complete the window transition.
+  GetFullscreenController()->EnterFullscreenModeForTab(
+      tab->GetPrimaryMainFrame());
+  ChangeWindowFullscreenState();
+  ASSERT_TRUE(window_->IsFullscreen());
+  ASSERT_TRUE(GetFullscreenController()->IsTabFullscreen());
+
+  // Exit fullscreen without going through the fullscreen controller.
+  window_->ExitFullscreen();
+
+  // Destroy the manager, and with it the controller, while the tab is being
+  // notified that it lost fullscreen.
+  window_->set_on_exit_fullscreen_mode_for_tab(
+      base::BindLambdaForTesting([&]() {
+        window_->set_exclusive_access_manager(nullptr);
+        exclusive_access_manager_.reset();
+      }));
+  EXPECT_CHECK_DEATH(ChangeWindowFullscreenState());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
