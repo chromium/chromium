@@ -185,6 +185,15 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       CompleteWithoutLoader();
       return;
     }
+    // Back/forward history navigations and tab restores set
+    // `net::LOAD_SKIP_CACHE_VALIDATION` to prefer cached content without
+    // revalidation. Do not inject the synthetic service worker registration so
+    // the request can be served from the HTTP cache or embedder cache.
+    if (tentative_resource_request.load_flags &
+        net::LOAD_SKIP_CACHE_VALIDATION) {
+      CompleteWithoutLoader();
+      return;
+    }
     // Only accepts GET.
     if (tentative_resource_request.method !=
         net::HttpRequestHeaders::kGetMethod) {

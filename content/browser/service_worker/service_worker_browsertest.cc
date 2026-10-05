@@ -8437,6 +8437,125 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceBypassServiceWorker_OnBackNavigation) {
+  SetUpMockContentBrowserClient();
+  // Disable BackForwardCache so that `GoBack()` triggers a full navigation
+  // loader pass with `net::LOAD_SKIP_CACHE_VALIDATION` rather than restoring
+  // a cached RenderFrameHost from memory.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  const GURL first_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&echo=foo&allow_worker"}));
+  EXPECT_TRUE(NavigateToURL(shell(), first_url));
+  EXPECT_EQ("[SyntheticResponse] foo", GetInnerText());
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.SyntheticResponse.Eligibility",
+      static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
+                           kNotEligibleByNoHeaderStored),
+      1);
+
+  const GURL second_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&echo=bar&allow_worker"}));
+  EXPECT_TRUE(NavigateToURL(shell(), second_url));
+  EXPECT_EQ("[SyntheticResponse] bar", GetInnerText());
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.SyntheticResponse.Eligibility",
+      static_cast<int>(
+          ServiceWorkerMetrics::SyntheticResponseEligibility::kEligible),
+      1);
+
+  // Navigate back to `first_url`. Because history navigations set
+  // `net::LOAD_SKIP_CACHE_VALIDATION`, synthetic response registration
+  // injection is bypassed.
+  TestNavigationObserver back_observer(web_contents());
+  web_contents()->GetController().GoBack();
+  back_observer.Wait();
+  EXPECT_TRUE(back_observer.last_navigation_succeeded());
+  EXPECT_EQ("[SyntheticResponse] foo", GetInnerText());
+  EXPECT_EQ(false, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                          "!!navigator.serviceWorker.controller"));
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.SyntheticResponse.Eligibility", 2);
+
+  // Main frame and Dedicated Worker subresource fetches should succeed and
+  // bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+  EXPECT_EQ(200, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
+                       SubresourceBypassServiceWorker_OnTabRestore) {
+  SetUpMockContentBrowserClient();
+  const GURL target_url = https_server()->GetURL(
+      kHostname, base::StrCat({kTargetPath, "foo&allow_worker"}));
+  EXPECT_TRUE(NavigateToURL(shell(), target_url));
+  EXPECT_EQ(true, EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         "!!navigator.serviceWorker.controller"));
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.SyntheticResponse.Eligibility",
+      static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
+                           kNotEligibleByNoHeaderStored),
+      1);
+
+  // Restore `target_url` into a new tab using `RestoreType::kRestored`, which
+  // sets `net::LOAD_SKIP_CACHE_VALIDATION`. Even though response headers were
+  // stored by the initial navigation, the restored tab navigation must bypass
+  // synthetic response registration injection.
+  Shell* restored_shell = Shell::CreateNewWindow(
+      web_contents()->GetBrowserContext(), GURL(), nullptr, gfx::Size());
+  std::unique_ptr<NavigationEntry> restored_entry =
+      NavigationController::CreateNavigationEntry(
+          target_url, Referrer(), /*initiator_origin=*/std::nullopt,
+          /*initiator_base_url=*/std::nullopt, ui::PAGE_TRANSITION_RELOAD,
+          /*is_renderer_initiated=*/false, std::string(),
+          restored_shell->web_contents()->GetBrowserContext(),
+          /*blob_url_loader_factory=*/nullptr);
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry));
+  NavigationController& restore_controller =
+      restored_shell->web_contents()->GetController();
+  restore_controller.Restore(0, RestoreType::kRestored, &entries);
+  ASSERT_EQ(0u, entries.size());
+
+  TestNavigationObserver restore_observer(restored_shell->web_contents());
+  restore_controller.LoadIfNecessary();
+  restore_observer.Wait();
+  EXPECT_TRUE(restore_observer.last_navigation_succeeded());
+  EXPECT_EQ(false, EvalJs(restored_shell->web_contents()->GetPrimaryMainFrame(),
+                          "!!navigator.serviceWorker.controller"));
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.SyntheticResponse.Eligibility", 1);
+
+  // Main frame and Dedicated Worker subresource fetches in the restored tab
+  // should succeed and bypass Service Worker.
+  EXPECT_EQ(200,
+            EvalJs(restored_shell->web_contents()->GetPrimaryMainFrame(),
+                   "fetch('/service_worker/empty.html').then(r => r.status)"));
+  EXPECT_EQ(200, EvalJs(restored_shell->web_contents()->GetPrimaryMainFrame(),
+                        kWorkerFetchScript));
+
+  FetchHistogramsFromChildProcesses();
+  histogram_tester().ExpectTotalCount("ServiceWorker.Subresource.Handled.Type2",
+                                      0);
+  histogram_tester().ExpectTotalCount(
+      "ServiceWorker.Subresource.Fallbacked.Type2", 0);
+}
+
+IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
                        SubresourceBypassServiceWorker_OnPrefetch) {
   SetUpMockContentBrowserClient();
   const GURL target_url = https_server()->GetURL(

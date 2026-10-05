@@ -1156,6 +1156,12 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
         SyntheticResponseEligibility::kNotEligibleByReload);
     return false;
   }
+  if (resource_request_.load_flags & net::LOAD_SKIP_CACHE_VALIDATION) {
+    // Back/forward history navigations and tab restores set
+    // `net::LOAD_SKIP_CACHE_VALIDATION` to prefer cached content without
+    // revalidation. Synthetic response must not intercept these navigations.
+    return false;
+  }
 
   // Check if an embedder-level interceptor (like Search Prefetch) wants to
   // handle this request.
