@@ -97,7 +97,7 @@ void ShowNotificationForAutoGrantedRequestFileSystem(
     const std::string& volume_id,
     const std::string& volume_label,
     bool writable) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   static int sequence = 0;
   // Create globally unique |notification_id| so that notifications are not
   // suppressed, thus allowing each AppNotificationLauncher instance to

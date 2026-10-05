@@ -100,7 +100,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
   chromeos::ExtensionPlatformKeysService* service =
       chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   std::optional<chromeos::platform_keys::KeyType> key_type =
       KeyTypeFromString(params->algorithm.name);
@@ -137,7 +137,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
 void EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey(
     std::vector<uint8_t> public_key_der,
     std::optional<chromeos::KeystoreError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!error) {
     Respond(ArgumentList(
         api_epki::GenerateKey::Results::Create(std::move(public_key_der))));

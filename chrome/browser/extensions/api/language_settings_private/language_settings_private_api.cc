@@ -576,7 +576,7 @@ LanguageSettingsPrivateGetSpellcheckWordsFunction::GetSpellcheckWords() const {
   SpellcheckService* service =
       SpellcheckServiceFactory::GetForContext(browser_context());
   SpellcheckCustomDictionary* dictionary = service->GetCustomDictionary();
-  DCHECK(dictionary->IsLoaded());
+  CHECK(dictionary->IsLoaded(), base::NotFatalUntil::M161);
 
   // TODO(michaelpg): Sort using app locale.
   base::ListValue word_list;
@@ -705,7 +705,7 @@ void PopulateInputMethodListFromDescriptors(
   UErrorCode error = U_ZERO_ERROR;
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error));  // use current ICU locale
-  DCHECK(U_SUCCESS(error));
+  CHECK(U_SUCCESS(error), base::NotFatalUntil::M161);
 
   // Map of sorted [display name -> input methods].
   std::map<std::u16string, language_settings_private::InputMethod,

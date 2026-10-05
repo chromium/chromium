@@ -39,7 +39,7 @@ void ClearImageBurner() {
 }  // namespace
 
 void Operation::Write(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   SetStage(image_writer_api::Stage::kWrite);
 
   // Note this has to be run on the FILE thread to avoid concurrent access.
@@ -51,14 +51,14 @@ void Operation::Write(base::OnceClosure continuation) {
 }
 
 void Operation::VerifyWrite(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   // No verification is available in Chrome OS currently.
   std::move(continuation).Run();
 }
 
 void Operation::UnmountVolumes(base::OnceClosure continuation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DiskMountManager::GetInstance()->UnmountDeviceRecursively(
       device_path_.value(), base::BindOnce(&Operation::UnmountVolumesCallback,
                                            this, std::move(continuation)));
@@ -66,7 +66,7 @@ void Operation::UnmountVolumes(base::OnceClosure continuation) {
 
 void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
                                        ash::MountError error_code) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (error_code != ash::MountError::kSuccess) {
     LOG(ERROR) << "Volume unmounting failed with error code " << error_code;
@@ -92,7 +92,7 @@ void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
 
 void Operation::StartWriteOnUIThread(const std::string& target_path,
                                      base::OnceClosure continuation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // TODO(haven): Image Burner cannot handle multiple burns. crbug.com/41107511
   ImageBurnerClient* burner = ImageBurnerClient::Get();

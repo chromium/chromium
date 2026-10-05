@@ -41,7 +41,7 @@ MessagingDelegate::PolicyPermission
 ChromeMessagingDelegate::IsNativeMessagingHostAllowed(
     content::BrowserContext* browser_context,
     const std::string& native_host_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   PrefService* pref_service =
       Profile::FromBrowserContext(browser_context)->GetPrefs();
@@ -152,7 +152,7 @@ void ChromeMessagingDelegate::QueryIncognitoConnectability(
     content::WebContents* source_contents,
     const GURL& source_url,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(context->IsOffTheRecord());
+  CHECK(context->IsOffTheRecord(), base::NotFatalUntil::M161);
   IncognitoConnectability::Get(context)->Query(
       target_extension, source_contents, source_url, std::move(callback));
 }

@@ -94,7 +94,7 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
       : extension_id_(extension_id),
         callback_(std::move(callback)),
         event_router_(EventRouter::EventRouter::Get(profile)) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
     event_router_->RegisterObserver(this, event_name);
   }
 

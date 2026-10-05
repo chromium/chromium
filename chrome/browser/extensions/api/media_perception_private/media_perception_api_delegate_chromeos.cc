@@ -94,7 +94,7 @@ void MediaPerceptionAPIDelegateChromeOS::LoadCrOSComponent(
 
 void MediaPerceptionAPIDelegateChromeOS::BindVideoSourceProvider(
     mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
       accelerator_factory;
   mojo::MakeSelfOwnedReceiver(

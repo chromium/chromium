@@ -47,7 +47,7 @@ void FillVolumeList(content::BrowserContext* browser_context,
                     std::vector<file_system::Volume>* result) {
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(browser_context);
-  DCHECK(volume_manager);
+  CHECK(volume_manager, base::NotFatalUntil::M161);
 
   const auto& volume_list = volume_manager->GetVolumeList();
   // Convert volume_list to result_volume_list.
@@ -88,12 +88,12 @@ void OnConsentReceived(content::BrowserContext* browser_context,
     return;
   }
 
-  DCHECK_EQ(origin.scheme(), kExtensionScheme);
+  CHECK_EQ(origin.scheme(), kExtensionScheme, base::NotFatalUntil::M161);
   scoped_refptr<storage::FileSystemContext> file_system_context =
       util::GetStoragePartitionForExtensionId(origin.host(), browser_context)
           ->GetFileSystemContext();
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M161);
 
   base::FilePath virtual_path;
   if (!backend->GetVirtualPath(volume->mount_path(), &virtual_path)) {
@@ -103,7 +103,7 @@ void OnConsentReceived(content::BrowserContext* browser_context,
 
   storage::IsolatedContext* const isolated_context =
       storage::IsolatedContext::GetInstance();
-  DCHECK(isolated_context);
+  CHECK(isolated_context, base::NotFatalUntil::M161);
 
   const storage::FileSystemURL original_url =
       file_system_context->CreateCrackedFileSystemURL(
@@ -128,7 +128,7 @@ void OnConsentReceived(content::BrowserContext* browser_context,
   // Grant file permissions to the renderer hosting component.
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();
-  DCHECK(policy);
+  CHECK(policy, base::NotFatalUntil::M161);
 
   const auto process_id = requester->source_process_id();
   // Read-only permisisons.
@@ -155,7 +155,7 @@ namespace file_system_api {
 
 void DispatchVolumeListChangeEventAsh(
     content::BrowserContext* browser_context) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
   EventRouter* const event_router = EventRouter::Get(browser_context);
   if (!event_router)  // Possible on shutdown.
     return;
@@ -203,7 +203,7 @@ void ChromeFileSystemDelegateAsh::RequestFileSystem(
   using file_manager::Volume;
   using file_manager::VolumeManager;
   VolumeManager* const volume_manager = VolumeManager::Get(browser_context);
-  DCHECK(volume_manager);
+  CHECK(volume_manager, base::NotFatalUntil::M161);
 
   if (writable &&
       !app_file_handler_util::HasFileSystemWritePermission(&extension)) {
@@ -229,7 +229,7 @@ void ChromeFileSystemDelegateAsh::RequestFileSystem(
       util::GetStoragePartitionForExtensionId(extension.id(), browser_context)
           ->GetFileSystemContext();
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M161);
 
   base::FilePath virtual_path;
   if (!backend->GetVirtualPath(volume->mount_path(), &virtual_path)) {

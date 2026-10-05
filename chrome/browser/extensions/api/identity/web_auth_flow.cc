@@ -93,8 +93,10 @@ WebAuthFlow::WebAuthFlow(
       "identity", "WebAuthFlow",
       perfetto::NamedTrack::FromPointer("extensions::WebAuthFlow", this));
   if (timeout_for_non_interactive_) {
-    DCHECK_GE(*timeout_for_non_interactive_, base::TimeDelta());
-    DCHECK_LE(*timeout_for_non_interactive_, base::Minutes(1));
+    CHECK_GE(*timeout_for_non_interactive_, base::TimeDelta(),
+             base::NotFatalUntil::M161);
+    CHECK_LE(*timeout_for_non_interactive_, base::Minutes(1),
+             base::NotFatalUntil::M161);
   }
 
   // profile_ can be null in unit tests.
@@ -104,7 +106,7 @@ WebAuthFlow::WebAuthFlow(
 }
 
 WebAuthFlow::~WebAuthFlow() {
-  DCHECK(!delegate_);
+  CHECK(!delegate_, base::NotFatalUntil::M161);
   BrowserWindowInterface* popup_browser =
       web_contents()
           ? browser_window_util::GetBrowserForTabContents(*web_contents())
@@ -136,9 +138,9 @@ void WebAuthFlow::SetClockForTesting(
 }
 
 void WebAuthFlow::Start() {
-  DCHECK(profile_);
-  DCHECK(!profile_->IsOffTheRecord());
-  DCHECK(!profile_->ShutdownStarted());
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M161);
+  CHECK(!profile_->ShutdownStarted(), base::NotFatalUntil::M161);
 
   content::WebContents::CreateParams params(profile_);
   web_contents_ = content::WebContents::Create(params);
@@ -202,7 +204,7 @@ void WebAuthFlow::RegisterInfoBar(
 }
 
 void WebAuthFlow::DisplayInfoBar() {
-  DCHECK(web_contents());
+  CHECK(web_contents(), base::NotFatalUntil::M161);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (infobars::IsInfoBarMigrated(
@@ -456,8 +458,8 @@ void WebAuthFlow::DidFinishNavigation(
       // then the Identity Scope Approval Dialog extension fails to load it.
       // Failing to load |about:blank| must not be treated as a failure of
       // the web auth flow.
-      DCHECK_EQ(net::ERR_UNKNOWN_URL_SCHEME,
-                navigation_handle->GetNetErrorCode());
+      CHECK_EQ(net::ERR_UNKNOWN_URL_SCHEME,
+               navigation_handle->GetNetErrorCode(), base::NotFatalUntil::M161);
     } else if (navigation_handle->GetResponseHeaders() &&
                navigation_handle->GetResponseHeaders()->response_code() ==
                    net::HTTP_NO_CONTENT) {

@@ -281,7 +281,7 @@ ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
       params->details &&
       params->details->enable_granular_permissions.value_or(false);
 
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
 
   // Check that the necessary information is present in the manifest.
@@ -426,7 +426,7 @@ bool IdentityGetAuthTokenFunction::ShouldDelayRemoteConsent() {
 }
 
 void IdentityGetAuthTokenFunction::StartWaitingForCookies() {
-  DCHECK(!accounts_in_cookie_updated_waiter_);
+  CHECK(!accounts_in_cookie_updated_waiter_, base::NotFatalUntil::M161);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   base::OnceCallback<void(bool)> cookie_callback = base::BindOnce(
@@ -506,7 +506,7 @@ bool IdentityGetAuthTokenFunction::ShouldStartSigninFlow() {
 }
 
 void IdentityGetAuthTokenFunction::StartSigninFlow() {
-  DCHECK(ShouldStartSigninFlow());
+  CHECK(ShouldStartSigninFlow(), base::NotFatalUntil::M161);
 
   // All cached tokens are invalid because the user is not signed in.
   IdentityAPI* id_api =
@@ -605,7 +605,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
                       IdentityMintRequestQueue::GetRequestTrack(this), "type",
                       type);
 
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
   IdentityAPI* id_api = IdentityAPI::GetFactoryInstance()->Get(GetProfile());
   IdentityTokenCacheValue cache_entry =
@@ -669,7 +669,8 @@ void IdentityGetAuthTokenFunction::StartMintToken(
         break;
     }
   } else {
-    DCHECK(type == IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE);
+    CHECK(type == IdentityMintRequestQueue::MINT_TYPE_INTERACTIVE,
+          base::NotFatalUntil::M161);
 
     switch (cache_status) {
       case IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
@@ -807,10 +808,11 @@ void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
 
   const CoreAccountInfo& primary_account_info =
       event_details.GetCurrentState().primary_account;
-  DCHECK(token_key_.account_info.IsEmpty());
+  CHECK(token_key_.account_info.IsEmpty(), base::NotFatalUntil::M161);
   token_key_.account_info = primary_account_info;
 
-  DCHECK(!GetSigninPrimaryAccount(GetProfile()).IsEmpty());
+  CHECK(!GetSigninPrimaryAccount(GetProfile()).IsEmpty(),
+        base::NotFatalUntil::M161);
   waiting_on_account_ = false;
   scoped_identity_manager_observation_.Reset();
 
@@ -873,7 +875,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     const GaiaId& gaia_id) {
   TRACE_EVENT_INSTANT("identity", "OnGaiaRemoteConsentFlowApproved",
                       IdentityMintRequestQueue::GetRequestTrack(this));
-  DCHECK(!consent_result.empty());
+  CHECK(!consent_result.empty(), base::NotFatalUntil::M161);
   remote_consent_approved_ = true;
 
   AccountInfo account = IdentityManagerFactory::GetForProfile(GetProfile())
@@ -921,9 +923,9 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
   // By the time we get here we should no longer have an outstanding access
   // token request.
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(!device_oauth2_token_fetcher_);
+  CHECK(!device_oauth2_token_fetcher_, base::NotFatalUntil::M161);
 #endif
-  DCHECK(!token_key_account_access_token_fetcher_);
+  CHECK(!token_key_account_access_token_fetcher_, base::NotFatalUntil::M161);
   if (access_token) {
     TRACE_EVENT_END("identity",
                     IdentityMintRequestQueue::GetRequestTrack(this));
@@ -993,7 +995,7 @@ void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
 
 void IdentityGetAuthTokenFunction::StartGaiaRequest(
     const std::string& login_access_token) {
-  DCHECK(!login_access_token.empty());
+  CHECK(!login_access_token.empty(), base::NotFatalUntil::M161);
   mint_token_flow_ = CreateMintTokenFlow();
   mint_token_flow_->Start(GetProfile()->GetURLLoaderFactory(),
                           login_access_token);
@@ -1074,7 +1076,7 @@ IdentityGetAuthTokenFunction::CreateMintTokenFlow() {
 }
 
 std::string IdentityGetAuthTokenFunction::GetOAuth2ClientId() const {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
 
   std::string client_id;
@@ -1159,7 +1161,7 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
       status = interactivity_status_for_consent_;
       break;
   }
-  DCHECK(!IsInteractionAllowed(status));
+  CHECK(!IsInteractionAllowed(status), base::NotFatalUntil::M161);
 
   IdentityGetAuthTokenError::State state =
       IdentityGetAuthTokenError::State::kNone;
@@ -1180,7 +1182,8 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
     case InteractivityStatus::kAllowedWithActivity:
       NOTREACHED();
   }
-  DCHECK_NE(state, IdentityGetAuthTokenError::State::kNone);
+  CHECK_NE(state, IdentityGetAuthTokenError::State::kNone,
+           base::NotFatalUntil::M161);
   return IdentityGetAuthTokenError(state);
 }
 

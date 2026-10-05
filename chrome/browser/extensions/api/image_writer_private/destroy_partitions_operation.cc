@@ -35,7 +35,7 @@ DestroyPartitionsOperation::DestroyPartitionsOperation(
 DestroyPartitionsOperation::~DestroyPartitionsOperation() = default;
 
 void DestroyPartitionsOperation::StartImpl() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (!base::CreateTemporaryFileInDir(temp_dir_->GetPath(), &image_path_)) {
     Error(error::kTempFileError);
     return;

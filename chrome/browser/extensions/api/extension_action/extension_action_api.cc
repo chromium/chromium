@@ -127,7 +127,7 @@ bool HasPopupOnActiveTab(BrowserWindowInterface& browser,
   ExtensionAction* extension_action =
       ExtensionActionManager::Get(browser_context)
           ->GetExtensionAction(extension);
-  DCHECK(extension_action);
+  CHECK(extension_action, base::NotFatalUntil::M161);
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   return extension_action->HasPopup(tab_id) &&
@@ -487,7 +487,7 @@ ActionGetUserSettingsFunction::ActionGetUserSettingsFunction() = default;
 ActionGetUserSettingsFunction::~ActionGetUserSettingsFunction() = default;
 
 ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
   ExtensionActionManager* const action_manager =
       ExtensionActionManager::Get(browser_context());
   ExtensionAction* const action =
@@ -495,8 +495,9 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
 
   // This API is only available to extensions with the "action" key in the
   // manifest, so they should always have an action.
-  DCHECK(action);
-  DCHECK_EQ(ActionInfo::Type::kAction, action->action_type());
+  CHECK(action, base::NotFatalUntil::M161);
+  CHECK_EQ(ActionInfo::Type::kAction, action->action_type(),
+           base::NotFatalUntil::M161);
 
   const bool is_pinned =
       ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))
@@ -553,7 +554,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
   }
 
   if (!browser) {
-    DCHECK(!error.empty());
+    CHECK(!error.empty(), base::NotFatalUntil::M161);
     return RespondNow(Error(std::move(error)));
   }
 
@@ -569,7 +570,7 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
           *browser, *extension(), &error,
           base::BindOnce(&ActionOpenPopupFunction::OnShowPopupComplete,
                          this))) {
-    DCHECK(!error.empty());
+    CHECK(!error.empty(), base::NotFatalUntil::M161);
     return RespondNow(Error(std::move(error)));
   }
 
@@ -579,12 +580,12 @@ ExtensionFunction::ResponseAction ActionOpenPopupFunction::Run() {
 }
 
 void ActionOpenPopupFunction::OnShowPopupComplete(ExtensionHost* popup_host) {
-  DCHECK(!did_respond());
+  CHECK(!did_respond(), base::NotFatalUntil::M161);
 
   if (popup_host) {
     // TODO(crbug.com/40057101): Return the tab for which the extension
     // popup was shown?
-    DCHECK(popup_host->document_element_available());
+    CHECK(popup_host->document_element_available(), base::NotFatalUntil::M161);
     Respond(NoArguments());
   } else {
     // NOTE(devlin): We could have the callback pass more information here about
@@ -616,7 +617,7 @@ ExtensionFunction::ResponseAction BrowserActionOpenPopupFunction::Run() {
   std::string error;
   if (!OpenPopupInBrowser(*browser, *extension(), &error,
                           ShowPopupCallback())) {
-    DCHECK(!error.empty());
+    CHECK(!error.empty(), base::NotFatalUntil::M161);
     return RespondNow(Error(std::move(error)));
   }
 

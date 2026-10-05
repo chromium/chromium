@@ -163,7 +163,7 @@ void OperationManager::DestroyPartitions(
 void OperationManager::OnProgress(const ExtensionId& extension_id,
                                   image_writer_api::Stage stage,
                                   int progress) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   image_writer_api::ProgressInfo info;
   info.stage = stage;
@@ -179,7 +179,7 @@ void OperationManager::OnProgress(const ExtensionId& extension_id,
 }
 
 void OperationManager::OnComplete(const ExtensionId& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto args(image_writer_api::OnWriteComplete::Create());
   std::unique_ptr<Event> event(new Event(
@@ -196,7 +196,7 @@ void OperationManager::OnError(const ExtensionId& extension_id,
                                image_writer_api::Stage stage,
                                int progress,
                                const std::string& error_message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   image_writer_api::ProgressInfo info;
 
   DLOG(ERROR) << "ImageWriter error: " << error_message;
@@ -248,7 +248,8 @@ void OperationManager::OnExtensionUnloaded(
 }
 
 void OperationManager::OnShutdown(ExtensionRegistry* registry) {
-  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  CHECK(extension_registry_observation_.IsObservingSource(registry),
+        base::NotFatalUntil::M161);
   extension_registry_observation_.Reset();
 }
 
@@ -257,7 +258,8 @@ void OperationManager::OnBackgroundHostClose(const ExtensionId& extension_id) {
 }
 
 void OperationManager::OnProcessManagerShutdown(ProcessManager* manager) {
-  DCHECK(process_manager_observation_.IsObservingSource(manager));
+  CHECK(process_manager_observation_.IsObservingSource(manager),
+        base::NotFatalUntil::M161);
   process_manager_observation_.Reset();
 }
 

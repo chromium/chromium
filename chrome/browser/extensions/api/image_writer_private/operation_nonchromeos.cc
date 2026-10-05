@@ -21,7 +21,7 @@ namespace image_writer {
 using content::BrowserThread;
 
 void Operation::Write(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
@@ -44,7 +44,7 @@ void Operation::Write(base::OnceClosure continuation) {
 }
 
 void Operation::VerifyWrite(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   if (IsCancelled()) {
     return;

@@ -107,7 +107,7 @@ void ImageWriterUtilityClient::Write(ProgressCallback progress_callback,
                                      const base::FilePath& source,
                                      const base::FilePath& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!removable_storage_writer_client_);
+  CHECK(!removable_storage_writer_client_, base::NotFatalUntil::M161);
 
   progress_callback_ = std::move(progress_callback);
   success_callback_ = std::move(success_callback);
@@ -129,7 +129,7 @@ void ImageWriterUtilityClient::Verify(ProgressCallback progress_callback,
                                       const base::FilePath& source,
                                       const base::FilePath& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!removable_storage_writer_client_);
+  CHECK(!removable_storage_writer_client_, base::NotFatalUntil::M161);
 
   progress_callback_ = std::move(progress_callback);
   success_callback_ = std::move(success_callback);
@@ -147,7 +147,7 @@ void ImageWriterUtilityClient::Verify(ProgressCallback progress_callback,
 
 void ImageWriterUtilityClient::Cancel(CancelCallback cancel_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(cancel_callback);
+  CHECK(cancel_callback, base::NotFatalUntil::M161);
 
   ResetRequest();
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

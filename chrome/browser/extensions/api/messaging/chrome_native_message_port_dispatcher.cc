@@ -29,7 +29,8 @@ ChromeNativeMessagePortDispatcher::ChromeNativeMessagePortDispatcher(
       port_(port),
       message_service_task_runner_(message_service_task_runner),
       host_task_runner_(host_->task_runner()) {
-  DCHECK(message_service_task_runner_->BelongsToCurrentThread());
+  CHECK(message_service_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M161);
   host_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeMessageHost::Start, base::Unretained(host_.get()),
@@ -37,12 +38,13 @@ ChromeNativeMessagePortDispatcher::ChromeNativeMessagePortDispatcher(
 }
 
 ChromeNativeMessagePortDispatcher::~ChromeNativeMessagePortDispatcher() {
-  DCHECK(host_task_runner_->BelongsToCurrentThread());
+  CHECK(host_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 }
 
 void ChromeNativeMessagePortDispatcher::DispatchOnMessage(
     const std::string& message) {
-  DCHECK(message_service_task_runner_->BelongsToCurrentThread());
+  CHECK(message_service_task_runner_->BelongsToCurrentThread(),
+        base::NotFatalUntil::M161);
   host_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NativeMessageHost::OnMessage,
                                 base::Unretained(host_.get()), message));
@@ -50,7 +52,7 @@ void ChromeNativeMessagePortDispatcher::DispatchOnMessage(
 
 void ChromeNativeMessagePortDispatcher::PostMessageFromNativeHost(
     const std::string& message) {
-  DCHECK(host_task_runner_->BelongsToCurrentThread());
+  CHECK(host_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
   message_service_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&NativeMessagePort::PostMessageFromNativeHost,
                                 port_, message));
@@ -58,7 +60,7 @@ void ChromeNativeMessagePortDispatcher::PostMessageFromNativeHost(
 
 void ChromeNativeMessagePortDispatcher::CloseChannel(
     const std::string& error_message) {
-  DCHECK(host_task_runner_->BelongsToCurrentThread());
+  CHECK(host_task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
   message_service_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeMessagePort::CloseChannel, port_, error_message));

@@ -138,13 +138,13 @@ int g_alert_count = 0;
 
 IncognitoConnectability::ScopedAlertTracker::ScopedAlertTracker(Mode mode)
     : last_checked_invocation_count_(g_alert_count) {
-  DCHECK_EQ(INTERACTIVE, g_alert_mode);
-  DCHECK_NE(INTERACTIVE, mode);
+  CHECK_EQ(INTERACTIVE, g_alert_mode, base::NotFatalUntil::M161);
+  CHECK_NE(INTERACTIVE, mode, base::NotFatalUntil::M161);
   g_alert_mode = mode;
 }
 
 IncognitoConnectability::ScopedAlertTracker::~ScopedAlertTracker() {
-  DCHECK_NE(INTERACTIVE, g_alert_mode);
+  CHECK_NE(INTERACTIVE, g_alert_mode, base::NotFatalUntil::M161);
   g_alert_mode = INTERACTIVE;
 }
 
@@ -322,7 +322,7 @@ void IncognitoConnectability::OnInteractiveResponse(
     pending_origins_.erase(origin_it);
   }
 
-  DCHECK(!callbacks.empty());
+  CHECK(!callbacks.empty(), base::NotFatalUntil::M161);
   for (auto& callback : callbacks) {
     std::move(callback).Run(response == ScopedAlertTracker::ALWAYS_ALLOW);
   }
@@ -331,7 +331,8 @@ void IncognitoConnectability::OnInteractiveResponse(
 bool IncognitoConnectability::IsInMap(const Extension* extension,
                                       const GURL& origin,
                                       const ExtensionToOriginsMap& map) {
-  DCHECK_EQ(origin, origin.DeprecatedGetOriginAsURL());
+  CHECK_EQ(origin, origin.DeprecatedGetOriginAsURL(),
+           base::NotFatalUntil::M161);
   auto it = map.find(extension->id());
   return it != map.end() && it->second.count(origin) > 0;
 }

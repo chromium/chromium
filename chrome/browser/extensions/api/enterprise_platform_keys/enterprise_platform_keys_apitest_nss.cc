@@ -152,7 +152,8 @@ base::FilePath GetExtensionDirName(ContextType context_type) {
   if (context_type == ContextType::kServiceWorker) {
     path = path.AppendASCII("service_worker");
   } else {
-    DCHECK(context_type == ContextType::kPersistentBackground);
+    CHECK(context_type == ContextType::kPersistentBackground,
+          base::NotFatalUntil::M161);
     path = path.AppendASCII("persistent_background");
   }
 

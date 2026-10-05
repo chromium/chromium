@@ -70,7 +70,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
                      const std::string& connection_id,
                      Profile* profile,
                      const std::string& error_arg) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     std::unique_ptr<NativeMessageHost> host =
         NativeMessageProcessHost::CreateWithLauncher(
@@ -99,7 +99,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   NativeMessagingHostErrorReporter(std::unique_ptr<NativeMessageHost> process,
                                    MovableScopedKeepAlive keep_alive)
       : keep_alive_(std::move(keep_alive)), process_(std::move(process)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
     timeout_.Start(
         FROM_HERE,
         g_native_messaging_host_timeout_override
@@ -115,7 +115,7 @@ class NativeMessagingHostErrorReporter : public NativeMessageHost::Client {
   void PostMessageFromNativeHost(const std::string& message) override {}
 
   void CloseChannel(const std::string& error_message) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
     timeout_.Stop();
 
@@ -185,26 +185,28 @@ bool ExtensionSupportsConnectionFromNativeApp(const ExtensionId& extension_id,
 ScopedAllowNativeAppConnectionForTest::ScopedAllowNativeAppConnectionForTest(
     bool allow)
     : allow_(allow) {
-  DCHECK(!g_allow_native_app_connection_for_test);
+  CHECK(!g_allow_native_app_connection_for_test, base::NotFatalUntil::M161);
   g_allow_native_app_connection_for_test = this;
 }
 
 ScopedAllowNativeAppConnectionForTest::
     ~ScopedAllowNativeAppConnectionForTest() {
-  DCHECK_EQ(this, g_allow_native_app_connection_for_test);
+  CHECK_EQ(this, g_allow_native_app_connection_for_test,
+           base::NotFatalUntil::M161);
   g_allow_native_app_connection_for_test = nullptr;
 }
 
 ScopedNativeMessagingErrorTimeoutOverrideForTest::
     ScopedNativeMessagingErrorTimeoutOverrideForTest(base::TimeDelta timeout)
     : timeout_(timeout) {
-  DCHECK(!g_native_messaging_host_timeout_override);
+  CHECK(!g_native_messaging_host_timeout_override, base::NotFatalUntil::M161);
   g_native_messaging_host_timeout_override = this;
 }
 
 ScopedNativeMessagingErrorTimeoutOverrideForTest::
     ~ScopedNativeMessagingErrorTimeoutOverrideForTest() {
-  DCHECK_EQ(this, g_native_messaging_host_timeout_override);
+  CHECK_EQ(this, g_native_messaging_host_timeout_override,
+           base::NotFatalUntil::M161);
   g_native_messaging_host_timeout_override = nullptr;
 }
 

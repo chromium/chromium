@@ -43,9 +43,9 @@ constexpr int kMaxListenersPerExtension = 10;
 
 MDnsAPI::MDnsAPI(content::BrowserContext* context)
     : browser_context_(context), dns_sd_registry_(nullptr) {
-  DCHECK(browser_context_);
+  CHECK(browser_context_, base::NotFatalUntil::M161);
   extensions::EventRouter* event_router = EventRouter::Get(context);
-  DCHECK(event_router);
+  CHECK(event_router, base::NotFatalUntil::M161);
   event_router->RegisterObserver(this, mdns::OnServiceList::kEventName);
 }
 
@@ -78,13 +78,13 @@ void MDnsAPI::SetDnsSdRegistryForTesting(DnsSdRegistry* dns_sd_registry) {
 }
 
 void MDnsAPI::ForceDiscovery() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   DnsSdRegistry* registry = dns_sd_registry();
   return registry->ResetAndDiscover();
 }
 
 DnsSdRegistry* MDnsAPI::dns_sd_registry() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   if (!dns_sd_registry_) {
     dns_sd_registry_ = media_router::DnsSdRegistry::GetInstance();
     dns_sd_registry_->AddObserver(this);
@@ -93,12 +93,12 @@ DnsSdRegistry* MDnsAPI::dns_sd_registry() {
 }
 
 void MDnsAPI::OnListenerAdded(const EventListenerInfo& details) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   UpdateMDnsListeners();
 }
 
 void MDnsAPI::OnListenerRemoved(const EventListenerInfo& details) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
   UpdateMDnsListeners();
 }
 
@@ -150,7 +150,7 @@ void MDnsAPI::UpdateMDnsListeners() {
 
 void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
                            const DnsSdRegistry::DnsSdServiceList& services) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
 
   std::vector<mdns::MDnsService> args;
   for (const auto& service : services) {

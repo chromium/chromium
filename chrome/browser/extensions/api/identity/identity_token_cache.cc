@@ -50,7 +50,7 @@ IdentityTokenCacheValue IdentityTokenCacheValue::CreateToken(
     const std::string& token,
     const std::set<std::string>& granted_scopes,
     base::TimeDelta time_to_live) {
-  DCHECK(!granted_scopes.empty());
+  CHECK(!granted_scopes.empty(), base::NotFatalUntil::M161);
 
   IdentityTokenCacheValue cache_value;
   cache_value.value_ = TokenValue(token, granted_scopes);
@@ -86,7 +86,8 @@ IdentityTokenCacheValue::GetStatusInternal() const {
   } else if (std::holds_alternative<TokenValue>(value_)) {
     return CACHE_STATUS_TOKEN;
   } else {
-    DCHECK(std::holds_alternative<std::monostate>(value_));
+    CHECK(std::holds_alternative<std::monostate>(value_),
+          base::NotFatalUntil::M161);
     return CACHE_STATUS_NOTFOUND;
   }
 }
@@ -165,7 +166,7 @@ void IdentityTokenCache::SetToken(const ExtensionTokenKey& key,
     }
   } else {
     // Access tokens are stored in their own cache for subset matching.
-    DCHECK(!token_data.granted_scopes().empty());
+    CHECK(!token_data.granted_scopes().empty(), base::NotFatalUntil::M161);
     intermediate_value_cache_.erase(key);
 
     AccessTokensKey access_tokens_key(key);
@@ -250,16 +251,17 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
     if (matched_token_it != cached_tokens.end()) {
       IdentityTokenCacheValue::CacheValueStatus status =
           matched_token_it->status();
-      DCHECK(status == IdentityTokenCacheValue::CACHE_STATUS_TOKEN ||
-             status == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND);
+      CHECK(status == IdentityTokenCacheValue::CACHE_STATUS_TOKEN ||
+                status == IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND,
+            base::NotFatalUntil::M161);
       return *matched_token_it;
     }
   }
 
   const IdentityTokenCacheValue& intermediate_value =
       intermediate_value_cache_[key];
-  DCHECK_NE(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
-            intermediate_value.status());
+  CHECK_NE(IdentityTokenCacheValue::CACHE_STATUS_TOKEN,
+           intermediate_value.status(), base::NotFatalUntil::M161);
   return intermediate_value;
 }
 

@@ -263,7 +263,8 @@ void ChromeFeedbackPrivateDelegate::OpenFeedback(
     api::feedback_private::FeedbackSource source) const {
   GURL url;
 
-  DCHECK(source == api::feedback_private::FeedbackSource::kQuickoffice);
+  CHECK(source == api::feedback_private::FeedbackSource::kQuickoffice,
+        base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(context);
   chrome::ShowFeedbackPage(url, profile,

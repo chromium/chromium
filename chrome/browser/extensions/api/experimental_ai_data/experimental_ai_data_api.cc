@@ -232,7 +232,7 @@ bool ExperimentalAiDataApiFunction::PreRunValidation(std::string* error) {
     *error = kIncognitoNotSupportedError;
     return false;
   }
-  DCHECK(ai_data_service);
+  CHECK(ai_data_service, base::NotFatalUntil::M161);
 
   return true;
 }
@@ -326,11 +326,11 @@ ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
                                     &web_contents)) {
     return RespondNow(Error(kInvalidTabError));
   }
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-  DCHECK(ai_data_service);
+  CHECK(ai_data_service, base::NotFatalUntil::M161);
 
   // Pass the same limit to the guard and service so they cover the same pages.
   constexpr int kMaxTabsForTextCollection = 10;
@@ -363,11 +363,11 @@ ExperimentalAiDataGetAiDataWithSpecifierFunction::Run() {
                                     &web_contents)) {
     return RespondNow(Error(kInvalidTabError));
   }
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   auto* ai_data_service =
       AiDataKeyedServiceFactory::GetAiDataKeyedService(browser_context());
-  DCHECK(ai_data_service);
+  CHECK(ai_data_service, base::NotFatalUntil::M161);
 
   // De-serailizing protos is safe per
   // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md

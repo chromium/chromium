@@ -19,7 +19,7 @@ static base::LazyInstance<scoped_refptr<StorageDeviceList>>::DestructorAtExit
 // https://code.google.com/p/chromium/issues/detail?id=284898
 
 void RemovableStorageProvider::GetAllDevices(DeviceListReadyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_test_device_list.Get().get() != nullptr) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

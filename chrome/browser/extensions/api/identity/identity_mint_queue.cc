@@ -20,13 +20,13 @@ IdentityMintRequestQueue::~IdentityMintRequestQueue() {
            it = interactive_request_queue_map_.begin();
        it != interactive_request_queue_map_.end();
        ++it) {
-    DCHECK_EQ(it->second.size(), 0lu);
+    CHECK_EQ(it->second.size(), 0lu, base::NotFatalUntil::M161);
   }
   for (RequestQueueMap::const_iterator
            it = noninteractive_request_queue_map_.begin();
        it != noninteractive_request_queue_map_.end();
        ++it) {
-    DCHECK_EQ(it->second.size(), 0lu);
+    CHECK_EQ(it->second.size(), 0lu, base::NotFatalUntil::M161);
   }
 }
 

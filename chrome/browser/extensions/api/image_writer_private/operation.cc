@@ -84,7 +84,7 @@ Operation::~Operation() {
 }
 
 void Operation::Cancel() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   stage_ = image_writer_api::Stage::kNone;
 
@@ -92,7 +92,7 @@ void Operation::Cancel() {
 }
 
 void Operation::Abort() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   Error(error::kAborted);
 }
 
@@ -109,7 +109,7 @@ void Operation::PostTask(base::OnceClosure task) {
 }
 
 void Operation::Start() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 #if BUILDFLAG(IS_CHROMEOS)
   if (download_folder_.empty() ||
       !temp_dir_->CreateUniqueTempDirUnderPath(download_folder_)) {
@@ -128,12 +128,12 @@ void Operation::Start() {
 }
 
 void Operation::OnExtractOpenComplete(const base::FilePath& image_path) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   image_path_ = image_path;
 }
 
 void Operation::Extract(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
@@ -160,7 +160,7 @@ void Operation::Extract(base::OnceClosure continuation) {
 }
 
 void Operation::Finish() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   CleanUp();
 
@@ -170,7 +170,7 @@ void Operation::Finish() {
 }
 
 void Operation::Error(const std::string& error_message) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -181,7 +181,7 @@ void Operation::Error(const std::string& error_message) {
 }
 
 void Operation::SetProgress(int progress) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   if (progress <= progress_) {
     return;
@@ -199,7 +199,7 @@ void Operation::SetProgress(int progress) {
 }
 
 void Operation::SetStage(image_writer_api::Stage stage) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   if (IsCancelled()) {
     return;
@@ -214,25 +214,25 @@ void Operation::SetStage(image_writer_api::Stage stage) {
 }
 
 bool Operation::IsCancelled() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
 
   return stage_ == image_writer_api::Stage::kNone;
 }
 
 void Operation::AddCleanUpFunction(base::OnceClosure callback) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   cleanup_functions_.push_back(std::move(callback));
 }
 
 void Operation::CompleteAndContinue(base::OnceClosure continuation) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   SetProgress(kProgressComplete);
   PostTask(std::move(continuation));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void Operation::StartUtilityClient() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (!image_writer_client_.get()) {
     image_writer_client_ = ImageWriterUtilityClient::Create(task_runner_);
     AddCleanUpFunction(base::BindOnce(&Operation::StopUtilityClient, this));
@@ -240,12 +240,12 @@ void Operation::StartUtilityClient() {
 }
 
 void Operation::StopUtilityClient() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   image_writer_client_->Shutdown();
 }
 
 void Operation::WriteImageProgress(int64_t total_bytes, int64_t curr_bytes) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
@@ -261,7 +261,7 @@ void Operation::WriteImageProgress(int64_t total_bytes, int64_t curr_bytes) {
 void Operation::GetMD5SumOfFile(
     const base::FilePath& file_path,
     base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
@@ -294,7 +294,7 @@ void Operation::MD5Chunk(
     size_t bytes_processed,
     size_t bytes_total,
     base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (IsCancelled()) {
     return;
   }
@@ -331,12 +331,12 @@ void Operation::MD5Chunk(
 }
 
 void Operation::OnExtractFailure(const std::string& error) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   Error(error);
 }
 
 void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   CHECK(total_bytes > 0);
 
   int progress_percent = kProgressComplete * progress_bytes / total_bytes;
@@ -344,7 +344,7 @@ void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
 }
 
 void Operation::CleanUp() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   for (base::OnceClosure& cleanup_function : cleanup_functions_) {
     std::move(cleanup_function).Run();
   }

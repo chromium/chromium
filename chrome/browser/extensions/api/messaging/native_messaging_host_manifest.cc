@@ -47,7 +47,7 @@ bool NativeMessagingHostManifest::IsValidName(const std::string& name) {
 std::unique_ptr<NativeMessagingHostManifest> NativeMessagingHostManifest::Load(
     const base::FilePath& file_path,
     std::string* error_message) {
-  DCHECK(error_message);
+  CHECK(error_message, base::NotFatalUntil::M161);
 
   JSONFileValueDeserializer deserializer(file_path);
   std::unique_ptr<base::Value> parsed =

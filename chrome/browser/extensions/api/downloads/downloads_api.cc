@@ -426,7 +426,7 @@ bool DownloadFileIconExtractorImpl::ExtractIconURLForPath(
 void DownloadFileIconExtractorImpl::OnIconLoadComplete(float scale,
                                                        IconURLCallback callback,
                                                        gfx::Image icon) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::move(callback).Run(
       icon.IsEmpty()
           ? std::string()
@@ -778,7 +778,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
                                DownloadItem::COMPLETE),
         is_completed_download_deleted_(
             download_item->GetFileExternallyRemoved()) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     download_item->SetUserData(kKey, base::WrapUnique(this));
   }
 
@@ -811,7 +811,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
 
   void BeginFilenameDetermination(
       ExtensionDownloadsEventRouter::FilenameChangedCallback filename_changed) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     ClearPendingDeterminers();
     filename_changed_ = std::move(filename_changed);
     determined_filename_ = creator_suggested_filename_;
@@ -843,7 +843,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   }
 
   void ClearPendingDeterminers() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     determined_filename_.clear();
     determined_conflict_action_ = downloads::FilenameConflictAction::kUniquify;
     determiner_ = DeterminerInfo();
@@ -853,7 +853,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   }
 
   void DeterminerRemoved(const ExtensionId& extension_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     for (auto iter = determiners_.begin(); iter != determiners_.end();) {
       if (iter->extension_id == extension_id) {
         iter = determiners_.erase(iter);
@@ -868,7 +868,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
 
   void AddPendingDeterminer(const ExtensionId& extension_id,
                             const base::Time& installed) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     for (auto& determiner : determiners_) {
       if (determiner.extension_id == extension_id) {
         DCHECK(false) << extension_id;
@@ -879,7 +879,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   }
 
   bool DeterminerAlreadyReported(const ExtensionId& extension_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     for (auto& determiner : determiners_) {
       if (determiner.extension_id == extension_id) {
         return determiner.reported;
@@ -891,7 +891,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   void CreatorSuggestedFilename(
       const base::FilePath& filename,
       downloads::FilenameConflictAction conflict_action) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     creator_suggested_filename_ = filename;
     creator_conflict_action_ = conflict_action;
   }
@@ -905,7 +905,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
   }
 
   void ResetCreatorSuggestion() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     creator_suggested_filename_.clear();
     creator_conflict_action_ = downloads::FilenameConflictAction::kUniquify;
   }
@@ -917,7 +917,7 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
                           const ExtensionId& extension_id,
                           const base::FilePath& filename,
                           downloads::FilenameConflictAction conflict_action) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     bool found_info = false;
     for (auto& determiner : determiners_) {
       if (determiner.extension_id == extension_id) {
@@ -1264,10 +1264,11 @@ void DownloadsDownloadFunction::OnStarted(
     downloads::FilenameConflictAction creator_conflict_action,
     DownloadItem* item,
     download::DownloadInterruptReason interrupt_reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   VLOG(1) << __func__ << " " << item << " " << interrupt_reason;
   if (item) {
-    DCHECK_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
+    CHECK_EQ(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason,
+             base::NotFatalUntil::M161);
     Respond(WithArguments(static_cast<int>(item->GetId())));
     if (!creator_suggested_filename.empty() ||
         (creator_conflict_action !=
@@ -1283,7 +1284,8 @@ void DownloadsDownloadFunction::OnStarted(
     new DownloadedByExtension(item, extension()->id(), extension()->name());
     item->UpdateObservers();
   } else {
-    DCHECK_NE(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason);
+    CHECK_NE(download::DOWNLOAD_INTERRUPT_REASON_NONE, interrupt_reason,
+             base::NotFatalUntil::M161);
     Respond(Error(download::DownloadInterruptReasonToString(interrupt_reason)));
   }
 }
@@ -1457,7 +1459,7 @@ ExtensionFunction::ResponseAction DownloadsRemoveFileFunction::RunInternal() {
 }
 
 void DownloadsRemoveFileFunction::Done(bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!success) {
     Respond(Error(download_extension_errors::kFileNotRemoved));
   } else {
@@ -1543,7 +1545,7 @@ void DownloadsAcceptDangerFunction::PromptOrWait(int download_id, int retries) {
 void DownloadsAcceptDangerFunction::DangerPromptCallback(
     int download_id,
     DownloadDangerPrompt::Action action) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DownloadItem* download_item = GetDownload(
       browser_context(), include_incognito_information(), download_id);
   std::string error;
@@ -1701,7 +1703,7 @@ base::AutoReset<bool> DownloadsOpenFunction::AcceptDialogForTesting() {
 }
 
 void DownloadsOpenFunction::OpenPromptDone(int download_id, bool accept) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::string error;
   if (Fault(!accept, download_extension_errors::kOpenPermission, &error)) {
     Respond(Error(std::move(error)));
@@ -1830,7 +1832,7 @@ DownloadsGetFileIconFunction::~DownloadsGetFileIconFunction() = default;
 
 void DownloadsGetFileIconFunction::SetIconExtractorForTesting(
     DownloadFileIconExtractor* extractor) {
-  DCHECK(extractor);
+  CHECK(extractor, base::NotFatalUntil::M161);
   icon_extractor_.reset(extractor);
 }
 
@@ -1858,8 +1860,8 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::RunInternal() {
   // In-progress downloads return the intermediate filename for GetFullPath()
   // which doesn't have the final extension. Therefore a good file icon can't be
   // found, so use GetTargetFilePath() instead.
-  DCHECK(icon_extractor_.get());
-  DCHECK(icon_size == 16 || icon_size == 32);
+  CHECK(icon_extractor_.get(), base::NotFatalUntil::M161);
+  CHECK(icon_size == 16 || icon_size == 32, base::NotFatalUntil::M161);
   float scale = 1.0;
   content::WebContents* web_contents = GetSenderWebContents();
   if (web_contents && web_contents->GetRenderWidgetHostView()) {
@@ -1873,7 +1875,7 @@ ExtensionFunction::ResponseAction DownloadsGetFileIconFunction::RunInternal() {
 }
 
 void DownloadsGetFileIconFunction::OnIconURLExtracted(const std::string& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::string error;
   if (Fault(url.empty(), download_extension_errors::kIconNotFound, &error)) {
     Respond(Error(std::move(error)));
@@ -1887,8 +1889,8 @@ ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
     Profile* profile,
     DownloadManager* manager)
     : profile_(profile), notifier_(manager, this) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile_, base::NotFatalUntil::M161);
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
   EventRouter* router = EventRouter::Get(profile_);
   if (router)
@@ -1897,7 +1899,7 @@ ExtensionDownloadsEventRouter::ExtensionDownloadsEventRouter(
 }
 
 ExtensionDownloadsEventRouter::~ExtensionDownloadsEventRouter() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   EventRouter* router = EventRouter::Get(profile_);
   if (router) {
     router->UnregisterObserver(this);
@@ -1978,7 +1980,7 @@ void ExtensionDownloadsEventRouter::OnDeterminingFilename(
     DownloadItem* item,
     const base::FilePath& suggested_path,
     FilenameChangedCallback filename_changed_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   ExtensionDownloadsEventRouterData* data =
       ExtensionDownloadsEventRouterData::Get(item);
   if (!data) {
@@ -2013,9 +2015,10 @@ void ExtensionDownloadsEventRouter::DetermineFilenameInternal(
     base::FilePath* determined_filename,
     downloads::FilenameConflictAction* determined_conflict_action,
     WarningSet* warnings) {
-  DCHECK(!filename.empty() ||
-         (conflict_action != downloads::FilenameConflictAction::kUniquify));
-  DCHECK(!suggesting_extension_id.empty());
+  CHECK(!filename.empty() ||
+            (conflict_action != downloads::FilenameConflictAction::kUniquify),
+        base::NotFatalUntil::M161);
+  CHECK(!suggesting_extension_id.empty(), base::NotFatalUntil::M161);
 
   if (incumbent_extension_id.empty()) {
     *winner_extension_id = suggesting_extension_id;
@@ -2048,7 +2051,7 @@ bool ExtensionDownloadsEventRouter::DetermineFilename(
     const base::FilePath& const_filename,
     downloads::FilenameConflictAction conflict_action,
     std::string* error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   RecordApiFunctions(
       DownloadsFunctionName::kDownloadsFunctionDetermineFilename);
   DownloadItem* item =
@@ -2087,7 +2090,7 @@ bool ExtensionDownloadsEventRouter::DetermineFilename(
 
 void ExtensionDownloadsEventRouter::OnListenerRemoved(
     const EventListenerInfo& details) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DownloadManager* manager = notifier_.GetManager();
   if (!manager) {
     return;
@@ -2130,7 +2133,7 @@ void ExtensionDownloadsEventRouter::OnListenerRemoved(
 void ExtensionDownloadsEventRouter::OnDownloadCreated(
     DownloadManager* manager,
     DownloadItem* download_item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!ShouldExport(*download_item)) {
     return;
   }
@@ -2165,7 +2168,7 @@ void ExtensionDownloadsEventRouter::OnDownloadCreated(
 void ExtensionDownloadsEventRouter::OnDownloadUpdated(
     DownloadManager* manager,
     DownloadItem* download_item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   EventRouter* router = EventRouter::Get(profile_);
   ExtensionDownloadsEventRouterData* data =
       ExtensionDownloadsEventRouterData::Get(download_item);
@@ -2187,8 +2190,9 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
   if (data->is_download_completed()) {
     if (data->is_completed_download_deleted() !=
         download_item->GetFileExternallyRemoved()) {
-      DCHECK(!data->is_completed_download_deleted());
-      DCHECK(download_item->GetFileExternallyRemoved());
+      CHECK(!data->is_completed_download_deleted(), base::NotFatalUntil::M161);
+      CHECK(download_item->GetFileExternallyRemoved(),
+            base::NotFatalUntil::M161);
       std::string exists = kExistsKey;
       delta.SetByDottedPath(exists + ".current", false);
       delta.SetByDottedPath(exists + ".previous", true);
@@ -2250,7 +2254,7 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
 void ExtensionDownloadsEventRouter::OnDownloadRemoved(
     DownloadManager* manager,
     DownloadItem* download_item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!ShouldExport(*download_item)) {
     return;
   }
@@ -2265,7 +2269,7 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
     bool include_incognito,
     Event::WillDispatchCallback will_dispatch_callback,
     base::Value arg) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!EventRouter::Get(profile_)) {
     return;
   }
@@ -2294,7 +2298,7 @@ void ExtensionDownloadsEventRouter::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto iter = ui_disabling_extensions_.find(extension);
   if (iter != ui_disabling_extensions_.end()) {
     ui_disabling_extensions_.erase(iter);

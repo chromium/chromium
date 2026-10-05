@@ -60,8 +60,8 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
 }
 
 LanguageSettingsPrivateDelegate::~LanguageSettingsPrivateDelegate() {
-  DCHECK(!listening_spellcheck_);
-  DCHECK(!listening_input_method_);
+  CHECK(!listening_spellcheck_, base::NotFatalUntil::M161);
+  CHECK(!listening_input_method_, base::NotFatalUntil::M161);
   pref_change_registrar_.RemoveAll();
 }
 

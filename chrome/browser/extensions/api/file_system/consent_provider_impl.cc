@@ -53,7 +53,7 @@ ui::mojom::DialogButton g_auto_dialog_button_for_test =
 content::WebContents* GetWebContentsForAppId(Profile* profile,
                                              const std::string& app_id) {
   AppWindowRegistry* const registry = AppWindowRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M161);
   AppWindow* const app_window = registry->GetCurrentAppWindowForApp(app_id);
   return app_window ? app_window->web_contents() : nullptr;
 }
@@ -91,7 +91,7 @@ ConsentProviderImpl::DelegateInterface::~DelegateInterface() = default;
 ConsentProviderImpl::ConsentProviderImpl(
     std::unique_ptr<DelegateInterface> delegate)
     : delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 }
 
 ConsentProviderImpl::~ConsentProviderImpl() = default;
@@ -102,7 +102,7 @@ void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
                                          const std::string& volume_label,
                                          bool writable,
                                          ConsentCallback callback) {
-  DCHECK(IsGrantable(extension));
+  CHECK(IsGrantable(extension), base::NotFatalUntil::M161);
 
   // If an allowlisted component, then no need to ask or inform the user.
   if (extension.location() == mojom::ManifestLocation::kComponent &&
@@ -152,7 +152,7 @@ bool ConsentProviderImpl::IsGrantable(const Extension& extension) {
 
 ConsentProviderDelegate::ConsentProviderDelegate(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   profile_observation_.Observe(profile_);
 }
 
@@ -165,7 +165,7 @@ void ConsentProviderDelegate::SetAutoDialogButtonForTest(
 }
 
 void ConsentProviderDelegate::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_EQ(profile_, profile);
+  CHECK_EQ(profile_, profile, base::NotFatalUntil::M161);
   profile_observation_.Reset();
   profile_ = nullptr;
 }
@@ -178,7 +178,7 @@ void ConsentProviderDelegate::ShowDialog(
     const std::string& volume_label,
     bool writable,
     file_system_api::ConsentProviderImpl::ShowDialogCallback callback) {
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M161);
   // Reject if |profile_| is gone.
   if (!profile_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

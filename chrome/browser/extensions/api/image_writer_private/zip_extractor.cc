@@ -63,7 +63,7 @@ void ZipExtractor::ExtractImpl() {
   }
 
   // If the ZIP can be opened, it shouldn't be empty.
-  DCHECK_GT(zip_reader_.num_entries(), 0);
+  CHECK_GT(zip_reader_.num_entries(), 0, base::NotFatalUntil::M161);
 
   if (zip_reader_.num_entries() != 1) {
     // |this| will be deleted inside.

@@ -28,7 +28,7 @@ WriteFromFileOperation::WriteFromFileOperation(
 WriteFromFileOperation::~WriteFromFileOperation() = default;
 
 void WriteFromFileOperation::StartImpl() {
-  DCHECK(IsRunningInCorrectSequence());
+  CHECK(IsRunningInCorrectSequence(), base::NotFatalUntil::M161);
   if (!base::PathExists(image_path_) || base::DirectoryExists(image_path_)) {
     DLOG(ERROR) << "Source must exist and not be a directory.";
     Error(error::kImageInvalid);

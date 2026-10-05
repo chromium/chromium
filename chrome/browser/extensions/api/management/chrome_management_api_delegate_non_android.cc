@@ -133,7 +133,7 @@ class ChromeAppForLinkDelegate : public AppForLinkDelegate {
       content::BrowserContext* context) override {
     auto* provider = web_app::WebAppProvider::GetForWebApps(
         Profile::FromBrowserContext(context));
-    DCHECK(provider);
+    CHECK(provider, base::NotFatalUntil::M161);
     const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
 
     api::management::ExtensionInfo info;
@@ -193,7 +193,7 @@ void LaunchWebApp(const webapps::AppId& app_id, Profile* profile) {
   // TODO(crbug.com/40098656): Make AppLaunchParams launch container Optional or
   // add a "default" launch container enum value.
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
   std::optional<web_app::mojom::UserDisplayMode> display_mode =
       provider->registrar_unsafe().GetAppUserDisplayMode(app_id);
   auto launch_container = apps::LaunchContainer::kLaunchContainerWindow;
@@ -235,7 +235,7 @@ void OnWebAppInstallabilityChecked(
   }
   switch (result) {
     case InstallableCheckResult::kAlreadyInstalled:
-      DCHECK(app_id);
+      CHECK(app_id, base::NotFatalUntil::M161);
       LaunchWebApp(*app_id, profile.get());
       std::move(callback).Run(InstallOrLaunchWebAppResult::kSuccess);
       return;
@@ -331,7 +331,7 @@ ChromeManagementAPIDelegate::GenerateAppForLinkFunctionDelegate(
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(Profile::FromBrowserContext(context),
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  DCHECK(favicon_service);
+  CHECK(favicon_service, base::NotFatalUntil::M161);
 
   auto delegate = std::make_unique<ChromeAppForLinkDelegate>();
 
@@ -357,7 +357,7 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     InstallOrLaunchWebAppCallback callback) const {
   Profile* profile = Profile::FromBrowserContext(context);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
 
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.

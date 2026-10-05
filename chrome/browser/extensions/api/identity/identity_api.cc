@@ -80,7 +80,7 @@ IdentityTokenCache& IdentityAPI::token_cache() {
 
 void IdentityAPI::SetGaiaIdForExtension(const std::string& extension_id,
                                         const GaiaId& gaia_id) {
-  DCHECK(!gaia_id.empty());
+  CHECK(!gaia_id.empty(), base::NotFatalUntil::M161);
   extension_prefs_->UpdateExtensionPref(extension_id, kIdentityGaiaIdPref,
                                         base::Value(gaia_id.ToString()));
 }
@@ -289,7 +289,7 @@ void IdentityAPI::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void IdentityAPI::OnExtendedAccountInfoRemoved(
     const AccountInfo& account_info) {
-  DCHECK(!account_info.GetGaiaId().empty());
+  CHECK(!account_info.GetGaiaId().empty(), base::NotFatalUntil::M161);
   token_cache_.EraseAllTokensForAccount(account_info.GetAccountId());
   EraseStaleGaiaIdsForAllExtensions();
 

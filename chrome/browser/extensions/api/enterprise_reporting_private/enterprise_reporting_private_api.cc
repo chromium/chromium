@@ -345,12 +345,12 @@ void StartSignalCollection(
     content::BrowserContext* browser_context,
     base::OnceCallback<void(device_signals::SignalsAggregationResponse)>
         callback) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
   auto* profile = Profile::FromBrowserContext(browser_context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   auto* signals_aggregator =
       enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
-  DCHECK(signals_aggregator);
+  CHECK(signals_aggregator, base::NotFatalUntil::M161);
 
   device_signals::UserContext user_context;
   user_context.user_id = user_id;
@@ -623,7 +623,7 @@ EnterpriseReportingPrivateGetContextInfoFunction::Run() {
   auto* connectors_service =
       enterprise_connectors::ConnectorsServiceFactory::GetInstance()
           ->GetForBrowserContext(browser_context());
-  DCHECK(connectors_service);
+  CHECK(connectors_service, base::NotFatalUntil::M161);
 
   context_info_fetcher_ =
       enterprise_signals::ContextInfoFetcher::CreateInstance(
