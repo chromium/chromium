@@ -92,8 +92,10 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
     : context_(context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+#if BUILDFLAG(IS_MAC)
   bool defer_spellcheck =
       base::FeatureList::IsEnabled(::features::kDeferSpellcheckInitialization);
+#endif  // BUILDFLAG(IS_MAC)
 
   PrefService* prefs = user_prefs::UserPrefs::Get(context);
   pref_change_registrar_.Init(prefs);
@@ -207,15 +209,12 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
 #endif
 
   // 1. Load custom dictionary.
+  // Note: `SpellcheckCustomDictionary::Load()` reads the dictionary file on a
+  // background ThreadPool runner, so it does not block the UI thread during
+  // startup. Deferring it on the UI thread stalls Chrome Sync initialization
+  // (syncer::DICTIONARY) until the post-startup idle queue is unblocked.
   if (run_custom_dict_load) {
-    if (defer_spellcheck) {
-      content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-          ->PostTask(FROM_HERE,
-                     base::BindOnce(&SpellcheckCustomDictionary::Load,
-                                    custom_dictionary_->GetWeakPtr()));
-    } else {
-      custom_dictionary_->Load();
-    }
+    custom_dictionary_->Load();
   }
 
 #if BUILDFLAG(IS_WIN)

@@ -13,9 +13,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
+#include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/supports_user_data.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -267,6 +270,50 @@ TEST_F(SpellcheckServiceRendererInitUnitTest, ReachesStillLaunchingRenderer) {
   EXPECT_TRUE(WaitForInitializeCount(1))
       << "a still-launching renderer was never initialized";
 }
+
+#if !BUILDFLAG(IS_MAC)
+// On Windows, Linux and ChromeOS, SpellcheckCustomDictionary::
+// WaitUntilReadyToSync() gates the syncer::DICTIONARY data type, and
+// BEST_EFFORT UI tasks are held until browser startup completes. The custom
+// dictionary load must therefore be handed to the ThreadPool directly from the
+// SpellcheckService constructor rather than from a BEST_EFFORT UI task.
+//
+// BrowserTaskEnvironment marks startup as complete, so a deferred load would
+// still finish eventually. Instead, this test checks that the load completes
+// without running any UI task other than the ThreadPool reply that was already
+// queued when the constructor returned.
+TEST(SpellcheckServiceCustomDictionaryTest, LoadIsNotDeferredOnStartup) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+
+  SpellcheckService service(&profile);
+  SpellcheckCustomDictionary* custom_dict = service.GetCustomDictionary();
+  ASSERT_TRUE(custom_dict);
+
+  // If Load() ran in the constructor, the file read is already on the
+  // ThreadPool; flushing it completes the read and queues OnLoaded() on the UI
+  // thread's default task runner.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Run UI tasks only up to a sentinel posted on that same task runner. No UI
+  // task has run yet, so any Load() triggered by a UI task (whatever its
+  // priority) would enqueue its OnLoaded() reply after the sentinel, and that
+  // reply cannot run before Run() returns. Only a reply queued by the
+  // constructor's own Load() can precede the sentinel.
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(custom_dict->IsLoaded());
+
+  // This is what the DICTIONARY data type controller waits on; it must run the
+  // callback synchronously now.
+  base::RunLoop ready_to_sync;
+  custom_dict->WaitUntilReadyToSync(ready_to_sync.QuitClosure());
+  EXPECT_TRUE(ready_to_sync.AnyQuitCalled());
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 class SpellcheckServiceHybridUnitTestBase

@@ -182,7 +182,11 @@ bool RemoteActorCredentialSharingEnabled() {
 // Controls the enablement of structured metrics on Windows, Linux, and Mac.
 BASE_FEATURE(kChromeStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_MAC)
+// Defers Cocoa spellchecker initialization to a post-startup idle task on
+// macOS.
 BASE_FEATURE(kDeferSpellcheckInitialization, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
