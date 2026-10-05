@@ -51,7 +51,9 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -81,6 +83,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/views_switches.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
 
@@ -1931,4 +1934,67 @@ IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultInteractiveTest,
       // Once closed, the native IPH is triggered.
       WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
       PressClosePromoButton());
+}
+
+// Hiding the anchor closes the promo, which must not re-enter ElementTracker
+// while it's notifying that the anchor was hidden.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultInteractiveTest,
+                       PromoClosesWhenAnchorHidden) {
+  RunTestSequence(
+      Do([this]() {
+        scoped_refptr<const extensions::Extension> extension =
+            InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+        auto install_ui = ExtensionInstallUI::Create(browser()->GetProfile());
+        install_ui->OnInstallSuccess(extension, nullptr);
+      }),
+      WaitForShow(views::BubbleFrameView::kCloseButtonElementId),
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      WithView(kExtensionsPinnedByDefaultElementId,
+               [](views::View* view) { view->SetVisible(false); }),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+// Same as ExtensionsPinnedByDefaultInteractiveTest, but with the WebUI
+// extensions container in place of the views ExtensionsToolbarDesktop.
+class ExtensionsPinnedByDefaultWebUIInteractiveTest
+    : public ExtensionsPinnedByDefaultInteractiveTest {
+ public:
+  ExtensionsPinnedByDefaultWebUIInteractiveTest() {
+    webui_feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIToolbar}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList webui_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoShowsOnInstall) {
+  ASSERT_TRUE(features::IsWebUIExtensionsContainerEnabled());
+  RunTestSequence(
+      Do([this]() {
+        scoped_refptr<const extensions::Extension> extension =
+            InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+        auto install_ui = ExtensionInstallUI::Create(browser()->GetProfile());
+        install_ui->OnInstallSuccess(extension, nullptr);
+      }),
+      // The extension install dialog pops up. Wait for it and close it.
+      WaitForShow(views::BubbleFrameView::kCloseButtonElementId),
+      PressButton(views::BubbleFrameView::kCloseButtonElementId),
+      WaitForHide(views::BubbleFrameView::kCloseButtonElementId),
+      // Once closed, the IPH is triggered, anchored to the WebUI extension
+      // button.
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      CheckElement(
+          kExtensionsPinnedByDefaultElementId,
+          [](ui::TrackedElement* el) {
+            return el->IsA<ui::TrackedElementWebUI>();
+          },
+          true),
+      PressClosePromoButton(),
+      // Closing the promo removes the temporary anchor.
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
 }

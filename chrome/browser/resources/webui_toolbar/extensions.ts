@@ -31,6 +31,25 @@ export class ExtensionsElement extends ExtensionsElementBase {
     return getHtml.bind(this)();
   }
 
+  // Whether the browser's initial state has been rendered. Until then, all
+  // updates are treated as initial.
+  private initialStateRendered_: boolean = false;
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.initialStateRendered_ = false;
+  }
+
+  // Called once the browser's initial state has been rendered.
+  markInitialStateRendered() {
+    this.initialStateRendered_ = true;
+  }
+
+  // ToolbarActionContainerMixin override
+  override isInitialUpdate(_newStates: ExtensionActionInfo[]): boolean {
+    return !this.initialStateRendered_;
+  }
+
   // ToolbarActionContainerMixin override
   override getKey(state: ExtensionActionInfo): string {
     return state.id;

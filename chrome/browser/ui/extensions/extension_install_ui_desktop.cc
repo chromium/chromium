@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog.h"
 #include "chrome/browser/ui/extensions/extension_post_install_dialog_model.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/extensions/installation_error_infobar_delegate.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -37,10 +38,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -158,15 +155,9 @@ void ExtensionInstallUIDesktop::OnInstallSuccess(
               if (!browser_interface) {
                 return;
               }
-              BrowserView* browser_view =
-                  BrowserView::GetBrowserViewForBrowser(browser_interface);
-              if (!browser_view->toolbar()) {
-                return;
-              }
-              ExtensionsToolbarDesktop* extensions_toolbar =
-                  browser_view->toolbar()->extensions_container();
-              if (extensions_toolbar) {
-                extensions_toolbar->ShowPinnedByDefaultIPH(extension_id);
+              if (ExtensionsContainer* extensions_container =
+                      ExtensionsContainer::From(*browser_interface)) {
+                extensions_container->ShowPinnedByDefaultIPH(extension_id);
               }
             },
             extension->id()));

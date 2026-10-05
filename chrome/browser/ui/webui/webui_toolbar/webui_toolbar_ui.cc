@@ -611,6 +611,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kToolbarBatterySaverButtonElementId,
        kExtensionsMenuButtonElementId,
        kToolbarActionViewElementId,
+       kExtensionsPinnedByDefaultElementId,
        kToolbarMediaButtonElementId});
   auto result = webui_toolbar::GetPinnedToolbarActionElementIds();
   std::vector<ui::ElementIdentifier> content_setting_identifiers =

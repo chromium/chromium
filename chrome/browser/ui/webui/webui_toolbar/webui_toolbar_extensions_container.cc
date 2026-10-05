@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 
 #include <optional>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/feature_list.h"
@@ -14,17 +15,25 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
+#include "chrome/common/pref_names.h"
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/common/extension_features.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -64,6 +73,9 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
     result->tooltip = model_->GetTooltip(web_contents);
     result->is_visible =
         extensions_container_->IsActionVisibleOnToolbar(result->id);
+    result->is_pinned_by_default_iph_anchor =
+        extensions_container_->pinned_by_default_iph_extension_id_ ==
+        result->id;
 
     if (result->is_visible) {
       ui::ImageModel icon_model =
@@ -277,6 +289,76 @@ bool WebUIToolbarExtensionsContainer::HasAnyExtensions() const {
   return !actions_.empty();
 }
 
+void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
+    const std::string& extension_id) {
+  if (!base::FeatureList::IsEnabled(features::kExtensionsPinnedByDefault) ||
+      !browser_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kExtensionsPinnedByDefault)) {
+    return;
+  }
+
+  if (!actions_.contains(extension_id) ||
+      !IsActionVisibleOnToolbar(extension_id)) {
+    return;
+  }
+
+  // Only one extension can be the anchor at a time.
+  ClearPinnedByDefaultIphAnchor();
+
+  // This causes the WebUI button to register
+  // kExtensionsPinnedByDefaultElementId.
+  pinned_by_default_iph_extension_id_ = extension_id;
+  NotifyOfOneAction(extension_id);
+
+  // Wait for the button to register kExtensionsPinnedByDefaultElementId and,
+  // like views, for any animations to finish so that the button is in its
+  // final location.
+  NotifyActionPoppedOut(base::BindOnce(
+      &WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow,
+      weak_ptr_factory_.GetWeakPtr(), extension_id));
+}
+
+void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPHNow(
+    const std::string& extension_id) {
+  // Bail if the anchor has since been cleared or moved to another extension.
+  if (pinned_by_default_iph_extension_id_ != extension_id) {
+    return;
+  }
+
+  // Clears the anchor, unless it has since moved to another extension.
+  auto clear_anchor = base::BindRepeating(
+      [](base::WeakPtr<WebUIToolbarExtensionsContainer> container,
+         const std::string& extension_id) {
+        if (container &&
+            container->pinned_by_default_iph_extension_id_ == extension_id) {
+          container->ClearPinnedByDefaultIphAnchor();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), extension_id);
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHExtensionsPinnedByDefaultFeature);
+  params.close_callback = base::BindOnce(clear_anchor);
+  params.show_promo_result_callback = base::BindOnce(
+      [](base::RepeatingClosure clear_anchor,
+         user_education::FeaturePromoResult result) {
+        if (!result) {
+          clear_anchor.Run();
+        }
+      },
+      clear_anchor);
+  BrowserUserEducationInterface::From(&browser_.get())
+      ->MaybeShowFeaturePromo(std::move(params));
+}
+
+void WebUIToolbarExtensionsContainer::ClearPinnedByDefaultIphAnchor() {
+  std::optional<std::string> old_extension_id =
+      std::exchange(pinned_by_default_iph_extension_id_, std::nullopt);
+  if (old_extension_id && actions_.contains(*old_extension_id)) {
+    NotifyOfOneAction(*old_extension_id);
+  }
+}
+
 std::optional<extensions::ExtensionId>
 WebUIToolbarExtensionsContainer::GetPoppedOutActionId() const {
   return popped_out_action_;
@@ -399,6 +481,9 @@ void WebUIToolbarExtensionsContainer::OnToolbarActionRemoved(
   }
   actions_[id]->model()->UnregisterCommand();
   actions_.erase(id);
+  if (pinned_by_default_iph_extension_id_ == id) {
+    ClearPinnedByDefaultIphAnchor();
+  }
 
   std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icon_updates;
   if (push_icon_table_updates_) {
@@ -509,10 +594,16 @@ ui::ElementIdentifier WebUIToolbarExtensionsContainer::GetElementId(
 
 ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionAnchor(
     std::string_view extension_id) const {
+  return GetExtensionElement(GetElementId(extension_id), extension_id);
+}
+
+ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionElement(
+    ui::ElementIdentifier element_id,
+    std::string_view extension_id) const {
   const std::string secondary_id = base::StrCat({"ext:", extension_id});
   for (ui::TrackedElement* element :
        ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
-           GetElementId(extension_id),
+           element_id,
            views::ElementTrackerViews::GetContextForWidget(GetWidget()))) {
     if (element->GetSecondaryIdentifier() == secondary_id) {
       return element;

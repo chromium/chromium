@@ -637,6 +637,14 @@ export class ToolbarAppElement extends AppElementBase {
                       avatar.classList.remove('initial-load');
                     });
                   }
+                  const extensions =
+                      this.shadowRoot.querySelector<ExtensionsElement>(
+                          '#extensions');
+                  if (extensions) {
+                    requestAnimationFrame(() => {
+                      extensions.markInitialStateRendered();
+                    });
+                  }
                 });
               }
 

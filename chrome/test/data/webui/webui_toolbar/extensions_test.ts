@@ -6,8 +6,9 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AnimationTracker, BrowserProxyImpl, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {ExtensionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {ExtensionActionInfo} from 'chrome://webui-toolbar.top-chrome/shared/extensions_bar_data_model.mojom-webui.js';
 
 suite('Extensions', function() {
   let container: ExtensionsElement;
@@ -87,6 +88,7 @@ suite('Extensions', function() {
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
         icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'action-2',
@@ -94,6 +96,7 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: '',
@@ -101,9 +104,16 @@ suite('Extensions', function() {
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
         icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
       },
     ];
     await container.updateComplete;
+    // Simulate the app having rendered the browser's initial state.
+    container.markInitialStateRendered();
+  });
+
+  teardown(() => {
+    AnimationTracker.resetForTesting();
   });
 
   test('Keyboard reorder retains focus', async () => {
@@ -140,6 +150,7 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'action-1',
@@ -147,6 +158,7 @@ suite('Extensions', function() {
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
         icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'extensions_button',
@@ -154,6 +166,7 @@ suite('Extensions', function() {
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
         icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
       },
     ];
     await microtasksFinished();
@@ -609,6 +622,7 @@ suite('Extensions', function() {
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
         icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'action-2',
@@ -616,6 +630,7 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'action-3',
@@ -623,6 +638,7 @@ suite('Extensions', function() {
         tooltip: 'Action 3 Tooltip',
         isVisible: true,
         icon: {handleId: 4n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: '',
@@ -630,6 +646,7 @@ suite('Extensions', function() {
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
         icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
       },
     ];
 
@@ -673,6 +690,7 @@ suite('Extensions', function() {
             tooltip: 'Action 1 Tooltip',
             isVisible: true,
             icon: {handleId: 1n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: 'action-2',
@@ -680,6 +698,7 @@ suite('Extensions', function() {
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
             icon: {handleId: 2n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: 'action-3',
@@ -687,6 +706,7 @@ suite('Extensions', function() {
             tooltip: 'Action 3 Tooltip',
             isVisible: true,
             icon: {handleId: 4n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: '',
@@ -694,6 +714,7 @@ suite('Extensions', function() {
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
             icon: {handleId: 3n},
+            isPinnedByDefaultIphAnchor: false,
           },
         ];
 
@@ -750,6 +771,7 @@ suite('Extensions', function() {
             tooltip: 'Action 1 Tooltip Changed',
             isVisible: true,
             icon: {handleId: 1n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: 'action-2',
@@ -757,6 +779,7 @@ suite('Extensions', function() {
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
             icon: {handleId: 2n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: '',
@@ -764,6 +787,7 @@ suite('Extensions', function() {
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
             icon: {handleId: 3n},
+            isPinnedByDefaultIphAnchor: false,
           },
         ];
 
@@ -802,6 +826,7 @@ suite('Extensions', function() {
         tooltip: 'Action 1 Tooltip Changed',
         isVisible: true,
         icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: 'action-2',
@@ -809,6 +834,7 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: '',
@@ -816,6 +842,7 @@ suite('Extensions', function() {
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
         icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
       },
     ];
 
@@ -872,6 +899,7 @@ suite('Extensions', function() {
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
             icon: {handleId: 2n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: 'action-1',
@@ -879,6 +907,7 @@ suite('Extensions', function() {
             tooltip: 'Action 1 Tooltip',
             isVisible: true,
             icon: {handleId: 1n},
+            isPinnedByDefaultIphAnchor: false,
           },
           {
             id: '',
@@ -886,6 +915,7 @@ suite('Extensions', function() {
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
             icon: {handleId: 3n},
+            isPinnedByDefaultIphAnchor: false,
           },
         ];
 
@@ -954,6 +984,7 @@ suite('Extensions', function() {
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
         icon: {handleId: 2n},
+        isPinnedByDefaultIphAnchor: false,
       },
       {
         id: '',
@@ -961,6 +992,7 @@ suite('Extensions', function() {
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
         icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
       },
     ];
 
@@ -982,6 +1014,7 @@ suite('Extensions', function() {
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
         icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
       },
       ...container.states,
     ];
@@ -1164,5 +1197,57 @@ suite('Extensions', function() {
       const button = element.shadowRoot.querySelector('cr-button')!;
       assertEquals('menu', button.getAttribute('aria-haspopup'));
     }
+  });
+
+  function createExtensionsStates(): ExtensionActionInfo[] {
+    return [
+      {
+        id: 'action-1',
+        accessibleName: 'Action 1',
+        tooltip: 'Action 1 Tooltip',
+        isVisible: true,
+        icon: {handleId: 1n},
+        isPinnedByDefaultIphAnchor: false,
+      },
+      {
+        id: '',
+        accessibleName: 'Extensions Button',
+        tooltip: 'Extensions Button Tooltip',
+        isVisible: true,
+        icon: {handleId: 3n},
+        isPinnedByDefaultIphAnchor: false,
+      },
+    ];
+  }
+
+  test('Actions in the initial state do not animate in', async () => {
+    AnimationTracker.showAnimations = true;
+    const newContainer = document.createElement('webui-toolbar-extensions');
+    document.body.appendChild(newContainer);
+    await microtasksFinished();
+
+    newContainer.states = createExtensionsStates();
+    await microtasksFinished();
+
+    assertEquals(2, newContainer.keyedStates.length);
+    assertFalse(newContainer.keyedStates.some(s => s.animateIn));
+    assertTrue(newContainer.classList.contains('initial-load'));
+  });
+
+  test('First action added after the initial state animates in', async () => {
+    AnimationTracker.showAnimations = true;
+    const newContainer = document.createElement('webui-toolbar-extensions');
+    document.body.appendChild(newContainer);
+    // The browser's initial state has no extensions.
+    newContainer.states = [];
+    await microtasksFinished();
+    newContainer.markInitialStateRendered();
+
+    newContainer.states = createExtensionsStates();
+    await microtasksFinished();
+
+    assertEquals(2, newContainer.keyedStates.length);
+    assertTrue(newContainer.keyedStates.every(s => s.animateIn));
+    assertFalse(newContainer.classList.contains('initial-load'));
   });
 });

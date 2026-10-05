@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -67,6 +68,7 @@ class WebUIToolbarExtensionsContainer
                                         ShowPopupCallback callback) override;
   void ToggleExtensionsMenu() override;
   bool HasAnyExtensions() const override;
+  void ShowPinnedByDefaultIPH(const std::string& extension_id) override;
 
   // ExtensionsContainerViews:
   std::optional<extensions::ExtensionId> GetPoppedOutActionId() const override;
@@ -114,6 +116,11 @@ class WebUIToolbarExtensionsContainer
   // `extension_id` is empty. Returns nullptr if the element has not registered
   // yet (e.g. while animating in).
   ui::TrackedElement* GetExtensionAnchor(std::string_view extension_id) const;
+
+  // Returns the TrackedElement registered with `element_id` by the extension
+  // button with `extension_id`, or nullptr if there is none.
+  ui::TrackedElement* GetExtensionElement(ui::ElementIdentifier element_id,
+                                          std::string_view extension_id) const;
 
   // extensions_bar::mojom::PageHandler:
   void ExecuteUserAction(const std::string& id) override;
@@ -189,6 +196,22 @@ class WebUIToolbarExtensionsContainer
                                       ui::TrackedElement* unused_anchor);
 
   std::vector<AnchoredWidget> anchored_widgets_;
+
+  // Pinned-by-default IPH support. The flow is:
+  //  1. ShowPinnedByDefaultIPH() marks the extension as the IPH anchor, which
+  //     causes the WebUI button to register
+  //     kExtensionsPinnedByDefaultElementId, then waits, via
+  //     NotifyActionPoppedOut(), for that element to be registered and any
+  //     animations to finish.
+  //  2. ShowPinnedByDefaultIPHNow() requests the promo.
+  //  3. When the promo closes (or fails to show) the anchor is cleared.
+  void ShowPinnedByDefaultIPHNow(const std::string& extension_id);
+  void ClearPinnedByDefaultIphAnchor();
+
+  // The extension currently designated as the pinned-by-default IPH anchor.
+  std::optional<std::string> pinned_by_default_iph_extension_id_;
+
+  base::WeakPtrFactory<WebUIToolbarExtensionsContainer> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_EXTENSIONS_CONTAINER_H_

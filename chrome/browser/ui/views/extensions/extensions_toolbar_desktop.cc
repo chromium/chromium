@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -407,9 +408,21 @@ void ExtensionsToolbarDesktop::ShowPinnedByDefaultIPH(
             feature_engagement::kIPHExtensionsPinnedByDefaultFeature);
         params.close_callback = base::BindOnce(
             [](std::unique_ptr<views::ViewTracker> tracker) {
-              if (tracker->view()) {
-                tracker->view()->ClearProperty(views::kElementIdentifierKey);
-              }
+              // The promo may be closing because the anchor is being hidden,
+              // in which case ElementTracker is in the middle of notifying
+              // that kExtensionsPinnedByDefaultElementId was hidden. Clearing
+              // the identifier now would re-enter ElementTracker for the same
+              // element, so defer it.
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      [](std::unique_ptr<views::ViewTracker> tracker) {
+                        if (tracker->view()) {
+                          tracker->view()->ClearProperty(
+                              views::kElementIdentifierKey);
+                        }
+                      },
+                      std::move(tracker)));
             },
             std::make_unique<views::ViewTracker>(extension_view));
         bool promo_shown = BrowserUserEducationInterface::From(browser.get())

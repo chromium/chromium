@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_extensions_container_wrapper.h"
 
+#include <optional>
+
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -203,12 +205,22 @@ void WebUIToolbarExtensionsContainerWrapper::OnActionPoppedOut(
   // progress to complete before running `callback`, that way none of the
   // button locations might shift after `callback` is run (and potentially
   // upset any pop-up anchoring that ExtensionActionDelegateDesktop::ShowPopup()
-  // or any other caller might want to display).
+  // or any other caller might want to display). Also wait for the
+  // pinned-by-default IPH anchor, if any, to be registered.
   for (const auto& action : delegate_->GetState().extensions_state) {
+    std::optional<ui::ElementIdentifier> missing_element_id;
     if (!extensions_container_->GetExtensionAnchor(action->id)) {
+      missing_element_id =
+          WebUIToolbarExtensionsContainer::GetElementId(action->id);
+    } else if (action->is_pinned_by_default_iph_anchor &&
+               !extensions_container_->GetExtensionElement(
+                   kExtensionsPinnedByDefaultElementId, action->id)) {
+      missing_element_id = kExtensionsPinnedByDefaultElementId;
+    }
+    if (missing_element_id) {
       auto subscription =
           ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-              WebUIToolbarExtensionsContainer::GetElementId(action->id),
+              *missing_element_id,
               BrowserElements::From(delegate_->GetBrowser())->GetContext(),
               base::BindRepeating(
                   &WebUIToolbarExtensionsContainerWrapper::OnElementShown,
