@@ -1347,7 +1347,7 @@ TEST_F(TabTest, SingleElementCentering) {
 namespace {
 class SeparatorTestTabSlotController : public FakeTabSlotController {
  public:
-  void SetTabs(std::vector<Tab*> tabs) { tabs_ = std::move(tabs); }
+  void SetTabs(std::vector<raw_ptr<Tab>> tabs) { tabs_ = std::move(tabs); }
 
   Tab* GetAdjacentTab(const Tab* tab, int offset) override {
     auto it = std::find(tabs_.begin(), tabs_.end(), tab);
@@ -1364,7 +1364,7 @@ class SeparatorTestTabSlotController : public FakeTabSlotController {
   int GetTabCount() const override { return static_cast<int>(tabs_.size()); }
 
  private:
-  std::vector<Tab*> tabs_;
+  std::vector<raw_ptr<Tab>> tabs_;
 };
 }  // namespace
 
@@ -1400,6 +1400,8 @@ TEST_F(TabTest, HorizontalSeparators) {
   auto opacities2 = tab2->tab_style_views()->GetSeparatorOpacitiesForTesting();
   EXPECT_EQ(opacities2.left, 1.0f);
   EXPECT_EQ(opacities2.right, 1.0f);
+
+  controller->SetTabs({});
 }
 
 #if BUILDFLAG(IS_MAC)
