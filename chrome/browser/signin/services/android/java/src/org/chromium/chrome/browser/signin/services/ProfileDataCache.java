@@ -746,7 +746,11 @@ public class ProfileDataCache
             updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
         }
 
-        /** Implements {@link IdentityManager.Observer}. */
+        /**
+         * Implements {@link IdentityManager.Observer}.
+         *
+         * <p>TODO(crbug.com/569915868): Observe OnExtendedAccountInfoUpdated instead.
+         */
         @Override
         public void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
             assert SigninFeatureMap.isEnabled(
@@ -756,7 +760,11 @@ public class ProfileDataCache
             }
         }
 
-        /** Implements {@link IdentityManager.Observer}. */
+        /**
+         * Implements {@link IdentityManager.Observer}.
+         *
+         * <p>TODO(crbug.com/569915868): Observe OnExtendedAccountInfoRemoved instead.
+         */
         @Override
         public void onRefreshTokenRemovedForAccount(CoreAccountId accountId) {
             assert SigninFeatureMap.isEnabled(

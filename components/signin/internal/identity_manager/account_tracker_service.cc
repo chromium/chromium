@@ -915,6 +915,9 @@ CoreAccountId AccountTrackerService::SeedAccountInfo(AccountInfo info) {
   }
 
   if (!already_exists && info.GetAvatarImage().has_value()) {
+    // TODO(crbug.com/569918566): SetAccountImage(..) is calling
+    // MaybeNotifyAccountUpdated() again for the same account. These
+    // notification should be deduplicated.
     SetAccountImage(
         account_info.GetAccountId(),
         std::string(

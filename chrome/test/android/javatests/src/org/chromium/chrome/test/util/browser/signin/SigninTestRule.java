@@ -233,18 +233,21 @@ public class SigninTestRule implements TestRule {
      */
     @Deprecated
     public CoreAccountInfo addTestAccountThenSignin() {
-        assert !mIsSignedIn : "An account is already signed in!";
         AccountInfo accountInfo = TestAccounts.ACCOUNT1;
         addAccount(accountInfo);
-        SigninTestUtil.signin(accountInfo);
-        mIsSignedIn = true;
+        signin(accountInfo);
         return accountInfo;
     }
 
     /** Adds and signs in with the provided account. */
     public void addAccountThenSignin(AccountInfo accountInfo) {
-        assert !mIsSignedIn : "An account is already signed in!";
         addAccount(accountInfo);
+        signin(accountInfo);
+    }
+
+    /** Signs in with the provided account. */
+    public void signin(AccountInfo accountInfo) {
+        assert !mIsSignedIn : "An account is already signed in!";
         SigninTestUtil.signin(accountInfo);
         mIsSignedIn = true;
     }

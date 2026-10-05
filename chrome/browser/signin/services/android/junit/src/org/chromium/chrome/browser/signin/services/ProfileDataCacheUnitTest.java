@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -290,6 +291,7 @@ public class ProfileDataCacheUnitTest {
         mProfileDataCache.addObserver(mObserverMock);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        clearInvocations(mObserverMock);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         var profileData = mProfileDataCache.getAccounts().getResult();
@@ -301,6 +303,31 @@ public class ProfileDataCacheUnitTest {
         Assert.assertEquals(TestAccounts.CHILD_ACCOUNT.getId(), profileData.get(1).getAccountId());
         Assert.assertEquals(TestAccounts.ACCOUNT1.getEmail(), profileData.get(2).getAccountEmail());
         Assert.assertEquals(TestAccounts.ACCOUNT1.getId(), profileData.get(2).getAccountId());
+        // Adding an account rebuilds the whole cache, notifying about all 3 accounts, and then
+        // notifies about the added account once more, for its account info update.
+        verify(mObserverMock).onAccountsUpdated(any());
+        verify(mObserverMock, times(4)).onProfileDataUpdated(any());
+    }
+
+    @Test
+    public void cacheShouldBeUpdatedWhenAccountIsUpdated() {
+        final String newFullName = "Updated Full Name";
+        mProfileDataCache.addObserver(mObserverMock);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        clearInvocations(mObserverMock);
+
+        mAccountManagerTestRule.updateAccount(
+                new AccountInfo.Builder(TestAccounts.ACCOUNT1).fullName(newFullName).build());
+
+        Assert.assertEquals(2, mProfileDataCache.getAccounts().getResult().size());
+        Assert.assertEquals(
+                newFullName,
+                mProfileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getFullName());
+        // Updating a single account rebuilds the whole cache, notifying about both accounts, and
+        // then notifies about the updated account once more, for its account info update.
+        verify(mObserverMock).onAccountsUpdated(any());
+        verify(mObserverMock, times(3)).onProfileDataUpdated(any());
     }
 
     @Test
@@ -323,8 +350,13 @@ public class ProfileDataCacheUnitTest {
                 TestAccounts.ACCOUNT2.getId(),
                 mProfileDataCache.getById(TestAccounts.ACCOUNT2.getId()).getAccountId());
 
+        clearInvocations(mObserverMock);
         mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
+        // Removing an account rebuilds the whole cache, notifying about the remaining account.
+        // Verified before getById() of the removed account below, which refreshes the cache.
+        verify(mObserverMock).onAccountsUpdated(any());
+        verify(mObserverMock).onProfileDataUpdated(any());
         Assert.assertEquals(1, mProfileDataCache.getAccounts().getResult().size());
         Assert.assertEquals(
                 TestAccounts.ACCOUNT2.getEmail(),
