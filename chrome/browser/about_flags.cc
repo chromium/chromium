@@ -4060,6 +4060,11 @@ const FeatureEntry::FeatureParam
         {"keep_home_button_in_toolbar", "true"},
         {"disable_on_ntp", "false"},
         {"show_glic_setting_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_bottom_bar_on_gts", "true"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_domain_only", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A with NTP", kAndroidBottomBar1AWithNtpParam, nullptr},
     {"- 1A with NTP (48dp)", kAndroidBottomBar1AWithNtp48dpParam, nullptr},
@@ -4071,6 +4076,8 @@ const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A with NTP and GTS (56dp)", kAndroidBottomBar1AWithNtpAndGts56dpParam,
      nullptr},
     {"- 1A with NTP and GTS (60dp)", kAndroidBottomBar1AWithNtpAndGts60dpParam,
+     nullptr},
+    {"- 1A with show domain only", kAndroidBottomBarShowDomainOnlyParam,
      nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
     {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,

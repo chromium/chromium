@@ -644,6 +644,7 @@ source_set("toolbar") {
   ]
   deps = [
     "//base",
+    "//chrome/browser/flags:flags_android",
     "//chrome/browser/profiles",
     "//chrome/browser/search",
     "//chrome/browser/segmentation_platform",
@@ -670,6 +671,7 @@ source_set("unit_tests") {
     ":toolbar",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/flags:flags_android",
     "//chrome/browser/segmentation_platform",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_test_utils",

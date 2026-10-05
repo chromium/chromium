@@ -368,6 +368,11 @@ BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageAndroid);
 // clang-format on
 
 // For FeatureParam, Alphabetical:
+inline constexpr base::FeatureParam<bool> kAndroidBottomBarShowDomainOnlyParam(
+    &kAndroidBottomBar,
+    "show_domain_only",
+    false);
+
 inline constexpr base::FeatureParam<int> kAppIntegrationMaxDonationCountParam(
     &kAndroidAppIntegrationMultiDataSource,
     "max_donation_count",

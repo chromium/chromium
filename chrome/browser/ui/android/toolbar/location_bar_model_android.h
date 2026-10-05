@@ -37,6 +37,10 @@ class LocationBarModelAndroid : public ChromeLocationBarModelDelegate {
   // ChromeLocationBarModelDelegate:
   content::WebContents* GetActiveWebContents() const override;
   bool IsNewTabPage() const override;
+  bool ShouldTrimDisplayUrlAfterHostName() const override;
+
+ protected:
+  virtual bool IsToolbarUiRefactorEnabled() const;
 
  private:
   std::unique_ptr<LocationBarModel> location_bar_model_;

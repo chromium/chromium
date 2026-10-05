@@ -6,6 +6,9 @@
 
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -16,13 +19,22 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
-#include "ui/base/device_form_factor.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 // Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 
 using jni_zero::JavaRef;
+
+namespace {
+
+bool IsShowDomainOnlyEnabled() {
+  return base::FeatureList::IsEnabled(chrome::android::kAndroidBottomBar) &&
+         chrome::android::kAndroidBottomBarShowDomainOnlyParam.Get();
+}
+
+}  // namespace
 
 LocationBarModelAndroid::LocationBarModelAndroid(const JavaRef<jobject>& obj)
     : location_bar_model_(
@@ -74,6 +86,17 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
   }
 
   return false;
+}
+
+bool LocationBarModelAndroid::ShouldTrimDisplayUrlAfterHostName() const {
+  GURL url;
+  return IsShowDomainOnlyEnabled() && GetURL(&url) &&
+         url.SchemeIsHTTPOrHTTPS() && IsToolbarUiRefactorEnabled();
+}
+
+bool LocationBarModelAndroid::IsToolbarUiRefactorEnabled() const {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_LocationBarModel_isToolbarUiRefactorEnabled(env, java_object_);
 }
 
 // static

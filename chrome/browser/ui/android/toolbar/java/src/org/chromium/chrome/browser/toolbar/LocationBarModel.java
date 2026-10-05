@@ -297,6 +297,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         return mTab.getWebContents();
     }
 
+    /** Returns whether the toolbar UI refactor (AndroidBottomBar) is enabled for this context. */
+    @CalledByNative
+    private boolean isToolbarUiRefactorEnabled() {
+        return ToolbarVariationUtils.isToolbarUiRefactorEnabled(mContext);
+    }
+
     /**
      * Sets the tab that contains the information to be displayed in the toolbar.
      *
