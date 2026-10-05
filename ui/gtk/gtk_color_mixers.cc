@@ -53,6 +53,21 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       accent_color.value_or(GetBgColor("treeview.view "
                                        "treeview.view.cell:selected:focus"));
 
+  // The GTK theme may disagree with `key.color_mode`. For example, a dark-only
+  // theme such as Adwaita-dark stays dark when the portal reports no
+  // color-scheme preference, which resolves to light (crrev.com/c/8429688).
+  // GTK only supplies some foreground/background pairs; the rest come from the
+  // Material mixers, which follow `key.color_mode`. WebUI and Views dialogs
+  // paint the content colors below (primary/secondary text, buttons, links,
+  // ...) on Material surfaces, so with a mismatched palette, GTK's foregrounds
+  // would be light-on-light or dark-on-dark there (crbug.com/565897998). In
+  // that case, leave the content colors to the Material mixers and keep only
+  // the GTK colors that are painted on GTK surfaces (frame, toolbar, tabs,
+  // menus, textfields, tooltips, ...).
+  const bool palette_matches_color_mode =
+      color_utils::IsDark(primary_bg) ==
+      (key.color_mode == ui::ColorProviderKey::ColorMode::kDark);
+
   static constexpr char kTextFocused[] =
       "textview.view:focus:focus-within text:focus:focus-within";
   static constexpr char kSelectionFocused[] =
@@ -74,15 +89,11 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAlertMediumSeverityText] = {
       SelectBasedOnDarkInput(ui::kColorPrimaryBackground, gfx::kGoogleYellow300,
                              gfx::kGoogleOrange900)};
-  mixer[ui::kColorDisabledForeground] = {label_fg_disabled};
   mixer[ui::kColorItemHighlight] = {GetBorderColor("entry:focus")};
   mixer[ui::kColorItemSelectionBackground] = {ui::kColorAccent};
   mixer[ui::kColorMenuSelectionBackground] = {GetBgColor(
       base::StrCat({GtkCssMenu(), " ", GtkCssMenuItem(), ":hover"}))};
   mixer[ui::kColorMidground] = {GetSeparatorColor("separator.horizontal")};
-  mixer[ui::kColorPrimaryBackground] = {primary_bg};
-  mixer[ui::kColorPrimaryForeground] = {label_fg};
-  mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
   mixer[ui::kColorTextSelectionBackground] = {kSelectedTextBackground};
   mixer[ui::kColorTextSelectionForeground] = {kSelectedTextForeground};
 
@@ -91,18 +102,11 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       DeriveDefaultIconColor(ui::kColorPrimaryForeground);
   mixer[ui::kColorBubbleBackground] = {ui::kColorPrimaryBackground};
   mixer[ui::kColorBubbleFooterBackground] = {ui::kColorBubbleBackground};
-  mixer[ui::kColorButtonBackground] = {GetBgColor("button")};
   mixer[ui::kColorButtonBackgroundProminent] =
       PickGoogleColor(ui::kColorAccent, ui::kColorDialogBackground,
                       color_utils::kMinimumVisibleContrastRatio);
   mixer[ui::kColorButtonBackgroundProminentFocused] = {
       ui::kColorButtonBackgroundProminent};
-  mixer[ui::kColorButtonBackgroundProminentDisabled] = {button_bg_disabled};
-  mixer[ui::kColorButtonBorder] = {GetBorderColor("button")};
-  mixer[ui::kColorButtonBorderDisabled] = {button_bg_disabled};
-  mixer[ui::kColorButtonForeground] = {GetFgColor("button.text-button label")};
-  mixer[ui::kColorButtonForegroundDisabled] = {
-      GetFgColor("button.text-button:disabled label")};
   mixer[ui::kColorButtonForegroundProminent] = {accent_fg};
   mixer[ui::kColorDialogForeground] = {ui::kColorPrimaryForeground};
   mixer[ui::kColorDropdownBackground] = {GetBgColor(base::StrCat(
@@ -142,14 +146,6 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   }();
   mixer[ui::kColorFrameInactive] = {frame_color_inactive};
   mixer[ui::kColorFocusableBorderUnfocused] = {entry_border};
-  mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};
-  mixer[ui::kColorIcon] = {GetFgColor("button.flat.scale image")};
-  mixer[ui::kColorHelpIconInactive] = {GetFgColor("button.image-button")};
-  mixer[ui::kColorLinkForegroundDefault] = {GetFgColor("label.link:link")};
-  mixer[ui::kColorLinkForegroundDisabled] = {
-      GetFgColor("label.link:link:disabled")};
-  mixer[ui::kColorLinkForegroundPressedDefault] = {
-      GetFgColor("label.link:link:hover:active")};
   mixer[ui::kColorMenuBackground] = {GetBgColor(GtkCssMenu())};
   mixer[ui::kColorMenuBorder] = {GetBorderColor(GtkCssMenu())};
   mixer[ui::kColorMenuDropmarker] = {ui::kColorMenuItemForeground};
@@ -189,7 +185,9 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTabBackgroundHighlightedFocused] = {
       GetBgColor("notebook:focus tab:checked")};
   mixer[ui::kColorTabContentSeparator] = {GetBorderColor("frame border")};
-  mixer[ui::kColorTabForegroundSelected] = {ui::kColorPrimaryForeground};
+  // Tabs are painted on the GTK toolbar color, so use the GTK label color even
+  // when `kColorPrimaryForeground` is left to the Material mixers.
+  mixer[ui::kColorTabForegroundSelected] = {label_fg};
   mixer[ui::kColorTableBackground] = {ui::kColorTreeBackground};
   mixer[ui::kColorTableBackgroundAlternate] = {ui::kColorTreeBackground};
   mixer[ui::kColorTableBackgroundSelectedUnfocused] = {
@@ -224,10 +222,6 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTextfieldSelectionForeground] = {kSelectedTextForeground};
   mixer[ui::kColorThrobber] = {GetFgColor("spinner")};
   mixer[ui::kColorThrobberPreconnect] = {GetFgColor("spinner:disabled")};
-  mixer[ui::kColorToggleButtonTrackOff] = {
-      GetBgColor("button.text-button.toggle")};
-  mixer[ui::kColorToggleButtonTrackOn] = {
-      GetBgColor("button.text-button.toggle:checked")};
   mixer[ui::kColorTooltipBackground] = {
       GetBgColorFromStyleContext(tooltip_context)};
   mixer[ui::kColorTooltipForeground] = {GtkStyleContextGetColor(
@@ -244,6 +238,36 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorTreeNodeForegroundSelectedUnfocused] = {
       GetFgColor("treeview.view "
                  "treeview.view.cell:selected label")};
+
+  // Content colors, which are painted on Material surfaces. See the comment on
+  // `palette_matches_color_mode` above.
+  if (palette_matches_color_mode) {
+    mixer[ui::kColorDisabledForeground] = {label_fg_disabled};
+    mixer[ui::kColorPrimaryBackground] = {primary_bg};
+    mixer[ui::kColorPrimaryForeground] = {label_fg};
+    mixer[ui::kColorSecondaryForeground] = {label_fg_disabled};
+
+    mixer[ui::kColorButtonBackground] = {GetBgColor("button")};
+    mixer[ui::kColorButtonBackgroundProminentDisabled] = {button_bg_disabled};
+    mixer[ui::kColorButtonBorder] = {GetBorderColor("button")};
+    mixer[ui::kColorButtonBorderDisabled] = {button_bg_disabled};
+    mixer[ui::kColorButtonForeground] = {
+        GetFgColor("button.text-button label")};
+    mixer[ui::kColorButtonForegroundDisabled] = {
+        GetFgColor("button.text-button:disabled label")};
+    mixer[ui::kColorHelpIconActive] = {GetFgColor("button.image-button:hover")};
+    mixer[ui::kColorHelpIconInactive] = {GetFgColor("button.image-button")};
+    mixer[ui::kColorIcon] = {GetFgColor("button.flat.scale image")};
+    mixer[ui::kColorLinkForegroundDefault] = {GetFgColor("label.link:link")};
+    mixer[ui::kColorLinkForegroundDisabled] = {
+        GetFgColor("label.link:link:disabled")};
+    mixer[ui::kColorLinkForegroundPressedDefault] = {
+        GetFgColor("label.link:link:hover:active")};
+    mixer[ui::kColorToggleButtonTrackOff] = {
+        GetBgColor("button.text-button.toggle")};
+    mixer[ui::kColorToggleButtonTrackOn] = {
+        GetBgColor("button.text-button.toggle:checked")};
+  }
 
   // Platform-specific UI elements
   mixer[ui::kColorNativeHeaderButtonBorderActive] = {

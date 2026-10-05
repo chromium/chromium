@@ -7,6 +7,8 @@
 
 #include <optional>
 
+#include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_provider_key.h"
 
 namespace ui {
@@ -15,6 +17,7 @@ class ColorProvider;
 
 namespace gtk {
 
+COMPONENT_EXPORT(GTK)
 void AddGtkNativeColorMixer(ui::ColorProvider* provider,
                             const ui::ColorProviderKey& key,
                             std::optional<SkColor> accent_color);

@@ -180,7 +180,7 @@ SkColor GetSeparatorColor(const std::string& css_selector);
 
 // The four functions above cache their results by selector; call this when the
 // GTK theme (or anything else that affects theme colors) changes.
-void ClearStyleColorCache();
+COMPONENT_EXPORT(GTK) void ClearStyleColorCache();
 
 // Get a GtkSettings property as a C++ string.
 std::string GetGtkSettingsStringProperty(GtkSettings* settings,

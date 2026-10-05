@@ -76,6 +76,7 @@ component("gtk") {
     "//ui/linux:linux_ui_factory",
   ]
   public = [
+    "gtk_color_mixers.h",
     "gtk_compat.h",
     "gtk_types.h",
     "gtk_ui_factory.h",
@@ -205,6 +206,7 @@ if (use_gtk) {
     configs += [ ":gtk_internal_config" ]
 
     sources = [
+      "gtk_color_mixers_unittest.cc",
       "gtk_util_unittest.cc",
       "run_all_unittests.cc",
     ]
@@ -215,6 +217,9 @@ if (use_gtk) {
       "//base/test:test_support",
       "//testing/gtest",
       "//ui/base/glib",
+      "//ui/color",
+      "//ui/color:mixers",
+      "//ui/gfx",
       "//ui/linux:linux_ui",
     ]
   }
