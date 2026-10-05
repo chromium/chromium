@@ -1902,20 +1902,6 @@ inline constexpr char kGlicCaaGuestErrorName[] = "Glic CAA Guest Error";
 inline constexpr char kGlicCaaGuestErrorDescription[] =
     "Enables the Glic CAA Guest Error UI when there are authentication issues.";
 
-inline constexpr char kGlicGeminiEnterpriseSettingsOverrideName[] =
-    "Glic Gemini Enterprise Settings Override";
-inline constexpr char kGlicGeminiEnterpriseSettingsOverrideDescription[] =
-    "Overrides the Gemini Enterprise settings (project_id, app_id, location) "
-    "for Glic local development and testing.";
-inline constexpr char kGlicGeminiEnterpriseSettingsEnabledName[] =
-    "Glic Gemini Enterprise Settings Enabled Feature";
-inline constexpr char kGlicGeminiEnterpriseSettingsEnabledDescription[] =
-    "Enables the Glic Gemini Enterprise settings feature.";
-inline constexpr char kGlicGeminiEnterpriseConsentEnabledName[] =
-    "Glic Gemini Enterprise Consent Toggle Enabled Feature";
-inline constexpr char kGlicGeminiEnterpriseConsentEnabledDescription[] =
-    "Enables the user consent toggle in Chrome settings for the Gemini "
-    "Enterprise integration.";
 inline constexpr char kGlicDisableActorSafetyChecksName[] =
     "Glic disable actor safety checks";
 inline constexpr char kGlicDisableActorSafetyChecksDescription[] =

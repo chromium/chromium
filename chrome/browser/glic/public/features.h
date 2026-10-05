@@ -196,12 +196,9 @@ BASE_DECLARE_FEATURE(kGlicShowForSignedOut);
 BASE_DECLARE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers);
 BASE_DECLARE_FEATURE(kGlicProcessCounterAbuseVerdict);
 BASE_DECLARE_FEATURE(kGlicNoWebUiLoader);
-BASE_DECLARE_FEATURE(kGlicGeminiEnterpriseSettingsEnabled);
-BASE_DECLARE_FEATURE(kGlicGeminiEnterpriseConsentEnabled);
 
 // Enables Gemini Enterprise in Chrome (GEiC), the standalone enterprise
-// surface. This is distinct from Gemini Enterprise as a Tool (GEaaT), which is
-// governed by kGlicGeminiEnterpriseSettingsEnabled above.
+// surface.
 BASE_DECLARE_FEATURE(kGeic);
 // Allows the GEiC surface to be turned off from within the kGeic study without
 // having to disable the study itself.

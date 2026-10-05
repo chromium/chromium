@@ -34,7 +34,8 @@ import "url/mojom/url.mojom";
 // chrome/browser/resources/glic/glic_api_impl/generate.py
 
 // @generate glic_api
-// Settings for Gemini Enterprise.
+// TODO(b/570016708): Remove once web client usages are eliminated.
+// Deprecated: Formerly settings for Gemini Enterprise as a Tool.
 struct GeminiEnterpriseSettings {
   string project_id;
   string app_id;
@@ -303,7 +304,8 @@ struct WebClientInitialState {
   bool enable_get_tab_favicon_by_id;
   // Whether the processCounterAbuseVerdict API is enabled.
   bool enable_process_counter_abuse_verdict;
-  // Settings for Gemini Enterprise.
+  // TODO(b/570016708): Remove once web client usages are eliminated.
+  // Deprecated: Formerly settings for Gemini Enterprise as a Tool.
   GeminiEnterpriseSettings? gemini_enterprise_settings;
   // Whether features::kGlicActorAutofillOneTimePassword is enabled.
   bool enable_gmail_otp_opt_in;
@@ -2010,7 +2012,9 @@ interface WebClient {
   // The onboarding completed state has changed.
   NotifyOnboardingCompletedChanged(bool completed);
 
-  // Informs the client that the Gemini Enterprise settings have changed.
+  // TODO(b/570016708): Remove once web client usages are eliminated.
+  // Deprecated: Formerly informed the client that Gemini Enterprise settings
+  // have changed.
   NotifyGeminiEnterpriseSettingsChanged(GeminiEnterpriseSettings? settings);
 
   // Notifies the client that the user has clicked on a row in the actor task

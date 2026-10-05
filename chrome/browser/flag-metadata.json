@@ -5844,30 +5844,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "glic-gemini-enterprise-consent-enabled",
-    "owners": [
-      "esalma@google.com",
-      "sugandhagoyal@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "glic-gemini-enterprise-settings-enabled",
-    "owners": [
-      "alexwchen@google.com",
-      "austinzzr@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
-    "name": "glic-gemini-enterprise-settings-override",
-    "owners": [
-      "alexwchen@google.com",
-      "austinzzr@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "glic-guest-url-presets",
     "owners": [
       "cuianthony@google.com",

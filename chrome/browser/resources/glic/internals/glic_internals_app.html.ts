@@ -113,23 +113,6 @@ export function getHtml(this: GlicInternalsAppElement) {
                 <td class="property-name">Account is eligible for 'Create Image with Gemini'</td>
               </tr>
               <tr>
-                <td class="status-cell-left" style="vertical-align: top;">
-                  <span class="badge badge-neutral">
-                    ${this.data_.enablement.geminiEnterpriseSettings ? 'Configured' : 'None'}
-                  </span>
-                </td>
-                <td class="property-name">
-                  <div>Gemini Enterprise Settings</div>
-                  ${this.data_.enablement.geminiEnterpriseSettings ? html`
-                    <div style="font-size: 12px; color: var(--cr-secondary-text-color); margin-top: 4px;">
-                      Project ID: <code>${this.data_.enablement.geminiEnterpriseSettings.projectId}</code> |
-                      App ID: <code>${this.data_.enablement.geminiEnterpriseSettings.appId}</code> |
-                      Location: <code>${this.data_.enablement.geminiEnterpriseSettings.location}</code>
-                    </div>
-                  ` : ''}
-                </td>
-              </tr>
-              <tr>
                 <td class="status-cell-left">
                   <span class="badge ${this.isActuationEligible_() ? 'badge-success' : 'badge-error'}">
                     ${this.getActuationEligibilityString_(this.data_.enablement.actuationEligibility)}

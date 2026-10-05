@@ -785,7 +785,8 @@ export declare interface CloseAuthTabResponse {
   result: CloseAuthTabResult;
 }
 
-// Settings for Gemini Enterprise.
+// TODO(b/570016708): Remove once web client usages are eliminated.
+// Deprecated: Formerly settings for Gemini Enterprise as a Tool.
 export declare interface GeminiEnterpriseSettings {
   projectId: string;
   appId: string;

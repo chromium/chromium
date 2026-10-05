@@ -11152,24 +11152,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicCaaGuestErrorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicCaaGuestError)},
 
-    // Glic enterprise settings
-    {"glic-gemini-enterprise-settings-override",
-     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideName,
-     flag_descriptions::kGlicGeminiEnterpriseSettingsOverrideDescription,
-     kOsDesktop,
-     STRING_VALUE_TYPE(switches::kGlicGeminiEnterpriseSettingsOverride, "")},
 
-    {"glic-gemini-enterprise-settings-enabled",
-     flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledName,
-     flag_descriptions::kGlicGeminiEnterpriseSettingsEnabledDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseSettingsEnabled)},
-
-    {"glic-gemini-enterprise-consent-enabled",
-     flag_descriptions::kGlicGeminiEnterpriseConsentEnabledName,
-     flag_descriptions::kGlicGeminiEnterpriseConsentEnabledDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kGlicGeminiEnterpriseConsentEnabled)},
 
     {"glic-disable-actor-safety-checks",
      flag_descriptions::kGlicDisableActorSafetyChecksName,

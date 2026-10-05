@@ -972,16 +972,6 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
   state->enable_process_counter_abuse_verdict =
       base::FeatureList::IsEnabled(features::kGlicProcessCounterAbuseVerdict);
 
-  std::optional<glic::mojom::GeminiEnterpriseSettings>
-      gemini_enterprise_settings =
-          GlicEnabling::GetGeminiEnterpriseSettings(profile);
-  if (gemini_enterprise_settings.has_value()) {
-    state->gemini_enterprise_settings =
-        glic::mojom::GeminiEnterpriseSettings::New(
-            gemini_enterprise_settings->project_id,
-            gemini_enterprise_settings->app_id,
-            gemini_enterprise_settings->location);
-  }
 
   state->enable_gmail_otp_opt_in =
       base::FeatureList::IsEnabled(features::kGlicActorAutofillOneTimePassword);

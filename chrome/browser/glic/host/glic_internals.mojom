@@ -24,12 +24,6 @@ enum ActuationEligibility {
   kPlatformUnsupported,
 };
 
-struct GeminiEnterpriseSettingsInfo {
-  string project_id;
-  string app_id;
-  string location;
-};
-
 // Struct containing data about eligibility for GLIC.
 struct ProfileEnablement {
   // Whether the GLIC feature is enabled.
@@ -76,9 +70,6 @@ struct ProfileEnablement {
   // Whether 'Create Image with Gemini' functionality is allowed for this
   // account type.
   bool share_image_allowed;
-
-  // Settings for Gemini Enterprise.
-  GeminiEnterpriseSettingsInfo? gemini_enterprise_settings;
 
   // Summary of whether actuation is enabled, and if not, why not.
   ActuationEligibility actuation_eligibility;

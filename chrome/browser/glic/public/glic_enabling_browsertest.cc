@@ -277,69 +277,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutV2Test, EnabledForProfileTest) {
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
-struct GeminiEntTestParams {
-  std::string email;
-  std::optional<std::string> hosted_domain;
-  bool expect_settings;
-};
-
-class GlicEnablingGeminiEntBrowserTest
-    : public GlicEnablingTest,
-      public ::testing::WithParamInterface<GeminiEntTestParams> {
- protected:
-  GlicEnablingGeminiEntBrowserTest() {
-    glic_test_env_.SetForceSigninAndModelExecutionCapability(false);
-  }
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        {
-            features::kGlicGeminiEnterpriseSettingsEnabled,
-#if BUILDFLAG(IS_CHROMEOS)
-            chromeos::features::kFeatureManagementGlic,
-#endif
-        },
-        {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_P(GlicEnablingGeminiEntBrowserTest, VerifySettings) {
-  const GeminiEntTestParams& params = GetParam();
-
-  // 1. Set the pref directly using base::DictValue.
-  base::DictValue pref_value;
-  pref_value.Set("project_id", "test-project");
-  pref_value.Set("app_id", "test-engine");
-  pref_value.Set("location", "us");
-  profile()->GetPrefs()->SetDict(glic::prefs::kGlicGeminiEnterpriseSettings,
-                                 std::move(pref_value));
-
-  // 2. Sign in with the parameterized account.
-  glic::ForceSigninAndGlicCapability(profile(),
-                                     params.hosted_domain.value_or(""));
-
-  // 3. Verify results.
-  std::optional<glic::mojom::GeminiEnterpriseSettings> settings =
-      GlicEnabling::GetGeminiEnterpriseSettings(profile());
-
-  if (params.expect_settings) {
-    ASSERT_TRUE(settings.has_value());
-    EXPECT_EQ(settings->project_id, "test-project");
-    EXPECT_EQ(settings->app_id, "test-engine");
-    EXPECT_EQ(settings->location, "us");
-  } else {
-    EXPECT_EQ(settings, std::nullopt);
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    GlicEnablingGeminiEntBrowserTest,
-    ::testing::Values(GeminiEntTestParams{.email = "user@consumer.com",
-                                          .hosted_domain = std::nullopt,
-                                          .expect_settings = false},
-                      GeminiEntTestParams{.email = "user@enterprise.com",
-                                          .hosted_domain = "enterprise.com",
-                                          .expect_settings = true}));
 
 struct SystemRequirementsTestParams {
   base::ByteSize memory_size;

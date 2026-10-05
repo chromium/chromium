@@ -203,6 +203,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   private panelState = ObservableValueImpl.withNoValue<PanelState>();
   canAttachPanelValue = ObservableValueImpl.withNoValue<boolean>();
   private focusedTabStateV2 = ObservableValueImpl.withNoValue<FocusedTabData>();
+  // @deprecated Legacy settings no longer populated; returns undefined.
+  // TODO(b/570016708): Remove once web client usages are eliminated.
   private geminiEnterpriseSettings =
       ObservableValueImpl.withNoValue<GeminiEnterpriseSettings|undefined>();
   private zoomLevel = ObservableValueImpl.withNoValue<number>();
@@ -534,6 +536,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     this.canAttachPanelValue.assignAndSignal(canAttach);
   }
 
+  // @deprecated
+  // TODO(b/570016708): Remove once web client usages are eliminated.
   notifyGeminiEnterpriseSettingsChanged(
       settings: GeminiEnterpriseSettingsMojo|null): void {
     this.geminiEnterpriseSettings.assignAndSignal(settings || undefined);
@@ -757,6 +761,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     return result.modelQualityClientId;
   }
 
+  // @deprecated
+  // TODO(b/570016708): Remove once web client usages are eliminated.
   getGeminiEnterpriseSettings?
       (): ObservableValueImpl<GeminiEnterpriseSettings|undefined> {
     return this.geminiEnterpriseSettings;

@@ -378,10 +378,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // and the account is non-enterprise (or for Glic dev).
   static bool IsShareImageEnabledForProfile(Profile* profile);
 
-  // Returns the Gemini Enterprise settings, taking into account command line
-  // overrides.
-  static std::optional<glic::mojom::GeminiEnterpriseSettings>
-  GetGeminiEnterpriseSettings(Profile* profile);
 
   // Whether the live mode and floaty window are enabled by flags.
   static bool IsLiveAndFloatyEnabledByFlags();
@@ -433,10 +429,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
     // Whether share image functionality is allowed for this account type.
     bool share_image_allowed : 1 = true;
-
-    // Settings for Gemini Enterprise.
-    std::optional<glic::mojom::GeminiEnterpriseSettings>
-        gemini_enterprise_settings;
 
     // LINT.IfChange(FeatureDisabledReason)
     enum class FeatureDisabledReason {
@@ -516,7 +508,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
     bool EligibleForShareImage() const;
 
-    bool EligibleForGeminiEnterpriseSettings() const;
 
     bool DisallowedByAdmin() const;
 

@@ -525,10 +525,6 @@ class GlicWebClientHandler
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
     pref_change_registrar_.Add(
-        glic::prefs::kGlicGeminiEnterpriseSettings,
-        base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
-                            base::Unretained(this)));
-    pref_change_registrar_.Add(
         glic::prefs::kGlicFileUploadAllowed,
         base::BindRepeating(&GlicWebClientHandler::OnPrefChanged,
                             base::Unretained(this)));
@@ -1720,20 +1716,6 @@ class GlicWebClientHandler
   }
 
  private:
-  glic::mojom::GeminiEnterpriseSettingsPtr GetGeminiEnterpriseSettingsPtr()
-      const {
-    std::optional<glic::mojom::GeminiEnterpriseSettings>
-        gemini_enterprise_settings =
-            GlicEnabling::GetGeminiEnterpriseSettings(profile_);
-    if (gemini_enterprise_settings.has_value()) {
-      return glic::mojom::GeminiEnterpriseSettings::New(
-          gemini_enterprise_settings->project_id,
-          gemini_enterprise_settings->app_id,
-          gemini_enterprise_settings->location);
-    }
-    return nullptr;
-  }
-
   bool ComputeCanAttach() const { return floating_panel_can_attach_; }
 
   void NotifyCanAttachChanged() {
@@ -1813,9 +1795,6 @@ class GlicWebClientHandler
     } else if (pref_name == prefs::kGlicDefaultTabContextEnabled) {
       web_client_->NotifyDefaultTabContextPermissionStateChanged(
           pref_service_->GetBoolean(pref_name));
-    } else if (pref_name == glic::prefs::kGlicGeminiEnterpriseSettings) {
-      web_client_->NotifyGeminiEnterpriseSettingsChanged(
-          GetGeminiEnterpriseSettingsPtr());
     } else if (pref_name == glic::prefs::kGlicFileUploadAllowed) {
       web_client_->NotifyFileUploadStateChanged(
           glic::prefs::GetFileUploadAllowedCapability(profile_->GetPrefs()));

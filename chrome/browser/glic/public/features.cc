@@ -286,12 +286,6 @@ BASE_FEATURE(kGlicProcessCounterAbuseVerdict,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicNoWebUiLoader, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicGeminiEnterpriseSettingsEnabled,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kGlicGeminiEnterpriseConsentEnabled,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGeic, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kGeicEnabledParam{&kGeic, "enabled", true};

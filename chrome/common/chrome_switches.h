@@ -1049,10 +1049,6 @@ inline constexpr char kGlicGuestURL[] = "glic-guest-url";
 
 inline constexpr char kSkillsV2Origin[] = "skills-v2-origin";
 
-// Overrides the Gemini Enterprise settings JSON dictionary for local
-// development.
-inline constexpr char kGlicGeminiEnterpriseSettingsOverride[] =
-    "glic-gemini-enterprise-settings-override";
 
 inline constexpr char kGlicAlwaysOpenFre[] = "glic-always-open-fre";
 

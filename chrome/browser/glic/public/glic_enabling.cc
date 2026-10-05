@@ -14,7 +14,6 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -511,8 +510,6 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
     }
   }
 
-  result.gemini_enterprise_settings =
-      GlicEnabling::GetGeminiEnterpriseSettings(profile);
 
   if (profile->GetPrefs()->GetInteger(
           optimization_guide::prefs::kGeminiSettings) !=
@@ -732,10 +729,6 @@ bool GlicEnabling::ProfileEnablement::EligibleForShareImage() const {
   return IsProfileEligible() && share_image_allowed;
 }
 
-bool GlicEnabling::ProfileEnablement::EligibleForGeminiEnterpriseSettings()
-    const {
-  return IsProfileEligible() && gemini_enterprise_settings.has_value();
-}
 
 bool GlicEnabling::ProfileEnablement::DisallowedByAdmin() const {
   return !allowed_by_chrome_policy || !allowed_by_remote_admin;
@@ -1300,62 +1293,6 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicShareImage);
 }
 
-namespace {
-std::optional<glic::mojom::GeminiEnterpriseSettings>
-ParseGeminiEnterpriseSettings(const base::DictValue& dict) {
-  const std::string* project_id = dict.FindString("project_id");
-  const std::string* app_id = dict.FindString("app_id");
-  const std::string* location = dict.FindString("location");
-  auto is_valid = [](const std::string* s) { return s && !s->empty(); };
-  if (is_valid(project_id) && is_valid(app_id) && is_valid(location)) {
-    glic::mojom::GeminiEnterpriseSettings settings;
-    settings.project_id = *project_id;
-    settings.app_id = *app_id;
-    settings.location = *location;
-    return settings;
-  }
-  return std::nullopt;
-}
-}  // namespace
-
-// static
-std::optional<glic::mojom::GeminiEnterpriseSettings>
-GlicEnabling::GetGeminiEnterpriseSettings(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          features::kGlicGeminiEnterpriseSettingsEnabled)) {
-    return std::nullopt;
-  }
-
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  // TODO(b/517605114): Remove this command line switch override before launch.
-  if (command_line->HasSwitch(
-          switches::kGlicGeminiEnterpriseSettingsOverride)) {
-    std::string switch_value = command_line->GetSwitchValueASCII(
-        switches::kGlicGeminiEnterpriseSettingsOverride);
-    auto parsed_json = base::JSONReader::Read(
-        switch_value, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-    if (parsed_json && parsed_json->is_dict()) {
-      if (auto settings = ParseGeminiEnterpriseSettings(parsed_json->GetDict());
-          settings.has_value()) {
-        return settings;
-      }
-      LOG(ERROR) << "Gemini Enterprise settings override is missing required "
-                    "fields or contains empty values.";
-      return std::nullopt;
-    }
-    LOG(ERROR) << "Gemini Enterprise settings override is not a valid "
-                  "JSON dictionary.";
-    return std::nullopt;
-  }
-
-  if (!IsEnterpriseAccount(profile)) {
-    return std::nullopt;
-  }
-
-  const base::DictValue& pref_dict =
-      profile->GetPrefs()->GetDict(glic::prefs::kGlicGeminiEnterpriseSettings);
-  return ParseGeminiEnterpriseSettings(pref_dict);
-}
 
 // static
 std::unique_ptr<GlicEnabling> GlicEnabling::CreateForTesting(  // IN-TEST
