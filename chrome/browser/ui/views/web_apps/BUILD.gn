@@ -92,24 +92,35 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "create_shortcut_confirmation_view_browsertest.cc",
+    "protocol_handler_launch_dialog_browsertest.cc",
     "simple_install_dialog_bubble_view_browsertest.cc",
     "sub_apps/sub_apps_install_dialog_controller_browsertest.cc",
     "web_app_blocked_migration_infobar_delegate_browsertest.cc",
+    "web_app_detailed_install_dialog_browsertest.cc",
+    "web_app_diy_install_dialog_browsertest.cc",
     "web_app_install_dialog_browsertest.cc",
     "web_app_install_flow_browsertest.cc",
+    "web_app_integration_browsertest.cc",
+    "web_app_launch_dialog_browsertest.cc",
+    "web_app_tab_strip_browsertest.cc",
+    "web_app_uninstall_dialog_browsertest.cc",
     "web_app_update_review_dialog_browsertest.cc",
+    "web_ui_web_app_browsertest.cc",
   ]
   deps = [
     ":create_shortcut_confirmation_view",
+    ":launch_dialogs",
     ":progress_delay",
     ":web_app_blocked_migration_infobar_delegate",
     ":web_app_install_dialog_delegate",
     ":web_app_install_flow_dialog_delegate",
     ":web_app_install_options_view",
     ":web_app_install_progress_view",
+    ":web_app_uninstall_dialog_view",
     ":web_app_update_identity_view",
     ":web_app_update_review_dialog",
     "//base",
+    "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:test_support_ui",
     "//chrome/browser/shortcuts",
@@ -117,22 +128,57 @@ source_set("browser_tests") {
     "//chrome/browser/ui:browser_commands",
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:intent_picker_tab_helper",
+    "//chrome/browser/ui:tab_ui_helper",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/tabs:tab_menu",
+    "//chrome/browser/ui/views/frame:browser_frame_view",
     "//chrome/browser/ui/views/frame:browser_view_header",
     "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/ui/views/web_apps/isolated_web_apps:isolated_web_app_identity_view",
     "//chrome/browser/ui/views/web_apps/sub_apps",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/ui/web_applications:launch_utils",
+    "//chrome/browser/ui/window_metadata",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//components/embedder_support",
     "//components/infobars/content",
+    "//components/page_load_metrics/browser:test_support",
+    "//components/password_manager/content/common",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/events:test_support",
     "//ui/views:test_support",
   ]
+
+  if (is_win) {
+    sources += [ "web_app_integration_browsertest_win.cc" ]
+  }
+  if (is_win || is_linux) {
+    sources += [ "web_app_integration_browsertest_win_linux.cc" ]
+  }
+  if (is_win || is_linux || is_chromeos) {
+    sources += [ "web_app_integration_browsertest_win_linux_cros.cc" ]
+  }
+  if (is_mac) {
+    sources += [
+      "app_shim_metrics_browsertest.cc",
+      "web_app_integration_browsertest_mac.cc",
+    ]
+    deps += [
+      "//chrome/browser/apps/app_shim",
+      "//chrome/browser/ui/startup",
+    ]
+  }
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "deprecated_apps_dialog_view_browsertest.cc",
+      "force_installed_deprecated_apps_dialog_view_browsertest.cc",
+      "web_app_integration_browsertest_mac_win_linux.cc",
+    ]
+  }
 
   if (is_chromeos) {
     sources += [
@@ -145,12 +191,49 @@ source_set("browser_tests") {
     ]
     deps += [
       ":protocol_handler_picker_dialog",
+      "//chrome/browser/ash/boca/on_task",
       "//chrome/browser/ui/views/frame:immersive_mode_controller_chromeos",
       "//chrome/browser/ui/views/frame:top_container_view",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_frame_toolbar_view",
       "//chrome/browser/ui/views/web_apps/frame_toolbar:web_app_toolbar_button_container",
       "//chromeos/ui/frame:test_support",
     ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "progress_delay_unittest.cc",
+    "view_visible_in_active_widget_notifier_unittest.cc",
+  ]
+  deps = [
+    ":progress_delay",
+    ":view_visible_in_active_widget_notifier",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/test/views",
+    "//testing/gtest",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = []
+  deps = []
+  if (is_mac || is_linux || is_win || is_chromeos) {
+    sources += [ "web_app_navigation_capturing_iph_interactive_uitest.cc" ]
+    deps += [
+      "//chrome/browser/apps/link_capturing:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/user_education",
+      "//testing/gtest",
+    ]
+    if (is_chromeos) {
+      deps += [ "//chrome/browser/ui:settings_window_manager_chromeos" ]
+    }
   }
 }
 

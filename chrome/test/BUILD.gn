@@ -2761,13 +2761,6 @@ if (!is_android) {
       "../browser/ui/views/web_apps/frame_toolbar/web_app_minimal_ui_test.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_browsertest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_browsertest.cc",
-      "../browser/ui/views/web_apps/protocol_handler_launch_dialog_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_detailed_install_dialog_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_diy_install_dialog_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_launch_dialog_browsertest.cc",
-      "../browser/ui/views/web_apps/web_app_tab_strip_browsertest.cc",
-      "../browser/ui/views/web_apps/web_ui_web_app_browsertest.cc",
       "data/webui/mojo/mojo_file_system_access_browsertest.cc",
       "data/webui/mojo/mojo_js_interface_broker_browsertest.cc",
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
@@ -2986,24 +2979,13 @@ if (!is_android) {
     ]
 
     if (is_win) {
-      sources += [
-        "../browser/ui/views/device_id/pen_id_browsertest_win.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
-      ]
+      sources += [ "../browser/ui/views/device_id/pen_id_browsertest_win.cc" ]
 
       # encrypted_media_browsertest uses Windows Media Foundation APIs.
       libs = [
         "mfuuid.lib",
         "mfplat.lib",
       ]
-    }
-
-    if (is_win || is_linux) {
-      sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux.cc" ]
-    }
-
-    if (is_win || is_linux || is_chromeos) {
-      sources += [ "../browser/ui/views/web_apps/web_app_integration_browsertest_win_linux_cros.cc" ]
     }
 
     deps += [
@@ -3098,11 +3080,7 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      sources += [
-        "../browser/ui/views/web_apps/app_shim_metrics_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac.cc",
-        "../common/profiler/thread_profiler_browsertest.cc",
-      ]
+      sources += [ "../common/profiler/thread_profiler_browsertest.cc" ]
 
       data_deps += [
         "//chrome",
@@ -3336,7 +3314,6 @@ if (!is_android) {
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
         "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_uninstall_dialog_browsertest.cc",
       ]
 
       deps += [
@@ -3375,11 +3352,6 @@ if (!is_android) {
         ]
       }
       if (is_win || is_mac || is_linux) {
-        sources += [
-          "../browser/ui/views/web_apps/deprecated_apps_dialog_view_browsertest.cc",
-          "../browser/ui/views/web_apps/force_installed_deprecated_apps_dialog_view_browsertest.cc",
-        ]
-
         deps += [ "//chrome/browser/ui/webui/app_home" ]
       }
       if (is_chromeos) {
@@ -4074,7 +4046,6 @@ if (!is_android) {
       sources += [
         "../browser/ui/views/supervised_user/parent_permission_dialog_view_browsertest.cc",
         "../browser/ui/views/supervised_user/parent_permission_extension_flow_view_browsertest.cc",
-        "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
       ]
 
       deps += [
@@ -5891,7 +5862,6 @@ test("unit_tests") {
       "//chrome/browser/ui/views/toolbar:unit_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/user_education:unit_tests",
-      "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
       "//chrome/browser/ui/views/webauthn:unit_tests",
       "//chrome/browser/ui/views/webid:test_support",
       "//chrome/browser/ui/views/webid:unit_tests",
@@ -7082,7 +7052,7 @@ test("unit_tests") {
       "//chrome/browser/ui/views/tabs/tab:unit_tests",
       "//chrome/browser/ui/views/tabs/vertical",
       "//chrome/browser/ui/views/translate:unit_tests",
-      "//chrome/browser/ui/views/web_apps:progress_delay",
+      "//chrome/browser/ui/views/web_apps:unit_tests",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:installer_base",
       "//chrome/browser/ui/views/web_apps/isolated_web_apps:user_installability_checker",
       "//chrome/browser/ui/views/web_dialogs:unit_tests",
@@ -7138,15 +7108,12 @@ test("unit_tests") {
       "../browser/ui/views/task_manager_search_bar_view_unittest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/callback_delayer_unittest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller_unittest.cc",
-      "../browser/ui/views/web_apps/progress_delay_unittest.cc",
-      "../browser/ui/views/web_apps/view_visible_in_active_widget_notifier_unittest.cc",
     ]
 
     deps += [
       "//chrome/browser/ui/views/context_hub:save_to_memory_bank_bubble_view",
       "//chrome/browser/ui/views/web_apps:create_shortcut_confirmation_view",
       "//chrome/browser/ui/views/web_apps:image_carousel_view",
-      "//chrome/browser/ui/views/web_apps:view_visible_in_active_widget_notifier",
       "//chrome/browser/ui/views/web_apps:web_app_uninstall_dialog_view",
     ]
 
@@ -7705,10 +7672,6 @@ if (!is_android && !is_chromeos_device) {
       "base/interactive_ui_tests_main.cc",
     ]
 
-    if (is_mac || is_linux || is_win || is_chromeos) {
-      sources += [ "../browser/ui/views/web_apps/web_app_navigation_capturing_iph_interactive_uitest.cc" ]
-    }
-
     configs += [ "//build/config:precompiled_headers" ]
     if ((is_linux || is_chromeos) && !is_component_build) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
@@ -7946,6 +7909,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/toolbar:interactive_ui_tests",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/views/user_education:interactive_ui_tests",
+      "//chrome/browser/ui/views/web_apps:interactive_ui_tests",
       "//chrome/browser/ui/web_applications",
       "//chrome/browser/ui/web_applications:interactive_ui_tests",
       "//chrome/browser/ui/web_applications/test:test_support_ui",
