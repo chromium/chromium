@@ -33,25 +33,4 @@ TEST_F(PerContextDataTest, LookupAndDestruction) {
   EXPECT_TRUE(per_context_data == NULL);
 }
 
-TEST_F(PerContextDataTest, ObjectTemplatesClearedOnDetach) {
-  v8::Isolate::Scope isolate_scope(instance_->isolate());
-  v8::HandleScope handle_scope(instance_->isolate());
-  v8::Local<v8::Context> context = v8::Context::New(
-      instance_->isolate(), nullptr, v8::Local<v8::ObjectTemplate>());
-  WrapperInfo info = {{kEmbedderNativeGin}, kTestObject};
-  PerContextData* per_context_data = nullptr;
-  {
-    ContextHolder context_holder(instance_->isolate());
-    context_holder.SetContext(context);
-    per_context_data = PerContextData::From(context);
-    ASSERT_TRUE(per_context_data != nullptr);
-
-    v8::Local<v8::ObjectTemplate> templ =
-        v8::ObjectTemplate::New(instance_->isolate());
-    per_context_data->SetObjectTemplate(&info, templ);
-    EXPECT_FALSE(per_context_data->GetObjectTemplate(&info).IsEmpty());
-  }
-  EXPECT_TRUE(per_context_data->GetObjectTemplate(&info).IsEmpty());
-}
-
 }  // namespace gin

@@ -13,8 +13,21 @@ CallbackHolderBase::CallbackHolderBase(uintptr_t type_identifier)
 
 CallbackHolderBase::~CallbackHolderBase() = default;
 
-const WrapperInfo* CallbackHolderBase::wrapper_info() const {
-  return &kWrapperInfo;
+v8::Local<v8::CppHeapExternal> CallbackHolderBase::GetHandle(
+    v8::Isolate* isolate) {
+  return v8::CppHeapExternal::New<CallbackHolderBase>(
+      isolate, this, static_cast<v8::CppHeapPointerTag>(kCallbackHolderBase));
+}
+
+// static
+CallbackHolderBase* CallbackHolderBase::FromV8(v8::Isolate* isolate,
+                                               v8::Local<v8::Data> data) {
+  if (data.IsEmpty() || !data->IsCppHeapExternal()) {
+    return nullptr;
+  }
+  constexpr auto kTag = static_cast<v8::CppHeapPointerTag>(kCallbackHolderBase);
+  return v8::CppHeapExternal::Cast(*data)->Value<CallbackHolderBase>(
+      isolate, {kTag, kTag});
 }
 
 void ThrowConversionError(Arguments* args,
