@@ -568,6 +568,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesHomeAndWorkdEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
@@ -611,6 +612,7 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565452121
     public void testDismissesPaymentOfferEducationBubbleOnFilling() throws InterruptedException {
         AutofillBarItem itemWithIph =
                 new AutofillBarItem(
