@@ -122,6 +122,10 @@ namespace back_to_opener {
 class BackToOpenerController;
 }  // namespace back_to_opener
 
+namespace blocked_content {
+class PopupOpenerTabHelper;
+}  // namespace blocked_content
+
 namespace autofill {
 class BubbleManager;
 class GmailOtpOptInBubbleController;
@@ -1006,6 +1010,9 @@ class TabFeatures {
 
   std::unique_ptr<metrics::MetricsServicesWebContentsObserver>
       metrics_services_web_contents_observer_;
+
+  std::unique_ptr<blocked_content::PopupOpenerTabHelper>
+      popup_opener_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

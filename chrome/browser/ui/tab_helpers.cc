@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -65,7 +64,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
-#include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -299,9 +297,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   // The PopupBlockerTabHelper has an implicit dependency on
   // ChromeSubresourceFilterClient being available in its constructor.
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
-  blocked_content::PopupOpenerTabHelper::CreateForWebContents(
-      web_contents, base::DefaultTickClock::GetInstance(),
-      HostContentSettingsMapFactory::GetForProfile(profile));
   if (predictors::LoadingPredictorFactory::GetForProfile(profile)) {
     predictors::LoadingPredictorTabHelper::CreateForWebContents(web_contents);
   }

@@ -22,6 +22,8 @@
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -30,8 +32,10 @@
 #include "content/public/test/test_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -41,10 +45,6 @@
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #else
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
-#include "components/tabs/public/mock_tab_interface.h"
-#include "components/tabs/public/tab_interface.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #endif
 
 class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
@@ -58,9 +58,15 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    blocked_content::PopupOpenerTabHelper::CreateForWebContents(
-        web_contents(), &raw_clock_,
-        HostContentSettingsMapFactory::GetForProfile(profile()));
+    // Associate the contents with the tab so that tab-helper lookups can find
+    // the helper. In production this association is maintained by TabModel.
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    ON_CALL(tab_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    popup_opener_tab_helper_ =
+        std::make_unique<blocked_content::PopupOpenerTabHelper>(
+            tab_, web_contents(), &raw_clock_,
+            HostContentSettingsMapFactory::GetForProfile(profile()));
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
@@ -77,11 +83,6 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
             web_contents());
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-    // Associate the contents with the tab so that framebust lookups can find
-    // the helper. In production this association is maintained by TabModel.
-    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
-    ON_CALL(tab_, GetUnownedUserDataHost())
-        .WillByDefault(::testing::ReturnRef(user_data_host_));
     framebust_block_tab_helper_ =
         std::make_unique<FramebustBlockTabHelper>(tab_, web_contents());
 #endif
@@ -97,6 +98,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 #if !BUILDFLAG(IS_ANDROID)
     framebust_block_tab_helper_.reset();
 #endif
+    popup_opener_tab_helper_.reset();
     popups_.clear();
 #if BUILDFLAG(IS_ANDROID)
     messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
@@ -149,13 +151,15 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
  private:
   base::SimpleTestTickClock raw_clock_;
   std::vector<std::unique_ptr<content::WebContents>> popups_;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<blocked_content::PopupOpenerTabHelper>
+      popup_opener_tab_helper_;
 #if BUILDFLAG(IS_ANDROID)
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   raw_ptr<blocked_content::FramebustBlockedMessageDelegate>
       framebust_blocked_message_delegate_;
 #else
-  ui::UnownedUserDataHost user_data_host_;
-  tabs::MockTabInterface tab_;
   std::unique_ptr<FramebustBlockTabHelper> framebust_block_tab_helper_;
 #endif
 };

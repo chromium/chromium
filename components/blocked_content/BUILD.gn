@@ -22,11 +22,16 @@ source_set("blocked_content") {
     "url_list_manager.cc",
     "url_list_manager.h",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//components/content_settings/core/browser",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/base/unowned_user_data",
+  ]
+  deps = [
     "//components/back_forward_cache",
     "//components/content_settings/browser",
-    "//components/content_settings/core/browser",
     "//components/embedder_support",
     "//components/pref_registry",
     "//components/prefs",
@@ -34,7 +39,6 @@ source_set("blocked_content") {
     "//components/subresource_filter/content/browser",
     "//components/ukm/content",
     "//components/user_prefs",
-    "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/common",
   ]

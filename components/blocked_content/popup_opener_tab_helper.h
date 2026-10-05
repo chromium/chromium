@@ -11,7 +11,7 @@
 #include "base/time/tick_clock.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
 class TickClock;
@@ -19,6 +19,10 @@ class TickClock;
 
 namespace content {
 class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace ui {
@@ -30,14 +34,26 @@ class PopupTracker;
 
 // This class tracks WebContents for the purpose of logging metrics related to
 // popup openers.
-class PopupOpenerTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<PopupOpenerTabHelper> {
+class PopupOpenerTabHelper : public content::WebContentsObserver {
  public:
+  DECLARE_USER_DATA(PopupOpenerTabHelper);
+
+  // |tick_clock| overrides the internal time for testing. This doesn't take
+  // ownership of |tick_clock| or |settings_map|, and they both must outlive the
+  // PopupOpenerTabHelper instance.
+  PopupOpenerTabHelper(tabs::TabInterface& tab,
+                       content::WebContents* web_contents,
+                       const base::TickClock* tick_clock,
+                       HostContentSettingsMap* settings_map);
+
   PopupOpenerTabHelper(const PopupOpenerTabHelper&) = delete;
   PopupOpenerTabHelper& operator=(const PopupOpenerTabHelper&) = delete;
 
   ~PopupOpenerTabHelper() override;
+
+  static PopupOpenerTabHelper* From(tabs::TabInterface* tab);
+  static PopupOpenerTabHelper* FromWebContents(
+      content::WebContents* web_contents);
 
   void OnOpenedPopup(PopupTracker* popup_tracker);
 
@@ -46,15 +62,6 @@ class PopupOpenerTabHelper
   }
 
  private:
-  friend class content::WebContentsUserData<PopupOpenerTabHelper>;
-
-  // |tick_clock| overrides the internal time for testing. This doesn't take
-  // ownership of |tick_clock| or |settings_map|, and they both must outlive the
-  // PopupOpenerTabHelper instance.
-  PopupOpenerTabHelper(content::WebContents* web_contents,
-                       const base::TickClock* tick_clock,
-                       HostContentSettingsMap* settings_map);
-
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DidStartNavigation(
@@ -80,7 +87,7 @@ class PopupOpenerTabHelper
   // The settings map for the web contents this object is associated with.
   raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<PopupOpenerTabHelper> scoped_unowned_user_data_;
 };
 
 }  // namespace blocked_content

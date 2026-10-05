@@ -661,6 +661,7 @@ if (!is_android) {
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
       "//chrome/common",
+      "//components/blocked_content",
       "//components/captive_portal/core:buildflags",
       "//components/client_hints/browser",
       "//components/commerce/content/browser",

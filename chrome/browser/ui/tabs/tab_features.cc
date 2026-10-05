@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
@@ -211,6 +212,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -1144,6 +1146,13 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
             metrics_services_manager->GetOnDidStopLoadingCb(),
             metrics_services_manager->GetOnRendererUnresponsiveCb());
   }
+
+  popup_opener_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<blocked_content::PopupOpenerTabHelper>(
+              tab, tab, tab.GetContents(),
+              base::DefaultTickClock::GetInstance(),
+              HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1629,6 +1638,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
             metrics_services_manager->GetOnDidStopLoadingCb(),
             metrics_services_manager->GetOnRendererUnresponsiveCb());
   }
+
+  popup_opener_tab_helper_.reset();
+  popup_opener_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<blocked_content::PopupOpenerTabHelper>(
+              *tab, *tab, new_contents, base::DefaultTickClock::GetInstance(),
+              HostContentSettingsMapFactory::GetForProfile(profile));
 }
 
 customize_chrome::SidePanelController*

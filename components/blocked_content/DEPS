@@ -10,6 +10,7 @@ include_rules = [
   "+components/subresource_filter/content/shared/browser",
   "+components/subresource_filter/core/browser",
   "+components/sync_preferences",
+  "+components/tabs/public",
   "+components/ukm",
   "+components/user_prefs",
   "+components/variations",

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/chained_back_navigation_tracker.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
@@ -95,6 +97,7 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "components/actor/core/actor_features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/content_capture/common/content_capture_features.h"
@@ -507,6 +510,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
             metrics_services_manager->GetOnDidStopLoadingCb(),
             metrics_services_manager->GetOnRendererUnresponsiveCb());
   }
+
+  popup_opener_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<blocked_content::PopupOpenerTabHelper>(
+              *tab, *tab, web_contents, base::DefaultTickClock::GetInstance(),
+              HostContentSettingsMapFactory::GetForProfile(profile));
 
   // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
   // persist language details.

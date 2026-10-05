@@ -12,6 +12,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -21,20 +22,36 @@
 
 namespace blocked_content {
 
+DEFINE_USER_DATA(PopupOpenerTabHelper);
+
 PopupOpenerTabHelper::~PopupOpenerTabHelper() = default;
+
+// static
+PopupOpenerTabHelper* PopupOpenerTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+PopupOpenerTabHelper* PopupOpenerTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
 
 void PopupOpenerTabHelper::OnOpenedPopup(PopupTracker* popup_tracker) {
   has_opened_popup_since_last_user_gesture_ = true;
   MaybeLogPagePopupContentSettings();
 }
 
-PopupOpenerTabHelper::PopupOpenerTabHelper(content::WebContents* web_contents,
+PopupOpenerTabHelper::PopupOpenerTabHelper(tabs::TabInterface& tab,
+                                           content::WebContents* web_contents,
                                            const base::TickClock* tick_clock,
                                            HostContentSettingsMap* settings_map)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<PopupOpenerTabHelper>(*web_contents),
       tick_clock_(tick_clock),
-      settings_map_(settings_map) {
+      settings_map_(settings_map),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   visibility_tracker_ = std::make_unique<ui::ScopedVisibilityTracker>(
       tick_clock_,
       web_contents->GetVisibility() != content::Visibility::HIDDEN);
@@ -88,7 +105,5 @@ void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {
     last_opener_source_id_ = source_id;
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupOpenerTabHelper);
 
 }  // namespace blocked_content
