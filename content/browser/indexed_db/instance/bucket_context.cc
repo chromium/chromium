@@ -1062,9 +1062,11 @@ void BucketContext::SetSqliteRolloutStageForTesting(SqliteRolloutStage stage) {
 }
 
 void BucketContext::PerformAndVerifySqliteMigrationForTesting() {
-  const_cast<SqliteRolloutStage&>(sqlite_rollout_stage_) =
-      SqliteRolloutStage::kMigrateDataToSqliteGentle;
-  verify_migration_for_testing_ = true;
+  if (!in_memory()) {
+    const_cast<SqliteRolloutStage&>(sqlite_rollout_stage_) =
+        SqliteRolloutStage::kMigrateDataToSqliteGentle;
+    verify_migration_for_testing_ = true;
+  }
 }
 
 // static
