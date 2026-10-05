@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -321,6 +322,36 @@ TEST(ScriptResourceTest, CreatesHandlerForWebUIBundledCodeCaching) {
   load_resource_and_check(kBundledUrl2, /*expect_handler=*/false);
 
   enable_webui_bundled_code_caching(false);
+}
+
+TEST(ScriptResourceTest, ServiceWorkerCodeCacheFlag) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  const KURL url("https://www.example.com/sw-script.js");
+
+  {
+    ScopedServiceWorkerCodeCacheForTest scoped_feature(false);
+    ScriptResource* resource =
+        ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+    response.SetWasFetchedViaServiceWorker(true);
+
+    resource->ResponseReceived(response);
+    EXPECT_FALSE(resource->CacheHandler());
+  }
+
+  {
+    ScopedServiceWorkerCodeCacheForTest scoped_feature(true);
+    ScriptResource* resource =
+        ScriptResource::CreateForTest(scope.GetIsolate(), url, Utf8Encoding());
+    ResourceResponse response(url);
+    response.SetHttpStatusCode(200);
+    response.SetWasFetchedViaServiceWorker(true);
+
+    resource->ResponseReceived(response);
+    EXPECT_TRUE(resource->CacheHandler());
+  }
 }
 
 }  // namespace

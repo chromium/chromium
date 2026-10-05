@@ -2845,7 +2845,10 @@ class CacheStorageSideDataSizeChecker
 class ServiceWorkerV8CodeCacheForCacheStorageTest
     : public ServiceWorkerBrowserTest {
  public:
-  ServiceWorkerV8CodeCacheForCacheStorageTest() = default;
+  ServiceWorkerV8CodeCacheForCacheStorageTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kServiceWorkerCodeCache);
+  }
 
   ServiceWorkerV8CodeCacheForCacheStorageTest(
       const ServiceWorkerV8CodeCacheForCacheStorageTest&) = delete;
@@ -2919,6 +2922,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
         partition->GetCacheStorageControl(), embedded_test_server()->base_url(),
         std::string("cache_name"), embedded_test_server()->GetURL(kScriptUrl));
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 const char ServiceWorkerV8CodeCacheForCacheStorageTest::kPageUrl[] =
