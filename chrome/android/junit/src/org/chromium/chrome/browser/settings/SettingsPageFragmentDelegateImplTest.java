@@ -936,7 +936,6 @@ public class SettingsPageFragmentDelegateImplTest {
         SettingsSearchCoordinator searchCoordinator = mDelegate.getSearchCoordinator();
         assertNotNull(searchCoordinator);
         verify(mMultiColumnSettings).addObserver(searchCoordinator);
-        verify(mockContainmentHelper).getItemDecorations();
     }
 
     @Test

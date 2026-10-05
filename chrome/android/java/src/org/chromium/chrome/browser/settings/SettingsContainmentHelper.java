@@ -4,32 +4,49 @@
 
 package org.chromium.chrome.browser.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup.PreferencePositionCallback;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/** Helper class to manage containment styling for settings fragments. */
+/**
+ * Helper class to manage containment styling and preference highlighting for settings fragments.
+ */
 @NullMarked
-class SettingsContainmentHelper {
+public class SettingsContainmentHelper {
     /**
      * Delegate interface implemented by the user of this helper. Allows access to data owned by
      * {@link SettingsActivity} or {@link SettingsPageFragmentDelegateImpl} respectively.
@@ -48,13 +65,28 @@ class SettingsContainmentHelper {
         PreferenceUpdateObserver getPreferenceUpdateObserver();
     }
 
+    // Information of the view to highlight.
+    private static class HighlightInfo {
+        public final View view;
+        public final HighlightParams params;
+
+        private HighlightInfo(View view, HighlightParams params) {
+            this.view = view;
+            this.params = params;
+        }
+    }
+
     private final Context mContext;
     private final Delegate mDelegate;
     private final Map<PreferenceFragmentCompat, ContainmentItemDecoration> mItemDecorations =
             new HashMap<>();
     private final Map<PreferenceFragmentCompat, ViewTreeObserver.OnGlobalLayoutListener>
             mGlobalLayoutListeners = new HashMap<>();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private FragmentManager.@Nullable FragmentLifecycleCallbacks mCallbacks;
+    private @Nullable Runnable mRemoveResultChildViewListener;
+    private @Nullable Runnable mTurnOffHighlight;
+    private @Nullable ContainmentItemController mContainmentController;
 
     /**
      * Fragments that have had the settings theme applied to them. Used as a performance
@@ -62,7 +94,7 @@ class SettingsContainmentHelper {
      */
     private final Set<PreferenceFragmentCompat> mThemedFragments = new HashSet<>();
 
-    SettingsContainmentHelper(Context context, Delegate delegate) {
+    public SettingsContainmentHelper(Context context, Delegate delegate) {
         mContext = context;
         mDelegate = delegate;
     }
@@ -82,6 +114,24 @@ class SettingsContainmentHelper {
                         if (f instanceof PreferenceUpdateObserver.Provider provider) {
                             provider.setPreferenceUpdateObserver(
                                     mDelegate.getPreferenceUpdateObserver());
+                        }
+                        if (f instanceof PreferenceFragmentCompat pf) {
+                            Bundle args = pf.getArguments();
+                            String highlightKey =
+                                    args != null
+                                            ? args.getString(
+                                                    SettingsNavigation.EXTRA_HIGHLIGHT_PREFERENCE)
+                                            : null;
+                            if (!TextUtils.isEmpty(highlightKey)) {
+                                args.remove(SettingsNavigation.EXTRA_HIGHLIGHT_PREFERENCE);
+                                mHandler.post(
+                                        () ->
+                                                scrollAndHighlightItem(
+                                                        pf,
+                                                        highlightKey,
+                                                        /* highlightKey= */ null,
+                                                        /* subViewPos= */ 0));
+                            }
                         }
                     }
 
@@ -123,6 +173,230 @@ class SettingsContainmentHelper {
         if (mCallbacks != null) {
             fragmentManager.unregisterFragmentLifecycleCallbacks(mCallbacks);
             mCallbacks = null;
+        }
+        destroy();
+    }
+
+    /** Cleans up pending highlight callbacks and controllers. */
+    public void destroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        turnOffHighlight();
+        mRemoveResultChildViewListener = null;
+        mContainmentController = null;
+    }
+
+    /** Turns off the active preference highlight if one is showing. */
+    public void turnOffHighlight() {
+        if (mTurnOffHighlight != null) {
+            mTurnOffHighlight.run();
+            mTurnOffHighlight = null;
+        }
+    }
+
+    /**
+     * Scrolls to the given preference in {@code fragment} and highlights its view.
+     *
+     * @param fragment The {@link PreferenceFragmentCompat} containing the preference.
+     * @param entryKey The key of the preference entry to scroll to and highlight.
+     * @param highlightKey Optional key of a sub-preference to highlight instead of {@code
+     *     entryKey}.
+     * @param subViewPos Zero-based index of the styled sub-view to highlight when {@code
+     *     highlightKey} is non-null.
+     */
+    public void scrollAndHighlightItem(
+            PreferenceFragmentCompat fragment,
+            String entryKey,
+            @Nullable String highlightKey,
+            int subViewPos) {
+        if (fragment.getView() == null) return;
+        RecyclerView listView = fragment.getListView();
+        if (listView == null) return;
+        assert listView.getAdapter() instanceof PreferencePositionCallback
+                : "Recycler adapter must implement PreferencePositionCallback";
+        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
+        boolean highlightSubView = highlightKey != null;
+        String key = assumeNonNull(highlightSubView ? highlightKey : entryKey);
+
+        // Zero-based position of the preference view in listView.
+        int pos = listAdapter.getPreferenceAdapterPosition(key);
+        if (pos < 0) {
+            // Fragment that builds preferences dynamically (not with an xml resource but using
+            // APIs) is not ready to return the right position of the item to highlight and scroll
+            // to, even though the associated view would already have been attached. Take a
+            // different approach to do the scrolling and highlighting i.e. wait a few more
+            // layout passes for the view holder to be available.
+            mHandler.post(
+                    () ->
+                            scrollAndHighlightDynamicPref(
+                                    fragment, key, highlightSubView, subViewPos));
+            return;
+        }
+        mRemoveResultChildViewListener = null;
+        var attachListener =
+                new RecyclerView.OnChildAttachStateChangeListener() {
+                    @Override
+                    public void onChildViewAttachedToWindow(View view) {
+                        // |attach| events for a preference view may be invoked multiple times,
+                        // intertwined with |detach| in close succession. We should use the last
+                        // event to highlight the corresponding preference view. The listener
+                        // is removed after that.
+                        if (fragment.getView() == null || fragment.getListView() == null) return;
+                        var viewHolder = fragment.getListView().getChildViewHolder(view);
+                        if (viewHolder != null && pos == viewHolder.getBindingAdapterPosition()) {
+                            scheduleHighlight(
+                                    listView,
+                                    this,
+                                    fragment,
+                                    view,
+                                    pos,
+                                    highlightSubView,
+                                    subViewPos);
+                        }
+                    }
+
+                    @Override
+                    public void onChildViewDetachedFromWindow(View view) {}
+                };
+        listView.addOnChildAttachStateChangeListener(attachListener);
+        var existingHolder = listView.findViewHolderForAdapterPosition(pos);
+        if (existingHolder != null) {
+            scheduleHighlight(
+                    listView,
+                    attachListener,
+                    fragment,
+                    existingHolder.itemView,
+                    pos,
+                    highlightSubView,
+                    subViewPos);
+        }
+        scrollToPref(fragment, key);
+    }
+
+    private void scheduleHighlight(
+            RecyclerView listView,
+            RecyclerView.OnChildAttachStateChangeListener listener,
+            PreferenceFragmentCompat fragment,
+            View view,
+            int pos,
+            boolean highlightSubView,
+            int subViewPos) {
+        if (mRemoveResultChildViewListener != null) {
+            mHandler.removeCallbacks(mRemoveResultChildViewListener);
+        }
+        mRemoveResultChildViewListener =
+                () -> {
+                    mRemoveResultChildViewListener = null;
+                    listView.removeOnChildAttachStateChangeListener(listener);
+                    if (fragment.getView() == null) return;
+                    highlightItem(fragment, view, pos, highlightSubView, subViewPos);
+                };
+        mHandler.postDelayed(mRemoveResultChildViewListener, 200);
+    }
+
+    private void scrollAndHighlightDynamicPref(
+            PreferenceFragmentCompat fragment,
+            String key,
+            boolean highlightSubView,
+            int subViewPos) {
+        if (fragment.getView() == null) return;
+        RecyclerView listView = fragment.getListView();
+        if (listView == null) return;
+
+        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
+        int pos = assumeNonNull(listAdapter).getPreferenceAdapterPosition(key);
+        var viewHolder = listView.findViewHolderForAdapterPosition(pos);
+        if (viewHolder == null) {
+            mHandler.post(
+                    () ->
+                            scrollAndHighlightDynamicPref(
+                                    fragment, key, highlightSubView, subViewPos));
+        } else {
+            highlightItem(fragment, viewHolder.itemView, pos, highlightSubView, subViewPos);
+            scrollToPref(fragment, key);
+        }
+    }
+
+    private void highlightItem(
+            PreferenceFragmentCompat fragment,
+            View view,
+            int pos,
+            boolean highlightSubView,
+            int viewPos) {
+        var info = getHighlightInfo(fragment, view, pos, highlightSubView, viewPos);
+        ViewHighlighter.turnOnHighlight(info.view, info.params);
+        mHandler.post(
+                () -> {
+                    mTurnOffHighlight = () -> ViewHighlighter.turnOffHighlight(info.view);
+                });
+    }
+
+    private void scrollToPref(PreferenceFragmentCompat fragment, String key) {
+        RecyclerView listView = fragment.getListView();
+        boolean containmentStyleDisabled =
+                mItemDecorations.isEmpty() && mGlobalLayoutListeners.isEmpty();
+        if (containmentStyleDisabled) {
+            fragment.scrollToPreference(key);
+        } else {
+            // Calling #scrollToPreference directly doesn't work when if containment styled is
+            // enabled. But OnScrollListener#onScrolled is always invoked after the recycler view
+            // layout pass is completed. Use this timing to actually scroll the fragment to
+            // the chosen preference.
+            listView.addOnScrollListener(
+                    new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
+
+                        @Override
+                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                            fragment.scrollToPreference(key);
+                            listView.removeOnScrollListener(this);
+                        }
+                    });
+        }
+        listView.addOnItemTouchListener(
+                new RecyclerView.SimpleOnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent e) {
+                        if (mTurnOffHighlight != null) {
+                            mTurnOffHighlight.run();
+                            mTurnOffHighlight = null;
+                            listView.removeOnItemTouchListener(this);
+                        }
+                        return false;
+                    }
+                });
+    }
+
+    private HighlightInfo getHighlightInfo(
+            PreferenceFragmentCompat fragment,
+            View view,
+            int pos,
+            boolean highlightSubView,
+            int subViewPos) {
+        var params = new HighlightParams(HighlightShape.RECTANGLE);
+        var defaultRes = new HighlightInfo(view, params);
+        if (highlightSubView) {
+            List<View> views = new ArrayList<>();
+            ContainmentViewStyler.recursivelyFindStyledViews(view, views);
+            if (views.isEmpty() || subViewPos >= views.size()) return defaultRes;
+
+            if (mContainmentController == null) {
+                mContainmentController = new ContainmentItemController(mContext);
+            }
+            var style = mContainmentController.generateViewStyles(views).get(subViewPos);
+            params.setTopCornerRadius((int) style.getTopRadius());
+            params.setBottomCornerRadius((int) style.getBottomRadius());
+            return new HighlightInfo(views.get(subViewPos), params);
+        } else {
+            var itemDecoration = mItemDecorations.get(fragment);
+            if (itemDecoration == null) return defaultRes;
+
+            var style = itemDecoration.getContainerStyle(pos);
+            if (style == null) return defaultRes;
+
+            params.setTopCornerRadius((int) style.getTopRadius());
+            params.setBottomCornerRadius((int) style.getBottomRadius());
+            return defaultRes;
         }
     }
 
@@ -215,7 +489,9 @@ class SettingsContainmentHelper {
         if (recyclerView == null) return;
 
         ContainmentItemController controller = new ContainmentItemController(mContext);
-        if (mDelegate.isTwoColumnSettingsVisible()) controller.setHorizontalMargin(0);
+        if (mDelegate.isTwoColumnSettingsVisible()) {
+            controller.setHorizontalMargin(0);
+        }
         ContainmentItemDecoration itemDecoration = mItemDecorations.get(fragment);
         if (itemDecoration == null) {
             itemDecoration = new ContainmentItemDecoration(controller);
@@ -284,9 +560,5 @@ class SettingsContainmentHelper {
         if (listener != null && view != null) {
             view.getViewTreeObserver().removeOnGlobalLayoutListener(listener);
         }
-    }
-
-    Map<PreferenceFragmentCompat, ContainmentItemDecoration> getItemDecorations() {
-        return mItemDecorations;
     }
 }

@@ -53,8 +53,6 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceGroup.PreferencePositionCallback;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
@@ -74,6 +72,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsContainmentHelper;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsMenuHelper;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -84,13 +83,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData.Sear
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.ToolbarUtils;
-import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
-import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
-import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
@@ -130,7 +123,7 @@ public class SettingsSearchCoordinator
     private final Toolbar mActionBar;
     private final BooleanSupplier mUseMultiColumnSupplier;
     private @Nullable final MultiColumnSettings mMultiColumnSettings;
-    private final Map<PreferenceFragmentCompat, ContainmentItemDecoration> mItemDecorations;
+    private final SettingsContainmentHelper mContainmentHelper;
     private final Handler mHandler = new Handler();
     private final Profile mProfile;
     private final Callback<Integer> mUpdateFirstVisibleTitle;
@@ -138,9 +131,6 @@ public class SettingsSearchCoordinator
     private final boolean mShownInTab;
 
     private @Nullable Runnable mSearchRunnable;
-    private @Nullable Runnable mRemoveResultChildViewListener;
-    private @Nullable Runnable mTurnOffHighlight;
-    private @Nullable ContainmentItemController mContainmentController;
 
     // States for search operation. These states are managed to go back and forth between viewing
     // the search results and browsing result fragments. We perform some UI tasks such as
@@ -224,23 +214,12 @@ public class SettingsSearchCoordinator
         void onSearchResults(SearchResults results);
     }
 
-    // Information of the view to highlight.
-    private static class HighlightInfo {
-        public final View view;
-        public final HighlightParams params;
-
-        private HighlightInfo(View view, HighlightParams params) {
-            this.view = view;
-            this.params = params;
-        }
-    }
-
     /**
      * @param activity {@link SettingsActivity} object
      * @param useMultiColumnSupplier Supplier telling us whether the multi-column mode is on
      * @param multiColumnSettings {@link MultiColumnSettings} Fragment. Can be {@code null} unless
      *     the multi-column settings feature is enabled.
-     * @param itemDecorations Containment style map used to apply the style to the highlighted item.
+     * @param containmentHelper Helper for containment styling and preference highlighting.
      * @param profile User profile object.
      * @param updateFirstVisibleTitle Callback used to set the first visible one of the titles. See
      *     {@link MultiColumnSettings#mFirstVisibleTitleIndex}.
@@ -252,7 +231,7 @@ public class SettingsSearchCoordinator
             Toolbar actionBar,
             BooleanSupplier useMultiColumnSupplier,
             @Nullable MultiColumnSettings multiColumnSettings,
-            Map<PreferenceFragmentCompat, ContainmentItemDecoration> itemDecorations,
+            SettingsContainmentHelper containmentHelper,
             Profile profile,
             Callback<Integer> updateFirstVisibleTitle,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
@@ -264,7 +243,7 @@ public class SettingsSearchCoordinator
         mUseMultiColumnSupplier = useMultiColumnSupplier;
         mMultiColumnSettings = multiColumnSettings;
         setFragmentState(FS_SETTINGS);
-        mItemDecorations = itemDecorations;
+        mContainmentHelper = containmentHelper;
         mProfile = profile;
         mUpdateFirstVisibleTitle = updateFirstVisibleTitle;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -1880,7 +1859,7 @@ public class SettingsSearchCoordinator
                                     FragmentManager fm, Fragment f, Context context) {
                                 mHandler.post(
                                         () ->
-                                                scrollAndHighlightItem(
+                                                mContainmentHelper.scrollAndHighlightItem(
                                                         pf,
                                                         entry.key,
                                                         entry.highlightKey,
@@ -1911,172 +1890,7 @@ public class SettingsSearchCoordinator
             requireViewById(R.id.search_query_container).setVisibility(View.GONE);
         }
         showBackArrowInSingleColumnMode(true);
-        if (mTurnOffHighlight != null) {
-            mTurnOffHighlight.run();
-            mTurnOffHighlight = null;
-        }
-    }
-
-    private void scrollAndHighlightItem(
-            PreferenceFragmentCompat fragment,
-            String entryKey,
-            @Nullable String highlightKey,
-            int subViewPos) {
-        RecyclerView listView = fragment.getListView();
-        assert listView.getAdapter() instanceof PreferencePositionCallback
-                : "Recycler adapter must implement PreferencePositionCallback";
-        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
-        boolean highlightSubView = highlightKey != null;
-        String key = assumeNonNull(highlightSubView ? highlightKey : entryKey);
-
-        // Zero-based position of the preference view in listView.
-        int pos = listAdapter.getPreferenceAdapterPosition(key);
-        if (pos < 0) {
-            // Fragment that builds preferences dynamically (not with an xml resource but using
-            // APIs) is not ready to return the right position of the item to highlight and scroll
-            // to, even though the associated view would already have been attached. Take a
-            // different approach to do the scrolling and highlighting i.e. wait a few more
-            // layout passes for the view holder to be available.
-            mHandler.post(
-                    () ->
-                            scrollAndHighlightDynamicPref(
-                                    fragment, key, highlightSubView, subViewPos));
-            return;
-        }
-        mRemoveResultChildViewListener = null;
-        listView.addOnChildAttachStateChangeListener(
-                new RecyclerView.OnChildAttachStateChangeListener() {
-                    @Override
-                    public void onChildViewAttachedToWindow(View view) {
-                        // |attach| events for a preference view may be invoked multiple times,
-                        // intertwined with |detach| in close succession. We should use the last
-                        // event to highlight the corresponding preference view. The listener
-                        // is removed after that.
-                        var viewHolder = fragment.getListView().getChildViewHolder(view);
-                        if (pos == viewHolder.getBindingAdapterPosition()) {
-                            if (mRemoveResultChildViewListener != null) {
-                                mHandler.removeCallbacks(mRemoveResultChildViewListener);
-                            }
-                            mRemoveResultChildViewListener =
-                                    () -> {
-                                        highlightItem(
-                                                fragment, view, pos, highlightSubView, subViewPos);
-                                        listView.removeOnChildAttachStateChangeListener(this);
-                                        mRemoveResultChildViewListener = null;
-                                    };
-                            mHandler.postDelayed(mRemoveResultChildViewListener, 200);
-                        }
-                    }
-
-                    @Override
-                    public void onChildViewDetachedFromWindow(View view) {}
-                });
-        scrollToPref(fragment, key);
-    }
-
-    private void scrollAndHighlightDynamicPref(
-            PreferenceFragmentCompat fragment,
-            String key,
-            boolean highlightSubView,
-            int subViewPos) {
-        RecyclerView listView = fragment.getListView();
-        if (listView == null) return;
-
-        var listAdapter = (PreferencePositionCallback) listView.getAdapter();
-        int pos = assumeNonNull(listAdapter).getPreferenceAdapterPosition(key);
-        var viewHolder = listView.findViewHolderForAdapterPosition(pos);
-        if (viewHolder == null) {
-            mHandler.post(
-                    () ->
-                            scrollAndHighlightDynamicPref(
-                                    fragment, key, highlightSubView, subViewPos));
-        } else {
-            highlightItem(fragment, viewHolder.itemView, pos, highlightSubView, subViewPos);
-            scrollToPref(fragment, key);
-        }
-    }
-
-    private void highlightItem(
-            PreferenceFragmentCompat fragment,
-            View view,
-            int pos,
-            boolean highlightSubView,
-            int viewPos) {
-        var info = getHighlightInfo(fragment, view, pos, highlightSubView, viewPos);
-        ViewHighlighter.turnOnHighlight(info.view, info.params);
-        mHandler.post(
-                () -> {
-                    mTurnOffHighlight = () -> ViewHighlighter.turnOffHighlight(info.view);
-                });
-    }
-
-    private void scrollToPref(PreferenceFragmentCompat fragment, String key) {
-        RecyclerView listView = fragment.getListView();
-        boolean containmentStyleDisabled = mItemDecorations.isEmpty();
-        if (containmentStyleDisabled) {
-            fragment.scrollToPreference(key);
-        } else {
-            // Calling #scrollToPreference directly doesn't work when if containment styled is
-            // enabled. But OnScrollListener#onScrolled is always invoked after the recycler view
-            // layout pass is completed. Use this timing to actually scroll the fragment to
-            // the chosen preference.
-            listView.addOnScrollListener(
-                    new RecyclerView.OnScrollListener() {
-                        @Override
-                        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {}
-
-                        @Override
-                        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                            fragment.scrollToPreference(key);
-                            listView.removeOnScrollListener(this);
-                        }
-                    });
-        }
-        listView.addOnItemTouchListener(
-                new RecyclerView.SimpleOnItemTouchListener() {
-                    @Override
-                    public boolean onInterceptTouchEvent(RecyclerView recyclerView, MotionEvent e) {
-                        if (mTurnOffHighlight != null) {
-                            mTurnOffHighlight.run();
-                            mTurnOffHighlight = null;
-                            listView.removeOnItemTouchListener(this);
-                        }
-                        return false;
-                    }
-                });
-    }
-
-    private HighlightInfo getHighlightInfo(
-            PreferenceFragmentCompat fragment,
-            View view,
-            int pos,
-            boolean highlightSubView,
-            int subViewPos) {
-        var params = new HighlightParams(HighlightShape.RECTANGLE);
-        var defaultRes = new HighlightInfo(view, params);
-        if (highlightSubView) {
-            List<View> views = new ArrayList<>();
-            ContainmentViewStyler.recursivelyFindStyledViews(view, views);
-            if (views.isEmpty() || subViewPos >= views.size()) return defaultRes;
-
-            if (mContainmentController == null) {
-                mContainmentController = new ContainmentItemController(mActivity);
-            }
-            var style = mContainmentController.generateViewStyles(views).get(subViewPos);
-            params.setTopCornerRadius((int) style.getTopRadius());
-            params.setBottomCornerRadius((int) style.getBottomRadius());
-            return new HighlightInfo(views.get(subViewPos), params);
-        } else {
-            var itemDecoration = mItemDecorations.get(fragment);
-            if (itemDecoration == null) return defaultRes;
-
-            var style = itemDecoration.getContainerStyle(pos);
-            if (style == null) return defaultRes;
-
-            params.setTopCornerRadius((int) style.getTopRadius());
-            params.setBottomCornerRadius((int) style.getBottomRadius());
-            return defaultRes;
-        }
+        mContainmentHelper.turnOffHighlight();
     }
 
     public void onStop() {
@@ -2110,7 +1924,7 @@ public class SettingsSearchCoordinator
             SettingsIndexData.reset();
         }
         mHandler.removeCallbacksAndMessages(null);
-        mContainmentController = null;
+        mContainmentHelper.destroy();
 
         RecentSearchQueue.getInstance().persistToDiskAndReset();
         if (mFragmentState != FS_SETTINGS) {

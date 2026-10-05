@@ -482,7 +482,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         actionBar,
                         this::isTwoColumnSettingsVisible,
                         mMultiColumnSettings,
-                        mContainmentHelper.getItemDecorations(),
+                        mContainmentHelper,
                         mProfile,
                         updateFirstVisibleTitle,
                         getModalDialogManagerSupplier(),
@@ -780,6 +780,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mTitleUpdater != null) {
             getSupportFragmentManager().unregisterFragmentLifecycleCallbacks(mTitleUpdater);
         }
+        mContainmentHelper.unregisterCallbacks(getSupportFragmentManager());
         if (mSearchCoordinator != null) {
             if (mMultiColumnSettings != null) {
                 mMultiColumnSettings.removeObserver(mSearchCoordinator);

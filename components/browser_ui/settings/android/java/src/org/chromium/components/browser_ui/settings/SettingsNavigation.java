@@ -21,6 +21,12 @@ import java.lang.annotation.RetentionPolicy;
 /** Interface for navigating Settings. */
 @NullMarked
 public interface SettingsNavigation {
+    /**
+     * Fragment argument key for the preference key to scroll to and highlight when opening a
+     * settings fragment.
+     */
+    String EXTRA_HIGHLIGHT_PREFERENCE = "highlight_preference";
+
     @IntDef({
         SettingsFragment.ABOUT_CHROME,
         SettingsFragment.ACCESSIBILITY,
@@ -234,6 +240,19 @@ public interface SettingsNavigation {
             boolean addToBackStack);
 
     /**
+     * Creates a {@link Bundle} of fragment arguments that scrolls to and highlights the preference
+     * with {@code preferenceKey}, copying any existing entries from {@code fragmentArgs}.
+     *
+     * @param fragmentArgs Existing fragment arguments, or null.
+     * @param preferenceKey The key of the preference to scroll to and highlight.
+     */
+    static Bundle createHighlightArgs(@Nullable Bundle fragmentArgs, String preferenceKey) {
+        Bundle args = fragmentArgs != null ? new Bundle(fragmentArgs) : new Bundle();
+        args.putString(EXTRA_HIGHLIGHT_PREFERENCE, preferenceKey);
+        return args;
+    }
+
+    /**
      * Starts settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
@@ -249,6 +268,23 @@ public interface SettingsNavigation {
             @Nullable Bundle fragmentArgs,
             boolean addToBackStack,
             @Nullable String tag);
+
+    /**
+     * Starts settings with the specified fragment and arguments, scrolling to and highlighting the
+     * preference with {@code highlightPreferenceKey}.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param highlightPreferenceKey The key of the preference to scroll to and highlight.
+     */
+    default void startSettings(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs,
+            String highlightPreferenceKey) {
+        startSettings(context, fragment, createHighlightArgs(fragmentArgs, highlightPreferenceKey));
+    }
 
     /**
      * Creates an intent for starting settings with the specified fragment.
@@ -303,6 +339,24 @@ public interface SettingsNavigation {
             @Nullable String tag);
 
     /**
+     * Creates an intent for starting settings with the specified fragment and arguments, scrolling
+     * to and highlighting the preference with {@code highlightPreferenceKey}.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The class of the fragment to show, or null to show the default fragment.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param highlightPreferenceKey The key of the preference to scroll to and highlight.
+     */
+    default Intent createSettingsIntent(
+            Context context,
+            @Nullable Class<? extends Fragment> fragment,
+            @Nullable Bundle fragmentArgs,
+            String highlightPreferenceKey) {
+        return createSettingsIntent(
+                context, fragment, createHighlightArgs(fragmentArgs, highlightPreferenceKey));
+    }
+
+    /**
      * Creates an intent for starting settings with the specified fragment and arguments.
      *
      * @param context The current Activity, or an application context if no Activity is available.
@@ -311,6 +365,24 @@ public interface SettingsNavigation {
      */
     Intent createSettingsIntent(
             Context context, @SettingsFragment int fragment, @Nullable Bundle fragmentArgs);
+
+    /**
+     * Creates an intent for starting settings with the specified fragment and arguments, scrolling
+     * to and highlighting the preference with {@code highlightPreferenceKey}.
+     *
+     * @param context The current Activity, or an application context if no Activity is available.
+     * @param fragment The fragment to show.
+     * @param fragmentArgs A bundle of additional fragment arguments.
+     * @param highlightPreferenceKey The key of the preference to scroll to and highlight.
+     */
+    default Intent createSettingsIntent(
+            Context context,
+            @SettingsFragment int fragment,
+            @Nullable Bundle fragmentArgs,
+            String highlightPreferenceKey) {
+        return createSettingsIntent(
+                context, fragment, createHighlightArgs(fragmentArgs, highlightPreferenceKey));
+    }
 
     /**
      * Finishes the current settings.

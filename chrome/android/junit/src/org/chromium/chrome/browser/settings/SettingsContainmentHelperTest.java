@@ -5,21 +5,27 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.View;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup.PreferencePositionCallback;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 import androidx.recyclerview.widget.RecyclerView;
@@ -33,12 +39,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
+
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link SettingsContainmentHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -275,6 +285,57 @@ public class SettingsContainmentHelperTest {
 
         // Verify ContainmentItemDecoration was removed from RecyclerView
         assertEquals(0, recyclerView.getItemDecorationCount());
+    }
+
+    private abstract static class TestPreferenceAdapter
+            extends RecyclerView.Adapter<RecyclerView.ViewHolder>
+            implements PreferencePositionCallback {}
+
+    @Test
+    public void testOnFragmentAttached_scrollsAndHighlightsPreferenceFromArgs() {
+        mContainmentHelper.registerCallbacks(mFragmentManager);
+        ArgumentCaptor<FragmentManager.FragmentLifecycleCallbacks> callbackCaptor =
+                ArgumentCaptor.forClass(FragmentManager.FragmentLifecycleCallbacks.class);
+        verify(mFragmentManager)
+                .registerFragmentLifecycleCallbacks(callbackCaptor.capture(), eq(true));
+        FragmentManager.FragmentLifecycleCallbacks callbacks = callbackCaptor.getValue();
+
+        PreferenceFragmentCompat fragment =
+                spy(
+                        new PreferenceFragmentCompat() {
+                            @Override
+                            public void onCreatePreferences(
+                                    @Nullable Bundle savedInstanceState,
+                                    @Nullable String rootKey) {}
+                        });
+        doNothing().when(fragment).scrollToPreference("my_pref");
+        when(fragment.getView()).thenReturn(mView);
+
+        View itemView = new View(mContext);
+        RecyclerView.ViewHolder viewHolder = new RecyclerView.ViewHolder(itemView) {};
+        RecyclerView listView =
+                new RecyclerView(mContext) {
+                    @Override
+                    public @Nullable ViewHolder findViewHolderForAdapterPosition(int position) {
+                        return position == 2 ? viewHolder : null;
+                    }
+                };
+        TestPreferenceAdapter mockAdapter = mock(TestPreferenceAdapter.class);
+        when(mockAdapter.getPreferenceAdapterPosition("my_pref")).thenReturn(2);
+        listView.setAdapter(mockAdapter);
+        setFragmentList(fragment, listView);
+
+        Bundle args = SettingsNavigation.createHighlightArgs(null, "my_pref");
+        fragment.setArguments(args);
+
+        callbacks.onFragmentAttached(mFragmentManager, fragment, mContext);
+
+        assertFalse(args.containsKey(SettingsNavigation.EXTRA_HIGHLIGHT_PREFERENCE));
+
+        ShadowLooper.idleMainLooper(250, TimeUnit.MILLISECONDS);
+
+        verify(fragment).scrollToPreference("my_pref");
+        assertTrue((Boolean) itemView.getTag(R.id.highlight_state));
     }
 
     /**

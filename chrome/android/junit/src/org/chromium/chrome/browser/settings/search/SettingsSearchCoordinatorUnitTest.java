@@ -52,13 +52,12 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
+import org.chromium.chrome.browser.settings.SettingsContainmentHelper;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-
-import java.util.HashMap;
 
 /** Unit tests for {@link SettingsSearchCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -68,6 +67,7 @@ public class SettingsSearchCoordinatorUnitTest {
     private FragmentActivity mActivity;
     private Toolbar mToolbar;
     @Mock private MultiColumnSettings mMultiColumnSettings;
+    @Mock private SettingsContainmentHelper mContainmentHelper;
     @Mock private Profile mProfile;
     @Mock private ModalDialogManager mModalDialogManager;
 
@@ -122,7 +122,7 @@ public class SettingsSearchCoordinatorUnitTest {
                 mToolbar,
                 this::isTwoColumnSettingsVisible,
                 mMultiColumnSettings,
-                new HashMap<>(),
+                mContainmentHelper,
                 mProfile,
                 (index) -> {},
                 modalDialogSupplier,

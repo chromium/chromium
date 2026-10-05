@@ -737,7 +737,7 @@ public class SettingsPageFragmentDelegateImpl
                         mToolbar,
                         this::isTwoColumnSettingsVisible,
                         multiColumnSettings,
-                        containmentHelper.getItemDecorations(),
+                        containmentHelper,
                         mProfile,
                         this::updateFirstVisibleTitle,
                         mModalDialogSupplier,
