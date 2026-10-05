@@ -18,8 +18,9 @@ VoiceFocusedContentsTracker::VoiceFocusedContentsTracker() {
   // synchronously.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&VoiceFocusedContentsTracker::NotifyActiveTabChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &VoiceFocusedContentsTracker::NotifyVoiceFocusedContentsChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 VoiceFocusedContentsTracker::~VoiceFocusedContentsTracker() = default;
@@ -32,7 +33,7 @@ void VoiceFocusedContentsTracker::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void VoiceFocusedContentsTracker::NotifyActiveTabChanged() {
+void VoiceFocusedContentsTracker::NotifyVoiceFocusedContentsChanged() {
   if (observers_.empty()) {
     return;
   }

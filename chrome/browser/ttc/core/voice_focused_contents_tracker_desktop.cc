@@ -72,14 +72,14 @@ void VoiceFocusedContentsTrackerDesktop::BindToBrowser(
             base::Unretained(this)));
   }
   if (had_active_contents || GetActiveWebContents()) {
-    NotifyActiveTabChanged();
+    NotifyVoiceFocusedContentsChanged();
   }
 }
 
 void VoiceFocusedContentsTrackerDesktop::OnBoundBrowserActiveTabChanged(
     BrowserWindowInterface* browser) {
   CHECK_EQ(browser, bound_browser_);
-  NotifyActiveTabChanged();
+  NotifyVoiceFocusedContentsChanged();
 }
 
 }  // namespace ttc

@@ -64,7 +64,7 @@ class VoiceFocusedContentsTracker {
   VoiceFocusedContentsTracker();
 
   // Notifies observers that the result of GetActiveWebContents() has changed.
-  void NotifyActiveTabChanged();
+  void NotifyVoiceFocusedContentsChanged();
 
  private:
   base::ObserverList<Observer> observers_;

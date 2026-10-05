@@ -54,7 +54,7 @@ void VoiceFocusedContentsTrackerAndroid::OnTabModelRemoved(
 void VoiceFocusedContentsTrackerAndroid::DidSelectTab(TabAndroid* tab) {
   if (bound_tab_model_ && bound_tab_model_->GetActiveTab() == tab) {
     has_active_contents_ = GetActiveWebContents() != nullptr;
-    NotifyActiveTabChanged();
+    NotifyVoiceFocusedContentsChanged();
   }
 }
 
@@ -62,14 +62,14 @@ void VoiceFocusedContentsTrackerAndroid::DidRemoveTabForClosure(
     TabAndroid* tab) {
   if (has_active_contents_ && !GetActiveWebContents()) {
     has_active_contents_ = false;
-    NotifyActiveTabChanged();
+    NotifyVoiceFocusedContentsChanged();
   }
 }
 
 void VoiceFocusedContentsTrackerAndroid::TabRemoved(TabAndroid* tab) {
   if (has_active_contents_ && !GetActiveWebContents()) {
     has_active_contents_ = false;
-    NotifyActiveTabChanged();
+    NotifyVoiceFocusedContentsChanged();
   }
 }
 
@@ -96,7 +96,7 @@ void VoiceFocusedContentsTrackerAndroid::BindToTabModel(TabModel* tab_model) {
   bound_tab_model_ = tab_model;
   has_active_contents_ = GetActiveWebContents() != nullptr;
   if (had_active_contents || has_active_contents_) {
-    NotifyActiveTabChanged();
+    NotifyVoiceFocusedContentsChanged();
   }
 }
 
