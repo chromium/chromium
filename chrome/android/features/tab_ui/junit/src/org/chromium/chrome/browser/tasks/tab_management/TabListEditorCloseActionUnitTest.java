@@ -26,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
@@ -122,7 +123,9 @@ public class TabListEditorCloseActionUnitTest {
 
         verify(mTabRemover)
                 .closeTabs(
-                        TabClosureParams.closeTabs(List.of(tabs.get(1))).build(),
+                        TabClosureParams.closeTabs(List.of(tabs.get(1)))
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                .build(),
                         /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
     }
@@ -152,7 +155,11 @@ public class TabListEditorCloseActionUnitTest {
         assertTrue(mAction.perform());
 
         verify(mTabRemover)
-                .closeTabs(TabClosureParams.closeTabs(tabs).build(), /* allowDialog= */ true);
+                .closeTabs(
+                        TabClosureParams.closeTabs(tabs)
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                .build(),
+                        /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
 
         helper.waitForOnly();
@@ -161,7 +168,11 @@ public class TabListEditorCloseActionUnitTest {
         assertTrue(mAction.perform());
 
         verify(mTabRemover, times(2))
-                .closeTabs(TabClosureParams.closeTabs(tabs).build(), /* allowDialog= */ true);
+                .closeTabs(
+                        TabClosureParams.closeTabs(tabs)
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                .build(),
+                        /* allowDialog= */ true);
         verify(mDelegate, times(2)).hideByAction();
         assertEquals(1, helper.getCallCount());
     }
@@ -230,6 +241,7 @@ public class TabListEditorCloseActionUnitTest {
                 .closeTabs(
                         TabClosureParams.closeTabs(holder.getSelectedAndRelatedTabs())
                                 .hideTabGroups(true)
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
                                 .build(),
                         /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
@@ -289,7 +301,9 @@ public class TabListEditorCloseActionUnitTest {
 
         verify(mTabRemover)
                 .closeTabs(
-                        TabClosureParams.closeTabs(holder.getSelectedTabs()).build(),
+                        TabClosureParams.closeTabs(holder.getSelectedTabs())
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                .build(),
                         /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
     }

@@ -1582,6 +1582,7 @@ public class TabGridDialogMediatorUnitTest {
                                 TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID)
                                         .allowUndo(shouldAllowUndo)
                                         .hideTabGroups(shouldHideTabGroups)
+                                        .tabClosingSource(TabClosingSource.BOTTOM_TAB_GROUP_STRIP)
                                         .build()),
                         /* allowDialog= */ eq(true),
                         any());

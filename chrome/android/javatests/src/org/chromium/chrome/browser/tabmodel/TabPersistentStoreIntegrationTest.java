@@ -442,7 +442,9 @@ public class TabPersistentStoreIntegrationTest {
                     regularModel
                             .getTabRemover()
                             .closeTabs(
-                                    TabClosureParams.closeAllTabs().build(),
+                                    TabClosureParams.closeAllTabs()
+                                            .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                            .build(),
                                     /* allowDialog= */ false);
                 });
         assertEquals(tabCount, closedTabIds.size());

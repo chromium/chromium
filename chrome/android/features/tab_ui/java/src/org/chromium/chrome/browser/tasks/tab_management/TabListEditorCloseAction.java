@@ -12,6 +12,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
@@ -75,6 +76,7 @@ public class TabListEditorCloseAction extends TabListEditorAction {
                         TabClosureParams.closeTabs(tabs)
                                 .allowUndo(TabClosureParamsUtils.shouldAllowUndo(triggeringMotion))
                                 .hideTabGroups(getLayoutType() == TabListLayoutType.GROUPED)
+                                .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
                                 .build(),
                         /* allowDialog= */ true);
         TabUiMetricsHelper.recordSelectionEditorActionMetrics(
