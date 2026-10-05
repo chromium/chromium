@@ -106,6 +106,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Entry point to the WebView. The system framework talks to this class to get instances of the
@@ -164,6 +165,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final Object sSingletonLock = new Object();
     private static WebViewChromiumFactoryProvider sSingleton;
+    private static final AtomicInteger sCreateCallCount = new AtomicInteger(0);
 
     public Object getLazyInitLock() {
         return mLazyInitLock;
@@ -319,6 +321,37 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     /** Entry point for Android 26 (Oreo) and above. See class docs for initialization details. */
     public static WebViewChromiumFactoryProvider create(WebViewDelegate delegate) {
+        int callCount = sCreateCallCount.incrementAndGet();
+        synchronized (sSingletonLock) {
+            if (sSingleton != null) {
+                // There is at least one SDK that reflects into `WebViewFactory.sProviderInstance`
+                // to replace it with a proxy in a thread-unsafe way which may cause the framework
+                // to attempt to create the provider more than once in a single process.
+                // This would always crash at some point (in setSingleton, if not earlier), but the
+                // resulting crash reports were weird and confusing.
+                // We could just throw a specific exception here to make the cause clear, but
+                // returning the already-existing instance to avoid crashing should be safe.
+                Log.w(
+                        TAG,
+                        "Attempted to recreate WebViewChromiumFactoryProvider: unsupported API"
+                                + " usage via reflection?");
+                RecordHistogram.recordCount100Histogram(
+                        "Android.WebView.UnsupportedUsage.ProviderRecreation", callCount);
+                return sSingleton;
+            }
+        }
+
+        if (callCount > 1) {
+            // The framework does not do anything to prevent another attempt to initialize the
+            // provider if the previous attempt threw an exception. Exceptions thrown from provider
+            // init are always unchecked and in principle intended to crash the app, but in practice
+            // apps often catch these in various ways and may continue to try to use WebView.
+            // Since this is probably not rare in the wild and is not *definitely* going to fail,
+            // don't warn about this.
+            RecordHistogram.recordCount100Histogram(
+                    "Android.WebView.UnsupportedUsage.ProviderRetry", callCount);
+        }
+
         return new WebViewChromiumFactoryProviderForT(delegate);
     }
 
@@ -328,6 +361,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
      * See class docs for initialization details.
      */
     public WebViewChromiumFactoryProvider(WebViewDelegate delegate) {
+        if (sCreateCallCount.get() == 0) {
+            // The framework calls the static `create()` method since API26.
+            Log.w(
+                    TAG,
+                    "WebViewChromiumFactoryProvider should only be constructed by the framework!");
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.UnsupportedUsage.ProviderConstructor", true);
+        }
         initialize(delegate);
     }
 

@@ -9684,6 +9684,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.UnsupportedUsage.ProviderConstructor"
+    enum="Boolean" expires_after="2027-02-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records true if the WebViewChromiumFactoryProvider is constructed without
+    the create() method being called first, which implies the host app is using
+    unsupported reflection. This does not cover every conceivable way that the
+    app might misuse the API. False is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.UnsupportedUsage.ProviderRecreation"
+    units="create calls" expires_after="2027-02-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when the WebViewChromiumFactoryProvider.create() method is called
+    after the provider has already been successfully created. The count is the
+    total number of calls to create() which have occurred so far (which will be
+    at least 2 by definition).
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.UnsupportedUsage.ProviderRetry"
+    units="create calls" expires_after="2027-02-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Recorded when the WebViewChromiumFactoryProvider.create() method is called
+    more than once and the provider has not yet been successfully created. The
+    count is the total number of calls to create() which have occurred so far
+    (which will be at least 2 by definition).
+
+    Note that this can only be reported to UMA if we did eventually succeed in
+    creating the provider! If the creation of the provider never succeeds then
+    we won't have reached the point where histograms are persisted to disk, and
+    this session's histograms will be lost.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.UsedInPopupWindow"
     enum="WebViewUsedInPopupWindow" expires_after="2026-09-01">
   <owner>peconn@chromium.org</owner>
