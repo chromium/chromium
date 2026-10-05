@@ -99,6 +99,16 @@ constexpr char kLongBodyText[] =
     "You fight and return "
     "Only to learn that you have lost her";
 
+const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
+    {'H', 12}, {'e', 6},  {'l', 5},  {'l', 4},  {'o', 8},  {',', 4},
+    {' ', 4},  {'w', 12}, {'o', 6},  {'r', 6},  {'l', 4},  {'d', 9},
+    {'!', 4},  {' ', 0},  {' ', 0},  {'G', 16}, {'o', 12}, {'o', 12},
+    {'d', 12}, {'b', 10}, {'y', 12}, {'e', 12}, {',', 4},  {' ', 6},
+    {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
+};
+
+constexpr char kChromiumTestUrl[] = "www.cs.chromium.org";
+
 // Returns a style with only the font weight set to a normal weight.
 chrome_pdf::AccessibilityTextStyleInfo CreateNormalStyle() {
   chrome_pdf::AccessibilityTextStyleInfo style;
@@ -113,49 +123,47 @@ chrome_pdf::AccessibilityTextStyleInfo CreateBoldStyle() {
   return style;
 }
 
-const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
-    /*start_index=*/0,
-    /*len=*/kCharsPerWord, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
-const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
-    /*start_index=*/kCharsPerWord,
-    /*len=*/kCharsPerWord, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
-const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
-    {'H', 12}, {'e', 6},  {'l', 5},  {'l', 4},  {'o', 8},  {',', 4},
-    {' ', 4},  {'w', 12}, {'o', 6},  {'r', 6},  {'l', 4},  {'d', 9},
-    {'!', 4},  {' ', 0},  {' ', 0},  {'G', 16}, {'o', 12}, {'o', 12},
-    {'d', 12}, {'b', 10}, {'y', 12}, {'e', 12}, {',', 4},  {' ', 6},
-    {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
-};
-const chrome_pdf::AccessibilityTextRunInfo kFirstRunMultiLine = {
-    /*start_index=*/0,
-    /*len=*/7,
-    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
-const chrome_pdf::AccessibilityTextRunInfo kSecondRunMultiLine = {
-    /*start_index=*/7,
-    /*len=*/8,
-    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
-const chrome_pdf::AccessibilityTextRunInfo kThirdRunMultiLine = {
-    /*start_index=*/15,
-    /*len=*/9,
-    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
-const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
-    /*start_index=*/24,
-    /*len=*/6,
-    gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
-    chrome_pdf::AccessibilityTextDirection::kNone,
-    chrome_pdf::AccessibilityTextStyleInfo()};
+chrome_pdf::AccessibilityTextRunInfo FirstTextRun() {
+  return {/*start_index=*/0,
+          /*len=*/kCharsPerWord, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
 
-const char kChromiumTestUrl[] = "www.cs.chromium.org";
+chrome_pdf::AccessibilityTextRunInfo SecondTextRun() {
+  return {/*start_index=*/kCharsPerWord,
+          /*len=*/kCharsPerWord, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
+
+chrome_pdf::AccessibilityTextRunInfo FirstRunMultiLine() {
+  return {/*start_index=*/0,
+          /*len=*/7, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
+
+chrome_pdf::AccessibilityTextRunInfo SecondRunMultiLine() {
+  return {/*start_index=*/7,
+          /*len=*/8, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
+
+chrome_pdf::AccessibilityTextRunInfo ThirdRunMultiLine() {
+  return {/*start_index=*/15,
+          /*len=*/9, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
+
+chrome_pdf::AccessibilityTextRunInfo FourthRunMultiLine() {
+  return {/*start_index=*/24,
+          /*len=*/6, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+          chrome_pdf::AccessibilityTextDirection::kNone,
+          chrome_pdf::AccessibilityTextStyleInfo()};
+}
 
 using testing::Matches;
 using testing::PrintToString;
@@ -404,7 +412,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     CHECK(text_runs_.empty());
     for (size_t i = 0; i < font_sizes.size(); ++i) {
       chrome_pdf::AccessibilityTextRunInfo run =
-          (i % 2 == 0) ? kFirstTextRun : kSecondTextRun;
+          (i % 2 == 0) ? FirstTextRun() : SecondTextRun();
       run.style.font_size = font_sizes[i];
       if (i < styles.size()) {
         run.style.font_name = styles[i].font_name;
@@ -686,8 +694,8 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
 TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
   static const char kTestAltText[] = "Alternate text for image";
 
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -4618,7 +4626,7 @@ class PdfAccessibilityTreeHeaderFooterRepetitionTest
     };
     std::vector<chrome_pdf::AccessibilityTextRunInfo> runs;
     for (size_t i = 0; i < font_sizes.size(); ++i) {
-      chrome_pdf::AccessibilityTextRunInfo run = kFirstTextRun;
+      chrome_pdf::AccessibilityTextRunInfo run = FirstTextRun();
       run.style = CreateNormalStyle();
       run.style.font_size = font_sizes[i];
       run.bounds = bounds[i];
@@ -5327,8 +5335,8 @@ TEST_F(PdfAccessibilityTreeTest, StructureTree) {
       std::make_unique<chrome_pdf::AccessibilityStructureElement>();
   page_structure->type = chrome_pdf::PdfTagType::kPart;
 
-  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
-                kFourthRunMultiLine};
+  text_runs_ = {FirstRunMultiLine(), SecondRunMultiLine(), ThirdRunMultiLine(),
+                FourthRunMultiLine()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -5640,8 +5648,8 @@ TEST_F(PdfAccessibilityTreeTest, StructureTreeAbbreviationExpansion) {
   pdf_tags.InitAndEnableFeature(chrome_pdf::features::kPdfTags);
   CreatePdfAccessibilityTree();
 
-  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
-                kFourthRunMultiLine};
+  text_runs_ = {FirstRunMultiLine(), SecondRunMultiLine(), ThirdRunMultiLine(),
+                FourthRunMultiLine()};
   chars_.insert_range(chars_.end(), kDummyCharsData);
 
   auto doc_structure_root =
@@ -5709,8 +5717,8 @@ TEST_F(PdfAccessibilityTreeTest, DocumentLanguageOnRootNode) {
       std::make_unique<chrome_pdf::AccessibilityStructureElement>();
   page_structure->type = chrome_pdf::PdfTagType::kPart;
 
-  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
-                kFourthRunMultiLine};
+  text_runs_ = {FirstRunMultiLine(), SecondRunMultiLine(), ThirdRunMultiLine(),
+                FourthRunMultiLine()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -5750,7 +5758,7 @@ TEST_F(PdfAccessibilityTreeTest, UntaggedDocumentLanguageOnRootNode) {
       ::features::kPdfAccessibilityHeuristicEnhancements);
   CreatePdfAccessibilityTree();
 
-  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  text_runs_ = {FirstTextRun(), SecondTextRun()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
   page_info_.text_run_count = text_runs_.size();
@@ -5784,7 +5792,7 @@ TEST_F(PdfAccessibilityTreeTest,
       ::features::kPdfAccessibilityHeuristicEnhancements);
   CreatePdfAccessibilityTree();
 
-  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  text_runs_ = {FirstTextRun(), SecondTextRun()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
   page_info_.text_run_count = text_runs_.size();
@@ -5829,8 +5837,8 @@ TEST_F(PdfAccessibilityTreeTest,
       std::make_unique<chrome_pdf::AccessibilityStructureElement>();
   page_structure->type = chrome_pdf::PdfTagType::kPart;
 
-  text_runs_ = {kFirstRunMultiLine, kSecondRunMultiLine, kThirdRunMultiLine,
-                kFourthRunMultiLine};
+  text_runs_ = {FirstRunMultiLine(), SecondRunMultiLine(), ThirdRunMultiLine(),
+                FourthRunMultiLine()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -5886,7 +5894,7 @@ TEST_F(PdfAccessibilityTreeTest, StructureTreeRootAttributes) {
   pdf_doc->language = "es";
   pdf_doc->alt_text = "Document description";
 
-  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  text_runs_ = {FirstTextRun(), SecondTextRun()};
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -5953,12 +5961,12 @@ TEST_F(PdfAccessibilityTreeTest, PartiallyTaggedPdfPreservesSemanticStructure) {
   // text_run[4]: tagged, in second list item - contains "4444444"
   constexpr size_t kTotalRuns = 5;
   for (size_t i = 0; i < kTotalRuns; ++i) {
-    text_runs_.push_back(kFirstRunMultiLine);
-    text_runs_.back().start_index = i * kFirstRunMultiLine.len;
+    text_runs_.push_back(FirstRunMultiLine());
+    text_runs_.back().start_index = i * FirstRunMultiLine().len;
   }
   // Create characters with each text run having its index repeated.
-  for (size_t i = 0; i < kTotalRuns * kFirstRunMultiLine.len; ++i) {
-    char digit = '0' + (i / kFirstRunMultiLine.len);
+  for (size_t i = 0; i < kTotalRuns * FirstRunMultiLine().len; ++i) {
+    char digit = '0' + (i / FirstRunMultiLine().len);
     chars_.push_back({static_cast<uint32_t>(digit), 10});
   }
 
@@ -6076,10 +6084,10 @@ TEST_F(PdfAccessibilityTreeTest, PartiallyTaggedPdfPreservesSemanticStructure) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
-  text_runs_.emplace_back(kFirstRunMultiLine);
-  text_runs_.emplace_back(kSecondRunMultiLine);
-  text_runs_.emplace_back(kThirdRunMultiLine);
-  text_runs_.emplace_back(kFourthRunMultiLine);
+  text_runs_.emplace_back(FirstRunMultiLine());
+  text_runs_.emplace_back(SecondRunMultiLine());
+  text_runs_.emplace_back(ThirdRunMultiLine());
+  text_runs_.emplace_back(FourthRunMultiLine());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6173,8 +6181,8 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
   constexpr uint32_t kHighlightWhiteColor = MakeARGB(255, 255, 255, 255);
   const char kPopupNoteText[] = "Text Note";
 
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6274,10 +6282,10 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
-  text_runs_.emplace_back(kFirstRunMultiLine);
-  text_runs_.emplace_back(kSecondRunMultiLine);
-  text_runs_.emplace_back(kThirdRunMultiLine);
-  text_runs_.emplace_back(kFourthRunMultiLine);
+  text_runs_.emplace_back(FirstRunMultiLine());
+  text_runs_.emplace_back(SecondRunMultiLine());
+  text_runs_.emplace_back(ThirdRunMultiLine());
+  text_runs_.emplace_back(FourthRunMultiLine());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6409,7 +6417,7 @@ TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
   // `chars_` and `text_runs_` span over the same page text. They should denote
   // the same page text size, but `text_runs_` is incorrect and only denotes 1
   // of 2 text runs.
-  text_runs_.emplace_back(kFirstTextRun);
+  text_runs_.emplace_back(FirstTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6432,8 +6440,8 @@ TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6474,8 +6482,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6507,8 +6515,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6547,8 +6555,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6578,8 +6586,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6622,8 +6630,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6750,8 +6758,8 @@ TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6867,8 +6875,8 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -6921,8 +6929,8 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
   page_info_.text_run_count = text_runs_.size();
@@ -7028,8 +7036,8 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
@@ -7064,7 +7072,7 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
 
 TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   CreatePdfAccessibilityTree();
-  text_runs_ = {kFirstTextRun, kSecondTextRun};
+  text_runs_ = {FirstTextRun(), SecondTextRun()};
   chars_ = {std::begin(kDummyCharsData), std::end(kDummyCharsData)};
   page_info_.text_run_count = text_runs_.size();
   page_info_.char_count = chars_.size();
@@ -7368,8 +7376,8 @@ TEST_F(PdfOcrTest, FeatureNotificationOnInaccessiblePdf) {
 }
 
 TEST_F(PdfOcrTest, NoFeatureNotificationOnAccessiblePdf) {
-  text_runs_.emplace_back(kFirstTextRun);
-  text_runs_.emplace_back(kSecondTextRun);
+  text_runs_.emplace_back(FirstTextRun());
+  text_runs_.emplace_back(SecondTextRun());
   chars_.insert(chars_.end(), std::begin(kDummyCharsData),
                 std::end(kDummyCharsData));
 
