@@ -14,6 +14,7 @@
 #import "ios/chrome/app/custom_scheme_buildflags.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -79,7 +80,7 @@ void RecordExternalActionMetrics(NSURL* url) {
     base::RecordAction(base::UserMetricsAction(
         "MobileExternalActionURLOpenedWithAppStoreGeminiPromo"));
     action = IOSExternalAction::ACTION_APP_STORE_GEMINI_PROMO;
-  } else if (IsAppSwitcherAISummarizationEnabled() &&
+  } else if (IsAppSwitcherAISummarizationTestingExternalURLEnabled() &&
              [path isEqualToString:kExternalActionAppSwitcherTesting]) {
     action = IOSExternalAction::ACTION_START_GEMINI_AI_SUMMARIZATION;
   }
@@ -171,7 +172,8 @@ void RecordExternalActionMetrics(NSURL* url) {
       ProfileIOS* profile = sceneState.profileState.profile;
       CHECK_DEREF(profile).GetPrefs()->SetBoolean(
           prefs::kAppStoreGeminiPromoTriggered, true);
-    } else if ([path isEqualToString:kExternalActionAppSwitcherTesting]) {
+    } else if (IsAppSwitcherAISummarizationTestingExternalURLEnabled() &&
+               [path isEqualToString:kExternalActionAppSwitcherTesting]) {
       // TODO(crbug.com/527016607): Remove this entire testing path when the
       // feature is enabled by default.
       std::string queryUrlString;

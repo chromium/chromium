@@ -437,7 +437,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
                                                         kGeminiAppStorePromoURL)
                                forceApplicationMode:forceApplicationMode];
     params.postOpeningAction = TRIGGER_GEMINI_PROMO;
-  } else if (IsAppSwitcherAISummarizationEnabled() &&
+  } else if (IsAppSwitcherAISummarizationTestingExternalURLEnabled() &&
              [path isEqualToString:kExternalActionAppSwitcherTesting]) {
     // TODO(crbug.com/527016607): Remove this entire testing path when the
     // feature is enabled by default.

@@ -8,6 +8,7 @@
 
 #import <optional>
 
+#import "base/command_line.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
@@ -19,9 +20,11 @@
 #import "ios/chrome/app/custom_scheme_buildflags.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -351,6 +354,8 @@ TEST_F(TaskRequestForURLContextTest, TestExternalActionMetrics) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {kPageActionMenu, kAppSwitcherAISummarization}, {});
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableAppSwitcherAISummarizationTestingExternalURL);
 
   struct TestCase {
     NSString* url_string;
