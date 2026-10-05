@@ -70,6 +70,11 @@ class CORE_EXPORT ArrayBufferContents {
     kCrash,
   };
 
+  enum class MaxAllocationSizePolicy {
+    kNormal,
+    kAllowGigaAllocations,
+  };
+
   ArrayBufferContents() = default;
   ArrayBufferContents(size_t num_elements,
                       size_t element_byte_size,
@@ -167,7 +172,9 @@ class CORE_EXPORT ArrayBufferContents {
   void ShareNonSharedForInternalUse(ArrayBufferContents& other);
   void CopyTo(ArrayBufferContents& other);
 
-  static void* AllocateMemoryOrNull(size_t, InitializationPolicy);
+  static void* AllocateMemoryOrNull(size_t,
+                                    InitializationPolicy,
+                                    MaxAllocationSizePolicy);
   static void FreeMemory(void*);
 
  private:

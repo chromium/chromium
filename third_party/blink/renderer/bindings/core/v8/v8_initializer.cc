@@ -966,10 +966,13 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   // http://www.ecma-international.org/ecma-262/6.0/#sec-createbytedatablock.
   void* Allocate(size_t size) override {
     if (max_allocation_ != 0 &&
-        std::atomic_load(&total_allocation_) > max_allocation_ - size)
+        (size > max_allocation_ ||
+         std::atomic_load(&total_allocation_) > max_allocation_ - size)) {
       return nullptr;
+    }
     void* result = ArrayBufferContents::AllocateMemoryOrNull(
-        size, ArrayBufferContents::kZeroInitialize);
+        size, ArrayBufferContents::kZeroInitialize,
+        ArrayBufferContents::MaxAllocationSizePolicy::kAllowGigaAllocations);
     if (max_allocation_ != 0 && result)
       total_allocation_.fetch_add(size, std::memory_order_relaxed);
     return result;
@@ -977,10 +980,13 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
 
   void* AllocateUninitialized(size_t size) override {
     if (max_allocation_ != 0 &&
-        std::atomic_load(&total_allocation_) > max_allocation_ - size)
+        (size > max_allocation_ ||
+         std::atomic_load(&total_allocation_) > max_allocation_ - size)) {
       return nullptr;
+    }
     void* result = ArrayBufferContents::AllocateMemoryOrNull(
-        size, ArrayBufferContents::kDontInitialize);
+        size, ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::MaxAllocationSizePolicy::kAllowGigaAllocations);
     if (max_allocation_ != 0 && result)
       total_allocation_.fetch_add(size, std::memory_order_relaxed);
     return result;
@@ -1010,15 +1016,18 @@ class InSandboxAllocator final : public v8::Allocator {
   InSandboxAllocator() = default;
   void* Allocate(size_t size) override {
     return ArrayBufferContents::AllocateMemoryOrNull(
-        size, ArrayBufferContents::kZeroInitialize);
+        size, ArrayBufferContents::kZeroInitialize,
+        ArrayBufferContents::MaxAllocationSizePolicy::kNormal);
   }
   void* AllocateUninitialized(size_t size) override {
     return ArrayBufferContents::AllocateMemoryOrNull(
-        size, ArrayBufferContents::kDontInitialize);
+        size, ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::MaxAllocationSizePolicy::kNormal);
   }
   void* AllocateUninitializedOrCrash(size_t size) override {
     void* result = ArrayBufferContents::AllocateMemoryOrNull(
-        size, ArrayBufferContents::kDontInitialize);
+        size, ArrayBufferContents::kDontInitialize,
+        ArrayBufferContents::MaxAllocationSizePolicy::kNormal);
     if (!result) {
       OOM_CRASH(size);
     }
