@@ -27,8 +27,6 @@ import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.core.content.ContextCompat;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -276,13 +274,6 @@ public class LogoContainerViewBinderUnitTest {
         verify(mMockLogoView).showSearchProviderInitialView();
         logoModel.set(LogoProperties.SHOW_SEARCH_PROVIDER_INITIAL_VIEW, true);
         verify(mMockLogoView, times(2)).showSearchProviderInitialView();
-    }
-
-    @Test
-    public void testLoadingViewWithAnimatedLogo() {
-        mLogoContainerView.setLoadingViewVisibilityForTesting(View.INVISIBLE);
-        mLogoModel.set(LogoProperties.ANIMATED_LOGO, new BaseGifImage(new byte[] {}));
-        assertEquals(View.GONE, mLogoContainerView.getLoadingViewVisibilityForTesting());
     }
 
     @Test

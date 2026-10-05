@@ -25,7 +25,6 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/gif_player:gif_player_java",
     "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
@@ -85,7 +84,6 @@ robolectric_library("junit") {
     "//components/embedder_support/android:simple_factory_key_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/gif_player:gif_player_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

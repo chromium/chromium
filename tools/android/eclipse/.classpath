@@ -495,7 +495,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="src" path="third_party/android_protobuf/src/java/src/main/java" including="com/google/protobuf/nano/*"/>
     <classpathentry kind="src" path="third_party/android_provider/java/src"/>
     <classpathentry kind="src" path="third_party/android_swipe_refresh/java/src"/>
-    <classpathentry kind="src" path="third_party/gif_player/src"/>
     <classpathentry kind="src" path="third_party/junit/src"/>
     <classpathentry kind="src" path="third_party/junit/src/src/main/java"/>
     <classpathentry kind="src" path="third_party/mockito/src/src/main/java"/>
@@ -651,7 +650,6 @@ to the classpath for downstream development. See "additional_entries" below.
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_support_test_runner/runner-release-no-dep.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/android_swipe_refresh/android_swipe_refresh_java.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/espresso/espresso-core-release-no-dep.jar"/>
-    <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/gif_player/gif_player_java.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/hamcrest/hamcrest-core.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/hamcrest/hamcrest-library.jar"/>
     <classpathentry kind="lib" path="../src/out/Debug/lib.java/third_party/robolectric/robolectric_annotations_java.jar" sourcepath="../src/third_party/robolectric/robolectric/robolectric-annotations/src/main/java"/>

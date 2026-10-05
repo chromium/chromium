@@ -16,8 +16,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import android.graphics.Bitmap;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,7 +47,6 @@ public class CachedImageFetcherTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ImageFetcherBridge mBridge;
     @Mock CachedImageFetcher.ImageLoader mImageLoader;
-    @Mock BaseGifImage mGif;
     @Mock Callback<Bitmap> mBitmapCallback;
     @Mock Callback<ImageDataFetchResult> mGifCallback;
 
@@ -65,7 +62,6 @@ public class CachedImageFetcherTest {
 
         mBitmap = Bitmap.createBitmap(WIDTH_PX, HEIGHT_PX, Bitmap.Config.ARGB_8888);
         mTestGifData = new byte[] {1, 2, 3};
-        doReturn(mTestGifData).when(mGif).getData();
         mImageDataFetchResult =
                 new ImageDataFetchResult(
                         mTestGifData,
@@ -170,7 +166,7 @@ public class CachedImageFetcherTest {
 
     @Test
     public void testFetchGif_fileFoundOnDisk() {
-        doReturn(mGif).when(mImageLoader).tryToLoadGifFromDisk(PATH);
+        doReturn(mTestGifData).when(mImageLoader).tryToLoadGifFromDisk(PATH);
 
         ImageFetcher.Params params = ImageFetcher.Params.create(URL, UMA_CLIENT_NAME);
         mCachedImageFetcher.fetchGif(params, mGifCallback);

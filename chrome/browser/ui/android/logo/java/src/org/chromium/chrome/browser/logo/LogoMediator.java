@@ -15,8 +15,6 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -25,7 +23,6 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator.VisibilityObserver;
@@ -411,39 +408,33 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                         return;
                     }
 
-                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANIMATED_GIF_REFACTOR)) {
-                        new AsyncTask<@Nullable Drawable>() {
-                            @Override
-                            protected @Nullable Drawable doInBackground() {
-                                try {
-                                    Drawable drawable =
-                                            ImageDecoder.decodeDrawable(
-                                                    ImageDecoder.createSource(
-                                                            ByteBuffer.wrap(
-                                                                    animatedLogoImageFetchResult
-                                                                            .imageData)));
-                                    if (!(drawable instanceof AnimatedImageDrawable)) {
-                                        Log.e(TAG, "Drawable is not animated.", drawable);
-                                        return null;
-                                    }
-                                    return drawable;
-                                } catch (IOException ex) {
-                                    Log.e(TAG, "Failed to parse logo", ex);
+                    new AsyncTask<@Nullable AnimatedImageDrawable>() {
+                        @Override
+                        protected @Nullable AnimatedImageDrawable doInBackground() {
+                            try {
+                                Drawable drawable =
+                                        ImageDecoder.decodeDrawable(
+                                                ImageDecoder.createSource(
+                                                        ByteBuffer.wrap(
+                                                                animatedLogoImageFetchResult
+                                                                        .imageData)));
+                                if (!(drawable instanceof AnimatedImageDrawable)) {
+                                    Log.e(TAG, "Drawable is not animated.", drawable);
                                     return null;
                                 }
+                                return (AnimatedImageDrawable) drawable;
+                            } catch (IOException ex) {
+                                Log.e(TAG, "Failed to parse logo", ex);
+                                return null;
                             }
+                        }
 
-                            @Override
-                            protected void onPostExecute(@Nullable Drawable result) {
-                                if (result == null) return;
-                                mLogoModel.set(LogoProperties.ANIMATED_LOGO, result);
-                            }
-                        }.executeWithTaskTraits(TaskTraits.USER_VISIBLE);
-                    } else {
-                        mLogoModel.set(
-                                LogoProperties.ANIMATED_LOGO,
-                                new BaseGifImage(animatedLogoImageFetchResult.imageData));
-                    }
+                        @Override
+                        protected void onPostExecute(@Nullable AnimatedImageDrawable result) {
+                            if (result == null) return;
+                            mLogoModel.set(LogoProperties.ANIMATED_LOGO, result);
+                        }
+                    }.executeWithTaskTraits(TaskTraits.USER_VISIBLE);
                 });
     }
 

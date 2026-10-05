@@ -82,7 +82,6 @@ BASE_DECLARE_FEATURE(kAndroidVerticalTabs);
 BASE_DECLARE_FEATURE(kAndroidXRUsesSurfaceControl);
 BASE_DECLARE_FEATURE(kAndroidXrImmersivePlayer);
 BASE_DECLARE_FEATURE(kAndroidZoomImmersive);
-BASE_DECLARE_FEATURE(kAnimatedGifRefactor);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentsVirtualStructure);
 BASE_DECLARE_FEATURE(kApb144Patch1);

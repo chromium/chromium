@@ -9,8 +9,6 @@ import android.graphics.BitmapFactory;
 
 import androidx.annotation.VisibleForTesting;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
@@ -47,13 +45,12 @@ public class CachedImageFetcher extends ImageFetcher {
         }
 
         /**
-         * Attempt to load a BaseGifImage from disk with the given filepath.
+         * Attempt to load a GIF from disk with the given filepath.
          *
-         * @param filePath The path to the BaseGifImage on disk (including the filename).
-         * @return The BaseGifImage that's on disk or null if the there's no file or the decoding
-         *     failed.
+         * @param filePath The path to the GIF on disk (including the filename).
+         * @return The GIF data that's on disk or null if there's no file or reading failed.
          */
-        @Nullable BaseGifImage tryToLoadGifFromDisk(@Nullable String filePath) {
+        byte @Nullable [] tryToLoadGifFromDisk(@Nullable String filePath) {
             if (filePath == null) return null;
 
             FileInputStream fileInputStream = null;
@@ -65,7 +62,7 @@ public class CachedImageFetcher extends ImageFetcher {
                 int bytesRead = fileInputStream.read(fileBytes);
                 if (bytesRead != fileBytes.length) return null;
 
-                return new BaseGifImage(fileBytes);
+                return fileBytes;
             } catch (IOException e) {
                 Log.w(TAG, "Failed to read: %s", filePath, e);
                 return null;
@@ -103,12 +100,12 @@ public class CachedImageFetcher extends ImageFetcher {
                 () -> {
                     // Try to read the gif from disk, then post back to the ui thread.
                     String filePath = getImageFetcherBridge().getFilePath(params.url);
-                    BaseGifImage cachedGif = mImageLoader.tryToLoadGifFromDisk(filePath);
+                    byte[] cachedGifData = mImageLoader.tryToLoadGifFromDisk(filePath);
                     PostTask.postTask(
                             TaskTraits.UI_USER_VISIBLE,
                             () -> {
                                 continueFetchGifAfterDisk(
-                                        params, callback, cachedGif, startTimeMillis);
+                                        params, callback, cachedGifData, startTimeMillis);
                             });
                 });
     }
@@ -117,12 +114,12 @@ public class CachedImageFetcher extends ImageFetcher {
     void continueFetchGifAfterDisk(
             final ImageFetcher.Params params,
             Callback<ImageDataFetchResult> callback,
-            @Nullable BaseGifImage cachedGif,
+            byte @Nullable [] cachedGifData,
             long startTimeMillis) {
-        if (cachedGif != null) {
+        if (cachedGifData != null) {
             callback.onResult(
                     new ImageDataFetchResult(
-                            cachedGif.getData(),
+                            cachedGifData,
                             new RequestMetadata("image/gif", -1, NetError.OK, "from_cache")));
             reportEvent(params.clientName, ImageFetcherEvent.JAVA_DISK_CACHE_HIT);
             getImageFetcherBridge().reportCacheHitTime(params.clientName, startTimeMillis);

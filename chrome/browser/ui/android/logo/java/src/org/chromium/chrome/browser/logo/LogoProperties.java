@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.logo;
 
+import android.graphics.drawable.AnimatedImageDrawable;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
@@ -47,9 +48,8 @@ interface LogoProperties {
             new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Boolean> SHOW_LOADING_VIEW =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
-    // TODO(crbug.com/434200490): Replace Object reference with AnimatedImageDrawable when the
-    // refactoring is fully rolled out.
-    WritableObjectPropertyKey<Object> ANIMATED_LOGO = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<AnimatedImageDrawable> ANIMATED_LOGO =
+            new WritableObjectPropertyKey<>();
     WritableObjectPropertyKey<Callback<Logo>> LOGO_AVAILABLE_CALLBACK =
             new WritableObjectPropertyKey<>();
     WritableIntDefPropertyKey<DoodleSize> DOODLE_SIZE =
