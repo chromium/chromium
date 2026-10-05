@@ -11,17 +11,19 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class ActionAppMenuManager;
-class AppMenuDragAndDropDelegate;
 class AppMenuSearchBarView;
 class BrowserWindowInterface;
 
@@ -37,7 +39,8 @@ class MenuRunner;
 }  // namespace views
 
 // Coordinator class for the Block Style ChroMenu.
-class ActionAppMenu : public views::MenuDelegate {
+class ActionAppMenu : public views::MenuDelegate,
+                      public AppMenuDragAndDropDelegate::Host {
  public:
   ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                 base::RepeatingClosure on_menu_closed_callback);
@@ -46,8 +49,13 @@ class ActionAppMenu : public views::MenuDelegate {
   ~ActionAppMenu() override;
 
   void RunMenu(views::MenuButtonController* host);
-  void CloseMenu();
   bool IsShowing() const;
+
+  // AppMenuDragAndDropDelegate::Host:
+  void UpdateMenuItem(actions::BaseAction* action,
+                      actions::BaseAction* target_parent_action,
+                      actions::BaseAction* insert_after = nullptr) override;
+  void CloseMenu() override;
 
   // views::MenuDelegate:
   void ExecuteCommand(int id, int mouse_event_flags) override;
@@ -82,8 +90,10 @@ class ActionAppMenu : public views::MenuDelegate {
 
  private:
   actions::BaseAction* GetActionForMenuItem(views::MenuItemView* menu) const;
+  views::MenuItemView* GetMenuItemForAction(actions::BaseAction* action) const;
   AppMenuDragAndDropDelegate* GetDragAndDropDelegate(
       actions::BaseAction* action) const;
+  void RemoveSubmenuActionsFromMap(views::MenuItemView* parent_menu_item);
 
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
@@ -92,10 +102,13 @@ class ActionAppMenu : public views::MenuDelegate {
   void PopulateMenu(views::MenuItemView* view_parent,
                     actions::BaseAction* base_action_item);
 
-  // Appends and returns a menu item to the `parent_menu_item` and adds the
-  // `base_action_item` to the command to action map.
-  views::MenuItemView* AppendMenuItem(actions::BaseAction* base_action_item,
-                                      views::MenuItemView* parent_menu_item);
+  // Appends (or inserts at `index`) and returns a menu item to the
+  // `parent_menu_item` and adds the `base_action_item` to the command to action
+  // map.
+  views::MenuItemView* AppendMenuItem(
+      actions::BaseAction* base_action_item,
+      views::MenuItemView* parent_menu_item,
+      std::optional<size_t> index = std::nullopt);
 
   // Configures the menu item to populate with the correct icon, text, and
   // padding. ConfigureMenuItem() should only be used for clickable menu items
@@ -160,6 +173,8 @@ class ActionAppMenu : public views::MenuDelegate {
   ActionAppMenuMetrics metrics_;
 
   int next_id_ = COMMAND_ID_FIRST_UNBOUNDED;
+
+  base::WeakPtrFactory<ActionAppMenu> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_H_

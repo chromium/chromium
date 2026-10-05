@@ -2935,4 +2935,87 @@ TEST_F(ActionAppMenuTest, DragAndDropDelegateForwarding) {
   menu.CloseMenu();
 }
 
+TEST_F(ActionAppMenuTest, UpdateMenuItem) {
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  actions::ActionItem* app_menu_root = actions::ActionManager::Get().FindAction(
+      kActionAppMenuRoot,
+      BrowserActions::From(&mock_window_interface_)->root_action_item());
+  ASSERT_TRUE(app_menu_root);
+
+  bool item_a_invoked = false;
+  bool item_b_invoked = false;
+  actions::BaseAction* item_a_action = nullptr;
+  auto submenu_action = actions::ActionItem::Builder()
+                            .SetText(u"Test Update Submenu")
+                            .SetProperty(AppMenuActionItem::kIsSubmenuKey, true)
+                            .Build();
+  item_a_action = submenu_action->AddChild(
+      actions::ActionItem::Builder()
+          .SetText(u"Item A")
+          .SetInvokeActionCallback(base::BindLambdaForTesting(
+              [&](actions::ActionItem*, actions::ActionInvocationContext) {
+                item_a_invoked = true;
+              }))
+          .Build());
+  actions::BaseAction* submenu_action_ptr =
+      app_menu_root->AddChild(std::move(submenu_action));
+
+  menu.RunMenu(button_->button_controller());
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+
+  views::MenuItemView* submenu_item = nullptr;
+  for (views::MenuItemView* item : root->GetSubmenu()->GetMenuItems()) {
+    if (item->title() == u"Test Update Submenu") {
+      submenu_item = item;
+      break;
+    }
+  }
+  ASSERT_TRUE(submenu_item);
+  ASSERT_TRUE(submenu_item->HasSubmenu());
+  menu.WillShowMenu(submenu_item);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
+
+  // Add Item B after Item A.
+  actions::BaseAction* item_b_action = submenu_action_ptr->AddChild(
+      actions::ActionItem::Builder()
+          .SetText(u"Item B")
+          .SetInvokeActionCallback(base::BindLambdaForTesting(
+              [&](actions::ActionItem*, actions::ActionInvocationContext) {
+                item_b_invoked = true;
+              }))
+          .Build());
+  menu.UpdateMenuItem(item_b_action, submenu_action_ptr, item_a_action);
+
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 2u);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item A");
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(1)->title(), u"Item B");
+
+  // Move Item B before Item A.
+  menu.UpdateMenuItem(item_b_action, submenu_action_ptr,
+                      /*insert_after=*/nullptr);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 2u);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item B");
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(1)->title(), u"Item A");
+
+  menu.ExecuteCommand(
+      submenu_item->GetSubmenu()->GetMenuItemAt(0)->GetCommand(), ui::EF_NONE);
+  EXPECT_TRUE(item_b_invoked);
+  menu.ExecuteCommand(
+      submenu_item->GetSubmenu()->GetMenuItemAt(1)->GetCommand(), ui::EF_NONE);
+  EXPECT_TRUE(item_a_invoked);
+
+  // Remove Item B.
+  menu.UpdateMenuItem(item_b_action, /*target_parent_action=*/nullptr);
+  ASSERT_EQ(submenu_item->GetSubmenu()->GetMenuItems().size(), 1u);
+  EXPECT_EQ(submenu_item->GetSubmenu()->GetMenuItemAt(0)->title(), u"Item A");
+
+  EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+
 }  // namespace

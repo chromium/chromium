@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_action_properties.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_block_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_chip_view.h"
-#include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_minor_text_view.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
@@ -35,6 +35,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/menu_button_controller.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_separator.h"
@@ -204,6 +205,86 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host) {
                           /*native_view_for_gestures=*/gfx::NativeView(),
                           /*corners=*/std::nullopt,
                           "Chrome.AppMenu.MenuHostInitToNextFramePresented");
+}
+
+void ActionAppMenu::UpdateMenuItem(actions::BaseAction* action,
+                                   actions::BaseAction* target_parent_action,
+                                   actions::BaseAction* insert_after) {
+  CHECK(action);
+  CHECK_NE(action, insert_after);
+  actions::BaseAction* old_parent_action = action->GetParent();
+  CHECK(old_parent_action);
+
+  views::MenuItemView* moved_item = GetMenuItemForAction(action);
+  std::unique_ptr<actions::BaseAction> owned_action =
+      old_parent_action->RemoveChild(action);
+
+  size_t target_index = 0;
+  if (target_parent_action) {
+    const auto& target_children =
+        target_parent_action->GetChildren().children();
+    if (insert_after) {
+      auto it = std::ranges::find_if(
+          target_children,
+          [insert_after](const std::unique_ptr<actions::BaseAction>& child) {
+            return child.get() == insert_after;
+          });
+      CHECK(it != target_children.end());
+      target_index = std::distance(target_children.begin(), it) + 1;
+    }
+    target_parent_action->AddChildAt(std::move(owned_action), target_index);
+  }
+
+  views::MenuItemView* old_parent_menu =
+      moved_item ? moved_item->GetParentMenuItem() : nullptr;
+  if (old_parent_menu) {
+    RemoveSubmenuActionsFromMap(moved_item);
+    command_to_action_map_.erase(moved_item->GetCommand());
+    old_parent_menu->RemoveMenuItem(moved_item);
+  }
+
+  if (!target_parent_action) {
+    if (old_parent_menu) {
+      old_parent_menu->ChildrenChanged();
+    }
+    return;
+  }
+
+  views::MenuItemView* prev_item =
+      insert_after ? GetMenuItemForAction(insert_after) : nullptr;
+  views::MenuItemView* new_parent_menu =
+      prev_item ? prev_item->GetParentMenuItem()
+                : GetMenuItemForAction(target_parent_action);
+  if (!new_parent_menu || !new_parent_menu->HasSubmenu() ||
+      (target_parent_action->HasPopulateChildActionsCallback() &&
+       new_parent_menu->GetSubmenu()->GetMenuItems().empty())) {
+    if (old_parent_menu) {
+      old_parent_menu->ChildrenChanged();
+    }
+    return;
+  }
+
+  size_t view_index =
+      prev_item
+          ? new_parent_menu->GetSubmenu()->GetIndexOf(prev_item).value() + 1
+          : 0;
+
+  const auto& target_children = target_parent_action->GetChildren().children();
+  views::MenuItemView* new_item =
+      AppendMenuItem(action, new_parent_menu, view_index);
+  ConfigureMenuItem(new_item, action,
+                    ShouldRoundTopCorners(target_index, target_children),
+                    ShouldRoundBottomCorners(target_index, target_children),
+                    ShouldAddTopPadding(target_index, target_children),
+                    ShouldAddBottomPadding(target_index, target_children));
+  if (!action->HasPopulateChildActionsCallback()) {
+    PopulateMenu(new_item, action);
+  }
+
+  if (old_parent_menu && old_parent_menu != new_parent_menu) {
+    old_parent_menu->ChildrenChanged();
+  }
+  new_parent_menu->ChildrenChanged();
 }
 
 void ActionAppMenu::CloseMenu() {
@@ -417,6 +498,19 @@ actions::BaseAction* ActionAppMenu::GetActionForMenuItem(
   return it != command_to_action_map_.end() ? it->second : nullptr;
 }
 
+views::MenuItemView* ActionAppMenu::GetMenuItemForAction(
+    actions::BaseAction* action) const {
+  if (!root_ || !action) {
+    return nullptr;
+  }
+  for (const auto& [command_id, mapped_action] : command_to_action_map_) {
+    if (mapped_action == action) {
+      return root_->GetMenuItemByID(command_id);
+    }
+  }
+  return nullptr;
+}
+
 AppMenuDragAndDropDelegate* ActionAppMenu::GetDragAndDropDelegate(
     actions::BaseAction* action) const {
   for (actions::BaseAction* curr = action; curr; curr = curr->GetParent()) {
@@ -425,6 +519,18 @@ AppMenuDragAndDropDelegate* ActionAppMenu::GetDragAndDropDelegate(
     }
   }
   return nullptr;
+}
+
+void ActionAppMenu::RemoveSubmenuActionsFromMap(
+    views::MenuItemView* parent_menu_item) {
+  if (!parent_menu_item || !parent_menu_item->HasSubmenu()) {
+    return;
+  }
+  for (views::MenuItemView* child :
+       parent_menu_item->GetSubmenu()->GetMenuItems()) {
+    RemoveSubmenuActionsFromMap(child);
+    command_to_action_map_.erase(child->GetCommand());
+  }
 }
 
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
@@ -494,7 +600,8 @@ void ActionAppMenu::PopulateMenu(views::MenuItemView* view_parent,
 
 views::MenuItemView* ActionAppMenu::AppendMenuItem(
     actions::BaseAction* base_action_item,
-    views::MenuItemView* parent_menu_item) {
+    views::MenuItemView* parent_menu_item,
+    std::optional<size_t> index) {
   actions::ActionItem* action_item = base_action_item->GetActionItem();
   CHECK(action_item);
   std::optional<actions::ActionId> action_id = action_item->GetActionId();
@@ -518,19 +625,25 @@ views::MenuItemView* ActionAppMenu::AppendMenuItem(
       action_item->GetProperty(AppMenuActionItem::kIsCheckableKey);
 
   views::MenuItemView::Type menu_item_type =
-      is_checkable ? views::MenuItemView::Type::kCheckbox
-                   : views::MenuItemView::Type::kNormal;
+      has_submenu ? views::MenuItemView::Type::kSubMenu
+                  : (is_checkable ? views::MenuItemView::Type::kCheckbox
+                                  : views::MenuItemView::Type::kNormal);
 
   if (display_type == AppMenuActionItem::DisplayType::kNotification) {
     has_notification_header_ = true;
   }
 
+  const std::u16string label =
+      has_submenu ? std::u16string(action_item->GetText()) : std::u16string();
   views::MenuItemView* menu_item =
-      has_submenu ? parent_menu_item->AppendSubMenu(
-                        command_id, std::u16string(action_item->GetText()))
-                  : parent_menu_item->AppendMenuItemImpl(
-                        command_id, /*label=*/std::u16string(),
-                        /*icon=*/ui::ImageModel(), menu_item_type);
+      index.has_value()
+          ? parent_menu_item->AddMenuItemAt(
+                *index, command_id, label, /*secondary_label=*/std::u16string(),
+                /*minor_text=*/std::u16string(),
+                /*minor_icon=*/ui::ImageModel(), /*icon=*/ui::ImageModel(),
+                menu_item_type, ui::NORMAL_SEPARATOR)
+          : parent_menu_item->AppendMenuItemImpl(
+                command_id, label, /*icon=*/ui::ImageModel(), menu_item_type);
 
   action_view_controller_.CreateActionViewRelationship(
       menu_item, action_item->GetAsWeakPtr());

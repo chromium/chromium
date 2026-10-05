@@ -27,6 +27,19 @@ class OSExchangeData;
 // `AppMenuActionItem::kDragAndDropDelegateKey`.
 class AppMenuDragAndDropDelegate {
  public:
+  // Interface implemented by ActionAppMenu to allow the delegate to notify the
+  // menu when the underlying data model changes while the menu is open.
+  class Host {
+   public:
+    virtual ~Host() = default;
+
+    virtual void UpdateMenuItem(
+        actions::BaseAction* action,
+        actions::BaseAction* target_parent_action,
+        actions::BaseAction* insert_after = nullptr) = 0;
+    virtual void CloseMenu() = 0;
+  };
+
   virtual ~AppMenuDragAndDropDelegate() = default;
 
   virtual bool GetDropFormats(
