@@ -1444,6 +1444,23 @@ size_t GetOutermostMainFrameCountForFastShutdown(RenderProcessHost* process) {
   return outermost_main_frames.size();
 }
 
+// Returns the priority to apply to the OS process and send to the renderer,
+// given the calculated `priority`. With --disable-renderer-backgrounding, the
+// process is kept visible and, on desktop, the priority override is ignored.
+RenderProcessPriority ComputeAppliedPriority(
+    const RenderProcessPriority& priority) {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableRendererBackgrounding)) {
+    return priority;
+  }
+  RenderProcessPriority applied_priority = priority;
+  applied_priority.visible = true;
+#if !BUILDFLAG(IS_ANDROID)
+  applied_priority.priority_override = std::nullopt;
+#endif
+  return applied_priority;
+}
+
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
@@ -1724,6 +1741,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 std::nullopt
 #endif
                 ),
+      applied_priority_(priority_),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
       storage_partition_impl_(storage_partition_impl),
@@ -2297,8 +2315,8 @@ void RenderProcessHostImpl::InitializeSharedMemoryRegionsOnceChannelIsUp() {
   if (!last_foreground_time_region_.has_value()) {
     last_foreground_time_region_ =
         base::AtomicSharedMemory<base::TimeTicks>::Create(
-            priority_.is_background() ? base::TimeTicks()
-                                      : base::TimeTicks::Now());
+            applied_priority_.is_background() ? base::TimeTicks()
+                                              : base::TimeTicks::Now());
     // TODO(https://crbug.com/526542975): CHECK-exclusion: Convert to CHECK once
     // we are sure this isn't hit.
     DCHECK(last_foreground_time_region_.has_value());
@@ -6026,16 +6044,17 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   if (!run_renderer_in_process() && (!child_process_launcher_.get() ||
                                      child_process_launcher_->IsStarting())) {
     // This path can be hit early (no-op) or on ProcessDied(). Reset
-    // |priority_| to defaults in case this RenderProcessHostImpl is reused.
+    // |priority_| and |applied_priority_| to defaults in case this
+    // RenderProcessHostImpl is reused.
     priority_.visible = !blink::kLaunchingProcessIsBackgrounded;
     priority_.boost_for_pending_views = true;
+    applied_priority_ = priority_;
     return;
   }
 
-  RenderProcessPriority priority(
-      visible_clients_ > 0 || base::CommandLine::ForCurrentProcess()->HasSwitch(
-                                  switches::kDisableRendererBackgrounding),
-      media_stream_count_ > 0, has_immersive_xr_session_,
+  const RenderProcessPriority previous_priority = priority_;
+  priority_ = RenderProcessPriority(
+      visible_clients_ > 0, media_stream_count_ > 0, has_immersive_xr_session_,
       foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
       boost_for_loading_count_ > 0, is_discarding_,
@@ -6048,44 +6067,52 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
 #endif
   );
 
-  if (priority_ == priority) {
+  const RenderProcessPriority previous_applied_priority = applied_priority_;
+  applied_priority_ = ComputeAppliedPriority(priority_);
+
+  if (priority_ == previous_priority &&
+      applied_priority_ == previous_applied_priority) {
     return;
   }
-  const bool priority_state_changed =
-      priority_.GetProcessPriority() != priority.GetProcessPriority();
-  const bool visibility_state_changed = priority_.visible != priority.visible;
-
   TRACE_EVENT("renderer_host", "RenderProcessHostImpl::UpdateProcessPriority",
               ChromeTrackEvent::kRenderProcessHost, *this,
-              ChromeTrackEvent::kChildProcessLauncherPriority, priority);
-  priority_ = priority;
+              ChromeTrackEvent::kChildProcessLauncherPriority,
+              applied_priority_);
 
-  // Control the background state from the browser process, otherwise the task
-  // telling the renderer to "unbackground" itself may be preempted by other
-  // tasks executing at lowered priority ahead of it or simply by not being
-  // swiftly scheduled by the OS per the low process priority
-  // (http://crbug.com/398103).
-  if (!run_renderer_in_process() &&
-      GetContentClient()->browser()->IsRendererProcessPriorityEnabled()) {
-    CHECK(child_process_launcher_.get(), base::NotFatalUntil::M152);
-    CHECK(!child_process_launcher_->IsStarting(), base::NotFatalUntil::M152);
+  if (applied_priority_ != previous_applied_priority) {
+    // Control the background state from the browser process, otherwise the
+    // task telling the renderer to "unbackground" itself may be preempted by
+    // other tasks executing at lowered priority ahead of it or simply by not
+    // being swiftly scheduled by the OS per the low process priority
+    // (http://crbug.com/398103).
+    if (!run_renderer_in_process() &&
+        GetContentClient()->browser()->IsRendererProcessPriorityEnabled()) {
+      CHECK(child_process_launcher_.get(), base::NotFatalUntil::M152);
+      CHECK(!child_process_launcher_->IsStarting(), base::NotFatalUntil::M152);
 #if BUILDFLAG(IS_ANDROID)
-    // TODO(339097516): Remove the following CHECK when the issue is fixed.
-    CHECK(child_process_launcher_->GetProcess().IsValid());
-    child_process_launcher_->SetRenderProcessPriority(priority_);
+      // TODO(339097516): Remove the following CHECK when the issue is fixed.
+      CHECK(child_process_launcher_->GetProcess().IsValid());
+      child_process_launcher_->SetRenderProcessPriority(applied_priority_);
 #else  // !BUILDFLAG(IS_ANDROID)
-    auto process_priority = priority_.GetProcessPriority();
-    if (!base::FeatureList::IsEnabled(kUserVisibleProcessPriority) &&
-        process_priority == base::Process::Priority::kUserVisible) {
-      process_priority = base::Process::Priority::kUserBlocking;
-    }
-    child_process_launcher_->SetProcessPriority(process_priority);
+      auto process_priority = applied_priority_.GetProcessPriority();
+      if (!base::FeatureList::IsEnabled(kUserVisibleProcessPriority) &&
+          process_priority == base::Process::Priority::kUserVisible) {
+        process_priority = base::Process::Priority::kUserBlocking;
+      }
+      child_process_launcher_->SetProcessPriority(process_priority);
 #endif  // BUILDFLAG(IS_ANDROID)
+    }
+
+    // Notify the child process of the change in state.
+    if (applied_priority_.GetProcessPriority() !=
+            previous_applied_priority.GetProcessPriority() ||
+        applied_priority_.visible != previous_applied_priority.visible) {
+      SendProcessStateToRenderer();
+    }
   }
 
-  // Notify the child process of the change in state.
-  if (priority_state_changed || visibility_state_changed) {
-    SendProcessStateToRenderer();
+  if (priority_ == previous_priority) {
+    return;
   }
   for (auto& observer : internal_observers_)
     observer.RenderProcessPriorityChanged(this);
@@ -6093,7 +6120,8 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
   // Update the priority of the process running the controller service worker
   // when client's background state changed. We can make the service worker
   // process backgrounded if all of its clients are backgrounded.
-  if (priority_state_changed) {
+  if (priority_.GetProcessPriority() !=
+      previous_priority.GetProcessPriority()) {
     UpdateControllerServiceWorkerProcessPriority();
   }
 }
@@ -6121,13 +6149,14 @@ void RenderProcessHostImpl::SendProcessStateToRenderer() {
   // latest TimeTicks value it sees and doesn't depend on it reflecting anything
   // about the state of other memory.
   last_foreground_time_region_->WritableRef().store(
-      priority_.is_background() ? base::TimeTicks() : base::TimeTicks::Now(),
+      applied_priority_.is_background() ? base::TimeTicks()
+                                        : base::TimeTicks::Now(),
       std::memory_order_relaxed);
 
-  base::Process::Priority priority = priority_.GetProcessPriority();
+  base::Process::Priority priority = applied_priority_.GetProcessPriority();
   mojom::RenderProcessVisibleState visible_state =
-      priority_.visible ? mojom::RenderProcessVisibleState::kVisible
-                        : mojom::RenderProcessVisibleState::kHidden;
+      applied_priority_.visible ? mojom::RenderProcessVisibleState::kVisible
+                                : mojom::RenderProcessVisibleState::kHidden;
   GetRendererInterface()->SetProcessState(priority, visible_state);
 }
 
@@ -6149,8 +6178,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
     CHECK(child_process_launcher_->GetProcess().IsValid(),
           base::NotFatalUntil::M152);
     // TODO(crbug.com/40590142): This should be based on
-    // |priority_.GetProcessPriority()|, see similar check below.
-    CHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible,
+    // |applied_priority_.GetProcessPriority()|, see similar check below.
+    CHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !applied_priority_.visible,
              base::NotFatalUntil::M152);
 
     // Unpause the channel now that the process is launched. We don't flush it
@@ -6182,22 +6211,24 @@ void RenderProcessHostImpl::OnProcessLaunched() {
         .WithArgs(GetProcess().Pid());
 
     // Not all platforms launch processes in the same backgrounded state. Make
-    // sure |priority_.visible| reflects this platform's initial process
+    // sure |applied_priority_.visible| reflects this platform's initial process
     // state.
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
-    priority_.visible = child_process_launcher_->GetProcess().GetPriority(
-                            ChildProcessTaskPortProvider::GetInstance()) ==
-                        base::Process::Priority::kUserBlocking;
+    applied_priority_.visible =
+        child_process_launcher_->GetProcess().GetPriority(
+            ChildProcessTaskPortProvider::GetInstance()) ==
+        base::Process::Priority::kUserBlocking;
 #elif BUILDFLAG(IS_ANDROID)
     // Android child process priority works differently and cannot be queried
     // directly from base::Process.
     // TODO(crbug.com/40590142): Fix initial priority on Android to
-    // reflect |priority_.GetProcessPriority()|.
-    CHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !priority_.visible,
+    // reflect |applied_priority_.GetProcessPriority()|.
+    CHECK_EQ(blink::kLaunchingProcessIsBackgrounded, !applied_priority_.visible,
              base::NotFatalUntil::M152);
 #else
-    priority_.visible = child_process_launcher_->GetProcess().GetPriority() !=
-                        base::Process::Priority::kBestEffort;
+    applied_priority_.visible =
+        child_process_launcher_->GetProcess().GetPriority() !=
+        base::Process::Priority::kBestEffort;
 #endif
 
     // Only update the priority on startup if boosting is enabled (to avoid

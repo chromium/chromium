@@ -1419,7 +1419,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   base::flat_set<raw_ptr<RenderProcessHostPriorityClient, CtnExperimental>>
       priority_clients_;
 
+  // The calculated priority of this process, which is exposed through
+  // GetPriority() and to observers.
   RenderProcessPriority priority_;
+
+  // The priority actually applied to the OS process and sent to the renderer.
+  // This matches `priority_`, except when --disable-renderer-backgrounding is
+  // set, in which case the process is kept visible and, on desktop, the
+  // priority override is ignored.
+  RenderProcessPriority applied_priority_;
 
   // On Desktop platforms, if this is set then the built-in process priority
   // calculation system is ignored, and an externally computed process priority
