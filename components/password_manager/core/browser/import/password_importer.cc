@@ -66,7 +66,6 @@ const base::FilePath::CharType kFileExtension[] = FILE_PATH_LITERAL("csv");
 const int32_t kMaxFileSizeBytes = 1000 * 1024;
 
 base::expected<void, ImportResults::Status> ValidateDataSize(int64_t size) {
-  base::UmaHistogramCounts10M("PasswordManager.ImportFileSize2", size);
   if (size > kMaxFileSizeBytes) {
     return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
   }

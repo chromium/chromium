@@ -1980,17 +1980,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.ImportFileSize2" units="bytes"
-    expires_after="2026-10-25">
-  <owner>natiahlyi@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    The size of the CSV file (to import passwords from) selected by a user in
-    bytes. Recorded when the user tries to import passwords from a CSV file. The
-    user has chosen the file, but the file hasn't been read yet.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.ImportResultsStatus2"
     enum="PasswordManagerImportResultsStatus" expires_after="2027-08-23">
   <owner>natiahlyi@google.com</owner>
