@@ -155,7 +155,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
   chromeos::ExtensionPlatformKeysService* service =
       chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   service->SelectClientCertificates(
       request, std::move(client_certs), params->details.interactive,
@@ -170,7 +170,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
 void PlatformKeysInternalSelectClientCertificatesFunction::
     OnSelectedCertificates(std::unique_ptr<net::CertificateList> matches,
                            std::optional<chromeos::KeystoreError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (error) {
     Respond(
@@ -178,7 +178,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     return;
   }
 
-  DCHECK(matches);
+  CHECK(matches, base::NotFatalUntil::M161);
   std::vector<api_pk::Match> result_matches;
   for (const scoped_refptr<net::X509Certificate>& match : *matches) {
     PublicKeyInfo key_info;
@@ -293,7 +293,7 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
   std::optional<base::DictValue> algorithm_dictionary =
       chromeos::platform_keys::BuildWebCryptoAlgorithmDictionary(key_info);
-  DCHECK(algorithm_dictionary);
+  CHECK(algorithm_dictionary, base::NotFatalUntil::M161);
   algorithm.additional_properties = std::move(*algorithm_dictionary);
 
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
@@ -323,7 +323,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
   chromeos::ExtensionPlatformKeysService* service =
       chromeos::ExtensionPlatformKeysServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   if (params->hash_algorithm_name == "none") {
     // Signing without digesting is only supported for RSASSA-PKCS1-v1_5.
@@ -373,7 +373,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
 void PlatformKeysInternalSignFunction::OnSigned(
     std::vector<uint8_t> signature,
     std::optional<chromeos::KeystoreError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!error) {
     Respond(ArgumentList(api_pki::Sign::Results::Create(std::move(signature))));
@@ -390,7 +390,7 @@ PlatformKeysVerifyTLSServerCertificateFunction::
 
 ExtensionFunction::ResponseAction
 PlatformKeysVerifyTLSServerCertificateFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::optional<api_pk::VerifyTLSServerCertificate::Params> params =
       api_pk::VerifyTLSServerCertificate::Params::Create(args());
@@ -410,7 +410,7 @@ void PlatformKeysVerifyTLSServerCertificateFunction::FinishedVerification(
     const std::string& error,
     int verify_result,
     int cert_status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!error.empty()) {
     Respond(Error(error));

@@ -35,8 +35,8 @@ bool GetControllerFromWindowID(ExtensionFunction* function,
                                extensions::WindowController::TypeFilter filter,
                                extensions::WindowController** out_controller,
                                std::string* error) {
-  DCHECK(out_controller);
-  DCHECK(error);
+  CHECK(out_controller, base::NotFatalUntil::M161);
+  CHECK(error, base::NotFatalUntil::M161);
 
   *out_controller = nullptr;
   if (window_id == extension_misc::kCurrentWindowId) {

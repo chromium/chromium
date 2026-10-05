@@ -756,8 +756,8 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
     ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
-  DCHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
-            to_store);
+  CHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
+           to_store, base::NotFatalUntil::M161);
   password_manager::PasswordForm::Store store_to_use =
       *ConvertToPasswordFormStores(to_store).begin();
   password_import_controller_->Import(
@@ -889,7 +889,7 @@ void PasswordsPrivateDelegateImpl::ShowAddShortcutDialog(
     content::WebContents* web_contents) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M161);
   web_app::CreateWebAppFromCurrentWebContents(
       browser, web_app::WebAppInstallFlow::kInstallSite);
   base::UmaHistogramEnumeration(

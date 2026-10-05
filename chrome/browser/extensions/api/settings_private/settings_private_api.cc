@@ -29,7 +29,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
 
   settings_private::SetPrefResult result =
       delegate->SetPref(parameters->name, &parameters->value);
@@ -61,7 +61,7 @@ SettingsPrivateGetAllPrefsFunction::~SettingsPrivateGetAllPrefsFunction() =
 ExtensionFunction::ResponseAction SettingsPrivateGetAllPrefsFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
   return RespondNow(WithArguments(delegate->GetAllPrefs()));
 }
 
@@ -78,7 +78,7 @@ ExtensionFunction::ResponseAction SettingsPrivateGetPrefFunction::Run() {
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
 
   std::optional<base::DictValue> value = delegate->GetPref(parameters->name);
   if (!value) {
@@ -99,7 +99,7 @@ ExtensionFunction::ResponseAction
     SettingsPrivateGetDefaultZoomFunction::Run() {
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
   return RespondNow(WithArguments(delegate->GetDefaultZoom()));
 }
 
@@ -118,7 +118,7 @@ ExtensionFunction::ResponseAction
 
   SettingsPrivateDelegate* delegate =
       SettingsPrivateDelegateFactory::GetForBrowserContext(browser_context());
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
   delegate->SetDefaultZoom(parameters->zoom);
   return RespondNow(WithArguments(true));
 }

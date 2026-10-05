@@ -91,7 +91,7 @@ class SettingsPrivateApiTest : public ExtensionApiTest {
     policies.Set(key, level, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
     provider_.UpdateChromePolicy(policies);
-    DCHECK(base::CurrentThread::Get());
+    CHECK(base::CurrentThread::Get(), base::NotFatalUntil::M161);
     base::RunLoop loop;
     loop.RunUntilIdle();
   }

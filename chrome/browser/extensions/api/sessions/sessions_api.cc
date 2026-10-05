@@ -294,7 +294,7 @@ api::tabs::Tab SessionsGetRecentlyClosedFunction::CreateTabModel(
 
 api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
     const sessions::tab_restore::Window& window) {
-  DCHECK(!window.tabs.empty());
+  CHECK(!window.tabs.empty(), base::NotFatalUntil::M161);
 
   std::vector<api::tabs::Tab> tabs;
   for (const auto& tab : window.tabs) {
@@ -309,7 +309,7 @@ api::windows::Window SessionsGetRecentlyClosedFunction::CreateWindowModel(
 
 api::tab_groups::TabGroup SessionsGetRecentlyClosedFunction::CreateGroupModel(
     const sessions::tab_restore::Group& group) {
-  DCHECK(!group.tabs.empty());
+  CHECK(!group.tabs.empty(), base::NotFatalUntil::M161);
 
   return ExtensionTabUtil::CreateTabGroupObject(group.group_id,
                                                 group.visual_data);
@@ -513,7 +513,7 @@ std::optional<api::windows::Window>
 SessionsGetDevicesFunction::CreateWindowModel(
     const sessions::SessionWindow& window,
     const std::string& session_tag) {
-  DCHECK(!window.tabs.empty());
+  CHECK(!window.tabs.empty(), base::NotFatalUntil::M161);
 
   // Ignore app popup window for now because we do not have a corresponding
   // api::windows::WindowType value.
@@ -654,7 +654,7 @@ ExtensionFunction::ResponseAction SessionsGetDevicesFunction::Run() {
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(browser_context()));
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       service->GetOpenTabsUIDelegate();
@@ -713,7 +713,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
           extension(), WindowController::kPopulateTabs, source_context_type());
   std::optional<api::windows::Window> window =
       api::windows::Window::FromValue(window_value);
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M161);
   return ArgumentList(Restore::Results::Create(
       CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::nullopt,
                                std::move(*window), std::nullopt)));
@@ -958,7 +958,7 @@ SessionsRestoreFunction::RestoreForeignSession(
   Profile* profile = Profile::FromBrowserContext(browser_context());
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       service->GetOpenTabsUIDelegate();
@@ -1017,7 +1017,7 @@ SessionsRestoreFunction::RestoreForeignSession(
 void SessionsRestoreFunction::OnRestoreForeignSessionWindows(
     std::vector<BrowserWindowInterface*> browsers) {
   // Will always create one browser because we only restore one window per call.
-  DCHECK_EQ(1u, browsers.size());
+  CHECK_EQ(1u, browsers.size(), base::NotFatalUntil::M161);
   Respond(GetRestoredWindowResult(ExtensionTabUtil::GetWindowId(browsers[0])));
 }
 

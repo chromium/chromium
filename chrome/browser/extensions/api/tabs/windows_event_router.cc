@@ -166,7 +166,7 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
                               base::Unretained(this))),
 #endif
       focused_window_id_(extension_misc::kUnknownWindowId) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   observed_controller_list_.Observe(WindowControllerList::GetInstance());
   // Needed for when no suitable window can be passed to an extension as the

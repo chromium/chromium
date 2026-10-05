@@ -43,7 +43,7 @@ PolicyValueStore::PolicyValueStore(
 PolicyValueStore::~PolicyValueStore() = default;
 
 void PolicyValueStore::SetCurrentPolicy(const policy::PolicyMap& policy) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   // Convert |policy| to a dictionary value. Only include mandatory policies
   // for now.
   base::DictValue current_policy;

@@ -151,7 +151,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
 
-    DCHECK(profile());
+    CHECK(profile(), base::NotFatalUntil::M161);
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
   }
@@ -167,7 +167,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   // made to continue to be able to access the underlying information.
   message_center::Notification* GetNotificationForExtension(
       const extensions::Extension* extension) {
-    DCHECK(extension);
+    CHECK(extension, base::NotFatalUntil::M161);
 
     std::set<std::string> notifications =
         GetDisplayHelper()->GetNotificationIdsForExtension(extension->url());

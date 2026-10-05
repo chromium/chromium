@@ -56,8 +56,8 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
                                ->GetDeprecatedID()),
         render_frame_id_(
             target_contents->GetPrimaryMainFrame()->GetRoutingID()) {
-    DCHECK(web_contents());
-    DCHECK(registry_);
+    CHECK(web_contents(), base::NotFatalUntil::M161);
+    CHECK(registry_, base::NotFatalUntil::M161);
   }
 
   LiveRequest(const LiveRequest&) = delete;
@@ -72,7 +72,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   bool is_verified() const { return is_verified_; }
 
   void SetIsVerified() {
-    DCHECK(!is_verified_);
+    CHECK(!is_verified_, base::NotFatalUntil::M161);
     is_verified_ = true;
   }
 
@@ -156,8 +156,8 @@ TabCaptureRegistry::GetFactoryInstance() {
 void TabCaptureRegistry::GetCapturedTabs(
     const std::string& extension_id,
     base::ListValue* capture_info_list) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(capture_info_list);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(capture_info_list, base::NotFatalUntil::M161);
   capture_info_list->clear();
   for (const std::unique_ptr<LiveRequest>& request : requests_) {
     if (request->is_anonymous() || !request->is_verified() ||
@@ -214,7 +214,7 @@ std::string TabCaptureRegistry::AddRequest(
 bool TabCaptureRegistry::VerifyRequest(int render_process_id,
                                        int render_frame_id,
                                        const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   LiveRequest* const request = FindRequest(render_process_id, render_frame_id);
   if (!request) {
@@ -236,7 +236,7 @@ void TabCaptureRegistry::OnRequestUpdate(
     int target_render_frame_id,
     blink::mojom::MediaStreamType stream_type,
     const content::MediaRequestState new_state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (stream_type != blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE &&
       stream_type != blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE) {
     return;

@@ -36,7 +36,7 @@ class StartupStatusPrinter {
 
   // Sets the max stage number.
   void set_max_stage(int max_stage) {
-    DCHECK(!progress_initialized_);
+    CHECK(!progress_initialized_, base::NotFatalUntil::M161);
     max_stage_ = max_stage;
   }
 

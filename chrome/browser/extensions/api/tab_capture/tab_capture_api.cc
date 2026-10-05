@@ -84,8 +84,8 @@ DesktopMediaID BuildDesktopMediaID(content::WebContents* target_contents,
 void AddMediaStreamSourceConstraints(content::WebContents* target_contents,
                                      TabCapture::CaptureOptions* options,
                                      const std::string& device_id) {
-  DCHECK(options);
-  DCHECK(target_contents);
+  CHECK(options, base::NotFatalUntil::M161);
+  CHECK(target_contents, base::NotFatalUntil::M161);
 
   MediaStreamConstraint* constraints_to_modify[2] = {nullptr, nullptr};
 

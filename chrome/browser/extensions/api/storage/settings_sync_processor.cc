@@ -29,17 +29,17 @@ SettingsSyncProcessor::SettingsSyncProcessor(
       type_(type),
       sync_processor_(sync_processor),
       initialized_(false) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   CHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS);
   CHECK(sync_processor);
 }
 
 SettingsSyncProcessor::~SettingsSyncProcessor() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 }
 
 void SettingsSyncProcessor::Init(const base::DictValue& initial_state) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   CHECK(!initialized_) << "Init called multiple times";
 
   for (auto iter : initial_state) {
@@ -51,7 +51,7 @@ void SettingsSyncProcessor::Init(const base::DictValue& initial_state) {
 
 std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
     const value_store::ValueStoreChangeList& changes) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   CHECK(initialized_) << "Init not called";
 
   syncer::SyncChangeList sync_changes;
@@ -102,7 +102,7 @@ std::optional<syncer::ModelError> SettingsSyncProcessor::SendChanges(
 
 void SettingsSyncProcessor::NotifyChanges(
     const value_store::ValueStoreChangeList& changes) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   CHECK(initialized_) << "Init not called";
 
   for (const auto& i : changes) {

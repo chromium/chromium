@@ -396,7 +396,7 @@ void NativeMessageProcessHost::OnWritten(
     base::expected<base::ByteSize, net::Error> result) {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  DCHECK(write_pending_);
+  CHECK(write_pending_, base::NotFatalUntil::M161);
   write_pending_ = false;
 
   HandleWriteResult(result);
@@ -404,7 +404,7 @@ void NativeMessageProcessHost::OnWritten(
 }
 
 void NativeMessageProcessHost::Close(const std::string& error_message) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   if (!closed_) {
     closed_ = true;

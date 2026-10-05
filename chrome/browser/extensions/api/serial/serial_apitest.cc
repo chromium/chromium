@@ -92,8 +92,8 @@ class FakeSerialPort : public device::mojom::SerialPort {
       return mojo::NullRemote();
     }
 
-    DCHECK(!client_.is_bound());
-    DCHECK(client.is_valid());
+    CHECK(!client_.is_bound(), base::NotFatalUntil::M161);
+    CHECK(client.is_valid(), base::NotFatalUntil::M161);
     client_.Bind(std::move(client));
 
     DoConfigurePort(*options);
@@ -232,7 +232,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
     } else if (read_step_ == 2) {
       // Write one byte in second step and trigger a break error.
       WriteOutReadData(1);
-      DCHECK(client_);
+      CHECK(client_, base::NotFatalUntil::M161);
       client_->OnReadError(device::mojom::SerialReceiveError::PARITY_ERROR);
       out_stream_watcher_.Cancel();
       out_stream_.reset();
@@ -271,7 +271,7 @@ class FakeSerialPort : public device::mojom::SerialPort {
       options_.stop_bits = options.stop_bits;
     }
     if (options.has_cts_flow_control) {
-      DCHECK(options_.has_cts_flow_control);
+      CHECK(options_.has_cts_flow_control, base::NotFatalUntil::M161);
       options_.cts_flow_control = options.cts_flow_control;
     }
   }
@@ -330,7 +330,7 @@ class FakeSerialPortManager : public device::mojom::SerialPortManager {
       mojo::PendingRemote<device::mojom::SerialPortClient> client,
       mojo::PendingRemote<device::mojom::SerialPortConnectionWatcher> watcher,
       OpenPortCallback callback) override {
-    DCHECK(!watcher);
+    CHECK(!watcher, base::NotFatalUntil::M161);
     auto it = ports_.find(token);
     CHECK(it != ports_.end());
     std::move(callback).Run(

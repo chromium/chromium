@@ -34,26 +34,26 @@ SyncableSettingsStorage::SyncableSettingsStorage(
       delegate_(delegate),
       sync_type_(sync_type),
       flare_(flare) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 }
 
 SyncableSettingsStorage::~SyncableSettingsStorage() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 }
 
 size_t SyncableSettingsStorage::GetBytesInUse(const std::string& key) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return delegate_->GetBytesInUse(key);
 }
 
 size_t SyncableSettingsStorage::GetBytesInUse(
     const std::vector<std::string>& keys) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return delegate_->GetBytesInUse(keys);
 }
 
 size_t SyncableSettingsStorage::GetBytesInUse() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return delegate_->GetBytesInUse();
 }
 
@@ -72,30 +72,30 @@ T SyncableSettingsStorage::HandleResult(T result) {
 }
 
 ValueStore::ReadResult SyncableSettingsStorage::GetKeys() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return HandleResult(delegate_->GetKeys());
 }
 
 ValueStore::ReadResult SyncableSettingsStorage::Get(
     const std::string& key) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return HandleResult(delegate_->Get(key));
 }
 
 ValueStore::ReadResult SyncableSettingsStorage::Get(
     const std::vector<std::string>& keys) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return HandleResult(delegate_->Get(keys));
 }
 
 ValueStore::ReadResult SyncableSettingsStorage::Get() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return HandleResult(delegate_->Get());
 }
 
 ValueStore::WriteResult SyncableSettingsStorage::Set(
     WriteOptions options, const std::string& key, const base::Value& value) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   WriteResult result = HandleResult(delegate_->Set(options, key, value));
   if (!result.status().ok()) {
     return result;
@@ -107,7 +107,7 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
 ValueStore::WriteResult SyncableSettingsStorage::Set(
     WriteOptions options,
     const base::DictValue& values) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   WriteResult result = HandleResult(delegate_->Set(options, values));
   if (!result.status().ok()) {
     return result;
@@ -118,7 +118,7 @@ ValueStore::WriteResult SyncableSettingsStorage::Set(
 
 ValueStore::WriteResult SyncableSettingsStorage::Remove(
     const std::string& key) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   WriteResult result = HandleResult(delegate_->Remove(key));
   if (!result.status().ok()) {
     return result;
@@ -129,7 +129,7 @@ ValueStore::WriteResult SyncableSettingsStorage::Remove(
 
 ValueStore::WriteResult SyncableSettingsStorage::Remove(
     const std::vector<std::string>& keys) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   WriteResult result = HandleResult(delegate_->Remove(keys));
   if (!result.status().ok()) {
     return result;
@@ -139,7 +139,7 @@ ValueStore::WriteResult SyncableSettingsStorage::Remove(
 }
 
 ValueStore::WriteResult SyncableSettingsStorage::Clear() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   WriteResult result = HandleResult(delegate_->Clear());
   if (!result.status().ok()) {
     return result;
@@ -173,8 +173,8 @@ void SyncableSettingsStorage::SyncResultIfEnabled(
 std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
     base::DictValue sync_state,
     std::unique_ptr<SettingsSyncProcessor> sync_processor) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(!sync_processor_.get());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(!sync_processor_.get(), base::NotFatalUntil::M161);
 
   sync_processor_ = std::move(sync_processor);
   sync_processor_->Init(sync_state);
@@ -194,7 +194,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::StartSyncing(
 
 std::optional<syncer::ModelError>
 SyncableSettingsStorage::SendLocalSettingsToSync(base::DictValue local_state) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 
   if (local_state.empty()) {
     return std::nullopt;
@@ -219,7 +219,7 @@ std::optional<syncer::ModelError>
 SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
     base::DictValue sync_state,
     base::DictValue local_state) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   // This is implemented by building up a list of sync changes then sending
   // those to ProcessSyncChanges. This generates events like onStorageChanged.
   auto changes = std::make_unique<SettingSyncDataList>();
@@ -255,13 +255,13 @@ SyncableSettingsStorage::OverwriteLocalSettingsWithSync(
 }
 
 void SyncableSettingsStorage::StopSyncing() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   sync_processor_.reset();
 }
 
 std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
     std::unique_ptr<SettingSyncDataList> sync_changes) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   DCHECK(!sync_changes->empty()) << "No sync changes for " << extension_id_;
 
   if (!sync_processor_.get()) {
@@ -273,7 +273,8 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
   value_store::ValueStoreChangeList changes;
 
   for (const std::unique_ptr<SettingSyncData>& sync_change : *sync_changes) {
-    DCHECK_EQ(extension_id_, sync_change->extension_id());
+    CHECK_EQ(extension_id_, sync_change->extension_id(),
+             base::NotFatalUntil::M161);
     const std::string& key = sync_change->key();
     base::Value change_value = sync_change->ExtractValue();
 
@@ -291,7 +292,7 @@ std::optional<syncer::ModelError> SyncableSettingsStorage::ProcessSyncChanges(
 
     std::optional<syncer::ModelError> error;
 
-    DCHECK(sync_change->change_type().has_value());
+    CHECK(sync_change->change_type().has_value(), base::NotFatalUntil::M161);
 
     switch (*sync_change->change_type()) {
       case syncer::SyncChange::ACTION_ADD:

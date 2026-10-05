@@ -205,7 +205,7 @@ std::vector<api::passwords_private::CompromiseType> GetCompromiseType(
         break;
     }
   }
-  DCHECK(!types.empty());
+  CHECK(!types.empty(), base::NotFatalUntil::M161);
   return types;
 }
 
@@ -241,7 +241,7 @@ PasswordCheckDelegate::PasswordCheckDelegate(
                                        prefs_),
       id_generator_(id_generator),
       event_router_(event_router) {
-  DCHECK(id_generator);
+  CHECK(id_generator, base::NotFatalUntil::M161);
   observed_saved_passwords_presenter_.Observe(saved_passwords_presenter_.get());
   observed_insecure_credentials_manager_.Observe(
       &insecure_credentials_manager_);
@@ -383,7 +383,7 @@ void PasswordCheckDelegate::StartPasswordAnalyses(
   is_check_running_ = bulk_leak_check_service_adapter_.StartBulkLeakCheck(
       password_check_initiator_, kPasswordCheckDataKey, &data);
 
-  DCHECK(is_check_running_);
+  CHECK(is_check_running_, base::NotFatalUntil::M161);
   std::move(callback).Run(
       bulk_leak_check_service_adapter_.GetBulkLeakCheckState());
 }

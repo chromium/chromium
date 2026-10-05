@@ -66,7 +66,7 @@ content::WebContents* AppWindowController::GetWebContentsAt(int i) const {
 bool AppWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
   return extension->id() == app_window_->extension_id();
 }
 

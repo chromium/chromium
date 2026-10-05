@@ -64,23 +64,24 @@ SyncStorageBackend::SyncStorageBackend(
       observer_(std::move(observer)),
       sync_type_(sync_type),
       flare_(flare) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(sync_type_ == syncer::EXTENSION_SETTINGS ||
-         sync_type_ == syncer::APP_SETTINGS);
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(sync_type_ == syncer::EXTENSION_SETTINGS ||
+            sync_type_ == syncer::APP_SETTINGS,
+        base::NotFatalUntil::M161);
 }
 
 SyncStorageBackend::~SyncStorageBackend() = default;
 
 value_store::ValueStore* SyncStorageBackend::GetStorage(
     const ExtensionId& extension_id) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   return GetOrCreateStorageWithSyncData(extension_id, EmptyDict());
 }
 
 SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
     const ExtensionId& extension_id,
     base::DictValue sync_data) const {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 
   auto maybe_storage = storage_objs_.find(extension_id);
   if (maybe_storage != storage_objs_.end()) {
@@ -114,7 +115,7 @@ SyncableSettingsStorage* SyncStorageBackend::GetOrCreateStorageWithSyncData(
 }
 
 void SyncStorageBackend::DeleteStorage(const ExtensionId& extension_id) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 
   // Clear settings when the extension is uninstalled.  Leveldb implementations
   // will also delete the database from disk when the object is destroyed as a
@@ -126,14 +127,14 @@ void SyncStorageBackend::DeleteStorage(const ExtensionId& extension_id) {
 }
 
 void SyncStorageBackend::WaitUntilReadyToSync(base::OnceClosure done) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   // This class is ready to sync immediately upon construction.
   std::move(done).Run();
 }
 
 syncer::SyncDataList SyncStorageBackend::GetAllSyncDataForTesting(
     syncer::DataType type) const {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   // For all extensions, get all their settings.  This has the effect
   // of bringing in the entire state of extension settings in memory; sad.
   syncer::SyncDataList all_sync_data;
@@ -160,10 +161,10 @@ std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
     syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK_EQ(sync_type_, type);
-  DCHECK(!sync_processor_.get());
-  DCHECK(sync_processor.get());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK_EQ(sync_type_, type, base::NotFatalUntil::M161);
+  CHECK(!sync_processor_.get(), base::NotFatalUntil::M161);
+  CHECK(sync_processor.get(), base::NotFatalUntil::M161);
 
   sync_processor_ = std::move(sync_processor);
 
@@ -219,8 +220,8 @@ std::optional<syncer::ModelError> SyncStorageBackend::MergeDataAndStartSyncing(
 std::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& sync_changes) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(sync_processor_.get());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(sync_processor_.get(), base::NotFatalUntil::M161);
 
   // Group changes by extension, to pass all changes in a single method call.
   // The raw pointers are safe because ownership of each item is passed to
@@ -264,7 +265,7 @@ std::string SyncStorageBackend::GetClientTag(
   if (entity_data.specifics.has_extension_setting()) {
     return GetClientTagInternal(entity_data.specifics.extension_setting());
   } else {
-    DCHECK(entity_data.specifics.has_app_setting());
+    CHECK(entity_data.specifics.has_app_setting(), base::NotFatalUntil::M161);
     return GetClientTagInternal(
         entity_data.specifics.app_setting().extension_setting());
   }
@@ -277,9 +278,10 @@ std::string SyncStorageBackend::GetClientTagInternal(
 }
 
 void SyncStorageBackend::StopSyncing(syncer::DataType type) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS);
-  DCHECK_EQ(sync_type_, type);
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS,
+        base::NotFatalUntil::M161);
+  CHECK_EQ(sync_type_, type, base::NotFatalUntil::M161);
 
   for (const auto& storage_obj : storage_objs_) {
     // Some storage areas may have already stopped syncing if they had areas

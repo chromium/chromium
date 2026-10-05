@@ -493,7 +493,7 @@ void TerminalPrivateOpenTerminalProcessFunction::OnGetVshSession(
 void TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     const std::string& user_id_hash,
     base::CommandLine cmdline) {
-  DCHECK(!cmdline.argv().empty());
+  CHECK(!cmdline.argv().empty(), base::NotFatalUntil::M161);
 
   content::WebContents* caller_contents = GetSenderWebContents();
   if (!caller_contents) {

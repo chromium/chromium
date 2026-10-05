@@ -36,7 +36,7 @@ SettingsPrivateEventRouter::SettingsPrivateEventRouter(
 }
 
 SettingsPrivateEventRouter::~SettingsPrivateEventRouter() {
-  DCHECK(!listening_);
+  CHECK(!listening_, base::NotFatalUntil::M161);
 }
 
 void SettingsPrivateEventRouter::OnGeneratedPrefChanged(
@@ -88,7 +88,7 @@ PrefChangeRegistrar* SettingsPrivateEventRouter::FindRegistrarForPref(
 }
 
 void SettingsPrivateEventRouter::StartOrStopListeningForPrefsChanges() {
-  DCHECK(prefs_util_);
+  CHECK(prefs_util_, base::NotFatalUntil::M161);
   EventRouter* event_router = EventRouter::Get(context_);
   bool should_listen = event_router->HasEventListener(
       api::settings_private::OnPrefsChanged::kEventName);

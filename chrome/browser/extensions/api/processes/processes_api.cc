@@ -114,7 +114,7 @@ void FillProcessData(
     task_manager::TaskManagerInterface* task_manager,
     bool include_optional,
     api::processes::Process* out_process) {
-  DCHECK(out_process);
+  CHECK(out_process, base::NotFatalUntil::M161);
 
   // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   out_process->id = task_manager->GetChildProcessUniqueId(id).GetUnsafeValue();
@@ -302,7 +302,8 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
 
   // Done with data collection. Now dispatch the appropriate events according to
   // the present listeners.
-  DCHECK(has_on_updated_listeners || has_on_updated_with_memory_listeners);
+  CHECK(has_on_updated_listeners || has_on_updated_with_memory_listeners,
+        base::NotFatalUntil::M161);
   if (has_on_updated_listeners) {
     api::processes::OnUpdated::Processes processes;
     processes.additional_properties.Merge(processes_dictionary.Clone());
@@ -483,7 +484,7 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 ////////////////////////////////////////////////////////////////////////////////
 
 ExtensionFunction::ResponseAction ProcessesTerminateFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // For this function, the task manager doesn't even need to be running.
   std::optional<api::processes::Terminate::Params> params =

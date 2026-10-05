@@ -424,7 +424,7 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
 
 void OmniboxSendSuggestionsFunction::OnParsedDescriptionsAndStyles(
     DescriptionAndStylesResult result) {
-  DCHECK_NE(0u, extension_suggestions_.size());
+  CHECK_NE(0u, extension_suggestions_.size(), base::NotFatalUntil::M161);
   // Since the XML parsing happens asynchronously, the browser context can be
   // torn down in the interim. If this happens, early-out.
   if (!browser_context()) {
@@ -498,7 +498,8 @@ void OmniboxSetDefaultSuggestionFunction::OnParsedDescriptionAndStyles(
     return;
   }
 
-  DCHECK_EQ(1u, result.descriptions_and_styles.size());
+  CHECK_EQ(1u, result.descriptions_and_styles.size(),
+           base::NotFatalUntil::M161);
   DescriptionAndStyles& single_result = result.descriptions_and_styles[0];
 
   omnibox::DefaultSuggestResult default_suggestion;
@@ -575,7 +576,8 @@ void ApplyDefaultSuggestionForExtensionKeyword(
     const TemplateURL* keyword,
     const std::u16string& remaining_input,
     AutocompleteMatch* match) {
-  DCHECK(keyword->type() == TemplateURL::OMNIBOX_API_EXTENSION);
+  CHECK(keyword->type() == TemplateURL::OMNIBOX_API_EXTENSION,
+        base::NotFatalUntil::M161);
 
   std::optional<omnibox::SuggestResult> suggestion(
       GetOmniboxDefaultSuggestion(profile, keyword->GetExtensionId()));

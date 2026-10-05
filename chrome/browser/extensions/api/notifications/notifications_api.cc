@@ -102,7 +102,7 @@ std::string CreateScopedIdentifier(const ExtensionId& extension_id,
 std::string StripScopeFromIdentifier(const ExtensionId& extension_id,
                                      const std::string& scoped_id) {
   size_t index_of_separator = extension_id.length() + 1;
-  DCHECK_LT(index_of_separator, scoped_id.length());
+  CHECK_LT(index_of_separator, scoped_id.length(), base::NotFatalUntil::M161);
 
   return scoped_id.substr(index_of_separator);
 }
@@ -184,10 +184,10 @@ bool NotificationBitmapToGfxImage(
 bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
                                            const GURL& origin) {
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   ExtensionId extension_id =
       ExtensionNotificationHandler::GetExtensionId(origin);
-  DCHECK(!extension_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M161);
   AppWindowRegistry::AppWindowList windows =
       AppWindowRegistry::Get(profile)->GetAppWindowsForApp(extension_id);
   for (AppWindow* window : windows) {

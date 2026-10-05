@@ -179,7 +179,7 @@ void PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile() {
 }
 
 void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO(bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (success) {
     // Setup a ShareableFileReference so the temporary file gets deleted
     // once it is no longer used.
@@ -211,7 +211,7 @@ void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnIO(bool success) {
 }
 
 void PageCaptureSaveAsMHTMLFunction::TemporaryFileCreatedOnUI(bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!success) {
     ReturnFailure(kTemporaryFileError);
     return;
@@ -257,12 +257,12 @@ void PageCaptureSaveAsMHTMLFunction::MHTMLGenerated(int64_t mhtml_file_size) {
 }
 
 void PageCaptureSaveAsMHTMLFunction::ReturnFailure(const std::string& error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   Respond(Error(error));
 }
 
 void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   WebContents* web_contents = GetWebContents();
   if (!web_contents) {

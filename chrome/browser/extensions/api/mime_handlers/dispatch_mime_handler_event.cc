@@ -43,7 +43,7 @@ void SendExecuteMimeTypeHandlerEvent(
     const std::string& internal_id,
     const std::string& mime_type,
     scoped_refptr<MimeHandlerBodyCache> body_cache) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);

@@ -145,7 +145,8 @@ const base::Value* GetRestrictedCrosSettingValueForChildUser(
     const std::string& pref_name) {
   // Make sure that profile belongs to a child and the preference is
   // pre-set.
-  DCHECK(IsRestrictedCrosSettingForChildUser(profile, pref_name));
+  CHECK(IsRestrictedCrosSettingForChildUser(profile, pref_name),
+        base::NotFatalUntil::M161);
 
   return ash::CrosSettings::Get()
       ->supervised_user_cros_settings_provider()

@@ -867,7 +867,7 @@ bool WindowBoundsIntersectDisplays(const gfx::Rect& bounds) {
 
 void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,
                             api::tabs::ZoomSettings* zoom_settings) {
-  DCHECK(zoom_settings);
+  CHECK(zoom_settings, base::NotFatalUntil::M161);
   switch (zoom_mode) {
     case zoom::ZoomController::ZOOM_MODE_DEFAULT:
       zoom_settings->mode = api::tabs::ZoomSettingsMode::kAutomatic;
@@ -998,8 +998,9 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
       windows::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DCHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
-         source_context_type() == mojom::ContextType::kUntrustedWebUi);
+  CHECK(extension() || source_context_type() == mojom::ContextType::kWebUi ||
+            source_context_type() == mojom::ContextType::kUntrustedWebUi,
+        base::NotFatalUntil::M161);
   create_data_ = std::move(params->create_data);
 
   // Look for optional url.
@@ -1767,7 +1768,7 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
-  DCHECK(dispatcher());
+  CHECK(dispatcher(), base::NotFatalUntil::M161);
 
   // If called from a tab, return the details from that tab. If not called from
   // a tab, return nothing (making the returned value undefined to the
@@ -2854,7 +2855,7 @@ bool TabsUpdateFunction::UpdateActiveTab(
   CHECK_LT(tab_index, tab_list.GetTabCount());
   if (tab_list.GetActiveIndex() != tab_index) {
     tab_list.ActivateTab(tab_list.GetTab(tab_index)->GetHandle());
-    DCHECK_EQ(tab_index, tab_list.GetActiveIndex());
+    CHECK_EQ(tab_index, tab_list.GetActiveIndex(), base::NotFatalUntil::M161);
   }
   return true;
 }
@@ -2995,8 +2996,9 @@ bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
     return false;
   }
 
-  DCHECK_EQ(*url,
-            web_contents->GetController().GetPendingEntry()->GetVirtualURL());
+  CHECK_EQ(*url,
+           web_contents->GetController().GetPendingEntry()->GetVirtualURL(),
+           base::NotFatalUntil::M161);
 
   return true;
 }
@@ -3281,7 +3283,7 @@ ExtensionFunction::ResponseAction TabsRemoveFunction::Run() {
     }
   }
   triggered_all_tab_removals_ = true;
-  DCHECK(!did_respond());
+  CHECK(!did_respond(), base::NotFatalUntil::M161);
   // WebContentsDestroyed will return the response in most cases, except when
   // the last tab closed immediately (it won't return a response because
   // |triggered_all_tab_removals_| will still be false). In this case we should
@@ -3348,7 +3350,7 @@ bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
 }
 
 void TabsRemoveFunction::TabDestroyed() {
-  DCHECK_GT(remaining_tabs_count_, 0);
+  CHECK_GT(remaining_tabs_count_, 0, base::NotFatalUntil::M161);
   // One of the tabs we wanted to remove had been destroyed.
   remaining_tabs_count_--;
   // If we've triggered all the tab removals we need, and this is the last tab
@@ -3503,7 +3505,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
   group_id = ExtensionTabUtil::GetGroupId(*final_group);
-  DCHECK_GT(group_id, 0);
+  CHECK_GT(group_id, 0, base::NotFatalUntil::M161);
 
   return RespondNow(WithArguments(group_id));
 }

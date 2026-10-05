@@ -64,7 +64,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::Run(Callback callback) {
 }
 
 void QuickUnlockPrivateGetAuthTokenHelper::RunOnUIThread(Callback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   auto user_context = std::make_unique<ash::UserContext>(*user);
@@ -86,8 +86,8 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthSessionStarted(
     bool user_exists,
     std::unique_ptr<ash::UserContext> user_context,
     std::optional<ash::AuthenticationError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(user_exists);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(user_exists, base::NotFatalUntil::M161);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to start auth session, code "
                << error->get_cryptohome_error();
@@ -144,7 +144,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthenticated(
     Callback callback,
     std::unique_ptr<ash::UserContext> user_context,
     std::optional<ash::AuthenticationError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to authenticate with password or PIN, code "
                << error->get_cryptohome_error();
@@ -164,7 +164,7 @@ void QuickUnlockPrivateGetAuthTokenHelper::OnAuthFactorsConfiguration(
     Callback callback,
     std::unique_ptr<ash::UserContext> user_context,
     std::optional<ash::AuthenticationError> error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error.has_value()) {
     LOG(ERROR) << "Failed to load auth factors configuration, code "
                << error->get_cryptohome_error();

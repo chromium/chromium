@@ -48,7 +48,7 @@ void PrintingSubmitJobFunction::OnPrintJobSubmitted(
     return;
   }
   api::printing::SubmitJobResponse response;
-  DCHECK(status.has_value());
+  CHECK(status.has_value(), base::NotFatalUntil::M161);
   response.status = status.value();
   response.job_id = std::move(job_id);
   Respond(WithArguments(response.ToValue()));
@@ -127,7 +127,7 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
     std::swap(response.capabilities->additional_properties,
               capabilities_value.GetDict());
   }
-  DCHECK(status.has_value());
+  CHECK(status.has_value(), base::NotFatalUntil::M161);
   response.status = status.value();
   Respond(WithArguments(response.ToValue()));
 }

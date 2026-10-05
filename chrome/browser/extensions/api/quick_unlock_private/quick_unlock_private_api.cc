@@ -128,8 +128,8 @@ std::pair<int, int> GetSanitizedPolicyPinMinMaxLength(
       pref_service->GetInteger(ash::prefs::kPinUnlockMaximumLength);
   max_length = max_length > 0 ? std::max(max_length, min_length) : 0;
 
-  DCHECK_GE(min_length, 1);
-  DCHECK_GE(max_length, 0);
+  CHECK_GE(min_length, 1, base::NotFatalUntil::M161);
+  CHECK_GE(max_length, 0, base::NotFatalUntil::M161);
   return std::make_pair(min_length, max_length);
 }
 
@@ -235,7 +235,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
 
   Profile* profile = GetActiveProfile(browser_context());
 
-  DCHECK(!helper_);
+  CHECK(!helper_, base::NotFatalUntil::M161);
   helper_ = std::make_unique<QuickUnlockPrivateGetAuthTokenHelper>(
       profile, params->account_password);
   auto callback = base::BindOnce(
@@ -248,7 +248,7 @@ void QuickUnlockPrivateGetAuthTokenFunction::OnResult(
     std::optional<api::quick_unlock_private::TokenInfo> token_info,
     std::optional<ash::AuthenticationError> error) {
   if (!token_info.has_value()) {
-    DCHECK(error.has_value());
+    CHECK(error.has_value(), base::NotFatalUntil::M161);
     Respond(Error(kInvalidCredential));
     return;
   }
@@ -578,7 +578,8 @@ void QuickUnlockPrivateSetModesFunction::OnGetActiveModes(
   std::string pin_credential;
 
   // Compute needed changes.
-  DCHECK_EQ(params_->credentials.size(), params_->modes.size());
+  CHECK_EQ(params_->credentials.size(), params_->modes.size(),
+           base::NotFatalUntil::M161);
   for (size_t i = 0; i < params_->modes.size(); ++i) {
     const QuickUnlockMode mode = params_->modes[i];
     const std::string& credential = params_->credentials[i];

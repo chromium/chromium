@@ -24,9 +24,9 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     entry.main_frame_url = referrer.main_frame_url();
   }
   // This url type value is deprecated and should not be used.
-  DCHECK_NE(
-      referrer.type(),
-      safe_browsing::ReferrerChainEntry_URLType_DEPRECATED_SERVER_REDIRECT);
+  CHECK_NE(referrer.type(),
+           safe_browsing::ReferrerChainEntry_URLType_DEPRECATED_SERVER_REDIRECT,
+           base::NotFatalUntil::M161);
   switch (referrer.type()) {
     case safe_browsing::ReferrerChainEntry_URLType_EVENT_URL:
       entry.url_type = safe_browsing_private::URLType::kEventUrl;
@@ -78,8 +78,9 @@ safe_browsing_private::ReferrerChainEntry ReferrerToReferrerChainEntry(
     }
   }
   if (referrer.has_navigation_initiation()) {
-    DCHECK_NE(referrer.navigation_initiation(),
-              safe_browsing::ReferrerChainEntry_NavigationInitiation_UNDEFINED);
+    CHECK_NE(referrer.navigation_initiation(),
+             safe_browsing::ReferrerChainEntry_NavigationInitiation_UNDEFINED,
+             base::NotFatalUntil::M161);
     switch (referrer.navigation_initiation()) {
       case safe_browsing::
           ReferrerChainEntry_NavigationInitiation_BROWSER_INITIATED:

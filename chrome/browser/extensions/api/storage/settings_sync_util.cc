@@ -28,7 +28,7 @@ namespace {
 base::WeakPtr<syncer::SyncableService> GetSyncableServiceOnBackendSequence(
     base::WeakPtr<SyncValueStoreCache> sync_cache,
     syncer::DataType type) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   if (!sync_cache) {
     return nullptr;
   }
@@ -121,9 +121,10 @@ syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
 base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
 GetSyncableServiceProvider(content::BrowserContext* context,
                            syncer::DataType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(context);
-  DCHECK(type == syncer::APP_SETTINGS || type == syncer::EXTENSION_SETTINGS);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(context, base::NotFatalUntil::M161);
+  CHECK(type == syncer::APP_SETTINGS || type == syncer::EXTENSION_SETTINGS,
+        base::NotFatalUntil::M161);
   StorageFrontend* frontend = StorageFrontend::Get(context);
   // StorageFrontend can be null in tests.
   if (!frontend) {
@@ -132,7 +133,7 @@ GetSyncableServiceProvider(content::BrowserContext* context,
   }
   SyncValueStoreCache* sync_cache = static_cast<SyncValueStoreCache*>(
       frontend->GetValueStoreCache(settings_namespace::SYNC));
-  DCHECK(sync_cache);
+  CHECK(sync_cache, base::NotFatalUntil::M161);
   return base::BindOnce(&GetSyncableServiceOnBackendSequence,
                         sync_cache->AsWeakPtr(), type);
 }

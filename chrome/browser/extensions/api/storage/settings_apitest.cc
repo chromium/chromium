@@ -135,11 +135,12 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
       base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
           syncable_service_provider,
       syncer::SyncChangeProcessor* sync_processor) {
-    DCHECK(GetBackendTaskRunner()->RunsTasksInCurrentSequence());
+    CHECK(GetBackendTaskRunner()->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     base::WeakPtr<syncer::SyncableService> syncable_service =
         std::move(syncable_service_provider).Run();
-    DCHECK(syncable_service.get());
+    CHECK(syncable_service.get(), base::NotFatalUntil::M161);
     EXPECT_FALSE(
         syncable_service
             ->MergeDataAndStartSyncing(
@@ -167,11 +168,12 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
       base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
           syncable_service_provider,
       const syncer::SyncChangeList& change_list) {
-    DCHECK(GetBackendTaskRunner()->RunsTasksInCurrentSequence());
+    CHECK(GetBackendTaskRunner()->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     base::WeakPtr<syncer::SyncableService> syncable_service =
         std::move(syncable_service_provider).Run();
-    DCHECK(syncable_service.get());
+    CHECK(syncable_service.get(), base::NotFatalUntil::M161);
     EXPECT_FALSE(syncable_service->ProcessSyncChanges(FROM_HERE, change_list)
                      .has_value());
   }

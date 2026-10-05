@@ -45,7 +45,7 @@ SyncValueStoreCache::SyncValueStoreCache(
     SettingsChangedCallback observer,
     const base::FilePath& profile_path)
     : initialized_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // This post is safe since the destructor can only be invoked from the
   // same message loop, and any potential post of a deletion task must come
@@ -61,7 +61,7 @@ SyncValueStoreCache::SyncValueStoreCache(
 }
 
 SyncValueStoreCache::~SyncValueStoreCache() {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
 }
 
 base::WeakPtr<SyncValueStoreCache> SyncValueStoreCache::AsWeakPtr() {
@@ -70,8 +70,8 @@ base::WeakPtr<SyncValueStoreCache> SyncValueStoreCache::AsWeakPtr() {
 
 syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
     syncer::DataType type) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(initialized_);
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(initialized_, base::NotFatalUntil::M161);
 
   switch (type) {
     case syncer::APP_SETTINGS:
@@ -86,15 +86,15 @@ syncer::SyncableService* SyncValueStoreCache::GetSyncableService(
 void SyncValueStoreCache::RunWithValueStoreForExtension(
     StorageCallback callback,
     scoped_refptr<const Extension> extension) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(initialized_);
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(initialized_, base::NotFatalUntil::M161);
   SyncStorageBackend* backend =
       extension->is_app() ? app_backend_.get() : extension_backend_.get();
   std::move(callback).Run(backend->GetStorage(extension->id()));
 }
 
 void SyncValueStoreCache::DeleteStorageSoon(const ExtensionId& extension_id) {
-  DCHECK(IsOnBackendSequence());
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
   app_backend_->DeleteStorage(extension_id);
   extension_backend_->DeleteStorage(extension_id);
 }
@@ -103,8 +103,8 @@ void SyncValueStoreCache::InitOnBackend(
     scoped_refptr<value_store::ValueStoreFactory> factory,
     SequenceBoundSettingsChangedCallback observer,
     const base::FilePath& profile_path) {
-  DCHECK(IsOnBackendSequence());
-  DCHECK(!initialized_);
+  CHECK(IsOnBackendSequence(), base::NotFatalUntil::M161);
+  CHECK(!initialized_, base::NotFatalUntil::M161);
   app_backend_ = std::make_unique<SyncStorageBackend>(
       factory, GetSyncQuotaLimits(), observer, syncer::APP_SETTINGS,
       sync_start_util::GetFlareForSyncableService(profile_path));

@@ -158,7 +158,7 @@ void PrintingAPIHandler::SubmitJob(
     scoped_refptr<const extensions::Extension> extension,
     std::optional<api::printing::SubmitJob::Params> params,
     SubmitJobCallback callback) {
-  DCHECK(params);
+  CHECK(params, base::NotFatalUntil::M161);
   // PrintingAPIHandler must outlive PrintJobSubmitter. Even if the WeakPtr
   // expires, PrintJobSubmitter will continue to access PrintingAPIHandler
   // member variables.
@@ -177,7 +177,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     SubmitJobCallback callback,
     const std::string& extension_id,
     PrintJobSubmitter::PrintJobCreationResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!result.has_value()) {
     std::optional<std::string> error = std::move(result).error();
@@ -194,7 +194,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   printing::PrintJobCreatedInfo info = std::move(result).value();
   std::string printer_id =
       base::UTF16ToUTF8(info.document->settings().device_name());
-  DCHECK(!printer_id.empty());
+  CHECK(!printer_id.empty(), base::NotFatalUntil::M161);
 
   std::string cups_id = CreateUniqueId(printer_id, info.job_id);
 
@@ -203,7 +203,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
       base::BindOnce(std::move(callback), api::printing::SubmitJobStatus::kOk,
                      cups_id, std::nullopt));
 
-  DCHECK(!in_progress_print_jobs_.contains(cups_id));
+  CHECK(!in_progress_print_jobs_.contains(cups_id), base::NotFatalUntil::M161);
   constexpr api::printing::JobStatus job_status =
       api::printing::JobStatus::kPending;
   in_progress_print_jobs_[cups_id] =
@@ -223,7 +223,7 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
 std::optional<std::string> PrintingAPIHandler::CancelJob(
     const std::string& extension_id,
     const std::string& job_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto it = in_progress_print_jobs_.find(job_id);
 
@@ -253,7 +253,7 @@ std::optional<std::string> PrintingAPIHandler::CancelJob(
 }
 
 void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(user_manager::UserManager::IsInitialized());
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
@@ -268,7 +268,7 @@ void PrintingAPIHandler::GetPrinters(GetPrintersCallback callback) {
 void PrintingAPIHandler::OnPrintersRetrieved(
     GetPrintersCallback callback,
     std::vector<chromeos::Printer> printers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context_)->GetPrefs();
@@ -294,7 +294,7 @@ void PrintingAPIHandler::OnPrintersRetrieved(
 
 void PrintingAPIHandler::GetPrinterInfo(const std::string& printer_id,
                                         GetPrinterInfoCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(user_manager::UserManager::IsInitialized());
   CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
 
@@ -313,7 +313,7 @@ void PrintingAPIHandler::OnPrinterCapabilitiesRetrieved(
     GetPrinterInfoCallback callback,
     base::optional_ref<const chromeos::Printer> /*printer*/,
     const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!caps.has_value()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -336,7 +336,7 @@ void PrintingAPIHandler::OnPrinterStatusRetrieved(
     GetPrinterInfoCallback callback,
     base::Value capabilities,
     std::unique_ptr<::printing::PrinterStatus> printer_status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!printer_status) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -359,8 +359,10 @@ void PrintingAPIHandler::MaybeEvictFinishedPrintJobs() {
     return;
   }
 
-  DCHECK_EQ(kMaximumFinishedJobs + 1u, finished_jobs_order_.size());
-  DCHECK_EQ(finished_jobs_order_.size(), finished_print_jobs_.size());
+  CHECK_EQ(kMaximumFinishedJobs + 1u, finished_jobs_order_.size(),
+           base::NotFatalUntil::M161);
+  CHECK_EQ(finished_jobs_order_.size(), finished_print_jobs_.size(),
+           base::NotFatalUntil::M161);
 
   size_t removed_jobs = 0;
   while (finished_jobs_order_.size() > 0 &&
@@ -422,7 +424,7 @@ void PrintingAPIHandler::OnPrintJobCancelled(
 void PrintingAPIHandler::UpdateJobStatus(const std::string& printer_id,
                                          int job_id,
                                          api::printing::JobStatus job_status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::string cups_id = CreateUniqueId(printer_id, job_id);
   auto it = in_progress_print_jobs_.find(cups_id);
@@ -442,7 +444,7 @@ void PrintingAPIHandler::UpdateJobStatus(const std::string& printer_id,
 
   // Treat only those jobs finished, which are completed, failed, or cancelled.
   if (PrintJobReachedTerminalState(it->second.status)) {
-    DCHECK(!finished_print_jobs_.contains(cups_id));
+    CHECK(!finished_print_jobs_.contains(cups_id), base::NotFatalUntil::M161);
     finished_print_jobs_[cups_id] =
         std::make_pair(it->second.extension_id, it->second.status);
     finished_jobs_order_.push_back(cups_id);
@@ -456,7 +458,7 @@ std::unique_ptr<KeyedService>
 BrowserContextKeyedAPIFactory<PrintingAPIHandler>::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(context);
   // We do not want an instance of PrintingAPIHandler on the lock screen.

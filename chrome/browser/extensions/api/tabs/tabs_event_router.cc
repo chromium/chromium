@@ -262,7 +262,8 @@ void TabsEventRouter::RegisterForTabNotifications(
   }
 
   int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
-  DCHECK(tab_entries_.find(tab_id) == tab_entries_.end());
+  CHECK(tab_entries_.find(tab_id) == tab_entries_.end(),
+        base::NotFatalUntil::M161);
   auto tab_entry = std::make_unique<TabEntry>(*this, web_contents);
   tab_entry->set_last_known_index(tab_index);
   tab_entries_[tab_id] = std::move(tab_entry);
@@ -288,7 +289,7 @@ void TabsEventRouter::UnregisterForTabNotifications(
 
   int tab_id = ExtensionTabUtil::GetTabId(&web_contents);
   int removed_count = tab_entries_.erase(tab_id);
-  DCHECK(removed_count > 0 || !expect_registered);
+  CHECK(removed_count > 0 || !expect_registered, base::NotFatalUntil::M161);
 }
 
 TabsEventRouter::TabEntry* TabsEventRouter::GetTabEntry(
@@ -308,8 +309,8 @@ void TabsEventRouter::TabUpdated(TabEntry* entry,
 void TabsEventRouter::DispatchTabUpdatedEvent(
     content::WebContents* contents,
     std::set<std::string> changed_property_names) {
-  DCHECK(!changed_property_names.empty());
-  DCHECK(contents);
+  CHECK(!changed_property_names.empty(), base::NotFatalUntil::M161);
+  CHECK(contents, base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
 
@@ -645,7 +646,7 @@ void TabsEventRouter::OnZoomControllerDestroyed(
 
 void TabsEventRouter::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
-  DCHECK(data.web_contents);
+  CHECK(data.web_contents, base::NotFatalUntil::M161);
   int tab_id = ExtensionTabUtil::GetTabId(data.web_contents);
   if (tab_id < 0) {
     return;

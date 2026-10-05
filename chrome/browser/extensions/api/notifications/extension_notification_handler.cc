@@ -29,7 +29,8 @@ base::ListValue CreateBaseEventArgs(const ExtensionId& extension_id,
                                     const std::string& scoped_notification_id) {
   // Unscope the notification id before returning it.
   size_t index_of_separator = extension_id.length() + 1;
-  DCHECK_LT(index_of_separator, scoped_notification_id.length());
+  CHECK_LT(index_of_separator, scoped_notification_id.length(),
+           base::NotFatalUntil::M161);
   std::string unscoped_notification_id =
       scoped_notification_id.substr(index_of_separator);
 
@@ -62,7 +63,7 @@ void ExtensionNotificationHandler::OnClose(
       by_user ? EventRouter::UserGestureState::kEnabled
               : EventRouter::UserGestureState::kNotEnabled;
   ExtensionId extension_id(GetExtensionId(GURL(origin)));
-  DCHECK(!extension_id.empty());
+  CHECK(!extension_id.empty(), base::NotFatalUntil::M161);
 
   base::ListValue args = CreateBaseEventArgs(extension_id, notification_id);
   args.Append(by_user);
@@ -85,7 +86,7 @@ void ExtensionNotificationHandler::OnClick(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
-  DCHECK(!reply.has_value());
+  CHECK(!reply.has_value(), base::NotFatalUntil::M161);
 
   ExtensionId extension_id(GetExtensionId(GURL(origin)));
   base::ListValue args = CreateBaseEventArgs(extension_id, notification_id);

@@ -95,7 +95,7 @@ bool IndexSupportsGroupMove(TabListInterface* tab_list,
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
-  DCHECK(params.has_value());
+  CHECK(params.has_value(), base::NotFatalUntil::M161);
 
   EXTENSION_FUNCTION_VALIDATE(params);
   int group_id = params->group_id;
@@ -109,7 +109,7 @@ ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  DCHECK(!id.is_empty());
+  CHECK(!id.is_empty(), base::NotFatalUntil::M161);
 
   return RespondNow(ArgumentList(api::tab_groups::Get::Results::Create(
       ExtensionTabUtil::CreateTabGroupObject(id, visual_data))));
@@ -236,7 +236,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   // window).
   CHECK(window);
 
-  DCHECK(!id.is_empty());
+  CHECK(!id.is_empty(), base::NotFatalUntil::M161);
 
   bool collapsed = visual_data.is_collapsed();
   if (params->update_properties.collapsed) {

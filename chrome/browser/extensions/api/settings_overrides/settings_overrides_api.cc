@@ -77,7 +77,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
       std::string old_sync_guid = data->sync_guid;
       data->prepopulate_id = 0;
       data->GenerateSyncGUID();
-      DCHECK_NE(data->sync_guid, old_sync_guid);
+      CHECK_NE(data->sync_guid, old_sync_guid, base::NotFatalUntil::M161);
     } else {
       VLOG(1) << "Settings Overrides API can't recognize prepopulated_id="
           << *search_provider.prepopulated_id;
@@ -90,7 +90,7 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 
   // `prepopulate_id` must be 0 to avoid collisions with prepopulated
   // engines.
-  DCHECK_EQ(0, data->prepopulate_id);
+  CHECK_EQ(0, data->prepopulate_id, base::NotFatalUntil::M161);
 
   if (search_provider.name) {
     data->SetShortName(base::UTF8ToUTF16(*search_provider.name));
@@ -218,7 +218,7 @@ void SettingsOverridesAPI::OnExtensionLoaded(
       } else {
         UnsetPref(extension->id(), prefs::kDefaultSearchProviderEnabled);
       }
-      DCHECK(url_service_);
+      CHECK(url_service_, base::NotFatalUntil::M161);
       RegisterSearchProvider(extension);
     }
   }
@@ -243,7 +243,7 @@ void SettingsOverridesAPI::OnExtensionUnloaded(
         UnsetPref(extension->id(),
                   DefaultSearchManager::kDefaultSearchProviderDataPrefName);
       }
-      DCHECK(url_service_);
+      CHECK(url_service_, base::NotFatalUntil::M161);
       url_service_->RemoveExtensionControlledTURL(
           extension->id(), TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION);
     }
@@ -252,11 +252,11 @@ void SettingsOverridesAPI::OnExtensionUnloaded(
 
 void SettingsOverridesAPI::RegisterSearchProvider(
     const Extension* extension) const {
-  DCHECK(url_service_);
-  DCHECK(extension);
+  CHECK(url_service_, base::NotFatalUntil::M161);
+  CHECK(extension, base::NotFatalUntil::M161);
   const SettingsOverrides* settings = SettingsOverrides::Get(extension);
-  DCHECK(settings);
-  DCHECK(settings->search_engine);
+  CHECK(settings, base::NotFatalUntil::M161);
+  CHECK(settings->search_engine, base::NotFatalUntil::M161);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   std::string install_parameter = GetInstallParam(prefs, extension->id());

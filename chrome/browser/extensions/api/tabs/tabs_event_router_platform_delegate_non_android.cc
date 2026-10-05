@@ -44,7 +44,7 @@ TabsEventRouterPlatformDelegate::TabsEventRouterPlatformDelegate(
     : router_(router),
       profile_(profile),
       browser_tab_strip_tracker_(this, this) {
-  DCHECK(!profile.IsOffTheRecord());
+  CHECK(!profile.IsOffTheRecord(), base::NotFatalUntil::M161);
 
   browser_collection_observation_.Observe(
       GlobalBrowserCollection::GetInstance());

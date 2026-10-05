@@ -206,7 +206,7 @@ ChromeVirtualKeyboardDelegate::~ChromeVirtualKeyboardDelegate() {
 
 void ChromeVirtualKeyboardDelegate::GetKeyboardConfig(
     OnKeyboardSettingsCallback on_settings_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!audio_system_) {
     audio_system_ = content::CreateAudioSystemForAudioService();
   }
@@ -216,13 +216,13 @@ void ChromeVirtualKeyboardDelegate::GetKeyboardConfig(
 }
 
 void ChromeVirtualKeyboardDelegate::OnKeyboardConfigChanged() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   GetKeyboardConfig(base::BindOnce(
       &ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent, weak_this_));
 }
 
 bool ChromeVirtualKeyboardDelegate::HideKeyboard() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (!keyboard_client->is_keyboard_enabled()) {
     return false;
@@ -235,7 +235,7 @@ bool ChromeVirtualKeyboardDelegate::HideKeyboard() {
 }
 
 bool ChromeVirtualKeyboardDelegate::InsertText(const std::u16string& text) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   ui::TextInputClient* tic = GetFocusedTextInputClient();
   if (!tic || tic->GetTextInputType() == ui::TEXT_INPUT_TYPE_NONE) {
     return false;
@@ -248,7 +248,7 @@ bool ChromeVirtualKeyboardDelegate::InsertText(const std::u16string& text) {
 }
 
 bool ChromeVirtualKeyboardDelegate::OnKeyboardLoaded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   base::RecordAction(base::UserMetricsAction("VirtualKeyboardLoaded"));
   return true;
 }
@@ -267,7 +267,7 @@ void ChromeVirtualKeyboardDelegate::SetHotrodKeyboard(bool enable) {
 }
 
 bool ChromeVirtualKeyboardDelegate::LockKeyboard(bool state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (!keyboard_client->is_keyboard_enabled()) {
     return false;
@@ -282,7 +282,7 @@ bool ChromeVirtualKeyboardDelegate::SendKeyEvent(const std::string& type,
                                                  int key_code,
                                                  const std::string& key_name,
                                                  int modifiers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   aura::Window* window =
       ChromeKeyboardControllerClient::Get()->GetKeyboardWindow();
   return window && SendKeyEventImpl(type, char_value, key_code, key_name,
@@ -290,7 +290,7 @@ bool ChromeVirtualKeyboardDelegate::SendKeyEvent(const std::string& type,
 }
 
 bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (keyboard_client->is_keyboard_enabled()) {
     keyboard_client->HideKeyboard(ash::HideReason::kUser);
@@ -305,7 +305,7 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
 }
 
 bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   if (keyboard_client->is_keyboard_enabled()) {
     keyboard_client->HideKeyboard(ash::HideReason::kUser);
@@ -505,7 +505,7 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated() {
 void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
     OnKeyboardSettingsCallback on_settings_callback,
     bool has_audio_input_devices) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
 
   base::DictValue results;
@@ -552,7 +552,7 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
 
 void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
     std::optional<base::DictValue> settings) {
-  DCHECK(settings);
+  CHECK(settings, base::NotFatalUntil::M161);
 
   EventRouter* router = GetRouterForEventName(
       browser_context_, keyboard_api::OnKeyboardConfigChanged::kEventName);

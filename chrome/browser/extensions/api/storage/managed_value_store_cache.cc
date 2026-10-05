@@ -217,7 +217,7 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
 
 void ManagedValueStoreCache::ExtensionTracker::Register(
     const policy::ComponentMap* components) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   schema_registry_->RegisterComponents(policy_domain_, *components);
 
   // The first SetExtensionsDomainsReady() call is performed after the
@@ -248,7 +248,7 @@ ManagedValueStoreCache::ManagedValueStoreCache(
       observer_(GetSequenceBoundSettingsChangedCallback(
           base::SequencedTaskRunner::GetCurrentDefault(),
           std::move(observer))) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DETACH_FROM_SEQUENCE(backend_sequence_checker_);
 
   policy_service_->AddObserver(policy_domain_, this);

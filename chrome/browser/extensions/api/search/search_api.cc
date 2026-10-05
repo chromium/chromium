@@ -104,7 +104,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
           kTabNotFoundError, base::NumberToString(*tab_id))));
     }
     // If tab_id was specified, disposition couldn't have been (checked above).
-    DCHECK_EQ(Disposition::kNone, disposition);
+    CHECK_EQ(Disposition::kNone, disposition, base::NotFatalUntil::M161);
   }
 
   // If the extension didn't specify a tab, we need to find a browser to use.
@@ -155,7 +155,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   // GURL for default search provider.
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(url_service);
+  CHECK(url_service, base::NotFatalUntil::M161);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(text));
   if (!url.is_valid()) {
@@ -165,7 +165,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   switch (disposition) {
     case Disposition::kCurrentTab:
     case Disposition::kNone:
-      DCHECK(url.is_valid());
+      CHECK(url.is_valid(), base::NotFatalUntil::M161);
       web_contents->GetController().LoadURL(
           url, content::Referrer(),
           ui::PageTransition::PAGE_TRANSITION_FROM_API,

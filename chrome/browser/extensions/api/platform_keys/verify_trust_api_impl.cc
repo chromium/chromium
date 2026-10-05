@@ -64,17 +64,17 @@ CreateCertChain(std::vector<std::vector<uint8_t>> server_certificate_chain) {
 
 VerifyTrustApiImpl::VerifyTrustApiImpl(content::BrowserContext* context)
     : browser_context_(context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 VerifyTrustApiImpl::~VerifyTrustApiImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void VerifyTrustApiImpl::Verify(Params params,
                                 const std::string& extension_id,
                                 VerifyCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // WeakPtr usage ensures that `callback` is not called after the
   // API is destroyed.
@@ -94,7 +94,7 @@ void VerifyTrustApiImpl::OnCertChainCreated(
     VerifyCallback callback,
     base::expected<scoped_refptr<net::X509Certificate>, std::string>
         maybe_cert_chain) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ASSIGN_OR_RETURN(auto cert_chain, std::move(maybe_cert_chain),
                    [&](const std::string& error) {
@@ -117,7 +117,7 @@ void VerifyTrustApiImpl::OnVerifyCert(VerifyCallback callback,
                                       int verify_result,
                                       const net::CertVerifyResult& result,
                                       bool pkp_bypassed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   std::move(callback).Run(/*error=*/std::string(), verify_result,
                           result.cert_status);
 }

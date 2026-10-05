@@ -27,7 +27,7 @@ namespace {
 std::string CheckedGetElementTag(const base::Value& node) {
   std::string tag;
   bool got_tag = data_decoder::GetXmlElementTagName(node, &tag);
-  DCHECK(got_tag);
+  CHECK(got_tag, base::NotFatalUntil::M161);
   return tag;
 }
 
@@ -42,10 +42,10 @@ void WalkNode(const base::Value& node, DescriptionAndStyles* result) {
     // Append text nodes to our description.
     if (data_decoder::IsXmlElementOfType(
             child, data_decoder::mojom::XmlParser::kTextNodeType)) {
-      DCHECK(child.is_dict());
+      CHECK(child.is_dict(), base::NotFatalUntil::M161);
       const std::string* text =
           child.GetDict().FindString(data_decoder::mojom::XmlParser::kTextKey);
-      DCHECK(text);
+      CHECK(text, base::NotFatalUntil::M161);
       std::u16string sanitized_text = base::UTF8ToUTF16(*text);
       // Keep leading whitespace, which we need to preserve for any non-first
       // styles.
@@ -137,7 +137,8 @@ void ConstructResultFromValue(
 
   // A helper function to set an error and run the callback.
   auto run_callback_with_error = [&result, &callback](std::string error) {
-    DCHECK_EQ(0u, result.descriptions_and_styles.size());
+    CHECK_EQ(0u, result.descriptions_and_styles.size(),
+             base::NotFatalUntil::M161);
     result.error = std::move(error);
     std::move(callback).Run(std::move(result));
   };
