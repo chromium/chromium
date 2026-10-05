@@ -161,8 +161,10 @@ CreateMojoVideoEncoderMetricsProviderFactory(LocalFrame* local_frame) {
 network::mojom::IPAddressSpace FromSocketAddress(
     const webrtc::SocketAddress socket_address) {
   switch (socket_address.GetIPAddressType()) {
+    // Sending to the unspecified address (0.0.0.0 or ::) reaches the local
+    // host on some platforms, so classify it as loopback, like
+    // services/network/public/cpp/ip_address_space_util.cc does.
     case webrtc::IPAddressType::kAny:
-      return network::mojom::IPAddressSpace::kPublic;
     case webrtc::IPAddressType::kLoopback:
       return network::mojom::IPAddressSpace::kLoopback;
     case webrtc::IPAddressType::kPrivate:
@@ -298,7 +300,11 @@ class LocalNetworkAccessPermission final
         target_address_space, originator_address_space_);
 
     if (network::features::kLocalNetworkAccessChecksWebRTCLoopbackOnly.Get()) {
-      return candidate_address.IsLoopbackIP() && is_less_public;
+      // Unlike IsLoopbackIP(), the address space covers the unspecified
+      // address.
+      return target_address_space ==
+                 network::mojom::IPAddressSpace::kLoopback &&
+             is_less_public;
     }
 
     return is_less_public;

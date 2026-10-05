@@ -288,6 +288,51 @@ TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
   TestUseCounters(scope.GetDocument(), request_type);
 }
 
+// Sending to the unspecified address (0.0.0.0 or ::, including the IPv4-mapped
+// ::ffff:0.0.0.0) reaches the local host on some platforms, so it must be
+// treated like a loopback address.
+TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
+       ShouldRequestPermission_UnspecifiedAddress) {
+  const auto [originator_address_space, candidate_address_space, result,
+              result_with_loopback_only, request_type] =
+      std::get<1>(GetParam());
+  if (candidate_address_space != IPAddressSpace::kLoopback) {
+    GTEST_SKIP() << "Only applies to loopback candidates.";
+  }
+
+  WebRuntimeFeatures::EnableLocalNetworkAccessWebRTC(true);
+
+  V8TestingScope scope;
+  auto& dependency_factory =
+      PeerConnectionDependencyFactory::From(*scope.GetExecutionContext());
+
+  auto policies = mojom::blink::PolicyContainerPolicies::New();
+  policies->ip_address_space = originator_address_space;
+  auto policy_container = std::make_unique<PolicyContainer>(
+      mojo::NullAssociatedRemote(), std::move(policies));
+
+  scope.GetExecutionContext()->SetPolicyContainer(std::move(policy_container));
+
+  auto lna_permission_factory =
+      dependency_factory.CreateLocalNetworkAccessPermissionFactoryForTesting();
+  auto lna_permission = lna_permission_factory->Create();
+
+  const bool loopback_only_enabled = std::get<0>(GetParam());
+  const bool expected =
+      loopback_only_enabled ? result_with_loopback_only : result;
+
+  EXPECT_EQ(expected, lna_permission->ShouldRequestPermission(
+                          webrtc::SocketAddress("0.0.0.0", 1234)));
+  EXPECT_EQ(expected, lna_permission->ShouldRequestPermission(
+                          webrtc::SocketAddress("::", 1234)));
+  EXPECT_EQ(expected, lna_permission->ShouldRequestPermission(
+                          webrtc::SocketAddress("::ffff:0.0.0.0", 1234)));
+
+  histogram_tester_.ExpectUniqueSample(
+      "WebRTC.PeerConnection.LocalNetworkAccess.RequestType", request_type, 3);
+  TestUseCounters(scope.GetDocument(), request_type);
+}
+
 TEST_P(LocalNetworkAccessPeerConnectionDependencyFactoryTest,
        ShouldRequestPermission_FeatureDisabled) {
   const auto [originator_address_space, candidate_address_space, result,
