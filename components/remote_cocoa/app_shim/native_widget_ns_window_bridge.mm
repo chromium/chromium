@@ -2177,7 +2177,7 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
   if (!window.visible || !window.onActiveSpace) {
     return;
   }
-  for (auto* child : child_windows_) {
+  for (NativeWidgetNSWindowBridge* child : child_windows_) {
     if (!child->wants_to_be_visible())
       continue;
     NSWindow* child_window = child->window_;

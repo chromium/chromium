@@ -210,7 +210,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // parent will close children before the parent closes, and children will be
   // raised above their parent when window z-order changes.
   NativeWidgetNSWindowBridge* parent() { return parent_; }
-  const std::vector<NativeWidgetNSWindowBridge*>& child_windows() {
+  const std::vector<raw_ptr<NativeWidgetNSWindowBridge>>& child_windows() {
     return child_windows_;
   }
 
@@ -475,7 +475,7 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
 
   raw_ptr<NativeWidgetNSWindowBridge> parent_ =
       nullptr;  // Weak. If non-null, owns this.
-  std::vector<NativeWidgetNSWindowBridge*> child_windows_;
+  std::vector<raw_ptr<NativeWidgetNSWindowBridge>> child_windows_;
 
   // The size of the content area of the window most recently sent to |host_|
   // (and its compositor).
