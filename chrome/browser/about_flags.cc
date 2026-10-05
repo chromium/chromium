@@ -12067,6 +12067,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"reauth-skip-identifier-page",
+     flag_descriptions::kReauthSkipIdentifierPageName,
+     flag_descriptions::kReauthSkipIdentifierPageDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kReauthSkipIdentifierPage)},
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-force-empty-csb-query",
      flag_descriptions::kLensOverlayForceEmptyCsbQueryName,

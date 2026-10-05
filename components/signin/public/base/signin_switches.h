@@ -781,6 +781,14 @@ BASE_DECLARE_FEATURE(kProfileDiscOnAllPages);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Re-authentication (mainly in the sign-in pending state) opens Gaia's
+// `/AccountChooser` with `ptc=1` instead of `/AddSession`, skipping the email
+// page.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kReauthSkipIdentifierPage);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !BUILDFLAG(IS_ANDROID)
 // Kill switch for Device Management Service OAuth scope.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

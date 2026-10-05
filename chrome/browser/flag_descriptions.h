@@ -6914,6 +6914,13 @@ inline constexpr char
     kReadAnythingReadAloudExperimentalPlaybackUiDescription[] =
         "Enables the experimental playback UI for Reading Mode Read Aloud.";
 
+inline constexpr char kReauthSkipIdentifierPageName[] =
+    "Skip identifier page on reauth";
+inline constexpr char kReauthSkipIdentifierPageDescription[] =
+    "Re-authentication (mainly in the sign-in pending state) opens Gaia's "
+    "AccountChooser with ptc=1 instead of AddSession, skipping the email "
+    "page.";
+
 inline constexpr char kRealboxVirtualFocusNavigationName[] =
     "Enable Realbox Virtual Focus Navigation";
 inline constexpr char kRealboxVirtualFocusNavigationDescription[] =

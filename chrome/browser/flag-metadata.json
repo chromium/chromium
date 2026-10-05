@@ -8645,6 +8645,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "reauth-skip-identifier-page",
+    "owners": ["ddac@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "record-web-app-debug-info",
     "owners": [ "pwa-team@google.com" ],
     // This flag is used for in-the-field debugging of preinstalled web apps on

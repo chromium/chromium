@@ -12458,6 +12458,7 @@ from previous Chrome versions.
   <int value="-758048639" label="InfiniteSessionRestore:enabled"/>
   <int value="-757946835"
       label="OmniboxUIExperimentShowSuggestionFavicons:enabled"/>
+  <int value="-757760901" label="ReauthSkipIdentifierPage:disabled"/>
   <int value="-757379927" label="Canvas2DImageChromium:enabled"/>
   <int value="-757282194" label="EnableFilesystemInIncognito:enabled"/>
   <int value="-757144288"
@@ -18395,6 +18396,7 @@ from previous Chrome versions.
   <int value="1060059366" label="EnableDynamicRouteFetching:enabled"/>
   <int value="1060127537" label="TabSwitcherFullNewTabButton:disabled"/>
   <int value="1060319397" label="enable-data-reduction-proxy-carrier-test"/>
+  <int value="1060949873" label="ReauthSkipIdentifierPage:enabled"/>
   <int value="1061121730" label="AccessibilityHandleOccludingViews:disabled"/>
   <int value="1061351122" label="LinkLayerPrivacy:disabled"/>
   <int value="1061947013" label="OmniboxDeferredKeyboardPopup:disabled"/>
