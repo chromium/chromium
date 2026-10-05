@@ -44,6 +44,7 @@ import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
@@ -79,6 +80,7 @@ import java.util.concurrent.Callable;
 
 /** Integration tests for text selection-related behavior. */
 @RunWith(ContentJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class ContentTextSelectionTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
@@ -905,7 +907,8 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    public void testSelectActionBarPlainTextCopy() throws Exception {
+    public void testSelectActionBarPlainTextCopy() throws Throwable {
+        copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "plain_text_1");
         waitForSelectActionBarVisible(true);
         Assert.assertTrue(mSelectionPopupController.hasSelection());
