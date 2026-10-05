@@ -16943,6 +16943,35 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IsolatedMode_Started_Supervised_LogSegment_Prefs_Mismatch">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <description>
+    An Enterprise Isolated Mode session is started, for a user whose UMA log
+    segment is supervised but who does not have parental controls applied. This
+    is an unexpected error condition.
+  </description>
+</action>
+
+<action name="IsolatedMode_Started_Supervised_Managed">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <description>
+    An Enterprise Isolated Mode session is started, for a supervised user where
+    the Isolated Mode preference is managed by an Enterprise policy.
+  </description>
+</action>
+
+<action name="IsolatedMode_Started_Supervised_Unexpected">
+  <owner>szpotekagata@google.com</owner>
+  <owner>cec-growth@google.com</owner>
+  <description>
+    An Enterprise Isolated Mode session is started, for a supervised user not
+    fitting into the definition of the two metrics above. This is an unexpected
+    error.
+  </description>
+</action>
+
 <action name="IsolatedModeMenu_ExitClicked">
   <owner>szpotekagata@google.com</owner>
   <description>

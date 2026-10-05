@@ -69,7 +69,8 @@ class Custodian {
 // availability.
 // The state of features is driven by changes to the following preferences:
 // * `profile.managed_user_id` for remote approvals and custodian data,
-// * `incognito.mode_availability` for incognito mode.
+// * `incognito.mode_availability` and `enterprise.isolated_mode` for
+//   off-the-record modes (incognito and enterprise isolated mode).
 class SupervisedUserService : public KeyedService {
  public:
   // Delegate encapsulating platform-specific logic that is invoked from this
@@ -140,8 +141,9 @@ class SupervisedUserService : public KeyedService {
   // Handler when supervision is disabled. Intentionally idempotent.
   void OnFamilyLinkParentalControlsDisabled();
 
-  // Closes incognito tabs on each availability change, under condition that
-  // any parental controls are enabled and incognito mode is not available.
+  // Closes incognito and isolated mode tabs on each availability change, under
+  // condition that any parental controls are enabled and off-the-record mode
+  // is not available.
   void OnIncognitoModeAvailabilityChanged();
 
   const raw_ref<PrefService> user_prefs_;

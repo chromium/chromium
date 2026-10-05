@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_value_map.h"
@@ -77,6 +78,10 @@ void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
   pref_values.SetInteger(
       policy::policy_prefs::kIncognitoModeAvailability,
       static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  pref_values.SetInteger(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
+      static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kDisabled));
 }
 }  // namespace supervised_user
 

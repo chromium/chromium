@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -116,6 +117,11 @@ SupervisedUserService::SupervisedUserService(
                           base::Unretained(this)));
   main_pref_change_registrar_.Add(
       policy::policy_prefs::kIncognitoModeAvailability,
+      base::BindRepeating(
+          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
+          base::Unretained(this)));
+  main_pref_change_registrar_.Add(
+      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
       base::BindRepeating(
           &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
           base::Unretained(this)));

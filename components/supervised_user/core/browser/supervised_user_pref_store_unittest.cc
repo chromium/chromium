@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/enterprise/isolated_mode/prefs.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/testing_pref_store.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -130,6 +131,13 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
       fixture.changed_prefs()->FindIntByDottedPath(
           policy::policy_prefs::kIncognitoModeAvailability),
       Optional(static_cast<int>(policy::IncognitoModeAvailability::kDisabled)));
+
+  // kEnterpriseIsolatedModeSettings must also be disabled for supervised users.
+  EXPECT_THAT(
+      fixture.changed_prefs()->FindIntByDottedPath(
+          enterprise_isolated_mode::kEnterpriseIsolatedModeSettings),
+      Optional(static_cast<int>(
+          enterprise_isolated_mode::IsolatedModeSetting::kDisabled)));
 
   // kSupervisedModeManualHosts does not have a hardcoded value.
   EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
