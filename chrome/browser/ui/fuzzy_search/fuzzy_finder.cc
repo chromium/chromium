@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 
 #include <algorithm>
+#include <functional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -158,10 +159,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
 
   // Stable sort in descending order by score (preserving insertion order on
   // ties).
-  std::stable_sort(results.begin(), results.end(),
-                   [](const FuzzySearchResult& a, const FuzzySearchResult& b) {
-                     return a.score > b.score;
-                   });
+  std::ranges::stable_sort(results, std::ranges::greater(),
+                           &FuzzySearchResult::score);
 
   if (results.size() > max_results) {
     results.resize(max_results);
