@@ -91,7 +91,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
    public:
     SystemWebAppLaunchHelper(
         OnTaskSystemWebAppManager* system_web_app_manager,
-        const std::vector<boca::BocaWindowObserver*> observers);
+        const std::vector<raw_ptr<boca::BocaWindowObserver>> observers);
     SystemWebAppLaunchHelper(const SystemWebAppLaunchHelper&) = delete;
     SystemWebAppLaunchHelper& operator=(const SystemWebAppLaunchHelper&) =
         delete;
@@ -108,7 +108,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
                                        base::RepeatingClosure callback);
 
     void SetObserversForTesting(
-        std::vector<boca::BocaWindowObserver*> observers) {
+        std::vector<raw_ptr<boca::BocaWindowObserver>> observers) {
       observers_ = std::move(observers);
     }
 
@@ -120,7 +120,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
     // Owned by the parent class `OnTaskSessionManager` that owns an instance of
     // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
     raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
-    std::vector<boca::BocaWindowObserver*> observers_;
+    std::vector<raw_ptr<boca::BocaWindowObserver>> observers_;
 
     SEQUENCE_CHECKER(sequence_checker_);
 

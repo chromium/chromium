@@ -42,7 +42,7 @@ class OnTaskSystemWebAppManagerImpl : public OnTaskSystemWebAppManager {
                                           SessionID window_id) override;
   void SetWindowTrackerForSystemWebAppWindow(
       SessionID window_id,
-      const std::vector<BocaWindowObserver*> observers) override;
+      const std::vector<raw_ptr<boca::BocaWindowObserver>> observers) override;
   SessionID CreateBackgroundTabWithUrl(
       SessionID window_id,
       GURL url,

@@ -264,7 +264,7 @@ void OnTaskSystemWebAppManagerImpl::PauseMicrophoneInput(bool paused) {
 // TODO(b/367417612): Add unit test for this function.
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     SessionID window_id,
-    const std::vector<boca::BocaWindowObserver*> observers) {
+    const std::vector<raw_ptr<boca::BocaWindowObserver>> observers) {
   BrowserDelegate* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
@@ -274,7 +274,7 @@ void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
     return;
   }
   window_tracker->InitializeBrowserInfoForTracking(browser);
-  for (auto* observer : observers) {
+  for (boca::BocaWindowObserver* observer : observers) {
     window_tracker->AddObserver(observer);
   }
 }

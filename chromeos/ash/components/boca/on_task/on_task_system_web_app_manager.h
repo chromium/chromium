@@ -48,7 +48,7 @@ class OnTaskSystemWebAppManager {
   // id.
   virtual void SetWindowTrackerForSystemWebAppWindow(
       SessionID window_id,
-      const std::vector<boca::BocaWindowObserver*> observers) = 0;
+      const std::vector<raw_ptr<boca::BocaWindowObserver>> observers) = 0;
 
   // Creates a background tab with the given URL and restriction_level in the
   // specified Boca SWA window.

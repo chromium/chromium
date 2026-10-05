@@ -54,8 +54,8 @@ OnTaskSessionManager::OnTaskSessionManager(
       system_web_app_launch_helper_(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
               system_web_app_manager_.get(),
-              std::vector<boca::BocaWindowObserver*>{active_tab_tracker_.get(),
-                                                     this})),
+              std::vector<raw_ptr<boca::BocaWindowObserver>>{
+                  active_tab_tracker_.get(), this})),
       notifications_manager_(OnTaskNotificationsManager::Create()),
       boca_session_manager_(boca_session_manager) {
   notification_countdown_duration_ =
@@ -506,7 +506,7 @@ void OnTaskSessionManager::OnTabRemoved(const SessionID tab_id) {
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
     OnTaskSystemWebAppManager* system_web_app_manager,
-    std::vector<boca::BocaWindowObserver*> observers)
+    std::vector<raw_ptr<boca::BocaWindowObserver>> observers)
     : system_web_app_manager_(system_web_app_manager), observers_(observers) {}
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::~SystemWebAppLaunchHelper() =
