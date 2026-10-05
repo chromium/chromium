@@ -16,18 +16,20 @@
 #include "ash/constants/devicetype.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_customization_id.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
@@ -99,7 +101,12 @@ class BackdropFetcher {
  public:
   using OnFetchComplete = base::OnceCallback<void(const std::string& response)>;
 
-  BackdropFetcher() = default;
+  // `shared_url_loader_factory` must not be null.
+  explicit BackdropFetcher(
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+      : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
+    CHECK(shared_url_loader_factory_);
+  }
 
   BackdropFetcher(const BackdropFetcher&) = delete;
   BackdropFetcher& operator=(const BackdropFetcher&) = delete;
@@ -115,17 +122,6 @@ class BackdropFetcher {
     CHECK(!simple_loader_ && callback_.is_null(), base::NotFatalUntil::M160);
     callback_ = std::move(callback);
 
-    SystemNetworkContextManager* system_network_context_manager =
-        g_browser_process->system_network_context_manager();
-    // In unit tests, the browser process can return a null context manager.
-    if (!system_network_context_manager) {
-      std::move(callback_).Run(std::string());
-      return;
-    }
-
-    network::mojom::URLLoaderFactory* loader_factory =
-        system_network_context_manager->GetURLLoaderFactory();
-
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = url;
     resource_request->method = "POST";
@@ -139,8 +135,9 @@ class BackdropFetcher {
     // |base::Unretained| is safe because this instance outlives
     // |simple_loader_|.
     simple_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory, base::BindOnce(&BackdropFetcher::OnURLFetchComplete,
-                                       base::Unretained(this)));
+        shared_url_loader_factory_.get(),
+        base::BindOnce(&BackdropFetcher::OnURLFetchComplete,
+                       base::Unretained(this)));
   }
 
  private:
@@ -166,6 +163,9 @@ class BackdropFetcher {
     std::move(callback_).Run(*response_body);
   }
 
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+
   // The url loader for the Backdrop service request.
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 
@@ -178,8 +178,13 @@ BackdropCollectionInfoFetcher::BackdropCollectionInfoFetcher() = default;
 BackdropCollectionInfoFetcher::~BackdropCollectionInfoFetcher() = default;
 
 BackdropCollectionInfoFetcherImpl::BackdropCollectionInfoFetcherImpl(
-    base::PassKey<WallpaperFetcherDelegateImpl>) {
+    base::PassKey<WallpaperFetcherDelegateImpl>,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(shared_url_loader_factory_);
 }
 
 BackdropCollectionInfoFetcherImpl::~BackdropCollectionInfoFetcherImpl() =
@@ -198,11 +203,12 @@ void BackdropCollectionInfoFetcherImpl::Start(
 
 void BackdropCollectionInfoFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
-  backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
+  backdrop_fetcher_ =
+      std::make_unique<BackdropFetcher>(shared_url_loader_factory_);
 
   backdrop::GetCollectionsRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {
     request.add_filtering_label(kGoogleDeviceFilteringLabel);
@@ -271,9 +277,14 @@ BackdropImageInfoFetcher::~BackdropImageInfoFetcher() = default;
 
 BackdropImageInfoFetcherImpl::BackdropImageInfoFetcherImpl(
     base::PassKey<WallpaperFetcherDelegateImpl>,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const std::string& collection_id)
-    : collection_id_(collection_id) {
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      collection_id_(collection_id) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(shared_url_loader_factory_);
 }
 
 BackdropImageInfoFetcherImpl::~BackdropImageInfoFetcherImpl() = default;
@@ -290,11 +301,12 @@ void BackdropImageInfoFetcherImpl::Start(OnImagesInfoFetched callback) {
 
 void BackdropImageInfoFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
-  backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
+  backdrop_fetcher_ =
+      std::make_unique<BackdropFetcher>(shared_url_loader_factory_);
 
   backdrop::GetImagesInCollectionRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   request.set_collection_id(collection_id_);
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {
@@ -365,10 +377,16 @@ BackdropSurpriseMeImageFetcher::~BackdropSurpriseMeImageFetcher() = default;
 
 BackdropSurpriseMeImageFetcherImpl::BackdropSurpriseMeImageFetcherImpl(
     base::PassKey<WallpaperFetcherDelegateImpl>,
+    const ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const std::string& collection_id,
     const std::string& resume_token)
-    : collection_id_(collection_id), resume_token_(resume_token) {
+    : application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      collection_id_(collection_id),
+      resume_token_(resume_token) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK(shared_url_loader_factory_);
 }
 
 BackdropSurpriseMeImageFetcherImpl::~BackdropSurpriseMeImageFetcherImpl() =
@@ -388,11 +406,12 @@ void BackdropSurpriseMeImageFetcherImpl::Start(
 
 void BackdropSurpriseMeImageFetcherImpl::OnGetCustomizationIdFilter(
     std::optional<std::string> customization_id_filter) {
-  backdrop_fetcher_ = std::make_unique<BackdropFetcher>();
+  backdrop_fetcher_ =
+      std::make_unique<BackdropFetcher>(shared_url_loader_factory_);
 
   backdrop::GetImageFromCollectionRequest request;
   // The language field may include the country code (e.g. "en-US").
-  request.set_language(g_browser_process->GetApplicationLocale());
+  request.set_language(application_locale_storage_->Get());
   request.add_collection_ids(collection_id_);
   request.add_filtering_label(kFilteringLabel);
   if (ash::IsGoogleBrandedDevice()) {

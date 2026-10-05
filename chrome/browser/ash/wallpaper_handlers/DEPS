@@ -17,7 +17,7 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/settings",
   "+chrome/browser/browser_process.h",
-  "+chrome/browser/net",
+  "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/test/base",
 ]

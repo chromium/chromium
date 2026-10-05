@@ -11,6 +11,8 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ash/wallpaper_handlers/google_photos_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "components/account_id/account_id.h"
@@ -19,6 +21,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/memory/memory.h"
 
 namespace wallpaper_handlers {
@@ -29,22 +32,31 @@ WallpaperFetcherDelegateImpl::~WallpaperFetcherDelegateImpl() = default;
 
 std::unique_ptr<BackdropCollectionInfoFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropCollectionInfoFetcher() const {
+  // TODO(crbug.com/404134916): Avoid using g_browser_process.
   return std::make_unique<BackdropCollectionInfoFetcherImpl>(
-      base::PassKey<WallpaperFetcherDelegateImpl>());
+      base::PassKey<WallpaperFetcherDelegateImpl>(),
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory());
 }
 
 std::unique_ptr<BackdropImageInfoFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropImageInfoFetcher(
     const std::string& collection_id) const {
+  // TODO(crbug.com/404134916): Avoid using g_browser_process.
   return std::make_unique<BackdropImageInfoFetcherImpl>(
-      base::PassKey<WallpaperFetcherDelegateImpl>(), collection_id);
+      base::PassKey<WallpaperFetcherDelegateImpl>(),
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory(), collection_id);
 }
 
 std::unique_ptr<BackdropSurpriseMeImageFetcher>
 WallpaperFetcherDelegateImpl::CreateBackdropSurpriseMeImageFetcher(
     const std::string& collection_id) const {
+  // TODO(crbug.com/404134916): Avoid using g_browser_process.
   return std::make_unique<BackdropSurpriseMeImageFetcherImpl>(
-      base::PassKey<WallpaperFetcherDelegateImpl>(), collection_id,
+      base::PassKey<WallpaperFetcherDelegateImpl>(),
+      g_browser_process->GetFeatures()->application_locale_storage(),
+      g_browser_process->shared_url_loader_factory(), collection_id,
       /*resume_token=*/"");
 }
 

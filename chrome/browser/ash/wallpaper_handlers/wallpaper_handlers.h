@@ -11,14 +11,22 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_fetcher_delegate.h"
+
+class ApplicationLocaleStorage;
 
 namespace backdrop {
 class Collection;
 class Image;
 }  // namespace backdrop
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace wallpaper_handlers {
 
@@ -47,8 +55,12 @@ class BackdropCollectionInfoFetcher {
 
 class BackdropCollectionInfoFetcherImpl : public BackdropCollectionInfoFetcher {
  public:
-  explicit BackdropCollectionInfoFetcherImpl(
-      base::PassKey<WallpaperFetcherDelegateImpl>);
+  // `application_locale_storage` must not be null and must outlive `this`.
+  // `shared_url_loader_factory` must not be null.
+  BackdropCollectionInfoFetcherImpl(
+      base::PassKey<WallpaperFetcherDelegateImpl>,
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   BackdropCollectionInfoFetcherImpl(const BackdropCollectionInfoFetcherImpl&) =
       delete;
@@ -66,6 +78,10 @@ class BackdropCollectionInfoFetcherImpl : public BackdropCollectionInfoFetcher {
 
   // Called when the collections info download completes.
   void OnResponseFetched(const std::string& response);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Used to download the proto from the Backdrop service.
   std::unique_ptr<BackdropFetcher> backdrop_fetcher_;
@@ -102,8 +118,13 @@ class BackdropImageInfoFetcher {
 
 class BackdropImageInfoFetcherImpl : public BackdropImageInfoFetcher {
  public:
-  BackdropImageInfoFetcherImpl(base::PassKey<WallpaperFetcherDelegateImpl>,
-                               const std::string& collection_id);
+  // `application_locale_storage` must not be null and must outlive `this`.
+  // `shared_url_loader_factory` must not be null.
+  BackdropImageInfoFetcherImpl(
+      base::PassKey<WallpaperFetcherDelegateImpl>,
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      const std::string& collection_id);
 
   BackdropImageInfoFetcherImpl(const BackdropImageInfoFetcherImpl&) = delete;
   BackdropImageInfoFetcherImpl& operator=(const BackdropImageInfoFetcherImpl&) =
@@ -120,6 +141,10 @@ class BackdropImageInfoFetcherImpl : public BackdropImageInfoFetcher {
 
   // Called when the images info download completes.
   void OnResponseFetched(const std::string& response);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Used to download the proto from the Backdrop service.
   std::unique_ptr<BackdropFetcher> backdrop_fetcher_;
@@ -161,8 +186,12 @@ class BackdropSurpriseMeImageFetcher {
 class BackdropSurpriseMeImageFetcherImpl
     : public BackdropSurpriseMeImageFetcher {
  public:
+  // `application_locale_storage` must not be null and must outlive `this`.
+  // `shared_url_loader_factory` must not be null.
   BackdropSurpriseMeImageFetcherImpl(
       base::PassKey<WallpaperFetcherDelegateImpl>,
+      const ApplicationLocaleStorage* application_locale_storage,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
       const std::string& collection_id,
       const std::string& resume_token);
 
@@ -177,12 +206,15 @@ class BackdropSurpriseMeImageFetcherImpl
   void Start(OnSurpriseMeImageFetched callback) override;
 
  private:
-
   // Called when the customization_id has been read from StatisticsProvider.
   void OnGetCustomizationIdFilter(std::optional<std::string> customization_id);
 
   // Called when the surprise me image info download completes.
   void OnResponseFetched(const std::string& response);
+
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
 
   // Used to download the proto from the Backdrop service.
   std::unique_ptr<BackdropFetcher> backdrop_fetcher_;
