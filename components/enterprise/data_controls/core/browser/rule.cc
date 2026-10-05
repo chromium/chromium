@@ -4,14 +4,16 @@
 
 #include "components/enterprise/data_controls/core/browser/rule.h"
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/data_controls/core/browser/conditions/and_condition.h"
@@ -50,11 +52,14 @@ std::string GetStringOrEmpty(const base::DictValue& dict, const char* key) {
 // ambiguity as to how the rule is evaluated, and as such this is considered an
 // error in the set policy.
 std::vector<std::string_view> OneOfConditions(const base::DictValue& value) {
-  std::vector<std::string_view> oneof_conditions;
   // "and", "or" and "not" need to be the only value at their level as it
   // is otherwise ambiguous which of them has precedence or how they are
   // combined together into one condition.
-  for (const char* oneof_value : {kKeyAnd, kKeyOr, kKeyNot}) {
+  static constexpr auto kOneOfValues =
+      std::to_array<std::string_view>({kKeyAnd, kKeyOr, kKeyNot});
+
+  std::vector<std::string_view> oneof_conditions;
+  for (std::string_view oneof_value : kOneOfValues) {
     if (value.contains(oneof_value)) {
       oneof_conditions.push_back(oneof_value);
     }
@@ -67,13 +72,16 @@ std::vector<std::string_view> OneOfConditions(const base::DictValue& value) {
 // conditions like "urls" or "incognito".
 std::vector<std::string_view> ExclusiveEndpointConditions(
     const base::DictValue& value) {
+  static constexpr auto kExclusiveValues = std::to_array<std::string_view>({
+      AttributesCondition::kKeyOsClipboard,
+      // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
+      // profile-bound attributes like `incognito`. When implemented, update
+      // `ExclusiveEndpointConditions` and `TabContextConditions`.
+      AttributesCondition::kKeyGeminiInChrome,
+  });
+
   std::vector<std::string_view> exclusive_conditions;
-  for (const char* exclusive_value :
-       {AttributesCondition::kKeyOsClipboard,
-        // TODO(crbug.com/510383413): Support combining `gemini_in_chrome` with
-        // profile-bound attributes like `incognito`. When implemented, update
-        // `ExclusiveEndpointConditions` and `TabContextConditions`.
-        AttributesCondition::kKeyGeminiInChrome}) {
+  for (std::string_view exclusive_value : kExclusiveValues) {
     if (value.contains(exclusive_value)) {
       exclusive_conditions.push_back(exclusive_value);
     }
@@ -86,16 +94,18 @@ std::vector<std::string_view> ExclusiveEndpointConditions(
 // ExclusiveEndpointConditions.
 std::vector<std::string_view> TabContextConditions(
     const base::DictValue& value) {
-  std::vector<std::string_view> tab_conditions;
-  for (const char* tab_condition :
-       {AttributesCondition::kKeyUrls,
-        AttributesCondition::kKeyUrlRegexprs,
-        AttributesCondition::kKeyIncognito,
-        AttributesCondition::kKeyOtherProfile,
+  static constexpr auto kTabConditions = std::to_array<std::string_view>({
+      AttributesCondition::kKeyUrls,
+      AttributesCondition::kKeyUrlRegexprs,
+      AttributesCondition::kKeyIncognito,
+      AttributesCondition::kKeyOtherProfile,
 #if BUILDFLAG(IS_CHROMEOS)
-        AttributesCondition::kKeyComponents
+      AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-       }) {
+  });
+
+  std::vector<std::string_view> tab_conditions;
+  for (std::string_view tab_condition : kTabConditions) {
     if (value.contains(tab_condition)) {
       tab_conditions.push_back(tab_condition);
     }
@@ -105,28 +115,30 @@ std::vector<std::string_view> TabContextConditions(
 
 // Returns any non-OneOf condition present in `value`.
 std::vector<std::string_view> AnyOfConditions(const base::DictValue& value) {
-  std::vector<std::string_view> anyof_conditions;
-  for (const char* anyof_condition :
-       {kKeySources, kKeyDestinations, AttributesCondition::kKeyOsClipboard,
-        AttributesCondition::kKeyGeminiInChrome,
-        AttributesCondition::kKeyUrls,
-        AttributesCondition::kKeyUrlRegexprs,
-        AttributesCondition::kKeyIncognito,
-        AttributesCondition::kKeyOtherProfile,
-        AttributesCondition::kKeySizeHigherThan,
-        AttributesCondition::kKeySizeLowerThan,
+  static constexpr auto kAnyOfConditions = std::to_array<std::string_view>({
+      kKeySources,
+      kKeyDestinations,
+      AttributesCondition::kKeyOsClipboard,
+      AttributesCondition::kKeyGeminiInChrome,
+      AttributesCondition::kKeyUrls,
+      AttributesCondition::kKeyUrlRegexprs,
+      AttributesCondition::kKeyIncognito,
+      AttributesCondition::kKeyOtherProfile,
+      AttributesCondition::kKeySizeHigherThan,
+      AttributesCondition::kKeySizeLowerThan,
 #if BUILDFLAG(IS_CHROMEOS)
-        AttributesCondition::kKeyComponents
+      AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-       }) {
+  });
+
+  std::vector<std::string_view> anyof_conditions;
+  for (std::string_view anyof_condition : kAnyOfConditions) {
     if (value.contains(anyof_condition)) {
       anyof_conditions.push_back(anyof_condition);
     }
   }
   return anyof_conditions;
 }
-
-
 
 // Returns true if `error_path` indicates that the attribute being validated is
 // nested inside a "destinations" dictionary.
@@ -575,82 +587,129 @@ bool Rule::AddUnsupportedAttributeErrors(
     const char* policy_name,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  static const base::NoDestructor<
-      base::flat_map<Rule::Restriction, std::set<std::string_view>>>
-      kSupportedAttributes({
-          {
-              Restriction::kClipboard,
-              {
-                  AttributesCondition::kKeyOsClipboard,
-                  AttributesCondition::kKeyUrls,
-                  AttributesCondition::kKeyIncognito,
-                  AttributesCondition::kKeyOtherProfile,
-                  AttributesCondition::kKeyGeminiInChrome,
+  static constexpr auto kClipboardAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyOsClipboard,
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+          AttributesCondition::kKeyOtherProfile,
+          AttributesCondition::kKeyGeminiInChrome,
 #if BUILDFLAG(IS_CHROMEOS)
-                  AttributesCondition::kKeyComponents,
+          AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-                  kKeyAnd,
-                  kKeyOr,
-                  kKeyNot,
-                  kKeySources,
-                  kKeyDestinations,
-              },
-          },
-          {
-              Restriction::kScreenshot,
-              {
-                  AttributesCondition::kKeyUrls,
-                  AttributesCondition::kKeyIncognito,
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+          kKeyDestinations,
+      });
+  static constexpr auto kSourceClipboardAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyOsClipboard,
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+          AttributesCondition::kKeyOtherProfile,
+          AttributesCondition::kKeyGeminiInChrome,
 #if BUILDFLAG(IS_CHROMEOS)
-                  AttributesCondition::kKeyComponents,
+          AttributesCondition::kKeyComponents,
 #endif  // BUILDFLAG(IS_CHROMEOS)
-                  kKeyAnd,
-                  kKeyOr,
-                  kKeyNot,
-                  kKeySources,
-              },
-          },
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+          kKeyDestinations,
+          AttributesCondition::kKeySizeHigherThan,
+          AttributesCondition::kKeySizeLowerThan,
+          AttributesCondition::kKeyUrlRegexprs,
+      });
+  static constexpr auto kDestinationClipboardAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyOsClipboard,
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+          AttributesCondition::kKeyOtherProfile,
+          AttributesCondition::kKeyGeminiInChrome,
+#if BUILDFLAG(IS_CHROMEOS)
+          AttributesCondition::kKeyComponents,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+          kKeyDestinations,
+          AttributesCondition::kKeyUrlRegexprs,
+      });
+  static constexpr auto kScreenshotAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+#if BUILDFLAG(IS_CHROMEOS)
+          AttributesCondition::kKeyComponents,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+      });
+  static constexpr auto kSourceAndDestinationScreenshotAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+#if BUILDFLAG(IS_CHROMEOS)
+          AttributesCondition::kKeyComponents,
+#endif  // BUILDFLAG(IS_CHROMEOS)
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+          AttributesCondition::kKeyUrlRegexprs,
+      });
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-          {
-              Restriction::kFileDownload,
-              {
-                  AttributesCondition::kKeyUrls,
-                  AttributesCondition::kKeyIncognito,
-                  kKeyAnd,
-                  kKeyOr,
-                  kKeyNot,
-                  kKeySources,
-              },
-          },
+  static constexpr auto kFileDownloadAttributes =
+      std::to_array<std::string_view>({
+          AttributesCondition::kKeyUrls,
+          AttributesCondition::kKeyIncognito,
+          kKeyAnd,
+          kKeyOr,
+          kKeyNot,
+          kKeySources,
+      });
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+  static constexpr auto kSupportedAttributes =
+      base::MakeFixedFlatMap<Restriction, base::span<const std::string_view>>({
+          {Restriction::kClipboard, kClipboardAttributes},
+          {Restriction::kScreenshot, kScreenshotAttributes},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+          {Restriction::kFileDownload, kFileDownloadAttributes},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
       });
 
-  static const base::NoDestructor<
-      base::flat_map<Rule::Restriction, std::set<std::string_view>>>
-      kSourceSupportedAttributes([] {
-        auto map = *kSupportedAttributes;
-        map[Restriction::kClipboard].insert({
-            AttributesCondition::kKeySizeHigherThan,
-            AttributesCondition::kKeySizeLowerThan,
-            AttributesCondition::kKeyUrlRegexprs,
-        });
-        map[Restriction::kScreenshot].insert(
-            AttributesCondition::kKeyUrlRegexprs);
-        return map;
-      }());
+  static constexpr auto kSourceSupportedAttributes =
+      base::MakeFixedFlatMap<Restriction, base::span<const std::string_view>>({
+          {Restriction::kClipboard, kSourceClipboardAttributes},
+          {Restriction::kScreenshot, kSourceAndDestinationScreenshotAttributes},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+          {Restriction::kFileDownload, kFileDownloadAttributes},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+      });
 
-  static const base::NoDestructor<
-      base::flat_map<Rule::Restriction, std::set<std::string_view>>>
-      kDestinationSupportedAttributes([] {
-        auto map = *kSupportedAttributes;
-        map[Restriction::kClipboard].insert(
-            AttributesCondition::kKeyUrlRegexprs);
-        map[Restriction::kScreenshot].insert(
-            AttributesCondition::kKeyUrlRegexprs);
-        return map;
-      }());
+  static constexpr auto kDestinationSupportedAttributes =
+      base::MakeFixedFlatMap<Restriction, base::span<const std::string_view>>({
+          {Restriction::kClipboard, kDestinationClipboardAttributes},
+          {Restriction::kScreenshot, kSourceAndDestinationScreenshotAttributes},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+          {Restriction::kFileDownload, kFileDownloadAttributes},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+      });
 
   const bool url_regex_and_size_attributes_enabled =
       base::FeatureList::GetInstance() &&
@@ -659,9 +718,9 @@ bool Rule::AddUnsupportedAttributeErrors(
   const auto& active_supported_attributes =
       url_regex_and_size_attributes_enabled
           ? (IsDestinationCondition(error_path)
-                 ? *kDestinationSupportedAttributes
-                 : *kSourceSupportedAttributes)
-          : *kSupportedAttributes;
+                 ? kDestinationSupportedAttributes
+                 : kSourceSupportedAttributes)
+          : kSupportedAttributes;
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
@@ -673,11 +732,11 @@ bool Rule::AddUnsupportedAttributeErrors(
       NOTREACHED();
     }
 
-    const std::set<std::string_view>& supported_attributes =
+    base::span<const std::string_view> supported_attributes =
         supported_attributes_it->second;
 
     for (const auto& attribute : anyof_conditions) {
-      if (!supported_attributes.contains(attribute)) {
+      if (!std::ranges::contains(supported_attributes, attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -688,7 +747,7 @@ bool Rule::AddUnsupportedAttributeErrors(
       }
     }
     for (const auto& attribute : oneof_conditions) {
-      if (!supported_attributes.contains(attribute)) {
+      if (!std::ranges::contains(supported_attributes, attribute)) {
         if (errors) {
           errors->AddError(policy_name,
                            IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_CONDITION,
@@ -709,46 +768,46 @@ bool Rule::AddUnsupportedRestrictionErrors(
     const base::flat_map<Rule::Restriction, Rule::Level>& restrictions,
     policy::PolicyErrorPath error_path,
     policy::PolicyErrorMap* errors) {
-  static const base::NoDestructor<
-      base::flat_map<Rule::Restriction, std::set<Rule::Level>>>
-      kSupportedRestrictions({
-          {
-              Restriction::kClipboard,
-              {
-                  Level::kNotSet,
-                  Level::kReport,
-                  Level::kWarn,
-                  Level::kBlock,
-              },
-          },
+  static constexpr auto kClipboardSupportedLevels = std::to_array<Level>({
+      Level::kNotSet,
+      Level::kReport,
+      Level::kWarn,
+      Level::kBlock,
+  });
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
-          {
-              Restriction::kScreenshot,
-              {
-                  Level::kNotSet,
-                  Level::kBlock,
-              },
-          },
+  static constexpr auto kScreenshotSupportedLevels = std::to_array<Level>({
+      Level::kNotSet,
+      Level::kBlock,
+  });
 #endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-          {
-              Restriction::kFileDownload,
-              {
-                  Level::kNotSet,
-                  Level::kReport,
-                  Level::kWarn,
-                  Level::kBlock,
-              },
-          },
+  static constexpr auto kFileDownloadSupportedLevels = std::to_array<Level>({
+      Level::kNotSet,
+      Level::kReport,
+      Level::kWarn,
+      Level::kBlock,
+  });
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+  static constexpr auto kSupportedRestrictions =
+      base::MakeFixedFlatMap<Restriction, base::span<const Level>>({
+          {Restriction::kClipboard, kClipboardSupportedLevels},
+#if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+          {Restriction::kScreenshot, kScreenshotSupportedLevels},
+#endif  // BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+          {Restriction::kFileDownload, kFileDownloadSupportedLevels},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
       });
 
   bool valid = true;
   for (const auto& restriction : restrictions) {
-    auto supported_levels_it = kSupportedRestrictions->find(restriction.first);
-    if (supported_levels_it == kSupportedRestrictions->end()) {
+    auto supported_levels_it = kSupportedRestrictions.find(restriction.first);
+    if (supported_levels_it == kSupportedRestrictions.end()) {
       if (errors) {
         errors->AddError(policy_name,
                          IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_RESTRICTION,
@@ -757,8 +816,8 @@ bool Rule::AddUnsupportedRestrictionErrors(
       valid = false;
       continue;
     }
-    const std::set<Rule::Level>& supported_levels = supported_levels_it->second;
-    if (!supported_levels.contains(restriction.second)) {
+    base::span<const Level> supported_levels = supported_levels_it->second;
+    if (!std::ranges::contains(supported_levels, restriction.second)) {
       if (errors) {
         errors->AddError(policy_name,
                          IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL,
