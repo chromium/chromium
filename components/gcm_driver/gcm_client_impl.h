@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/fcm/engine/checkin_info.h"
 #include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "google_apis/gcm/base/mcs_message.h"
@@ -170,23 +171,6 @@ class GCMClientImpl
   void OnDisconnected() override;
 
  private:
-  // The check-in info for the device.
-  // TODO(fgorski): Convert to a class with explicit getters/setters.
-  struct CheckinInfo {
-    CheckinInfo();
-    ~CheckinInfo();
-    bool IsValid() const { return android_id != 0 && secret != 0; }
-    void Reset();
-
-    // Android ID of the device as assigned by the server.
-    uint64_t android_id;
-    // Security token of the device as assigned by the server.
-    uint64_t secret;
-    // True if accounts were already provided through SetAccountsForCheckin(),
-    // or when |last_checkin_accounts| was loaded as empty.
-    bool accounts_set;
-  };
-
   // Reasons for resetting the GCM Store.
   // Note: this enum is recorded into a histogram. Do not change enum value
   // or order.
@@ -238,7 +222,7 @@ class GCMClientImpl
   // Initializes mcs_client_, which handles the connection to MCS.
   void InitializeMCSClient();
   // Complets the first time device checkin.
-  void OnFirstTimeDeviceCheckinCompleted(const CheckinInfo& checkin_info);
+  void OnFirstTimeDeviceCheckinCompleted(const fcm::CheckinInfo& checkin_info);
   // Starts a login on mcs_client_.
   void StartMCSLogin();
   // Resets the GCM store when it is corrupted.
@@ -352,7 +336,7 @@ class GCMClientImpl
   StartMode start_mode_;
 
   // Device checkin info (android ID and security token used by device).
-  CheckinInfo device_checkin_info_;
+  fcm::CheckinInfo device_checkin_info_;
 
   // Clock used for timing of retry logic. Passed in for testing.
   raw_ptr<base::Clock> clock_;

@@ -242,17 +242,6 @@ std::unique_ptr<ConnectionFactory> GCMInternalsBuilder::BuildConnectionFactory(
       std::move(io_task_runner), recorder, network_connection_tracker);
 }
 
-GCMClientImpl::CheckinInfo::CheckinInfo()
-    : android_id(0), secret(0), accounts_set(false) {}
-
-GCMClientImpl::CheckinInfo::~CheckinInfo() = default;
-
-void GCMClientImpl::CheckinInfo::Reset() {
-  android_id = 0;
-  secret = 0;
-  accounts_set = false;
-}
-
 GCMClientImpl::GCMClientImpl(
     std::unique_ptr<GCMInternalsBuilder> internals_builder)
     : internals_builder_(std::move(internals_builder)),
@@ -356,9 +345,9 @@ void GCMClientImpl::OnLoadCompleted(
   }
   gcm_store_reset_ = false;
 
-  device_checkin_info_.android_id = result->device_android_id;
-  device_checkin_info_.secret = result->device_security_token;
-  device_checkin_info_.accounts_set = true;
+  device_checkin_info_.set_android_id(result->device_android_id);
+  device_checkin_info_.set_secret(result->device_security_token);
+  device_checkin_info_.set_accounts_set(true);
   last_checkin_time_ = result->last_checkin_time;
   gservices_settings_.UpdateFromLoadResult(*result);
 
@@ -386,7 +375,7 @@ void GCMClientImpl::OnLoadCompleted(
   if (start_mode_ == DELAYED_START && !HasStandaloneRegisteredApp()) {
     // If no standalone app is using GCM and the device ID is present, schedule
     // to have the store wiped out.
-    if (device_checkin_info_.android_id) {
+    if (device_checkin_info_.android_id()) {
       DVLOG(1) << "GCM is in delayed start mode and there is no standalone "
                   "app, posting task to wipe store in "
                << base::Milliseconds(kDestroyGCMStoreDelayMS)
@@ -454,16 +443,16 @@ void GCMClientImpl::InitializeMCSClient() {
 }
 
 void GCMClientImpl::OnFirstTimeDeviceCheckinCompleted(
-    const CheckinInfo& checkin_info) {
+    const fcm::CheckinInfo& checkin_info) {
   DCHECK(!device_checkin_info_.IsValid());
 
-  device_checkin_info_.android_id = checkin_info.android_id;
-  device_checkin_info_.secret = checkin_info.secret;
+  device_checkin_info_.set_android_id(checkin_info.android_id());
+  device_checkin_info_.set_secret(checkin_info.secret());
   // If accounts were not set by now, we can consider them set (to empty list)
   // to make sure periodic checkins get scheduled after initial checkin.
-  device_checkin_info_.accounts_set = true;
+  device_checkin_info_.set_accounts_set(true);
   gcm_store_->SetDeviceCredentials(
-      checkin_info.android_id, checkin_info.secret,
+      checkin_info.android_id(), checkin_info.secret(),
       base::BindOnce(&GCMClientImpl::SetDeviceCredentialsCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 
@@ -481,8 +470,8 @@ void GCMClientImpl::OnReady(const std::vector<AccountMapping>& account_mappings,
 void GCMClientImpl::StartMCSLogin() {
   DCHECK_EQ(READY, state_);
   DCHECK(device_checkin_info_.IsValid());
-  mcs_client_->Login(device_checkin_info_.android_id,
-                     device_checkin_info_.secret);
+  mcs_client_->Login(device_checkin_info_.android_id(),
+                     device_checkin_info_.secret());
 }
 
 void GCMClientImpl::DestroyStoreWhenNotNeeded() {
@@ -511,8 +500,8 @@ void GCMClientImpl::SetAccountTokens(
     const std::vector<AccountTokenInfo>& account_tokens) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
-  bool accounts_set_before = device_checkin_info_.accounts_set;
-  device_checkin_info_.accounts_set = true;
+  bool accounts_set_before = device_checkin_info_.accounts_set();
+  device_checkin_info_.set_accounts_set(true);
 
   DVLOG(1) << "Set account called with: " << account_tokens.size()
            << " accounts.";
@@ -618,7 +607,7 @@ void GCMClientImpl::StartCheckin() {
   ToCheckinProtoVersion(chrome_build_info_, &chrome_build_proto);
 
   CheckinRequest::RequestInfo request_info(
-      device_checkin_info_.android_id, device_checkin_info_.secret,
+      device_checkin_info_.android_id(), device_checkin_info_.secret(),
       gservices_settings_.digest(), chrome_build_proto);
   checkin_request_ = std::make_unique<CheckinRequest>(
       gservices_settings_.GetCheckinURL(), request_info,
@@ -645,9 +634,9 @@ void GCMClientImpl::OnCheckinCompleted(
 
   DCHECK(checkin_response.has_android_id());
   DCHECK(checkin_response.has_security_token());
-  CheckinInfo checkin_info;
-  checkin_info.android_id = checkin_response.android_id();
-  checkin_info.secret = checkin_response.security_token();
+  fcm::CheckinInfo checkin_info;
+  checkin_info.set_android_id(checkin_response.android_id());
+  checkin_info.set_secret(checkin_response.security_token());
 
   if (state_ == INITIAL_DEVICE_CHECKIN) {
     OnFirstTimeDeviceCheckinCompleted(checkin_info);
@@ -655,8 +644,8 @@ void GCMClientImpl::OnCheckinCompleted(
     // checkin_info is not expected to change after a periodic checkin as it
     // would invalidate the registration IDs.
     DCHECK_EQ(READY, state_);
-    DCHECK_EQ(device_checkin_info_.android_id, checkin_info.android_id);
-    DCHECK_EQ(device_checkin_info_.secret, checkin_info.secret);
+    DCHECK_EQ(device_checkin_info_.android_id(), checkin_info.android_id());
+    DCHECK_EQ(device_checkin_info_.secret(), checkin_info.secret());
   }
 
   if (device_checkin_info_.IsValid()) {
@@ -685,8 +674,9 @@ void GCMClientImpl::SchedulePeriodicCheckin() {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   // Make sure no checkin is in progress.
-  if (checkin_request_.get() || !device_checkin_info_.accounts_set)
+  if (checkin_request_.get() || !device_checkin_info_.accounts_set()) {
     return;
+  }
 
   // There should be only one periodic checkin pending at a time. Removing
   // pending periodic checkin to schedule a new one.
@@ -886,9 +876,9 @@ void GCMClientImpl::Register(
                              ? chrome_build_info_.product_category_for_subtypes
                              : registration_info->app_id;
   std::string subtype = use_subtype ? registration_info->app_id : std::string();
-  RegistrationRequest::RequestInfo request_info(device_checkin_info_.android_id,
-                                                device_checkin_info_.secret,
-                                                category, subtype);
+  RegistrationRequest::RequestInfo request_info(
+      device_checkin_info_.android_id(), device_checkin_info_.secret(),
+      category, subtype);
 
   std::unique_ptr<RegistrationRequest> registration_request(
       new RegistrationRequest(
@@ -1070,8 +1060,8 @@ void GCMClientImpl::Unregister(
                              : registration_info->app_id;
   std::string subtype = use_subtype ? registration_info->app_id : std::string();
   UnregistrationRequest::RequestInfo request_info(
-      device_checkin_info_.android_id, device_checkin_info_.secret, category,
-      subtype);
+      device_checkin_info_.android_id(), device_checkin_info_.secret(),
+      category, subtype);
 
   std::unique_ptr<UnregistrationRequest> unregistration_request(
       new UnregistrationRequest(
@@ -1190,10 +1180,12 @@ GCMClient::GCMStatistics GCMClientImpl::GetStatistics() const {
     stats.send_queue_size = mcs_client_->GetSendQueueSize();
     stats.resend_queue_size = mcs_client_->GetResendQueueSize();
   }
-  if (device_checkin_info_.android_id > 0)
-    stats.android_id = device_checkin_info_.android_id;
-  if (device_checkin_info_.secret > 0)
-    stats.android_secret = device_checkin_info_.secret;
+  if (device_checkin_info_.android_id() > 0) {
+    stats.android_id = device_checkin_info_.android_id();
+  }
+  if (device_checkin_info_.secret() > 0) {
+    stats.android_secret = device_checkin_info_.secret();
+  }
 
   recorder_.CollectActivities(&stats.recorded_activities);
 

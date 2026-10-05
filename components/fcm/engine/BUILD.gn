@@ -6,6 +6,8 @@ assert(!is_android)
 
 static_library("engine") {
   sources = [
+    "checkin_info.cc",
+    "checkin_info.h",
     "fcm_stats_recorder_impl.cc",
     "fcm_stats_recorder_impl.h",
     "system_encryptor.cc",
@@ -23,7 +25,10 @@ static_library("engine") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "fcm_stats_recorder_impl_unittest.cc" ]
+  sources = [
+    "checkin_info_unittest.cc",
+    "fcm_stats_recorder_impl_unittest.cc",
+  ]
 
   deps = [
     ":engine",
