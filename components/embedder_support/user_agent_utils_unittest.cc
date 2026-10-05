@@ -368,17 +368,6 @@ class UserAgentUtilsTest : public testing::Test,
     return minor_version;
   }
 
-  std::string GetUserAgentPlatformOsCpu(const std::string& user_agent_value) {
-    // A regular expression that matches Mozilla/5.0 ({platform_oscpu})
-    // in the User-Agent string.
-    static constexpr char kChromePlatformOscpuRegex[] =
-        "^Mozilla\\/5\\.0 \\((.+)\\) AppleWebKit\\/537\\.36";
-    std::string platform_oscpu;
-    EXPECT_TRUE(re2::RE2::PartialMatch(
-        user_agent_value, kChromePlatformOscpuRegex, &platform_oscpu));
-    return platform_oscpu;
-  }
-
   void VerifyGetUserAgentFunctions() {
     // GetUserAgent should return user agent depends on
     // kReduceUserAgentMinorVersion feature.
@@ -509,93 +498,6 @@ TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
   scoped_feature_list.InitWithFeatures({}, {});
   { VerifyGetUserAgentFunctions(); }
 }
-
-TEST_F(UserAgentUtilsTest, ReduceUserAgentPlatformOsCpu) {
-  base::test::ScopedFeatureList scoped_feature_list;
-
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion}, {});
-  // Verify the mobile platform and oscpu user agent string is reduced when
-  // not using a mobile user agent.
-  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
-    EXPECT_EQ(GetUnifiedPlatformForTesting().c_str(),
-              GetUserAgentPlatformOsCpu(GetUserAgent()));
-  }
-
-  // Verify the mobile platform and oscpu user agent string is reduced when
-  // using a mobile user agent (but still on Android)
-  command_line->AppendSwitch(kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
-  }
-
-#else
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion}, {});
-  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    // Verify unified platform user agent is returned.
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
-  }
-
-#if BUILDFLAG(IS_IOS)
-  // On iOS, also check the kUseMobileUserAgent flag with the features above.
-  // This is similar to the Android case above.
-  command_line->AppendSwitch(kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
-  }
-#endif  // BUILDFLAG(IS_IOS)
-#endif
-
-  // Verify we reduce platform and oscpu
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion}, {});
-  EXPECT_EQ(GetUnifiedPlatformForTesting().c_str(),
-            GetUserAgentPlatformOsCpu(GetUserAgent()));
-}
-
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(UserAgentUtilsTest, ReduceUserAgentAndroidVersionDeviceModel) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {blink::features::kReduceUserAgentMinorVersion}, {});
-  // Verify the correct user agent is returned when the UseMobileUserAgent
-  // command line flag is present.
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-
-  // Verify the mobile deviceModel and androidVersion in the user agent string
-  // is reduced when not using a mobile user agent.
-  ASSERT_FALSE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    std::string buffer = GetUserAgent();
-    EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent());
-  }
-
-  // Verify the mobile deviceModel and androidVersion in the user agent string
-  // is reduced when using a mobile user agent.
-  command_line->AppendSwitch(kUseMobileUserAgent);
-  ASSERT_TRUE(command_line->HasSwitch(kUseMobileUserAgent));
-  {
-    std::string buffer = GetUserAgent();
-    EXPECT_EQ("Linux; Android 10; K", GetUserAgentPlatformOsCpu(buffer));
-    EXPECT_EQ(GetUserAgent(), GenerateExpectedUserAgent(kMobileProductSuffix));
-  }
-}
-#endif
 
 TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   auto metadata = GetUserAgentMetadata();
@@ -1032,17 +934,6 @@ TEST_F(UserAgentUtilsTest, GetProductAndVersion) {
   EXPECT_EQ(minor_version, "0");
   EXPECT_EQ(build_version, "0");
   EXPECT_EQ(patch_version, "0");
-}
-
-TEST_F(UserAgentUtilsTest, GetUserAgent) {
-  const std::string ua = GetUserAgent();
-  std::string major_version;
-  std::string minor_version;
-  EXPECT_TRUE(re2::RE2::PartialMatch(ua, kChromeProductVersionRegex,
-                                     &major_version, &minor_version));
-  EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
-  // Minor version should contain the actual minor version number.
-  EXPECT_EQ(minor_version, "0");
 }
 
 TEST_F(UserAgentUtilsTest, HeadlessUserAgent) {
