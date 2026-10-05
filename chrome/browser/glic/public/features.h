@@ -61,10 +61,6 @@ extern const base::FeatureParam<bool> kGlicSelectionAutoSendPrompt;
 extern const base::FeatureParam<std::string> kGlicSelectionPromptCta;
 inline constexpr char kGlicSelectionPromptCtaTellMe[] = "tell_me_about_this";
 inline constexpr char kGlicSelectionPromptCtaExplain[] = "explain";
-extern const base::FeatureParam<bool> kGlicSelectionPromptInlineFulfillment;
-extern const base::FeatureParam<std::string>
-    kGlicSelectionPromptInlinePromptTemplate;
-extern const base::FeatureParam<bool> kGlicSelectionPromptSkills;
 extern const base::FeatureParam<std::string> kGlicSelectionDefaultBlockedSites;
 base::flat_set<std::string> GetGlicSelectionDefaultBlockedSites();
 

@@ -321,13 +321,9 @@ class GlicSelectionObserverTest : public ChromeRenderViewHostTestHarness {
   void InvokeGlicFromSelectionAffordance(
       std::u16string selected_text,
       bool is_widget,
-      base::WeakPtr<content::WebContents> web_contents,
-      std::u16string prompt_override = u"",
-      const GlicSkillOption& skill = {},
-      const std::string& skill_prompt = "") {
+      base::WeakPtr<content::WebContents> web_contents) {
     GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
-        selected_text, is_widget, web_contents, prompt_override, skill,
-        skill_prompt);
+        selected_text, is_widget, web_contents);
   }
 
   std::optional<GURL> GetGeneratedLink() const {
@@ -1534,34 +1530,6 @@ TEST_F(GlicSelectionObserverPromptTest,
 
   InvokeGlicFromSelectionAffordance(u"Sample selected text", /*is_widget=*/true,
                                     web_contents()->GetWeakPtr());
-}
-
-TEST_F(GlicSelectionObserverPromptTest,
-       InvokeGlicFromSelectionAffordancePromptOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kGlicSelectionPrompt,
-        {{"auto_send_prompt", "true"}, {"cta", "explain"}}}},
-      {});
-
-  tabs::MockTabInterface mock_tab;
-  MockBrowserWindowInterface mock_bwi;
-  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
-                                                       &mock_tab);
-  EXPECT_CALL(mock_tab, GetBrowserWindowInterface())
-      .WillRepeatedly(testing::Return(&mock_bwi));
-
-  EXPECT_CALL(*mock_glic_service(),
-              InvokeWithAutoSubmit(
-                  testing::_,
-                  testing::Field(&GlicInvokeOptions::prompts,
-                                 testing::ElementsAre(
-                                     "Tell me more about \"Sample text\""))))
-      .Times(1);
-
-  InvokeGlicFromSelectionAffordance(
-      u"Sample text", /*is_widget=*/true, web_contents()->GetWeakPtr(),
-      /*prompt_override=*/u"Tell me more about \"Sample text\"");
 }
 
 TEST_F(GlicSelectionObserverPromptTest,
