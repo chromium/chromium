@@ -54,8 +54,7 @@ public class TriggerConditions {
 
     @Override
     public boolean equals(Object other) {
-        if (!(other instanceof TriggerConditions)) return false;
-        TriggerConditions otherTriggerConditions = (TriggerConditions) other;
+        if (!(other instanceof TriggerConditions otherTriggerConditions)) return false;
         return mRequirePowerConnected == otherTriggerConditions.mRequirePowerConnected
                 && mMinimumBatteryPercentage == otherTriggerConditions.mMinimumBatteryPercentage
                 && mRequireUnmeteredNetwork == otherTriggerConditions.mRequireUnmeteredNetwork;

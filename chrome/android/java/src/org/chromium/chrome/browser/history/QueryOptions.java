@@ -34,8 +34,7 @@ public class QueryOptions {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof QueryOptions)) return false;
-        QueryOptions that = (QueryOptions) o;
+        if (!(o instanceof QueryOptions that)) return false;
         return Objects.equals(appId, that.appId)
                 && Objects.equals(hostName, that.hostName)
                 && Objects.equals(clientIds, that.clientIds);

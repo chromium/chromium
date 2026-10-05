@@ -30,8 +30,7 @@ public class ClientId {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof ClientId) {
-            ClientId otherId = (ClientId) o;
+        if (o instanceof ClientId otherId) {
             return otherId.getNamespace().equals(mNamespace) && otherId.getId().equals(mId);
         }
         return false;

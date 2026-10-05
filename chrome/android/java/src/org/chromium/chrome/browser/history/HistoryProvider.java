@@ -26,8 +26,7 @@ public interface HistoryProvider {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof ClientInfo)) return false;
-            ClientInfo that = (ClientInfo) o;
+            if (!(o instanceof ClientInfo that)) return false;
             return Objects.equals(clientIds, that.clientIds) && Objects.equals(name, that.name);
         }
 

@@ -156,8 +156,7 @@ public class OfflinePageOrigin {
 
     @Override
     public boolean equals(Object other) {
-        if (other != null && other instanceof OfflinePageOrigin) {
-            OfflinePageOrigin o = (OfflinePageOrigin) other;
+        if (other instanceof OfflinePageOrigin o) {
             return mAppName.equals(o.mAppName) && Arrays.equals(mSignatures, o.mSignatures);
         }
         return false;
