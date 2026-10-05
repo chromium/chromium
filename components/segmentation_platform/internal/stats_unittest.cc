@@ -370,6 +370,19 @@ TEST_F(StatsTest, SegmentIdToHistogramVariant) {
                          proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN));
 }
 
+TEST_F(StatsTest, ClassificationRequestTotalDuration) {
+  base::HistogramTester tester;
+  Config config;
+  config.segmentation_key = kDeviceSwitcherKey;
+  config.segmentation_uma_name = kDeviceSwitcherUmaName;
+
+  stats::RecordClassificationRequestTotalDuration(config, base::Seconds(45));
+  tester.ExpectUniqueTimeSample(
+      "SegmentationPlatform.ClassificationRequest.TotalDuration2."
+      "DeviceSwitcher",
+      base::Seconds(45), 1);
+}
+
 class BackgroundRecorderTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_env_;

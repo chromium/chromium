@@ -435,10 +435,10 @@ void RecordModelExecutionDurationTotal(SegmentId segment_id,
 
 void RecordClassificationRequestTotalDuration(const Config& config,
                                               base::TimeDelta duration) {
-  std::string histogram_name =
-      base::StrCat({"SegmentationPlatform.ClassificationRequest.TotalDuration.",
-                    config.segmentation_uma_name});
-  base::UmaHistogramTimes(histogram_name, duration);
+  std::string histogram_name = base::StrCat(
+      {"SegmentationPlatform.ClassificationRequest.TotalDuration2.",
+       config.segmentation_uma_name});
+  base::UmaHistogramMediumTimes(histogram_name, duration);
 }
 
 void RecordOnDemandSegmentSelectionDuration(

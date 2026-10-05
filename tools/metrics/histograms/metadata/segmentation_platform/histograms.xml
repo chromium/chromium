@@ -195,14 +195,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}"
+    name="SegmentationPlatform.ClassificationRequest.TotalDuration2.{SegmentationKey}"
     units="ms" expires_after="2027-02-14">
   <owner>ritikagup@google.com</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>
-    Records the total duration for Classification API call for the given
-    {SegmentationKey} including the time required for feature processing and
-    model execution as well.
+    Records the total duration (up to 3 minutes) for a Classification API call
+    for the given {SegmentationKey}, including the time required for feature
+    processing and model execution. Replaces
+    SegmentationPlatform.ClassificationRequest.TotalDuration.{SegmentationKey}
+    with an extended bucket range to cover longer timeouts (such as the 60s
+    DeviceSwitcher sync wait timeout).
 
     Starts recording every time the GetClassificationAPI is called for
     {SegmentationKey}. Records the duration when ClassificationResult is
