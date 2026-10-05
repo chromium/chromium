@@ -99,6 +99,11 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
                        VerifyTabGroupButton) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kEverythingMenuPinnedToTabstrip, true);
+  EXPECT_TRUE(browser()
+                  ->GetProfile()
+                  ->GetPrefs()
+                  ->GetTime(prefs::kVerticalTabsEverythingMenuLastPressed)
+                  .is_null());
   RunTestSequence(
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   1),
@@ -106,6 +111,15 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       WaitForShow(kSavedTabGroupButtonElementId),
       PressButton(kSavedTabGroupButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->GetProfile()
+                ->GetPrefs()
+                ->GetTime(prefs::kVerticalTabsEverythingMenuLastPressed)
+                .is_null();
+          },
+          false),
       EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
       SelectMenuItem(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
       WaitForShow(kTabGroupHeaderElementId),

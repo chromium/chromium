@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
@@ -246,6 +247,8 @@ void TabStripComboButton::ShowEverythingMenu() {
               ->ShouldDrawVerticalTabStrip()
           ? "TabGroups_SavedTabGroups_EverythingButtonPressed_Vertical"
           : "TabGroups_SavedTabGroups_EverythingButtonPressed_Horizontal"));
+  browser_->GetProfile()->GetPrefs()->SetTime(
+      prefs::kVerticalTabsEverythingMenuLastPressed, base::Time::Now());
   if (everything_menu_ && everything_menu_->IsShowing()) {
     return;
   }

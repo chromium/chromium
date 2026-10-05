@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -30,6 +31,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kVerticalTabsCollapsedState, false);
   registry->RegisterIntegerPref(prefs::kVerticalTabsUncollapsedWidth,
                                 kVerticalTabStripDefaultUncollapsedWidth);
+  registry->RegisterTimePref(prefs::kVerticalTabsEverythingMenuLastPressed,
+                             base::Time());
 }
 
 void MigrateHoverCardMemoryPref(PrefService* local_prefs) {
