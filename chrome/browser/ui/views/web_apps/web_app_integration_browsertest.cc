@@ -235,7 +235,13 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, AppLaunchedInTab) {
   helper_.CheckAppLoadedInTab(Site::kStandalone);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckSubAppInstallation) {
+// TODO(crbug.com/403376533): Re-enable on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CheckSubAppInstallation DISABLED_CheckSubAppInstallation
+#else
+#define MAYBE_CheckSubAppInstallation CheckSubAppInstallation
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppIntegration, MAYBE_CheckSubAppInstallation) {
   helper_.InstallIsolatedApp(Site::kHasSubApps);
   helper_.CheckNoSubApps(Site::kHasSubApps);
   helper_.InstallSubApp(Site::kHasSubApps, Site::kSubApp1,
