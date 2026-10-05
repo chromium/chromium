@@ -147,6 +147,48 @@ class ElementRuleCollectorTest : public PageTestBase {
   }
 };
 
+TEST_F(ElementRuleCollectorTest, PresentationHintApplicationMetadata) {
+  for (bool enabled : {false, true}) {
+    ScopedSvgIncrementalStyleForTest incremental_style(enabled);
+    SCOPED_TRACE(enabled);
+    SetBodyInnerHTML(R"HTML(
+      <div id="html"></div>
+      <svg><rect id="svg"/></svg>
+    )HTML");
+    const auto* properties =
+        css_test_helpers::ParseDeclarationBlock("opacity: 0.5");
+    for (const char* id : {"html", "svg"}) {
+      SCOPED_TRACE(id);
+      Element* element = GetElementById(id);
+      for (CascadeOrigin origin :
+           {CascadeOrigin::kAuthorPresentationalHint, CascadeOrigin::kAuthor}) {
+        const bool is_inline_style = origin == CascadeOrigin::kAuthor;
+        ElementResolveContext context(*element);
+        SelectorFilter filter;
+        MatchResult result;
+        if (is_inline_style) {
+          result.BeginAddingAuthorRulesForTreeScope(GetDocument());
+        }
+        ElementRuleCollector collector(context, StyleRecalcContext(), filter,
+                                       result, InsideLink(element));
+        collector.AddElementStyleProperties(properties, origin,
+                                            /*is_cacheable=*/true,
+                                            is_inline_style);
+        ASSERT_EQ(1u, result.GetMatchedProperties().size());
+        const bool is_svg_hint =
+            enabled && element->IsSVGElement() && !is_inline_style;
+        EXPECT_EQ(
+            is_svg_hint,
+            result.GetMatchedProperties()[0].data_.is_svg_presentation_hint);
+        ASSERT_EQ(1u, result.GetMatchedPropertiesHash().size());
+        EXPECT_EQ(
+            is_svg_hint,
+            result.GetMatchedPropertiesHash()[0].data.is_svg_presentation_hint);
+      }
+    }
+  }
+}
+
 TEST_F(ElementRuleCollectorTest, LinkMatchType) {
   SetBodyInnerHTML(R"HTML(
     <div id=foo></div>

@@ -207,17 +207,7 @@ void StyleAdjuster::AdjustStyleForSvgElement(
     builder.SetTextUnderlinePosition(TextUnderlinePosition::kAuto);
   }
 
-  // Only the root <svg> element in an SVG document fragment tree, honors the
-  // CSS position, all other inner <svg> elements has to have position as static
-  // as they don't follow CSS box model. This also includes when a <use> element
-  // refers an <svg> root element, in that case, we need to consider the
-  // styled_element itself to set its position CSS property.
   bool is_svg_root = styled_element->IsOutermostSVGSVGElement();
-  if (!is_svg_root) {
-    // Only the root <svg> element in an SVG document fragment tree honors css
-    // position.
-    builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
-  }
 
   if (builder.Display() == EDisplay::kContents &&
       (is_svg_root ||
@@ -1138,6 +1128,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   ComputedStyleBuilder& builder = state.StyleBuilder();
   const ComputedStyle& parent_style = *state.ParentStyle();
   const ComputedStyle& layout_parent_style = *state.LayoutParentStyle();
+  const auto* svg_element = DynamicTo<SVGElement>(element);
+  const auto* styled_svg_element =
+      svg_element ? To<SVGElement>(state.GetStyledElement()) : nullptr;
 
   auto* html_element = DynamicTo<HTMLElement>(element);
   if (html_element &&
@@ -1182,7 +1175,16 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         builder.SetDisplay(EDisplay::kBlock);
       }
     }
+  }
 
+  // Top-layer positioning must precede the SVG override, which in turn must
+  // precede blockification and the other position-dependent adjustments.
+  if (styled_svg_element && !styled_svg_element->IsOutermostSVGSVGElement()) {
+    // Only an outermost <svg> honors CSS positioning.
+    builder.SetPosition(ComputedStyleInitialValues::InitialPosition());
+  }
+
+  if (builder.Display() != EDisplay::kNone) {
     // Absolute/fixed positioned elements, floating elements and the document
     // element need block-like outside display.
     if (is_document_element ||
@@ -1246,6 +1248,13 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   // display setting above (including in AdjustStyleForHTMLElement()),
   // and this needs to override those changes.
   AdjustStyleForFirstLetter(builder, parent_style);
+
+  // Apply SVG display constraints after generic display conversions, before
+  // stacking-context decisions and decoration propagation consume display.
+  if (svg_element) {
+    AdjustStyleForSvgElement(*svg_element, styled_svg_element, builder,
+                             layout_parent_style);
+  }
 
   builder.SetForcesStackingContext(false);
 
@@ -1325,11 +1334,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   AdjustStyleForEditing(builder, element);
 
-  if (auto* svg_element = DynamicTo<SVGElement>(element); svg_element) {
-    auto* styled_element = DynamicTo<SVGElement>(state.GetStyledElement());
-    AdjustStyleForSvgElement(*svg_element, styled_element, builder,
-                             layout_parent_style);
-  } else if (IsA<MathMLElement>(element)) {
+  if (IsA<MathMLElement>(element)) {
     if (builder.Display() == EDisplay::kContents) {
       // https://drafts.csswg.org/css-display/#unbox-mathml
       builder.SetDisplay(EDisplay::kNone);
@@ -1454,6 +1459,11 @@ void StyleAdjuster::RunUncacheableStyleAdjustment(
   // The layout theme has its own style adjustment, mostly related to
   // the appearance property (although it can also modify display,
   // seemingly for historical reasons).
+  // A late display override can make repeated adjustment non-idempotent:
+  // decoration propagation above sees a different display on the next pass.
+  // SVG styles with appearance therefore cannot be reused incrementally.
+  // TODO: Make appearance adjustment safe for incremental style reuse by
+  // normalizing display before dependent adjustments.
   if (builder.Appearance() == AppearanceValue::kNone ||
       !element_or_pseudo_element) {
     builder.SetEffectiveAppearance(AppearanceValue::kNone);

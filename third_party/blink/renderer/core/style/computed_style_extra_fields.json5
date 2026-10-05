@@ -1349,7 +1349,10 @@
       field_group: "*",
     },
     {
-      name: "InlineStyleLostCascade",
+      // Blocks incremental styling after unsafe cascade losses.
+      // False does not guarantee eligibility; see
+      // CanApplyStyleIncrementally() in style_resolver.cc.
+      name: "HasIncrementalStyleBlocker",
       field_template: "primitive",
       type_name: "bool",
       field_group: "*",

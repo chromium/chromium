@@ -1636,9 +1636,9 @@ void StyleResolver::ApplyMathMLCustomStyleProperties(
   }
 }
 
-bool CanApplyInlineStyleIncrementally(Element* element,
-                                      const StyleResolverState& state,
-                                      const StyleRequest& style_request) {
+bool CanApplyStyleIncrementally(Element* element,
+                                const StyleResolverState& state,
+                                const StyleRequest& style_request) {
   // If non-independent properties are modified, we need to do a full
   // recomputation; otherwise, the properties we're setting could affect
   // the interpretation of other properties (e.g. if a script is setting
@@ -1649,7 +1649,7 @@ bool CanApplyInlineStyleIncrementally(Element* element,
   // This also covers the case where the inline style got new or removed
   // existing property declarations. We cannot say easily how that would
   // affect the cascade, so we do a full recalculation in that case.
-  if (element->GetStyleChangeType() != kInlineIndependentStyleChange) {
+  if (element->GetStyleChangeType() != kIndependentStyleChange) {
     return false;
   }
 
@@ -1675,10 +1675,11 @@ bool CanApplyInlineStyleIncrementally(Element* element,
     return false;
   }
 
-  // If in the existing style, any inline property _lost_ the cascade
-  // (e.g. to an !important class declaration), modifying the ComputedStyle
-  // directly may be wrong. This is rare, so we can just skip those cases.
-  if (element->GetComputedStyle()->InlineStyleLostCascade()) {
+  // If a declaration applied incrementally lost the cascade in the existing
+  // style (e.g. inline style lost to an !important stylesheet declaration),
+  // applying it directly could overwrite the winning value. Use a full recalc
+  // when cascade-loss tracking marks the style as unsafe to reuse.
+  if (element->GetComputedStyle()->HasIncrementalStyleBlocker()) {
     return false;
   }
 
@@ -1997,15 +1998,13 @@ void StyleResolver::ApplyBaseStyleNoCache(
 // In the normal case, just a forwarder to ApplyBaseStyleNoCache(); see that
 // function for the meat of the computation. However, this is where the
 // “computed base style optimization” is applied if possible, and also
-// incremental inline style updates:
+// incremental style updates:
 //
-// If we have an existing computed style, and the only changes have been
-// mutations of independent properties on the element's inline style
-// (see CanApplyInlineStyleIncrementally() for the precise conditions),
-// we may reuse the old computed style and just reapply the element's
-// inline style on top of it. This allows us to skip collecting elements
-// and computing the full cascade, which can be a significant win when
-// animating elements via inline style from JavaScript.
+// If we have an existing computed style and the only changes are eligible
+// independent mutations (see CanApplyStyleIncrementally()), we can clone the
+// previous style and apply the element's style values on top of it. This skips
+// matching stylesheet rules and computing the full cascade, which can be a
+// significant win when animating elements via inline style from JavaScript.
 void StyleResolver::ApplyBaseStyle(
     Element* element,
     const StyleRecalcContext& style_recalc_context,
@@ -2051,11 +2050,10 @@ void StyleResolver::ApplyBaseStyle(
   }
 
   if (style_recalc_context.can_use_incremental_style &&
-      CanApplyInlineStyleIncrementally(element, state, style_request)) {
-    // We are in a situation where we can reuse the old style
-    // and just apply the element's inline style on top of it
-    // (see the function comment). This is also known as
-    // MISU (More Incremental Style Updates).
+      CanApplyStyleIncrementally(element, state, style_request)) {
+    // Reuse the previous style and apply the whole inline style, not just the
+    // changed properties: invalidation does not track individual declarations.
+    // This optimization is also known as MISU (More Incremental Style Updates).
     state.CreateNewClonedStyle(*element->GetComputedStyle());
 
     // This is always false when creating a new style, but is not reset
@@ -3270,10 +3268,14 @@ void StyleResolver::ApplyPropertiesFromCascade(StyleResolverState& state,
     computed_style_bytes_used_ += sizeof(*new_style) + kOilpanOverheadBytes;
   }
 
-  // NOTE: This flag (and the length conversion flags) need to be set before the
-  // entry is added to the matched properties cache, or it will be wrong on
-  // cache hits.
-  state.StyleBuilder().SetInlineStyleLostCascade(cascade.InlineStyleLost());
+  // Set cascade-loss and length-conversion flags before caching the style.
+  // MatchedProperties::Data::is_svg_presentation_hint keeps SVG loss flags
+  // out of HTML cache hits.
+  state.StyleBuilder().SetHasIncrementalStyleBlocker(
+      cascade.InlineStyleLost() ||
+      (state.GetElement().IsSVGElement() &&
+       RuntimeEnabledFeatures::SvgIncrementalStyleEnabled() &&
+       cascade.PresentationAttributeStyleLost()));
   ApplyLengthConversionFlags(state);
 
   DCHECK(!state.GetFontBuilder().FontDirty());

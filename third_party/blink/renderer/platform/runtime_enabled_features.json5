@@ -6368,6 +6368,10 @@
       status: "stable",
     },
     {
+      name: "SvgIncrementalStyle",
+      status: "test",
+    },
+    {
       name: "SvgInlineRootPixelSnappingScaleAdjustment",
       status: "test",
     },

@@ -5741,7 +5741,7 @@ StyleRecalcChange Element::RecalcOwnStyle(
   } else {
     // We are not propagating inherited changes from the parent,
     // and (if other circumstances allow it;
-    // see CanApplyInlineStyleIncrementally()), incremental style
+    // see CanApplyStyleIncrementally()), incremental style
     // may be used.
     new_style_recalc_context.can_use_incremental_style = true;
   }
@@ -13372,7 +13372,7 @@ void Element::InvalidateStyleAttribute(
   DCHECK(HasElementData());
   GetElementData()->SetStyleAttributeIsDirty(true);
   SetNeedsStyleRecalc(only_changed_independent_properties
-                          ? kInlineIndependentStyleChange
+                          ? kIndependentStyleChange
                           : kLocalStyleChange,
                       StyleChangeReasonForTracing::Create(
                           style_change_reason::kInlineCSSStyleMutated));

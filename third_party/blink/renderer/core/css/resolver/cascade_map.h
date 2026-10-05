@@ -91,12 +91,14 @@ class CORE_EXPORT CascadeMap {
 #endif
     return std::move(important_set_);
   }
-  // True if any inline style declaration lost the cascade to something
-  // else. This is rare, but if it happens, we need to turn off incremental
-  // style calculation (see CanApplyInlineStyleIncrementally() and related
-  // functions). This information is propagated up to ComputedStyle after
-  // the cascade and stored there.
+  // True if an inline declaration lost the cascade. Propagated to
+  // ComputedStyle to block incremental application.
   bool InlineStyleLost() const { return inline_style_lost_; }
+  // True if a presentation hint eligible for incremental application has a
+  // stronger non-inline declaration, even if inline style or revert masks it.
+  bool PresentationAttributeStyleLost() const {
+    return presentation_attribute_style_lost_;
+  }
   const CSSBitset& NativeBitset() const { return native_properties_.Bits(); }
   // Remove all properties (both native and custom) from the CascadeMap.
   void Reset();
@@ -207,6 +209,8 @@ class CORE_EXPORT CascadeMap {
   ALWAYS_INLINE void Add(CascadePriorityList* list, CascadePriority);
 
   bool inline_style_lost_ = false;
+  bool presentation_attribute_style_lost_ = false;
+  CSSBitset presentation_attribute_properties_;
   NativeMap native_properties_;
   CustomMap custom_properties_;
   CascadePriorityList::BackingVector backing_vector_;

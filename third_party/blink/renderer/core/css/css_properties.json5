@@ -776,17 +776,21 @@
       valid_type: "bool",
     },
 
-    // Whether changing this property is so independent that we can apply
-    // a change to them incrementally on top of the old style. This happens
-    // only when inline style is changed. Conceptually, this could be a blocklist,
-    // but being conservative, we have chosen to make it an allowlist.
+    // Whether changes to an existing inline style declaration or SVG
+    // presentation attribute can be applied incrementally on top of the old
+    // style. Also selects which CSS values from SVG presentation attributes are
+    // applied before inline style; values from other presentation attributes
+    // remain in the cloned style.
+    // See CanApplyStyleIncrementally() for eligibility.
+    // Conceptually, this could be a blocklist, but being conservative, we have
+    // chosen to make it an allowlist.
     // The properties with known issue are explicitly marked as false,
     // so changing the default from false to true _should_ have no ill effects,
     // but bugs are of course possible. (There is a DCHECK verifying that we
     // computed the correct style when this optimization is in effect.)
     //
     // Since animations can affect pretty much anything else, and we don't
-    // support their interactions anyway (see CanApplyInlineStyleIncrementally()),
+    // support their interactions anyway (see CanApplyStyleIncrementally()),
     // animation properties are also never marked as supporting incremental style.
     // This is verified in validate_property().
     supports_incremental_style: {
@@ -794,9 +798,10 @@
       valid_type: "bool",
     },
 
-    // If false, this property is known to cause problems if setting
-    // it on an element's inline style will cause problems with computing
-    // that element's style incrementally.
+    // If false, specifying this property in inline style or through an SVG
+    // presentation attribute makes incremental style unsafe.
+    // StyleAdjuster runs again on the cloned style, even for property values
+    // retained from presentation attributes that are not reapplied.
     //
     // NOTE: Setting false here is probably indicative of a bug. Long-term,
     // we should fix all of these and remove the flag.

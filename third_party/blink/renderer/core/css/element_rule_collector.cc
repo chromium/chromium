@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -492,7 +493,11 @@ void ElementRuleCollector::AddElementStyleProperties(
       {.link_match_type = static_cast<uint8_t>(
            AdjustLinkMatchType(inside_link_, link_match_type)),
        .is_inline_style = is_inline_style,
-       .origin = origin});
+       .origin = origin,
+       .is_svg_presentation_hint =
+           origin == CascadeOrigin::kAuthorPresentationalHint &&
+           context_.GetElement().IsSVGElement() &&
+           RuntimeEnabledFeatures::SvgIncrementalStyleEnabled()});
   if (!is_cacheable) {
     result_.SetIsCacheable(false);
   }

@@ -130,6 +130,89 @@ TEST(CascadeMapTest, AddNative) {
   EXPECT_EQ(user, *map.Find(display));
 }
 
+TEST(CascadeMapTest, PresentationAttributeStyleLost) {
+  const CSSPropertyName width(CSSPropertyID::kWidth);
+  CascadeMap map;
+  map.Add(width.Id(),
+          CascadePriority(CascadeOrigin::kAuthorPresentationalHint));
+  const CascadePriority author = AuthorPriority(0, 1);
+  map.Add(width.Id(), author);
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_EQ(author, map.At(width));
+
+  const CascadePriority applied(author, /*already_applied=*/true);
+  *map.Find(width) = applied;
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_EQ(applied, map.At(width));
+  map.ClearAppliedFlags();
+  EXPECT_EQ(author, map.At(width));
+  map.Reset();
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+
+  const CascadePriority hint(CascadeOrigin::kAuthorPresentationalHint);
+  const CascadePriority inline_style(
+      CascadeOrigin::kAuthor, /*important=*/false, /*tree_order=*/0,
+      /*is_inline_style=*/true, /*is_try_style=*/false,
+      /*is_try_tactics_style=*/false, /*layer_order=*/0, /*rule_index=*/0,
+      /*declaration_index=*/0);
+  const CascadePriority animation(CascadeOrigin::kAnimation);
+  map.Add(width.Id(), hint);
+  map.Add(width.Id(), inline_style);
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+  EXPECT_FALSE(map.InlineStyleLost());
+  map.Add(width.Id(), animation);
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_TRUE(map.InlineStyleLost());
+
+  map.Reset();
+  map.Add(width.Id(), hint);
+  map.Add(width.Id(), author);
+  map.Add(width.Id(), inline_style);
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_FALSE(map.InlineStyleLost());
+
+  // A later tree scope can add a non-inline declaration below an important
+  // inline winner. Its priority still exceeds the presentation hint.
+  map.Reset();
+  const CascadePriority important_inline_style(
+      CascadeOrigin::kAuthor, /*important=*/true, /*tree_order=*/0,
+      /*is_inline_style=*/true, /*is_try_style=*/false,
+      /*is_try_tactics_style=*/false, /*layer_order=*/0, /*rule_index=*/0,
+      /*declaration_index=*/0);
+  const CascadePriority later_author(CascadeOrigin::kAuthor,
+                                     /*important=*/false, /*tree_order=*/1);
+  map.Add(width.Id(), hint);
+  map.Add(width.Id(), important_inline_style);
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+  map.Add(width.Id(), later_author);
+  EXPECT_EQ(important_inline_style, map.At(width));
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_FALSE(map.InlineStyleLost());
+
+  map.Reset();
+  map.Add(width.Id(), author);
+  map.Add(width.Id(), inline_style);
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+
+  map.Reset();
+  map.Add(width.Id(), UaPriority(0, 0));
+  map.Add(width.Id(), hint);
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+
+  map.Reset();
+  const CascadePriority important_user(CascadeOrigin::kUser,
+                                       /*important=*/true);
+  map.Add(width.Id(), important_user);
+  map.Add(width.Id(), hint);
+  EXPECT_TRUE(map.PresentationAttributeStyleLost());
+  EXPECT_EQ(important_user, map.At(width));
+
+  map.Reset();
+  map.Add(CSSPropertyID::kFill, hint);
+  map.Add(CSSPropertyID::kFill, author);
+  EXPECT_FALSE(map.PresentationAttributeStyleLost());
+}
+
 TEST(CascadeMapTest, FindAndMutateCustom) {
   CascadeMap map;
   CascadePriority user(CascadeOrigin::kUser);

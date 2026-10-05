@@ -176,6 +176,27 @@ void CascadeMap::Add(CSSPropertyID id, CascadePriority priority) {
 
   CascadePriorityList* list =
       UNSAFE_BUFFERS(&native_properties_.Buffer()[index]);
+  if (!presentation_attribute_style_lost_ && !priority.IsInlineStyle() &&
+      CSSProperty::Get(id).SupportsIncrementalStyle()) {
+    const bool is_presentation_hint =
+        priority.GetOrigin() == CascadeOrigin::kAuthorPresentationalHint;
+    if (native_properties_.Bits().Has(id) &&
+        (is_presentation_hint || presentation_attribute_properties_.Has(id))) {
+      // The top may be inline style, so check for non-inline losses below it.
+      for (auto it = list->Begin(backing_vector_);
+           it != list->End(backing_vector_); ++it) {
+        if ((is_presentation_hint && !it->IsInlineStyle() && *it >= priority) ||
+            (it->GetOrigin() == CascadeOrigin::kAuthorPresentationalHint &&
+             *it < priority)) {
+          presentation_attribute_style_lost_ = true;
+          break;
+        }
+      }
+    }
+    if (is_presentation_hint) {
+      presentation_attribute_properties_.Set(id);
+    }
+  }
   if (!native_properties_.Bits().Has(id)) {
     native_properties_.Bits().Set(id);
     new (list) CascadeMap::CascadePriorityList(backing_vector_, priority);
@@ -208,6 +229,8 @@ void CascadeMap::Add(CascadePriorityList* list, CascadePriority priority) {
 
 void CascadeMap::Reset() {
   inline_style_lost_ = false;
+  presentation_attribute_style_lost_ = false;
+  presentation_attribute_properties_.Reset();
   native_properties_.Bits().Reset();
   custom_properties_.clear();
   backing_vector_.clear();

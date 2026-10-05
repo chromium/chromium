@@ -120,6 +120,9 @@ class CORE_EXPORT StyleCascade {
   std::unique_ptr<CSSBitset> ReleaseImportantSet();
 
   bool InlineStyleLost() const { return map_.InlineStyleLost(); }
+  bool PresentationAttributeStyleLost() const {
+    return map_.PresentationAttributeStyleLost();
+  }
 
   // Resets the cascade to its initial state. Note that this does not undo
   // any changes already applied to the StyleResolverState/ComputedStyle.

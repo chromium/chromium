@@ -24,6 +24,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MATCH_RESULT_H_
 
+#include <type_traits>
+
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -71,9 +73,14 @@ struct CORE_EXPORT MatchedProperties {
     // Try-tactics style come from <try-tactic>.
     // https://drafts.csswg.org/css-anchor-position-1/#typedef-position-try-fallbacks-try-tactic
     bool is_try_tactics_style = false;
-    // 15 free bits after this, but since the MPC hashes and compares
-    // this as raw bytes, we cannot have undefined padding.
-    uint8_t padding = 0;
+    // With SVG reuse enabled, distinguishes SVG hints from HTML hints in the
+    // MPC key to isolate cached cascade-loss flags.
+    bool is_svg_presentation_hint = false;
+
+    // NOTE: MPC hashes and compares raw bytes. The two bools occupy one byte
+    // each, completing the eight-byte layout without padding; the uint8_t
+    // bitfields above occupy all eight bits of their byte. If extending this
+    // structure, ensure all bytes are defined and initialized.
 
     bool operator==(const Data& other) const {
       return UNSAFE_BUFFERS(memcmp(this, &other, sizeof(*this))) == 0;
@@ -93,6 +100,9 @@ struct CORE_EXPORT MatchedProperties {
   Member<const MixinParameterBindings> mixin_parameter_bindings;
   Data data_;
 };
+
+static_assert(std::has_unique_object_representations_v<MatchedProperties::Data>,
+              "MPC requires Data to have a unique object representation");
 
 struct SameSizeAsMatchedProperties {
   Member<void*> properties;

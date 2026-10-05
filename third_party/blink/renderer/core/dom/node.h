@@ -123,12 +123,10 @@ enum StyleChangeType : uint32_t {
   //  2. They don't add or remove any properties.
   //  3. They only touch independent properties.
   //
-  // If all changes are of this type, we can do incremental style
-  // recalculation by reusing the previous style and just applying
-  // any modified inline style, which is cheaper than a full recalc.
-  // See CanApplyInlineStyleIncrementally() and comments on
-  // StyleResolver::ApplyBaseStyle() for more details.
-  kInlineIndependentStyleChange = 1 << kNodeStyleChangeShift,
+  // May reuse the previous style, applying the whole inline style.
+  // Invalidation does not track which declarations changed.
+  // See CanApplyStyleIncrementally() in style_resolver.cc for eligibility.
+  kIndependentStyleChange = 1 << kNodeStyleChangeShift,
   // This node needs (full) style recalculation.
   kLocalStyleChange = 2 << kNodeStyleChangeShift,
   // This node and all of its flat-tree descendeants need style recalculation.

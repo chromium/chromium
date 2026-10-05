@@ -515,11 +515,11 @@ TEST_F(StyleResolverTest, TransitionWithIncrementalInlineStyle) {
   EXPECT_EQ("0", ComputedValue("opacity", *StyleForId("target")));
 
   // Mutating an existing independent inline property via CSSStyleDeclaration
-  // sets kInlineIndependentStyleChange, which must still fall back to full
+  // sets kIndependentStyleChange, which must still fall back to full
   // cascade resolution when a transition can start.
   target->style()->setProperty(GetDocument().GetExecutionContext(), "opacity",
                                "1", "", ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(kInlineIndependentStyleChange, target->GetStyleChangeType());
+  EXPECT_EQ(kIndependentStyleChange, target->GetStyleChangeType());
   UpdateAllLifecyclePhasesForTest();
 
   ElementAnimations* element_animations = target->GetElementAnimations();
@@ -4877,7 +4877,7 @@ TEST_F(StyleResolverTest, IncrementalStyleResetsColorIsDerivedFromParent) {
   // Incremental style starts from a copy of the old style.
   target->style()->setProperty(GetDocument().GetExecutionContext(), "color",
                                "blue", "", ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(kInlineIndependentStyleChange, target->GetStyleChangeType());
+  EXPECT_EQ(kIndependentStyleChange, target->GetStyleChangeType());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(target->GetComputedStyle()->ColorIsDerivedFromParent());
 }
