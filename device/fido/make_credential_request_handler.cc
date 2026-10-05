@@ -366,6 +366,9 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   DCHECK(!request_.resident_key_required);
   DCHECK(!request_.cred_protect);
   DCHECK(!request_.cred_protect_enforce);
+  // AuthenticatorCommonImpl rejects requests with no algorithms.
+  CHECK(!request_.public_key_credential_params.public_key_credential_params()
+             .empty());
 
   transport_availability_info().request_type = FidoRequestType::kMakeCredential;
   transport_availability_info().resident_key_requirement =

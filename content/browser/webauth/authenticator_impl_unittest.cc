@@ -4241,6 +4241,25 @@ TEST_F(AuthenticatorImplTest, AlgorithmsOmitted) {
   }
 }
 
+TEST_F(AuthenticatorImplTest,
+       MakeCredentialEmptyPublicKeyParametersIsBadMessage) {
+  // Blink never sends an empty list of public key parameters, so receiving one
+  // indicates a compromised renderer.
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->public_key_parameters.clear();
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  authenticator->MakeCredential(std::move(options), base::DoNothing());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "empty public_key_parameters");
+}
+
 TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
   // Exercise all the public key types in the virtual authenticator for create()
   // and get().

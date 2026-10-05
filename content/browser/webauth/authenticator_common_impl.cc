@@ -1160,6 +1160,15 @@ void AuthenticatorCommonImpl::MakeCredential(
     return;
   }
 
+  // Blink rejects requests with an empty list of public key parameters.
+  if (options->public_key_parameters.empty()) {
+    mojo::ReportBadMessage("empty public_key_parameters");
+    req_state_->request_outcome = MakeCredentialOutcome::kOtherFailure;
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(device::kWebAuthnActorCheck) &&
       GetContentClient()->browser()->ShouldDisallowCredentialRequest(
           WebContents::FromRenderFrameHost(GetRenderFrameHost()))) {
