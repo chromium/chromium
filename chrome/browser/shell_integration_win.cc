@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <wrl/client.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -57,13 +58,16 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/taskbar_util.h"
+#include "chrome/installer/util/util_constants.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "components/variations/variations_associated_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace shell_integration {
 
@@ -625,7 +629,171 @@ bool CheckImplicitAppShortcutsForPin(const base::FilePath& implicit_apps_path,
   return false;
 }
 
+// Returns true if `filename` matches the canonical naming pattern used by
+// ProfileShortcutManagerWin for profile-specific shortcuts:
+// `<profile_name> - <product_name>.lnk` or
+// `<profile_name> - <product_name> (<digits>).lnk`.
+bool IsCanonicalProfileShortcutFilename(std::wstring_view filename,
+                                        std::wstring_view product_name) {
+  if (!base::EndsWith(filename, installer::kLnkExt,
+                      base::CompareCase::INSENSITIVE_ASCII)) {
+    return false;
+  }
+  filename.remove_suffix(std::wstring_view(installer::kLnkExt).size());
 
+  // Strip an optional " (<digits>)" uniquifier suffix appended by
+  // GetUniqueShortcutFilenameForProfile().
+  if (filename.ends_with(L')')) {
+    const size_t open_paren = filename.rfind(L" (");
+    if (open_paren != std::wstring_view::npos) {
+      const std::wstring_view digits =
+          filename.substr(open_paren + 2, filename.size() - open_paren - 3);
+      if (!digits.empty() &&
+          std::ranges::all_of(digits, base::IsAsciiDigit<wchar_t>)) {
+        filename.remove_suffix(filename.size() - open_paren);
+      }
+    }
+  }
+
+  // Require a non-empty profile name prefix before " - <product_name>".
+  if (!filename.ends_with(product_name)) {
+    return false;
+  }
+  filename.remove_suffix(product_name.size());
+  static constexpr std::wstring_view kProfileProductSeparator = L" - ";
+  return filename.size() > kProfileProductSeparator.size() &&
+         filename.ends_with(kProfileProductSeparator);
+}
+
+int MigrateShortcutsInPath(const base::FilePath& chrome_exe,
+                           const base::FilePath& path,
+                           std::string_view target_location,
+                           bool only_profile_shortcuts) {
+  // This function may load DLL's so ensure it is running in a foreground
+  // thread.
+  DCHECK_GT(base::PlatformThread::GetCurrentThreadType(),
+            base::ThreadType::kBackground);
+
+  const std::wstring product_name =
+      only_profile_shortcuts
+          ? base::AsWString(l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME))
+          : std::wstring();
+  const std::wstring filter_pattern =
+      only_profile_shortcuts
+          ? base::StrCat({L"* - ", product_name, L"*", installer::kLnkExt})
+          : base::StrCat({L"*", installer::kLnkExt});
+
+  // Enumerate matching shortcuts in the given path directly. When
+  // `only_profile_shortcuts` is true, `filter_pattern` filters by
+  // "* - <product_name>*.lnk" at the OS FindFirstFileEx level so non-profile
+  // shortcuts in the Start Menu are skipped without opening any files.
+  base::FileEnumerator shortcuts_enum(path, /*recursive=*/false,
+                                      base::FileEnumerator::FILES,
+                                      filter_pattern);
+
+  const bool is_per_user_install = InstallUtil::IsPerUserInstall();
+  const bool migrate_shortcut_location =
+      base::FeatureList::IsEnabled(win::kMigrateTaskbarShortcutLocation);
+
+  int shortcuts_migrated = 0;
+  base::FilePath target_path;
+  std::wstring arguments;
+  base::win::ScopedPropVariant propvariant;
+  for (base::FilePath shortcut = shortcuts_enum.Next(); !shortcut.empty();
+       shortcut = shortcuts_enum.Next()) {
+    if (only_profile_shortcuts &&
+        !IsCanonicalProfileShortcutFilename(shortcut.BaseName().value(),
+                                            product_name)) {
+      continue;
+    }
+
+    // TODO(gab): Use ProgramCompare instead of comparing FilePaths below once
+    // it is fixed to work with FilePaths with spaces.
+    if (!base::win::ResolveShortcut(shortcut, &target_path, &arguments) ||
+        !base::FilePath::CompareEqualIgnoreCase(chrome_exe.value(),
+                                                target_path.value())) {
+      continue;
+    }
+    base::CommandLine command_line(base::CommandLine::FromString(
+        base::StrCat({L"\"", target_path.value(), L"\" ", arguments})));
+    if (only_profile_shortcuts &&
+        !command_line.HasSwitch(switches::kProfileDirectory)) {
+      continue;
+    }
+
+    // Get the expected AppId for this Chrome shortcut.
+    std::wstring expected_app_id(
+        GetExpectedAppId(command_line, is_per_user_install));
+    if (expected_app_id.empty()) {
+      continue;
+    }
+
+    // Load the shortcut.
+    Microsoft::WRL::ComPtr<IShellLink> shell_link;
+    Microsoft::WRL::ComPtr<IPersistFile> persist_file;
+    if (FAILED(::CoCreateInstance(CLSID_ShellLink, nullptr,
+                                  CLSCTX_INPROC_SERVER,
+                                  IID_PPV_ARGS(&shell_link))) ||
+        FAILED(shell_link.As(&persist_file)) ||
+        FAILED(persist_file->Load(shortcut.value().c_str(), STGM_READ))) {
+      DLOG(WARNING) << "Failed loading shortcut at " << shortcut.value();
+      continue;
+    }
+
+    // Any properties that need to be updated on the shortcut will be stored in
+    // |updated_properties|.
+    base::win::ShortcutProperties updated_properties;
+
+    // Validate the existing app id for the shortcut.
+    Microsoft::WRL::ComPtr<IPropertyStore> property_store;
+    propvariant.Reset();
+    if (FAILED(shell_link.As(&property_store)) ||
+        property_store->GetValue(PKEY_AppUserModel_ID, propvariant.Receive()) !=
+            S_OK) {
+      // When in doubt, prefer not updating the shortcut.
+      NOTREACHED();
+    } else {
+      switch (propvariant.get().vt) {
+        case VT_EMPTY:
+          // If there is no app_id set, set our app_id.
+          updated_properties.set_app_id(expected_app_id);
+          break;
+        case VT_LPWSTR:
+          if (expected_app_id != std::wstring(propvariant.get().pwszVal)) {
+            updated_properties.set_app_id(expected_app_id);
+          }
+          break;
+        default:
+          NOTREACHED();
+      }
+    }
+
+    persist_file.Reset();
+    shell_link.Reset();
+
+    // Ensure shortcuts are tagged with
+    // `--source-shortcut-location=<target_location>`. Remove any existing
+    // switch first in case the shortcut was pinned from another location (e.g.,
+    // Desktop or Start Menu).
+    if (migrate_shortcut_location &&
+        command_line.GetSwitchValueASCII(switches::kSourceShortcutLocation) !=
+            target_location) {
+      command_line.RemoveSwitch(switches::kSourceShortcutLocation);
+      command_line.AppendSwitchASCII(switches::kSourceShortcutLocation,
+                                     target_location);
+      updated_properties.set_arguments(command_line.GetArgumentsString());
+    }
+
+    // Update the shortcut if some of its properties need to be updated.
+    if (updated_properties.options &&
+        base::win::CreateOrUpdateShortcutLink(
+            shortcut, updated_properties,
+            base::win::ShortcutOperation::kUpdateExisting)) {
+      ++shortcuts_migrated;
+    }
+  }
+  return shortcuts_migrated;
+}
 
 }  // namespace
 
@@ -802,16 +970,22 @@ void MigrateTaskbarPins(base::OnceClosure completion_callback) {
           FROM_HERE, base::BindOnce([]() {
             base::FilePath taskbar_path;
             base::FilePath implicit_apps_path;
+            base::FilePath start_menu_path;
             base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_path);
             base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
                                    &implicit_apps_path);
-            MigrateTaskbarPinsCallback(taskbar_path, implicit_apps_path);
+            if (base::FeatureList::IsEnabled(kMigrateTaskbarShortcutLocation)) {
+              base::PathService::Get(base::DIR_START_MENU, &start_menu_path);
+            }
+            MigrateTaskbarPinsCallback(taskbar_path, implicit_apps_path,
+                                       start_menu_path);
           }),
           std::move(completion_callback));
 }
 
 void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
-                                const base::FilePath& implicit_apps_path) {
+                                const base::FilePath& implicit_apps_path,
+                                const base::FilePath& start_menu_path) {
   // Get full path of chrome.
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe))
@@ -832,6 +1006,13 @@ void MigrateTaskbarPinsCallback(const base::FilePath& taskbar_path,
       shortcuts_migrated += MigrateChromeAndChromeProxyShortcuts(
           chrome_exe, chrome_proxy_path, implicit_app_sub_directory);
     }
+  }
+  if (!start_menu_path.empty() &&
+      base::FeatureList::IsEnabled(kMigrateTaskbarShortcutLocation)) {
+    shortcuts_migrated += MigrateShortcutsInPath(
+        chrome_exe, start_menu_path,
+        switches::kSourceShortcutLocationStartMenu,
+        /*only_profile_shortcuts=*/true);
   }
   base::UmaHistogramCounts100("Windows.TaskbarShortcutMigrationCount",
                               shortcuts_migrated);
@@ -876,105 +1057,9 @@ IsPinnedToTaskbarResult GetIsPinnedToTaskbar3State() {
 
 int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
                                    const base::FilePath& path) {
-  // This function may load DLL's so ensure it is running in a foreground
-  // thread.
-  DCHECK_GT(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kBackground);
-
-  // Enumerate all pinned shortcuts in the given path directly.
-  base::FileEnumerator shortcuts_enum(
-      path, false,  // not recursive
-      base::FileEnumerator::FILES, FILE_PATH_LITERAL("*.lnk"));
-
-  const bool is_per_user_install = InstallUtil::IsPerUserInstall();
-  const bool migrate_shortcut_location =
-      base::FeatureList::IsEnabled(kMigrateTaskbarShortcutLocation);
-
-  int shortcuts_migrated = 0;
-  base::FilePath target_path;
-  std::wstring arguments;
-  base::win::ScopedPropVariant propvariant;
-  for (base::FilePath shortcut = shortcuts_enum.Next(); !shortcut.empty();
-       shortcut = shortcuts_enum.Next()) {
-    // TODO(gab): Use ProgramCompare instead of comparing FilePaths below once
-    // it is fixed to work with FilePaths with spaces.
-    if (!base::win::ResolveShortcut(shortcut, &target_path, &arguments) ||
-        !base::FilePath::CompareEqualIgnoreCase(chrome_exe.value(),
-                                                target_path.value())) {
-      continue;
-    }
-    base::CommandLine command_line(base::CommandLine::FromString(
-        base::StrCat({L"\"", target_path.value(), L"\" ", arguments})));
-
-    // Get the expected AppId for this Chrome shortcut.
-    std::wstring expected_app_id(
-        GetExpectedAppId(command_line, is_per_user_install));
-    if (expected_app_id.empty())
-      continue;
-
-    // Load the shortcut.
-    Microsoft::WRL::ComPtr<IShellLink> shell_link;
-    Microsoft::WRL::ComPtr<IPersistFile> persist_file;
-    if (FAILED(::CoCreateInstance(CLSID_ShellLink, NULL, CLSCTX_INPROC_SERVER,
-                                  IID_PPV_ARGS(&shell_link))) ||
-        FAILED(shell_link.As(&persist_file)) ||
-        FAILED(persist_file->Load(shortcut.value().c_str(), STGM_READ))) {
-      DLOG(WARNING) << "Failed loading shortcut at " << shortcut.value();
-      continue;
-    }
-
-    // Any properties that need to be updated on the shortcut will be stored in
-    // |updated_properties|.
-    base::win::ShortcutProperties updated_properties;
-
-    // Validate the existing app id for the shortcut.
-    Microsoft::WRL::ComPtr<IPropertyStore> property_store;
-    propvariant.Reset();
-    if (FAILED(shell_link.As(&property_store)) ||
-        property_store->GetValue(PKEY_AppUserModel_ID, propvariant.Receive()) !=
-            S_OK) {
-      // When in doubt, prefer not updating the shortcut.
-      NOTREACHED();
-    } else {
-      switch (propvariant.get().vt) {
-        case VT_EMPTY:
-          // If there is no app_id set, set our app_id.
-          updated_properties.set_app_id(expected_app_id);
-          break;
-        case VT_LPWSTR:
-          if (expected_app_id != std::wstring(propvariant.get().pwszVal))
-            updated_properties.set_app_id(expected_app_id);
-          break;
-        default:
-          NOTREACHED();
-      }
-    }
-
-    persist_file.Reset();
-    shell_link.Reset();
-
-    // Ensure taskbar shortcuts are tagged with
-    // --source-shortcut-location=taskbar. Remove any existing switch first in
-    // case the shortcut was pinned from the Desktop or Start Menu.
-    if (migrate_shortcut_location &&
-        command_line.GetSwitchValueASCII(switches::kSourceShortcutLocation) !=
-            switches::kSourceShortcutLocationTaskbar) {
-      command_line.RemoveSwitch(switches::kSourceShortcutLocation);
-      command_line.AppendSwitchASCII(
-          switches::kSourceShortcutLocation,
-          switches::kSourceShortcutLocationTaskbar);
-      updated_properties.set_arguments(command_line.GetArgumentsString());
-    }
-
-    // Update the shortcut if some of its properties need to be updated.
-    if (updated_properties.options &&
-        base::win::CreateOrUpdateShortcutLink(
-            shortcut, updated_properties,
-            base::win::ShortcutOperation::kUpdateExisting)) {
-      ++shortcuts_migrated;
-    }
-  }
-  return shortcuts_migrated;
+  return MigrateShortcutsInPath(chrome_exe, path,
+                                switches::kSourceShortcutLocationTaskbar,
+                                /*only_profile_shortcuts=*/false);
 }
 
 }  // namespace win

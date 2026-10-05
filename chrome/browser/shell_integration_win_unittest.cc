@@ -30,12 +30,14 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/shell_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace shell_integration {
 namespace win {
@@ -455,6 +457,77 @@ TEST_F(ShellIntegrationWinMigrateShortcutTest, MigrateMixedCaseDirTest) {
   shortcuts_[0].properties.set_app_id(chrome_app_id_);
   shortcuts_[0].properties.set_arguments(L"--source-shortcut-location=taskbar");
   base::win::ValidateShortcut(shortcuts_[0].path, shortcuts_[0].properties);
+}
+
+TEST_F(ShellIntegrationWinMigrateShortcutTest,
+       MigrateStartMenuProfileShortcutsTest) {
+  base::ScopedPathOverride exe_override(base::FILE_EXE, chrome_exe_,
+                                        /*is_absolute=*/true, /*create=*/false);
+  const std::wstring product_name =
+      base::AsWString(l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME));
+
+  // 1. Canonical profile shortcut pinned from Desktop to Start Menu.
+  const base::FilePath profile_shortcut_path = temp_dir_.GetPath().Append(
+      base::StrCat({L"Person 1 - ", product_name, installer::kLnkExt}));
+  base::win::ShortcutProperties profile_props;
+  profile_props.set_target(chrome_exe_);
+  profile_props.set_app_id(non_default_profile_chrome_app_id_);
+  profile_props.set_arguments(
+      base::StrCat({L"--profile-directory=", non_default_profile_,
+                    L" --source-shortcut-location=desktop"}));
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      profile_shortcut_path, profile_props,
+      base::win::ShortcutOperation::kCreateAlways));
+
+  // 2. Uniquified canonical profile shortcut ("Person 1 - Chrome (1).lnk").
+  const base::FilePath uniquified_profile_shortcut_path =
+      temp_dir_.GetPath().Append(base::StrCat(
+          {L"Person 1 - ", product_name, L" (1)", installer::kLnkExt}));
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      uniquified_profile_shortcut_path, profile_props,
+      base::win::ShortcutOperation::kCreateAlways));
+
+  // 3. Non-profile shortcut in Start Menu (e.g., main Chrome shortcut or
+  // third-party shortcut) should not be modified.
+  const base::FilePath main_shortcut_path =
+      temp_dir_.GetPath().Append(L"Google Chrome.lnk");
+  base::win::ShortcutProperties main_props;
+  main_props.set_target(chrome_exe_);
+  main_props.set_app_id(chrome_app_id_);
+  main_props.set_arguments(L"--source-shortcut-location=desktop");
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      main_shortcut_path, main_props,
+      base::win::ShortcutOperation::kCreateAlways));
+
+  // 4. Shortcut matching the profile filename pattern but missing
+  // --profile-directory should not be modified.
+  const base::FilePath fake_profile_shortcut_path = temp_dir_.GetPath().Append(
+      base::StrCat({L"Fake - ", product_name, installer::kLnkExt}));
+  ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
+      fake_profile_shortcut_path, main_props,
+      base::win::ShortcutOperation::kCreateAlways));
+
+  base::HistogramTester histogram_tester;
+  MigrateTaskbarPinsCallback(/*pins_path=*/base::FilePath(),
+                             /*implicit_apps_path=*/base::FilePath(),
+                             /*start_menu_path=*/temp_dir_.GetPath());
+  histogram_tester.ExpectUniqueSample("Windows.TaskbarShortcutMigrationCount",
+                                      2, 1);
+
+  profile_props.set_arguments(
+      base::StrCat({L"--profile-directory=", non_default_profile_,
+                    L" --source-shortcut-location=start-menu"}));
+  base::win::ValidateShortcut(profile_shortcut_path, profile_props);
+  base::win::ValidateShortcut(uniquified_profile_shortcut_path, profile_props);
+  base::win::ValidateShortcut(main_shortcut_path, main_props);
+  base::win::ValidateShortcut(fake_profile_shortcut_path, main_props);
+
+  // Subsequent runs should not re-migrate already updated shortcuts.
+  MigrateTaskbarPinsCallback(/*pins_path=*/base::FilePath(),
+                             /*implicit_apps_path=*/base::FilePath(),
+                             /*start_menu_path=*/temp_dir_.GetPath());
+  histogram_tester.ExpectBucketCount("Windows.TaskbarShortcutMigrationCount", 0,
+                                     1);
 }
 
 TEST_F(ShellIntegrationWinMigrateShortcutTest, GetIsPinnedToTaskbar3StateTest) {

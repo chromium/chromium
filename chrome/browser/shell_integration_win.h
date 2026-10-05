@@ -122,8 +122,10 @@ void CreateOrUpdateShortcuts(
 void MigrateTaskbarPins(base::OnceClosure completion_callback);
 
 // Callback for MigrateTaskbarPins(). Exposed for testing.
-void MigrateTaskbarPinsCallback(const base::FilePath& pins_path,
-                                const base::FilePath& implicit_apps_path);
+void MigrateTaskbarPinsCallback(
+    const base::FilePath& pins_path,
+    const base::FilePath& implicit_apps_path,
+    const base::FilePath& start_menu_path = base::FilePath());
 
 // Migrates all shortcuts in |path| which point to |chrome_exe| such that they
 // have the appropriate AppUserModelId and `--source-shortcut-location=taskbar`.
