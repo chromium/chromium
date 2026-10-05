@@ -200,6 +200,32 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
 
 }  // namespace
 
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+class InfoBarInternalsHandler::
+    ScopedInstallerDownloaderBypassEligibilityCheck {
+ public:
+  ScopedInstallerDownloaderBypassEligibilityCheck() {
+    if (PrefService* prefs = g_browser_process->local_state()) {
+      prefs->SetBoolean(installer_downloader::prefs::
+                            kInstallerDownloaderBypassEligibilityCheck,
+                        true);
+    }
+  }
+
+  ScopedInstallerDownloaderBypassEligibilityCheck(
+      const ScopedInstallerDownloaderBypassEligibilityCheck&) = delete;
+  ScopedInstallerDownloaderBypassEligibilityCheck& operator=(
+      const ScopedInstallerDownloaderBypassEligibilityCheck&) = delete;
+
+  ~ScopedInstallerDownloaderBypassEligibilityCheck() {
+    if (PrefService* prefs = g_browser_process->local_state()) {
+      prefs->ClearPref(installer_downloader::prefs::
+                           kInstallerDownloaderBypassEligibilityCheck);
+    }
+  }
+};
+#endif
+
 InfoBarInternalsHandler::InfoBarInternalsHandler(
     mojo::PendingReceiver<infobar_internals::mojom::PageHandler> receiver)
     : receiver_(this, std::move(receiver)) {}
@@ -724,23 +750,32 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
                                  ->installer_downloader_controller()) {
         PrefService* prefs = g_browser_process->local_state();
 
-        // This manual triggering from the debug page will reset the state of
-        // the installer downloader.
-        prefs->SetInteger(
-            installer_downloader::prefs::kInstallerDownloaderInfobarShowCount,
-            0);
+        // Manual triggering from the debug page resets all persistent and
+        // in-memory state of the installer downloader so the infobar can be
+        // shown regardless of prior impression limits, cooldowns, or
+        // dismissals.
+        prefs->ClearPref(
+            installer_downloader::prefs::kInstallerDownloaderInfobarShowCount);
+        prefs->ClearPref(installer_downloader::prefs::
+                             kInstallerDownloaderInfobarLastShowTime);
+        prefs->ClearPref(installer_downloader::prefs::
+                             kInstallerDownloaderPreventFutureDisplay);
+        prefs->ClearPref(
+            installer_downloader::prefs::kInstallerDownloaderCycleCount);
+        prefs->ClearPref(
+            installer_downloader::prefs::kInstallerDownloaderDownloadCompleted);
+        prefs->ClearPref(
+            installer_downloader::prefs::kInstallerDownloaderTotalShowCount);
 
-        // Reset the prevent future display flag.
-        prefs->SetBoolean(installer_downloader::prefs::
-                              kInstallerDownloaderPreventFutureDisplay,
-                          false);
+        // Initialize once per handler so a second trigger doesn't destroy the
+        // previous instance (and clear the bypass pref) after constructing the
+        // new one.
+        if (!scoped_initializer_) {
+          scoped_initializer_ = std::make_unique<
+              ScopedInstallerDownloaderBypassEligibilityCheck>();
+        }
 
-        // Set bypass flag to instruct to the controller to skip/ignore
-        // eligibility check result since it may failed.
-        prefs->SetBoolean(installer_downloader::prefs::
-                              kInstallerDownloaderBypassEligibilityCheck,
-                          true);
-
+        controller->ResetSessionStateForTesting();  // IN-TEST
         controller->MaybeShowInfoBar();
 
         return true;
@@ -917,9 +952,9 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     case InfoBarType::kSessionRestore: {
       session_restore_infobar::SessionRestoreInfoBarManager::GetInstance()
-          ->ShowInfoBar(*profile,
-                        session_restore_infobar::InfobarMessageType::
-                            kTurnOffFromRestart);
+          ->ShowInfoBar(
+              *profile,
+              session_restore_infobar::InfobarMessageType::kTurnOffFromRestart);
       return true;
     }
 #endif

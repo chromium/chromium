@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -30,6 +33,10 @@ class InfoBarInternalsHandler final
                             PerformInfoBarActionCallback callback) override;
 
  private:
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  class ScopedInstallerDownloaderBypassEligibilityCheck;
+#endif
+
   // Returns true on success, false if the requested type is unsupported or the
   // action fails.
   bool PerformInfoBarActionInternal(
@@ -41,6 +48,11 @@ class InfoBarInternalsHandler final
   // Stores the subscriptions to the ExtensionDevToolsInfoBarDelegate to keep
   // them alive.
   std::vector<base::CallbackListSubscription> subscriptions_;
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::unique_ptr<ScopedInstallerDownloaderBypassEligibilityCheck>
+      scoped_initializer_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HANDLER_H_
