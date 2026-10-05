@@ -845,6 +845,9 @@ class TabStripModel {
   // index supplied to `ExecuteContextMenuCommand`.
   bool WillContextMenuMuteSites(int index);
 
+  // Sets the sound content setting for each site at the `indices`.
+  void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
+
   // Returns true if 'CommandTogglePinned' will pin. `index` is the index
   // supplied to `ExecuteContextMenuCommand`.
   bool WillContextMenuPin(int index);
@@ -1379,9 +1382,6 @@ class TabStripModel {
   void MoveTabsWithNotifications(std::vector<int> tab_indices,
                                  int destination_index,
                                  base::OnceClosure execute_tabs_move_operation);
-
-  // Sets the sound content setting for each site at the `indices`.
-  void SetSitesMuted(const std::vector<int>& indices, bool mute) const;
 
   // Sets the opener of any tabs that reference the tab at `index` to that tab's
   // opener or null if there's a cycle.

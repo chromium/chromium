@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
+#include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -27,10 +31,12 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/tabs/split_tab_mute_menu_model.h"
 #include "chrome/browser/ui/tabs/split_tab_swap_menu_model.h"
 #include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
@@ -57,6 +63,7 @@
 #include "components/tabs/public/split_tab_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
@@ -64,6 +71,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
+#include "url/gurl.h"
 
 class TabMenuModelBrowserTest : public MenuModelTest,
                                 public InProcessBrowserTest {
@@ -369,6 +377,291 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelBrowserTest, MultiSelectTabs) {
     EXPECT_TRUE(index.has_value());
     EXPECT_FALSE(menu_model.IsEnabledAt(index.value()));
   }
+}
+
+namespace {
+
+// Returns the label of the "Mute sites" item in `menu_model`.
+std::u16string GetMuteSitesLabel(TabMenuModel& menu_model) {
+  return menu_model.GetLabelAt(
+      menu_model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted)
+          .value());
+}
+
+// Returns the "Mute sites" submenu of `menu_model`, or nullptr if "Mute sites"
+// is a regular menu item.
+ui::SimpleMenuModel* GetMuteSitesSubmenu(TabMenuModel& menu_model) {
+  const std::optional<size_t> index =
+      menu_model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted);
+  if (!index.has_value() ||
+      menu_model.GetTypeAt(*index) != ui::MenuModel::TYPE_SUBMENU) {
+    return nullptr;
+  }
+  return static_cast<ui::SimpleMenuModel*>(
+      menu_model.GetSubmenuModelAt(*index));
+}
+
+size_t GetMuteSubmenuIndex(ui::SimpleMenuModel* submenu,
+                           SplitTabMuteMenuModel::CommandId id) {
+  return submenu->GetIndexOfCommandId(static_cast<int>(id)).value();
+}
+
+std::u16string GetMuteSubmenuLabel(ui::SimpleMenuModel* submenu,
+                                   SplitTabMuteMenuModel::CommandId id) {
+  return submenu->GetLabelAt(GetMuteSubmenuIndex(submenu, id));
+}
+
+}  // namespace
+
+class TabMenuModelMuteSitesBrowserTest : public TabMenuModelBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    TabMenuModelBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  // Navigates the first tab to `first_url`, opens `second_url` in a second tab
+  // and puts both tabs in a side-by-side split. Returns the split's id.
+  split_tabs::SplitTabId CreateSplit(const GURL& first_url,
+                                     const GURL& second_url) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
+    EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), second_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    EXPECT_EQ(tab_strip_model->count(), 2);
+    tab_strip_model->AddToNewSplit(
+        {0},
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kSideBySide),
+        split_tabs::SplitTabCreatedSource::kToolbarButton);
+    return tab_strip_model->GetSplitForTab(1).value();
+  }
+
+  // Returns the tab indices of the first and second view of `split_id`.
+  std::pair<int, int> GetSplitIndices(split_tabs::SplitTabId split_id) {
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    const std::vector<tabs::TabInterface*> tabs_in_split =
+        tab_strip_model->GetSplitData(split_id)->ListTabs();
+    EXPECT_EQ(tabs_in_split.size(), 2u);
+    return {tab_strip_model->GetIndexOfTab(tabs_in_split[0]),
+            tab_strip_model->GetIndexOfTab(tabs_in_split[1])};
+  }
+
+  bool IsMuted(int index) {
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    return IsSiteMuted(*tab_strip_model, index) &&
+           tab_strip_model->GetWebContentsAt(index)->IsAudioMuted();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TabMenuModelMuteSitesBrowserTest, MuteSitesSubmenu) {
+  using CommandId = SplitTabMuteMenuModel::CommandId;
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Outside of a split, "Mute site" is a regular menu item.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, 0);
+    EXPECT_TRUE(
+        menu_model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted)
+            .has_value());
+    EXPECT_FALSE(GetMuteSitesSubmenu(menu_model));
+  }
+
+  // Put two different sites in a split so that muting one of them leaves the
+  // other one playing.
+  const split_tabs::SplitTabId split_id =
+      CreateSplit(embedded_test_server()->GetURL("a.com", "/title1.html"),
+                  embedded_test_server()->GetURL("b.com", "/title2.html"));
+  const auto [left_index, right_index] = GetSplitIndices(split_id);
+
+  // For a split, "Mute sites" is a submenu that can mute both sites or just
+  // the site in one of the views. Mute only the left site.
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    EXPECT_EQ(
+        GetMuteSitesLabel(menu_model),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_MUTE_SITE, 2));
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    ASSERT_EQ(submenu->GetItemCount(), 4u);
+    EXPECT_EQ(submenu->GetTypeAt(1), ui::MenuModel::TYPE_SEPARATOR);
+    EXPECT_EQ(
+        GetMuteSubmenuLabel(submenu, CommandId::kToggleAllSitesMuted),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_MUTE_SITE, 2));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleStartSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_MUTE_LEFT_SITE));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_MUTE_RIGHT_SITE));
+
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleStartSiteMuted));
+  }
+  EXPECT_TRUE(IsMuted(left_index));
+  EXPECT_FALSE(IsMuted(right_index));
+
+  // The left site now offers to unmute, and "Mute sites" mutes both sites.
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleStartSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_LEFT_SITE));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_MUTE_RIGHT_SITE));
+
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleAllSitesMuted));
+  }
+  EXPECT_TRUE(IsMuted(left_index));
+  EXPECT_TRUE(IsMuted(right_index));
+
+  // With both sites muted, the menu offers to unmute. Unmute the right site.
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, right_index);
+    EXPECT_EQ(
+        GetMuteSitesLabel(menu_model),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, 2));
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    EXPECT_EQ(
+        GetMuteSubmenuLabel(submenu, CommandId::kToggleAllSitesMuted),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, 2));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_RIGHT_SITE));
+
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleEndSiteMuted));
+  }
+  EXPECT_TRUE(IsMuted(left_index));
+  EXPECT_FALSE(IsMuted(right_index));
+
+  // In RTL, the start tab (index 0) in a side-by-side split is shown on the
+  // right and the end tab (index 1) is shown on the left, so the labels flip
+  // while `kToggleStartSiteMuted` and `kToggleEndSiteMuted` still target index
+  // 0 and index 1 respectively.
+  {
+    base::i18n::ScopedDefaultIcuLocale rtl_locale(
+        base::i18n::GetKnownLanguageTag("he"));
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleStartSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_RIGHT_SITE));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_MUTE_LEFT_SITE));
+
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleEndSiteMuted));
+    EXPECT_TRUE(IsMuted(right_index));
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleEndSiteMuted));
+    EXPECT_FALSE(IsMuted(right_index));
+  }
+
+  // Stacked splits refer to the top and bottom views.
+  tab_strip_model->UpdateSplitLayout(split_id,
+                                     split_tabs::SplitTabLayout::kStacked);
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleStartSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_TOP_SITE));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_MUTE_BOTTOM_SITE));
+  }
+
+  // An unselected split still gets the submenu, and "Mute sites" covers both
+  // of its sites.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_FALSE(tab_strip_model->IsTabSelected(left_index));
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    EXPECT_EQ(
+        GetMuteSitesLabel(menu_model),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_MUTE_SITE, 2));
+    EXPECT_TRUE(GetMuteSitesSubmenu(menu_model));
+  }
+
+  // When the selection spans the split and another tab, "Mute sites" acts on
+  // the whole selection, so it stays a regular menu item.
+  tab_strip_model->AddSelectionFromAnchorTo(left_index);
+  ASSERT_TRUE(tab_strip_model->IsTabSelected(left_index));
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    EXPECT_TRUE(
+        menu_model.GetIndexOfCommandId(TabStripModel::CommandToggleSiteMuted)
+            .has_value());
+    EXPECT_FALSE(GetMuteSitesSubmenu(menu_model));
+  }
+
+  // After separating the split, the muted site can still be unmuted via the
+  // regular single-tab "Unmute site" item.
+  tab_strip_model->RemoveSplit(split_id);
+  tab_strip_model->ActivateTabAt(left_index);
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    EXPECT_EQ(
+        GetMuteSitesLabel(menu_model),
+        l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, 1));
+    tab_strip_model->ExecuteContextMenuCommand(
+        left_index, TabStripModel::CommandToggleSiteMuted);
+  }
+  EXPECT_FALSE(IsMuted(left_index));
+}
+
+// The per-view items change the sound content setting of the view's site, so
+// when both views show the same site they mute and unmute both views.
+IN_PROC_BROWSER_TEST_F(TabMenuModelMuteSitesBrowserTest,
+                       MuteSitesSubmenuSameSite) {
+  using CommandId = SplitTabMuteMenuModel::CommandId;
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  const split_tabs::SplitTabId split_id =
+      CreateSplit(embedded_test_server()->GetURL("a.com", "/title1.html"),
+                  embedded_test_server()->GetURL("a.com", "/title2.html"));
+  const auto [left_index, right_index] = GetSplitIndices(split_id);
+
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleStartSiteMuted));
+  }
+  EXPECT_TRUE(IsMuted(left_index));
+  EXPECT_TRUE(IsMuted(right_index));
+
+  // Both views now offer to unmute, and unmuting either of them unmutes both.
+  {
+    TabMenuModel menu_model(&delegate_, TabMenuModelDelegate::From(browser()),
+                            tab_strip_model, left_index);
+    ui::SimpleMenuModel* submenu = GetMuteSitesSubmenu(menu_model);
+    ASSERT_TRUE(submenu);
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleStartSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_LEFT_SITE));
+    EXPECT_EQ(GetMuteSubmenuLabel(submenu, CommandId::kToggleEndSiteMuted),
+              l10n_util::GetStringUTF16(IDS_SPLIT_TAB_UNMUTE_RIGHT_SITE));
+    submenu->ActivatedAt(
+        GetMuteSubmenuIndex(submenu, CommandId::kToggleEndSiteMuted));
+  }
+  EXPECT_FALSE(IsMuted(left_index));
+  EXPECT_FALSE(IsMuted(right_index));
 }
 
 class TabMenuModelSplitViewHorizontalBrowserTest

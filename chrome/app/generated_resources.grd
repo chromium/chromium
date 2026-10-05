@@ -12453,6 +12453,30 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" desc="The label for a menu item that closes the bottom view in the active split.">
           Close bottom view
         </message>
+        <message name="IDS_SPLIT_TAB_MUTE_LEFT_SITE" desc="The label for a menu item that mutes the site shown in the left view of the split.">
+          Mute left site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_RIGHT_SITE" desc="The label for a menu item that mutes the site shown in the right view of the split.">
+          Mute right site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_TOP_SITE" desc="The label for a menu item that mutes the site shown in the top view of the split.">
+          Mute top site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_BOTTOM_SITE" desc="The label for a menu item that mutes the site shown in the bottom view of the split.">
+          Mute bottom site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_LEFT_SITE" desc="The label for a menu item that unmutes the site shown in the left view of the split.">
+          Unmute left site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_RIGHT_SITE" desc="The label for a menu item that unmutes the site shown in the right view of the split.">
+          Unmute right site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_TOP_SITE" desc="The label for a menu item that unmutes the site shown in the top view of the split.">
+          Unmute top site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_BOTTOM_SITE" desc="The label for a menu item that unmutes the site shown in the bottom view of the split.">
+          Unmute bottom site
+        </message>
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" desc="The label for a menu item that unsplits the split tab when clicked.">
           Separate views
         </message>
@@ -12505,6 +12529,30 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         </message>
         <message name="IDS_SPLIT_TAB_CLOSE_BOTTOM_VIEW" desc="In title case: the label for a menu item that closes the bottom view in the active split.">
           Close Bottom View
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_LEFT_SITE" desc="In title case: the label for a menu item that mutes the site shown in the left view of the split.">
+          Mute Left Site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_RIGHT_SITE" desc="In title case: the label for a menu item that mutes the site shown in the right view of the split.">
+          Mute Right Site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_TOP_SITE" desc="In title case: the label for a menu item that mutes the site shown in the top view of the split.">
+          Mute Top Site
+        </message>
+        <message name="IDS_SPLIT_TAB_MUTE_BOTTOM_SITE" desc="In title case: the label for a menu item that mutes the site shown in the bottom view of the split.">
+          Mute Bottom Site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_LEFT_SITE" desc="In title case: the label for a menu item that unmutes the site shown in the left view of the split.">
+          Unmute Left Site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_RIGHT_SITE" desc="In title case: the label for a menu item that unmutes the site shown in the right view of the split.">
+          Unmute Right Site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_TOP_SITE" desc="In title case: the label for a menu item that unmutes the site shown in the top view of the split.">
+          Unmute Top Site
+        </message>
+        <message name="IDS_SPLIT_TAB_UNMUTE_BOTTOM_SITE" desc="In title case: the label for a menu item that unmutes the site shown in the bottom view of the split.">
+          Unmute Bottom Site
         </message>
         <message name="IDS_SPLIT_TAB_SEPARATE_VIEWS" desc="In title case: the label for a menu item that unsplits the split tab when clicked.">
           Separate Views
