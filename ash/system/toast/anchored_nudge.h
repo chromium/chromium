@@ -60,10 +60,6 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
 
-  // views::WidgetDelegate:
-  std::unique_ptr<views::FrameView> CreateFrameView(
-      views::Widget* widget) override;
-
   // views::View:
   void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
