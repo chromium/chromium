@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -27,7 +28,9 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -47,15 +50,16 @@ const char kRequestGmsCoreNotificationsDisabledDeviceNames[] =
 const char kSendGmsCoreNotificationsDisabledDeviceNames[] =
     "sendGmsCoreNotificationsDisabledDeviceNames";
 
-Profile* GetProfileForPrimaryUser() {
-  return Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetPrimaryUser()));
+bool IsPrimaryUser(const user_manager::User& user) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  return user.GetAccountId() == primary_session->account_id();
 }
 
-bool IsVpnConfigAllowed() {
-  PrefService* prefs = GetProfileForPrimaryUser()->GetPrefs();
-  DCHECK(prefs);
+bool IsVpnConfigAllowed(const user_manager::User& user) {
+  const PrefService* prefs = user.GetProfilePrefs();
+  CHECK(prefs);
   return prefs->GetBoolean(prefs::kVpnConfigAllowed);
 }
 
@@ -123,12 +127,14 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue& args) {
     NET_LOG(ERROR) << "Empty app id for " << kAddThirdPartyVpnMessage;
     return;
   }
-  if (profile_ != GetProfileForPrimaryUser() || profile_->IsChild()) {
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  if (!IsPrimaryUser(user) || user.IsChild()) {
     NET_LOG(ERROR)
         << "Only the primary user and non-child accounts can add VPNs";
     return;
   }
-  if (!IsVpnConfigAllowed()) {
+  if (!IsVpnConfigAllowed(user)) {
     NET_LOG(ERROR) << "Cannot add VPN; prohibited by policy";
     return;
   }
@@ -145,7 +151,7 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue& args) {
 
   // Request that the third-party VPN provider identified by |provider_id|
   // show its "add network" dialog.
-  chromeos::VpnServiceFactory::GetForBrowserContext(GetProfileForPrimaryUser())
+  chromeos::VpnServiceFactory::GetForBrowserContext(profile_)
       ->SendShowAddDialogToExtension(app_id);
 }
 
@@ -154,11 +160,13 @@ void InternetHandler::ConfigureThirdPartyVpn(const base::ListValue& args) {
     NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
   }
   const std::string& guid = args[0].GetString();
-  if (profile_ != GetProfileForPrimaryUser()) {
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  if (!IsPrimaryUser(user)) {
     NET_LOG(ERROR) << "Only the primary user can configure VPNs";
     return;
   }
-  if (!IsVpnConfigAllowed()) {
+  if (!IsVpnConfigAllowed(user)) {
     NET_LOG(ERROR) << "Cannot configure VPN; prohibited by policy";
     return;
   }

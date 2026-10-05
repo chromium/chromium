@@ -35,7 +35,7 @@ static_library("floating_workspace") {
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login",
     "//chromeos/ash/components/browser_context_helper",
-    "//components/user_manager",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//ui/aura",
     "//ui/base:types",

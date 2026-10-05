@@ -30,9 +30,11 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_dialog.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -454,11 +456,16 @@ void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
         ->SaveHttpAuthCacheProxyEntries(base::BindOnce(
             &TransferHttpAuthCacheToSystemNetworkContext, base::DoNothing()));
 
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-    // Transfer auth cache to the active user's profile so that there is no need
-    // to enter them again after unlocking the device.
+    // TODO(crbug.com/278643115): Take the account_id from the callers.
+    const session_manager::Session* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    CHECK(primary_session);
+    Profile* profile = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            primary_session->account_id()));
+    CHECK(profile);
+    // Transfer auth cache to the primary user's profile so that there is no
+    // need to enter them again after unlocking the device.
     ProfileAuthData::TransferHttpAuthCacheProxyEntries(
         base::DoNothing(), webview_storage_partition,
         profile->GetDefaultStoragePartition());

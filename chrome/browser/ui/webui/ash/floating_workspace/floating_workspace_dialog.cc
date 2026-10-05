@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/aura/window.h"
@@ -65,11 +65,13 @@ void FloatingWorkspaceDialog::GetDialogSize(gfx::Size* size) const {
 
 void FloatingWorkspaceDialog::OnDialogClosed(const std::string& json_retval) {
   if (json_retval == "stopRestoringSession") {
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetPrimaryUser();
-    CHECK(user);
+    // TODO(crbug.com/278643115): Take the account_id from the callers.
+    const auto* primary_session =
+        session_manager::SessionManager::Get()->GetPrimarySession();
+    CHECK(primary_session);
     content::BrowserContext* browser_context =
-        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user);
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            primary_session->account_id());
     CHECK(browser_context);
     FloatingWorkspaceService* service =
         FloatingWorkspaceServiceFactory::GetForProfile(browser_context);

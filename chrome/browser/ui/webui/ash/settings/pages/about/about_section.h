@@ -12,7 +12,8 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/user_manager/user_manager.h"
+
+class AccountId;
 
 namespace content {
 class WebUIDataSource;
@@ -50,8 +51,8 @@ class AboutSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  // Returns if the auto update toggle should be shown for the active user.
-  bool ShouldShowAUToggle(user_manager::User* active_user);
+  // Returns if the auto update toggle should be shown for `account_id`.
+  bool ShouldShowAUToggle(const AccountId& account_id);
 
   const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;

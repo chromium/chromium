@@ -12,6 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -35,6 +36,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "printing/backend/print_backend.h"
@@ -60,11 +62,15 @@ bool IsSecureIppPrinter(const chromeos::Printer& printer) {
 }
 
 bool IsActiveUserAffiliated() {
-  const user_manager::User* user =
-      user_manager::UserManager::IsInitialized()
-          ? user_manager::UserManager::Get()->GetActiveUser()
-          : nullptr;
-  return user ? user->IsAffiliated() : false;
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const session_manager::Session* session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!session) {
+    return false;
+  }
+  return CHECK_DEREF(
+             user_manager::UserManager::Get()->FindUser(session->account_id()))
+      .IsAffiliated();
 }
 
 void OnGetPrintersComplete(
@@ -600,7 +606,7 @@ void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       // TODO(crbug.com/479647640): Check if we should use current user than
       // primary user.
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
       printer_id, base::BindOnce([](const chromeos::CupsPrinterStatus& status) {
                     return StatusToValue(status);
                   }).Then(std::move(callback)));

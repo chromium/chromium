@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/version/version_ui.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/policy/core/common/management/management_service.h"
@@ -41,6 +42,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user_manager.h"
 #include "components/webui/version/version_ui_constants.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -388,8 +390,10 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
     html_source->AddBoolean("isConsumerAutoUpdateTogglingAllowed",
                             is_current_owner);
+    const AccountId* account_id =
+        AnnotatedAccountId::Get(profile()->GetOriginalProfile());
     html_source->AddBoolean("showAutoUpdateToggle",
-                            ShouldShowAUToggle(user_manager->GetActiveUser()));
+                            account_id && ShouldShowAUToggle(*account_id));
   }
 
   html_source->AddString("aboutBrowserVersion",
@@ -528,12 +532,7 @@ void AboutSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   crostini_subsection_.RegisterHierarchy(generator);
 }
 
-bool AboutSection::ShouldShowAUToggle(user_manager::User* active_user) {
-  if (!active_user) {
-    return false;
-  }
-
-  AccountId account_id = active_user->GetAccountId();
+bool AboutSection::ShouldShowAUToggle(const AccountId& account_id) {
   if (account_id.GetAccountType() != AccountType::GOOGLE) {
     return false;
   }
