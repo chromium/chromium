@@ -66,6 +66,11 @@ constexpr net::NetworkTrafficAnnotationTag kAmbientClientNetworkTag =
         })");
 
 bool HasPrimaryAccount(const AccountId& account_id) {
+  if (!CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id))
+           .is_profile_created()) {
+    return false;
+  }
+
   auto* identity_manager = ash::IdentityManagerProvider::Get().Find(account_id);
   if (!identity_manager)
     return false;
