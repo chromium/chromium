@@ -7,8 +7,6 @@ source_set("ui") {
     "composebox_animation_context.h",
     "composebox_dismiss_animator.h",
     "composebox_dismiss_animator.mm",
-    "composebox_favicons_accordion_view.h",
-    "composebox_favicons_accordion_view.mm",
     "composebox_input_item.h",
     "composebox_input_item.mm",
     "composebox_input_item_cell.h",
@@ -65,7 +63,23 @@ source_set("ui") {
     "//ios/web/public",
     "//ui/base",
   ]
-  public_deps = [ "//ios/chrome/browser/composebox/shared/ui" ]
+  public_deps = [
+    ":favicons_accordion",
+    "//ios/chrome/browser/composebox/shared/ui",
+  ]
+}
+
+source_set("favicons_accordion") {
+  sources = [
+    "composebox_favicons_accordion_view.h",
+    "composebox_favicons_accordion_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("ui_util") {

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
 #import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/composebox/ui/composebox_favicons_accordion_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
@@ -61,6 +62,9 @@ const CGFloat kSeparatorVerticalPadding = 10.0f;
 
 // Height of the separator line.
 const CGFloat kSeparatorHeight = 1.0f;
+
+// Size of the fallback globe symbol for shared tabs without a favicon.
+constexpr CGFloat kSharedTabFaviconSymbolSize = 24.0f;
 
 // Maps a menu item type to its corresponding attachment option.
 std::optional<ComposeboxAttachmentOption> AttachmentOptionForMenuItemType(
@@ -212,6 +216,7 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
   // Shared Tabs Section
   if (_inputState.sharedTabs.count > 0) {
     NSMutableArray<NSString*>* tabDomains = [[NSMutableArray alloc] init];
+    NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
     for (ComposeboxMenuSharedTab* tab in _inputState.sharedTabs) {
       if (tab.URL.is_valid() && !tab.URL.host().empty()) {
         std::u16string elidedHost = url_formatter::
@@ -219,6 +224,10 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
                 tab.URL);
         [tabDomains addObject:base::SysUTF16ToNSString(elidedHost)];
       }
+      UIImage* favicon =
+          tab.favicon
+              ?: SymbolWithPointSize(SymbolGlobe, kSharedTabFaviconSymbolSize);
+      [favicons addObject:favicon];
     }
     NSString* subtitle = [tabDomains componentsJoinedByString:@", "];
 
@@ -226,11 +235,8 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
         initWithTitle:l10n_util::GetNSString(
                           IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS)
              subtitle:subtitle
-                count:_inputState.sharedTabs.count
-                image:_inputState.sharedTabs.firstObject.favicon
-                 type:ComposeboxMenuItemType::kAttachmentSharedTabs
-             disabled:NO
-              favicon:_inputState.sharedTabs.firstObject.favicon];
+             favicons:favicons
+                 type:ComposeboxMenuItemType::kAttachmentSharedTabs];
 
     ComposeboxMenuSection* sharedTabsSection = [[ComposeboxMenuSection alloc]
         initWithTitle:nil
@@ -698,10 +704,25 @@ BOOL IsToolType(ComposeboxMenuItemType type) {
 
   if (item.type == ComposeboxMenuItemType::kAttachmentSharedTabs) {
     [accessories addObject:[[UICellAccessoryDisclosureIndicator alloc] init]];
-    UICellAccessoryLabel* labelAccessory = [[UICellAccessoryLabel alloc]
-        initWithText:[NSString
-                         stringWithFormat:@"%lu", (unsigned long)item.count]];
-    [accessories addObject:labelAccessory];
+    // TODO(crbug.com/568743843): Update `ComposeboxFaviconsAccordionView` badge
+    // background and border colors so the overflow badge contrasts with the
+    // cell's `kGroupedSecondaryBackgroundColor` in Dark mode.
+    ComposeboxFaviconsAccordionView* faviconsView =
+        [[ComposeboxFaviconsAccordionView alloc] initWithFrame:CGRectZero];
+    faviconsView.translatesAutoresizingMaskIntoConstraints = YES;
+    faviconsView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+    [cell.traitCollection performAsCurrentTraitCollection:^{
+      [faviconsView updateWithImages:item.favicons];
+    }];
+    UICellAccessoryCustomView* customViewAccessory =
+        [[UICellAccessoryCustomView alloc]
+            initWithCustomView:faviconsView
+                     placement:UICellAccessoryPlacementTrailing];
+    // Use the actual width of the favicons stack instead of the standard
+    // reserved layout width so multi-icon piles do not overflow into the
+    // disclosure indicator.
+    customViewAccessory.reservedLayoutWidth = 0;
+    [accessories addObject:customViewAccessory];
   }
   cell.accessories = accessories;
   cell.accessibilityIdentifier =

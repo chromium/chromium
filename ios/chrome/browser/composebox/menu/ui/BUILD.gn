@@ -42,6 +42,7 @@ source_set("ui") {
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:model_options",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
+    "//ios/chrome/browser/composebox/ui:favicons_accordion",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui:ui_util",
     "//ios/chrome/browser/keyboard/ui_bundled",
@@ -68,10 +69,15 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/omnibox/common",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/menu/coordinator:shared_tab",
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/shared/ui:ui_constants",
+    "//ios/chrome/browser/composebox/ui:favicons_accordion",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//url",
   ]
 }

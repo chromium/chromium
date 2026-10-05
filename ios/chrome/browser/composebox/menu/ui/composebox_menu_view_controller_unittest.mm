@@ -7,16 +7,23 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/scoped_feature_list.h"
+#import "base/unguessable_token.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_shared_tab.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item_type.h"
+#import "ios/chrome/browser/composebox/menu/ui/composebox_menu_list_cell.h"
 #import "ios/chrome/browser/composebox/public/composebox_attachment_option.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+#import "ios/chrome/browser/composebox/ui/composebox_favicons_accordion_view.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_config.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 @interface ComposeboxMenuViewController (Testing)
 @property(nonatomic, readonly) UICollectionView* collectionView;
@@ -32,6 +39,84 @@ const CGFloat kIPhoneSEScreenWidth = 375.0f;
 const CGFloat kTestViewHeight = 600.0f;
 
 using ComposeboxMenuViewControllerTest = PlatformTest;
+
+// Helper to create a dummy UIImage for testing.
+UIImage* CreateTestImage() {
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:CGSizeMake(10, 10)];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    UIRectFill(CGRectMake(0, 0, 10, 10));
+  }];
+}
+
+// Tests that the Shared Tabs cell is configured without a leading image, with
+// the comma-joined domain subtitle, and with a trailing favicons accordion view
+// alongside the disclosure indicator.
+TEST_F(ComposeboxMenuViewControllerTest, TestSharedTabsCellConfiguration) {
+  ComposeboxMenuViewController* viewController =
+      [[ComposeboxMenuViewController alloc] init];
+  viewController.view.frame =
+      CGRectMake(0, 0, kIPhoneScreenWidth, kTestViewHeight);
+
+  ComposeboxUIInputState* inputState = [[ComposeboxUIInputState alloc] init];
+  inputState.uiConfig = [ComposeboxUIConfig localFallbackUIConfig];
+  inputState.allowedAttachments = {
+      ComposeboxAttachmentOption::kCurrentTab,
+      ComposeboxAttachmentOption::kTab,
+  };
+  inputState.sharedTabs = @[
+    [[ComposeboxMenuSharedTab alloc]
+                initWithURL:GURL("https://www.alltrails.com/parks")
+                      title:@"AllTrails"
+        inputItemIdentifier:base::UnguessableToken::Create()
+                    favicon:CreateTestImage()],
+    [[ComposeboxMenuSharedTab alloc]
+                initWithURL:GURL("https://www.nps.gov/yose")
+                      title:@"NPS"
+        inputItemIdentifier:base::UnguessableToken::Create()
+                    favicon:nil],
+  ];
+
+  [viewController setUIInputState:inputState];
+  [viewController.view layoutIfNeeded];
+  [viewController.collectionView layoutIfNeeded];
+
+  UICollectionView* collectionView = viewController.collectionView;
+  ASSERT_NE(collectionView, nil);
+  ASSERT_EQ(collectionView.numberOfSections, 2);
+  ASSERT_EQ([collectionView numberOfItemsInSection:1], 1);
+
+  NSIndexPath* sharedTabsIndexPath = [NSIndexPath indexPathForItem:0
+                                                         inSection:1];
+  UICollectionViewCell* rawCell =
+      [collectionView cellForItemAtIndexPath:sharedTabsIndexPath];
+  ASSERT_TRUE([rawCell isKindOfClass:[ComposeboxMenuListCell class]]);
+  ComposeboxMenuListCell* cell = static_cast<ComposeboxMenuListCell*>(rawCell);
+
+  ASSERT_TRUE([cell.contentConfiguration
+      isKindOfClass:[UIListContentConfiguration class]]);
+  UIListContentConfiguration* contentConfig =
+      static_cast<UIListContentConfiguration*>(cell.contentConfiguration);
+  EXPECT_EQ(contentConfig.image, nil);
+  EXPECT_NSEQ(contentConfig.text,
+              l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_MENU_SHARED_TABS));
+  EXPECT_NSEQ(contentConfig.secondaryText, @"alltrails.com, nps.gov");
+
+  ASSERT_EQ(cell.accessories.count, 2u);
+  EXPECT_TRUE([cell.accessories[0]
+      isKindOfClass:[UICellAccessoryDisclosureIndicator class]]);
+  ASSERT_TRUE(
+      [cell.accessories[1] isKindOfClass:[UICellAccessoryCustomView class]]);
+  UICellAccessoryCustomView* customAccessory =
+      static_cast<UICellAccessoryCustomView*>(cell.accessories[1]);
+  EXPECT_EQ(customAccessory.placement, UICellAccessoryPlacementTrailing);
+  EXPECT_EQ(customAccessory.reservedLayoutWidth, 0.0);
+  ASSERT_TRUE([customAccessory.customView
+      isKindOfClass:[ComposeboxFaviconsAccordionView class]]);
+  ComposeboxFaviconsAccordionView* faviconsView =
+      static_cast<ComposeboxFaviconsAccordionView*>(customAccessory.customView);
+  EXPECT_EQ(faviconsView.arrangedSubviews.count, 2u);
+}
 
 // Tests that when 5 attachment items are present, each button is wider than or
 // equal to the 60 pt minimum width, and all buttons fit across the screen

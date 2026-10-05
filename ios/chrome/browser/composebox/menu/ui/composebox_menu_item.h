@@ -24,19 +24,17 @@
 @property(nonatomic, strong, readonly) UIImage* favicon;
 // The composebox menu item subtitle.
 @property(nonatomic, copy, readonly) NSString* subtitle;
-// The composebox menu item count.
-@property(nonatomic, assign, readonly) NSUInteger count;
+// The composebox menu item favicons.
+@property(nonatomic, copy, readonly) NSArray<UIImage*>* favicons;
 
 - (BOOL)isEqual:(id)object;
 - (NSUInteger)hash;
 
+// Initializes a menu item with a subtitle and a list of favicons.
 - (instancetype)initWithTitle:(NSString*)title
                      subtitle:(NSString*)subtitle
-                        count:(NSUInteger)count
-                        image:(UIImage*)image
-                         type:(ComposeboxMenuItemType)type
-                     disabled:(BOOL)disabled
-                      favicon:(UIImage*)favicon;
+                     favicons:(NSArray<UIImage*>*)favicons
+                         type:(ComposeboxMenuItemType)type;
 
 - (instancetype)initWithTitle:(NSString*)title
                         image:(UIImage*)image
