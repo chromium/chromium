@@ -57,8 +57,6 @@ class TestDistillerPage : public DistillerPage {
     simulate_result_val_ = std::move(val);
   }
 
-  bool ShouldFetchOfflineData() override { return false; }
-
   DistillerType GetDistillerType() override {
     return DistillerType::kReadability;
   }

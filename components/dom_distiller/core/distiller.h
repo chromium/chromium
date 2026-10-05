@@ -14,13 +14,11 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
 #include "components/dom_distiller/core/distiller_options.h"
 #include "components/dom_distiller/core/distiller_page.h"
-#include "components/dom_distiller/core/distiller_url_fetcher.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/readability_options.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -62,22 +60,18 @@ class DistillerFactory {
 // Factory for creating a Distiller.
 class DistillerFactoryImpl : public DistillerFactory {
  public:
-  DistillerFactoryImpl(
-      std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
-      const DistillerOptions& options);
+  explicit DistillerFactoryImpl(const DistillerOptions& options);
   ~DistillerFactoryImpl() override;
   std::unique_ptr<Distiller> CreateDistiller() override;
 
  private:
-  std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory_;
   DistillerOptions options_;
 };
 
 // Distills a article from a page and associated pages.
 class DistillerImpl : public Distiller {
  public:
-  DistillerImpl(const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
-                const DistillerOptions& options);
+  explicit DistillerImpl(const DistillerOptions& options);
   ~DistillerImpl() override;
 
   void DistillPage(const GURL& url,
@@ -102,19 +96,12 @@ class DistillerImpl : public Distiller {
     virtual ~DistilledPageData();
     // Relative page number of the page.
     int page_num;
-    std::vector<std::unique_ptr<DistillerURLFetcher>> image_fetchers_;
     scoped_refptr<base::RefCountedData<DistilledPageProto>>
         distilled_page_proto;
 
     DistilledPageData(const DistilledPageData&) = delete;
     DistilledPageData& operator=(const DistilledPageData&) = delete;
   };
-
-  void OnFetchImageDone(int page_num,
-                        DistillerURLFetcher* url_fetcher,
-                        const std::string& id,
-                        const std::string& original_url,
-                        const std::string& response);
 
   void OnPageDistillationFinished(
       int page_num,
@@ -158,8 +145,6 @@ class DistillerImpl : public Distiller {
   // state.
   const ArticleDistillationUpdate CreateDistillationUpdate() const;
 
-  const raw_ref<const DistillerURLFetcherFactory>
-      distiller_url_fetcher_factory_;
   std::unique_ptr<DistillerPage> distiller_page_;
 
   DistillerOptions options_;

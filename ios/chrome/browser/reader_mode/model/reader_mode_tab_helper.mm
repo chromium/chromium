@@ -17,7 +17,6 @@
 #import "components/translate/core/browser/translate_infobar_delegate.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
-#import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -407,7 +406,6 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     ReaderModeAccessPoint access_point,
     const GURL& page_url,
     const std::string& html,
-    const std::vector<DistillerViewerInterface::ImageInfo>& images,
     const std::string& title,
     const std::string& csp_nonce) {
   // Cancel the distillation timeout request if page distillation completes.

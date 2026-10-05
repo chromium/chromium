@@ -60,10 +60,6 @@ class DistillerPage {
                    const DistillerOptions& options,
                    DistillerPageCallback callback);
 
-  // Returns true if the distiller page should fetch distillation data for
-  // offline consumption.
-  virtual bool ShouldFetchOfflineData() = 0;
-
   // Returns the distillation type to use to retrieve simplified page content.
   virtual DistillerType GetDistillerType() = 0;
 

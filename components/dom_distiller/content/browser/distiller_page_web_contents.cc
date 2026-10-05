@@ -126,10 +126,6 @@ DistillerPageWebContents::DistillerPageWebContents(
 
 DistillerPageWebContents::~DistillerPageWebContents() = default;
 
-bool DistillerPageWebContents::ShouldFetchOfflineData() {
-  return false;
-}
-
 DistillerType DistillerPageWebContents::GetDistillerType() {
   return DistillerType::kReadability;
 }

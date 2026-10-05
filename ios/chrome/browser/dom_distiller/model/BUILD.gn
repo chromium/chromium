@@ -10,9 +10,6 @@ source_set("model") {
     "distiller_service.mm",
     "distiller_service_factory.h",
     "distiller_service_factory.mm",
-    "distiller_viewer_interface.h",
-    "offline_page_distiller_viewer.cc",
-    "offline_page_distiller_viewer.h",
   ]
   deps = [
     "//base",
@@ -20,8 +17,6 @@ source_set("model") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-    "//services/network/public/cpp",
-    "//ui/gfx",
     "//url",
   ]
   public_deps = [ "//components/dom_distiller/core" ]

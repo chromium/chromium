@@ -272,7 +272,7 @@ void DomDistillerViewerSource::StartDataRequest(
   std::string unsafe_page_html = viewer::GetArticleTemplateHtml(
       dom_distiller_service_->GetDistilledPagePrefs()->GetTheme(),
       dom_distiller_service_->GetDistilledPagePrefs()->GetFontFamily(),
-      std::string(), /*use_offline_data=*/false);
+      std::string());
 
   if (viewer_handle) {
     // The service returned a |ViewerHandle| and guarantees it will call

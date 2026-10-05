@@ -68,7 +68,6 @@ class DistillerPageWebContents : public DistillerPage,
   ~DistillerPageWebContents() override;
 
   // DistillerPage implementation.
-  bool ShouldFetchOfflineData() override;
   DistillerType GetDistillerType() override;
 
   // content::WebContentsDelegate implementation.

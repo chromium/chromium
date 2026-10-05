@@ -30,8 +30,7 @@ namespace viewer {
 // so the returned HTML should be safe.
 std::string GetArticleTemplateHtml(mojom::Theme theme,
                                    mojom::FontFamily font_family,
-                                   const std::string& csp_nonce,
-                                   bool use_offline_data);
+                                   const std::string& csp_nonce);
 
 // Returns the JavaScript to place a full article's HTML on the page. The
 // returned HTML should be considered unsafe, so callers must ensure

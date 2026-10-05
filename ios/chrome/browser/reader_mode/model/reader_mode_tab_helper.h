@@ -131,13 +131,11 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   friend class web::WebStateUserData<ReaderModeTabHelper>;
 
   // Callback for handling completion of the page distillation.
-  void PageDistillationCompleted(
-      ReaderModeAccessPoint access_point,
-      const GURL& page_url,
-      const std::string& html,
-      const std::vector<DistillerViewerInterface::ImageInfo>& images,
-      const std::string& title,
-      const std::string& csp_nonce);
+  void PageDistillationCompleted(ReaderModeAccessPoint access_point,
+                                 const GURL& page_url,
+                                 const std::string& html,
+                                 const std::string& title,
+                                 const std::string& csp_nonce);
 
   // Creates `reader_mode_web_state_` if necessary, adds a content tab helper
   // and starts distillation.

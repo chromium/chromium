@@ -10,13 +10,6 @@ const fontFamilyClasses = ['sans-serif', 'serif', 'monospace', 'Lexend'];
 
 // LINT.ThenChange(//components/dom_distiller/core/viewer.cc:JSThemesAndFonts)
 
-// On iOS, |distillerOnIos| was set to true before this script.
-// eslint-disable-next-line no-var
-var distillerOnIos;
-if (typeof distillerOnIos === 'undefined') {
-  distillerOnIos = false;
-}
-
 // The style guide recommends preferring $() to getElementById(). Chrome's
 // standard implementation of $() is imported from chrome://resources, which the
 // distilled page is prohibited from accessing. A version of it is

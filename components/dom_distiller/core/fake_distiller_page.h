@@ -31,7 +31,6 @@ class MockDistillerPage : public DistillerPage {
  public:
   MockDistillerPage();
   ~MockDistillerPage() override;
-  MOCK_METHOD0(ShouldFetchOfflineData, bool());
   MOCK_METHOD0(GetDistillerType, DistillerType());
   MOCK_METHOD2(DistillPageImpl,
                void(const GURL& gurl, const std::string& script));

@@ -143,8 +143,7 @@ std::string_view GetFontCssClass(mojom::FontFamily font_family) {
 
 std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
                                       const mojom::FontFamily font_family,
-                                      const std::string& csp_nonce,
-                                      bool use_offline_data) {
+                                      const std::string& csp_nonce) {
   std::string html_template =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DOM_DISTILLER_VIEWER_HTML);
@@ -204,34 +203,15 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   svg << "<img src=\"/" << kViewerLoadingImagePath << "\">";
 #endif  // BUILDFLAG(IS_IOS) && !BUILDFLAG(USE_BLINK)
 
-  if (use_offline_data) {
-    // CSP policy to mitigate leaking of data from different origins.
-    csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
-    csp << "default-src 'none'; ";
-    csp << "script-src 'nonce-" << csp_nonce << "'; ";
-    // YouTube videos are embedded as an iframe.
-    csp << "frame-src https://www.youtube.com "
-           "https://www.youtube-nocookie.com; ";
-
-    // Allow the browser to send a referrer.
-    csp << "referrer strict-origin-when-cross-origin; ";
-    csp << "style-src 'unsafe-inline' https://fonts.googleapis.com; ";
-    // Allows the fallback font-face from the main stylesheet.
-    csp << "font-src https://fonts.gstatic.com; ";
-    // Images will be inlined as data-uri if they are valid.
-    csp << "img-src data:; ";
-    csp << "form-action 'none'; ";
-    csp << "base-uri 'none'; ";
-    csp << "\">";
-  } else if (!csp_nonce.empty()) {
-    // Reader mode (non-offline) viewer on iOS: the composed document is
-    // committed via -[WKWebView loadData:...baseURL:] at the original
-    // article's origin and carries no HTTP response headers, so without a
-    // <meta> policy it has no CSP at all. Restrict script execution to the
-    // nonced viewer script so that markup surviving distillation (e.g. on*
-    // event handler attributes or srcdoc iframes) cannot execute script at
-    // the article's origin. Styles/images/fonts are intentionally left
-    // unrestricted to keep the viewer functional.
+  if (!csp_nonce.empty()) {
+    // Reader mode viewer on iOS: the composed document is committed via
+    // -[WKWebView loadData:...baseURL:] at the original article's origin and
+    // carries no HTTP response headers, so without a <meta> policy it has no
+    // CSP at all. Restrict script execution to the nonced viewer script so that
+    // markup surviving distillation (e.g. on* event handler attributes or
+    // srcdoc iframes) cannot execute script at the article's origin.
+    // Styles/images/fonts are intentionally left unrestricted to keep the
+    // viewer functional.
     csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
     csp << "script-src 'nonce-" << csp_nonce << "'; ";
     csp << "object-src 'none'; ";
@@ -298,10 +278,8 @@ std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
 
 std::string GetArticleTemplateHtml(mojom::Theme theme,
                                    mojom::FontFamily font_family,
-                                   const std::string& csp_nonce,
-                                   bool use_offline_data) {
-  return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce,
-                                   use_offline_data);
+                                   const std::string& csp_nonce) {
+  return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce);
 }
 
 std::string GetUnsafeArticleContentJs(

@@ -91,8 +91,7 @@ void FakeDistilledPage::Load(EmbeddedTestServer* server,
 
 std::string FakeDistilledPage::GetPageHtmlWithScripts() {
   std::string html = GetArticleTemplateHtml(
-      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, std::string(),
-      /*use_offline_data=*/false);
+      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, std::string());
   for (const std::string& file : scripts_) {
     if (file == "dom_distiller_viewer.js") {
       // This file is handled separately below.

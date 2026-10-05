@@ -36,7 +36,6 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -54,23 +53,18 @@ namespace dom_distiller {
 // for different URLs, i.e. a specific kOriginalUrl option for each URL.
 class TestDistillerFactoryImpl : public DistillerFactory {
  public:
-  TestDistillerFactoryImpl(
-      std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory,
+  explicit TestDistillerFactoryImpl(
       const dom_distiller::proto::DomDistillerOptions& dom_distiller_options)
-      : distiller_url_fetcher_factory_(
-            std::move(distiller_url_fetcher_factory)),
-        dom_distiller_options_(dom_distiller_options) {}
+      : dom_distiller_options_(dom_distiller_options) {}
 
   ~TestDistillerFactoryImpl() override = default;
 
   std::unique_ptr<Distiller> CreateDistiller() override {
     return std::make_unique<DistillerImpl>(
-        *distiller_url_fetcher_factory_,
         DistillerOptions(dom_distiller_options_));
   }
 
  private:
-  std::unique_ptr<DistillerURLFetcherFactory> distiller_url_fetcher_factory_;
   dom_distiller::proto::DomDistillerOptions dom_distiller_options_;
 };
 
@@ -116,10 +110,6 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
 
   auto distiller_page_factory =
       std::make_unique<DistillerPageWebContentsFactory>(context);
-  auto distiller_url_fetcher_factory =
-      std::make_unique<DistillerURLFetcherFactory>(
-          context->GetDefaultStoragePartition()
-              ->GetURLLoaderFactoryForBrowserProcess());
 
   dom_distiller::proto::DomDistillerOptions options;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kExtractTextOnly)) {
@@ -143,8 +133,7 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
               kPaginationAlgo));
   }
 
-  auto distiller_factory = std::make_unique<TestDistillerFactoryImpl>(
-      std::move(distiller_url_fetcher_factory), options);
+  auto distiller_factory = std::make_unique<TestDistillerFactoryImpl>(options);
 
   return std::make_unique<DomDistillerService>(
       std::move(distiller_factory), std::move(distiller_page_factory),

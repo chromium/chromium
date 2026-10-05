@@ -200,12 +200,10 @@ TEST_F(DomDistillerViewerTest, TestGetJavaScriptPinchMinMaxZoom) {
 }
 
 // Tests that GetArticleTemplateHtml includes a nonce-based
-// Content-Security-Policy meta tag when a csp_nonce is provided and
-// use_offline_data is false.
+// Content-Security-Policy meta tag when a csp_nonce is provided.
 TEST_F(DomDistillerViewerTest, TestGetArticleTemplateHtmlHasCspWithNonce) {
   const std::string html = viewer::GetArticleTemplateHtml(
-      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, "test_nonce_12345",
-      /*use_offline_data=*/false);
+      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, "test_nonce_12345");
   EXPECT_NE(html.find("<meta http-equiv=\"Content-Security-Policy\""),
             std::string::npos);
   EXPECT_NE(html.find("script-src 'nonce-test_nonce_12345'"),
@@ -213,7 +211,6 @@ TEST_F(DomDistillerViewerTest, TestGetArticleTemplateHtmlHasCspWithNonce) {
   EXPECT_NE(html.find("object-src 'none'"), std::string::npos);
   EXPECT_NE(html.find("form-action 'none'"), std::string::npos);
 
-  // Values added only with use_offline_data should be absent.
   EXPECT_EQ(html.find("default-src 'none'"), std::string::npos);
   EXPECT_EQ(html.find("frame-src"), std::string::npos);
   EXPECT_EQ(html.find("style-src"), std::string::npos);
@@ -223,36 +220,14 @@ TEST_F(DomDistillerViewerTest, TestGetArticleTemplateHtmlHasCspWithNonce) {
 }
 
 // Tests that GetArticleTemplateHtml omits the Content-Security-Policy meta tag
-// when csp_nonce is empty and use_offline_data is false.
+// when csp_nonce is empty.
 TEST_F(DomDistillerViewerTest,
        TestGetArticleTemplateHtmlOmitsCspWhenNonceEmpty) {
   const std::string html = viewer::GetArticleTemplateHtml(
       mojom::Theme::kLight, mojom::FontFamily::kSansSerif,
-      /*csp_nonce=*/"", /*use_offline_data=*/false);
+      /*csp_nonce=*/"");
   EXPECT_EQ(html.find("<meta http-equiv=\"Content-Security-Policy\""),
             std::string::npos);
-}
-
-// Tests that GetArticleTemplateHtml includes the offline
-// Content-Security-Policy meta tag when use_offline_data is true.
-TEST_F(DomDistillerViewerTest, TestGetArticleTemplateHtmlOfflineDataCsp) {
-  const std::string html = viewer::GetArticleTemplateHtml(
-      mojom::Theme::kLight, mojom::FontFamily::kSansSerif, "test_nonce_12345",
-      /*use_offline_data=*/true);
-  EXPECT_NE(html.find("<meta http-equiv=\"Content-Security-Policy\""),
-            std::string::npos);
-  EXPECT_NE(html.find("default-src 'none'"), std::string::npos);
-  EXPECT_NE(html.find("script-src 'nonce-test_nonce_12345'"),
-            std::string::npos);
-  EXPECT_NE(html.find("frame-src https://www.youtube.com"), std::string::npos);
-  EXPECT_NE(html.find("referrer strict-origin-when-cross-origin"),
-            std::string::npos);
-  EXPECT_NE(html.find("style-src 'unsafe-inline' https://fonts.googleapis.com"),
-            std::string::npos);
-  EXPECT_NE(html.find("font-src https://fonts.gstatic.com"), std::string::npos);
-  EXPECT_NE(html.find("img-src data:"), std::string::npos);
-  EXPECT_NE(html.find("form-action 'none'"), std::string::npos);
-  EXPECT_NE(html.find("base-uri 'none'"), std::string::npos);
 }
 
 }  // namespace dom_distiller

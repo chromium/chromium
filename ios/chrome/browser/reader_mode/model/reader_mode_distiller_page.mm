@@ -47,10 +47,6 @@ void ReaderModeDistillerPage::DistillPageImpl(const GURL& url,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
 
-bool ReaderModeDistillerPage::ShouldFetchOfflineData() {
-  return false;
-}
-
 dom_distiller::DistillerType ReaderModeDistillerPage::GetDistillerType() {
   return dom_distiller::DistillerType::kReadability;
 }
