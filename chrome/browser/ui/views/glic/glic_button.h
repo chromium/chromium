@@ -219,12 +219,6 @@ class GlicButton : public GlicBaseShim<T>,
   ~GlicButton() override = default;
 
   bool ShouldApplyCustomThemeFallback() const {
-    if (!base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
-      return false;
-    }
-    if (!features::kGlicButtonCustomThemeFallback.Get()) {
-      return false;
-    }
     if (!profile_) {
       return false;
     }
@@ -581,10 +575,7 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   void UpdateIcon() override {
-    const bool solid_icon_for_pressed_state =
-        base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
-        features::kGlicButtonPressedForceSolidIcon.Get() && glic_panel_is_open_;
-    const ui::ImageModel model = solid_icon_for_pressed_state
+    const ui::ImageModel model = glic_panel_is_open_
                                      ? GetIconForHighlight(icon_size_)
                                      : GetNormalIcon(icon_size_);
 
@@ -691,15 +682,11 @@ class GlicButton : public GlicBaseShim<T>,
   void OnPrewarmTimerFired() { EstablishPrivateAiConnection(profile_); }
 
   void NotifyClick(const ui::Event& event) override {
-    if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState)) {
-      // T likely manipulates the ink drop in its NotifyClick(), so
-      // if we're using the ink drop to show the button's pressed state, skip
-      // T::NotifyClick() and just call the base
-      // NotifyClick().
-      views::LabelButton::NotifyClick(event);
-    } else {
-      T::NotifyClick(event);
-    }
+    // T likely manipulates the ink drop in its NotifyClick(), so
+    // if we're using the ink drop to show the button's pressed state, skip
+    // T::NotifyClick() and just call the base
+    // NotifyClick().
+    views::LabelButton::NotifyClick(event);
   }
 
   // Creates the model for the context menu.
@@ -749,8 +736,7 @@ class GlicButton : public GlicBaseShim<T>,
     }
     this->SetTextColor(views::Button::STATE_DISABLED, kTextDisabled);
 
-    if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
-        this->GetWidget()) {
+    if (this->GetWidget()) {
       this->SetHighlighted(glic_panel_is_open_);
     }
 

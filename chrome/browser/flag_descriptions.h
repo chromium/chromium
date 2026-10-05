@@ -1893,10 +1893,6 @@ inline constexpr char kGlicContextualCueBubbleName[] =
     "Glic contextual cue bubble";
 inline constexpr char kGlicContextualCueBubbleDescription[] =
     "Show glic contextual cues in a bubble UI.";
-inline constexpr char kGlicButtonPressedStateName[] =
-    "Glic Button Pressed State";
-inline constexpr char kGlicButtonPressedStateDescription[] =
-    "Enables visual changes to the Glic entry button when Glic is open.";
 
 inline constexpr char kGlicDaisyChainNewTabsName[] =
     "Glic Daisy chain new tabs";

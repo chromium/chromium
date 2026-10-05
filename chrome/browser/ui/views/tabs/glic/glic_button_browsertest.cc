@@ -287,11 +287,6 @@ class FakeThemeService : public ThemeService {
 
 class GlicButtonThemeTest : public GlicButtonTest {
  public:
-  GlicButtonThemeTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicButtonPressedState, {{"custom-theme-fallback", "true"}});
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     GlicButtonTest::SetUpInProcessBrowserTestFixture();
     create_services_subscription_ =
@@ -311,7 +306,6 @@ class GlicButtonThemeTest : public GlicButtonTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
 };
 

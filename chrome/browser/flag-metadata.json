@@ -5752,14 +5752,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "glic-button-pressed-state",
-    "owners": [
-      "iwells@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-caa-guest-error",
     "owners": [
       "birnie@google.com",

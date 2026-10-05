@@ -347,15 +347,6 @@ void TabStripActionContainer::SetGlicPanelIsOpen(bool open) {
   }
 
   glic_button_->SetGlicPanelIsOpen(open);
-
-  if (base::FeatureList::IsEnabled(features::kGlicButtonPressedState) &&
-      features::kGlicButtonContainerBackground.Get()) {
-    if (glic_actor_button_container_) {
-      glic_actor_button_container_->SetBackgroundColor(
-          glic_button_->GetBackgroundColor());
-      glic_actor_button_container_->SetHighlighted(open);
-    }
-  }
 }
 
 void TabStripActionContainer::ShowGlicActorTaskIcon() {

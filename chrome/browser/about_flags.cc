@@ -3842,13 +3842,6 @@ const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
 const FeatureEntry::FeatureVariation kGlicActorTransientTasksVariations[] = {
     {"(force transient)", kGlicActorTransientTasksForceTransient, nullptr}};
 
-const FeatureEntry::FeatureParam kGlicButtonPressedStateForceSolidIcon[] = {
-    {"glic-button-pressed-force-solid-icon", "true"}};
-
-const FeatureEntry::FeatureVariation kGlicButtonPressedStateVariations[] = {
-    {"force solid color icon when pressed",
-     kGlicButtonPressedStateForceSolidIcon, nullptr}};
-
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_LeftOfProfile[] = {
     {"glic-toolbar-button-location", "LeftOfProfileChip"}};
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_RightOfOmnibox[] = {
@@ -11154,12 +11147,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicContextualCueBubbleName,
      flag_descriptions::kGlicContextualCueBubbleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicContextualCueBubble)},
-    {"glic-button-pressed-state",
-     flag_descriptions::kGlicButtonPressedStateName,
-     flag_descriptions::kGlicButtonPressedStateDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicButtonPressedState,
-                                    kGlicButtonPressedStateVariations,
-                                    "GlicButtonPressedState")},
     {"glic-capture-region", flag_descriptions::kGlicCaptureRegionName,
      flag_descriptions::kGlicCaptureRegionDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicCaptureRegion)},
