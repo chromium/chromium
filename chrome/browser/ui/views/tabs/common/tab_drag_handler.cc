@@ -463,9 +463,10 @@ bool TabDragHandlerImpl::IsViewDragging(const views::View& view) const {
   if (!drag_controller_) {
     return false;
   }
-  for (TabSlotView* slot_view :
-       drag_controller_->GetSessionData().attached_views()) {
-    if (&view == ViewFromTabSlot(slot_view)) {
+  for (const TabDragData& tab_data :
+       drag_controller_->GetSessionData().tab_drag_data_) {
+    if (tab_data.attached_view &&
+        &view == ViewFromTabSlot(tab_data.attached_view)) {
       return true;
     }
   }
