@@ -2149,7 +2149,7 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
-       MaybeAddTabToPersistedTabs_IgnoresSupercededTokens) {
+       MarkTabAckByServer_IgnoresSupercededTokens) {
   auto mock_controller =
       std::make_unique<MockContextualSearchContextController>();
   MockContextualSearchContextController* mock_controller_ptr =
@@ -2169,7 +2169,7 @@ TEST_F(ContextualSearchSessionHandleTest,
   EXPECT_CALL(*mock_controller_ptr, GetFileInfo(tab_token))
       .WillRepeatedly(testing::Return(&tab_info));
 
-  // Submit Query 1. Because token is superceded, `MaybeAddTabToPersistedTabs`
+  // Submit Query 1. Because token is superceded, `MarkTabAckByServer`
   // should skip it.
   auto request_info = std::make_unique<
       ContextualSearchContextController::CreateClientToAimRequestInfo>();
@@ -2718,6 +2718,104 @@ TEST_F(ContextualSearchSessionHandleTest,
 
   EXPECT_TRUE(handle_->RemoveUploadedContextToken(delayed_token));
   EXPECT_TRUE(handle_->GetTabContextState().attached.empty());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       SubmittedTabIsTrackedInAttachedAndNotifies) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  MockContextualSearchContextController* mock_controller_ptr =
+      mock_controller.get();
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  base::UnguessableToken tab_token = local_handle->CreateContextToken();
+  FileInfo tab_info;
+  tab_info.file_token = tab_token;
+  tab_info.tab_session_id = SessionID::FromSerializedValue(5);
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(42);
+  tab_info.request_id = req_id;
+  tab_info.tab_url = GURL("https://example.com/5");
+  tab_info.tab_title = "Tab 5";
+  EXPECT_CALL(*mock_controller_ptr, GetFileInfo(tab_token))
+      .WillRepeatedly(testing::Return(&tab_info));
+  EXPECT_CALL(*mock_controller_ptr, CreateClientToAimRequest(_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+
+  base::MockCallback<ContextualSearchSessionHandle::TabContextSubscriber>
+      callback;
+  auto subscription = local_handle->SubscribeTabContext(callback.Get());
+  EXPECT_CALL(callback, Run(testing::_)).Times(1);
+
+  local_handle->CreateClientToAimRequest(
+      std::make_unique<
+          ContextualSearchContextController::CreateClientToAimRequestInfo>());
+
+  const TabContextState& state = local_handle->GetTabContextState();
+  EXPECT_TRUE(state.restored.empty());
+  ASSERT_EQ(1u, state.attached.size());
+  const TabInfo& tab = state.attached[0];
+  EXPECT_EQ(tab_token, tab.context_token);
+  EXPECT_EQ(5, tab.tab_id);
+  ASSERT_TRUE(tab.request_id.has_value());
+  EXPECT_EQ(42u, tab.request_id->uuid());
+  EXPECT_TRUE(tab.uploaded);
+  EXPECT_TRUE(tab.submitted);
+  EXPECT_FALSE(tab.restored_from_aim);
+
+  auto persisted = local_handle->persisted_tabs();
+  ASSERT_EQ(1u, persisted.size());
+  EXPECT_EQ(tab_token, persisted.at(SessionID::FromSerializedValue(5)).first);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       SetRestoredTabsDoesNotTouchSubmittedTabs) {
+  auto local_handle = service_->CreateSessionForTesting(
+      std::make_unique<MockContextualSearchContextController>(), nullptr);
+
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  SessionID session_id = SessionID::FromSerializedValue(5);
+  local_handle->set_persisted_tabs(
+      {{session_id, {token, lens::LensOverlayRequestId()}}});
+
+  local_handle->SetRestoredTabs(
+      {MakeRestoredTab("https://example.com/10", "Tab 10", 10),
+       MakeRestoredTab("https://example.com/5", "AIM Tab 5", 5)});
+
+  const TabContextState& state = local_handle->GetTabContextState();
+  ASSERT_EQ(2u, state.restored.size());
+  EXPECT_EQ(10, state.restored[0].tab_id);
+  EXPECT_TRUE(state.restored[0].restored_from_aim);
+  EXPECT_EQ(5, state.restored[1].tab_id);
+  EXPECT_TRUE(state.restored[1].restored_from_aim);
+  ASSERT_EQ(1u, state.attached.size());
+  EXPECT_EQ(token, state.attached[0].context_token);
+  EXPECT_EQ(1u, local_handle->persisted_tabs().size());
+  EXPECT_EQ(token, local_handle->GetTokenForTab(session_id));
+
+  // Clearing restored tabs keeps the submitted tab.
+  local_handle->SetRestoredTabs({});
+  EXPECT_TRUE(state.restored.empty());
+  EXPECT_EQ(1u, state.attached.size());
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       AimRestoredTabsAreNotTreatedAsPersisted) {
+  auto local_handle = service_->CreateSessionForTesting(
+      std::make_unique<MockContextualSearchContextController>(), nullptr);
+
+  local_handle->SetRestoredTabs(
+      {MakeRestoredTab("https://example.com/3", "Tab 3", 3)});
+
+  EXPECT_TRUE(local_handle->persisted_tabs().empty());
+  EXPECT_TRUE(local_handle->GetTokenForTab(SessionID::FromSerializedValue(3))
+                  .is_empty());
+
+  // Replacing persisted tabs does not touch AIM restored tabs.
+  local_handle->set_persisted_tabs({});
+  EXPECT_EQ(1u, local_handle->GetTabContextState().restored.size());
 }
 
 }  // namespace contextual_search

@@ -70,18 +70,18 @@ struct TabInfo {
   std::string title;
 
   // True if the tab is explicitly uploaded (no delay) or persisted in the
-  // session; false for tabs not uploaded: delayed/implicit uploads
-  // (uploaded at submit time) and restored tabs.
+  // session; false for tabs not uploaded: delayed/implicit uploads (e.g., smart
+  // tab, etc.), submitted but not confirmed uploaded tabs, and restored tabs.
   bool uploaded = false;
 
   // True if the tab was restored from durable task context (e.g. an AIM
   // thread's history) rather than attached in this session.
   bool restored_from_aim = false;
 
-  // True once the tab has been sent to the server in a submitted query AND
-  // the server has acknowledged it received it. Tabs are remembered after
-  // submitting so they can be removed if the user manually removes them.
-  bool ack_by_server = false;
+  // True once the tab has been sent to the server in a submitted query. Tabs
+  // are remembered after submitting so they can be removed if the user
+  // manually removes them.
+  bool submitted = false;
 };
 
 // The set of tabs attached or restored as context for a session, as a snapshot.
@@ -103,12 +103,12 @@ struct TabContextState {
 
   // Tabs attached in this session, in the order they were attached. Kept in
   // sync by `StartTabContextUploadFlow()`, `AddDelayedTabContext()`,
-  // `DeleteFile()` and `RemoveUploadedContextToken()`. `ClearFiles()` only
-  // removes tabs that were never submitted, so tabs stay attached after
-  // submission. Delayed tabs are attached with `uploaded` false
-  // before their upload starts, and are changed to true once uploaded.
-  // Does not include restored tabs, only tabs manually attached in the
-  // current session. At most one entry per tab ID.
+  // `DeleteFile()` and `RemoveUploadedContextToken()`. If `submitted=false`
+  // in `ClearFiles(), all attached tabs should be cleared; otherwise, no
+  // change. Delayed tabs are attached with `uploaded` false before their upload
+  // starts, and are changed to true once uploaded. Does not include restored
+  // tabs, only tabs manually attached in the current session. At most one entry
+  // per tab ID.
   std::vector<TabInfo> attached;
 
   // Tabs carried from past history in this thread from the server, in the
@@ -345,7 +345,7 @@ class ContextualSearchSessionHandle {
   // Clear all context controller files from this particular instance of the
   // session handle. This does not clear the internal state of the context
   // controller, which may be shared with other session handles.
-  // Moves uploaded file tokens that are tabs into `persisted_tabs_` if
+  // Marks uploaded tabs in `tab_context_.attached` as 'submitted' if
   // `query_submitted` is true.
   void ClearFiles(bool query_submitted = false);
 
@@ -369,17 +369,17 @@ class ContextualSearchSessionHandle {
 
   // Returns the request IDs of contexts removed since the last query that the
   // server has not yet been told about: contexts dropped by a Smart Tab Sharing
-  // toggle, and persisted tabs that were deselected, closed, or navigated away
-  // from their uploaded page. Clears the returned contexts from this handle, so
-  // each removal is only reported once. Callers that submit queries outside of
-  // `CreateClientToAimRequest()` must call this on every submission and
-  // forward the result to the server as removed contexts.
+  // toggle, and persisted attached tabs that were deselected, closed, or
+  // navigated away from their uploaded page. Clears the returned contexts from
+  // this handle, so each removal is only reported once. Callers that submit
+  // queries outside of `CreateClientToAimRequest()` must call this on every
+  // submission and forward the result to the server as removed contexts.
   std::vector<lens::LensOverlayRequestId> TakeRemovedContexts();
 
   // Records that a query was submitted with `file_tokens` plus any uploaded
-  // context tokens not already in `file_tokens`. Moves submitted tabs into
-  // `persisted_tabs_`, clears `uploaded_context_tokens_`, appends to the
-  // submitted context tokens, and records query metrics when
+  // context tokens not already in `file_tokens`. Moves submitted tabs in
+  // `tab_context_.attached` as 'submitted', clears `uploaded_context_tokens_`,
+  // appends to the submitted context tokens, and records query metrics when
   // `query_text_length` is provided. Returns the full list of submitted
   // tokens in upload order. Callers that submit queries outside of
   // `CreateClientToAimRequest()` must call this on every submission.
@@ -440,11 +440,16 @@ class ContextualSearchSessionHandle {
       std::map<SessionID,
                std::pair<base::UnguessableToken, lens::LensOverlayRequestId>>;
 
-  // Returns the map of persisted tabs.
-  const PersistedTabsMap& persisted_tabs() const { return persisted_tabs_; }
+  // Returns the tabs submitted in previous turns of this session, i.e. the
+  // entries of `tab_context_.attached` with `submitted` set.
+  PersistedTabsMap persisted_tabs() const;
 
-  // Sets the persisted tabs map.
-  void set_persisted_tabs(PersistedTabsMap persisted_tabs);
+  // Delete all tabs that have persisted across submissions.
+  void ClearAllPersistedTabs();
+
+  // Replaces the tabs submitted in previous turns of this session. Used for
+  // session handoff.
+  void set_persisted_tabs(PersistedTabsMap new_persisted_tabs);
 
   // Returns the list of submitted FileInfo for this particular instance
   // of the session. These are uploaded and submitted, but we have not received
@@ -504,6 +509,7 @@ class ContextualSearchSessionHandle {
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
+
   FRIEND_TEST_ALL_PREFIXES(
       ContextualSearchSessionHandleTest,
       NotifyQuerySubmittedSessionState_TabAttachmentCount);
@@ -530,6 +536,10 @@ class ContextualSearchSessionHandle {
   // context subscribers if any tabs were removed.
   void RemoveAttachedTabForToken(const base::UnguessableToken& file_token);
 
+  // Notifies tab context subscribers if tab context has been updated
+  // (`tab_context_dirty_` is set to `true`). Clears the dirty flag.
+  void MaybeNotifyTabContextSubscribers();
+
   // Notifies the metrics recorder that a query has been submitted, providing
   // information about the presence of tab and non-tab context.
   void NotifyQuerySubmittedSessionState(const std::vector<FileInfo>& file_infos,
@@ -539,8 +549,10 @@ class ContextualSearchSessionHandle {
   // or an empty token if not found.
   base::UnguessableToken GetActiveTokenForTab(SessionID tab_session_id) const;
 
-  // Tracks a persisted tab if it is not superceded, deduplicating history.
-  void MaybeAddTabToPersistedTabs(const base::UnguessableToken& token);
+  // Marks the tab for `token` in `tab_context_.attached` as `submitted`
+  // if it is not already done so. O(n) search to find duplicates is okay
+  // since tab number is small.
+  void MarkTabAckByServer(const base::UnguessableToken& token);
 
   // Returns true if the token corresponds to a tab context.
   bool IsTabToken(const base::UnguessableToken& token) const;
@@ -563,19 +575,19 @@ class ContextualSearchSessionHandle {
   // Whether any context tokens were submitted in a query in this session.
   bool has_submitted_context_ = false;
 
-  // Map of tab session IDs to their latest submitted token and request ID.
-  // Tracks active tabs in the session to detect their deletion or removal.
-  std::map<SessionID,
-           std::pair<base::UnguessableToken, lens::LensOverlayRequestId>>
-      persisted_tabs_;
-
-  // Current snapshot of attached, restored, and deselected tabs. Mutable
-  // because `IsTabDeselected()` lazily clears stale deselections.
+  // Current snapshot of attached, restored, and deselected tabs. Entries in
+  // `attached` with `submitted` are persistent tabs that are still tracked
+  // for the purpose of deleting them from server if manually removed by user.
   TabContextState tab_context_;
 
   // Subscribers to changes in the tab context state.
   base::RepeatingCallbackList<void(const TabContextState&)>
       tab_context_subscribers_;
+
+  // This flag is set when `tab_context_.attached` and/or
+  // `tab_context_.restored` change. It is cleared by
+  // `MaybeNotifyTabContextSubscribers()`.
+  bool tab_context_dirty_ = false;
 
   // Whether the SearchContentSharingSettings policy has been checked.
   bool policy_checked_ = false;
