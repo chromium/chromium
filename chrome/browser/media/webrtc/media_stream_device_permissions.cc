@@ -21,7 +21,7 @@ MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
                                         const GURL& security_origin,
                                         const char* policy_name,
                                         const char* allowed_urls_pref_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // If the security origin policy matches a value in allowed urls list, allow
   // it.  Otherwise, check the |policy_name| switch for the default behavior.

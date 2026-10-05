@@ -127,12 +127,12 @@ class WlanApi {
         wlan_free_memory(reinterpret_cast<WlanFreeMemoryFunction>(
             GetProcAddress(library, "WlanFreeMemory"))),
         library_(library) {
-    DCHECK(library);
-    DCHECK(wlan_open_handle);
-    DCHECK(wlan_close_handle);
-    DCHECK(wlan_enum_interfaces);
-    DCHECK(wlan_query_interface);
-    DCHECK(wlan_free_memory);
+    CHECK(library, base::NotFatalUntil::M161);
+    CHECK(wlan_open_handle, base::NotFatalUntil::M161);
+    CHECK(wlan_close_handle, base::NotFatalUntil::M161);
+    CHECK(wlan_enum_interfaces, base::NotFatalUntil::M161);
+    CHECK(wlan_query_interface, base::NotFatalUntil::M161);
+    CHECK(wlan_free_memory, base::NotFatalUntil::M161);
   }
 
   HINSTANCE library_;

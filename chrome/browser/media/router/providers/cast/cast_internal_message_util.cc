@@ -241,10 +241,12 @@ blink::mojom::PresentationConnectionMessagePtr CreateSessionMessage(
     const MediaSinkInternal& sink,
     const std::string& hash_token,
     CastInternalMessage::Type type) {
-  DCHECK(type == CastInternalMessage::Type::kNewSession ||
-         type == CastInternalMessage::Type::kUpdateSession);
+  CHECK(type == CastInternalMessage::Type::kNewSession ||
+            type == CastInternalMessage::Type::kUpdateSession,
+        base::NotFatalUntil::M161);
   base::DictValue session_with_receiver_label = session.value().Clone();
-  DCHECK(!session_with_receiver_label.FindByDottedPath("receiver.label"));
+  CHECK(!session_with_receiver_label.FindByDottedPath("receiver.label"),
+        base::NotFatalUntil::M161);
   session_with_receiver_label.SetByDottedPath(
       "receiver.label", base::Value(GetReceiverLabel(sink, hash_token)));
   return CreateMessageCommon(type, std::move(session_with_receiver_label),
@@ -443,7 +445,7 @@ std::unique_ptr<CastSession> CastSession::From(
 
 std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
   auto found = cast_util::EnumToString(type);
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M161);
   return std::string(found.value_or(std::string_view()));
 }
 
@@ -459,14 +461,14 @@ void CastSession::UpdateSession(std::unique_ptr<CastSession> from) {
   message_namespaces_ = std::move(from->message_namespaces_);
 
   auto* status_text_value = from->value_.Find("statusText");
-  DCHECK(status_text_value);
+  CHECK(status_text_value, base::NotFatalUntil::M161);
   value_.Set("statusText", std::move(*status_text_value));
   auto* namespaces_value = from->value_.Find("namespaces");
-  DCHECK(namespaces_value);
+  CHECK(namespaces_value, base::NotFatalUntil::M161);
   value_.Set("namespaces", std::move(*namespaces_value));
   auto* receiver_volume_value =
       from->value_.FindByDottedPath("receiver.volume");
-  DCHECK(receiver_volume_value);
+  CHECK(receiver_volume_value, base::NotFatalUntil::M161);
   value_.SetByDottedPath("receiver.volume", std::move(*receiver_volume_value));
 }
 

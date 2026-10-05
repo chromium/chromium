@@ -144,7 +144,7 @@ void DialActivityManager::AddActivity(const DialActivity& activity) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   MediaRoute::Id route_id = activity.route.media_route_id();
-  DCHECK(!records_.contains(route_id));
+  CHECK(!records_.contains(route_id), base::NotFatalUntil::M161);
   // TODO(crbug.com/40090609): Consider adding a timeout for transitioning
   // to kLaunched state to clean up unresponsive launches.
   records_.emplace(route_id,
@@ -243,7 +243,7 @@ void DialActivityManager::StopApp(
   auto record_it = records_.find(route_id);
   CHECK(record_it != records_.end());
   std::unique_ptr<Record>& record = record_it->second;
-  DCHECK(!record->pending_stop_request);
+  CHECK(!record->pending_stop_request, base::NotFatalUntil::M161);
 
   // Note that it is possible that the app launched on the device, but we
   // haven't received the launch response yet. In this case we will treat it
@@ -302,7 +302,7 @@ void DialActivityManager::OnLaunchSuccess(const MediaRoute::Id& route_id,
   const network::mojom::URLResponseHead* response_info =
       record->pending_launch_request->fetcher->GetResponseHead();
 
-  DCHECK(response_info);
+  CHECK(response_info, base::NotFatalUntil::M161);
   record->app_instance_url = GetApplicationInstanceURL(
       *response_info, record->activity.sink.dial_data().ip_address);
   record->state = DialActivityManager::Record::State::kLaunched;

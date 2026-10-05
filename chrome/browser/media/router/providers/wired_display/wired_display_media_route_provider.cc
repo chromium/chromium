@@ -99,7 +99,7 @@ void WiredDisplayMediaRouteProvider::CreateRoute(
     int32_t frame_tree_node_id,
     base::TimeDelta timeout,
     CreateRouteCallback callback) {
-  DCHECK(!presentations_.contains(presentation_id));
+  CHECK(!presentations_.contains(presentation_id), base::NotFatalUntil::M161);
   std::optional<Display> display = GetDisplayBySinkId(sink_id);
   if (!display) {
     std::move(callback).Run(std::nullopt, nullptr,

@@ -67,7 +67,7 @@ void PostSendNetworkList(
     base::WeakPtr<DialServiceImpl> impl,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const std::optional<net::NetworkInterfaceList>& networks) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&DialServiceImpl::SendNetworkList,
                                        std::move(impl), networks));
@@ -125,7 +125,7 @@ std::string BuildRequest() {
       version_info::GetVersionNumber().data(),
       version_info::GetOSType().data()));
   // 1500 is a good MTU value for most Ethernet LANs.
-  DCHECK_LE(request.size(), 1500U);
+  CHECK_LE(request.size(), 1500U, base::NotFatalUntil::M161);
   return request;
 }
 
@@ -150,7 +150,7 @@ void InsertBestBindAddressChromeOS(const ash::NetworkTypePattern& type,
 }
 
 net::IPAddressList GetBestBindAddressOnUIThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   net::IPAddressList bind_address_list;
   if (ash::NetworkHandler::IsInitialized()) {
@@ -177,7 +177,7 @@ net::IPAddressList GetBestBindAddressOnUIThread() {
 void GetNetworkListOnUIThread(
     base::WeakPtr<DialServiceImpl> impl,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   content::GetNetworkService()->GetNetworkList(
       net::INCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
       base::BindOnce(&PostSendNetworkList, std::move(impl), task_runner));
@@ -188,7 +188,7 @@ void GetNetworkListOnUIThread(
 
 DialServiceImpl::DialSocket::DialSocket(DialServiceImpl* dial_service)
     : is_writing_(false), is_reading_(false), dial_service_(dial_service) {
-  DCHECK(dial_service_);
+  CHECK(dial_service_, base::NotFatalUntil::M161);
 }
 
 DialServiceImpl::DialSocket::~DialSocket() {
@@ -199,8 +199,8 @@ bool DialServiceImpl::DialSocket::CreateAndBindSocket(
     const IPAddress& bind_ip_address,
     net::NetLog* net_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!socket_);
-  DCHECK(bind_ip_address.IsIPv4());
+  CHECK(!socket_, base::NotFatalUntil::M161);
+  CHECK(bind_ip_address.IsIPv4(), base::NotFatalUntil::M161);
 
   socket_ = std::make_unique<UDPSocket>(net::DatagramSocket::RANDOM_BIND,
                                         net_log, net::NetLogSource());
@@ -322,7 +322,7 @@ void DialServiceImpl::DialSocket::OnSocketRead(int result) {
 
 void DialServiceImpl::DialSocket::HandleResponse(int bytes_read) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(bytes_read, 0);
+  CHECK_GT(bytes_read, 0, base::NotFatalUntil::M161);
   if (bytes_read > kDialRecvBufferSize) {
     return;
   }
@@ -417,7 +417,7 @@ DialServiceImpl::DialServiceImpl(
       request_interval_(base::Milliseconds(kDialRequestIntervalMillis)) {
   IPAddress address;
   bool success = address.AssignFromIPLiteral(kDialRequestAddress);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
   send_address_ = net::IPEndPoint(address, kDialRequestPort);
   send_buffer_ = base::MakeRefCounted<StringIOBuffer>(BuildRequest());
 }
@@ -439,7 +439,7 @@ bool DialServiceImpl::Discover() {
 
 void DialServiceImpl::StartDiscovery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(discovery_active_);
+  CHECK(discovery_active_, base::NotFatalUntil::M161);
   if (HasOpenSockets()) {
     return;
   }
@@ -572,7 +572,7 @@ void DialServiceImpl::NotifyOnError() {
 
 void DialServiceImpl::FinishDiscovery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(discovery_active_);
+  CHECK(discovery_active_, base::NotFatalUntil::M161);
   // Close all open sockets.
   dial_sockets_.clear();
   finish_timer_.Stop();

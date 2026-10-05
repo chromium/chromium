@@ -16,7 +16,7 @@
 namespace media_router {
 
 cast_channel::CastMessageHandler* GetCastMessageHandler() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   static cast_channel::CastMessageHandler* instance =
       new cast_channel::CastMessageHandler(
           cast_channel::CastSocketService::GetInstance(),

@@ -49,7 +49,7 @@ DialRegistry::DialRegistry(
       expiration_delta_(base::Seconds(kDialExpirationSecs)),
       max_devices_(kDialMaxDevices),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK_GT(max_devices_, 0U);
+  CHECK_GT(max_devices_, 0U, base::NotFatalUntil::M161);
 }
 
 DialRegistry::~DialRegistry() = default;
@@ -171,7 +171,7 @@ void DialRegistry::StartPeriodicDiscovery() {
 
 void DialRegistry::DoDiscovery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(dial_);
+  CHECK(dial_, base::NotFatalUntil::M161);
   dial_->Discover();
 }
 
@@ -197,7 +197,7 @@ bool DialRegistry::PruneExpiredDevices() {
       // during erase().
       std::string device_id = device->device_id();
       const size_t num_erased_by_id = device_by_id_map_.erase(device_id);
-      DCHECK_EQ(1U, num_erased_by_id);
+      CHECK_EQ(1U, num_erased_by_id, base::NotFatalUntil::M161);
       device_by_label_map_.erase(it++);
       pruned_device = true;
     } else {
@@ -270,8 +270,8 @@ void DialRegistry::OnDeviceDiscovered(const DialDeviceData& device) {
   // |device| is a duplicate. Returns true if the list was modified and
   // increments the list generation.
   auto device_data = std::make_unique<DialDeviceData>(device);
-  DCHECK(!device_data->device_id().empty());
-  DCHECK(device_data->label().empty());
+  CHECK(!device_data->device_id().empty(), base::NotFatalUntil::M161);
+  CHECK(device_data->label().empty(), base::NotFatalUntil::M161);
 
   bool did_modify_list = false;
   auto lookup_result = device_by_id_map_.find(device_data->device_id());

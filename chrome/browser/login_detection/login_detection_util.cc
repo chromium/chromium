@@ -26,7 +26,7 @@ bool IsLoginDetectionFeatureEnabled() {
 }
 
 std::string GetSiteNameForURL(const GURL& url) {
-  DCHECK(url.SchemeIsHTTPOrHTTPS());
+  CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M161);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   std::string scheme = url.GetScheme();

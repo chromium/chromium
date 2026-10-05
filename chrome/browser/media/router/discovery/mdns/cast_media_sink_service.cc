@@ -37,7 +37,7 @@ void CastMediaSinkService::Initialize(
     base::RepeatingClosure discovery_permission_rejected_cb,
     DialMediaSinkServiceImpl* dial_media_sink_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!impl_);
+  CHECK(!impl_, base::NotFatalUntil::M161);
   discovery_permission_rejected_cb_ = discovery_permission_rejected_cb;
 
   // |sinks_discovered_cb| should only be invoked on the current sequence.
@@ -120,7 +120,7 @@ void CastMediaSinkService::StartMdnsDiscovery() {
   // `dns_sd_registry_ is already set to a mock version in unit tests only.
   // `impl_` must be initialized first because AddObserver might end up
   // calling `OnDnsSdEvent` right away.
-  DCHECK(impl_);
+  CHECK(impl_, base::NotFatalUntil::M161);
   if (MdnsDiscoveryStarted()) {
     return;
   }
@@ -154,7 +154,7 @@ void CastMediaSinkService::DiscoverSinksNow() {
 }
 
 void CastMediaSinkService::SetDnsSdRegistryForTest(DnsSdRegistry* registry) {
-  DCHECK(!dns_sd_registry_);
+  CHECK(!dns_sd_registry_, base::NotFatalUntil::M161);
   dns_sd_registry_ = registry;
   dns_sd_registry_->AddObserver(this);
   dns_sd_registry_->RegisterDnsSdListener(kCastServiceType);

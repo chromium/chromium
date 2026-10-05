@@ -36,9 +36,9 @@ CastAppDiscoveryServiceImpl::CastAppDiscoveryServiceImpl(
       media_sink_service_(media_sink_service),
       clock_(clock) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(message_handler_);
-  DCHECK(socket_service_);
-  DCHECK(clock_);
+  CHECK(message_handler_, base::NotFatalUntil::M161);
+  CHECK(socket_service_, base::NotFatalUntil::M161);
+  CHECK(clock_, base::NotFatalUntil::M161);
   socket_service_->task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&CastAppDiscoveryServiceImpl::Init,
                                 base::Unretained(this)));

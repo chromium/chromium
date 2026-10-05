@@ -115,8 +115,8 @@ TEST_F(CastInternalMessageUtilDeathTest,
   message_body.Set("foo", base::Value("bar"));
   EXPECT_EQ(message_body, message->app_message_body());
 
-  EXPECT_DCHECK_DEATH(message->v2_message_type());
-  EXPECT_DCHECK_DEATH(message->v2_message_body());
+  EXPECT_CHECK_DEATH(message->v2_message_type());
+  EXPECT_CHECK_DEATH(message->v2_message_body());
 }
 
 TEST_F(CastInternalMessageUtilDeathTest,
@@ -146,8 +146,8 @@ TEST_F(CastInternalMessageUtilDeathTest,
     })");
   EXPECT_EQ(v2_body, message->v2_message_body());
 
-  EXPECT_DCHECK_DEATH(message->app_message_namespace());
-  EXPECT_DCHECK_DEATH(message->app_message_body());
+  EXPECT_CHECK_DEATH(message->app_message_namespace());
+  EXPECT_CHECK_DEATH(message->app_message_body());
 }
 
 // TODO(crbug.com/1378312): This test sometimes times out on the Win debug bot.
@@ -172,11 +172,11 @@ TEST_F(CastInternalMessageUtilDeathTest,
   EXPECT_EQ("12345", message->client_id());
   EXPECT_FALSE(message->sequence_number());
 
-  EXPECT_DCHECK_DEATH(message->session_id());
-  EXPECT_DCHECK_DEATH(message->v2_message_type());
-  EXPECT_DCHECK_DEATH(message->v2_message_body());
-  EXPECT_DCHECK_DEATH(message->app_message_namespace());
-  EXPECT_DCHECK_DEATH(message->app_message_body());
+  EXPECT_CHECK_DEATH(message->session_id());
+  EXPECT_CHECK_DEATH(message->v2_message_type());
+  EXPECT_CHECK_DEATH(message->v2_message_body());
+  EXPECT_CHECK_DEATH(message->app_message_namespace());
+  EXPECT_CHECK_DEATH(message->app_message_body());
 }
 
 TEST(CastInternalMessageUtilTest, CastInternalMessageFromInvalidStrings) {

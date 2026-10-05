@@ -30,21 +30,21 @@ ServiceDiscoverySharedClient* g_service_discovery_client = nullptr;
 }  // namespace
 
 ServiceDiscoverySharedClient::ServiceDiscoverySharedClient() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!g_service_discovery_client);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!g_service_discovery_client, base::NotFatalUntil::M161);
   g_service_discovery_client = this;
 }
 
 ServiceDiscoverySharedClient::~ServiceDiscoverySharedClient() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(g_service_discovery_client, this);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(g_service_discovery_client, this, base::NotFatalUntil::M161);
   g_service_discovery_client = nullptr;
 }
 
 // static
 scoped_refptr<ServiceDiscoverySharedClient>
     ServiceDiscoverySharedClient::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 #if BUILDFLAG(ENABLE_MDNS) || BUILDFLAG(IS_MAC)
   if (g_service_discovery_client)
     return g_service_discovery_client;

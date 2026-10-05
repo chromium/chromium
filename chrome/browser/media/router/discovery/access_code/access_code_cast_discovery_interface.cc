@@ -106,8 +106,8 @@ AccessCodeCastDiscoveryInterface::AccessCodeCastDiscoveryInterface(
       logger_(logger),
       identity_manager_(identity_manager),
       endpoint_fetcher_(CreateEndpointFetcher(access_code)) {
-  DCHECK(profile_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 AccessCodeCastDiscoveryInterface::~AccessCodeCastDiscoveryInterface() = default;
@@ -243,7 +243,7 @@ void AccessCodeCastDiscoveryInterface::SetNetworkInfoField(
 std::unique_ptr<EndpointFetcher>
 AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // TODO(crbug.com/417950948): ConsentLevel::kSync is deprecated and should be
   // removed. See ConsentLevel::kSync documentation for details.
@@ -270,8 +270,8 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(
     DiscoveryDeviceCallback callback) {
-  DCHECK(!callback_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!callback_, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   callback_ = std::move(callback);
 
   auto* const fetcher_ptr = endpoint_fetcher_.get();

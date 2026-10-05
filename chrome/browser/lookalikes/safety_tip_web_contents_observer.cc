@@ -30,12 +30,14 @@ namespace {
 void RecordHeuristicsUKMData(SafetyTipCheckResult result,
                              ukm::SourceId navigation_source_id,
                              SafetyTipInteraction action) {
-  DCHECK(
-      result.safety_tip_status == security_state::SafetyTipStatus::kNone ||
-      result.safety_tip_status == security_state::SafetyTipStatus::kUnknown ||
-      result.safety_tip_status == security_state::SafetyTipStatus::kLookalike ||
-      result.safety_tip_status ==
-          security_state::SafetyTipStatus::kLookalikeIgnored);
+  CHECK(result.safety_tip_status == security_state::SafetyTipStatus::kNone ||
+            result.safety_tip_status ==
+                security_state::SafetyTipStatus::kUnknown ||
+            result.safety_tip_status ==
+                security_state::SafetyTipStatus::kLookalike ||
+            result.safety_tip_status ==
+                security_state::SafetyTipStatus::kLookalikeIgnored,
+        base::NotFatalUntil::M161);
 
   // If we didn't trigger any lookalike heuristics at all, we don't want to
   // record UKM data.

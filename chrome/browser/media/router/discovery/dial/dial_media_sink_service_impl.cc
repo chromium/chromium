@@ -113,8 +113,8 @@ void DialMediaSinkServiceImpl::Initialize() {
 }
 
 void DialMediaSinkServiceImpl::StartDiscovery() {
-  DCHECK(description_service_);
-  DCHECK(app_discovery_service_);
+  CHECK(description_service_, base::NotFatalUntil::M161);
+  CHECK(app_discovery_service_, base::NotFatalUntil::M161);
   if (dial_registry_) {
     return;
   }

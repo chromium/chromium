@@ -52,9 +52,10 @@ std::vector<DomainInfo> UpdateEngagedSitesOnWorkerThread(
   std::vector<DomainInfo> new_engaged_sites;
   new_engaged_sites.reserve(details.size());
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
-    DCHECK(detail.origin.SchemeIsHTTPOrHTTPS());
-    DCHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
-        detail.total_score, blink::mojom::EngagementLevel::MEDIUM));
+    CHECK(detail.origin.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M161);
+    CHECK(site_engagement::SiteEngagementService::IsEngagementAtLeast(
+              detail.total_score, blink::mojom::EngagementLevel::MEDIUM),
+          base::NotFatalUntil::M161);
     const DomainInfo domain_info = lookalikes::GetDomainInfo(detail.origin);
     if (domain_info.domain_and_registry.empty()) {
       continue;
@@ -117,7 +118,7 @@ void LookalikeUrlService::ForceUpdateEngagedSites(
 void LookalikeUrlService::OnUpdateEngagedSitesCompleted(
     std::vector<DomainInfo> new_engaged_sites) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(update_in_progress_);
+  CHECK(update_in_progress_, base::NotFatalUntil::M161);
   TRACE_EVENT0("navigation",
                "LookalikeUrlService::OnUpdateEngagedSitesCompleted");
   engaged_sites_.swap(new_engaged_sites);
@@ -206,7 +207,7 @@ LookalikeUrlService::CheckUrlForLookalikes(
   std::string matched_domain;
   if (GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
                         proto, &matched_domain, &result.match_type)) {
-    DCHECK(!matched_domain.empty());
+    CHECK(!matched_domain.empty(), base::NotFatalUntil::M161);
     result.suggested_url =
         GetSuggestedURL(result.match_type, url, matched_domain);
 
@@ -245,7 +246,7 @@ void LookalikeUrlService::CheckSafetyTipStatus(
     const GURL& url,
     content::WebContents* web_contents,
     SafetyTipCheckCallback callback) {
-  DCHECK(url.SchemeIsHTTPOrHTTPS());
+  CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M161);
   if (EngagedSitesNeedUpdating()) {
     ForceUpdateEngagedSites(base::BindOnce(
         &LookalikeUrlService::CheckSafetyTipStatusWithEngagedSites,

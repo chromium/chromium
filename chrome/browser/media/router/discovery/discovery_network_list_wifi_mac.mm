@@ -28,7 +28,7 @@ bool GetWifiSSID(CWInterface* interface, std::string* ssid_out) {
 }  // namespace
 
 bool MaybeGetWifiSSID(const std::string& if_name, std::string* ssid_out) {
-  DCHECK(ssid_out);
+  CHECK(ssid_out, base::NotFatalUntil::M161);
 
   NSString* ns_ifname = base::SysUTF8ToNSString(if_name.data());
   NSArray<CWInterface*>* all_interfaces =

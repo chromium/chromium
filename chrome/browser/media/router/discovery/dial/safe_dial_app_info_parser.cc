@@ -101,7 +101,7 @@ SafeDialAppInfoParser::~SafeDialAppInfoParser() = default;
 
 void SafeDialAppInfoParser::Parse(const std::string& xml_text,
                                   ParseCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
   GetDataDecoder().ParseXml(
       xml_text, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
       base::BindOnce(&SafeDialAppInfoParser::OnXmlParsingDone,

@@ -176,7 +176,7 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     case AllowedScreenCaptureLevel::kSameOrigin:
       return base::BindRepeating(
           [](const GURL& request_origin, content::WebContents* web_contents) {
-            DCHECK(web_contents);
+            CHECK(web_contents, base::NotFatalUntil::M161);
             return !PictureInPictureWindowManager::IsChildWebContents(
                        web_contents) &&
                    url::IsSameOriginWith(request_origin,
@@ -186,7 +186,7 @@ DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
           request_origin);
     default:
       return base::BindRepeating([](content::WebContents* web_contents) {
-        DCHECK(web_contents);
+        CHECK(web_contents, base::NotFatalUntil::M161);
         return !PictureInPictureWindowManager::IsChildWebContents(web_contents);
       });
   }

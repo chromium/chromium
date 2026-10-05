@@ -109,7 +109,7 @@ void Metrics::RecordAppFileSystemType() {
     RecordAppFileSystemTypeUsingVolumeTag(VT_NON);
     return;
   }
-  DCHECK_GE(sizeof(buff), buff.length);
+  CHECK_GE(sizeof(buff), buff.length, base::NotFatalUntil::M161);
   RecordAppFileSystemTypeUsingVolumeTag(buff.tag);
 }
 
@@ -121,7 +121,7 @@ void Metrics::OnUpgradeRecommended() {
     RecordAppUpgradeCodeSignatureValidationImpl(base::DoNothing());
     return true;
   }();
-  DCHECK(once);
+  CHECK(once, base::NotFatalUntil::M161);
 }
 
 void Metrics::RecordAppUpgradeCodeSignatureValidation(

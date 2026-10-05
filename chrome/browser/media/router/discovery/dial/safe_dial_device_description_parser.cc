@@ -43,7 +43,7 @@ SafeDialDeviceDescriptionParser::~SafeDialDeviceDescriptionParser() = default;
 void SafeDialDeviceDescriptionParser::Parse(const std::string& xml_text,
                                             const GURL& app_url,
                                             ParseCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
   GetDataDecoder().ParseXml(
       xml_text, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
       base::BindOnce(&SafeDialDeviceDescriptionParser::OnXmlParsingDone,
@@ -70,7 +70,7 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
         SafeDialDeviceDescriptionParser::ParsingResult::kInvalidXml);
     return;
   }
-  DCHECK(unique_device);
+  CHECK(unique_device, base::NotFatalUntil::M161);
 
   ParsedDialDeviceDescription device_description;
   static constexpr size_t kArraySize = 4U;
@@ -89,8 +89,10 @@ void SafeDialDeviceDescriptionParser::OnXmlParsingDone(
     const base::Value* value =
         data_decoder::GetXmlElementChildWithTag(*device_element, kNodeNames[i]);
     if (value) {
-      DCHECK_EQ(1, data_decoder::GetXmlElementChildrenCount(*device_element,
-                                                            kNodeNames[i]));
+      CHECK_EQ(1,
+               data_decoder::GetXmlElementChildrenCount(*device_element,
+                                                        kNodeNames[i]),
+               base::NotFatalUntil::M161);
       bool parsed = data_decoder::GetXmlElementText(*value, kFields[i]);
       if (!parsed) {
         NotifyParsingError(std::move(callback), kParsingErrors[i]);

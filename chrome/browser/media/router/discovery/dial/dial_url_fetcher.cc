@@ -123,7 +123,7 @@ void DialURLFetcher::Start(const GURL& url,
                            int max_retries,
                            bool set_origin_header) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!loader_);
+  CHECK(!loader_, base::NotFatalUntil::M161);
 
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;

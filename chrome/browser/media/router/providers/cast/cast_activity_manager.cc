@@ -95,10 +95,10 @@ CastActivityManager::CastActivityManager(
       logger_(logger),
       debugger_(debugger),
       hash_token_(hash_token) {
-  DCHECK(media_sink_service_);
-  DCHECK(session_tracker_);
-  DCHECK(message_handler_);
-  DCHECK(media_router_);
+  CHECK(media_sink_service_, base::NotFatalUntil::M161);
+  CHECK(session_tracker_, base::NotFatalUntil::M161);
+  CHECK(message_handler_, base::NotFatalUntil::M161);
+  CHECK(media_router_, base::NotFatalUntil::M161);
   message_handler_->AddObserver(this);
   for (const auto& sink_id_session : session_tracker_->GetSessions()) {
     const MediaSinkInternal* sink =
@@ -611,7 +611,8 @@ void CastActivityManager::OnSessionAddedOrUpdated(const MediaSinkInternal& sink,
   }
 
   CastActivity* activity = activity_it->second.get();
-  DCHECK(activity->route().media_sink_id() == sink.sink().id());
+  CHECK(activity->route().media_sink_id() == sink.sink().id(),
+        base::NotFatalUntil::M161);
 
   const auto& existing_session_id = activity->session_id();
 
@@ -1019,7 +1020,7 @@ void CastActivityManager::HandleLaunchSessionResponseMiddleStages(
     DoLaunchSessionParams params,
     const std::string& message,
     cast_channel::LaunchSessionCallbackWrapper* out_callback) {
-  DCHECK(out_callback);
+  CHECK(out_callback, base::NotFatalUntil::M161);
   logger_.get()->LogInfo(mojom::LogCategory::kRoute, kLoggerComponent, message,
                          params.sink.id(), params.cast_source.source_id(),
                          MediaRoute::GetPresentationIdFromMediaRouteId(

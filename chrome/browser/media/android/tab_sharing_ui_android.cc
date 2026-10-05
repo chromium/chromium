@@ -88,9 +88,10 @@ gfx::NativeViewId TabSharingUIAndroid::OnStarted(
     content::MediaStreamUI::SourceCallback source_callback,
     const std::vector<content::DesktopMediaID>& media_ids) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS);
+  CHECK(media_id_.type == content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        base::NotFatalUntil::M161);
 
-  DCHECK(!stop_callback_);
+  CHECK(!stop_callback_, base::NotFatalUntil::M161);
   stop_callback_ = std::move(stop_callback);
   source_callback_ = std::move(source_callback);
 

@@ -38,7 +38,8 @@ void MaybeLogAdditionalMicSystemPermissionStats(SystemPermission permission) {
   PrefService* prefs = g_browser_process->local_state();
 
   if (!prefs->HasPrefPath(kSystemPermissionMicFirstBlockedTimePref)) {
-    DCHECK(!prefs->HasPrefPath(kSystemPermissionMicLastBlockedTimePref));
+    CHECK(!prefs->HasPrefPath(kSystemPermissionMicLastBlockedTimePref),
+          base::NotFatalUntil::M161);
     return;
   }
 

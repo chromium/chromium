@@ -45,7 +45,7 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
       : content::NavigationThrottle(registry),
         matching_scheme_(matching_scheme),
         matching_url_found_(std::move(matching_url_found)) {
-    DCHECK(!matching_url_found_.is_null());
+    CHECK(!matching_url_found_.is_null(), base::NotFatalUntil::M161);
   }
   AuthNavigationThrottle(content::NavigationThrottleRegistry& registry,
                          ASWebAuthenticationSessionCallback* matcher_callback,
@@ -54,7 +54,7 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
       : content::NavigationThrottle(registry),
         matcher_callback_(matcher_callback),
         matching_url_found_(std::move(matching_url_found)) {
-    DCHECK(!matching_url_found_.is_null());
+    CHECK(!matching_url_found_.is_null(), base::NotFatalUntil::M161);
   }
   ~AuthNavigationThrottle() override = default;
 
@@ -68,7 +68,8 @@ class AuthNavigationThrottle : public content::NavigationThrottle {
   ThrottleCheckResult HandleRequest() {
     // Cancel any prerendering.
     if (!navigation_handle()->IsInPrimaryMainFrame()) {
-      DCHECK(navigation_handle()->IsInPrerenderedMainFrame());
+      CHECK(navigation_handle()->IsInPrerenderedMainFrame(),
+            base::NotFatalUntil::M161);
       return CANCEL_AND_IGNORE;
     }
 

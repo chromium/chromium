@@ -44,9 +44,9 @@ NetworkServiceQuicPacketWriter::NetworkServiceQuicPacketWriter(
       task_runner_(task_runner),
       async_packet_sender_(std::move(async_packet_sender)),
       delegate_(delegate) {
-  DCHECK(async_packet_sender_ != nullptr);
-  DCHECK(delegate_ != nullptr);
-  DCHECK(task_runner_ != nullptr);
+  CHECK(async_packet_sender_ != nullptr, base::NotFatalUntil::M161);
+  CHECK(delegate_ != nullptr, base::NotFatalUntil::M161);
+  CHECK(task_runner_ != nullptr, base::NotFatalUntil::M161);
 }
 
 NetworkServiceQuicPacketWriter::~NetworkServiceQuicPacketWriter() = default;

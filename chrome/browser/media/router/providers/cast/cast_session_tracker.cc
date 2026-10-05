@@ -269,7 +269,7 @@ void CastSessionTracker::SetInstanceForTest(
 void CastSessionTracker::SetSessionForTest(
     const MediaSink::Id& sink_id,
     std::unique_ptr<CastSession> session) {
-  DCHECK(session);
+  CHECK(session, base::NotFatalUntil::M161);
   sessions_by_sink_id_[sink_id] = std::move(session);
 }
 

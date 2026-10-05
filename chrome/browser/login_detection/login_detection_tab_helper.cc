@@ -93,14 +93,14 @@ LoginDetectionTabHelper::LoginDetectionTabHelper(
       oauth_login_detector_(std::make_unique<OAuthLoginDetector>()),
       ukm_source_id_(
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()) {
-  DCHECK(IsLoginDetectionFeatureEnabled());
+  CHECK(IsLoginDetectionFeatureEnabled(), base::NotFatalUntil::M161);
 }
 
 LoginDetectionTabHelper::~LoginDetectionTabHelper() = default;
 
 void LoginDetectionTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle);
+  CHECK(navigation_handle, base::NotFatalUntil::M161);
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (!navigation_handle->HasCommitted())

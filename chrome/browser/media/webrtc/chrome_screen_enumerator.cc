@@ -44,7 +44,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS)
 blink::mojom::StreamDevicesSetPtr EnumerateScreens(
     blink::mojom::MediaStreamType stream_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   aura::Window::Windows root_windows =
       (root_windows_for_testing_.IsCreated())
@@ -58,7 +58,8 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
     content::DesktopMediaID media_id =
         content::DesktopMediaID::RegisterNativeWindow(
             content::DesktopMediaID::TYPE_SCREEN, window);
-    DCHECK_EQ(content::DesktopMediaID::Type::TYPE_SCREEN, media_id.type);
+    CHECK_EQ(content::DesktopMediaID::Type::TYPE_SCREEN, media_id.type,
+             base::NotFatalUntil::M161);
 
     // Add selected desktop source to the list.
     blink::MediaStreamDevice device(
@@ -82,7 +83,7 @@ blink::mojom::StreamDevicesSetPtr EnumerateScreens(
 #elif BUILDFLAG(IS_LINUX)
 blink::mojom::StreamDevicesSetPtr EnumerateScreens(
     blink::mojom::MediaStreamType stream_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   blink::mojom::StreamDevicesSetPtr stream_devices_set =
       blink::mojom::StreamDevicesSet::New();
@@ -143,7 +144,7 @@ void ChromeScreenEnumerator::SetDesktopCapturerForTesting(
 void ChromeScreenEnumerator::EnumerateScreens(
     blink::mojom::MediaStreamType stream_type,
     ScreensCallback screens_callback) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   content::GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(

@@ -179,13 +179,13 @@ void SetUpServiceBrowser(
 void StartServiceBrowser(
     nw_browser_t browser,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  CHECK(task_runner->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   nw_browser_start(browser);
 }
 void StopServiceBrowser(
     nw_browser_t browser,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(task_runner->RunsTasksInCurrentSequence());
+  CHECK(task_runner->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   nw_browser_cancel(browser);
 }
 
@@ -293,7 +293,7 @@ ServiceWatcherImplMac::~ServiceWatcherImplMac() {
 }
 
 void ServiceWatcherImplMac::Start() {
-  DCHECK(!started_);
+  CHECK(!started_, base::NotFatalUntil::M161);
   VLOG(1) << "ServiceWatcherImplMac::Start";
 
   std::optional<local_discovery::ServiceInfo> service_info =
@@ -331,7 +331,7 @@ void ServiceWatcherImplMac::Start() {
 }
 
 void ServiceWatcherImplMac::DiscoverNewServices() {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   VLOG(1) << "ServiceWatcherImplMac::DiscoverNewServices";
   service_discovery_runner_->PostTask(
       FROM_HERE, base::BindOnce(&StartServiceBrowser, nw_browser_,
@@ -345,7 +345,7 @@ void ServiceWatcherImplMac::DiscoverNewServices() {
 
 void ServiceWatcherImplMac::SetActivelyRefreshServices(
     bool actively_refresh_services) {
-  DCHECK(started_);
+  CHECK(started_, base::NotFatalUntil::M161);
   VLOG(1) << "ServiceWatcherImplMac::SetActivelyRefreshServices";
 }
 

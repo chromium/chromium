@@ -23,7 +23,7 @@ DualMediaSinkService* g_dual_media_sink_service = nullptr;
 
 // static
 DualMediaSinkService* DualMediaSinkService::GetInstance() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!g_dual_media_sink_service) {
     g_dual_media_sink_service = new DualMediaSinkService();
   }

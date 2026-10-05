@@ -81,9 +81,9 @@ LongScreenshotsTabService::LongScreenshotsTabService(
       memory_consumer_registration_("LongScreenshotsTabService",
                                     kLongScreenshotsMemoryConsumerTraits,
                                     this) {
-  DCHECK(google_amp_cache_path_regex_.ok());
-  DCHECK(google_amp_viewer_path_regex_.ok());
-  DCHECK(google_news_path_regex_.ok());
+  CHECK(google_amp_cache_path_regex_.ok(), base::NotFatalUntil::M161);
+  CHECK(google_amp_viewer_path_regex_.ok(), base::NotFatalUntil::M161);
+  CHECK(google_news_path_regex_.ok(), base::NotFatalUntil::M161);
 
   JNIEnv* env = base::android::AttachCurrentThread();
 

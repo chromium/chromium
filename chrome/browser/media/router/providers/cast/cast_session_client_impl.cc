@@ -205,7 +205,7 @@ void CastSessionClientImpl::OnMessage(
       // Send an ACK message back to SDK client to indicate it is handled.
       if (activity_->SendAppMessageToReceiver(*cast_message) ==
           cast_channel::Result::kOk) {
-        DCHECK(cast_message->sequence_number());
+        CHECK(cast_message->sequence_number(), base::NotFatalUntil::M161);
         SendMessageToClient(CreateAppMessageAck(
             cast_message->client_id(), *cast_message->sequence_number()));
       }
@@ -269,7 +269,7 @@ void CastSessionClientImpl::HandleV2ProtocolMessage(
     std::optional<int> request_id =
         activity_->SendMediaRequestToReceiver(cast_message);
     if (request_id) {
-      DCHECK(cast_message.sequence_number());
+      CHECK(cast_message.sequence_number(), base::NotFatalUntil::M161);
       if (pending_media_requests_.size() >= kMaxPendingMediaRequests) {
         // Delete old pending requests.  Request IDs are generated sequentially,
         // so this should always delete the oldest requests.  Deleting requests
@@ -284,7 +284,7 @@ void CastSessionClientImpl::HandleV2ProtocolMessage(
     }
   } else if (type == cast_channel::V2MessageType::kSetVolume) {
     DVLOG(2) << "Got volume command from client";
-    DCHECK(cast_message.sequence_number());
+    CHECK(cast_message.sequence_number(), base::NotFatalUntil::M161);
     activity_->SendSetVolumeRequestToReceiver(cast_message,
                                               MakeResultCallback(cast_message));
   } else if (type == cast_channel::V2MessageType::kStop) {
@@ -335,7 +335,7 @@ void CastSessionClientImpl::TearDownPresentationConnection() {
 
 cast_channel::ResultCallback CastSessionClientImpl::MakeResultCallback(
     const CastInternalMessage& cast_message) {
-  DCHECK(cast_message.sequence_number());
+  CHECK(cast_message.sequence_number(), base::NotFatalUntil::M161);
   return base::BindOnce(&CastSessionClientImpl::SendResultResponse,
                         weak_ptr_factory_.GetWeakPtr(),
                         *cast_message.sequence_number());

@@ -31,7 +31,7 @@ DeviceDescriptionFetcher::~DeviceDescriptionFetcher() {
 
 void DeviceDescriptionFetcher::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!fetcher_);
+  CHECK(!fetcher_, base::NotFatalUntil::M161);
 
   fetcher_ = std::make_unique<DialURLFetcher>(
       base::BindOnce(&DeviceDescriptionFetcher::ProcessResponse,
@@ -44,11 +44,11 @@ void DeviceDescriptionFetcher::Start() {
 
 void DeviceDescriptionFetcher::ProcessResponse(const std::string& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(fetcher_);
+  CHECK(fetcher_, base::NotFatalUntil::M161);
 
   const network::mojom::URLResponseHead* response_info =
       fetcher_->GetResponseHead();
-  DCHECK(response_info);
+  CHECK(response_info, base::NotFatalUntil::M161);
 
   // NOTE: The uPnP spec requires devices to set a Content-Type: header of
   // text/xml; charset="utf-8" (sec 2.11).  However Chromecast (and possibly

@@ -92,7 +92,7 @@ std::optional<media::AudioCodec> ParseAudioCodec(
 std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
     const MediaSource& media_source,
     const std::vector<MediaSinkInternal>& sinks) {
-  DCHECK(media_source.IsRemotePlaybackSource());
+  CHECK(media_source.IsRemotePlaybackSource(), base::NotFatalUntil::M161);
   std::vector<MediaSinkInternal> compatible_sinks;
 
   // Return an empty list if the source URL contains invalid codecs. It's
@@ -145,9 +145,9 @@ CastMediaRouteProvider::CastMediaRouteProvider(
       message_handler_(message_handler),
       task_runner_(task_runner) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(media_sink_service_);
-  DCHECK(app_discovery_service_);
-  DCHECK(message_handler_);
+  CHECK(media_sink_service_, base::NotFatalUntil::M161);
+  CHECK(app_discovery_service_, base::NotFatalUntil::M161);
+  CHECK(message_handler_, base::NotFatalUntil::M161);
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -176,8 +176,9 @@ void CastMediaRouteProvider::Init(
 CastMediaRouteProvider::~CastMediaRouteProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!sink_queries_.empty()) {
-    DCHECK_EQ(sink_queries_.size(), 1u);
-    DCHECK_EQ(sink_queries_.begin()->first, MediaSource::ForAnyTab().id());
+    CHECK_EQ(sink_queries_.size(), 1u, base::NotFatalUntil::M161);
+    CHECK_EQ(sink_queries_.begin()->first, MediaSource::ForAnyTab().id(),
+             base::NotFatalUntil::M161);
   }
 }
 

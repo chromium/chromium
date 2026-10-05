@@ -457,7 +457,7 @@ void RecordCloneCount() {
                   sizeof(attr_buff), 0) != 0) {
     return;
   }
-  DCHECK_GE(sizeof(attr_buff), attr_buff.length);
+  CHECK_GE(sizeof(attr_buff), attr_buff.length, base::NotFatalUntil::M161);
 
   // Record the clone count. Each running instance of Chrome maintains a clone
   // of itself. Only a handful (~1-5) of in use clones are expected to be

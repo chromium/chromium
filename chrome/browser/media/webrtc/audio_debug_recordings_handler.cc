@@ -57,8 +57,8 @@ base::FilePath GetLogDirectoryAndEnsureExists(
 AudioDebugRecordingsHandler::AudioDebugRecordingsHandler(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context), current_audio_debug_recordings_id_(0) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context_, base::NotFatalUntil::M161);
 }
 
 AudioDebugRecordingsHandler::~AudioDebugRecordingsHandler() = default;
@@ -68,8 +68,8 @@ void AudioDebugRecordingsHandler::StartAudioDebugRecordings(
     base::TimeDelta delay,
     RecordingDoneCallback callback,
     RecordingErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(host);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(host, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -84,8 +84,8 @@ void AudioDebugRecordingsHandler::StopAudioDebugRecordings(
     content::RenderProcessHost* host,
     RecordingDoneCallback callback,
     RecordingErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(host);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(host, base::NotFatalUntil::M161);
 
   const bool is_manual_stop = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -104,7 +104,7 @@ void AudioDebugRecordingsHandler::DoStartAudioDebugRecordings(
     RecordingDoneCallback callback,
     RecordingErrorCallback error_callback,
     const base::FilePath& log_directory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (audio_debug_recording_session_) {
     std::move(error_callback).Run("Audio debug recordings already in progress");
@@ -154,8 +154,9 @@ void AudioDebugRecordingsHandler::DoStopAudioDebugRecordings(
     RecordingDoneCallback callback,
     RecordingErrorCallback error_callback,
     const base::FilePath& log_directory) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_LE(audio_debug_recordings_id, current_audio_debug_recordings_id_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_LE(audio_debug_recordings_id, current_audio_debug_recordings_id_,
+           base::NotFatalUntil::M161);
 
   base::FilePath prefix_path = GetAudioDebugRecordingsPrefixPath(
       log_directory, audio_debug_recordings_id);

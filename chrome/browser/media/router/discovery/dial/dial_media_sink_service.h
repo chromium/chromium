@@ -58,7 +58,7 @@ class DialMediaSinkService {
   // Returns a raw pointer to `impl_`. This method is only valid to call after
   // `Initialize()` has been called. Always returns non-null.
   DialMediaSinkServiceImpl* impl() {
-    DCHECK(impl_);
+    CHECK(impl_, base::NotFatalUntil::M161);
     return impl_.get();
   }
 

@@ -45,7 +45,7 @@ void ChromeMediaRouterFactory::DoPlatformInit() {
   // because we can't reach into Views from this directory.
   media_router::MediaRouterDialogController::SetGetOrCreate(
       base::BindRepeating([](content::WebContents* web_contents) {
-        DCHECK(web_contents);
+        CHECK(web_contents, base::NotFatalUntil::M161);
         MediaRouterDialogController* controller = nullptr;
         // This call does nothing if the controller already exists.
         MediaRouterDialogControllerAndroid::CreateForWebContents(web_contents);

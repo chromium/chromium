@@ -187,7 +187,7 @@ constexpr int CastMediaSinkServiceImpl::kMaxDialSinkFailureCount;
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetCastSinkIdFromDial(
     MediaSink::IdView dial_sink_id) {
-  DCHECK(dial_sink_id.starts_with("dial:"));
+  CHECK(dial_sink_id.starts_with("dial:"), base::NotFatalUntil::M161);
   // Replace the "dial:" prefix with "cast:".
   return base::StrCat({"cast:", dial_sink_id.substr(5)});
 }
@@ -195,7 +195,7 @@ MediaSink::Id CastMediaSinkServiceImpl::GetCastSinkIdFromDial(
 // static
 MediaSink::Id CastMediaSinkServiceImpl::GetDialSinkIdFromCast(
     const MediaSink::IdView cast_sink_id) {
-  DCHECK(cast_sink_id.starts_with("cast:"));
+  CHECK(cast_sink_id.starts_with("cast:"), base::NotFatalUntil::M161);
   // Replace the "cast:" prefix with "dial:".
   return base::StrCat({"dial:", cast_sink_id.substr(5)});
 }
@@ -214,8 +214,8 @@ CastMediaSinkServiceImpl::CastMediaSinkServiceImpl(
       task_runner_(cast_socket_service_->task_runner()),
       clock_(base::DefaultClock::GetInstance()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(cast_socket_service_);
-  DCHECK(network_monitor_);
+  CHECK(cast_socket_service_, base::NotFatalUntil::M161);
+  CHECK(network_monitor_, base::NotFatalUntil::M161);
 
   backoff_policy_ = {
       // Number of initial errors (in sequence) to ignore before going into
@@ -546,7 +546,8 @@ void CastMediaSinkServiceImpl::OpenChannel(
 
   cast_socket_service_->OpenSocket(
       base::BindRepeating([] {
-        DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+        CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                           base::NotFatalUntil::M161);
         return g_browser_process->system_network_context_manager()
             ->GetContext();
       }),
@@ -565,7 +566,7 @@ void CastMediaSinkServiceImpl::OnChannelOpened(
     cast_channel::CastSocketOpenParams open_params,
     cast_channel::CastSocket* socket) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(socket);
+  CHECK(socket, base::NotFatalUntil::M161);
 
   pending_for_open_ip_endpoints_.erase(cast_sink.cast_data().ip_endpoint);
   bool succeeded = socket->error_state() == cast_channel::ChannelError::NONE;
@@ -627,7 +628,7 @@ void CastMediaSinkServiceImpl::OnChannelOpenSucceeded(
     SinkSource sink_source,
     ChannelOpenedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(socket);
+  CHECK(socket, base::NotFatalUntil::M161);
   CastAnalytics::RecordCastChannelConnectResult(
       MediaRouterChannelConnectResults::SUCCESS);
   CastSinkExtraData& extra_data = cast_sink.cast_data();

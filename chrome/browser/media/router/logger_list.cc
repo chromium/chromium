@@ -16,14 +16,14 @@ LoggerList* LoggerList::GetInstance() {
 }
 
 void LoggerList::AddLogger(LoggerImpl* logger_impl) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(logger_impl);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(logger_impl, base::NotFatalUntil::M161);
   loggers_.insert(logger_impl);
 }
 
 void LoggerList::RemoveLogger(LoggerImpl* logger_impl) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(logger_impl);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(logger_impl, base::NotFatalUntil::M161);
   loggers_.erase(logger_impl);
 }
 
@@ -62,7 +62,7 @@ void LoggerList::LogOnUiThread(LoggerImpl::Severity severity,
                                const std::string& sink_id,
                                const std::string& media_source,
                                const std::string& session_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   for (LoggerImpl* logger : loggers_) {
     logger->Log(severity, category, time, component, message, sink_id,
                 media_source, session_id);

@@ -99,7 +99,7 @@ void CreateMediaDrmStorage(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver) {
   DVLOG(1) << __func__;
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(render_frame_host);
 
   content::BrowserContext* browser_context =

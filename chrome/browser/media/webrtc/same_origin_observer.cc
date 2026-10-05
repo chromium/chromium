@@ -15,7 +15,7 @@ SameOriginObserver::SameOriginObserver(
     : content::WebContentsObserver(observed_contents),
       reference_origin_(reference_origin),
       on_same_origin_state_changed_(on_same_origin_state_changed) {
-  DCHECK(observed_contents);
+  CHECK(observed_contents, base::NotFatalUntil::M161);
   is_same_origin_ = reference_origin_.IsSameOriginWith(
       observed_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }

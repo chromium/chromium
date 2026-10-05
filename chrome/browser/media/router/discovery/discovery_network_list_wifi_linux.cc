@@ -18,7 +18,7 @@
 namespace media_router {
 
 bool MaybeGetWifiSSID(const std::string& if_name, std::string* ssid_out) {
-  DCHECK(ssid_out);
+  CHECK(ssid_out, base::NotFatalUntil::M161);
 
   base::ScopedFD ioctl_socket(socket(AF_INET, SOCK_DGRAM, 0));
   if (!ioctl_socket.is_valid()) {

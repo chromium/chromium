@@ -12,13 +12,14 @@
 DesktopMediaList::WebContentsFilter DesktopMediaList::ExcludeWebContents(
     WebContentsFilter filter,
     content::WebContents* excluded_web_contents) {
-  DCHECK(excluded_web_contents);
+  CHECK(excluded_web_contents, base::NotFatalUntil::M161);
 
   return base::BindRepeating(
       [](DesktopMediaList::WebContentsFilter filter,
          base::WeakPtr<content::WebContents> excluded_web_contents,
          content::WebContents* candidate_web_contents) {
-        DCHECK(candidate_web_contents);  // But maybe !excluded_web_contents.
+        CHECK(candidate_web_contents,
+              base::NotFatalUntil::M161);  // But maybe !excluded_web_contents.
         return excluded_web_contents.get() != candidate_web_contents &&
                filter.Run(candidate_web_contents);
       },

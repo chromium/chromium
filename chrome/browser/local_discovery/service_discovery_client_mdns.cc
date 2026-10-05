@@ -338,7 +338,7 @@ class LocalDomainResolverProxy : public ProxyBase<LocalDomainResolver> {
 
 ServiceDiscoveryClientMdns::ServiceDiscoveryClientMdns()
     : mdns_runner_(content::GetIOThreadTaskRunner({})) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
   StartNewClient();
 }
@@ -347,7 +347,7 @@ std::unique_ptr<ServiceWatcher>
 ServiceDiscoveryClientMdns::CreateServiceWatcher(
     const std::string& service_type,
     ServiceWatcher::UpdatedCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return std::make_unique<ServiceWatcherProxy>(this, service_type,
                                                std::move(callback));
 }
@@ -356,7 +356,7 @@ std::unique_ptr<ServiceResolver>
 ServiceDiscoveryClientMdns::CreateServiceResolver(
     const std::string& service_name,
     ServiceResolver::ResolveCompleteCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return std::make_unique<ServiceResolverProxy>(this, service_name,
                                                 std::move(callback));
 }
@@ -366,27 +366,27 @@ ServiceDiscoveryClientMdns::CreateLocalDomainResolver(
     const std::string& domain,
     net::AddressFamily address_family,
     LocalDomainResolver::IPAddressCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return std::make_unique<LocalDomainResolverProxy>(
       this, domain, address_family, std::move(callback));
 }
 
 ServiceDiscoveryClientMdns::~ServiceDiscoveryClientMdns() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
   DestroyMdns();
 }
 
 void ServiceDiscoveryClientMdns::OnConnectionChanged(
     net::NetworkChangeNotifier::ConnectionType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // Only network changes resets counter.
   restart_attempts_ = 0;
   ScheduleStartNewClient();
 }
 
 void ServiceDiscoveryClientMdns::ScheduleStartNewClient() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   OnBeforeMdnsDestroy();
   if (restart_attempts_ >= kMaxRestartAttempts)
     return;
@@ -400,7 +400,7 @@ void ServiceDiscoveryClientMdns::ScheduleStartNewClient() {
 }
 
 void ServiceDiscoveryClientMdns::StartNewClient() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   ++restart_attempts_;
   DestroyMdns();
   mdns_ = net::MDnsClient::CreateDefault();
@@ -414,7 +414,7 @@ void ServiceDiscoveryClientMdns::StartNewClient() {
 
 void ServiceDiscoveryClientMdns::OnInterfaceListReady(
     const net::InterfaceIndexFamilyList& interfaces) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   mdns_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -425,7 +425,7 @@ void ServiceDiscoveryClientMdns::OnInterfaceListReady(
 }
 
 void ServiceDiscoveryClientMdns::OnMdnsInitialized(int net_error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (net_error != net::OK) {
     ScheduleStartNewClient();
     return;

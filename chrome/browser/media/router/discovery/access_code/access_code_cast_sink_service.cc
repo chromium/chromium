@@ -1089,7 +1089,7 @@ void AccessCodeCastSinkService::Shutdown() {
 
 void AccessCodeCastSinkService::SetIdentityManagerForTesting(
     signin::IdentityManager* identity_manager) {
-  DCHECK(identity_manager);
+  CHECK(identity_manager, base::NotFatalUntil::M161);
   identity_manager_ = identity_manager;
 }
 

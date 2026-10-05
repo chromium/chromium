@@ -121,7 +121,7 @@ std::string DialAppInfoErrorToString(DialAppInfoResultCode error) {
 std::unique_ptr<DialInternalMessage> DialInternalMessage::From(
     base::DictValue message,
     std::string* error) {
-  DCHECK(error);
+  CHECK(error, base::NotFatalUntil::M161);
 
   std::string* type_value = message.FindString("type");
   if (!type_value) {
@@ -167,7 +167,8 @@ DialInternalMessage::~DialInternalMessage() = default;
 // static
 CustomDialLaunchMessageBody CustomDialLaunchMessageBody::From(
     const DialInternalMessage& message) {
-  DCHECK(message.type == DialInternalMessageType::kCustomDialLaunch);
+  CHECK(message.type == DialInternalMessageType::kCustomDialLaunch,
+        base::NotFatalUntil::M161);
 
   const std::optional<base::Value>& body = message.body;
   if (!body || !body->is_dict()) {
@@ -282,7 +283,7 @@ mojom::RouteMessagePtr DialInternalMessageUtil::CreateDialAppInfoErrorMessage(
   body.Set("code", DialAppInfoErrorToString(result_code));
   body.Set("description", error_message);
   if (result_code == DialAppInfoResultCode::kHttpError) {
-    DCHECK(http_error_code);
+    CHECK(http_error_code, base::NotFatalUntil::M161);
     base::DictValue details;
     details.Set("http_error_code", *http_error_code);
     body.Set("details", std::move(details));

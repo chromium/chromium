@@ -15,7 +15,7 @@ namespace media_router {
 // static
 AccessCodeCastSinkService* AccessCodeCastSinkServiceFactory::GetForProfile(
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (!GetAccessCodeCastEnabledPref(profile)) {
     return nullptr;
   }

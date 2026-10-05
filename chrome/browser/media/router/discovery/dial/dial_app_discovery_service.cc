@@ -106,7 +106,7 @@ DialAppDiscoveryService::PendingRequest::PendingRequest(
       service_(service) {}
 
 DialAppDiscoveryService::PendingRequest::~PendingRequest() {
-  DCHECK(app_info_cb_.is_null());
+  CHECK(app_info_cb_.is_null(), base::NotFatalUntil::M161);
 }
 
 void DialAppDiscoveryService::PendingRequest::Start() {

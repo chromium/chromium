@@ -97,27 +97,27 @@ class CastInternalMessage {
   }
 
   const std::string& session_id() const {
-    DCHECK(has_session_id());
+    CHECK(has_session_id(), base::NotFatalUntil::M161);
     return session_id_;
   }
 
   const std::string& app_message_namespace() const {
-    DCHECK(type_ == Type::kAppMessage);
+    CHECK(type_ == Type::kAppMessage, base::NotFatalUntil::M161);
     return namespace_or_v2_type_;
   }
 
   const std::string& v2_message_type() const {
-    DCHECK(type_ == Type::kV2Message);
+    CHECK(type_ == Type::kV2Message, base::NotFatalUntil::M161);
     return namespace_or_v2_type_;
   }
 
   const base::Value& app_message_body() const {
-    DCHECK(type_ == Type::kAppMessage);
+    CHECK(type_ == Type::kAppMessage, base::NotFatalUntil::M161);
     return message_body_;
   }
 
   const base::DictValue& v2_message_body() const {
-    DCHECK(type_ == Type::kV2Message);
+    CHECK(type_ == Type::kV2Message, base::NotFatalUntil::M161);
     return message_body_.GetDict();
   }
 

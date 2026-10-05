@@ -53,8 +53,8 @@ bool DialDeviceData::IsValidUrl(const GURL& url) const {
 }
 
 bool DialDeviceData::UpdateFrom(const DialDeviceData& new_data) {
-  DCHECK(new_data.device_id() == device_id_);
-  DCHECK(new_data.label().empty());
+  CHECK(new_data.device_id() == device_id_, base::NotFatalUntil::M161);
+  CHECK(new_data.label().empty(), base::NotFatalUntil::M161);
   std::string label_tmp(label_);
   bool updated_api_visible_field =
       (new_data.device_description_url() != device_description_url_) ||

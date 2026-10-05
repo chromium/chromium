@@ -78,7 +78,7 @@ OAuthLoginDetector::OAuthLoginFlowInfo::~OAuthLoginFlowInfo() = default;
 OAuthLoginDetector::OAuthLoginDetector()
     : login_flow_start_query_params_(GetOAuthLoginStartQueryParams()),
       login_flow_complete_query_params_(GetOAuthLoginCompleteQueryParams()) {
-  DCHECK(IsLoginDetectionFeatureEnabled());
+  CHECK(IsLoginDetectionFeatureEnabled(), base::NotFatalUntil::M161);
 }
 
 OAuthLoginDetector::~OAuthLoginDetector() = default;
@@ -157,7 +157,7 @@ OAuthLoginDetector::GetPopUpLoginFlowSite() const {
 
 bool OAuthLoginDetector::CheckSuccessfulLoginCompletion(
     const GURL& navigation_url) {
-  DCHECK(login_flow_info_.has_value());
+  CHECK(login_flow_info_.has_value(), base::NotFatalUntil::M161);
 
   // Login flow had started previously, check if it completes within the
   // navigation limit.

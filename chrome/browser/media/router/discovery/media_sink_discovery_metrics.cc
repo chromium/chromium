@@ -65,7 +65,7 @@ void CastDeviceCountMetrics::RecordDeviceCounts(size_t available_device_count,
 
 void CastDeviceCountMetrics::RecordCastSinkDiscoverySource(
     SinkSource sink_source) {
-  DCHECK_LT(sink_source, kTotalCount);
+  CHECK_LT(sink_source, kTotalCount, base::NotFatalUntil::M161);
   UMA_HISTOGRAM_ENUMERATION(kHistogramCastDiscoverySinkSource, sink_source,
                             kTotalCount);
 }
@@ -83,7 +83,8 @@ const char CastAnalytics::kHistogramCastMdnsChannelOpenFailure[] =
 // static
 void CastAnalytics::RecordCastChannelConnectResult(
     MediaRouterChannelConnectResults result) {
-  DCHECK_LT(result, MediaRouterChannelConnectResults::TOTAL_COUNT);
+  CHECK_LT(result, MediaRouterChannelConnectResults::TOTAL_COUNT,
+           base::NotFatalUntil::M161);
   UMA_HISTOGRAM_ENUMERATION(kHistogramCastChannelConnectResult, result,
                             MediaRouterChannelConnectResults::TOTAL_COUNT);
 }
@@ -91,7 +92,8 @@ void CastAnalytics::RecordCastChannelConnectResult(
 // static
 void CastAnalytics::RecordDeviceChannelError(
     MediaRouterChannelError channel_error) {
-  DCHECK_LT(channel_error, MediaRouterChannelError::TOTAL_COUNT);
+  CHECK_LT(channel_error, MediaRouterChannelError::TOTAL_COUNT,
+           base::NotFatalUntil::M161);
   UMA_HISTOGRAM_ENUMERATION(kHistogramCastChannelError, channel_error,
                             MediaRouterChannelError::TOTAL_COUNT);
 }

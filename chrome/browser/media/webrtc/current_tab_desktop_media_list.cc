@@ -32,7 +32,7 @@ void HandleCapturedBitmap(
     std::optional<uint32_t> last_hash,
     gfx::Size thumbnail_size,
     const content::CopyFromSurfaceResult& result) {
-  DCHECK(!thumbnail_size.IsEmpty());
+  CHECK(!thumbnail_size.IsEmpty(), base::NotFatalUntil::M161);
 
   // TODO(crbug.com/466199824): Update callsite to handle error case.
   const SkBitmap& bitmap = result.has_value() ? result->bitmap : SkBitmap();
@@ -70,7 +70,7 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
                     web_contents->GetPrimaryMainFrame()->GetRoutingID())),
       thumbnail_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   type_ = DesktopMediaList::Type::kCurrentTab;
 
@@ -85,8 +85,8 @@ CurrentTabDesktopMediaList::CurrentTabDesktopMediaList(
 CurrentTabDesktopMediaList::~CurrentTabDesktopMediaList() = default;
 
 void CurrentTabDesktopMediaList::Refresh(bool update_thumbnails) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(can_refresh());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(can_refresh(), base::NotFatalUntil::M161);
 
   if (refresh_in_progress_ || !update_thumbnails || thumbnail_size_.IsEmpty()) {
     return;
@@ -119,8 +119,9 @@ void CurrentTabDesktopMediaList::Refresh(bool update_thumbnails) {
 void CurrentTabDesktopMediaList::OnCaptureHandled(
     uint32_t hash,
     const std::optional<gfx::ImageSkia>& image) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK((hash != last_hash_) == image.has_value());  // Only new frames passed.
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK((hash != last_hash_) == image.has_value(),
+        base::NotFatalUntil::M161);  // Only new frames passed.
 
   refresh_in_progress_ = false;
 
@@ -133,6 +134,6 @@ void CurrentTabDesktopMediaList::OnCaptureHandled(
 }
 
 void CurrentTabDesktopMediaList::ResetLastHashForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   last_hash_.reset();
 }
