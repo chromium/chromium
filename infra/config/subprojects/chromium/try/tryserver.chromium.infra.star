@@ -24,6 +24,7 @@ consoles.list_view(
 
 try_.builder(
     name = "3pp-linux-amd64-packager",
+    description_html = "Chromium 3PP packager on Linux AMD64 platform.",
     executable = "recipe:chromium_3pp",
     builderless = False,
     cores = 8,
@@ -48,6 +49,7 @@ try_.builder(
 
 try_.builder(
     name = "3pp-mac-amd64-packager",
+    description_html = "Chromium 3PP packager on Mac AMD64 platform.",
     executable = "recipe:chromium_3pp",
     builderless = True,
     # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.

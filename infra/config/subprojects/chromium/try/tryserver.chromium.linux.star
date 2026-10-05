@@ -824,6 +824,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_chromium_clobber_deterministic",
+    description_html = "Verifies that Linux x64 release builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -1043,6 +1044,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_clang",
+    description_html = "Builds and uploads Clang toolchain packages for Linux x64.",
     executable = "recipe:chromium_toolchain/package_clang",
     gn_args = gn_args.config(
         configs = [
@@ -1070,6 +1072,7 @@ try_.builder(
 
 try_.builder(
     name = "linux_upload_rust",
+    description_html = "Builds and uploads Rust toolchain packages for Linux x64.",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = True,
     cores = 32,
@@ -1128,6 +1131,7 @@ try_.builder(
 
 try_.builder(
     name = "tricium-metrics-analysis",
+    description_html = "Runs Tricium metrics analysis on modified JSON and XML files.",
     executable = "recipe:tricium_metrics",
     cq_settings = try_.cq_settings(
         custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],
@@ -1141,6 +1145,7 @@ try_.builder(
 
 try_.builder(
     name = "tricium-oilpan-analysis",
+    description_html = "Runs Tricium Oilpan static analysis on modified C/C++ files.",
     executable = "recipe:tricium_oilpan",
     cq_settings = try_.cq_settings(
         custom_cq_run_modes = [cq.MODE_NEW_PATCHSET_RUN],

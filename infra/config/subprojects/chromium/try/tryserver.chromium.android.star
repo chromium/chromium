@@ -553,6 +553,7 @@ try_.builder(
 try_.builder(
     name = "android-binary-size",
     branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Measures Android binary size impact of CLs on ARM and ARM64 official builds.",
     executable = "recipe:binary_size_trybot",
     gn_args = gn_args.config(
         configs = [
@@ -961,6 +962,7 @@ try_.builder(
 
 try_.builder(
     name = "android-deterministic-dbg",
+    description_html = "Verifies that Android ARM debug builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -980,6 +982,7 @@ try_.builder(
 
 try_.builder(
     name = "android-deterministic-rel",
+    description_html = "Verifies that Android ARM release builds are deterministic.",
     executable = "recipe:swarming/deterministic_build",
     gn_args = gn_args.config(
         configs = [
@@ -1198,6 +1201,7 @@ try_.compilator_builder(
 
 try_.builder(
     name = "android_blink_rel",
+    description_html = "Builds Android x64 release configs and runs Blink unit tests on Android 12 x64 emulators.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",

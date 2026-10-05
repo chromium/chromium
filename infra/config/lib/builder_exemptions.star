@@ -13,7 +13,6 @@ builders listed here should not grow, and should *only* decrease.
 """
 
 exempted_from_description_builders = {
-    "ci": set([]),
     "codesearch": set([
         "gen-android-try",
         "gen-chromiumos-try",
@@ -44,37 +43,6 @@ exempted_from_description_builders = {
         "mac-launcher",
         "runner",
         "win-launcher",
-    ]),
-    "try": set([
-        "3pp-linux-amd64-packager",
-        "3pp-mac-amd64-packager",
-        "android-binary-size",
-        "android-clang-tidy-rel",
-        "android-deterministic-dbg",
-        "android-deterministic-rel",
-        "android_blink_rel",
-        "branch-config-verifier",
-        "fuchsia-binary-size",
-        "fuchsia-clang-tidy-rel",
-        "fuchsia-deterministic-dbg",
-        "linux-chromeos-clang-tidy-rel",
-        "linux-clang-tidy-rel",
-        "linux_chromium_clobber_deterministic",
-        "linux_upload_clang",
-        "linux_upload_rust",
-        "mac-clang-tidy-rel",
-        "mac_upload_clang",
-        "mac_upload_clang_arm",
-        "mac_upload_rust",
-        "mac_upload_rust_arm",
-        "reclient-config-deployment-verifier",
-        "tricium-clang-tidy",
-        "tricium-metrics-analysis",
-        "tricium-oilpan-analysis",
-        "win-presubmit",
-        "win10-clang-tidy-rel",
-        "win_upload_clang",
-        "win_upload_rust",
     ]),
 }
 

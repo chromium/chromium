@@ -353,6 +353,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_clang",
+    description_html = "Builds and uploads Clang toolchain packages for Windows.",
     executable = "recipe:chromium_toolchain/package_clang",
     builderless = False,
     cores = 32,
@@ -363,6 +364,7 @@ try_.builder(
 
 try_.builder(
     name = "win_upload_rust",
+    description_html = "Builds and uploads Rust toolchain packages for Windows.",
     executable = "recipe:chromium_toolchain/package_rust",
     builderless = False,
     cores = 32,

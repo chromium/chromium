@@ -71,6 +71,7 @@ def branch_configs():
 
 try_.presubmit_builder(
     name = "branch-config-verifier",
+    description_html = "Checks that branch configs can be generated and validated with lucicfg across branch configurations.",
     executable = "recipe:branch_configuration/tester",
     cq_settings = try_.cq_settings(
         location_filters = ["infra/config/.+"],
@@ -87,6 +88,7 @@ try_.presubmit_builder(
 
 try_.presubmit_builder(
     name = "reclient-config-deployment-verifier",
+    description_html = "Checks that reclient configs can be fetched from CIPD and verified for existence.",
     executable = "recipe:reclient_config_deploy_check/tester",
     cq_settings = try_.cq_settings(
         location_filters = [
@@ -199,6 +201,7 @@ try_.presubmit_builder(
 
 try_.presubmit_builder(
     name = "win-presubmit",
+    description_html = "Runs basic presubmit checks on Windows machines.",
     executable = "recipe:presubmit",
     builderless = True,
     os = os.WINDOWS_DEFAULT,
