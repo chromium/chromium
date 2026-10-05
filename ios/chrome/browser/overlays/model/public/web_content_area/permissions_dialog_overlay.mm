@@ -23,8 +23,8 @@ namespace {
 
 // The row indices of the buttons that the user clicks in persistent 3-button
 // permissions dialogs.
-constexpr size_t kAlwaysAllowButtonRowIndex = 0;
-constexpr size_t kAllowThisTimeButtonRowIndex = 1;
+constexpr size_t kAllowThisTimeButtonRowIndex = 0;
+constexpr size_t kAlwaysAllowButtonRowIndex = 1;
 constexpr size_t kDontAllowButtonRowIndex = 2;
 
 // The column index of the button that the user clicks to grant permissions
@@ -44,11 +44,11 @@ std::unique_ptr<OverlayResponse> CreatePermissionsDialogResponse(
     size_t row_index = alert_response->tapped_button_row_index();
     PermissionDialogDecision decision;
     switch (row_index) {
-      case kAlwaysAllowButtonRowIndex:
-        decision = PermissionDialogDecision::kAlwaysAllow;
-        break;
       case kAllowThisTimeButtonRowIndex:
         decision = PermissionDialogDecision::kAllowThisTime;
+        break;
+      case kAlwaysAllowButtonRowIndex:
+        decision = PermissionDialogDecision::kAlwaysAllow;
         break;
       case kDontAllowButtonRowIndex:
         decision = PermissionDialogDecision::kDontAllow;
@@ -104,9 +104,9 @@ void PermissionsDialogRequest::CreateAuxiliaryData(
   if (IsDomainLevelSitePermissionsEnabled()) {
     button_configs = {
         {ButtonConfig(l10n_util::GetNSString(
-            IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW))},
-        {ButtonConfig(l10n_util::GetNSString(
             IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME))},
+        {ButtonConfig(l10n_util::GetNSString(
+            IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW))},
         {ButtonConfig(
             l10n_util::GetNSString(
                 IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW),

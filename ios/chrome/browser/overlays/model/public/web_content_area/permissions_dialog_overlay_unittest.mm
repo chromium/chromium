@@ -184,34 +184,19 @@ TEST_F(PermissionsDialogOverlayTest, DomainLevelSitePermissionsChoices) {
   const auto& button_configs = config->button_configs();
   ASSERT_EQ(3U, button_configs.size());
   EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW),
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME),
               button_configs[0][0].title);
   EXPECT_NSEQ(l10n_util::GetNSString(
-                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME),
+                  IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW),
               button_configs[1][0].title);
   EXPECT_NSEQ(l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW),
               button_configs[2][0].title);
 
-  // Test tapping "Always Allow" (row 0).
-  std::unique_ptr<OverlayResponse> always_allow_alert_response =
-      OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_row_index=*/0,
-          /*tapped_button_column_index=*/0, nil);
-  std::unique_ptr<OverlayResponse> always_allow_response =
-      config->response_converter().Run(std::move(always_allow_alert_response));
-  ASSERT_TRUE(always_allow_response);
-  PermissionsDialogResponse* always_allow_perm_response =
-      always_allow_response->GetInfo<PermissionsDialogResponse>();
-  ASSERT_TRUE(always_allow_perm_response);
-  EXPECT_TRUE(always_allow_perm_response->capture_allow());
-  EXPECT_EQ(always_allow_perm_response->decision(),
-            PermissionDialogDecision::kAlwaysAllow);
-
-  // Test tapping "Allow This Time" (row 1).
+  // Test tapping "Allow This Time" (row 0).
   std::unique_ptr<OverlayResponse> allow_once_alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
-          /*tapped_button_row_index=*/1,
+          /*tapped_button_row_index=*/0,
           /*tapped_button_column_index=*/0, nil);
   std::unique_ptr<OverlayResponse> allow_once_response =
       config->response_converter().Run(std::move(allow_once_alert_response));
@@ -222,6 +207,21 @@ TEST_F(PermissionsDialogOverlayTest, DomainLevelSitePermissionsChoices) {
   EXPECT_TRUE(allow_once_perm_response->capture_allow());
   EXPECT_EQ(allow_once_perm_response->decision(),
             PermissionDialogDecision::kAllowThisTime);
+
+  // Test tapping "Always Allow" (row 1).
+  std::unique_ptr<OverlayResponse> always_allow_alert_response =
+      OverlayResponse::CreateWithInfo<AlertResponse>(
+          /*tapped_button_row_index=*/1,
+          /*tapped_button_column_index=*/0, nil);
+  std::unique_ptr<OverlayResponse> always_allow_response =
+      config->response_converter().Run(std::move(always_allow_alert_response));
+  ASSERT_TRUE(always_allow_response);
+  PermissionsDialogResponse* always_allow_perm_response =
+      always_allow_response->GetInfo<PermissionsDialogResponse>();
+  ASSERT_TRUE(always_allow_perm_response);
+  EXPECT_TRUE(always_allow_perm_response->capture_allow());
+  EXPECT_EQ(always_allow_perm_response->decision(),
+            PermissionDialogDecision::kAlwaysAllow);
 
   // Test tapping "Don't Allow" (row 2).
   std::unique_ptr<OverlayResponse> block_alert_response =
