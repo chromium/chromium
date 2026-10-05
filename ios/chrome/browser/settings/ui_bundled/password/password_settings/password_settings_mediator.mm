@@ -444,7 +444,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   [self.consumer setUserEmail:base::SysUTF8ToNSString(
                                   _syncService->GetAccountInfo().email)];
   [self updateShowBulkMovePasswordsToAccount];
-  // TODO(crbug.com/430876032): Update GPM Pin section properly.
+  [self checkUserCanChangeGPMPin];
 }
 
 #pragma mark - PasskeyModelObserverDelegate
@@ -548,24 +548,34 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
                                                       .email];
 }
 
-// Checks whether the account is recoverable in the passkey security domain
-// (this means that the user has a GPM Pin created). If yes, proceeds to check
-// whether the device was bootstrapped to use passkeys.
+// Checks whether the user is eligible to change their GPM Pin: account storage
+// must be active, the account must be recoverable in the passkey security
+// domain (meaning that the user has a GPM Pin created), and the device must be
+// bootstrapped to use passkeys.
 - (void)checkUserCanChangeGPMPin {
+  if (!_identity ||
+      !password_manager::features_util::IsAccountStorageActive(_syncService)) {
+    [self.consumer setCanChangeGPMPin:NO];
+    return;
+  }
+
   __weak __typeof(self) weakSelf = self;
   _trustedVaultClientBackend->GetDegradedRecoverabilityStatus(
       _identity, trusted_vault::SecurityDomainId::kPasskeys,
-      base::BindOnce(^(BOOL is_degraded) {
-        if (!is_degraded) {
-          [weakSelf checkDeviceBootstrappedForPasskeys];
-        }
+      base::BindOnce(^(BOOL isDegraded) {
+        [weakSelf onDegradedRecoverabilityStatusFetched:isDegraded];
       }));
 }
 
-// Checks whether the device can fetch shared keys for passkey security domain.
-// If yes, notifies the consumer that the change GPM Pin button should be
-// visible. This should be called from `checkUserCanChangeGPMPin`.
-- (void)checkDeviceBootstrappedForPasskeys {
+// Handles the `isDegraded` recoverability status from
+// `_trustedVaultClientBackend`. If not degraded, checks whether the device can
+// fetch shared keys for the passkey security domain and updates the consumer.
+- (void)onDegradedRecoverabilityStatusFetched:(BOOL)isDegraded {
+  if (isDegraded) {
+    [self.consumer setCanChangeGPMPin:NO];
+    return;
+  }
+
   __weak id<PasswordSettingsConsumer> weakConsumer = self.consumer;
   _trustedVaultClientBackend->FetchKeys(
       _identity, trusted_vault::SecurityDomainId::kPasskeys,

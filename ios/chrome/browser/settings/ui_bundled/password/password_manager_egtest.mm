@@ -2069,6 +2069,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that an alert is displayed when update GPM PIN flow returns an error.
 // For now, fake trusted vault backend returns the error unconditionally.
 - (void)testUpdateGPMPinErrorAlert {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   OpenPasswordManager();
   OpenSettingsSubmenu();
   CheckChangePinVisibleInSettings();
@@ -2092,6 +2093,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that attempting to change GPM PIN with no passcode does not show the
 // dialog and displays an alert prompting the user to set a passcode.
 - (void)testUpdateGPMPinWithoutPasscodeSet {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   OpenPasswordManager();
   OpenSettingsSubmenu();
   CheckChangePinVisibleInSettings();
