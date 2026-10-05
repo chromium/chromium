@@ -35,8 +35,8 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
-#include "services/audio/ml_model_manager.h"
 #include "services/audio/test/fake_ml_model_handles.h"
+#include "services/audio/test/mock_ml_model_manager.h"
 #include "services/audio/voice_isolation_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,19 +153,7 @@ enum class VoiceIsolationStartupResult {
   kAborted = 2,
 };
 
-class MockMlModelManager : public MlModelManager {
- public:
-  MockMlModelManager() {
-    ON_CALL(*this, GetModel(testing::_)).WillByDefault([](mojom::MlModelType) {
-      return base::MakeRefCounted<FakeMlModelHandle>();
-    });
-  }
-  MOCK_METHOD(scoped_refptr<media::MlModelHandle>,
-              GetModel,
-              (mojom::MlModelType model_type),
-              (override));
-};
-#endif
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 TEST_F(AudioProcessorHandlerTest, ProcessingWithoutVoiceIsolationHandler) {
   media::AudioProcessingSettings settings;

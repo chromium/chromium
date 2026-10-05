@@ -4,6 +4,7 @@
 
 #include "services/audio/input_stream.h"
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
@@ -29,7 +30,7 @@
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "media/webrtc/ml_model_handle.h"  // nogncheck
-#include "services/audio/ml_model_manager.h"
+#include "services/audio/test/mock_ml_model_manager.h"
 #endif
 
 using testing::_;
@@ -50,23 +51,6 @@ const bool kInvalidStream = false;
 const bool kMuted = true;
 const bool kNotMuted = false;
 const char* kDefaultDeviceId = "default";
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-class MockMlModelManager : public MlModelManager {
- public:
-  scoped_refptr<media::MlModelHandle> GetModel(
-      mojom::MlModelType model_type) override {
-    if (model_type == mojom::MlModelType::kResidualEchoEstimation) {
-      model_requested_ = true;
-    }
-    return nullptr;
-  }
-  bool model_requested() { return model_requested_; }
-
- private:
-  bool model_requested_ = false;
-};
-#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 
 class MockStreamClient : public media::mojom::AudioInputStreamClient {
  public:
@@ -157,6 +141,14 @@ class AudioServiceInputStreamTest : public testing::Test {
         stream_factory_receiver_(
             &stream_factory_,
             remote_stream_factory_.BindNewPipeAndPassReceiver()) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+    ON_CALL(mock_ml_model_manager_,
+            GetModel(mojom::MlModelType::kResidualEchoEstimation))
+        .WillByDefault([this]() {
+          residual_echo_model_requested_ = true;
+          return nullptr;
+        });
+#endif
   }
 
   AudioServiceInputStreamTest(const AudioServiceInputStreamTest&) = delete;
@@ -239,7 +231,8 @@ class AudioServiceInputStreamTest : public testing::Test {
   base::test::TaskEnvironment scoped_task_env_;
   media::MockAudioManager audio_manager_;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  MockMlModelManager mock_ml_model_manager_;
+  std::atomic<bool> residual_echo_model_requested_{false};
+  NiceMock<MockMlModelManager> mock_ml_model_manager_;
 #endif
   media::mojom::AudioProcessingConfigPtr processing_config_ = nullptr;
   StreamFactory stream_factory_;
@@ -616,7 +609,7 @@ TEST_F(AudioServiceInputStreamTest, ResidualEchoEstimationModelRequested) {
   EXPECT_CALL(observer(), BindingConnectionError());
   remote_stream.reset();
   EXPECT_TRUE(base::test::RunUntil(
-      [&]() { return mock_ml_model_manager_.model_requested(); }));
+      [&]() { return residual_echo_model_requested_.load(); }));
 }
 #endif
 

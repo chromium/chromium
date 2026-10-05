@@ -22,7 +22,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/in_process_audio_manager_accessor.h"
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-#include "services/audio/ml_model_manager.h"
+#include "services/audio/test/fake_ml_model_handles.h"
+#include "services/audio/test/mock_ml_model_manager.h"
 #endif
 #include "services/audio/system_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -522,33 +523,6 @@ TEST_F(AudioSystemToServiceAdapterDisconnectTest,
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-class MockMlModelManager : public MlModelManager {
- public:
-  scoped_refptr<media::MlModelHandle> GetModel(
-      mojom::MlModelType model_type) override {
-    if (model_type == mojom::MlModelType::kVoiceIsolationDenoiser &&
-        is_voice_isolation_available_) {
-      return base::MakeRefCounted<MockMlModelHandle>();
-    }
-    return nullptr;
-  }
-
-  void SetVoiceIsolationAvailable(bool available) {
-    is_voice_isolation_available_ = available;
-  }
-
- private:
-  class MockMlModelHandle : public media::MlModelHandle {
-   public:
-    const tflite::FlatBufferModel& Get() override { NOTREACHED(); }
-
-   private:
-    ~MockMlModelHandle() override = default;
-  };
-
-  bool is_voice_isolation_available_ = false;
-};
-
 class SystemInfoVoiceIsolationTest : public testing::Test {
  protected:
   SystemInfoVoiceIsolationTest()
@@ -563,17 +537,25 @@ class SystemInfoVoiceIsolationTest : public testing::Test {
 
   ~SystemInfoVoiceIsolationTest() override { audio_manager_->Shutdown(); }
 
+  void SetVoiceIsolationAvailable(bool available) {
+    scoped_refptr<media::MlModelHandle> handle =
+        available ? base::MakeRefCounted<FakeMlModelHandle>() : nullptr;
+    ON_CALL(mock_ml_model_manager_,
+            GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
+        .WillByDefault(testing::Return(handle));
+  }
+
   mojom::SystemInfo& system_info_api() { return system_info_; }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<media::MockAudioManager> audio_manager_;
-  MockMlModelManager mock_ml_model_manager_;
+  NiceMock<MockMlModelManager> mock_ml_model_manager_;
   SystemInfo system_info_;
 };
 
 TEST_F(SystemInfoVoiceIsolationTest,
        GetInputStreamParameters_ModelNotAvailable) {
-  mock_ml_model_manager_.SetVoiceIsolationAvailable(false);
+  SetVoiceIsolationAvailable(false);
   base::RunLoop run_loop;
   system_info_api().GetInputStreamParameters(
       media::AudioDeviceDescription::kDefaultDeviceId,
@@ -590,7 +572,7 @@ TEST_F(SystemInfoVoiceIsolationTest,
 }
 
 TEST_F(SystemInfoVoiceIsolationTest, GetInputStreamParameters_ModelAvailable) {
-  mock_ml_model_manager_.SetVoiceIsolationAvailable(true);
+  SetVoiceIsolationAvailable(true);
   base::RunLoop run_loop;
   system_info_api().GetInputStreamParameters(
       media::AudioDeviceDescription::kDefaultDeviceId,
@@ -607,7 +589,7 @@ TEST_F(SystemInfoVoiceIsolationTest, GetInputStreamParameters_ModelAvailable) {
 }
 
 TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_ModelNotAvailable) {
-  mock_ml_model_manager_.SetVoiceIsolationAvailable(false);
+  SetVoiceIsolationAvailable(false);
   base::RunLoop run_loop;
   system_info_api().GetInputDeviceInfo(
       media::AudioDeviceDescription::kDefaultDeviceId,
@@ -625,7 +607,7 @@ TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_ModelNotAvailable) {
 }
 
 TEST_F(SystemInfoVoiceIsolationTest, GetInputDeviceInfo_ModelAvailable) {
-  mock_ml_model_manager_.SetVoiceIsolationAvailable(true);
+  SetVoiceIsolationAvailable(true);
   base::RunLoop run_loop;
   system_info_api().GetInputDeviceInfo(
       media::AudioDeviceDescription::kDefaultDeviceId,

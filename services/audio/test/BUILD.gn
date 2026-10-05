@@ -41,6 +41,8 @@ source_set("test_support") {
     sources += [
       "fake_ml_model_handles.cc",
       "fake_ml_model_handles.h",
+      "mock_ml_model_manager.cc",
+      "mock_ml_model_manager.h",
     ]
     public_deps = [
       "//media/webrtc",
