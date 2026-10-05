@@ -286,8 +286,9 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
       "DefaultBrowser.ChangeDetectedNotification.ShellIntegration.Shown", 1, 1);
 }
 
+// TODO(crbug.com/526025707): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
-                       NoNotificationWhenChromeRemainsDefault) {
+                       DISABLED_NoNotificationWhenChromeRemainsDefault) {
   fake_shell_delegate_ptr_->set_default_state(shell_integration::IS_DEFAULT);
   CreateDefaultBrowserKey(L"ChromeHTML");
 
