@@ -17,7 +17,7 @@
   // The mediator for handling AI prototyping models.
   AIPrototypingMediator* _mediator;
 
-  // The coordinator for TalkToChrome.
+  // The coordinator for TTC.
   TTCCoordinator* _TTCCoordinator;
 
   // The view controller presented as the AI prototyping menu.

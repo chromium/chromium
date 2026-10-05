@@ -34,8 +34,8 @@ enum class AIPrototypingFeature : NSInteger {
   kAPC,
   // Represents the UI Catalog feature.
   kUICatalog,
-  // Represents the TalkToChrome feature.
-  kTalkToChrome,
+  // Represents the TTC feature.
+  kTTC,
 };
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UTILS_AI_PROTOTYPING_CONSTANTS_H_

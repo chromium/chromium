@@ -961,7 +961,7 @@ BASE_DECLARE_FEATURE(kAimHistoryThreadsManagement);
 // Returns true if the AimHistoryThreadsManagement feature is enabled.
 bool IsAimHistoryThreadsManagementEnabled();
 
-// Enables TalkToChrome prototype.
+// Enables the TTC prototype.
 BASE_DECLARE_FEATURE(kTTCEnabled);
 
 // Returns true if the TTCEnabled feature is enabled.

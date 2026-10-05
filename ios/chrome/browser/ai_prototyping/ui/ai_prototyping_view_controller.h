@@ -20,7 +20,7 @@
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
 
-// Initializes the menu with the TalkToChrome view controller.
+// Initializes the menu with the TTC view controller.
 // `ttcViewController` can be nil if TTC is disabled.
 - (instancetype)initWithTTCViewController:
     (UIViewController<AIPrototypingViewControllerProtocol>*)ttcViewController

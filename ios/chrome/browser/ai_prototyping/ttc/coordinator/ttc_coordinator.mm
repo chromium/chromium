@@ -21,8 +21,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _viewController = [[TTCViewController alloc]
-      initForFeature:AIPrototypingFeature::kTalkToChrome];
+  _viewController =
+      [[TTCViewController alloc] initForFeature:AIPrototypingFeature::kTTC];
 
   TTCKeyedService* ttcService =
       self.profile ? TTCKeyedService::Get(self.profile) : nullptr;
