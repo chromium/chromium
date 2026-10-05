@@ -941,6 +941,57 @@ TEST_F(JXLImageDecoderTest, AnimationReferenceFrameBlending) {
   EXPECT_EQ(ImageFrame::kFrameComplete, first_frame->GetStatus());
 }
 
+// When the requested frame is ahead of the decoder and the decoder already
+// holds everything that frame depends on, Decode() decodes forward (skipping
+// output for the in-between frames) instead of seeking from the frame's decode
+// start. The in-between frames still update the decoder's reference frames, so
+// the forward-decoded frame must be pixel-identical to the authoritative
+// sequential decode. newtons_cradle.jxl uses reference-frame blending, so
+// later frames depend on earlier ones and exercise this path.
+TEST_F(JXLImageDecoderTest, AnimationForwardSkipMatchesSequential) {
+  auto baseline = CreateJXLDecoder();
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer(kImagesDir, "newtons_cradle.jxl");
+  ASSERT_TRUE(data);
+  baseline->SetData(data.get(), true);
+
+  const wtf_size_t frame_count = baseline->FrameCount();
+  ASSERT_GT(frame_count, 3u) << "Need several frames to jump forward over";
+
+  Vector<uint32_t> baseline_hashes;
+  for (wtf_size_t i = 0; i < frame_count; ++i) {
+    ImageFrame* frame = baseline->DecodeFrameBufferAtIndex(i);
+    ASSERT_TRUE(frame) << "Baseline frame " << i << " is null";
+    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+    baseline_hashes.push_back(HashBitmap(frame->Bitmap()));
+  }
+  ASSERT_FALSE(baseline->Failed());
+
+  // Fresh decoder: prime it on an early frame, then jump forward. Clearing the
+  // cache for the earlier frames forces a re-decode that leaves the decoder
+  // positioned between frames, which is where the forward-skip path applies.
+  auto decoder = CreateJXLDecoder();
+  decoder->SetData(data.get(), true);
+  ASSERT_EQ(frame_count, decoder->FrameCount());
+
+  const std::array<wtf_size_t, 3> forward_targets = {2u, frame_count / 2,
+                                                     frame_count - 1};
+  for (wtf_size_t target : forward_targets) {
+    decoder->ClearCacheExceptFrame(kNotFound);
+    ImageFrame* primed = decoder->DecodeFrameBufferAtIndex(0);
+    ASSERT_TRUE(primed) << "Priming frame 0 failed before target " << target;
+    ASSERT_EQ(ImageFrame::kFrameComplete, primed->GetStatus());
+
+    ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(target);
+    ASSERT_TRUE(frame) << "Forward target " << target << " is null";
+    ASSERT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+    EXPECT_EQ(baseline_hashes[target], HashBitmap(frame->Bitmap()))
+        << "Forward-decoded frame " << target
+        << " does not match sequential decode";
+  }
+  EXPECT_FALSE(decoder->Failed());
+}
+
 // Test progressive/pass rendering: during incremental data loading, frames
 // should have kFramePartial status (not kFrameEmpty). This prevents the
 // ImageDecoderWrapper from destroying the decoder between calls.

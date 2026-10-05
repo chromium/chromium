@@ -95,6 +95,12 @@ class PLATFORM_EXPORT JXLImageDecoder final : public ImageDecoder {
   // Must be called when decoder_state_ >= kHaveBasicInfo and scanner_ is valid.
   void SeekToFrame(wtf_size_t index);
 
+  // Whether the frame at `index`, which is ahead of the decoder, can be
+  // reached by decoding forward from the decoder's current position with less
+  // work than a seek would do. True only when the decoder is positioned
+  // between frames and already holds everything `index` depends on.
+  bool CanDecodeForwardTo(wtf_size_t index) const;
+
   // Lightweight frame scanner -- discovers frame count, durations, and seek
   // offsets without decoding any pixels.
   std::optional<JxlRsDecoderPtr> scanner_;
