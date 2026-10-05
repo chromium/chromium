@@ -47,6 +47,10 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/test_reg_util_win.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace policy {
 
 const size_t kNumChunks = 32;
@@ -95,6 +99,17 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+#if BUILDFLAG(IS_WIN)
+    // Override HKCU to isolate from and prevent writing to real registry keys.
+    // On Windows, the metrics reporting consent is stored in the registry and
+    // is used to determine the default value for
+    // `metrics::prefs::kMetricsReportingEnabled` on startup. Without this,
+    // tests may flake if the registry already has metrics reporting enabled or
+    // if policy changes during the test write to the real registry.
+    ASSERT_NO_FATAL_FAILURE(
+        registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
+#endif  // BUILDFLAG(IS_WIN)
+
     // Some policies default value might depend on features, enforce use of
     // field trial testing config to avoid having unexpected results based on
     // new feature flags coming from the server (e.g. on Chrome-branded CI
@@ -145,6 +160,9 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 #if !BUILDFLAG(IS_ANDROID)
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 #endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+  registry_util::RegistryOverrideManager registry_override_manager_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // Splits the test cases into `kNumChunks` and the testing parameter determines
