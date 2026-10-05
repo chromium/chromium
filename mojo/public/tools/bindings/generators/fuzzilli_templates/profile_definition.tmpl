@@ -11,6 +11,12 @@ private let mojoBuiltins: [String: ILType] = [
 {%- for struct in structs %}
     "{{struct|fully_qualified_name}}": .{{struct|format_il_type}}Constructor,
 {%- endfor %}
+{%- for union in unions %}
+    {%- for field in union.fields %}
+    "{{union|fully_qualified_name}}.{{field.name}}": .{{union|format_il_type}}
+        {{- field.name|to_camel}}Constructor,
+    {%- endfor %}
+{%- endfor %}
 ]
 
 private let keepGenerators = [
@@ -94,16 +100,15 @@ let mojo{{primary.name}}Profile = Profile(
 {%- for struct in structs + response_structs %}
         .{{struct|format_unique_name|to_camel(True)}},
 {%- endfor %}
+{%- for union in unions %}
+        .{{union|format_unique_name|to_camel(True)}},
+{%- endfor %}
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
 {%- for enum in enums %}
         .{{enum|format_il_type}},
 {%- endfor %}
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-{%- for union in unions %}
-        .{{union|format_unique_name|to_camel(True)}},
-{%- endfor %}
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

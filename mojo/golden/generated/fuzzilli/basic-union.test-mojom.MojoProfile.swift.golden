@@ -154,19 +154,22 @@ private let MojoInt64MojoArrayGenerator = CodeGenerator(
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsGoldenSimpleUnion: ILType =
-        OptionsBag.goldenSimpleUnion.group.instanceType
+    fileprivate static let jsGoldenSimpleUnion: ILType = .object(
+        ofGroup: "golden.SimpleUnion")
+    fileprivate static let jsGoldenSimpleUnionArrConstructor: ILType = .constructor(
+        [.plain(.jsInt64MojoArray)] => .jsGoldenSimpleUnion)
+    fileprivate static let jsGoldenSimpleUnionTokenConstructor: ILType = .constructor(
+        [.plain(.jsGoldenToken)] => .jsGoldenSimpleUnion)
+    fileprivate static let jsGoldenSimpleUnionFlagConstructor: ILType = .constructor(
+        [.plain(.boolean)] => .jsGoldenSimpleUnion)
 }
 
-extension OptionsBag {
-    fileprivate static let goldenSimpleUnion = OptionsBag(
+extension ObjectGroup {
+    fileprivate static let goldenSimpleUnion = ObjectGroup(
         name: "golden.SimpleUnion",
-        properties: [
-            "arr": .jsInt64MojoArray,
-            "token": .jsGoldenToken,
-            "flag": .boolean,
-        ],
-        selectionMode: .exactlyOne,
+        instanceType: .jsGoldenSimpleUnion,
+        properties: [:],
+        methods: [:]
     )
 }
 
@@ -227,6 +230,9 @@ private let mojoBuiltins: [String: ILType] = [
     /// can be closed at the end of the program.
     "getOrCreatePrimaryRemote": .function([] => .jsGoldenPrimaryRemote),
     "golden.Token": .jsGoldenTokenConstructor,
+    "golden.SimpleUnion.arr": .jsGoldenSimpleUnionArrConstructor,
+    "golden.SimpleUnion.token": .jsGoldenSimpleUnionTokenConstructor,
+    "golden.SimpleUnion.flag": .jsGoldenSimpleUnionFlagConstructor,
 ]
 
 private let keepGenerators = [
@@ -288,11 +294,10 @@ let mojoPrimaryProfile = Profile(
         .goldenToken,
         .goldenPrimaryGetUnionResponseParams,
         .goldenPrimarySyncGetUnionResponseParams,
+        .goldenSimpleUnion,
     ] + commonMojoObjectGroups,
     additionalEnumerations: [
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [
-        .goldenSimpleUnion,
-    ] + commonMojoOptionsBags,
+    additionalOptionsBags: [] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )

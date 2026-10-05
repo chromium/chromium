@@ -84,9 +84,9 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
 |---|---|---|---|
 | `enum` | `.intEnumeration` of the enum's `numeric_value`s | ✅ | |
 | `[Native] enum` | Generator would emit an **empty** enum | ⚠️ | Must be hand-defined in `common/` and added to `IGNORED_TYPES`. |
-| `struct` | `ILType` object + `ObjectGroup` + constructor builtin | ✅ | Uses the fuzzing-only positional constructors in the lite bindings. |
-| `union` | `OptionsBag` with `selectionMode: .exactlyOne` | ✅ | |
-| Union with a nullable field | – | ❌ | |
+| `struct` | `ILType` + `ObjectGroup` + constructor builtin | ✅ | Uses the fuzzing-only positional constructors in the lite bindings. |
+| `union` | `ILType` + `ObjectGroup` + per-variant constructor | ✅ | Uses the fuzzing-only positional constructors in the lite bindings. |
+| Union with a nullable field | N/A | ❌ | |
 
 ### Containers
 
@@ -208,27 +208,34 @@ Legend: ✅ supported · ⚠️ partial / approximated · ❌ not supported
     bindings' `struct_definition.tmpl` makes constructors take the fields as
     positional arguments. Side effect: `new Foo()` now gives fields that are
     present but `undefined`, as opposed to an object without those fields.
-*   WebIDL dictionaries, such as `MojoCreateDataPipeOptions`, have no
-    constructors. They are `OptionsBag`s with `.anySubset`. This makes their
-    fields optional.
 
 #### Unions
 
-*   In MojoJS a union is an object literal with exactly one key, the active
-    field, e.g. `{invalidBuffer: true}`.  Each union becomes an `OptionsBag`
-    with `selectionMode: .exactlyOne`, and its `ILType` is the bag's instance
-    type.
+*   In MojoJS a union is an object literal where the active variant is the sole
+    key (e.g. `{invalidBuffer: true}`). Builds with the GN argument
+    `enable_mojom_fuzzer = true` have bindings with constructors for each union
+    variant that output these object literals. Fuzzilli selects a constructor
+    uniformly at random when generating the union.
+
+#### WebIDL dictionaries
+
+*   WebIDL dictionaries, such as `MojoCreateDataPipeOptions`, have no
+    constructors. They are `OptionsBag`s with `.anySubset`. This outputs an
+    object literal with some fields randomly undefined.
 *   When a mutator picks an object literal, Fuzzilli runs generators from the
-    `.objectLiteral` context. The builtin ones add properties or methods, which
-    invalidates the union, and C++ validation then rejects the message. A
-    generator must be available, as Fuzzilli crashes if a context has none. So
-    all builtin `.objectLiteral` generators are disabled and
-    `MojoObjectLiteralNoopGenerator` is added as a no-op for Fuzzilli to use.
+    `.objectLiteral` context. A generator must be available, as Fuzzilli
+    crashes if a context has none. However, the builtin generators add
+    properties and methods that never get used, so all builtin `.objectLiteral`
+    generators are disabled and `MojoObjectLiteralNoopGenerator` is added as a
+    no-op for Fuzzilli to use.
 
 ##### Issues:
 
+*   The output is an object literal, which lacks type information, so
+    Fuzzilli cannot reuse the variable.
 *   Any invocation of `MojoObjectLiteralNoopGenerator` is a waste of fuzzing
-    resources, since it's a no-op.
+    resources, since it's a no-op. However, it is cheaper than the builtin
+    `.objectLiteral` generators.
 
 #### Nullability
 

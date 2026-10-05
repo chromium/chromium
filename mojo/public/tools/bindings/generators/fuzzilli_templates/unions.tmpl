@@ -1,21 +1,23 @@
 {#- TODO(crbug.com/532201584): Handle nullable union field types -#}
 extension ILType {
 {%- for union in unions %}
-    fileprivate static let {{union|format_il_type}}: ILType =
-        OptionsBag.{{union|format_unique_name|to_camel(True)}}.group.instanceType
+    fileprivate static let {{union|format_il_type}}: ILType = .object(
+        ofGroup: "{{union|fully_qualified_name}}")
+    {%- for field in union.fields %}
+    fileprivate static let {{union|format_il_type}}
+        {{- field.name|to_camel}}Constructor: ILType = .constructor(
+        [.plain(.{{field.kind|format_il_type}})] => .{{union|format_il_type}})
+    {%- endfor %}
 {%- endfor %}
 }
 
-extension OptionsBag {
+extension ObjectGroup {
 {%- for union in unions %}
-    fileprivate static let {{union|format_unique_name|to_camel(True)}} = OptionsBag(
+    fileprivate static let {{union|format_unique_name|to_camel(True)}} = ObjectGroup(
         name: "{{union|fully_qualified_name}}",
-        properties: [
-        {%- for field in union.fields %}
-            "{{field.name}}": .{{field.kind|format_il_type}},
-        {%- endfor %}
-        ],
-        selectionMode: .exactlyOne,
+        instanceType: .{{union|format_il_type}},
+        properties: [:],
+        methods: [:]
     )
 {%- endfor %}
 }
