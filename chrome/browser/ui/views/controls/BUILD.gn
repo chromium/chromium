@@ -60,3 +60,28 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 }
+
+if (!is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "button/button_dump_accessibility_events_browsertest.cc",
+      "button/checkbox_dump_accessibility_events_browsertest.cc",
+      "label_dump_accessibility_events_browsertest.cc",
+      "slider/slider_dump_accessibility_events_browsertest.cc",
+      "textfield/textfield_dump_accessibility_events_browsertest.cc",
+    ]
+    deps = [
+      "//base",
+      "//base/test:test_support",
+      "//build:buildflag_header_h",
+      "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
+      "//content/test:test_support",
+      "//ui/accessibility",
+      "//ui/events:test_support",
+      "//ui/gfx/range",
+      "//ui/views",
+    ]
+  }
+}

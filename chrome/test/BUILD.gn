@@ -3096,14 +3096,6 @@ if (!is_android) {
     }
 
     if (!is_chromeos) {
-      sources += [
-        "../browser/ui/views/controls/button/button_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/controls/button/checkbox_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/controls/label_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/controls/slider/slider_dump_accessibility_events_browsertest.cc",
-        "../browser/ui/views/controls/textfield/textfield_dump_accessibility_events_browsertest.cc",
-      ]
-
       if (is_win) {
         sources += [
           # Tooltip accessibility event tests rely on Aura APIs
@@ -3120,6 +3112,7 @@ if (!is_android) {
         "//chrome/browser/download/bubble:browser_tests",
         "//chrome/browser/ui/download",
         "//chrome/browser/ui/global_media_controls",
+        "//chrome/browser/ui/views/controls:browser_tests",
         "//components/global_media_controls:test_support",
         "//components/global_media_controls/public/mojom:device_service",
       ]
