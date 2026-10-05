@@ -80,7 +80,6 @@ import org.chromium.base.LocaleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.blink.mojom.DisplayMode;
@@ -793,9 +792,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         maybeAddShareOption(intent, context);
 
         logCustomTabFeatures(intent, colorScheme);
-        RecordHistogram.recordBooleanHistogram(
-                "CustomTabs.HasNonSpoofablePackageName",
-                !TextUtils.isEmpty(getClientPackageName()));
     }
 
     /** Returns the toolbar corner radius in px. */
