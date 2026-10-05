@@ -778,6 +778,9 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
         last_signout_value.first, last_signout_value.second);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+    AddSectionEntry(basic_info, "Current Time",
+                    base::TimeFormatAsIso8601(base::Time::Now()));
+
     AddSection(signin_info, std::move(basic_info), "Basic Information");
   }
 
