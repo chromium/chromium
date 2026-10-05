@@ -2582,7 +2582,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0u);
 
   // Advance the animation to its end, at this point the contents view should be
   // reparented to the side panel's ContentParentView.
@@ -2591,7 +2591,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -2785,7 +2785,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0u);
 
   // Trigger the side panel to close, at this point the contents view should be
   // reparented to the side panel's ContentParentView.
@@ -2795,7 +2795,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1u);
 }
 #endif
 
@@ -2856,7 +2856,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 0u);
 
   // Show the kShoppingInsights side panel mid content transition animation and
   // verify the content is correctly reparented.
@@ -2865,7 +2865,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetBrowserViewLayoutForTesting()
                 ->side_panel_animation_content(),
             nullptr);
-  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1);
+  ASSERT_EQ(side_panel->GetContentParentView()->children().size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,

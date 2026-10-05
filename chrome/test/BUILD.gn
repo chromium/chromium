@@ -2088,6 +2088,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/profiles:avatar_toolbar_button_browser_tests",
       "//chrome/browser/ui/views/profiles:browser_tests",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/side_panel:browser_tests",
       "//chrome/browser/ui/views/storage",
       "//chrome/browser/ui/views/tabs:base",
       "//chrome/browser/ui/views/tabs:browser_tests",
@@ -2752,9 +2753,6 @@ if (!is_android) {
       "../browser/ui/views/sharing/remote_copy_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.cc",
       "../browser/ui/views/sharing/sharing_browsertest.h",
-      "../browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator_browsertest.cc",
-      "../browser/ui/views/side_panel/side_panel_coordinator_browsertest.cc",
-      "../browser/ui/views/side_panel/side_panel_web_ui_view_browsertest.cc",
       "../browser/ui/views/storage/storage_pressure_bubble_view_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_menu_browsertest.cc",
@@ -3313,7 +3311,6 @@ if (!is_android) {
         "../browser/ui/views/bubble/webui_bubble_manager_browsertest.cc",
         "../browser/ui/views/page_action/zoom_view_browsertest.cc",
         "../browser/ui/views/search_engines/dse_reset_dialog_view_browsertest.cc",
-        "../browser/ui/views/side_panel/extensions/extension_side_panel_browsertest.cc",
       ]
 
       deps += [
@@ -7637,8 +7634,6 @@ if (!is_android && !is_chromeos_device) {
 
     sources = [
       "../browser/ui/views/new_tab_footer/footer_interactive_uitest.cc",
-      "../browser/ui/views/side_panel/comments/comments_side_panel_coordinator_interactive_uitest.cc",
-      "../browser/ui/views/side_panel/extensions/extension_side_panel_interactive_uitest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "//ui/base/clipboard/clipboard_unittest.cc",
       "base/interactive_ui_tests_main.cc",
@@ -7869,6 +7864,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/promos:interactive_ui_tests",
       "//chrome/browser/ui/views/send_tab_to_self:interactive_ui_tests",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/views/side_panel:interactive_ui_tests",
       "//chrome/browser/ui/views/tabs/dragging",
       "//chrome/browser/ui/views/tabs/dragging:interactive_ui_tests",
       "//chrome/browser/ui/views/tabs/horizontal",
@@ -8172,7 +8168,6 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/fullscreen_control/fullscreen_control_view_interactive_uitest.cc",
         "../browser/ui/views/location_bar/webui_location_bar_interactive_uitest.cc",
         "../browser/ui/views/page_action/collaboration_messaging_page_action_icon_view_interactive_uitest.cc",
-        "../browser/ui/views/side_panel/side_panel_interactive_uitest.cc",
         "../browser/ui/views/test/view_event_test_base.cc",
         "../browser/ui/views/test/view_event_test_base.h",
       ]

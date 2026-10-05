@@ -2995,8 +2995,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
   EXPECT_TRUE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
 
   // Verify that the onOpened event key is NOT in the dispatched events.
-  EXPECT_EQ(0, observer.dispatched_events().count(
-                   api::side_panel::OnOpened::kEventName));
+  EXPECT_EQ(0u, observer.dispatched_events().count(
+                    api::side_panel::OnOpened::kEventName));
 }
 
 // Tests that the sidePanel.onOpened event fires with the correct event payload.

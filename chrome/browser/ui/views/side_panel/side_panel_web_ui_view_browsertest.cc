@@ -85,7 +85,8 @@ void QueryTabsForCurrentWindowAndCheckResults(
       content::EvalJs(contents, "chrome.tabs.query({currentWindow: true})")
           .ExtractList()
           .Clone());
-  EXPECT_EQ(list.size(), browser->GetTabStripModel()->count());
+  EXPECT_EQ(list.size(),
+            static_cast<size_t>(browser->GetTabStripModel()->count()));
   EXPECT_TRUE(list[0].is_dict());
   EXPECT_TRUE(list[1].is_dict());
   {
