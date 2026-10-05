@@ -275,7 +275,7 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   // avoids unnecessary heap matrix allocations.
   //
   // TODO(crbug.com/549169077): Support queries longer than candidate strings.
-  if (m == 0 || n == 0 || m > n) {
+  if (m == 0 || m > n) {
     return 0.0;
   }
 
@@ -299,9 +299,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
       const bool is_exact_match = (query[j] == candidate[i]);
       // Check for adjacent character transposition (e.g. user typed "teh" for
       // "the").
-      const bool is_swap_match =
-          (j > 0 && i > 0 && query[j] == candidate[i - 1] &&
-           query[j - 1] == candidate[i]);
+      const bool is_swap_match = (j > 0 && query[j] == candidate[i - 1] &&
+                                  query[j - 1] == candidate[i]);
 
       // 2. Diagonal match steps:
       // Only allow diagonal steps if the previous query prefix had a
@@ -335,7 +334,7 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
           diagonal_score = (kMatchScore * 2) + kSwapPenalty;
           consecutive = 2;
           diag_step = MatchStep::kTransposition;
-        } else if (j > 1 && i > 1) {
+        } else {
           const size_t trans_diag_idx = (i - 2) + ((j - 2) * n);
           if (alignment_matrix_[trans_diag_idx].score > 0) {
             diagonal_score = alignment_matrix_[trans_diag_idx].score +
@@ -351,9 +350,7 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
         if (diag.score > 0) {
           diagonal_score = diag.score + kTypoPenalty;
           consecutive = 0;
-          if (diagonal_score > 0) {
-            diag_step = MatchStep::kSubstitution;
-          }
+          diag_step = MatchStep::kSubstitution;
         }
       }
 
