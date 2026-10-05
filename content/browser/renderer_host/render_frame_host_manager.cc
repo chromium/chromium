@@ -1654,7 +1654,14 @@ void RenderFrameHostManager::RestorePage(
 }
 
 void RenderFrameHostManager::ClearRFHsPendingShutdown() {
-  pending_delete_hosts_.clear();
+  // Move the pending-delete RenderFrameHosts to a local set before destroying
+  // them so that `pending_delete_hosts_` is already empty while their
+  // destructors run, and verify that nothing re-entrantly adds new entries to
+  // `pending_delete_hosts_` during destruction (see https://crbug.com/567160164).
+  RFHPendingDeleteSet pending_delete_hosts;
+  pending_delete_hosts_.swap(pending_delete_hosts);
+  pending_delete_hosts.clear();
+  CHECK(pending_delete_hosts_.empty());
 }
 
 void RenderFrameHostManager::ClearWebUIInstances() {
