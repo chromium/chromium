@@ -1337,7 +1337,7 @@ TEST_F(FilePathWatcherTest, DirectoryChain) {
   }
 
   // Allow the watcher to update its watch list.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
 
   // It may take some time for `watcher` to re-construct its watch list, so it's
   // possible an event is missed. _At least_ one event should be fired, though.
@@ -1403,7 +1403,8 @@ TEST_F(FilePathWatcherTest, DeleteAndRecreate) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Allow the watcher to update its watch list.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
   VLOG(1) << "Waiting for file creation + modification";
@@ -1538,7 +1539,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   ASSERT_TRUE(setup_result);
 
   // Allow the watcher to initialize its watch on the parent directory.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // TODO(crbug.com/40263777): Create a version of this test which also
   // verifies that the events occur on the correct file path if the watcher is
@@ -1550,7 +1552,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Ensure inotify has established the watch for the new 'dir'.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Create "$dir/file1".
   base::FilePath file1(dir.AppendASCII("file1"));
@@ -1567,7 +1570,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Ensure inotify has established the watch for the new 'subdir'.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Create "$dir/subdir/subdir2".
   base::FilePath subdir2(subdir.AppendASCII("subdir2"));
@@ -1576,7 +1580,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Ensure inotify has established the watch for the new 'subdir2'.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Rename "$dir/subdir/subdir2" to "$dir/subdir/subdir2b".
   base::FilePath subdir2b(subdir.AppendASCII("subdir2b"));
@@ -1585,7 +1590,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Ensure inotify has established the watch for the new 'subdir2b'.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Create "$dir/subdir/subdir_file1".
   base::FilePath subdir_file1(subdir.AppendASCII("subdir_file1"));
@@ -1602,7 +1608,8 @@ TEST_F(FilePathWatcherTest, RecursiveWatch) {
   delegate.RunUntilEventsMatch(event_expecter);
 
   // Ensure inotify has established the watch for the new 'subdir_child_dir'.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Create "$dir/subdir/subdir_child_dir/child_dir_file1".
   base::FilePath child_dir_file1(
@@ -1725,10 +1732,12 @@ TEST_F(FilePathWatcherTest, MoveChild) {
   ASSERT_TRUE(SetupWatch(dest_subdir, &subdir_watcher, &subdir_delegate,
                          FilePathWatcher::Type::kNonRecursive));
 
+  // Allow the watcher to update its watch list.
+  file_delegate.SpinAndDiscardAllReceivedEvents();
+  subdir_delegate.SpinAndDiscardAllReceivedEvents();
+
   // Move the directory into place, s.t. the watched file appears.
   ASSERT_TRUE(Move(source_dir, dest_dir));
-  // Allow the watcher to update its watch list.
-  SpinEventLoopForABit();
   file_event_expecter.AddExpectedEventForPath(dest_file);
   subdir_event_expecter.AddExpectedEventForPath(dest_subdir);
   file_delegate.RunUntilEventsMatch(file_event_expecter);
@@ -1749,12 +1758,11 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
   ASSERT_TRUE(SetupWatch(temp_dir_.GetPath(), &watcher, &delegate,
                          FilePathWatcher::Type::kNonRecursive));
   // Allow the watcher to update its watch list.
-  SpinEventLoopForABit();
+  delegate.SpinAndDiscardAllReceivedEvents();
+  event_expecter = AccumulatingEventExpecter();
 
   // Move the directory into place, s.t. the watched file appears.
   Move(from_path, to_path);
-  // Allow the watcher to update its watch list.
-  SpinEventLoopForABit();
 
   // The move event.
   event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
