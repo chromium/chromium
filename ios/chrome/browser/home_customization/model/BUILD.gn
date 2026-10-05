@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ephemeral_theme_data_manager.h",
+    "ephemeral_theme_data_manager.mm",
     "home_background_customization_service.h",
     "home_background_customization_service.mm",
     "home_background_customization_service_factory.h",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "ephemeral_theme_data_manager_unittest.mm",
     "home_background_customization_service_unittest.mm",
     "home_background_image_service_unittest.mm",
     "theme_syncable_service_ios_unittest.mm",

@@ -1397,12 +1397,12 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetAndPersistEphemeralTheme) {
 }
 
 // Test that when both ephemeral theme features are enabled, the service
-// sequentially downloads the main animation JSON and the promo animation JSON,
+// downloads the main animation JSON and the promo animation JSON in parallel,
 // writes both to disk, saves their file paths and parsed color mapping
 // dictionaries in `kIosNtpEphemeralThemeData`, and registers the promo for
 // single display.
 TEST_F(HomeBackgroundCustomizationServiceTest,
-       FetchesAndSavesEphemeralThemeDataSequentiallyAndRegistersPromo) {
+       FetchesAndSavesEphemeralThemeDataInParallelAndRegistersPromo) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -1441,19 +1441,15 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       background_image_service_.get(), test_shared_loader_factory_,
       temp_dir.GetPath(), &mock_promos_manager);
 
-  // Step 1: Only the first download (`animation-url`) should be pending.
+  // Both downloads should be started in parallel.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kPromoUrl));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, kAnimationLottieJsonBody);
-  test_url_loader_factory_.WaitForRequest(GURL(kPromoUrl));
-
-  // Step 2: After the first file is written to disk, the second download
-  // (`animation-promo-url`) is started.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kPromoUrl, kPromoLottieJsonBody);
+
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty();
   }));
@@ -1616,10 +1612,9 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       temp_dir.GetPath(), &mock_promos_manager);
 
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
+  EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, R"({"v":"5.7.4","name":"theme_v2","layers":[]})");
-
-  test_url_loader_factory_.WaitForRequest(GURL(kPromoUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kPromoUrl, R"({"v":"5.7.4","name":"promo_v2","layers":[]})");
 
