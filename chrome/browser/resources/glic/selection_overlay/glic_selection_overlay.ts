@@ -86,7 +86,7 @@ export class SelectionOverlayElementElement extends
       enableSelectionOverlayPrompt: {type: Boolean},
       enableSelectionOverlayPromptBox: {type: Boolean},
       hideHandles: {type: Boolean},
-      disableMultiSelect: {type: Boolean},
+      disableMultiSelect: {type: Boolean, reflect: true},
     };
   }
 
@@ -450,6 +450,12 @@ export class SelectionOverlayElementElement extends
     // If no one is responding to the drag yet, then let the region selection
     // layer respond.
     if (this.draggingRespondent === DragFeature.NONE) {
+      // Disable region selection on click.
+      // TODO(b/565871325): Allow adding regions while Ctrl or Cmd is held, here
+      // and in `handleGestureEnd()`.
+      if (this.disableMultiSelect) {
+        return;
+      }
       this.setCursorToCrosshair();
       this.draggingRespondent = DragFeature.MANUAL_REGION;
 
@@ -471,6 +477,13 @@ export class SelectionOverlayElementElement extends
   }
 
   protected override handleGestureEnd() {
+    if (this.disableMultiSelect &&
+        this.draggingRespondent === DragFeature.NONE) {
+      (this.baseHandler as SelectionOverlayBaseHandlerImpl)
+          .dismissOverlay(DismissOverlayReason.kBackgroundClick);
+      return;
+    }
+
     // Allow proper feature to respond to the tap/drag event.
     switch (this.currentGesture.state) {
       case GestureState.DRAGGING:

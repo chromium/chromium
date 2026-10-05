@@ -160,6 +160,16 @@
   visibility: hidden;
 }
 
+/* Clicks dismiss the overlay instead of drawing a region, so show the normal
+ * cursor. */
+:host([disable-multi-select]) #selectionOverlay {
+  cursor: default;
+}
+
+:host([disable-multi-select]) #cursor {
+  visibility: hidden;
+}
+
 /* Set styles for high contrast mode in Windows. */
 @media (forced-colors: active) {
   #cursor {
