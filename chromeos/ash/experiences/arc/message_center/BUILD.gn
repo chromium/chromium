@@ -76,7 +76,6 @@ source_set("unit_tests") {
     "arc_notification_manager_unittest.cc",
     "arc_notification_surface_manager_impl_unittest.cc",
     "arc_notification_view_unittest.cc",
-    "metadata_utils_unittest.cc",
   ]
   public_deps = [ "//ash:test_support" ]
   deps = [

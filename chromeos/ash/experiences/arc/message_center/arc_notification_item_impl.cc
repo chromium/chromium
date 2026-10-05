@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -104,14 +103,7 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         base::UTF8ToUTF16(data->accessible_name.value());
   }
 
-  const bool render_on_chrome =
-      features::IsRenderArcNotificationsByChromeEnabled() &&
-      data->render_on_chrome;
-
-  if (render_on_chrome) {
-    rich_data.settings_button_handler =
-        message_center::SettingsButtonHandler::INLINE;
-  } else if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
+  if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
     rich_data.settings_button_handler =
         message_center::SettingsButtonHandler::DELEGATE;
   } else {
@@ -130,29 +122,14 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
     notifier_id.group_key = data->group_key;
   }
 
-  auto notification_type =
-      render_on_chrome
-          ? (data->messages
-                 ? message_center::NOTIFICATION_TYPE_CONVERSATION
-                 : ((data->indeterminate_progress || data->progress_max != -1)
-                        ? message_center::NOTIFICATION_TYPE_PROGRESS
-                        : message_center::NOTIFICATION_TYPE_SIMPLE))
-          : message_center::NOTIFICATION_TYPE_CUSTOM;
-
   auto notification = CreateNotificationFromArcNotificationData(
-      notification_type, notification_id_, data.get(), notifier_id, rich_data,
+      message_center::NOTIFICATION_TYPE_CUSTOM, notification_id_, data.get(),
+      notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
 
   notification->set_timestamp(
       base::Time::FromMillisecondsSinceUnixEpoch(data->time));
-
-  if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
-    notification->set_custom_view_type(kArcNotificationCustomViewType);
-  }
-
-  if (notification_type == message_center::NOTIFICATION_TYPE_PROGRESS) {
-    notification->set_progress_status(base::UTF8ToUTF16(data->message));
-  }
+  notification->set_custom_view_type(kArcNotificationCustomViewType);
 
   if (expand_state_ != ArcNotificationExpandState::FIXED_SIZE &&
       data->expand_state != ArcNotificationExpandState::FIXED_SIZE &&
