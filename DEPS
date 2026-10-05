@@ -1900,7 +1900,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_build_tools/aapt2/${{platform}}',
-              'version': 'version:2@9.5.0-alpha07-15978811',
+              'version': 'version:2@9.5.0-alpha08-16409357',
           },
       ],
       'condition': 'checkout_android and non_git_source and '
