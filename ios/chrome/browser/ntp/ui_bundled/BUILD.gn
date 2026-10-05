@@ -93,6 +93,7 @@ source_set("component_factory") {
     "//components/subscription_eligibility/objc",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:aim_button_service",
     "//ios/chrome/browser/browser_view/model",
     "//ios/chrome/browser/content_suggestions/coordinator",
     "//ios/chrome/browser/content_suggestions/ui",
@@ -160,6 +161,7 @@ source_set("coordinator") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:aim_button_service",
     "//ios/chrome/browser/authentication/account_menu/coordinator",
     "//ios/chrome/browser/authentication/account_menu/public",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
@@ -248,8 +250,6 @@ source_set("coordinator") {
 
 source_set("ntp_internal") {
   sources = [
-    "ai_mode_button_service_ios.h",
-    "ai_mode_button_service_ios.mm",
     "fake_location_bar_view.h",
     "fake_location_bar_view.mm",
     "feed_header_view_controller.h",
@@ -304,6 +304,7 @@ source_set("ntp_internal") {
     "//components/subscription_eligibility/objc",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:aim_button_service",
     "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/browser_view/model",
     "//ios/chrome/browser/bubble/ui_bundled",
@@ -442,6 +443,7 @@ source_set("unit_tests") {
     "//components/variations:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/aim/model:aim_button_service",
     "//ios/chrome/browser/aim/model:test_support",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_view/model",

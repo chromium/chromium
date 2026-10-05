@@ -2,6 +2,31 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("aim_button_service") {
+  sources = [
+    "ai_mode_button_service_ios.h",
+    "ai_mode_button_service_ios.mm",
+    "ai_mode_button_service_ios_factory.h",
+    "ai_mode_button_service_ios_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/lens:lens_url_utils",
+    "//components/search_engines",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ntp/ui_bundled:constants",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+    "//url",
+  ]
+}
+
 source_set("aim_availability") {
   sources = [
     "ios_chrome_aim_eligibility_service.h",

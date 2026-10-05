@@ -13,6 +13,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
@@ -27,7 +29,6 @@
 #import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_header_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -124,8 +125,7 @@
   AimEligibilityService* aimEligibilityService =
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
   AIModeButtonServiceIOS* aiModeButtonServiceIOS =
-      [[AIModeButtonServiceIOS alloc]
-          initWithTemplateURLService:templateURLService];
+      AIModeButtonServiceIOSFactory::GetForProfile(profile);
   return [[NewTabPageMediator alloc]
               initWithTemplateURLService:templateURLService
                                URLLoader:URLLoadingBrowserAgent

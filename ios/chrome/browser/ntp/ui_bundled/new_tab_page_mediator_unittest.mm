@@ -20,6 +20,8 @@
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
 #import "components/sync/protocol/theme_types.pb.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -39,7 +41,6 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ntp/ui_bundled/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_content_delegate.h"
@@ -187,8 +188,7 @@ class NewTabPageMediatorTest : public PlatformTest {
     TemplateURLService* template_url_service =
         ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     AIModeButtonServiceIOS* ai_mode_button_service =
-        [[AIModeButtonServiceIOS alloc]
-            initWithTemplateURLService:template_url_service];
+        AIModeButtonServiceIOSFactory::GetForProfile(profile_.get());
 
     mediator_ = [[NewTabPageMediator alloc]
                 initWithTemplateURLService:template_url_service

@@ -32,7 +32,7 @@ class WebState;
 }  // namespace web
 
 class AimEligibilityService;
-@class AIModeButtonServiceIOS;
+class AIModeButtonServiceIOS;
 class AuthenticationService;
 class BrowserViewVisibilityNotifierBrowserAgent;
 class ChromeAccountManagerService;
@@ -99,8 +99,6 @@ class UserUploadedImageManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Service vending the AI Mode button configuration.
-@property(nonatomic, readonly) AIModeButtonServiceIOS* aiModeButtonServiceIOS;
 // Recorder for the metrics related to the feed.
 @property(nonatomic, weak) FeedMetricsRecorder* feedMetricsRecorder;
 // Consumer for this mediator.

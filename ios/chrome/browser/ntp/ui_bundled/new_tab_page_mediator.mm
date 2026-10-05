@@ -40,6 +40,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/subscription_eligibility/objc/subscription_eligibility_observer_bridge.h"
 #import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
@@ -64,7 +65,6 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/ai_mode_button_service_ios.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_control_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -324,7 +324,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   // AIM eligibility service.
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // Service vending the AI Mode button configuration.
-  AIModeButtonServiceIOS* _aiModeButtonServiceIOS;
+  raw_ptr<AIModeButtonServiceIOS> _aiModeButtonServiceIOS;
   // AIM eligibility subscription.
   base::CallbackListSubscription _aimEligibilitySubscription;
   // Whether AIM is currently allowed.
@@ -639,7 +639,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _identityManager = nullptr;
   _aimEligibilitySubscription = {};
   _aimEligibilityService = nullptr;
-  _aiModeButtonServiceIOS = nil;
+  _aiModeButtonServiceIOS = nullptr;
   _isAIMAllowed = NO;
   self.feedControlDelegate = nil;
   _backgroundCustomizationServiceObserverBridge = nullptr;
@@ -864,8 +864,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [self.consumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setAIMAllowed:aimAllowed];
   [self.headerConsumer setFuseboxEligible:fuseboxEligible];
-  [self.consumer setAIMTitle:_aiModeButtonServiceIOS.title
-                        icon:_aiModeButtonServiceIOS.icon];
+  if (_aiModeButtonServiceIOS) {
+    [self.consumer setAIMTitle:_aiModeButtonServiceIOS->GetTitle()
+                          icon:_aiModeButtonServiceIOS->GetIcon()];
+  }
 
   if (aimAllowed == _isAIMAllowed) {
     return;
