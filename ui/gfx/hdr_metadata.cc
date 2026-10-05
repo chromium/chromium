@@ -189,11 +189,17 @@ void HDRMetadata::SetSerializedAgtm(base::span<const uint8_t> data) {
   }
 }
 
+void HDRMetadata::SetHdrReferenceWhite(float nits) {
+  if (!agtm_) {
+    agtm_.emplace();
+  }
+  agtm_->fHdrReferenceWhite = nits;
+}
+
 void HDRMetadata::Reset() {
   mdcv_.reset();
   clli_.reset();
   agtm_.reset();
-  ndwl_.reset();
   extended_range.reset();
 }
 
@@ -206,9 +212,6 @@ void HDRMetadata::MergeMetadataFrom(const HDRMetadata& other) {
   }
   if (other.agtm_) {
     agtm_ = other.agtm_;
-  }
-  if (other.ndwl_) {
-    ndwl_ = other.ndwl_;
   }
   if (other.extended_range) {
     extended_range = other.extended_range;
@@ -233,10 +236,6 @@ float HDRMetadata::GetWaylandReferenceLuminance(
     const HDRMetadata& hdr_metadata) {
   if (hdr_metadata.agtm_) {
     return hdr_metadata.agtm_->fHdrReferenceWhite;
-  }
-
-  if (hdr_metadata.ndwl_.has_value() && hdr_metadata.ndwl_.value() > 0.f) {
-    return hdr_metadata.ndwl_.value();
   }
 
   if (color_space.GetTransferID() == ColorSpace::TransferID::PQ ||
@@ -292,9 +291,6 @@ std::string HDRMetadata::ToString() const {
   if (clli_) {
     ss << "clli:" << clli_->toString().c_str() << ", ";
   }
-  if (ndwl_) {
-    ss << "ndwl:" << *ndwl_ << ", ";
-  }
   if (extended_range) {
     ss << "extended_range:" << extended_range->ToString() << ", ";
   }
@@ -313,7 +309,6 @@ std::weak_ordering HDRMetadata::operator<=>(const HDRMetadata& other) const {
   const auto& a = *this;
   const auto& b = other;
   auto cmp = std::weak_ordering::equivalent;
-  COMPARE_MEMBER(ndwl_);
   COMPARE_MEMBER(clli_);
   COMPARE_MEMBER(mdcv_);
   COMPARE_MEMBER(agtm_);

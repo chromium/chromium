@@ -34,10 +34,6 @@ bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
   if (mdcv) {
     output->SetMDCV(*mdcv);
   }
-  std::optional<float> ndwl = data.ndwl();
-  if (ndwl) {
-    output->SetNDWL(*ndwl);
-  }
   if (!data.ReadExtendedRange(&output->extended_range)) {
     return false;
   }

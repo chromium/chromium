@@ -74,9 +74,6 @@ ToneMapInfo ComputeToneMapInfo(const skcms_TransferFunction& fn,
     if (metadata.HasAgtm()) {
       hdr_reference_white = metadata.GetAgtm().fHdrReferenceWhite;
       info.white_scale_factor = hdr_reference_white / fn.a;
-    } else if (metadata.HasNDWL() && metadata.GetNDWL() > 0.f) {
-      hdr_reference_white = metadata.GetNDWL();
-      info.white_scale_factor = hdr_reference_white / fn.a;
     } else {
       hdr_reference_white = fn.a;
     }
@@ -167,19 +164,6 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
 
   skhdr::Metadata skia_metadata;
 
-  skhdr::AdaptiveGlobalToneMap agtm;
-  bool agtm_valid = false;
-  if (metadata.HasAgtm()) {
-    agtm_valid = true;
-    agtm = metadata.GetAgtm();
-  }
-
-  // Use NDWL to specify HDR reference white only if AGTM was not present.
-  if (!agtm_valid && metadata.HasNDWL() && metadata.GetNDWL() > 0.f) {
-    agtm.fHdrReferenceWhite = metadata.GetNDWL();
-    agtm_valid = true;
-  }
-
   // Set the MDCV, CLLI, and AGTM values on `skia_metadata`.
   if (metadata.HasMDCV()) {
     skia_metadata.setMasteringDisplayColorVolume(metadata.GetMDCV());
@@ -187,8 +171,8 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   if (metadata.HasCLLI()) {
     skia_metadata.setContentLightLevelInformation(metadata.GetCLLI());
   }
-  if (agtm_valid) {
-    skia_metadata.setAdaptiveGlobalToneMap(agtm);
+  if (metadata.HasAgtm()) {
+    skia_metadata.setAdaptiveGlobalToneMap(metadata.GetAgtm());
   }
 
   // Use skhdr::Metadata to compute the filter.

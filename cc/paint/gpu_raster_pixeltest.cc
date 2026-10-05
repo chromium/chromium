@@ -1078,7 +1078,7 @@ TEST_F(GpuRasterPixelTest, DrawHdrImageWithMetadata) {
               peak_luminance.value(), kContentAvgNits});
         }
         if (white_luminance.has_value()) {
-          hdr_metadata.SetNDWL(white_luminance.value());
+          hdr_metadata.SetHdrReferenceWhite(white_luminance.value());
         }
 
         auto image_generator = sk_make_sp<FakePaintImageGenerator>(

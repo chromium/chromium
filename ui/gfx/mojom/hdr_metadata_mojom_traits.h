@@ -40,13 +40,6 @@ struct StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata> {
                                                    : nullptr);
   }
 
-  static std::optional<float> ndwl(const gfx::HDRMetadata& input) {
-    if (input.HasNDWL()) {
-      return input.GetNDWL();
-    }
-    return std::nullopt;
-  }
-
   static mojo::OptionalAsPointer<const skhdr::AdaptiveGlobalToneMap> agtm(
       const gfx::HDRMetadata& input) {
     return mojo::OptionalAsPointer(input.HasAgtm() ? &input.GetAgtm()

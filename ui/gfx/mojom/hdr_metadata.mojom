@@ -18,7 +18,6 @@ struct HdrMetadataExtendedRange {
 struct HDRMetadata {
   skia.mojom.SkHdrMasteringDisplayColorVolume? mdcv;
   skia.mojom.SkHdrContentLightLevelInformation? clli;
-  float? ndwl;
   HdrMetadataExtendedRange? extended_range;
   skia.mojom.SkHdrAdaptiveGlobalToneMap? agtm;
 };

@@ -2839,16 +2839,18 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   if (needs_tone_map) {
     // Use the current SDR slider white level for PQ HDR videos on
     // Windows, so that they look similar when rendered by the
-    // compositor and when rendered as an overlay (HDR10 MPO).
+    // compositor and when rendered as an overlay (HDR10 MPO). Do not adjust
+    // the white level of content that has AGTM metadata.
     // https://crbug.com/1492817
     auto hdr_metadata = src_hdr_metadata;
     if (quad->is_video_frame &&
         src_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ &&
+        !src_hdr_metadata.HasAgtm() &&
         base::FeatureList::IsEnabled(
             features::kUseDisplaySDRMaxLuminanceNits)) {
       hdr_metadata =
           gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(src_hdr_metadata);
-      hdr_metadata.SetNDWL(
+      hdr_metadata.SetHdrReferenceWhite(
           current_frame()->display_color_spaces.GetSDRMaxLuminanceNits());
     }
     cc::ToneMapUtil::AddGlobalToneMapFilterToPaint(

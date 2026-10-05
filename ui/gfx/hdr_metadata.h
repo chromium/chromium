@@ -72,6 +72,11 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // metadata to the parsed value. Otherwise leave it unchanged.
   void SetSerializedAgtm(base::span<const uint8_t> data);
 
+  // Set the HDR reference white (the number of nits of SDR white) in the AGTM
+  // metadata. If there is no AGTM metadata, then default AGTM metadata will be
+  // created first.
+  void SetHdrReferenceWhite(float nits);
+
   // Mastering display color volume (MDCV) metadata.
   void SetMDCV(const skhdr::MasteringDisplayColorVolume& smpte) {
     mdcv_ = smpte;
@@ -90,15 +95,6 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
     return clli_.value();
   }
 
-  // Nominal diffuse white level (NDWL), which is the number of nits of SDR
-  // white.
-  void SetNDWL(float nits) { ndwl_ = nits; }
-  bool HasNDWL() const { return ndwl_.has_value(); }
-  float GetNDWL() const {
-    CHECK(ndwl_.has_value());
-    return ndwl_.value();
-  }
-
   // Brightness points for extended range color spaces.
   std::optional<HdrMetadataExtendedRange> extended_range;
 
@@ -113,7 +109,7 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
 
   // Return true if this structure holds no metadata.
   bool IsEmpty() const {
-    return !mdcv_.has_value() && !clli_.has_value() && !ndwl_.has_value() &&
+    return !mdcv_.has_value() && !clli_.has_value() &&
            !extended_range.has_value() && !agtm_.has_value();
   }
 
@@ -155,7 +151,6 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   std::optional<skhdr::MasteringDisplayColorVolume> mdcv_;
   std::optional<skhdr::ContentLightLevelInformation> clli_;
   std::optional<skhdr::AdaptiveGlobalToneMap> agtm_;
-  std::optional<float> ndwl_;
 };
 
 // HDR metadata types as described in
