@@ -1565,8 +1565,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
 
 // Test that resizing a window below minimum dimensions while the dialog is
 // showing closes the dialog.
+// TODO(crbug.com/570038473): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowOpenFileThenResizeSmall DISABLED_ShowOpenFileThenResizeSmall
+#else
+#define MAYBE_ShowOpenFileThenResizeSmall ShowOpenFileThenResizeSmall
+#endif
 IN_PROC_BROWSER_TEST_F(FileSystemAccessBrowserTest,
-                       ShowOpenFileThenResizeSmall) {
+                       MAYBE_ShowOpenFileThenResizeSmall) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WebContents* first_tab =
