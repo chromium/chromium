@@ -11,6 +11,7 @@ chromium::import! {
 }
 
 mod child_process_security_policy_impl;
+mod process_lock;
 mod process_state;
 
 pub(crate) use child_process_security_policy_impl::ChildProcessSecurityPolicyImpl;

@@ -70,6 +70,7 @@ rust_static_library("child_process_security_policy_impl") {
   sources = [
     "security/cpsp/child_process_security_policy_impl.rs",
     "security/cpsp/lib.rs",
+    "security/cpsp/process_lock.rs",
     "security/cpsp/process_state.rs",
   ]
   cxx_bindings = [
@@ -1590,6 +1591,8 @@ source_set("browser") {
     "process_internals/process_internals_ui.h",
     "process_lock.cc",
     "process_lock.h",
+    "process_lock_shim.cc",
+    "process_lock_shim.h",
     "process_reuse_policy.h",
     "process_visibility_util.cc",
     "push_messaging/push_messaging_context.cc",

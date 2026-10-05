@@ -619,6 +619,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void LockProcess(const IsolationContext& isolation_context,
                    ChildProcessId child_id,
                    const ProcessLock& process_lock);
+  void LockProcess_Cpp(const IsolationContext& isolation_context,
+                       ChildProcessId child_id,
+                       const ProcessLock& process_lock);
 
   // Marks the process identified by |child_id| as "used", meaning that it has
   // committed a page or has been given to a SiteInstance that already has a
@@ -627,6 +630,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // will reject attempts to lock it to a site, since it is no longer suitable
   // to host a URL that requires a dedicated process.
   void SetProcessIsUsed(ChildProcessId child_id);
+  void SetProcessIsUsed_Cpp(ChildProcessId child_id);
 
   // Testing helper method that generates a lock_url from |url| and then
   // calls LockProcess() with that lock URL.
@@ -637,6 +641,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Retrieves the current ProcessLock of process |child_id|.  Returns an empty
   // lock if the process does not exist or if it is not locked.
   ProcessLock GetProcessLock(ChildProcessId child_id);
+  ProcessLock GetProcessLock_Cpp(ChildProcessId child_id);
 
   // TODO(crbug.com/379869738) Remove this method when usages are ported.
   ProcessLock GetProcessLock(int child_id);

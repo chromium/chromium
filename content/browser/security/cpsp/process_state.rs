@@ -10,17 +10,63 @@ use std::collections::hash_map::Entry;
 use std::collections::HashMap;
 
 use content_common_id_types::ChildProcessId;
+use cxx::UniquePtr;
 
+use crate::process_lock::{AssignableProcessLock, StatefulProcessLock};
 use crate::ChildProcessSecurityPolicyImpl;
 
 #[cxx::bridge(namespace = "content::rust::child_process_security_policy")]
-mod ffi {
+pub(crate) mod ffi {
     #![allow(unsafe_code)]
     unsafe extern "C++" {
         include!("content/public/common/child_process_id.h");
+        include!("content/browser/process_lock.h");
+        include!("content/browser/process_lock_shim.h");
+        include!("content/browser/site_instance_impl.h");
 
         #[namespace = "content"]
         type ChildProcessId = content_common_id_types::ChildProcessId;
+
+        #[namespace = ""]
+        type GURL = url::gurl::ffi::GURL;
+
+        #[namespace = "content"]
+        #[rust_name = "CppProcessLock"]
+        type ProcessLock;
+
+        #[rust_name = "is_locked_to_site"]
+        fn IsLockedToSite(self: &CppProcessLock) -> bool;
+        #[rust_name = "allows_any_site"]
+        fn AllowsAnySite(self: &CppProcessLock) -> bool;
+        fn is_unused(self: &CppProcessLock) -> bool;
+
+        #[namespace = "content"]
+        type SiteInstanceImpl;
+
+        #[namespace = "content"]
+        #[rust_name = "get_default_site_url"]
+        #[Self = "SiteInstanceImpl"]
+        fn GetDefaultSiteURL() -> &'static GURL;
+
+        // ProcessLock helpers in C++
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "GetProcessLockURL"]
+        fn get_process_lock_url(lock: &CppProcessLock) -> UniquePtr<GURL>;
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "HaveSameWebExposedIsolationInfo"]
+        fn have_same_web_exposed_isolation_info(a: &CppProcessLock, b: &CppProcessLock) -> bool;
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "ToString"]
+        fn to_string(lock: &CppProcessLock) -> String;
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "CreateInvalid"]
+        fn create_invalid() -> UniquePtr<CppProcessLock>;
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "Clone"]
+        fn clone(lock: &CppProcessLock) -> UniquePtr<CppProcessLock>;
+        #[namespace = "content::rust::process_lock"]
+        #[cxx_name = "SetIsUsed"]
+        fn set_is_used(lock: Pin<&mut CppProcessLock>);
     }
 
     extern "Rust" {
@@ -34,6 +80,11 @@ mod ffi {
         fn grant_send_midi_sysex_message(child_id: ChildProcessId);
         fn can_send_midi_message(child_id: ChildProcessId) -> bool;
         fn can_send_midi_sysex_message(child_id: ChildProcessId) -> bool;
+
+        // Process lock methods.
+        fn lock_process(child_id: ChildProcessId, process_lock: &CppProcessLock);
+        fn set_process_is_used(child_id: ChildProcessId);
+        fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<CppProcessLock>;
     }
 }
 
@@ -110,6 +161,29 @@ fn can_send_midi_sysex_message(child_id: ChildProcessId) -> bool {
     cpsp.process_states
         .get_for_query(&child_id)
         .is_some_and(|state| state.can_send_midi_sysex_message())
+}
+
+fn lock_process(child_id: ChildProcessId, process_lock: &ffi::CppProcessLock) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
+    let cloned_lock = ffi::clone(process_lock);
+    let lock_to_set = AssignableProcessLock::lift(cloned_lock);
+    state.set_process_lock(lock_to_set);
+}
+
+fn set_process_is_used(child_id: ChildProcessId) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    let state = cpsp.process_states.get_mut(&child_id).expect("The process state should exist.");
+    state.set_process_is_used();
+}
+
+fn get_process_lock(child_id: ChildProcessId) -> UniquePtr<ffi::CppProcessLock> {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_for_query(&child_id) {
+        ffi::clone(state.process_lock())
+    } else {
+        ffi::create_invalid()
+    }
 }
 
 /// Data structure that tracks ProcessState for each RenderProcessHost based on
@@ -269,13 +343,20 @@ impl ProcessStateMaps {
 pub(crate) struct ProcessState {
     /// Determines if a child process can send MIDI messages.
     midi_permission: MidiPermission,
+    /// The typestate-protected ProcessLock for this process. This determines
+    /// which documents are allowed to load in a process and which site data the
+    /// process is allowed to access, based on the SiteInfo principal.
+    process_lock: StatefulProcessLock,
 }
 
 impl ProcessState {
     /// Private to the module to prevent creating new ProcessStates outside of
     /// ProcessStateMaps.
     fn new() -> Self {
-        ProcessState { midi_permission: MidiPermission::CannotSendMidi }
+        ProcessState {
+            midi_permission: MidiPermission::CannotSendMidi,
+            process_lock: StatefulProcessLock::default(),
+        }
     }
 
     fn can_send_midi_message(&self) -> bool {
@@ -285,6 +366,10 @@ impl ProcessState {
 
     fn can_send_midi_sysex_message(&self) -> bool {
         self.midi_permission == MidiPermission::CanSendMidiSysEx
+    }
+
+    pub(crate) fn process_lock(&self) -> &ffi::CppProcessLock {
+        self.process_lock.as_ffi()
     }
 }
 
@@ -324,6 +409,19 @@ impl MutableProcessState {
 
     fn grant_send_midi_sysex_message(&mut self) {
         self.0.midi_permission = MidiPermission::CanSendMidiSysEx;
+    }
+
+    // TODO(crbug.com/568880876): Mark the process as used when it is locked to
+    // a site, so that a `Locked` lock is never unused. This must match the C++
+    // `ProcessState::SetProcessLock()`.
+    pub(crate) fn set_process_lock(&mut self, lock_to_set: AssignableProcessLock) {
+        let old_lock = std::mem::take(&mut self.0.process_lock);
+        self.0.process_lock = old_lock.transition_to_state(lock_to_set).into();
+    }
+
+    pub(crate) fn set_process_is_used(&mut self) {
+        let old_lock = std::mem::take(&mut self.0.process_lock);
+        self.0.process_lock = old_lock.set_is_used();
     }
 }
 

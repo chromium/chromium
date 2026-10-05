@@ -915,9 +915,16 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     return false;
   }
 
+  // TODO(crbug.com/568880876): Mark the process as used when it is locked to a
+  // site. SiteInstanceImpl::LockProcessIfNeeded() already calls SetIsUsed()
+  // right after locking, but tests that call LockProcess() directly leave the
+  // process locked and unused. This must match the Rust
+  // `ProcessState::set_process_lock()`.
   void SetProcessLock(const ProcessLock& lock_to_set,
                       const IsolationContext& context) {
     CHECK(!lock_to_set.is_invalid());
+    CHECK(lock_to_set.is_unused())
+        << "Cannot lock a process to an already used lock: " << lock_to_set;
     CHECK(!process_lock_.IsLockedToSite());
     CHECK_NE(SiteInstanceImpl::GetDefaultSiteURL(),
              lock_to_set.GetProcessLockURL());
@@ -933,10 +940,11 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
                lock_to_set.GetWebExposedIsolationInfo());
 
       if (process_lock_.AllowsAnySite()) {
-        // TODO(acolwell): Remove ability to lock to an allows_any_site
-        // lock multiple times. Legacy behavior allows the old "lock to site"
-        // path to generate an "allow_any_site" lock if an empty URL is passed
-        // to SiteInstanceImpl::SetSite().
+        // TODO(crbug.com/568893320): Remove ability to lock to an
+        // allows_any_site lock multiple times. Legacy behavior allows the old
+        // "lock to site" path to generate an "allow_any_site" lock if an empty
+        // URL is passed to SiteInstanceImpl::SetSite(). The Rust
+        // `ProcessLock<NotYetAssigned>::transition()` already disallows this.
         CHECK(lock_to_set.AllowsAnySite() || lock_to_set.IsLockedToSite());
 
         // Do not allow a lock to become more strict if the process has already
@@ -950,11 +958,16 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       }
     }
 
+    // TODO(crbug.com/568883891): This drops the used bit if the old lock is
+    // invalid and was already marked as used (e.g., DevTools hidden targets or
+    // renderer debug URLs). Carry the used bit over from the old lock so that a
+    // used process can never become unused again. This must match the Rust
+    // `ProcessLock<Invalid>::transition()`.
     process_lock_ = lock_to_set;
     AddBrowsingInstanceInfo(context);
   }
 
-  void SetProcessIsUsed() { process_lock_.set_is_used(); }
+  void SetProcessIsUsed() { rust::process_lock::SetIsUsed(process_lock_); }
 
   void AddBrowsingInstanceInfo(const IsolationContext& context) {
     CHECK(!context.browsing_instance_id().is_null(), base::NotFatalUntil::M159);
@@ -2980,6 +2993,26 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
   // call GetProcessLock from any thread).
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    // TODO(crbug.com/522872468): The `IsolationContext` is currently ignored by
+    // the Rust implementation, which does not yet track BrowsingInstance
+    // isolation state (`browsing_instance_default_isolation_states_`). Support
+    // this in Rust (ideally decoupled from `LockProcess()`).
+    rust::child_process_security_policy::lock_process(child_id, process_lock);
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since the values tracked by ProcessState have only
+  // partially been implemented by the Rust version so far. Once ProcessState
+  // is fully supported in Rust, this should be combined into a
+  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  LockProcess_Cpp(context, child_id, process_lock);
+}
+
+void ChildProcessSecurityPolicyImpl::LockProcess_Cpp(
+    const IsolationContext& context,
+    ChildProcessId child_id,
+    const ProcessLock& process_lock) {
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
   CHECK(state);
@@ -2989,6 +3022,20 @@ void ChildProcessSecurityPolicyImpl::LockProcess(
 void ChildProcessSecurityPolicyImpl::SetProcessIsUsed(ChildProcessId child_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
 
+  if (IsRustEnabled(GetRustPolicy(CpspRustFeature::kProcessState))) {
+    rust::child_process_security_policy::set_process_is_used(child_id);
+  }
+
+  // Note: We explicitly continue with C++ state update as well even when in
+  // Rust-only mode, since the values tracked by ProcessState have only
+  // partially been implemented by the Rust version so far. Once ProcessState
+  // is fully supported in Rust, this should be combined into a
+  // RUST_CPP_PROCESS_STATE_VOID_FUNCTION call.
+  SetProcessIsUsed_Cpp(child_id);
+}
+
+void ChildProcessSecurityPolicyImpl::SetProcessIsUsed_Cpp(
+    ChildProcessId child_id) {
   base::AutoLock lock(lock_);
   auto* state = process_states_.GetProcessStateForMutation(child_id);
   CHECK(state);
@@ -3005,6 +3052,19 @@ void ChildProcessSecurityPolicyImpl::LockProcessForTesting(
 }
 
 ProcessLock ChildProcessSecurityPolicyImpl::GetProcessLock(
+    ChildProcessId child_id) {
+  // TODO(crbug.com/522872468): The Rust path copies the ProcessLock twice: once
+  // in Rust (`ffi::clone()` in `get_process_lock()`), and once here to copy it
+  // out of the returned unique_ptr. Changing the second copy to a move would
+  // need move constructors for ProcessLock, SiteInfo, and SiteInfo's members,
+  // which currently only declare copy constructors.
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      ProcessLock(
+          *rust::child_process_security_policy::get_process_lock(child_id)),
+      GetProcessLock_Cpp(child_id));
+}
+
+ProcessLock ChildProcessSecurityPolicyImpl::GetProcessLock_Cpp(
     ChildProcessId child_id) {
   base::AutoLock lock(lock_);
   if (auto* state = process_states_.GetProcessStateForQuery(child_id)) {

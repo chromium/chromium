@@ -171,6 +171,10 @@ class ChildProcessSecurityPolicyTest
     return result;
   }
 
+  bool IsRustProcessStateEnabled() const {
+    return std::get<1>(GetParam()) == CpspRustFeature::kProcessState;
+  }
+
   void SetUp() override {
     old_browser_client_ = SetBrowserClientForTesting(&test_browser_client_);
 
@@ -3362,12 +3366,19 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
   // If the process is then considered used (e.g., by loading content), it
   // should not be possible to lock it to another site.
   p->SetProcessIsUsed(kRendererProcess);
+  EXPECT_FALSE(p->GetProcessLock(kRendererProcess).is_unused());
+
   EXPECT_CHECK_DEATH_WITH(
       {
         p->LockProcess(bar_instance->GetIsolationContext(), kRendererProcess,
                        ProcessLock::FromSiteInfo(bar_instance->GetSiteInfo()));
       },
-      "Cannot lock an already used process to .*bar\\.com");
+      // Ensure that the Rust implementation caused the CHECK failure when
+      // Rust is enabled.
+      IsRustProcessStateEnabled()
+          ? "process_lock\\.rs[\\s\\S]*Cannot lock an already used process to "
+            ".*bar\\.com"
+          : "Cannot lock an already used process to .*bar\\.com");
 
   // We need to remove it otherwise other tests may fail.
   p->Remove(kRendererProcess);

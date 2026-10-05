@@ -18,6 +18,12 @@
 namespace content {
 
 class IsolationContext;
+class ProcessLock;
+
+namespace rust::process_lock {
+// C++ function defined in process_lock_shim.cc. See friend declaration below.
+void SetIsUsed(ProcessLock& lock);
+}  // namespace rust::process_lock
 
 // ProcessLock is a core part of Site Isolation, which is used to determine
 // which documents are allowed to load in a process and which site data the
@@ -234,16 +240,25 @@ class CONTENT_EXPORT ProcessLock {
   // that this class does not enforce that itself.
   bool is_unused() const { return is_unused_; }
 
-  // Marks the process associated with this ProcessLock as used. Note that this
-  // only mutates this instance, so it has no effect when called on a copy
-  // returned by ChildProcessSecurityPolicyImpl::GetProcessLock(). Most callers
-  // should use RenderProcessHost::SetIsUsed() instead.
-  void set_is_used() { is_unused_ = false; }
-
   std::string ToString() const;
 
  private:
+  // Only ChildProcessSecurityPolicyImpl may mark a ProcessLock as used. Both
+  // its C++ and Rust implementations call set_is_used() through this function
+  // so that CPSP does not need to be a friend of this class.
+  //
+  // Note: despite the `rust::process_lock` namespace, this is a C++ function
+  // (defined in process_lock_shim.cc alongside the other C++ shims exposed to
+  // Rust via FFI). The C++-only CPSP path calls it directly and does not go
+  // through any Rust code.
+  friend void rust::process_lock::SetIsUsed(ProcessLock& lock);
+
   explicit ProcessLock(const SiteInfo& site_info);
+
+  // Marks the process associated with this ProcessLock as used. Note that this
+  // only mutates this instance, so it has no effect when called on a copy
+  // returned by ChildProcessSecurityPolicyImpl::GetProcessLock().
+  void set_is_used() { is_unused_ = false; }
 
   // TODO(creis): Consider tracking multiple compatible SiteInfos in ProcessLock
   // (e.g., multiple sites when Site Isolation is disabled). This can better
