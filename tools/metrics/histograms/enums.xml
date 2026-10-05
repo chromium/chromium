@@ -5154,6 +5154,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147023078" label="RPC_S_CALL_CANCELLED"/>
   <int value="-2147022646" label="ERROR_NOT_CONNECTED"/>
   <int value="-2147022492" label="ERROR_DEVICE_IN_USE"/>
+  <int value="-2147020345" label="ERROR_SYSTEM_INTEGRITY_POLICY_VIOLATION"/>
   <int value="-2147019873" label="E_NOT_VALID_STATE (0x8007139F)"/>
   <int value="-2147012894" label="WININET_E_TIMEOUT"/>
   <int value="-2147012889" label="WININET_E_NAME_NOT_RESOLVED"/>
