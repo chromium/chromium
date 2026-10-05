@@ -11,9 +11,14 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/process/process.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/reporting/browser_launch/scoped_initial_command_line.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/webui/flags/flags_ui_switches.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/common/chrome_switches.h"
+#endif
 
 namespace enterprise_reporting {
 
@@ -71,6 +76,12 @@ BrowserLaunchDataCollectorDesktop::GetEvent() {
   for (const auto& [name, value] : initial_cli.GetSwitches()) {
     switch_keys.insert(name);
   }
+#if BUILDFLAG(IS_WIN)
+  // Exclude `--source-shortcut-location`, which Chrome automatically embeds
+  // into Windows shortcuts (Desktop, Start Menu, Taskbar) to record launch
+  // mode metrics.
+  switch_keys.erase(switches::kSourceShortcutLocation);
+#endif
 
   // Capture flag switch keys from the current process command line.
   CHECK(base::CommandLine::InitializedForCurrentProcess());

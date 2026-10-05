@@ -68,6 +68,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser:flags",
       "//chrome/browser/enterprise:browser_launch_reporting",
+      "//chrome/common:non_code_constants",
       "//components/webui/flags",
     ]
   }
