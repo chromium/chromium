@@ -14,6 +14,7 @@
 #include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -352,7 +353,11 @@ void PolicyLogger::EnableLogCompression(
     scoped_refptr<base::SequencedTaskRunner> compression_task_runner) {
   CHECK(compression_task_runner);
   base::AutoLock lock(lock_);
-  CHECK(!compression_task_runner_);
+  if (compression_task_runner_) {
+    CHECK_IS_TEST();
+    LOG(WARNING) << "PolicyLogger::EnableLogCompression called more than once";
+    return;
+  }
   compression_task_runner_ = std::move(compression_task_runner);
 }
 
