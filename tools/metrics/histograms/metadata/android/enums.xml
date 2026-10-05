@@ -2949,6 +2949,31 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="TEXT_AUTOSIZING"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewLockOutcome) -->
+
+<enum name="WebViewLockOutcome">
+  <int value="0" label="Failed to lock; couldn't probe lock holder"/>
+  <int value="1" label="Failed to lock; couldn't read lock holder status"/>
+  <int value="2" label="Failed to lock; lock holder didn't exist"/>
+  <int value="3" label="Failed to lock; lock holder was inaccessible"/>
+  <int value="4"
+      label="Failed to lock; lock holder's main thread is uninterruptible"/>
+  <int value="5" label="Failed to lock; lock holder's main thread is a zombie"/>
+  <int value="6" label="Failed to lock; lock holder is alive"/>
+  <int value="7" label="Acquired lock successfully"/>
+  <int value="8" label="Current process already held lock"/>
+  <int value="9" label="Failed to create lock file"/>
+  <int value="10" label="Exception in tryLock"/>
+  <int value="11" label="Failed to lock; couldn't read lock holder pid/name"/>
+  <int value="12" label="Failed to lock; lock holder is our pid"/>
+  <int value="13"
+      label="Correctly failed to lock: holder has a different name"/>
+  <int value="14"
+      label="Continued despite failing to lock; lock holder was likely stuck"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwDataDirLock.java:WebViewLockOutcome)-->
+
 <enum name="WebViewMixedContentMode">
   <int value="0" label="Always allow"/>
   <int value="1" label="Never allow"/>

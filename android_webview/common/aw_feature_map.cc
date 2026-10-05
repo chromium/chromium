@@ -77,6 +77,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
     &features::kWebViewReducedSeedExpiration,
     &features::kWebViewReducedSeedRequestPeriod,
+    &features::kWebViewRelaxDataDirLocking,
     &features::kWebViewRemoveInstantAppSupport,
     &features::kWebViewRendererKeepAlive,
     &features::kWebViewSetDownloadFaviconsEnabled,

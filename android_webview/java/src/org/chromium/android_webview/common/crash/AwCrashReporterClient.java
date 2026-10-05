@@ -30,6 +30,10 @@ public class AwCrashReporterClient {
         AwCrashReporterClientJni.get().setProcessNameCrashKey(processName);
     }
 
+    public static void setSkippedDataDirLockCrashKey(boolean skipped) {
+        AwCrashReporterClientJni.get().setSkippedDataDirLockCrashKey(skipped);
+    }
+
     /**
      * Determine if a Throwable should be reported to the crash reporting mechanism.
      *
@@ -60,5 +64,7 @@ public class AwCrashReporterClient {
     @NativeMethods
     interface Natives {
         void setProcessNameCrashKey(@JniType("std::string") String processName);
+
+        void setSkippedDataDirLockCrashKey(boolean skipped);
     }
 }

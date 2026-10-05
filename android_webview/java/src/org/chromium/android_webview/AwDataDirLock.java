@@ -13,10 +13,14 @@ import android.system.OsConstants;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.WebViewCachedFlags;
+import org.chromium.android_webview.common.crash.AwCrashReporterClient;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +45,9 @@ public abstract class AwDataDirLock {
     private static @Nullable RandomAccessFile sLockFile;
     private static @Nullable FileLock sExclusiveFileLock;
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(WebViewLockOutcome)
     @IntDef({
         ProcessStatus.PROBE_FAILURE,
         ProcessStatus.STATUS_FAILURE,
@@ -67,6 +74,62 @@ public abstract class AwDataDirLock {
         int ALIVE = 6;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        LockOutcome.PROBE_FAILURE,
+        LockOutcome.STATUS_FAILURE,
+        LockOutcome.NONEXISTENT,
+        LockOutcome.INACCESSIBLE,
+        LockOutcome.UNINTERRUPTIBLE,
+        LockOutcome.ZOMBIE,
+        LockOutcome.ALIVE,
+        LockOutcome.SUCCESS,
+        LockOutcome.ALREADY_HELD,
+        LockOutcome.CREATION_FAILED,
+        LockOutcome.EXCEPTION_IN_TRYLOCK,
+        LockOutcome.FAILED_TO_READ_HOLDER,
+        LockOutcome.HOLDER_IS_US,
+        LockOutcome.HELD_BY_OTHER_PROCESS,
+        LockOutcome.CONTINUED_WITH_STUCK_HOLDER,
+    })
+    private @interface LockOutcome {
+        // Include all the values from ProcessStatus above. These all indicate that we failed to
+        // acquire the lock after exhausting our retries, with the state of the lock holder.
+        int PROBE_FAILURE = 0;
+        int STATUS_FAILURE = 1;
+        int NONEXISTENT = 2;
+        int INACCESSIBLE = 3;
+        int UNINTERRUPTIBLE = 4;
+        int ZOMBIE = 5;
+        int ALIVE = 6;
+
+        // Successfully acquired the lock.
+        int SUCCESS = 7;
+        // The lock was already held on entry (this is also a success).
+        int ALREADY_HELD = 8;
+        // Failed to create the lock file.
+        int CREATION_FAILED = 9;
+        // Exception thrown in tryLock().
+        int EXCEPTION_IN_TRYLOCK = 10;
+        // Failed to read lock holder info.
+        int FAILED_TO_READ_HOLDER = 11;
+        // Lock holder info has our own pid.
+        int HOLDER_IS_US = 12;
+        // Lock holder has a different process name (this is the case that *should* fail).
+        int HELD_BY_OTHER_PROCESS = 13;
+        // Lock holder is likely stuck and we continued without the lock (this is also a "success").
+        int CONTINUED_WITH_STUCK_HOLDER = 14;
+        int COUNT = 15;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:WebViewLockOutcome)
+
+    private static void record(@LockOutcome int outcome) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.DataDirLock.Outcome", outcome, LockOutcome.COUNT);
+    }
+
     public static void lock(final Context appContext) {
         try (DualTraceEvent e1 = DualTraceEvent.scoped("AwDataDirLock.lock");
                 StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
@@ -75,6 +138,7 @@ public abstract class AwDataDirLock {
                 // This can happen if our own code calls lock() multiple times or it could be the
                 // result of an app catching an exception thrown during initialization and
                 // discarding it, causing us to later attempt to initialize WebView again.
+                record(LockOutcome.ALREADY_HELD);
                 return;
             }
 
@@ -92,6 +156,7 @@ public abstract class AwDataDirLock {
                     // Failing to create the lock file is always fatal; even if multiple processes
                     // are using the same data directory we should always be able to access the file
                     // itself.
+                    record(LockOutcome.CREATION_FAILED);
                     throw new RuntimeException("Failed to create lock file " + lockFile, e);
                 }
             }
@@ -117,20 +182,6 @@ public abstract class AwDataDirLock {
             // sleep, but there's a long history of bugs in the kernel code (generally a device
             // driver or filesystem rather than the "core" kernel logic) that can result in wakeups
             // being lost and the thread being stuck forever.
-            //
-            // We could just ignore the lock in this case; if the other process is actually stuck in
-            // D state forever then it's not going to run our code any more and can't actually cause
-            // any real data corruption issues. But, this would be somewhat risky: various parts of
-            // Chromium *also* use file locks on individual files within the data directory (e.g.
-            // sqlite databases) so just ignoring the lock failure here may lead to a similar lock
-            // failure later for another file, which may block forever, or crash in native code in a
-            // way that's harder to identify and debug than the specific Java exception we throw
-            // here. So, for now we continue to throw an exception if we run out of retries.
-            //
-            // This is really annoying for apps since it's not their fault and they can't do
-            // anything to prevent or avoid it other than catch exceptions from WebView startup and
-            // give up on using it, but we don't support or recommend this, and it's difficult to
-            // implement correctly without introducing other problems.
             for (int attempts = 1; attempts <= LOCK_RETRIES; ++attempts) {
                 try {
                     sExclusiveFileLock = sLockFile.getChannel().tryLock();
@@ -158,12 +209,15 @@ public abstract class AwDataDirLock {
                     // last retry, though, we rethrow the exception so that we still see the real
                     // cause in crash data instead of just a generic failure to acquire the lock.
                     if (attempts == LOCK_RETRIES) {
+                        record(LockOutcome.EXCEPTION_IN_TRYLOCK);
                         throw e;
                     }
                 }
                 if (sExclusiveFileLock != null) {
                     // We got the lock; write out info for debugging.
                     ProcessInfo.current().writeToFile(sLockFile);
+                    record(LockOutcome.SUCCESS);
+                    AwCrashReporterClient.setSkippedDataDirLockCrashKey(false);
                     return;
                 }
 
@@ -175,8 +229,52 @@ public abstract class AwDataDirLock {
                 }
             }
 
-            // We failed to get the lock even after retrying.
+            // We failed to get the lock even after retrying; attempt to debug why.
             @Nullable ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
+            ProcessInfo current = ProcessInfo.current();
+
+            if (holder == null) {
+                // We couldn't figure out who holds the lock.
+                record(LockOutcome.FAILED_TO_READ_HOLDER);
+            } else if (current.pid == holder.pid) {
+                // We allegedly hold the lock - something weird is going on.
+                record(LockOutcome.HOLDER_IS_US);
+            } else if (!current.processName.equals(holder.processName)) {
+                // A process with a different name allegedly holds the lock.
+                // The app is misusing WebView in the way the lock exists to prevent.
+                record(LockOutcome.HELD_BY_OTHER_PROCESS);
+            } else {
+                // A process with the same name but a different pid allegedly holds the lock.
+                boolean likelyStuck =
+                        holder.processStatus == ProcessStatus.ZOMBIE
+                                || holder.processStatus == ProcessStatus.UNINTERRUPTIBLE;
+                if (likelyStuck
+                        && WebViewCachedFlags.get()
+                                .isCachedFeatureEnabled(
+                                        AwFeatures.WEBVIEW_RELAX_DATA_DIR_LOCKING)) {
+                    // If the other process is actually stuck in D state forever then it's not going
+                    // to run our code any more and can't actually cause any real data corruption
+                    // issues. But, this is somewhat risky: various parts of Chromium *also* use
+                    // file locks on individual files within the data directory (e.g. sqlite) so
+                    // this may lead to a similar lock failure later for another file, which may
+                    // block forever, or crash in native code in a way that's harder to identify and
+                    // debug.
+                    //
+                    // This is really annoying for apps since it's not their fault, and we don't
+                    // want apps to catch WebView startup exceptions. So, when the experiment is
+                    // enabled, we continue here and accept the risk.
+                    Log.w(
+                            TAG,
+                            "ignoring data directory lock held by likely-stuck process: "
+                                    + ProcessInfo.formatWithStatus(holder));
+                    record(LockOutcome.CONTINUED_WITH_STUCK_HOLDER);
+                    AwCrashReporterClient.setSkippedDataDirLockCrashKey(true);
+                    return;
+                } else {
+                    record(holder.processStatus);
+                }
+            }
+
             String error = getLockFailureReason(holder);
             if (CompatQuirks.isEnabled(CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY)) {
                 Log.w(TAG, error);

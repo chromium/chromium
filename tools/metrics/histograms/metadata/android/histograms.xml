@@ -7622,6 +7622,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.DataDirLock.Outcome" enum="WebViewLockOutcome"
+    expires_after="2027-04-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the outcome of a call to AwDataDirLock.lock(). This is recorded when
+    browser process startup is triggered. This is usually only once per session,
+    but can potentially be recorded multiple times if the host app catches a
+    startup exception and triggers startup again.
+
+    Note that histogram persistence is not yet enabled at the time this is
+    usually called and that most cases of lock failure are intended to be fatal,
+    so only the &quot;success&quot; values will be reported reliably - failure
+    cases will only be reported if startup is retried later and succeeds, or in
+    other unexpected edge cases.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.DevUi.AppLaunch" enum="Boolean"
     expires_after="2026-07-15">
   <owner>ntfschr@chromium.org</owner>

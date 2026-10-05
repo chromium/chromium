@@ -1547,6 +1547,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.SCROLL_PREDICTOR_REFINED_HAS_PREDICTION,
                 "Refines ScrollPredictor::HasPrediction() to check prediction availability before"
                         + " generating synthetic scroll updates."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_RELAX_DATA_DIR_LOCKING,
+                "Allow WebView initialization to continue in the case where an old instance of"
+                        + " the same app process is stuck holding the lock."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

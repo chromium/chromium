@@ -153,6 +153,14 @@ static void JNI_AwCrashReporterClient_SetProcessNameCrashKey(
   crash_key.Set(process_name);
 }
 
+static void JNI_AwCrashReporterClient_SetSkippedDataDirLockCrashKey(
+    JNIEnv* env,
+    bool skipped) {
+  static ::crash_reporter::CrashKeyString<2> crash_key(
+      crash_keys::kSkippedDataDirLock);
+  crash_key.Set(skipped ? "1" : "0");
+}
+
 }  // namespace android_webview
 
 DEFINE_JNI(AwCrashReporterClient)

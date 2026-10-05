@@ -28,6 +28,8 @@ extern const char kContextLossReason[];
 
 extern const char kSupportLibraryWebkitVersion[];
 
+extern const char kSkippedDataDirLock[];
+
 }  // namespace crash_keys
 }  // namespace android_webview
 

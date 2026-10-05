@@ -20,6 +20,8 @@ const char kContextLossReason[] = "context-loss-reason";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
+const char kSkippedDataDirLock[] = "skipped-data-dir-lock";
+
 // clang-format off
 const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageName,
@@ -28,6 +30,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
     kAndroidSdkInt,
     kContextLossReason,
     kSupportLibraryWebkitVersion,
+    kSkippedDataDirLock,
 
     // process type
     "ptype",

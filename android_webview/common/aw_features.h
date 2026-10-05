@@ -95,6 +95,7 @@ BASE_DECLARE_FEATURE(kWebViewRecordAppCacheHistograms);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
 BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
+BASE_DECLARE_FEATURE(kWebViewRelaxDataDirLocking);
 BASE_DECLARE_FEATURE(kWebViewRemoveInstantAppSupport);
 BASE_DECLARE_FEATURE(kWebViewRenderDocument);
 BASE_DECLARE_FEATURE(kWebViewRendererKeepAlive);

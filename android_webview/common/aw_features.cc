@@ -385,6 +385,10 @@ BASE_FEATURE(kWebViewReducedSeedRequestPeriod,
 BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow WebView initialization to continue in the case where an old instance of
+// the same app process is stuck holding the lock.
+BASE_FEATURE(kWebViewRelaxDataDirLocking, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, WebView support for Instant Apps is removed.
 BASE_FEATURE(kWebViewRemoveInstantAppSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
