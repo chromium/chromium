@@ -548,6 +548,5 @@ task setUpRepository(type: BuildConfigGenerator) {
     pathToBuildGradle = 'third_party/androidx'
     cipdPackagePrefix = 'chromium/third_party/androidx'
     internalTargetVisibility = [':*', '//third_party/android_deps:*']
-    ignoreDEPS = true
     writeBoM = true
 }

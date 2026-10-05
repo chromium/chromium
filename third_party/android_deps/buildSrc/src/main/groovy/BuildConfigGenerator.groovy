@@ -4,18 +4,12 @@
 
 
 import groovy.json.JsonOutput
-import groovy.text.SimpleTemplateEngine
-import groovy.text.Template
-import groovy.transform.SourceURI
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
-
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.concurrent.*
 import java.time.*
 import java.util.regex.Matcher
@@ -53,10 +47,6 @@ class BuildConfigGenerator extends DefaultTask {
             "${BUILD_GN_TOKEN_START}(.*)${BUILD_GN_TOKEN_END}", Pattern.DOTALL)
     private static final String GEN_REMINDER =
             '# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.\n'
-    private static final String DEPS_TOKEN_START = '# === ANDROID_DEPS Generated Code Start ==='
-    private static final String DEPS_TOKEN_END = '# === ANDROID_DEPS Generated Code End ==='
-    private static final Pattern DEPS_GEN_PATTERN = Pattern.compile(
-            "${DEPS_TOKEN_START}(.*)${DEPS_TOKEN_END}", Pattern.DOTALL)
     private static final String LIBS_DIRECTORY = 'libs'
 
     private static final String ANDROIDX_PROJECT_PATH = 'third_party/androidx'
@@ -135,12 +125,6 @@ class BuildConfigGenerator extends DefaultTask {
             androidx_media3: '!defined(media3_target)',
     ]
 
-    static final String COPYRIGHT_HEADER = '''\
-        # Copyright 2021 The Chromium Authors
-        # Use of this source code is governed by a BSD-style license that can be
-        # found in the LICENSE file.
-    '''.stripIndent(/* forceGroovyBehavior */ true)
-
     // This cache allows us to download license files from the same URL at most once.
     static final ConcurrentMap<String, String> URL_TO_STRING_CACHE = new ConcurrentHashMap<>()
 
@@ -176,18 +160,9 @@ class BuildConfigGenerator extends DefaultTask {
     @Input
     String[] internalTargetVisibility
 
-    /** Whether to ignore DEPS file. */
-    @Input
-    boolean ignoreDEPS
-
     /** Whether to write a bill_of_materials.json file. */
     @Input
     boolean writeBoM
-
-    /** The URI of the file BuildConfigGenerator.groovy */
-    @Input
-    @SourceURI
-    URI sourceUri
 
     static String translateTargetName(String targetName) {
         if (isPlayServicesTarget(targetName)) {
@@ -216,24 +191,6 @@ class BuildConfigGenerator extends DefaultTask {
             }
         }
         return null
-    }
-
-    static String makeRootOwners() {
-        return """\
-# This restriction is in place so that new third-party libraries go through
-# full third-party review:
-# https://chromium.googlesource.com/chromium/src.git/+/master/docs/adding_to_third_party.md#Get-a-review
-set noparent
-
-file://third_party/OWNERS
-
-# The following OWNERS are only for adding / removing / renaming directories
-# that are conceptually the same as existing ones (which would have already gone
-# through third_party review). E.g. robolectric is partiationed into multiple
-# directories, but they are all conceptually the same dependency.
-agrieve@chromium.org
-wnwen@chromium.org
-"""
     }
 
     static String makeLibraryOwners() {
@@ -412,38 +369,6 @@ No modifications.
         }
     }
 
-    static String make3ppPb(String cipdPackagePrefix) {
-        String pkgPrefix = "${cipdPackagePrefix}/${LIBS_DIRECTORY}"
-
-        return COPYRIGHT_HEADER + '\n' + GEN_REMINDER + """
-            create {
-              source {
-                script { name: "fetch.py" }
-              }
-            }
-
-            upload {
-              pkg_prefix: "${pkgPrefix}"
-              universal: true
-            }
-            """.stripIndent(/* forceGroovyBehavior */ true)
-    }
-
-    static String make3ppFetch(Template fetchTemplate, ChromiumDepGraph.DependencyDescription dependency) {
-        String fileExt = dependency.extension
-        if (dependency.id == 'org_mockito_mockito_android') {
-            // In mockito-andorid 5.23, the artifact went from a jar to an aar, but 5.23 is a breaking change
-            // that we don't support yet. When we update our version to 5.23 we can remove this special case.
-            fileExt = 'aar'
-        }
-        Map bindMap = [
-                copyrightHeader: COPYRIGHT_HEADER,
-                dependency: dependency,
-                fileExt: fileExt,
-        ]
-        return fetchTemplate.make(bindMap).toString()
-    }
-
     static String jsonDump(Object obj) {
         return JsonOutput.prettyPrint(JsonOutput.toJson(obj))
     }
@@ -504,9 +429,6 @@ No modifications.
         assert pathToBuildGradle in ALLOWED_PROJECT_PATHS
 
         boolean skipLicenses = project.hasProperty('skipLicenses')
-
-        Path fetchTemplatePath = Paths.get(sourceUri).resolveSibling('3ppFetch.template')
-        Template fetchTemplate = new SimpleTemplateEngine().createTemplate(fetchTemplatePath.toFile())
 
         Set<Project> allProjects = [] as Set
         allProjects.add(project)
@@ -573,21 +495,6 @@ No modifications.
             new File(depDir, 'cipd.yaml').write(makeCipdYaml(dependency, cipdPackagePrefix))
             new File(depDir, 'OWNERS').write(makeLibraryOwners())
 
-            // Enable 3pp flow for //third_party/android_deps only.
-            // TODO(crbug.com/1132368): Enable 3pp flow for subprojects as well.
-            if (pathToBuildGradle == MAIN_PROJECT_PATH) {
-                if (dependency.fileUrl) {
-                    File dependency3ppDir = new File(depDir, '3pp')
-                    dependency3ppDir.mkdirs()
-                    new File(dependency3ppDir, "3pp.pb").write(make3ppPb(cipdPackagePrefix))
-                    File fetchFile = new File(dependency3ppDir, 'fetch.py')
-                    fetchFile.write(make3ppFetch(fetchTemplate, dependency))
-                    fetchFile.setExecutable(true, false)
-                } else {
-                    throw new RuntimeException("Failed to generate 3pp files for ${dependency.id} with empty fileUrl.")
-                }
-            }
-
             if (!skipLicenses) {
                 validateLicenses(dependency)
                 downloadLicenses(dependency, downloadExecutor, downloadTasks)
@@ -606,17 +513,8 @@ No modifications.
 
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph)
-        if (!ignoreDEPS) {
-            updateDepsDeclaration(graph, cipdPackagePrefix, fromSourceRoot("DEPS"))
-        }
         dependencyDirectories.sort { path1, path2 -> return path1 <=> path2 }
         updateReadmeReferenceFile(dependencyDirectories, project.file("additional_readme_paths.json"))
-
-        // libs/ is only created above when at least one dependency has an
-        // artifact; the main project may have none (crbug.com/562517138).
-        File libsDir = project.file(LIBS_DIRECTORY)
-        libsDir.mkdirs()
-        new File(libsDir, 'OWNERS').write(makeRootOwners())
         if (writeBoM) {
             project.file("bill_of_materials.json").write(makeBillOfMaterials(graph.dependencies.values()))
         }
@@ -1068,59 +966,6 @@ No modifications.
         }
         String out = "${BUILD_GN_TOKEN_START}\n$sb\n${BUILD_GN_TOKEN_END}"
         buildFile.write(matcher.replaceFirst(Matcher.quoteReplacement(out)))
-    }
-
-    private void updateDepsDeclaration(ChromiumDepGraph depGraph, String cipdPackagePrefix,
-                                       File depsFile) {
-        StringBuilder sb = new StringBuilder()
-        // Note: The string we're inserting is nested 1 level, hence the 2 leading spaces. Same
-        // applies to the multiline package declaration string below.
-        sb.append('  # Generated by //third_party/android_deps/fetch_all.py')
-
-        // Comparator to sort the dependencies in alphabetical order.
-        Closure dependencyComparator = { dependency1, dependency2 ->
-            dependency1.id <=> dependency2.id
-        }
-
-        depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (ignoreForCurrentProject(dependency) || dependency.extension == 'group') {
-                return
-            }
-            if (!dependency.artifact) {
-                logger.debug("Skipping ${dependency.id} because it has no artifact")
-                return
-            }
-            String cipdPath = "${cipdPackagePrefix}/${dependency.directoryPath}"
-            sb.append("""\
-            |
-            |  'src/${pathToBuildGradle}/${dependency.artifactDirectoryPath}': {
-            |      'packages': [
-            |          {
-            |              'package': '${cipdPath}',
-            |              'version': 'version:${THREEPP_EPOCH}@${dependency.version}.${dependency.cipdSuffix}',
-            |          },
-            |      ],
-            |      'condition': 'checkout_android and non_git_source',
-            |      'dep_type': 'cipd',
-            |  },
-            |""".stripMargin())
-        }
-
-        Matcher matcher = DEPS_GEN_PATTERN.matcher(depsFile.text)
-        if (!matcher.find()) {
-            throw new IllegalStateException('DEPS insertion point not found.')
-        }
-        depsFile.write(matcher.replaceFirst("${DEPS_TOKEN_START}\n${sb}\n  ${DEPS_TOKEN_END}"))
-    }
-
-    private int countPathSegments(String path) {
-        // third_party/android_deps/autorolled -> 3
-        return path.split('/').length
-    }
-
-    private File fromSourceRoot(String pathRelativeToChromiumRoot) {
-        File sourceRoot = project.file('../'.multiply(countPathSegments(pathToBuildGradle)))
-        return new File(sourceRoot, pathRelativeToChromiumRoot)
     }
 
 }

@@ -12,7 +12,6 @@ For each dependency in `build.gradle`:
   - Generate a README.chromium file
   - Generate a GN target in BUILD.gn
   - Generate .info files for AAR libraries
-  - Generate a 'deps' entry in DEPS.
 """
 
 import argparse
@@ -27,7 +26,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import textwrap
 import urllib.request
 
 from typing import Dict
@@ -50,9 +48,6 @@ _BOM_NAME = 'bill_of_materials.json'
 
 # Path to BUILD.gn file from custom 'android_deps' directory.
 _BUILD_GN = 'BUILD.gn'
-
-# The word DEPS in case we forget how to spell XD.
-_DEPS = 'DEPS'
 
 # Path to build.gradle file relative to custom 'android_deps' directory.
 _BUILD_GRADLE = 'build.gradle'
@@ -510,19 +505,6 @@ def _FixArchiveNames(android_deps_dir):
         shutil.move(src_path, dst_path)
 
 
-def _CopyJarFilesToCipd(android_deps_dir):
-    src_libs_dir = os.path.join(android_deps_dir, _LIBS_DIR)
-    # Match .aar and .jar
-    for src_path in FindInDirectory(src_libs_dir, '*.?ar'):
-        dst_path = os.path.join(android_deps_dir, 'cipd', _LIBS_DIR,
-                                os.path.relpath(src_path, src_libs_dir))
-        logging.debug('mv [%s -> %s]', src_path, dst_path)
-        if os.path.exists(dst_path):
-            os.unlink(dst_path)
-        os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-        shutil.move(src_path, dst_path)
-
-
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
@@ -544,11 +526,10 @@ def main():
     parser.add_argument('--override-artifact',
                         action='append',
                         help='lib_subpath:url of .aar / .jar to override.')
-    parser.add_argument('--local',
-                        help='Move .jar and .aar files to cipd/ directory '
-                        'after running (3pp bot requires this to not '
-                        'happen)',
-                        action='store_true')
+    parser.add_argument(
+        '--local',
+        help='Mark this as a local (non-bot) run; silences the bot warning.',
+        action='store_true')
     parser.add_argument('-v',
                         '--verbose',
                         dest='verbose_count',
@@ -598,14 +579,12 @@ def main():
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
 
-        Copy(_CHROMIUM_SRC, [_DEPS], build_dir, [_DEPS])
-
         _InitSubprojects(args.android_deps_dir, build_android_deps_dir,
                          bool(args.build_dir))
 
         logging.info('Running Gradle.')
 
-        # This gradle command generates the new DEPS and BUILD.gn files, it can
+        # This gradle command generates the new BUILD.gn files, it can
         # also handle special cases.
         # Edit BuildConfigGenerator.groovy#addSpecialTreatment for such cases.
         gradle_cmd = _BuildGradleCmd(build_android_deps_dir, 'setupRepository')
@@ -655,16 +634,12 @@ def main():
 
         new_packages = sorted(set(build_packages) - set(existing_packages))
 
-        # Copy updated DEPS and BUILD.gn to build directory.
+        # Copy updated BUILD.gn to output directory.
         Copy(build_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              output_android_deps_dir,
              _CUSTOM_ANDROID_DEPS_FILES,
              src_path_must_exist=is_primary_android_deps)
-
-        # Auto-rollers adjust DEPS for androidx & autorolled.
-        if is_primary_android_deps:
-            Copy(build_dir, [_DEPS], _CHROMIUM_SRC, [_DEPS])
 
         # Not all projects (eg: the primary project) output a bill of materials.
         # Thus only copy if it exists.
@@ -673,8 +648,6 @@ def main():
              src_path_must_exist=False)
 
         # Delete obsolete or updated package directories.
-        # TODO(mheikal): also delete directories that do not have a cipd.yaml
-        # file, there shouldn't be any of those under libs/
         for pkg in existing_packages.values():
             pkg_path = os.path.join(output_android_deps_dir, pkg.path)
             DeleteDirectory(pkg_path)
@@ -689,8 +662,6 @@ def main():
                                 ignore_extension=".tmp")
 
         _FixArchiveNames(output_android_deps_dir)
-        if args.local and not args.output_subdir:
-            _CopyJarFilesToCipd(args.android_deps_dir)
 
         # Useful for printing timestamp.
         logging.info('All Done.')
