@@ -13,7 +13,9 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
+#import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/gtest_util.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
@@ -277,6 +279,15 @@ class ActorServiceTest : public PlatformTest {
 
   ActorToolFactory* GetToolFactory(ActorService* service) {
     return service->tool_factory_.get();
+  }
+
+  // Runs the tasks already posted to the current sequence. Tasks they post in
+  // turn are not run; use `base::test::RunUntil()` to wait on such chains.
+  void FlushTaskRunner() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -632,7 +643,9 @@ TEST_F(ActorServiceTest, PerformActions_LogsActionsToJournal) {
   service->PerformActions(invalid_task_id, actions, "Update",
                           future.GetCallback());
   PerformActionsResult result = future.Take();
-  EXPECT_TRUE(result.action_results.empty());
+  ASSERT_EQ(1u, result.action_results.size());
+  EXPECT_EQ(mojom::ActionResultCode::kTaskWentAway,
+            result.action_results[0].tool_result.code());
 
   EXPECT_TRUE(HasJournalEntry(*GetJournal(service), "PerformActions"));
   EXPECT_TRUE(HasJournalEntryWithDetail(
@@ -770,13 +783,19 @@ TEST_F(ActorServiceTest, TaskUpdatesObserverLifecycle) {
   service->AddTaskUpdatesObserver(observer);
 
   ActorTaskId task_id = CreateTask(service);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_NSEQ(@"Test Task", observer.taskTitle);
 
   PerformActions(service, task_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.stateChangeCount > 0; }));
   EXPECT_GT(observer.stateChangeCount, 0);
 
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
   EXPECT_EQ(1, observer.stoppedCount);
 
   service->RemoveTaskUpdatesObserver(observer);
@@ -793,13 +812,19 @@ TEST_F(ActorServiceTest, LateAddedTaskUpdatesObserverAttachesToActiveTasks) {
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   service->AddTaskUpdatesObserver(observer);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_NSEQ(@"Active Task", observer.taskTitle);
 
   PerformActions(service, task_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.stateChangeCount > 0; }));
   EXPECT_GT(observer.stateChangeCount, 0);
 
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.stoppedCount == 1; }));
   EXPECT_EQ(1, observer.stoppedCount);
 
   service->RemoveTaskUpdatesObserver(observer);
@@ -820,6 +845,9 @@ TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
 
   // Both observers should receive the registration callback on task creation.
   ActorTaskId task_id = CreateTask(service, "Shared Task");
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return observer1.registeredCount == 1 && observer2.registeredCount == 1;
+  }));
   EXPECT_EQ(1, observer1.registeredCount);
   EXPECT_NSEQ(@"Shared Task", observer1.taskTitle);
   EXPECT_EQ(1, observer2.registeredCount);
@@ -827,17 +855,23 @@ TEST_F(ActorServiceTest, MultipleTaskUpdatesObserversBroadcastAndRemoval) {
 
   // Performing actions transitions task state and broadcasts to all observers.
   PerformActions(service, task_id);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer1.stateChangeCount > 0; }));
   EXPECT_GT(observer1.stateChangeCount, 0);
   EXPECT_EQ(observer1.stateChangeCount, observer2.stateChangeCount);
 
   // Stopping the task should only notify the remaining active observer.
   service->RemoveTaskUpdatesObserver(observer1);
   service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer2.stoppedCount == 1; }));
   EXPECT_EQ(0, observer1.stoppedCount);
   EXPECT_EQ(1, observer2.stoppedCount);
 
   // Creating a new task should only notify observer2.
   CreateTask(service, "Next Task");
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer2.registeredCount == 2; }));
   EXPECT_EQ(1, observer1.registeredCount);
   EXPECT_EQ(2, observer2.registeredCount);
 
@@ -855,6 +889,8 @@ TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
   service->AddTaskUpdatesObserver(observer);
 
   CreateTask(service);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
   EXPECT_EQ(1, observer.registeredCount);
 
   service->RemoveTaskUpdatesObserver(observer);
@@ -872,17 +908,20 @@ TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
   FakeActorServiceTaskUpdatesObserver* observer =
       [[FakeActorServiceTaskUpdatesObserver alloc] init];
   EXPECT_TRUE(service->AddTaskUpdatesObserver(observed_task_id, observer));
-  EXPECT_EQ(1, observer.registeredCount);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return observer.registeredCount == 1; }));
   EXPECT_NSEQ(@"Observed Task", observer.taskTitle);
 
   // Neither other tasks nor newly created tasks notify the observer.
   service->StopTask(other_task_id, ActorTaskStoppedReason::kStoppedByUser);
   CreateTask(service, "New Task");
+  FlushTaskRunner();
   EXPECT_EQ(1, observer.registeredCount);
   EXPECT_EQ(0, observer.stoppedCount);
 
   service->RemoveTaskUpdatesObserver(observed_task_id, observer);
   service->StopTask(observed_task_id, ActorTaskStoppedReason::kStoppedByUser);
+  FlushTaskRunner();
   EXPECT_EQ(0, observer.stoppedCount);
 }
 
@@ -1198,6 +1237,8 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   service->InterruptTask(task_id,
                          ActorTaskInterruptReason::kWaitingUserConfirmation,
                          "Please confirm");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.requestConfirmationCalled; }));
 
   EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
@@ -1205,9 +1246,12 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
   ASSERT_TRUE(delegate.confirmationCompletionHandler != nil);
 
-  // Resolving the confirmation resumes the task to kReflecting.
+  // Resolving the confirmation resumes the task to kReflecting once the posted
+  // completion runs.
   delegate.confirmationCompletionHandler();
-  EXPECT_EQ(task->GetState(), ActorTaskState::kReflecting);
+  EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return task->GetState() == ActorTaskState::kReflecting; }));
 }
 
 // Test that a task can be interrupted for user confirmation before it performs
@@ -1232,6 +1276,8 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
   service->InterruptTask(task_id,
                          ActorTaskInterruptReason::kWaitingUserConfirmation,
                          "Please confirm before starting");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.requestConfirmationCalled; }));
 
   EXPECT_EQ(task->GetState(), ActorTaskState::kWaitingOnUser);
   EXPECT_TRUE(delegate.requestConfirmationCalled);
@@ -1239,10 +1285,11 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
   EXPECT_NSEQ(@"Continue", delegate.confirmationButtonText);
   ASSERT_TRUE(delegate.confirmationCompletionHandler != nil);
 
-  // Resolving the confirmation resumes the task to kReflecting, from which it
-  // can perform its first actions.
+  // Resolving the confirmation resumes the task to kReflecting once the posted
+  // completion runs, from which it can perform its first actions.
   delegate.confirmationCompletionHandler();
-  EXPECT_EQ(task->GetState(), ActorTaskState::kReflecting);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return task->GetState() == ActorTaskState::kReflecting; }));
 
   PerformActions(service, task_id);
   EXPECT_EQ(task->GetState(), ActorTaskState::kReflecting);
@@ -1262,6 +1309,7 @@ TEST_F(ActorServiceTest, InterventionAndInterruptSafelyHandleUnknownTaskId) {
   service->InterruptTask(unknown_task_id,
                          ActorTaskInterruptReason::kWaitingUserConfirmation,
                          "Unknown");
+  FlushTaskRunner();
 
   EXPECT_FALSE(delegate.requestConfirmationCalled);
 }
@@ -1293,9 +1341,8 @@ TEST_F(ActorServiceTest, InterruptTaskRemovesStoppedTaskOnFailure) {
   service->RemoveTaskLifecycleObserver(observer);
 }
 
-// Test that synchronously calling StopTask from within the intervention
-// delegate callback during InterruptTask does not cause iterator invalidation
-// or Use-After-Free.
+// Test that calling StopTask from within the intervention delegate callback
+// does not cause iterator invalidation or Use-After-Free.
 TEST_F(ActorServiceTest, InterruptTaskHandlesReentrantStopTask) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
@@ -1313,6 +1360,9 @@ TEST_F(ActorServiceTest, InterruptTaskHandlesReentrantStopTask) {
   service->InterruptTask(task_id,
                          ActorTaskInterruptReason::kWaitingUserConfirmation,
                          "Please confirm");
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return delegate.requestConfirmationCalled; }));
 
   EXPECT_TRUE(delegate.requestConfirmationCalled);
   EXPECT_FALSE(HasTask(service, task_id));

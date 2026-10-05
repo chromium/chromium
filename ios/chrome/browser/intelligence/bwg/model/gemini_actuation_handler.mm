@@ -517,15 +517,15 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
 }
 
 // Stops the task and invokes `completionBlock`.
-// `_actorService->StopTask` synchronously triggers `actorTaskDidStopWithID:`,
-// which cleans up `_taskToWebStateIDMap`. Since `completionBlock` is not
-// registered in `_activeCallbacks`, the observer safely no-ops and this
-// method completes the request directly.
+// `actorTaskDidStopWithID:` is posted, so the task is forgotten here directly
+// to reject follow-up requests with `kTaskWentAway`. Any in-flight request is
+// still completed by `actorTaskDidStopWithID:`.
 - (void)handleStopTaskWithID:(actor::ActorTaskId)taskID
                       reason:(actor::ActorTaskStoppedReason)reason
              completionBlock:
                  (void (^)(GeminiActuationResponse*))completionBlock {
   _actorService->StopTask(taskID, reason);
+  _taskToWebStateIDMap.erase(taskID);
   if (completionBlock) {
     completionBlock([[GeminiActuationResponse alloc]
              initWithResultCode:actor::mojom::ActionResultCode::kOk

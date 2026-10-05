@@ -104,9 +104,13 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   if (!_actorService) {
     return;
   }
-  // `_currentTaskId` is set by `didRegisterAsObserverForTaskID:`, which is
-  // called synchronously upon successful registration.
-  _actorService->AddTaskUpdatesObserver(taskID, self);
+  // Tracked right away rather than from the posted
+  // `didRegisterAsObserverForTaskID:`, so that `stopObservingTask` still
+  // unregisters if called before the registration is delivered.
+  if (!_actorService->AddTaskUpdatesObserver(taskID, self)) {
+    return;
+  }
+  _currentTaskId = taskID;
 }
 
 - (void)stopObservingTask {
@@ -179,7 +183,9 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                             taskUpdate:(NSString*)taskUpdate
                           currentState:(actor::ActorTaskState)state
                              webStates:(NSArray<NSNumber*>*)webStatesIDs {
-  _currentTaskId = taskID;
+  if (_currentTaskId != taskID) {
+    return;
+  }
   ActuationWorklogItem* initialItem = [ActuationWorklogItem
       labeledItemWithTitle:l10n_util::GetNSString(
                                IDS_IOS_GEMINI_FIRST_ACTUATION_STEP_TITLE)

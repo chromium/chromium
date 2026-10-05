@@ -62,9 +62,10 @@ class ActorService : public KeyedService {
   // validation or execution, the sequence is aborted immediately, and
   // subsequent actions will not be run.
   //
-  // If the task is still executing a previous request, `callback` is posted
-  // with a single `kExecutionEngineExistingAction` result and the request's
-  // target WebStates are not added to the task.
+  // If the task does not exist, `callback` is posted with a single
+  // `kTaskWentAway` result. If the task is still executing a previous request,
+  // `callback` is posted with a single `kExecutionEngineExistingAction` result
+  // and the request's target WebStates are not added to the task.
   void PerformActions(
       ActorTaskId task_id,
       const std::vector<optimization_guide::proto::Action>& actions,

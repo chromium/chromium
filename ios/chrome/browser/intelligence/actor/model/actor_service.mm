@@ -140,9 +140,10 @@ void ActorService::PerformActions(
 
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end()) {
-    // TODO(crbug.com/503054406): Return high level error for non-existent
-    // task.
-    PostPerformActionsReply(std::move(callback), PerformActionsResult());
+    PerformActionsResult actions_result;
+    actions_result.action_results =
+        MakeActionResults(mojom::ActionResultCode::kTaskWentAway);
+    PostPerformActionsReply(std::move(callback), std::move(actions_result));
     return;
   }
 

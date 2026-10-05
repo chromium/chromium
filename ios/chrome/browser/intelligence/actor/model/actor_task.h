@@ -52,6 +52,18 @@ class ActorWebStatePolicyDecider;
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
+//
+// Re-entrancy: code outside the actor model must never run task logic while a
+// task method is on the stack. Therefore:
+// - Outbound call-outs (observer notifications and `Act()` replies) are always
+//   posted with snapshot arguments.
+// - Intervention delegate requests are issued from a posted task, so no task
+//   method caller is re-entered. The delegate itself is messaged synchronously
+//   and may stop, and thereby destroy, the task, so the request must be the
+//   last statement of its method.
+// - Callbacks handed to code outside the actor model (e.g. intervention
+//   delegate completions) are wrapped with `BindPostTaskToCurrentDefault`.
+// Callbacks handed to the engine or timers stay synchronous.
 class ActorTask : public web::WebStateObserver,
                   public ActorEngine::ExecutionUpdatesDelegate {
  public:
@@ -68,11 +80,13 @@ class ActorTask : public web::WebStateObserver,
   ActorTask& operator=(const ActorTask&) = delete;
 
   // Adds an observer to be notified of task state transitions and tool
-  // executions. Registered observers will immediately receive a notification
-  // with the current state via `didRegisterAsObserverForTaskID:`.
+  // executions. Registration is posted: `observer` first receives
+  // `didRegisterAsObserverForTaskID:` with the task state at call time, then
+  // only the notifications posted after this call.
   void AddObserver(id<ActorTaskUpdatesObserver> observer);
 
-  // Removes a registered observer.
+  // Removes `observer`, including a registration that has not run yet. Pending
+  // notifications are not delivered to `observer`.
   void RemoveObserver(id<ActorTaskUpdatesObserver> observer);
 
   const std::string& title() const { return title_; }
@@ -91,10 +105,11 @@ class ActorTask : public web::WebStateObserver,
 
   // Begins executing the given sequence of actions on the underlying execution
   // engine with a string update blurb in plain language about what the actor is
-  // doing. `callback` runs exactly once, either:
+  // doing. `callback` is posted, so a reply is delivered even if the task is
+  // destroyed after replying:
   // - with the engine results once actions complete and pages finish loading;
-  // - posted with a single `kExecutionEngineExistingAction` result if a
-  //   previous `Act()` is pending.
+  // - with a single `kExecutionEngineExistingAction` result if a previous
+  //   `Act()` has not replied yet.
   void Act(std::vector<std::unique_ptr<ActorToolRequest>> actions,
            const std::string& task_update,
            ActCallback callback);
@@ -236,8 +251,17 @@ class ActorTask : public web::WebStateObserver,
   // blocked by origin gating policy.
   void OnNavigationBlocked(mojom::ActionResultCode code);
 
-  // Requests user confirmation via the intervention delegate.
+  // Validates the confirmation request synchronously, so that a rejected
+  // request stops the task before `Interrupt()` returns, where `ActorService`
+  // can still clean it up. Then posts `ShowInterruptConfirmation()`, so that
+  // the delegate never runs while the caller of `Interrupt()` is on the stack.
   void RequestInterruptConfirmation(std::string_view message);
+
+  // Shows the confirmation `message` via the intervention delegate. The task
+  // state and the delegate are re-checked in the same posted task as the
+  // delegate call, so the user is never prompted for a task that was stopped
+  // or uninterrupted since the request was made.
+  void ShowInterruptConfirmation(const std::string& message);
 
   // Handles the user resolving the confirmation.
   void OnInterruptConfirmationResolved();
@@ -335,6 +359,12 @@ class ActorTask : public web::WebStateObserver,
   // executions. `CRBProtocolObservers` itself is held strongly, but the
   // observers inside are held weakly.
   __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* observers_;
+
+  // Observers whose posted registration has not run yet. Used as a weak set
+  // with the same lifetime and removal semantics as `observers_`, so that the
+  // posted registration outlives the task and observers can remove themselves
+  // from `dealloc`.
+  __strong CRBProtocolObservers<ActorTaskUpdatesObserver>* pending_observers_;
 
   // Active context for background continued processing, if requested.
   __strong BackgroundContinuedProcessingTaskContext* background_task_context_ =
