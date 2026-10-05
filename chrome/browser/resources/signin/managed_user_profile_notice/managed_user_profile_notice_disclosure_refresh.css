@@ -155,7 +155,7 @@ main {
 }
 
 .disclaimer p {
-  color: var(--google-grey-700);
+  color: var(--cr-secondary-text-color);
   line-height: 20px;
   margin: 0;
 }
@@ -179,10 +179,6 @@ main {
 }
 
 @media (prefers-color-scheme: dark) {
-  .disclaimer p {
-    color: var(--google-grey-500);
-  }
-
   .work-badge {
     border-color: var(--md-background-color);
   }
