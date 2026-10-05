@@ -17,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -30,21 +31,22 @@ import org.chromium.components.webapps.WebApkDistributor;
 
 /** Tests basic functionality of WebappLaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class WebappLaunchCauseMetricsTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private WebappInfo mWebappInfo;
+
+    private Activity mActivity;
 
     @Before
     public void setUp() {
+        // Lifecycle is not driven so that ApplicationStatus states are controlled by the test.
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
     }
 
     @After
     public void tearDown() {
-        ApplicationStatus.resetActivitiesForInstrumentationTests();
         LaunchCauseMetrics.resetForTests();
     }
 
