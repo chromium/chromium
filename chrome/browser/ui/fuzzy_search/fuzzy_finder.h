@@ -105,7 +105,7 @@ class FuzzyFinder {
   // best match.
   double ScoreItem(const FuzzySearchItem* item,
                    std::u16string_view norm_query,
-                   std::vector<gfx::Range>* match_ranges = nullptr);
+                   std::vector<gfx::Range>& match_ranges);
 
   // Evaluates a candidate string against a query with typo, transposition, and
   // boundary tolerance using reusable scratch buffers. Returns a normalized

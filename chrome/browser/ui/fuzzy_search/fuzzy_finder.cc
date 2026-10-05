@@ -149,7 +149,7 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
   for (FuzzySearchItem* item : searchable_items_) {
     CHECK(item);
     std::vector<gfx::Range> match_ranges;
-    const double score = ScoreItem(item, normalized_query, &match_ranges);
+    const double score = ScoreItem(item, normalized_query, match_ranges);
     if (score >= kMinScore) {
       results.push_back(
           FuzzySearchResult{item, score, std::move(match_ranges)});
@@ -172,52 +172,33 @@ std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
 
 double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
                               std::u16string_view norm_query,
-                              std::vector<gfx::Range>* match_ranges) {
+                              std::vector<gfx::Range>& match_ranges) {
   CHECK(item);
 
   // TODO(crbug.com/549169077): Support full diacritic/accent folding or
   // transliteration (e.g. via ICU) so accented words at initial positions
   // align identically to non-accented queries.
 
-  // 1. Title match
-  const std::u16string norm_title = base::i18n::ToLower(item->GetTitle());
-  std::vector<gfx::Range> title_ranges;
-  const double title_raw_score =
-      MatchCandidate(norm_query, norm_title, &title_ranges);
-  const double title_score = title_raw_score * kTitleWeight;
-  double best_score = title_score;
-  bool best_is_title = (title_raw_score > 0.0);
+  // 1. Title match. MatchCandidate() leaves `match_ranges` empty if the title
+  // does not match.
+  double best_score =
+      MatchCandidate(norm_query, base::i18n::ToLower(item->GetTitle()),
+                     &match_ranges) *
+      kTitleWeight;
 
-  // 2. Secondary text match
-  const std::u16string& secondary_text = item->GetSecondaryText();
-  if (!secondary_text.empty()) {
-    const std::u16string norm_secondary = base::i18n::ToLower(secondary_text);
-    const double secondary_score =
-        MatchCandidate(norm_query, norm_secondary, nullptr) *
-        kSecondaryTextWeight;
-    if (secondary_score > best_score) {
-      best_score = secondary_score;
-      best_is_title = false;
+  // 2. Secondary text and synonym matches. Match ranges are only reported for
+  // the title, so they are cleared if any other field scores higher.
+  auto score_field = [&](const std::u16string& text, double weight) {
+    const double score =
+        MatchCandidate(norm_query, base::i18n::ToLower(text)) * weight;
+    if (score > best_score) {
+      best_score = score;
+      match_ranges.clear();
     }
-  }
-
-  // 3. Synonyms match
+  };
+  score_field(item->GetSecondaryText(), kSecondaryTextWeight);
   for (const std::u16string& synonym : item->GetSynonyms()) {
-    const std::u16string norm_syn = base::i18n::ToLower(synonym);
-    const double syn_score =
-        MatchCandidate(norm_query, norm_syn, nullptr) * kSynonymWeight;
-    if (syn_score > best_score) {
-      best_score = syn_score;
-      best_is_title = false;
-    }
-  }
-
-  if (match_ranges) {
-    if (best_is_title) {
-      *match_ranges = std::move(title_ranges);
-    } else {
-      match_ranges->clear();
-    }
+    score_field(synonym, kSynonymWeight);
   }
 
   return best_score;
