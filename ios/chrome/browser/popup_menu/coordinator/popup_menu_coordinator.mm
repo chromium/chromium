@@ -336,6 +336,7 @@ NSString* const kPreferredContentSizeKey = @"preferredContentSize";
   mediator.pictureInPictureHandler = HandlerForProtocol(
       mainBrowser->GetCommandDispatcher(), PictureInPictureCommands);
   mediator.webStateList = browser->GetWebStateList();
+  mediator.sceneState = sceneState;
   mediator.navigationAgent = WebNavigationBrowserAgent::FromBrowser(browser);
   mediator.baseViewController = self.baseViewController;
   mediator.bookmarkModel = ios::BookmarkModelFactory::GetForProfile(profile);

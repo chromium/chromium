@@ -6,7 +6,6 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/block_types.h"
-#import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -80,6 +79,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -221,6 +221,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
         {language::LanguageDetectionJavaScriptFeature::GetInstance()});
 
     // Set up the TestBrowser.
+    scene_state_ = [[SceneState alloc] init];
     browser_ = std::make_unique<TestBrowser>(profile_);
 
     // Set up the WebStateList.
@@ -285,6 +286,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     reading_list_model_.reset();
     bookmark_model_ = nullptr;
     browser_.reset();
+    scene_state_ = nil;
     profile_ = nullptr;
 
     CleanupNSUserDefaults();
@@ -301,6 +303,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     mediator_ = [[OverflowMenuMediator alloc] init];
     mediator_.incognito = incognito;
     mediator_.menuOrderer = orderer_;
+    mediator_.sceneState = scene_state_;
     mediator_.baseViewController = baseViewController_;
     mediator_.localStatePrefs = localStatePrefs_.get();
     mediator_.profilePrefs = profilePrefs_.get();
@@ -535,6 +538,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
+  SceneState* scene_state_ = nil;
   std::unique_ptr<Browser> browser_;
   raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
 
@@ -600,7 +604,7 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   if (showReloadStopAction) {
     number_of_tab_actions++;
   }
-  if (base::ios::IsMultipleScenesSupported()) {
+  if (scene_state_.multipleScenesAvailable) {
     // New Window option is added in this case.
     number_of_tab_actions++;
   }
@@ -621,6 +625,23 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
     // Feedback/help actions.
     @(number_of_help_items),
   ]);
+}
+
+// Tests that the New Window action is shown only when multiple scenes are
+// available, and updates dynamically when availability changes.
+TEST_F(OverflowMenuMediatorTest, TestNewWindowActionAvailability) {
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+  mediator_.model = model_;
+
+  EXPECT_FALSE(HasItem(kToolsMenuNewWindowId, /*enabled=*/YES));
+
+  scene_state_.multipleScenesAvailable = YES;
+  EXPECT_TRUE(HasItem(kToolsMenuNewWindowId, /*enabled=*/YES));
+
+  scene_state_.multipleScenesAvailable = NO;
+  EXPECT_FALSE(HasItem(kToolsMenuNewWindowId, /*enabled=*/YES));
 }
 
 // Tests that the Report an Issue item is hidden when the capability is false.

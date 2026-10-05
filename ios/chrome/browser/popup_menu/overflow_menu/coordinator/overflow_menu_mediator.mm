@@ -6,7 +6,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
-#import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -88,6 +87,8 @@
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -307,6 +308,7 @@ void GetPresetNTPBackgroundPreview(
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
                                     ReadingListModelBridgeObserver,
+                                    SceneStateObserver,
                                     SearchEngineObserving,
                                     SubscriptionEligibilityServiceObserving,
                                     SyncObserverModelBridge,
@@ -511,6 +513,7 @@ void GetPresetNTPBackgroundPreview(
 
   self.webState = nullptr;
   self.webStateList = nullptr;
+  self.sceneState = nil;
 
   self.bookmarkModel = nullptr;
   self.readingListModel = nullptr;
@@ -680,6 +683,16 @@ void GetPresetNTPBackgroundPreview(
   if (_webStateList) {
     _webStateList->AddObserver(_webStateListObserver.get());
   }
+}
+
+- (void)setSceneState:(SceneState*)sceneState {
+  if (_sceneState == sceneState) {
+    return;
+  }
+  [_sceneState removeObserver:self];
+  _sceneState = sceneState;
+  [_sceneState addObserver:self];
+  [self updateModel];
 }
 
 - (void)setBookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel {
@@ -2039,7 +2052,7 @@ void GetPresetNTPBackgroundPreview(
   [appActions
       addObjectsFromArray:@[ self.openTabAction, self.openIncognitoTabAction ]];
 
-  if (base::ios::IsMultipleScenesSupported()) {
+  if (self.sceneState.multipleScenesAvailable) {
     [appActions addObject:self.openNewWindowAction];
   }
 
@@ -3385,6 +3398,13 @@ void GetPresetNTPBackgroundPreview(
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  [self updateModel];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    multipleScenesAvailabilityDidChange:(BOOL)multipleScenesAvailable {
   [self updateModel];
 }
 

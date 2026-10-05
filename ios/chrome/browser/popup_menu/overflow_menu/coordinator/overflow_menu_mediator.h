@@ -65,6 +65,7 @@ class ReadingListBrowserAgent;
 class ReadingListModel;
 @protocol ReminderNotificationsCommands;
 @protocol SceneCommands;
+@class SceneState;
 @protocol SettingsCommands;
 class TabBasedIPHBrowserAgent;
 class TemplateURLService;
@@ -85,6 +86,9 @@ class WebStateList;
 // The WebStateList that this mediator listens for any changes on the current
 // WebState.
 @property(nonatomic, assign) WebStateList* webStateList;
+
+// The scene state of the current browser.
+@property(nonatomic, weak) SceneState* sceneState;
 
 // Command Handlers.
 @property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
