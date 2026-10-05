@@ -186,6 +186,7 @@ if (is_mac || is_win) {
       "//content/test:test_support",
       "//testing/gtest",
       "//ui/display:test_support",
+      "//ui/events:test_support",
       "//ui/views",
       "//ui/views:test_support",
     ]

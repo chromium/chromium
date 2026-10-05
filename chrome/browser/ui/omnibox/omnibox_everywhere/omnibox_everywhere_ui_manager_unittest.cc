@@ -44,6 +44,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/test_ai_mode_button_service.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -52,13 +53,18 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
+#include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
 
@@ -111,6 +117,22 @@ class TestWebUIContentsWrapper : public WebUIContentsWrapper {
 
   base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  // content::WebContentsDelegate:
+  void PreHandleDragUpdate(const content::DropData& /*drop_data*/,
+                           const gfx::PointF& /*client_pt*/) override {
+    if (auto* ui_manager =
+            static_cast<OmniboxEverywhereUIManager*>(GetHost().get())) {
+      ui_manager->OnDragEntered();
+    }
+  }
+
+  void PreHandleDragExit() override {
+    if (auto* ui_manager =
+            static_cast<OmniboxEverywhereUIManager*>(GetHost().get())) {
+      ui_manager->OnDragExited();
+    }
   }
 
  private:
@@ -244,6 +266,20 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
 #if BUILDFLAG(IS_WIN)
   base::ScopedTempDir temp_start_menu_dir_;
   std::optional<base::ScopedPathOverride> start_menu_override_;
+#endif
+};
+
+// Fixture for tests that drive OnWidgetActivationChanged() by hand and assert
+// on state that a real OS activation event would clobber (e.g. the deferred
+// dismissal timer, or the exact number of ActivateAndFocus() calls). Emulates
+// activation so that other test processes competing for foreground on the
+// bots cannot deliver spurious activation changes to the widget.
+class OmniboxEverywhereUIManagerEmulatedActivationTest
+    : public OmniboxEverywhereUIManagerTest {
+ private:
+#if defined(USE_MOCK_ACTIVATION_CONTROLLER)
+  // Must be created before SetUp() creates any widgets.
+  views::test::MockActivationController mock_activation_controller_;
 #endif
 };
 
@@ -526,6 +562,78 @@ TEST_F(OmniboxEverywhereUIManagerTest, DismissOnDeactivationInEphemeralMode) {
   ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
   EXPECT_TRUE(base::test::RunUntil([&]() { return !widget->IsVisible(); }));
   EXPECT_TRUE(ui_manager->widget());
+}
+
+// Deactivation caused by a mouse press in another window (e.g. the start of a
+// file drag from Finder) must not hide the widget until the button is released:
+// releasing during a drag over the WebContents re-focuses the widget, whereas
+// releasing elsewhere dismisses it.
+TEST_F(OmniboxEverywhereUIManagerEmulatedActivationTest,
+       DeactivationWhileMouseButtonDownDefersDismissal) {
+  if (g_browser_process && g_browser_process->local_state()) {
+    g_browser_process->local_state()->SetBoolean(
+        omnibox_everywhere::prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+  auto* test_service = static_cast<TestingOmniboxEverywhereService*>(
+      OmniboxEverywhereServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          &profile_, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+            return std::make_unique<TestingOmniboxEverywhereService>(
+                Profile::FromBrowserContext(context));
+          })));
+  ASSERT_TRUE(test_service);
+
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  views::Widget* widget = ui_manager->widget();
+  ASSERT_TRUE(widget);
+  ASSERT_TRUE(ui_manager->web_contents());
+  ASSERT_TRUE(ui_manager->web_contents()->GetDelegate());
+  EXPECT_EQ(1, test_service->maybe_show_lens_promo_count());
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+
+  // Press in another window; the widget stays visible while the button is held.
+  ui::test::EventGenerator generator(views::GetRootWindow(widget),
+                                     widget->GetNativeWindow());
+  generator.MoveMouseTo(gfx::Point(10, 10));
+  generator.PressLeftButton();
+  ASSERT_TRUE(widget->IsMouseButtonDown());
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kPendingDismissalPollInterval *
+      4);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Dropping onto the WebContents (PreHandleDragUpdate without a subsequent
+  // PreHandleDragExit) keeps the widget visible and re-focuses it.
+  ui_manager->web_contents()->GetDelegate()->PreHandleDragUpdate(
+      content::DropData(), gfx::PointF());
+  generator.ReleaseLeftButton();
+  ASSERT_FALSE(widget->IsMouseButtonDown());
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kPendingDismissalPollInterval);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(2, test_service->maybe_show_lens_promo_count());
+
+  // A subsequent press and release where the drag exits before mouse-up
+  // resolves to dismissal.
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kActivationGracePeriod +
+      base::Milliseconds(1));
+  generator.PressLeftButton();
+  ui_manager->OnWidgetActivationChanged(widget, /*active=*/false);
+  ui_manager->web_contents()->GetDelegate()->PreHandleDragUpdate(
+      content::DropData(), gfx::PointF());
+  ui_manager->web_contents()->GetDelegate()->PreHandleDragExit();
+  generator.ReleaseLeftButton();
+  task_environment()->FastForwardBy(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kPendingDismissalPollInterval);
+  EXPECT_FALSE(widget->IsVisible());
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest, DismissOnSpaceSwitchInEphemeralMode) {
