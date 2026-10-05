@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 #import <stdint.h>
 
-#import <optional>
 #import <string>
 #import <string_view>
 #import <utility>
@@ -31,7 +30,6 @@
 #import "base/task/thread_pool.h"
 #import "base/threading/platform_thread.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/country_codes/country_codes.h"
 #import "components/crash/core/common/crash_keys.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/keyed_service/core/service_access_type.h"
@@ -56,7 +54,6 @@
 #import "components/metrics/net/net_metrics_log_uploader.h"
 #import "components/metrics/net/network_metrics_provider.h"
 #import "components/metrics/persistent_histograms.h"
-#import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics/stability_metrics_helper.h"
 #import "components/metrics/ui/form_factor_metrics_provider.h"
 #import "components/metrics/ui/screen_info_metrics_provider.h"
@@ -65,9 +62,6 @@
 #import "components/policy/core/common/enterprise_management_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "components/regional_capabilities/regional_capabilities_country_id.h"
-#import "components/regional_capabilities/regional_capabilities_service.h"
-#import "components/regional_capabilities/regional_capabilities_switches.h"
 #import "components/sync/service/passphrase_type_metrics_provider.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync_device_info/device_count_metrics_provider.h"
@@ -93,7 +87,6 @@
 #import "ios/chrome/browser/policy/model/browser_management_service_factory.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/regional_capabilities/model/ios_regional_capabilities_metrics_provider.h"
-#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -222,7 +215,6 @@ void IOSChromeMetricsServiceClient::RegisterPrefs(
   metrics::RegisterMetricsReportingStatePrefs(registry);
   ukm::UkmService::RegisterPrefs(registry);
   metrics::dwa::DwaService::RegisterPrefs(registry);
-  metrics::private_metrics::PumaService::RegisterPrefs(registry);
 }
 
 variations::SyntheticTrialRegistry*
@@ -240,43 +232,6 @@ ukm::UkmService* IOSChromeMetricsServiceClient::GetUkmService() {
 
 metrics::dwa::DwaService* IOSChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
-}
-
-metrics::private_metrics::PumaService*
-IOSChromeMetricsServiceClient::GetPumaService() {
-  return puma_service_.get();
-}
-
-std::optional<regional_capabilities::CountryIdHolder>
-IOSChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
-  std::vector<ProfileIOS*> profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-  if (profiles.empty()) {
-    return std::nullopt;
-  }
-
-  std::optional<regional_capabilities::CountryIdHolder> first_country_id;
-  for (ProfileIOS* profile : profiles) {
-    if (profile->IsOffTheRecord()) {
-      continue;
-    }
-    regional_capabilities::RegionalCapabilitiesService* service =
-        ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
-    if (!service) {
-      continue;
-    }
-
-    regional_capabilities::CountryIdHolder current_id = service->GetCountryId();
-
-    if (!first_country_id.has_value()) {
-      first_country_id = current_id;
-    } else if (first_country_id.value() != current_id) {
-      // Mismatched IDs.
-      return std::nullopt;
-    }
-  }
-
-  return first_country_id;
 }
 
 void IOSChromeMetricsServiceClient::SetMetricsClientId(
@@ -371,11 +326,6 @@ void IOSChromeMetricsServiceClient::Initialize() {
     dwa_service_ = std::make_unique<metrics::dwa::DwaService>(
         this, local_state,
         GetApplicationContext()->GetSharedURLLoaderFactory());
-  }
-
-  if (metrics::private_metrics::PumaService::IsPumaEnabled()) {
-    puma_service_ = std::make_unique<metrics::private_metrics::PumaService>(
-        this, local_state);
   }
 }
 
