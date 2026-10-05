@@ -54,6 +54,7 @@ static_library("status_collector") {
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",

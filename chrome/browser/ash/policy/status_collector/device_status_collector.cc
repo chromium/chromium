@@ -72,6 +72,7 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_util.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
@@ -108,9 +109,12 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "extensions/browser/extension_registry.h"
@@ -2262,17 +2266,20 @@ void DeviceStatusCollector::ReportingUsersChanged() {
 std::string DeviceStatusCollector::GetUserForActivityReporting() const {
   // Primary user is used as unique identifier of a single session, even for
   // multi-user sessions.
-  const user_manager::User* const primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return std::string();
   }
+  const user_manager::User& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
 
   // Store affiliated user emails or the kiosk app id / guest session account
   // emails. Those emails will be used to calculate the session type when
   // constructing the ActiveTimePeriod protos sent as part of the report.
-  std::string primary_user_email = primary_user->GetAccountId().GetUserEmail();
-  if (primary_user->HasGaiaAccount() &&
+  std::string primary_user_email = primary_user.GetAccountId().GetUserEmail();
+  if (primary_user.HasGaiaAccount() &&
       !reporting_user_tracker_->ShouldReportUser(primary_user_email)) {
     return std::string();
   }
@@ -2486,11 +2493,14 @@ bool DeviceStatusCollector::GetNetworkStatus(
   ash::NetworkStateHandler* network_state_handler =
       ash::NetworkHandler::Get()->network_state_handler();
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* const primary_user = user_manager->GetPrimaryUser();
   // Don't write network state for unaffiliated users or when no user is signed
   // in.
-  if (!primary_user || !primary_user->IsAffiliated()) {
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session ||
+      !CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                       primary_session->account_id()))
+           .IsAffiliated()) {
     return anything_reported;
   }
 
@@ -2977,9 +2987,6 @@ void DeviceStatusCollector::GetSessionStatus(
       state->response_params().session_status.get();
   bool anything_reported = false;
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* const primary_user = user_manager->GetPrimaryUser();
-
   if (report_kiosk_session_status_) {
     anything_reported |= GetKioskSessionStatus(status);
   }
@@ -2987,8 +2994,15 @@ void DeviceStatusCollector::GetSessionStatus(
   // Only report affiliated users' data in enterprise reporting. Note that
   // device-local accounts are also affiliated. Currently we only report for the
   // primary user.
-  if (primary_user && primary_user->IsAffiliated()) {
-    anything_reported |= GetSessionStatusForUser(state, status, primary_user);
+  if (const session_manager::Session* const primary_session =
+          session_manager::SessionManager::Get()->GetPrimarySession()) {
+    const user_manager::User& primary_user =
+        CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+            primary_session->account_id()));
+    if (primary_user.IsAffiliated()) {
+      anything_reported |=
+          GetSessionStatusForUser(state, status, &primary_user);
+    }
   }
 
   // |app_infos|
@@ -3086,15 +3100,21 @@ bool DeviceStatusCollector::GetCrostiniUsage(
 
 std::string DeviceStatusCollector::GetAppVersion(
     const std::string& kiosk_app_id) {
-  Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-      user_manager::UserManager::Get()->GetActiveUser());
+  const session_manager::Session* const active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return std::string();
+  }
+  content::BrowserContext* const browser_context =
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id());
   // TODO(b/191334671): Replace with DCHECK once we no longer hit this timing
   // issue.
-  if (!profile) {
+  if (!browser_context) {
     return std::string();
   }
   const extensions::ExtensionRegistry* const registry =
-      extensions::ExtensionRegistry::Get(profile);
+      extensions::ExtensionRegistry::Get(browser_context);
   const extensions::Extension* const extension = registry->GetExtensionById(
       kiosk_app_id, extensions::ExtensionRegistry::EVERYTHING);
   if (!extension) {
