@@ -403,9 +403,6 @@ const DELEGATE: ClientApiDelegate = {
   reloadMainFrame() {
     parentMessagePipe.sendMessage(Message.RELOAD_MAIN_FRAME);
   },
-  maybeTriggerPdfHats() {
-    parentMessagePipe.sendMessage(Message.MAYBE_TRIGGER_PDF_HATS);
-  },
 
   // All methods below are on the guest / untrusted frame.
 

@@ -32,7 +32,6 @@ class MediaAppPageHandler : public media_app_ui::mojom::PageHandler {
   void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
   void ToggleBrowserFullscreenMode(
       ToggleBrowserFullscreenModeCallback callback) override;
-  void MaybeTriggerPdfHats(MaybeTriggerPdfHatsCallback callback) override;
   void IsFileArcWritable(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       IsFileArcWritableCallback callback) override;

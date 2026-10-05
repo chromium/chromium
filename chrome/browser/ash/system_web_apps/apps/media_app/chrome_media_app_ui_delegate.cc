@@ -6,33 +6,25 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/webui/media_app_ui/file_system_access_helpers.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/check_deref.h"
-#include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
-#include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
 #include "components/user_manager/user.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/events/event_constants.h"
@@ -68,17 +60,6 @@ void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
   views::Widget* top = views::Widget::GetTopLevelWidgetForNativeView(
       web_ui_->GetWebContents()->GetNativeView());
   top->SetFullscreen(!top->IsFullscreen());
-}
-
-void ChromeMediaAppUIDelegate::MaybeTriggerPdfHats() {
-  Profile* profile = Profile::FromWebUI(web_ui_);
-  const base::flat_map<std::string, std::string> product_specific_data;
-
-  if (ash::HatsNotificationController::ShouldShowSurveyToProfile(
-          profile, ash::kHatsMediaAppPdfSurvey)) {
-    hats_notification_controller_ = new ash::HatsNotificationController(
-        profile, ash::kHatsMediaAppPdfSurvey, product_specific_data);
-  }
 }
 
 void ChromeMediaAppUIDelegate::IsFileArcWritable(

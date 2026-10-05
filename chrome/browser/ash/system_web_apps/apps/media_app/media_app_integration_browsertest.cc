@@ -7,8 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/media_app_ui/url_constants.h"
@@ -21,7 +19,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -30,10 +27,6 @@
 #include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chrome/browser/ash/hats/hats_config.h"
-#include "chrome/browser/ash/hats/hats_notification_controller.h"
-#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/ash/system_web_apps/apps/media_app/media_web_app_info.h"
@@ -52,7 +45,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -62,8 +54,6 @@
 #include "components/crash/content/browser/error_reporting/mock_crash_endpoint.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/intent.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -78,9 +68,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/test/message_center_waiter.h"
 
 using ash::SystemWebAppType;
 using platform_util::OpenOperationResult;
@@ -143,21 +130,6 @@ bool ExtractBoolInGlobalScope(content::WebContents* web_ui,
 
 class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
  public:
-  MediaAppIntegrationTest() {
-    // Init with survey triggers enabled to ensure no bad interactions.
-    // Always enable because not all bots run with
-    // fieldtrial_testing_config.json. Simplify (slightly) by using the same
-    // survey trigger ID in the params.
-    const base::FieldTrialParams survey_params{
-        {"prob", "1"},  // 100% probability for testing.
-        {"survey_cycle_length", "90"},
-        {"survey_start_date_ms", "1662336000000"},
-        {"trigger_id", "s5EmUqzvY0jBnuKU19R0Tdf9ticy"}};
-
-    feature_list_.InitWithFeaturesAndParameters(
-        {{ash::kHatsMediaAppPdfSurvey.feature, survey_params}}, {});
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SystemWebAppIntegrationTest::SetUpCommandLine(command_line);
 
@@ -194,11 +166,7 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
     observer.Wait();
   }
 
- protected:
-  ash::NetworkPortalDetectorMixin network_portal_detector_{&mixin_host_};
-
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<file_manager::test::FolderInMyFiles> launch_folder_;
 };
 
@@ -1505,62 +1473,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, ToggleBrowserFullscreen) {
   EXPECT_TRUE(app_browser->GetWindow()->IsFullscreen());
   EXPECT_EQ("success", ExtractStringInGlobalScope(web_ui, kToggleFullscreen));
   EXPECT_FALSE(app_browser->GetWindow()->IsFullscreen());
-}
-
-// Tests that invoking the maybeTriggerPdfHats() MediaApp delegate method fires
-// the notification that asks the user whether to complete a HaTS survey.
-// Note kForceHappinessTrackingSystem is set in the test fixture to ignore the
-// "dice roll" that would normally only show the prompt by chance.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
-  // Enable HaTS testing for PDF editing.
-  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-      ash::switches::kForceHappinessTrackingSystem,
-      ash::features::kHappinessTrackingMediaAppPdf.name);
-
-  content::WebContents* web_ui = LaunchWithOneTestFile(kFilePdfTall);
-
-  constexpr char kMaybeTriggerPdfHats[] = R"(
-      (async function triggerPdfHats() {
-        await customLaunchData.delegate.maybeTriggerPdfHats();
-        return "success";
-      })();
-  )";
-
-  // Notifications only fire if the device is "online". Simulate that.
-  network_portal_detector_.SimulateDefaultNetworkState(
-      ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
-  const user_manager::User& user = CHECK_DEREF(
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
-  const std::string notification_id =
-      ash::HatsNotificationController::GetMessageCenterNotificationIdForTesting(
-          user);
-  message_center::MessageCenterWaiter waiter(notification_id);
-
-  EXPECT_EQ("success",
-            ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
-  waiter.WaitUntilAdded();
-  EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      notification_id));
-}
-
-// Tests the survey trigger codepaths without kForceHappinessTrackingSystem,
-// which skips over some important coverage.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, SurveyTriggers) {
-  // Surveys only trigger for the device owner. Fake it.
-  auto owner_id =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile())->GetAccountId();
-  user_manager::UserManager::Get()->SetOwnerId(owner_id);
-
-  // Do some consistency checks. If these fail then the method we want to test
-  // will bail out early.
-  EXPECT_TRUE(ash::ProfileHelper::IsOwnerProfile(profile()));
-  EXPECT_TRUE(
-      base::FeatureList::IsEnabled(ash::kHatsMediaAppPdfSurvey.feature));
-
-  // The constructor configures the survey features with a 100% probability, so
-  // it should always trigger.
-  EXPECT_TRUE(ash::HatsNotificationController::ShouldShowSurveyToProfile(
-      profile(), ash::kHatsMediaAppPdfSurvey));
 }
 
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, GuestCanReadLocalFonts) {

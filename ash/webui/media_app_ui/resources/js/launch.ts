@@ -236,10 +236,6 @@ guestMessagePipe.registerHandler(Message.RELOAD_MAIN_FRAME, () => {
   window.location.reload();
 });
 
-guestMessagePipe.registerHandler(Message.MAYBE_TRIGGER_PDF_HATS, () => {
-  mediaAppPageHandler.maybeTriggerPdfHats();
-});
-
 guestMessagePipe.registerHandler(Message.EDIT_IN_PHOTOS, (message) => {
   const editInPhotosMsg: EditInPhotosMessage = message;
   const fileHandle = fileHandleForToken(editInPhotosMsg.token);

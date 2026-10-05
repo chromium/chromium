@@ -36,11 +36,9 @@ static_library("media_app") {
     "//chrome/browser/accessibility/media_app",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/common",
@@ -57,7 +55,6 @@ static_library("media_app") {
     "//components/prefs",
     "//components/search_engines",
     "//components/services/app_service",
-    "//components/services/app_service/public/cpp:instance_update",
     "//components/version_info:channel",
     "//skia",
     "//ui/base",
@@ -80,7 +77,6 @@ source_set("browser_tests") {
 
   deps = [
     ":media_app",
-    "//ash/constants",
     "//ash/webui/media_app_ui",
     "//ash/webui/media_app_ui:browser_test_support",
     "//ash/webui/media_app_ui:buildflags",
@@ -92,8 +88,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
-    "//chrome/browser/ash/hats",
-    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/system_web_apps",
@@ -114,7 +108,6 @@ source_set("browser_tests") {
     "//chromeos/constants",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
     "//components/services/app_service",
-    "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",
     "//media",
@@ -124,7 +117,5 @@ source_set("browser_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/aura",
     "//ui/gfx:color_utils",
-    "//ui/message_center:test_support",
-    "//ui/message_center/public/cpp",
   ]
 }

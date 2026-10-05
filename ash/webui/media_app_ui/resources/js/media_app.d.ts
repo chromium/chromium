@@ -253,11 +253,6 @@ declare interface ClientApiDelegate {
    */
   reloadMainFrame?: () => void;
   /**
-   * Indicates to the WebUI Controller that a trigger for displaying the PDF
-   * HaTS survey has occurred.
-   */
-  maybeTriggerPdfHats?: () => void;
-  /**
    * Called when the media app finishes loading a PDF file, to notify Mahi about
    * the refresh availability.
    */
