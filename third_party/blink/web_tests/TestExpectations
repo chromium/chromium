@@ -4401,7 +4401,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/table
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/tall-content-inside-constrained-block-004.tentative.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/tall-content-inside-constrained-block-006.tentative.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-008.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-015.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-017.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-018.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-024-print.html [ Failure ]
