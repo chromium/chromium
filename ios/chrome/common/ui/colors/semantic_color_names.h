@@ -36,8 +36,8 @@ extern NSString* const kMDCSecondaryInkColor;
 extern NSString* const kPlaceholderImageTintColor;
 // New Tab Page background color.
 extern NSString* const kNewTabPageBackgroundColor;
-// Surface container low background color.
-extern NSString* const kSurfaceContainerLowColor;
+// Module background color on the New Tab Page.
+extern NSString* const kNTPModuleBackgroundColor;
 // Color used for quick action buttons on the NTP.
 extern NSString* const kNTPQuickActionChipColor;
 // Background color for NTP Redesign.

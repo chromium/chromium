@@ -53,7 +53,7 @@
                                   UITraitCollection* traits) {
                 if (traits.userInterfaceStyle == UIUserInterfaceStyleDark) {
                   return IsNewTabPageUICleanupEnabled()
-                             ? [UIColor colorNamed:kSurfaceContainerLowColor]
+                             ? [UIColor colorNamed:kNTPModuleBackgroundColor]
                              : [UIColor
                                    colorNamed:kTabGroupFaviconBackgroundColor];
                 }

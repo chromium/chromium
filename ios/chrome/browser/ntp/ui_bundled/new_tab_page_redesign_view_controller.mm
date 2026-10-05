@@ -726,7 +726,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
               return [UIColor colorWithDynamicProvider:^UIColor*(
                                   UITraitCollection* traits) {
                 if (traits.userInterfaceStyle == UIUserInterfaceStyleDark) {
-                  return [UIColor colorNamed:kSurfaceContainerLowColor];
+                  return [UIColor colorNamed:kNTPModuleBackgroundColor];
                 }
                 return [[UIColor colorNamed:kSolidWhiteColor]
                     colorWithAlphaComponent:

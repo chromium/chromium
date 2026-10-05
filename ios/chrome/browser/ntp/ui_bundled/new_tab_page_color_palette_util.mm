@@ -173,6 +173,6 @@ UIColor* NTPCardBackgroundColor(NewTabPageColorPalette* color_palette) {
   }
 
   return [UIColor colorNamed:IsNewTabPageUICleanupEnabled()
-                                 ? kSurfaceContainerLowColor
+                                 ? kNTPModuleBackgroundColor
                                  : kBackgroundColor];
 }

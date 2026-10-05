@@ -437,7 +437,7 @@ constexpr CGFloat kFloatingPointEpsilon = 0.001;
         [self isIPadRegularLayout]
             ? NTPCardBackgroundColor(
                   [self.traitCollection objectForNewTabPageTrait])
-            : [UIColor colorNamed:kSurfaceContainerLowColor];
+            : [UIColor colorNamed:kNTPModuleBackgroundColor];
     _blurBackgroundView.hidden = YES;
   }
 }
