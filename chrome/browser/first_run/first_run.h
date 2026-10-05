@@ -12,6 +12,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/installer/util/initial_preferences.h"
 #include "extensions/buildflags/buildflags.h"
@@ -74,8 +75,12 @@ struct MasterPrefs {
   bool confirm_to_quit;
 #endif
 #if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   bool eula_required = true;
-#endif
+#else
+  bool eula_required = false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 void RegisterProfilePrefs(

@@ -8,6 +8,7 @@ source_set("first_run") {
 
   public_deps = [
     "//base",
+    "//build:branding_buildflags",
     "//chrome/installer/util:with_no_strings",
     "//extensions/buildflags",
   ]
