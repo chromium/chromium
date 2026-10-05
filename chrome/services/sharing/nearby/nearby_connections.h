@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -24,7 +23,6 @@
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
 #include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
@@ -34,8 +32,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/nearby/src/connections/implementation/service_controller_router.h"
-#include "third_party/nearby/src/presence/presence_device.h"
-#include "third_party/nearby/src/presence/presence_device_provider.h"
 
 namespace nearby::connections {
 
@@ -56,7 +52,6 @@ class NearbyConnections : public mojom::NearbyConnections {
   // destroy this instance.
   NearbyConnections(
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
-      NearbyDeviceProvider* presence_device_provider,
       nearby::api::LogMessage::Severity min_log_severity,
       base::OnceClosure on_disconnect);
 
@@ -124,27 +119,6 @@ class NearbyConnections : public mojom::NearbyConnections {
                            base::File input_file,
                            base::File output_file,
                            RegisterPayloadFileCallback callback) override;
-  void RequestConnectionV3(
-      const std::string& service_id,
-      ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      mojom::ConnectionOptionsPtr connection_options,
-      mojo::PendingRemote<mojom::ConnectionListenerV3> listener,
-      RequestConnectionV3Callback callback) override;
-  void AcceptConnectionV3(
-      const std::string& service_id,
-      ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      mojo::PendingRemote<mojom::PayloadListenerV3> listener,
-      AcceptConnectionV3Callback callback) override;
-  void RejectConnectionV3(
-      const std::string& service_id,
-      ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      RejectConnectionV3Callback callback) override;
-  void DisconnectFromDeviceV3(
-      const std::string& service_id,
-      ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
-      DisconnectFromDeviceV3Callback callback) override;
-  void RegisterServiceWithPresenceDeviceProvider(
-      const std::string& service_id) override;
 
   // Returns the file associated with |payload_id| for InputFile.
   base::File ExtractInputFile(int64_t payload_id);
@@ -161,19 +135,7 @@ class NearbyConnections : public mojom::NearbyConnections {
  private:
   Core* GetCore(const std::string& service_id);
 
-  const presence::PresenceDevice& GetPresenceDevice(
-      const std::string& service_id,
-      const std::string& endpoint_id) const;
-  void RemovePresenceDevice(const std::string& service_id,
-                            const std::string& endpoint_id);
-
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;
-
-  // This field is only used in `RegisterServiceWithPresenceDeviceProvider()`
-  // for authentication of connections when using Nearby Presence. Nearby
-  // Connections clients who do not also use Nearby Presence should not call
-  // this method.
-  raw_ptr<NearbyDeviceProvider> presence_local_device_provider_;
 
   std::unique_ptr<ServiceControllerRouter> service_controller_router_;
 
@@ -197,15 +159,6 @@ class NearbyConnections : public mojom::NearbyConnections {
   // A map of payload_id to file for OutputFile.
   base::flat_map<int64_t, base::File> output_file_map_
       GUARDED_BY(output_file_lock_);
-
-  // A map of outgoing connections to remote devices per service, keyed first by
-  // `service_id`, and then as `endpoint_id` to `PresenceDevice`. This class
-  // must own its `PresenceDevice` instances, because Nearby Connections' `Core`
-  // object only accepts `PresenceDevice` references.
-  base::flat_map<
-      std::string,
-      base::flat_map<std::string, std::unique_ptr<presence::PresenceDevice>>>
-      service_id_to_endpoint_id_to_presence_devices_with_outgoing_connections_map_;
 
   scoped_refptr<base::SingleThreadTaskRunner> thread_task_runner_;
 

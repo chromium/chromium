@@ -52,8 +52,7 @@ void SharingImpl::Connect(
                      MojoDependencyName::kNearbyPresence));
 
   nearby_connections_ = std::make_unique<NearbyConnections>(
-      std::move(connections_receiver),
-      nearby_presence_->GetLocalDeviceProvider(), min_log_severity,
+      std::move(connections_receiver), min_log_severity,
       base::BindOnce(&SharingImpl::OnDisconnect, weak_ptr_factory_.GetWeakPtr(),
                      MojoDependencyName::kNearbyConnections));
 

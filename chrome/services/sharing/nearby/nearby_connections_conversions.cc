@@ -145,29 +145,4 @@ BooleanMediumSelector MediumSelectorFromMojom(
   };
 }
 
-mojom::BandwidthQuality BandwidthQualityToMojom(v3::Quality quality) {
-  switch (quality) {
-    case v3::Quality::kUnknown:
-      return mojom::BandwidthQuality::kUnknown;
-    case v3::Quality::kLow:
-      return mojom::BandwidthQuality::kLow;
-    case v3::Quality::kMedium:
-      return mojom::BandwidthQuality::kMedium;
-    case v3::Quality::kHigh:
-      return mojom::BandwidthQuality::kHigh;
-  }
-}
-
-mojom::AuthenticationStatus AuthenticationStatusToMojom(
-    AuthenticationStatus status) {
-  switch (status) {
-    case AuthenticationStatus::kUnknown:
-      return mojom::AuthenticationStatus::kUnknown;
-    case AuthenticationStatus::kSuccess:
-      return mojom::AuthenticationStatus::kSuccess;
-    case AuthenticationStatus::kFailure:
-      return mojom::AuthenticationStatus::kFailure;
-  }
-}
-
 }  // namespace nearby::connections
