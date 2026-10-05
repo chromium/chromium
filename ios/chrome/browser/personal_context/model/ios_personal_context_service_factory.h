@@ -19,6 +19,7 @@ class IOSPersonalContextServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static personal_context::PersonalContextService* GetForProfile(
       ProfileIOS* profile);
   static IOSPersonalContextServiceFactory* GetInstance();
+  static TestingFactory GetDefaultFactory();
 
  private:
   friend class base::NoDestructor<IOSPersonalContextServiceFactory>;

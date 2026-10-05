@@ -5,12 +5,31 @@
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_service_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace {
+
+std::unique_ptr<KeyedService> BuildPersonalContextService(
+    content::BrowserContext* context) {
+  if (!base::FeatureList::IsEnabled(
+          personal_context::features::kPersonalContext)) {
+    return nullptr;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<personal_context::PersonalContextServiceImpl>(
+      profile->GetURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+}
+
+}  // namespace
 
 // static
 personal_context::PersonalContextService*
@@ -26,6 +45,12 @@ PersonalContextServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+PersonalContextServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildPersonalContextService);
+}
+
 PersonalContextServiceFactory::PersonalContextServiceFactory()
     : ProfileKeyedServiceFactory(
           "PersonalContextService",
@@ -39,17 +64,16 @@ PersonalContextServiceFactory::PersonalContextServiceFactory()
 PersonalContextServiceFactory::~PersonalContextServiceFactory() =
     default;
 
+bool PersonalContextServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  return true;
+}
+
+bool PersonalContextServiceFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 PersonalContextServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          personal_context::features::kPersonalContext)) {
-    return nullptr;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<personal_context::PersonalContextServiceImpl>(
-      profile->GetURLLoaderFactory(),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      DeviceInfoSyncServiceFactory::GetForProfile(profile));
+  return BuildPersonalContextService(context);
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/sync/tab_context_sync_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -79,6 +80,8 @@ class ContextHubServiceFactoryTest : public testing::Test {
 
   void OnWillCreateBrowserContextKeyedServices(
       content::BrowserContext* browser_context) {
+    PersonalContextServiceFactory::GetInstance()->SetTestingFactory(
+        browser_context, PersonalContextServiceFactory::GetDefaultFactory());
     OptimizationGuideKeyedServiceFactory::GetInstance()
         ->SetTestingFactoryAndUse(
             browser_context,

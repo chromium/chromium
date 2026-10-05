@@ -252,6 +252,7 @@ PersonalContextServiceImpl::PersonalContextServiceImpl(
 PersonalContextServiceImpl::~PersonalContextServiceImpl() = default;
 
 void PersonalContextServiceImpl::Shutdown() {
+  key_manager_.reset();
   personal_context_manager_->Shutdown();
 }
 

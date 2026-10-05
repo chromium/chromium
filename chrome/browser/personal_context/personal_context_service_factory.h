@@ -19,6 +19,7 @@ class PersonalContextServiceFactory : public ProfileKeyedServiceFactory {
   static personal_context::PersonalContextService* GetForProfile(
       Profile* profile);
   static PersonalContextServiceFactory* GetInstance();
+  static TestingFactory GetDefaultFactory();
 
   PersonalContextServiceFactory(
       const PersonalContextServiceFactory&) = delete;
@@ -32,6 +33,8 @@ class PersonalContextServiceFactory : public ProfileKeyedServiceFactory {
   ~PersonalContextServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsNULLWhileTesting() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
