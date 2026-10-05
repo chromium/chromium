@@ -1288,7 +1288,20 @@ void XMLDocumentParser::StartElementNs(
     return;
   }
 
-  SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
+  if (reactions.has_value()) {
+    // A synchronous custom element constructor ran and may have manipulated
+    // the element (set attributes, appended children, or inserted it into the
+    // tree), so the batched ParserSetAttributes() path is no longer safe. Set
+    // the attributes one by one, as HTMLConstructionSite::CreateElement does.
+    if (!ScriptingContentIsAllowed(GetParserContentPolicy())) {
+      new_element->StripScriptingAttributes(prefixed_attributes);
+    }
+    for (const auto& attribute : prefixed_attributes) {
+      new_element->setAttribute(attribute.GetName(), attribute.Value());
+    }
+  } else {
+    SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
+  }
 
   if (parsing_fragment_ && encountered_namespace_reset &&
       !ancestor_resetting_namespace_) {
