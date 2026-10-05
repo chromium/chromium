@@ -355,6 +355,7 @@ public class StartupLoadingMetricsTest {
     /** Tests that the startup loading histograms are recorded correctly for NTP launches */
     @Test
     @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/570146323
     public void testNtpRecordedCorrectly() throws Exception {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
