@@ -126,7 +126,7 @@ auto ParseAndRecordMetrics(std::string_view time_metric,
 
 }  // namespace
 
-BASE_FEATURE(kStructuredHeadersInRust, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kStructuredHeadersInRust, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
