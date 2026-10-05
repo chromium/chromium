@@ -1246,6 +1246,14 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SiteListEntry) {
   RunTest("settings/site_list_entry_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SiteSettingsMixin) {
+  RunTest("settings/site_settings_mixin_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, SiteSettingsMixinLit) {
+  RunTest("settings/site_settings_mixin_lit_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SiteShortcutsPage) {
   RunTest("settings/site_shortcuts_page_test.js", "mocha.run()");
 }

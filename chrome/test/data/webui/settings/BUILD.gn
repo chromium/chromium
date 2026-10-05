@@ -170,6 +170,8 @@ build_webui_tests("build") {
     "site_favicon_test.ts",
     "site_list_entry_test.ts",
     "site_list_test.ts",
+    "site_settings_mixin_test.ts",
+    "site_settings_mixin_lit_test.ts",
     "site_settings_page_test.ts",
     "site_shortcuts_page_test.ts",
     "skills_page_test.ts",

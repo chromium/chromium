@@ -1,49 +1,39 @@
-// Copyright 2015 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
- * @fileoverview Behavior common to Site Settings classes.
+ * @fileoverview Behavior common to Site Settings classes in Lit.
  */
 
-// clang-format off
-import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ContentSettingsTypes} from './constants.js';
-import {SiteSettingSource} from './constants.js';
+import {ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
 import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
-// clang-format on
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const SiteSettingsMixin = dedupingMixin(
-    <T extends Constructor<PolymerElement>>(superClass: T): T&
-    Constructor<SiteSettingsMixinInterface> => {
-      class SiteSettingsMixin extends superClass {
+export const SiteSettingsMixinLit = dedupingMixin(
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
+    Constructor<SiteSettingsMixinLitInterface> => {
+      class SiteSettingsMixinLit extends superClass implements
+          SiteSettingsMixinLitInterface {
         static get properties() {
           return {
             /**
              * The string ID of the category this element is displaying data
              * for. See site_settings/constants.js for possible values.
              */
-            category: String,
+            category: {type: String},
           };
         }
 
-        declare category: ContentSettingsTypes;
-        browserProxy: SiteSettingsBrowserProxy;
+        accessor category: ContentSettingsTypes = ContentSettingsTypes.COOKIES;
 
-        constructor(...args: any[]) {
-          super(...args);
-
-          /**
-           * The browser proxy used to retrieve and change information about
-           * site settings categories and the sites within.
-           */
-          this.browserProxy = SiteSettingsBrowserProxyImpl.getInstance();
-        }
+        browserProxy: SiteSettingsBrowserProxy =
+            SiteSettingsBrowserProxyImpl.getInstance();
 
         /**
          * Ensures the URL has a scheme (assumes http if omitted).
@@ -148,10 +138,10 @@ export const SiteSettingsMixin = dedupingMixin(
         }
       }
 
-      return SiteSettingsMixin;
+      return SiteSettingsMixinLit;
     });
 
-export interface SiteSettingsMixinInterface {
+export interface SiteSettingsMixinLitInterface {
   browserProxy: SiteSettingsBrowserProxy;
   category: ContentSettingsTypes;
   originRepresentation(origin: string): string;

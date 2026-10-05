@@ -327,6 +327,8 @@ export {SiteListEntryElement} from './site_settings/site_list_entry.js';
 export {DefaultSettingSource, SiteSettingsBrowserProxyImpl, ThirdPartyCookieBlockingSetting} from './site_settings/site_settings_browser_proxy.js';
 export type {ChooserException, DefaultContentSetting, FileSystemGrant, OriginFileSystemGrants, OriginInfo, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsBrowserProxy, StorageAccessEmbeddingException, StorageAccessSiteException, SubAppsPermissionExplanationInfo, ZoomLevelEntry} from './site_settings/site_settings_browser_proxy.js';
 export {defaultSettingLabel} from './site_settings/site_settings_list.js';
+export {SiteSettingsMixin} from './site_settings/site_settings_mixin.js';
+export {SiteSettingsMixinLit} from './site_settings/site_settings_mixin_lit.js';
 export {SettingsSiteSettingsPageElement} from './site_settings/site_settings_page.js';
 // <if expr="is_chromeos">
 export {SettingsSmartCardReadersPageElement} from './site_settings/smart_card_readers_page.js';
