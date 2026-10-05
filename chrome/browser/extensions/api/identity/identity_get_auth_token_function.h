@@ -22,9 +22,14 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
+#include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "components/signin/public/browser/web_signin_tracker.h"
+#endif
 
 namespace signin {
 class AccessTokenFetcher;
@@ -161,9 +166,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   FRIEND_TEST_ALL_PREFIXES(GetAuthTokenFunctionTest, NoninteractiveShutdown);
 
   class RefreshTokensLoadedWaiter;
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  class AccountsInCookieUpdatedWaiter;
-#endif
   enum class InteractionType { kSignin, kConsent };
 #if BUILDFLAG(IS_CHROMEOS)
   class DeviceOAuth2TokenFetcher;
@@ -175,8 +177,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   void GetAuthTokenForAccount(const GaiaId& gaia_id);
 
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  void OnCookiesUpdatedForRemoteConsent(bool success);
-  bool ShouldDelayRemoteConsent();
+  void OnWebSigninTrackerResult(signin::WebSigninTracker::Result result);
   void StartWaitingForCookies();
 #endif
 
@@ -294,8 +295,13 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   RemoteConsentResolutionData resolution_data_;
   std::unique_ptr<RefreshTokensLoadedWaiter> refresh_tokens_loaded_waiter_;
 #if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  std::unique_ptr<AccountsInCookieUpdatedWaiter>
-      accounts_in_cookie_updated_waiter_;
+  // Waits for the account to be available in the cookie jar before showing the
+  // remote consent dialog. Kept alive after reporting its result, until the
+  // next wait.
+  std::unique_ptr<signin::WebSigninTracker> web_signin_tracker_;
+  // Result reported from the `web_signin_tracker_` constructor, handled once
+  // the constructor returns.
+  std::optional<signin::WebSigninTracker::Result> synchronous_tracker_result_;
 #endif
   std::unique_ptr<GaiaRemoteConsentFlow> gaia_remote_consent_flow_;
   std::string consent_result_;

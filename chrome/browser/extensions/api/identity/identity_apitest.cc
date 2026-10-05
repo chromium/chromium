@@ -1705,9 +1705,9 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest,
       1);
 }
 
-// The function may still be parked in the cookie waiter when the profile goes
-// away. `OnIdentityAPIShutdown()` has to tear the waiter down and fail the
-// request; see the `accounts_in_cookie_updated_waiter_` reset there.
+// The function may still be waiting for cookies when the profile goes
+// away. `OnIdentityAPIShutdown()` has to tear the tracker down and fail the
+// request; see the `web_signin_tracker_` reset there.
 //
 // Note: the other shutdown tests in this file drive shutdown by closing
 // browsers, which isn't available in this build configuration. Notifying
