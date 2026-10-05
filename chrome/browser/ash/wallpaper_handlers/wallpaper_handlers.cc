@@ -394,7 +394,9 @@ BackdropSurpriseMeImageFetcherImpl::~BackdropSurpriseMeImageFetcherImpl() =
 
 void BackdropSurpriseMeImageFetcherImpl::Start(
     OnSurpriseMeImageFetched callback) {
-  CHECK(callback_.is_null(), base::NotFatalUntil::M160);
+  // TODO(crbug.com/568730651): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(callback_.is_null());
   callback_ = std::move(callback);
 
   ash::GetCustomizationId(
