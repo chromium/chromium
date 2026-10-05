@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "ui/color/color_provider_source_observer.h"
+#include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/shadow_value.h"
@@ -21,8 +22,8 @@ class Window;
 namespace ui {
 class ColorProvider;
 class ColorProviderSource;
+class Decoration;
 class Layer;
-class Shadow;
 }  // namespace ui
 
 namespace views {
@@ -32,8 +33,8 @@ class View;
 namespace ash {
 
 // SystemShadow generates a shadow with system shadow style for different types
-// of UI surfaces. It is based on `ui::Shadow` which paints the shadow on a nine
-// patch layer.
+// of UI surfaces. It is based on `ui::decoration::Shadow` which paints the
+// shadow on a nine patch layer.
 class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
  public:
   // Shadow types of system UI components. The shadows with different elevations
@@ -46,12 +47,12 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
 
   ~SystemShadow() override;
 
-  // Create a system shadow based on `ui::Shadow` which paints shadow on a nine
-  // patch layer. This shadow can be used for any UI surfaces. Usually, when
-  // creating the shadow for a window, attach the shadow's layer at the bottom
-  // of the window's layer; when creating the shadow for a view, attach the
-  // shadow's layer at the bottom of the view's parent layer. The layer's
-  // content bounds should be manually updated.
+  // Create a system shadow based on `ui::decoration::Shadow` which paints
+  // shadow on a nine patch layer. This shadow can be used for any UI surfaces.
+  // Usually, when creating the shadow for a window, attach the shadow's layer
+  // at the bottom of the window's layer; when creating the shadow for a view,
+  // attach the shadow's layer at the bottom of the view's parent layer. The
+  // layer's content bounds should be manually updated.
   static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayer(
       Type shadow_type);
 
@@ -67,13 +68,13 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
       views::View* view,
       Type shadow_type);
 
-  // Create a system shadow based on `ui::Shadow`. The shadow's layer is added
-  // to the bottom of the window's layer and its contents bounds are adjusted
-  // with the window bounds. The shadow does not need to manually update the
-  // content bounds but cannot be used when the shadow's contents bounds do not
-  // equal to the window bounds. For example, the content bounds of
-  // `OverviewItem` for wide and tall windows do not equal to the item bounds.
-  // In this case, please use `CreateShadowOnNinePatchLayer` instead.
+  // Create a system shadow based on `ui::decoration::Shadow`. The shadow's
+  // layer is added to the bottom of the window's layer and its contents bounds
+  // are adjusted with the window bounds. The shadow does not need to manually
+  // update the content bounds but cannot be used when the shadow's contents
+  // bounds do not equal to the window bounds. For example, the content bounds
+  // of `OverviewItem` for wide and tall windows do not equal to the item
+  // bounds. In this case, please use `CreateShadowOnNinePatchLayer` instead.
   static std::unique_ptr<SystemShadow> CreateShadowOnNinePatchLayerForWindow(
       aura::Window* window,
       Type shadow_type);
@@ -88,6 +89,7 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
 
   void SetContentBounds(const gfx::Rect& bounds);
 
+  // Sets the radii of the corners of the content the shadow frames.
   void SetRoundedCorners(const gfx::RoundedCornersF& rounded_corners);
 
   const gfx::Rect& GetContentBounds();
@@ -107,8 +109,8 @@ class ASH_EXPORT SystemShadow : public ui::ColorProviderSourceObserver {
   const gfx::ShadowValues GetShadowValuesForTesting() const;
 
  protected:
-  virtual ui::Shadow* shadow() = 0;
-  virtual const ui::Shadow* shadow() const = 0;
+  virtual ui::Decoration* decoration() = 0;
+  virtual const ui::Decoration* decoration() const = 0;
 
  private:
   // Update shadow colors with given color provider.

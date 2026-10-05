@@ -22,8 +22,8 @@ class BrowserContext;
 }
 
 namespace ui {
-class Shadow;
-}
+class Decoration;
+}  // namespace ui
 
 // Subclass of KeyboardUI. It is used by KeyboardController to get
 // access to the virtual keyboard window and setup Chrome extension functions.
@@ -64,7 +64,7 @@ class ChromeKeyboardUI : public keyboard::KeyboardUI,
   const raw_ptr<content::BrowserContext> browser_context_;
 
   std::unique_ptr<ChromeKeyboardWebContents> keyboard_contents_;
-  std::unique_ptr<ui::Shadow> shadow_;
+  std::unique_ptr<ui::Decoration> shadow_decoration_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_UI_H_

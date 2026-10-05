@@ -4,17 +4,25 @@
 
 #include "ui/decoration/shadow.h"
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
+#include "ui/decoration/decoration.h"
 #include "ui/decoration/decoration_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/shadow_value.h"
 
-namespace ui {
+namespace ui::decoration {
 namespace {
 
 using ::testing::FieldsAre;
@@ -36,8 +44,8 @@ gfx::Size GetNineboxImageSize(int elevation,
   auto values = Shadow::MakeShadowValues(
       elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
   gfx::Rect bounds(0, 0, 1, 1);
-  bounds.Inset(-decoration::ShadowGenerator::GetNineboxApertureInsets(
-      values, rounded_corners));
+  bounds.Inset(
+      -ShadowGenerator::GetNineboxApertureInsets(values, rounded_corners));
   return bounds.size();
 }
 
@@ -49,8 +57,8 @@ gfx::Size GetMinContentSize(
     bool is_pill_shaped = false) {
   auto values = Shadow::MakeShadowValues(
       elevation, Shadow::Style::kMaterialDesign, std::nullopt, is_pill_shaped);
-  gfx::Insets insets = decoration::ShadowGenerator::GetNineboxApertureInsets(
-      values, rounded_corners);
+  gfx::Insets insets =
+      ShadowGenerator::GetNineboxApertureInsets(values, rounded_corners);
   return gfx::Size(insets.width(), insets.height());
 }
 
@@ -77,264 +85,243 @@ class ShadowTest : public testing::Test {
 };
 
 // Test if the proper content bounds is calculated based on the current style.
+// Decoration::CreateShadow() yields a decoration drawn by a shadow configured
+// as requested, with slightly rounded corners.
+TEST_F(ShadowTest, CreateShadow) {
+  const Shadow::ElevationToColorsMap color_map = {
+      {kElevationSmall, {SK_ColorRED, SK_ColorBLUE}}};
+  auto decoration = Decoration::CreateShadow(
+      kElevationSmall, Shadow::Style::kMaterialDesign, color_map);
+
+  const Shadow* shadow = decoration->GetSourceAs<Shadow>();
+  ASSERT_TRUE(shadow);
+  EXPECT_EQ(kElevationSmall, shadow->elevation());
+  EXPECT_EQ(Shadow::Style::kMaterialDesign, shadow->style());
+  EXPECT_EQ(color_map, shadow->color_map());
+  EXPECT_EQ(gfx::RoundedCornersF(2.f), decoration->rounded_corners());
+}
+
 TEST_F(ShadowTest, SetContentBounds) {
   gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   // Verify that layer bounds are outset from content bounds.
-  Shadow shadow;
+  auto decoration = Decoration::CreateShadow(kElevationLarge);
+  Shadow* shadow = decoration->GetSourceAs<Shadow>();
   {
-    shadow.Init(kElevationLarge);
     gfx::Rect content_bounds(100, 100, 300, 300);
-    shadow.SetContentBounds(content_bounds);
-    EXPECT_EQ(content_bounds, shadow.content_bounds());
+    decoration->SetContentBounds(content_bounds);
+    EXPECT_EQ(content_bounds, decoration->content_bounds());
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   {
-    shadow.SetElevation(kElevationSmall);
+    shadow->SetElevation(kElevationSmall);
     gfx::Rect content_bounds(100, 100, 300, 300);
-    shadow.SetContentBounds(content_bounds);
-    EXPECT_EQ(content_bounds, shadow.content_bounds());
+    decoration->SetContentBounds(content_bounds);
+    EXPECT_EQ(content_bounds, decoration->content_bounds());
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kElevationSmall));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 }
 
-// Test that layer bounds are empty when content bounds are empty, and update
-// properly when transitioning between empty and non-empty bounds.
-TEST_F(ShadowTest, EmptyContentBounds) {
-  Shadow shadow;
-  shadow.Init(kElevationLarge);
-  // Initially, content bounds are empty and layer bounds should be empty.
-  EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
-  EXPECT_TRUE(shadow.shadow_layer_for_testing()->bounds().IsEmpty());
+// Test that no nine-patch image is generated while the size-adjusted elevation
+// is zero, and that images keep being generated once one has been created.
+TEST_F(ShadowTest, ZeroElevationDoesNotGenerateDetails) {
+  gfx::ScopedAnimationDurationScaleMode zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
-  // Set non-empty content bounds.
-  gfx::Rect content_bounds(100, 100, 300, 300);
-  shadow.SetContentBounds(content_bounds);
-  gfx::Rect shadow_bounds(content_bounds);
-  shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
-  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
-  EXPECT_EQ(shadow_bounds.size(),
-            shadow.shadow_layer_for_testing()->bounds().size());
-
-  // Reset to empty content bounds. Layer bounds should collapse to empty.
-  shadow.SetContentBounds(gfx::Rect());
-  EXPECT_TRUE(shadow.layer()->bounds().IsEmpty());
-  EXPECT_TRUE(shadow.shadow_layer_for_testing()->bounds().IsEmpty());
-
-  // Restore non-empty content bounds.
-  shadow.SetContentBounds(content_bounds);
-  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
-  EXPECT_EQ(shadow_bounds.size(),
-            shadow.shadow_layer_for_testing()->bounds().size());
-}
-
-// Test if the shadow's layer bounds are modified, setting the same content
-// bounds can reset the layer bounds.
-TEST_F(ShadowTest, ResetLayerBoundsBySettingSameContentBounds) {
-  Shadow shadow;
-  shadow.Init(kElevationLarge);
-  gfx::Rect content_bounds(100, 100, 300, 300);
-  shadow.SetContentBounds(content_bounds);
-  EXPECT_EQ(content_bounds, shadow.content_bounds());
-
-  const gfx::Rect layer_bounds = shadow.layer()->bounds();
-
-  // Change shadow's layer bounds.
-  const gfx::Rect modified_bounds(200, 200, 150, 400);
-  shadow.layer()->SetBounds(modified_bounds);
-  EXPECT_EQ(shadow.layer()->bounds(), modified_bounds);
-
-  // Reset layer bounds by setting the same content bounds.
-  shadow.SetContentBounds(content_bounds);
-  EXPECT_EQ(layer_bounds, shadow.layer()->bounds());
-}
-
-// Test that calling setters before Init() does not crash and properties are
-// properly applied when Init() is called.
-TEST_F(ShadowTest, ConfigureBeforeInit) {
-  Shadow shadow;
-
-  // Set properties before Init(). These should not crash or create layers.
+  // A shadow that has never had a positive elevation generates no details, and
+  // the decoration layer is left unconfigured, i.e. not outset by any margins.
+  auto decoration = Decoration::CreateShadow(0);
+  Shadow* shadow = decoration->GetSourceAs<Shadow>();
   const gfx::Rect content_bounds(100, 100, 300, 300);
-  shadow.SetContentBounds(content_bounds);
-  EXPECT_EQ(content_bounds, shadow.content_bounds());
+  decoration->SetContentBounds(content_bounds);
+  EXPECT_FALSE(shadow->details_for_testing());
+  EXPECT_EQ(content_bounds, decoration->layer()->bounds());
 
-  shadow.SetElevation(kElevationSmall);
-  EXPECT_EQ(kElevationSmall, shadow.elevation());
+  // The elevation is also clamped to zero when the content is too small to
+  // support it, which likewise generates no details.
+  auto small_decoration = Decoration::CreateShadow(kElevationLarge);
+  Shadow* small_shadow = small_decoration->GetSourceAs<Shadow>();
+  const gfx::Rect small_content_bounds(0, 0, 2, 2);
+  small_decoration->SetContentBounds(small_content_bounds);
+  EXPECT_FALSE(small_shadow->details_for_testing());
+  EXPECT_EQ(small_content_bounds, small_decoration->layer()->bounds());
 
-  const gfx::RoundedCornersF radii(10, 20, 30, 40);
-  shadow.SetRoundedCorners(radii);
-  EXPECT_EQ(radii, shadow.rounded_corners());
+  // Once a positive elevation has generated details, returning to a zero
+  // elevation keeps painting the shadow rather than dropping the image.
+  shadow->SetElevation(kElevationSmall);
+  ASSERT_TRUE(shadow->details_for_testing());
+  shadow->SetElevation(0);
+  EXPECT_TRUE(shadow->details_for_testing());
+}
+
+// Test that calling setters on a standalone Shadow before attaching to a
+// Decoration does not crash and properties are properly applied when attached.
+TEST_F(ShadowTest, ConfigureBeforeAttach) {
+  auto shadow = std::make_unique<Shadow>(/*elevation=*/0);
+  Shadow* shadow_ptr = shadow.get();
+
+  shadow->SetElevation(kElevationSmall);
+  EXPECT_EQ(kElevationSmall, shadow->elevation());
 
   Shadow::ElevationToColorsMap color_map;
   color_map[kElevationLarge] =
       Shadow::ElevationColors{SK_ColorRED, SK_ColorBLUE};
-  shadow.SetColorMap(color_map);
-  EXPECT_EQ(color_map, shadow.color_map());
+  shadow->SetColorMap(color_map);
+  EXPECT_EQ(color_map, shadow->color_map());
 
-  shadow.SetStyle(Shadow::Style::kMaterialDesign);
-  EXPECT_EQ(Shadow::Style::kMaterialDesign, shadow.style());
+  shadow->SetStyle(Shadow::Style::kMaterialDesign);
+  EXPECT_EQ(Shadow::Style::kMaterialDesign, shadow->style());
+  EXPECT_FALSE(shadow->details_for_testing());
 
-  EXPECT_FALSE(shadow.layer());
-  EXPECT_FALSE(shadow.shadow_layer_for_testing());
-  EXPECT_FALSE(shadow.details_for_testing());
+  shadow->SetElevation(kElevationLarge);
 
-  // Call Init() and verify that the shadow appearance is correctly updated with
-  // the previously configured properties.
-  shadow.Init(kElevationLarge);
-  EXPECT_TRUE(shadow.layer());
-  EXPECT_TRUE(shadow.shadow_layer_for_testing());
-  ASSERT_TRUE(shadow.details_for_testing());
+  auto decoration = Decoration::Create(std::move(shadow));
+  const gfx::Rect content_bounds(100, 100, 300, 300);
+  const gfx::RoundedCornersF radii(10, 20, 30, 40);
+  decoration->SetContentBounds(content_bounds);
+  decoration->SetRoundedCorners(radii);
+
+  EXPECT_TRUE(decoration->layer());
+  EXPECT_TRUE(decoration->decoration_layer_for_testing());
+  ASSERT_TRUE(shadow_ptr->details_for_testing());
 
   gfx::Rect shadow_bounds(content_bounds);
   shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
-  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   EXPECT_EQ(GetNineboxImageSize(kElevationLarge, radii),
-            shadow.details_for_testing()->nine_patch_image.size());
-  EXPECT_EQ(SK_ColorRED, shadow.details_for_testing()->spec[0].color());
-  EXPECT_EQ(SK_ColorBLUE, shadow.details_for_testing()->spec[1].color());
+            shadow_ptr->details_for_testing()->nine_patch_image.size());
+  EXPECT_EQ(SK_ColorRED, shadow_ptr->details_for_testing()->spec[0].color());
+  EXPECT_EQ(SK_ColorBLUE, shadow_ptr->details_for_testing()->spec[1].color());
 }
 
 // Test that the elevation is reduced when the contents are too small to handle
 // the full elevation.
 TEST_F(ShadowTest, AdjustElevationForSmallContents) {
-  Shadow shadow;
-  shadow.Init(kElevationLarge);
+  auto decoration = Decoration::CreateShadow(kElevationLarge);
 
   // Test with corner radius 0.
-  shadow.SetRoundedCorners(gfx::RoundedCornersF());
+  gfx::RoundedCornersF radii;
   {
     gfx::Rect content_bounds(100, 100, 300, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kElevationLarge));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kWidth / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   {
     constexpr int kHeight = 80;
     gfx::Rect content_bounds(100, 100, 300, kHeight);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kHeight / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   // Test with default corner radius 2.
-  shadow.SetRoundedCorners(gfx::RoundedCornersF(2));
+  radii = gfx::RoundedCornersF(2);
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation((kWidth - 4) / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   {
     constexpr int kHeight = 80;
     gfx::Rect content_bounds(100, 100, 300, kHeight);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation((kHeight - 4) / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   // Test with pill shaped contents.
-  shadow.SetRoundedCorners(gfx::RoundedCornersF(40));
+  radii = gfx::RoundedCornersF(40);
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kWidth / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   // Test with variable rounded corners.
-  shadow.SetRoundedCorners(gfx::RoundedCornersF(10, 20, 30, 40));
+  radii = gfx::RoundedCornersF(10, 20, 30, 40);
   {
     constexpr int kWidth = 100;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation((kWidth - 2 * 40) / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 
   // Test with variable rounded corners that trigger pill-shape clamping.
-  shadow.SetRoundedCorners(gfx::RoundedCornersF(40, 40, 20, 20));
+  radii = gfx::RoundedCornersF(40, 40, 20, 20);
   {
     constexpr int kWidth = 80;
     gfx::Rect content_bounds(100, 100, kWidth, 300);
-    shadow.SetContentBounds(content_bounds);
+    decoration->SetContentBounds(content_bounds);
+    decoration->SetRoundedCorners(radii);
     gfx::Rect shadow_bounds(content_bounds);
     shadow_bounds.Inset(InsetsForElevation(kWidth / 4));
-    EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+    EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   }
 }
 
 // Test that rounded corners are handled correctly.
 TEST_F(ShadowTest, AdjustRoundedCorners) {
-  Shadow shadow;
-  shadow.Init(kElevationSmall);
+  auto decoration = Decoration::CreateShadow(kElevationSmall);
+  Shadow* shadow = decoration->GetSourceAs<Shadow>();
   gfx::Rect content_bounds(100, 100, 300, 300);
-  shadow.SetContentBounds(content_bounds);
-  EXPECT_EQ(content_bounds, shadow.content_bounds());
+  decoration->SetContentBounds(content_bounds);
+  EXPECT_EQ(content_bounds, decoration->content_bounds());
 
-  shadow.SetRoundedCorners(gfx::RoundedCornersF());
+  decoration->SetContentBounds(content_bounds);
+  decoration->SetRoundedCorners(gfx::RoundedCornersF());
   gfx::Rect shadow_bounds(content_bounds);
   shadow_bounds.Inset(InsetsForElevation(kElevationSmall));
-  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   EXPECT_EQ(GetNineboxImageSize(6, gfx::RoundedCornersF()),
-            shadow.details_for_testing()->nine_patch_image.size());
+            shadow->details_for_testing()->nine_patch_image.size());
 
   gfx::RoundedCornersF radii(10, 20, 30, 40);
-  shadow.SetRoundedCorners(radii);
-  EXPECT_EQ(shadow_bounds, shadow.layer()->bounds());
+  decoration->SetContentBounds(content_bounds);
+  decoration->SetRoundedCorners(radii);
+  EXPECT_EQ(shadow_bounds, decoration->layer()->bounds());
   EXPECT_EQ(GetNineboxImageSize(6, radii),
-            shadow.details_for_testing()->nine_patch_image.size());
+            shadow->details_for_testing()->nine_patch_image.size());
 
-  shadow.SetRoundedCorners(gfx::RoundedCornersF(150));
+  decoration->SetContentBounds(content_bounds);
+  decoration->SetRoundedCorners(gfx::RoundedCornersF(150));
   EXPECT_EQ(GetNineboxImageSize(6, gfx::RoundedCornersF(150),
                                 /*is_pill_shaped=*/true),
-            shadow.details_for_testing()->nine_patch_image.size());
-}
-
-// Test that rounded corners are size-adjusted using floor precision when
-// content bounds are small to support rounded corners.
-TEST_F(ShadowTest, SizeAdjustedRoundedCorners) {
-  Shadow shadow;
-  shadow.Init(kElevationSmall);
-
-  // Set rounded corners where some corners exceed half the smaller dimension
-  // of the content bounds below (smaller_dimension = 39, half = 19.5).
-  gfx::RoundedCornersF radii(10, 24, 24, 24);
-  shadow.SetRoundedCorners(radii);
-
-  // Set small content bounds (width = 50, height = 39, smaller_dimension = 39).
-  // Max radius with floor precision: std::floor(39 / 2.0f) = 19.0.
-  gfx::Rect small_content_bounds(100, 100, 50, 39);
-  shadow.SetContentBounds(small_content_bounds);
-
-  const gfx::RoundedCornersF expected_adjusted_radii(10, 19, 19, 19);
-  EXPECT_EQ(GetNineboxImageSize(kElevationSmall, expected_adjusted_radii,
-                                /*is_pill_shaped=*/true),
-            shadow.details_for_testing()->nine_patch_image.size());
+            shadow->details_for_testing()->nine_patch_image.size());
 }
 
 // Test that the uniquely owned shadow image is evicted from the cache when new
@@ -343,83 +330,77 @@ TEST_F(ShadowTest, EvictUniquelyOwnedDetail) {
   // Insert a new shadow with unique details which will evict existing details
   // from the cache.
   {
-    Shadow shadow_new;
-    shadow_new.Init(kElevationUnique);
-    shadow_new.SetRoundedCorners(gfx::RoundedCornersF(2));
+    auto new_decoration = Decoration::CreateShadow(kElevationUnique);
 
     const gfx::Size min_content_size = GetMinContentSize(kElevationUnique);
-    shadow_new.SetContentBounds(gfx::Rect(min_content_size));
+    new_decoration->SetContentBounds(gfx::Rect(min_content_size));
     // The cache size should be 1.
-    EXPECT_EQ(1u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a shadow with the same detail won't increase the cache size.
-    Shadow shadow_same;
-    shadow_same.Init(kElevationUnique);
-    shadow_same.SetRoundedCorners(gfx::RoundedCornersF(2));
-    shadow_same.SetContentBounds(
+    auto same_decoration = Decoration::CreateShadow(kElevationUnique);
+    same_decoration->SetContentBounds(
         gfx::Rect(gfx::Point(10, 10), min_content_size + gfx::Size(50, 50)));
     // The cache size is unchanged.
-    EXPECT_EQ(1u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a new uniquely owned detail will increase the cache size.
-    decoration::ShadowDetails::Get(gfx::RoundedCornersF(3),
-                                   Shadow::MakeShadowValues(kElevationUnique));
-    EXPECT_EQ(2u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    ShadowDetails::Get(gfx::RoundedCornersF(3),
+                       Shadow::MakeShadowValues(kElevationUnique));
+    EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Creating a shadow with different details will replace the uniquely owned
     // detail.
-    Shadow shadow_small;
-    shadow_small.Init(kElevationSmall);
-    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(2));
-    shadow_small.SetContentBounds(
-        gfx::Rect(GetMinContentSize(kElevationSmall)));
-    EXPECT_EQ(2u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    auto small_decoration = Decoration::CreateShadow(kElevationSmall);
+    const gfx::Rect small_content_bounds(GetMinContentSize(kElevationSmall));
+    small_decoration->SetContentBounds(small_content_bounds);
+    EXPECT_EQ(2u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow appearance will insert a new detail in the cache and
     // make the old detail uniquely owned.
-    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(3));
-    EXPECT_EQ(3u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    small_decoration->SetContentBounds(small_content_bounds);
+    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(3));
+    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow with another appearance will replace the uniquely
     // owned detail.
-    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(4));
-    EXPECT_EQ(3u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    small_decoration->SetContentBounds(small_content_bounds);
+    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(4));
+    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
 
     // Changing the shadow to be pill shaped will replace the uniquely owned
     // detail.
-    shadow_small.SetContentBounds(gfx::Rect(GetMinContentSize(
-        kElevationSmall, gfx::RoundedCornersF(14), /*is_pill_shaped=*/true)));
-    shadow_small.SetRoundedCorners(gfx::RoundedCornersF(14));
-    EXPECT_EQ(3u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+    small_decoration->SetContentBounds(
+        gfx::Rect(GetMinContentSize(kElevationSmall, gfx::RoundedCornersF(14),
+                                    /*is_pill_shaped=*/true)));
+    small_decoration->SetRoundedCorners(gfx::RoundedCornersF(14));
+    EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
   }
 
-  // After destroying the all the shadows, the cache has 3 uniquely owned
-  // details.
-  EXPECT_EQ(3u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+  // After destroying all the shadows, the cache has 3 uniquely owned details.
+  EXPECT_EQ(3u, ShadowDetails::GetDetailsCacheSizeForTest());
 
   // After inserting a new detail, the uniquely owned details will be evicted.
-  Shadow shadow_large;
-  shadow_large.Init(kElevationLarge);
-  shadow_large.SetRoundedCorners(gfx::RoundedCornersF(2));
-  shadow_large.SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
+  auto large_decoration = Decoration::CreateShadow(kElevationLarge);
+  large_decoration->SetContentBounds(
+      gfx::Rect(GetMinContentSize(kElevationLarge)));
   // The cache size is unchanged.
-  EXPECT_EQ(1u, decoration::ShadowDetails::GetDetailsCacheSizeForTest());
+  EXPECT_EQ(1u, ShadowDetails::GetDetailsCacheSizeForTest());
 }
 
 class ShadowColorTest : public ShadowTest,
-                        public testing::WithParamInterface<ui::Shadow::Style> {
+                        public testing::WithParamInterface<Shadow::Style> {
  public:
   ShadowColorTest() = default;
   ShadowColorTest(const ShadowColorTest&) = delete;
   ShadowColorTest& operator=(const ShadowColorTest&) = delete;
   ~ShadowColorTest() override = default;
 
-  static std::vector<ui::Shadow::Style> GetTestParamValues() {
+  static std::vector<Shadow::Style> GetTestParamValues() {
 #if BUILDFLAG(IS_CHROMEOS)
-    return {ui::Shadow::Style::kMaterialDesign,
-            ui::Shadow::Style::kChromeOSSystemUI};
+    return {Shadow::Style::kMaterialDesign, Shadow::Style::kChromeOSSystemUI};
 #else
-    return {ui::Shadow::Style::kMaterialDesign};
+    return {Shadow::Style::kMaterialDesign};
 #endif
   }
 };
@@ -432,14 +413,13 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests the shadow colors are updated when setting elevation to colors map.
 TEST_P(ShadowColorTest, ElevationToColorsMap) {
   using ElevationColors = Shadow::ElevationColors;
-  Shadow shadow;
-  shadow.Init(kElevationSmall);
-  shadow.SetStyle(GetParam());
+  auto decoration = Decoration::CreateShadow(kElevationSmall, GetParam());
+  Shadow* shadow = decoration->GetSourceAs<Shadow>();
   // Set the content bounds which is big enough for the large elevation.
-  shadow.SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
+  decoration->SetContentBounds(gfx::Rect(GetMinContentSize(kElevationLarge)));
 
   // Cache the default colors.
-  const auto& values = shadow.details_for_testing()->spec;
+  const auto& values = shadow->details_for_testing()->spec;
   const SkColor default_key_color = values[0].color();
   const SkColor default_ambient_color = values[1].color();
 
@@ -453,28 +433,28 @@ TEST_P(ShadowColorTest, ElevationToColorsMap) {
       ElevationColors{small_key_color, small_ambient_color};
   color_map[kElevationLarge] =
       ElevationColors{large_key_color, large_ambient_color};
-  shadow.SetColorMap(color_map);
+  shadow->SetColorMap(color_map);
 
   // A lambda to get key and ambient shadow colors.
-  auto get_colors = [](const ui::Shadow& shadow) -> ElevationColors {
+  auto get_colors = [](const Shadow& shadow) -> ElevationColors {
     const auto& values = shadow.details_for_testing()->spec;
     return ElevationColors{values[0].color(), values[1].color()};
   };
 
   // Check if shadow colors are updated.
-  EXPECT_EQ(get_colors(shadow),
+  EXPECT_EQ(get_colors(*shadow),
             (ElevationColors{small_key_color, small_ambient_color}));
 
   // Check if shadow colors are updated when the shadow changes to another
   // specified elevation.
-  shadow.SetElevation(kElevationLarge);
-  EXPECT_EQ(get_colors(shadow),
+  shadow->SetElevation(kElevationLarge);
+  EXPECT_EQ(get_colors(*shadow),
             (ElevationColors{large_key_color, large_ambient_color}));
 
   // Check if the shadow colors change back to default colors when the shadow
   // changes to a non-specified elevation.
-  shadow.SetElevation(kElevationSmall + 1);
-  EXPECT_EQ(get_colors(shadow),
+  shadow->SetElevation(kElevationSmall + 1);
+  EXPECT_EQ(get_colors(*shadow),
             (ElevationColors{default_key_color, default_ambient_color}));
 }
 
@@ -510,4 +490,4 @@ TEST(ShadowStaticTest, MakeShadowValues) {
 }
 
 }  // namespace
-}  // namespace ui
+}  // namespace ui::decoration

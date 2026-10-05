@@ -166,8 +166,9 @@ class DragImageItemView : public views::View {
   gfx::Insets GetInsets() const final {
     // Add insets to accommodate the shadow so that the view's content will be
     // laid out within the appropriate shadow margins.
-    return gfx::Insets(-gfx::ShadowValue::GetMargin(
-        ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation)));
+    return gfx::Insets(
+        -gfx::ShadowValue::GetMargin(ui::decoration::Shadow::MakeShadowValues(
+            drag_drop::kDragImageElevation)));
   }
 
   void OnPaintBackground(gfx::Canvas* canvas) override {
@@ -181,8 +182,9 @@ class DragImageItemView : public views::View {
     flags.setAntiAlias(true);
     flags.setColor(
         color_provider_->GetColor(drag_drop::kDragImageBackgroundColor));
-    flags.setLooper(gfx::CreateShadowDrawLooper(
-        ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation)));
+    flags.setLooper(
+        gfx::CreateShadowDrawLooper(ui::decoration::Shadow::MakeShadowValues(
+            drag_drop::kDragImageElevation)));
     canvas->DrawRoundRect(bounds, kDragImageItemViewCornerRadius, flags);
   }
 

@@ -46,8 +46,9 @@ class ShadowColorizer : public ui::ColorProviderSourceObserver {
     // exists.
     if (auto* color_provider_source = GetColorProviderSource()) {
       const auto* color_provider = color_provider_source->GetColorProvider();
-      auto* shadow = wm::ShadowController::GetShadowForWindow(window_.get());
-      shadow->SetColorMap(
+      auto* shadow_decoration =
+          wm::ShadowController::GetShadowDecorationForWindow(window_.get());
+      shadow_decoration->GetSourceAs<ui::decoration::Shadow>()->SetColorMap(
           wm::ShadowController::GenerateShadowColorsMap(color_provider));
     }
   }

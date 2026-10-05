@@ -12,6 +12,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer_nine_patch.h"
+#include "ui/decoration/decoration.h"
 #include "ui/decoration/shadow.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -25,13 +26,13 @@ namespace {
 ////////////////////////////////////////////////////////////////////////////////
 // SystemShadowImpl:
 
-// An implementation of `SystemShadow`. It is directly based on ui::Shadow.
+// An implementation of `SystemShadow`. It directly owns a shadow Decoration.
 class SystemShadowImpl : public SystemShadow {
  public:
-  explicit SystemShadowImpl(SystemShadow::Type type) {
-    shadow_.Init(SystemShadow::GetElevationFromType(type));
-    shadow_.SetStyle(ui::Shadow::Style::kChromeOSSystemUI);
-  }
+  explicit SystemShadowImpl(SystemShadow::Type type)
+      : decoration_(ui::Decoration::CreateShadow(
+            SystemShadow::GetElevationFromType(type),
+            ui::decoration::Shadow::Style::kChromeOSSystemUI)) {}
 
   SystemShadowImpl(const SystemShadowImpl&) = delete;
   SystemShadowImpl& operator=(const SystemShadowImpl&) = delete;
@@ -40,10 +41,12 @@ class SystemShadowImpl : public SystemShadow {
 
  private:
   // SystemShadow:
-  ui::Shadow* shadow() override { return &shadow_; }
-  const ui::Shadow* shadow() const override { return &shadow_; }
+  ui::Decoration* decoration() override { return decoration_.get(); }
+  const ui::Decoration* decoration() const override {
+    return decoration_.get();
+  }
 
-  ui::Shadow shadow_;
+  std::unique_ptr<ui::Decoration> decoration_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -56,7 +59,8 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
  public:
   SystemViewShadow(views::View* view, SystemShadow::Type type)
       : view_shadow_(view, SystemShadow::GetElevationFromType(type)) {
-    view_shadow_.shadow()->SetStyle(ui::Shadow::Style::kChromeOSSystemUI);
+    view_shadow_.decoration()->GetSourceAs<ui::decoration::Shadow>()->SetStyle(
+        ui::decoration::Shadow::Style::kChromeOSSystemUI);
     view_observation_.Observe(view);
     if (auto* widget = view->GetWidget()) {
       ObserveColorProviderSource(widget);
@@ -78,8 +82,10 @@ class SystemViewShadow : public SystemShadow, public views::ViewObserver {
 
  private:
   // SystemShadow:
-  ui::Shadow* shadow() override { return view_shadow_.shadow(); }
-  const ui::Shadow* shadow() const override { return view_shadow_.shadow(); }
+  ui::Decoration* decoration() override { return view_shadow_.decoration(); }
+  const ui::Decoration* decoration() const override {
+    return view_shadow_.decoration();
+  }
 
   views::ViewShadow view_shadow_;
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
@@ -175,24 +181,25 @@ int SystemShadow::GetElevationFromType(Type type) {
 }
 
 void SystemShadow::SetType(SystemShadow::Type type) {
-  shadow()->SetElevation(SystemShadow::GetElevationFromType(type));
+  decoration()->GetSourceAs<ui::decoration::Shadow>()->SetElevation(
+      SystemShadow::GetElevationFromType(type));
 }
 
 void SystemShadow::SetContentBounds(const gfx::Rect& bounds) {
-  shadow()->SetContentBounds(bounds);
+  decoration()->SetContentBounds(bounds);
 }
 
 void SystemShadow::SetRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners) {
-  shadow()->SetRoundedCorners(rounded_corners);
+  decoration()->SetRoundedCorners(rounded_corners);
 }
 
 const gfx::Rect& SystemShadow::GetContentBounds() {
-  return shadow()->content_bounds();
+  return decoration()->content_bounds();
 }
 
 ui::Layer* SystemShadow::GetLayer() {
-  return shadow()->layer();
+  return decoration()->layer();
 }
 
 void SystemShadow::ObserveColorProviderSource(
@@ -207,11 +214,14 @@ void SystemShadow::OnColorProviderChanged() {
 }
 
 const gfx::ShadowValues SystemShadow::GetShadowValuesForTesting() const {
-  return shadow()->details_for_testing()->spec;  // IN-TEST
+  return decoration()
+      ->GetSourceAs<ui::decoration::Shadow>()
+      ->details_for_testing()  // IN-TEST
+      ->spec;
 }
 
 void SystemShadow::UpdateShadowColors(const ui::ColorProvider* color_provider) {
-  shadow()->SetColorMap(
+  decoration()->GetSourceAs<ui::decoration::Shadow>()->SetColorMap(
       StyleUtil::CreateShadowElevationToColorsMap(color_provider));
 }
 

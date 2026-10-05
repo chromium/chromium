@@ -194,9 +194,11 @@ void WindowMirrorView::InitLayerOwner() {
   layer_owner_->root()->SetOpacity(1.f);
 
   if (exclude_shadow_) {
-    ui::Shadow* shadow = ::wm::ShadowController::GetShadowForWindow(source_);
-    ExcludeShadowContainer(layer_owner_->root(),
-                           shadow ? shadow->layer() : nullptr);
+    ui::Decoration* shadow_decoration =
+        ::wm::ShadowController::GetShadowDecorationForWindow(source_);
+    ExcludeShadowContainer(
+        layer_owner_->root(),
+        shadow_decoration ? shadow_decoration->layer() : nullptr);
   }
 
   SetPaintToLayer();
