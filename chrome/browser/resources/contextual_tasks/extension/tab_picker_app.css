@@ -77,16 +77,12 @@
   width: 20px;
 }
 
-#shareTabsTrigger:hover {
-  background-color: var(--tab-picker-hover-background-color);
-}
-
 #shareTabsTrigger:focus {
-  background-color: var(--tab-picker-hover-background-color);
   outline: none;
 }
 
 #shareTabsTrigger:focus-visible {
+  background-color: var(--tab-picker-hover-background-color);
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;
 }
