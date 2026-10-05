@@ -90,6 +90,7 @@ class HTMLSink : public UnderlyingSinkBase {
                                     ScriptValue reason,
                                     ExceptionState& exception_state) override {
     parser_->StopParsing();
+    parser_->Detach();
     return ToResolvedUndefinedPromise(script_state);
   }
 
