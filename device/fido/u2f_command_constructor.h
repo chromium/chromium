@@ -17,6 +17,8 @@
 
 namespace device {
 
+struct AuthenticatorGetInfoResponse;
+
 // Checks whether the request can be translated to valid U2F request
 // parameter. Namely, U2F request does not support resident key and
 // user verification, and ES256 algorithm must be used for public key
@@ -29,9 +31,16 @@ bool IsConvertibleToU2fRegisterCommand(
 // ShouldPreferCTAP2 returns true if the given request should be routed over
 // CTAP2, if the authenticator supports it, even if we might want to route it
 // over U2F to avoid a PIN prompt to create the credential.
+//
+// This includes the case where routing over U2F would change the credential
+// algorithm: U2F always creates ES256 credentials, so CTAP2 is preferred unless
+// ES256 is the first algorithm in the request's pubKeyCredParams that the
+// authenticator described by |device_info| supports. If the authenticator
+// doesn't advertise its algorithms, this condition is ignored.
 COMPONENT_EXPORT(DEVICE_FIDO)
 bool ShouldPreferCTAP2EvenIfItNeedsAPIN(
-    const CtapMakeCredentialRequest& request);
+    const CtapMakeCredentialRequest& request,
+    const AuthenticatorGetInfoResponse& device_info);
 
 // Checks whether user verification is not required and that allow list is
 // not empty.

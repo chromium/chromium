@@ -171,4 +171,9 @@ COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_FEATURE(kWebAuthnSoftwareKeysWhenTpmAbsent,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled by default in M157. Remove in or after M160.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_FEATURE(kWebAuthnU2fFallbackRequiresPreferredEs256,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

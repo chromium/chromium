@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <list>
 #include <string>
 #include <vector>
@@ -11,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -26,6 +28,7 @@
 #include "device/fido/fido_user_verification_requirement.h"
 #include "device/fido/mock_fido_device.h"
 #include "device/fido/multiple_virtual_fido_device_factory.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
@@ -589,6 +592,92 @@ TEST_F(PINAuthenticatorImplTest, MakeCredUvNotRqd) {
                        ->registrations.begin()
                        ->second.is_u2f);
     }
+  }
+}
+
+class PINAuthenticatorImplU2fFallbackTest
+    : public PINAuthenticatorImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PINAuthenticatorImplU2fFallbackTest() {
+    feature_list_.InitWithFeatureState(
+        device::kWebAuthnU2fFallbackRequiresPreferredEs256, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PINAuthenticatorImplU2fFallbackTest,
+                         testing::Bool());
+
+// Test that on a CTAP 2.0 authenticator with a PIN set, non-UV credentials are
+// only created over U2F (avoiding a PIN prompt) if that won't change the
+// algorithm the relying party prefers. With the feature disabled, U2F is used
+// whenever ES256 is acceptable.
+TEST_P(PINAuthenticatorImplU2fFallbackTest, U2fFallbackRequiresPreferredEs256) {
+  const bool feature_enabled = GetParam();
+  using Alg = device::CoseAlgorithmIdentifier;
+  struct TestCase {
+    std::vector<Alg> rp_algorithms;
+    bool advertise_algorithms;
+    bool expect_u2f_with_feature;
+  };
+  // clang-format off
+  const auto kTests = std::to_array<TestCase>({
+      // rp_algorithms               advertised    u2f
+      {{Alg::kEs256, Alg::kMlDsa44}, true,         true},
+      {{Alg::kRs256, Alg::kEs256},   true,         true},
+      {{Alg::kMlDsa44, Alg::kEs256}, true,         false},
+      {{Alg::kMlDsa44, Alg::kEs256}, false,        true},
+  });
+  // clang-format on
+
+  for (const TestCase& test : kTests) {
+    SCOPED_TRACE(testing::Message()
+                 << "rp_algorithms="
+                 << testing::PrintToString(test.rp_algorithms)
+                 << " advertise_algorithms=" << test.advertise_algorithms);
+    const bool expect_u2f = test.expect_u2f_with_feature || !feature_enabled;
+
+    ResetVirtualDevice();
+    device::VirtualCtap2Device::Config config;
+    config.u2f_support = true;
+    config.pin_support = true;
+    if (test.advertise_algorithms) {
+      config.advertised_algorithms = {Alg::kEs256, Alg::kMlDsa44};
+    } else {
+      config.advertised_algorithms.clear();
+    }
+    virtual_device_factory_->SetCtap2Config(config);
+    virtual_device_factory_->mutable_state()->pin = kTestPIN;
+    if (expect_u2f) {
+      test_client_.expected = {};
+    } else {
+      test_client_.expected = {{PINReason::kChallenge, kTestPIN16,
+                                device::kMaxPinRetries, device::kMinPinLength}};
+    }
+
+    PublicKeyCredentialCreationOptionsPtr options = make_credential_options(
+        device::UserVerificationRequirement::kDiscouraged);
+    options->public_key_parameters.clear();
+    for (Alg algorithm : test.rp_algorithms) {
+      options->public_key_parameters.push_back(
+          {device::CredentialType::kPublicKey,
+           static_cast<int32_t>(algorithm)});
+    }
+
+    MakeCredentialResult result =
+        AuthenticatorMakeCredential(std::move(options));
+    ASSERT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+    EXPECT_EQ(result.response->public_key_algo,
+              static_cast<int32_t>(expect_u2f ? Alg::kEs256
+                                              : test.rp_algorithms.front()));
+    EXPECT_EQ(virtual_device_factory_->mutable_state()
+                  ->registrations.begin()
+                  ->second.is_u2f,
+              expect_u2f);
   }
 }
 

@@ -9,11 +9,39 @@
 #include <utility>
 
 #include "base/containers/extend.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "components/apdu/apdu_command.h"
 #include "crypto/hash.h"
+#include "device/fido/authenticator_get_info_response.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 
 namespace device {
+
+namespace {
+
+// Returns true if ES256 is the first algorithm in |request|'s pubKeyCredParams
+// that is also in |authenticator_algorithms|.
+bool IsEs256PreferredCommonAlgorithm(
+    const CtapMakeCredentialRequest& request,
+    base::span<const int32_t> authenticator_algorithms) {
+  for (const auto& param :
+       request.public_key_credential_params.public_key_credential_params()) {
+    if (param.type != CredentialType::kPublicKey) {
+      continue;
+    }
+    if (std::ranges::contains(authenticator_algorithms, param.algorithm)) {
+      return param.algorithm ==
+             static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256);
+    }
+  }
+  // No common algorithm. MakeCredentialRequestHandler normally filters these
+  // authenticators out already, so let CTAP2 report the error.
+  return false;
+}
+
+}  // namespace
 
 bool IsConvertibleToU2fRegisterCommand(
     const CtapMakeCredentialRequest& request) {
@@ -28,13 +56,20 @@ bool IsConvertibleToU2fRegisterCommand(
 }
 
 bool ShouldPreferCTAP2EvenIfItNeedsAPIN(
-    const CtapMakeCredentialRequest& request) {
-  return request.hmac_secret ||
-         // U2F devices can only support |kEnterpriseApprovedByBrowser| so
-         // |kEnterpriseIfRPListedOnAuthenticator| should go over CTAP2.
-         request.attestation_preference ==
-             AttestationConveyancePreference::
-                 kEnterpriseIfRPListedOnAuthenticator;
+    const CtapMakeCredentialRequest& request,
+    const AuthenticatorGetInfoResponse& device_info) {
+  if (request.hmac_secret ||
+      // U2F devices can only support |kEnterpriseApprovedByBrowser| so
+      // |kEnterpriseIfRPListedOnAuthenticator| should go over CTAP2.
+      request.attestation_preference ==
+          AttestationConveyancePreference::
+              kEnterpriseIfRPListedOnAuthenticator) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(
+             kWebAuthnU2fFallbackRequiresPreferredEs256) &&
+         device_info.algorithms &&
+         !IsEs256PreferredCommonAlgorithm(request, *device_info.algorithms);
 }
 
 bool IsConvertibleToU2fSignCommand(const CtapGetAssertionRequest& request) {

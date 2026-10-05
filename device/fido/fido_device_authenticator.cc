@@ -708,7 +708,7 @@ FidoDeviceAuthenticator::PINUVDispositionForMakeCredential(
       device()->device_info() &&
       device()->device_info()->versions.contains(ProtocolVersion::kU2f) &&
       IsConvertibleToU2fRegisterCommand(request) &&
-      !ShouldPreferCTAP2EvenIfItNeedsAPIN(request);
+      !ShouldPreferCTAP2EvenIfItNeedsAPIN(request, *device()->device_info());
 
   // CTAP 2.1 authenticators on the other hand can indicate that they allow
   // credential creation with PIN or UV.

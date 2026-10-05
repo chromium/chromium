@@ -33,7 +33,7 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
     const FidoDevice* device,
     const CtapMakeCredentialRequest& request) {
   if (!IsConvertibleToU2fRegisterCommand(request) ||
-      ShouldPreferCTAP2EvenIfItNeedsAPIN(request)) {
+      ShouldPreferCTAP2EvenIfItNeedsAPIN(request, *device->device_info())) {
     return false;
   }
 
@@ -52,7 +52,6 @@ bool CtapDeviceShouldUseU2fBecauseClientPinIsSet(
     return false;
   }
 
-  DCHECK(device && device->device_info());
   bool client_pin_set =
       device->device_info()->options.client_pin_availability ==
       AuthenticatorSupportedOptions::ClientPinAvailability::kSupportedAndPinSet;

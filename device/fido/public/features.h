@@ -164,6 +164,11 @@ BASE_DECLARE_FEATURE(kWebAuthnModalProviderIcons);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSoftwareKeysWhenTpmAbsent);
 
+// Only fall back to U2F registration on CTAP2 security keys when ES256 is the
+// first algorithm in pubKeyCredParams that the key supports.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnU2fFallbackRequiresPreferredEs256);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_PUBLIC_FEATURES_H_
