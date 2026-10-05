@@ -42,6 +42,7 @@ class WebContentsModalDialogHost;
 namespace contextual_tasks {
 
 class ContextualTasksGhostLoaderView;
+class ContextualTasksUIBase;
 
 class ContextualTasksWebView
     : public views::View,
@@ -128,6 +129,13 @@ class ContextualTasksWebView
   // Returns whether the task associated with the current WebContents is waiting
   // for its initial thread URL to be generated.
   bool IsTaskWaitingForUrl() const;
+
+  // Returns the toolbar WebUI controller, or nullptr if unavailable.
+  ContextualTasksUIBase* GetToolbarUI() const;
+
+  // Synchronizes the toolbar WebUI's AI page status and thread title with `wc`.
+  void UpdateToolbarStateFromWebContents(content::WebContents* wc,
+                                         bool use_last_committed_url = false);
 
   // The browser window interface associated with this view.
   raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;

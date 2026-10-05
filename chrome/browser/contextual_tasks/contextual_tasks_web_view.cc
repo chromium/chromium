@@ -4,12 +4,16 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -33,6 +37,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -89,12 +94,12 @@ ContextualTasksWebView::ContextualTasksWebView(
     toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
 
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 46));
+    webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
+                                     browser_window);
     if (owns_toolbar_web_contents_) {
       toolbar_web_view_->LoadInitialURL(
           GURL(chrome::kChromeUIContextualTasksToolbarURL));
     }
-    webui::SetBrowserWindowInterface(toolbar_web_view_->GetWebContents(),
-                                     browser_window);
 
     auto content_container = std::make_unique<views::View>();
     content_container->SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -169,6 +174,7 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
     ignore_next_stop_loading_for_about_blank_ = false;
     Observe(wc);
+    UpdateToolbarStateFromWebContents(wc);
     if (wc) {
       bool should_show_ghost_loader = false;
       if (browser_window_ && browser_window_->GetProfile()) {
@@ -259,6 +265,9 @@ void ContextualTasksWebView::DidStartNavigation(
     SetGhostLoaderVisible(false);
   } else {
     SetGhostLoaderVisible(true);
+    if (auto* toolbar_ui = GetToolbarUI()) {
+      toolbar_ui->SetIsAiPage(false);
+    }
   }
 }
 
@@ -287,6 +296,9 @@ void ContextualTasksWebView::DidRedirectNavigation(
     SetGhostLoaderVisible(false);
   } else {
     SetGhostLoaderVisible(true);
+    if (auto* toolbar_ui = GetToolbarUI()) {
+      toolbar_ui->SetIsAiPage(false);
+    }
   }
 }
 
@@ -302,36 +314,69 @@ void ContextualTasksWebView::DidFinishNavigation(
       ignore_next_stop_loading_for_about_blank_ = true;
       return;
     }
+  }
 
-    if (!navigation_handle->HasCommitted() ||
-        navigation_handle->IsErrorPage()) {
+  if (!navigation_handle->HasCommitted()) {
+    if (!navigation_handle->IsSameDocument()) {
+      UpdateToolbarStateFromWebContents(web_contents(),
+                                        /*use_last_committed_url=*/true);
       if (IsTaskWaitingForUrl()) {
         return;
       }
       SetGhostLoaderVisible(false);
     }
-  }
-
-  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return;
   }
 
+  if (navigation_handle->IsErrorPage()) {
+    if (auto* toolbar_ui = GetToolbarUI()) {
+      toolbar_ui->SetIsAiPage(false);
+      toolbar_ui->SetThreadTitle(std::nullopt);
+    }
+    if (IsTaskWaitingForUrl()) {
+      return;
+    }
+    SetGhostLoaderVisible(false);
+    return;
+  }
+
+  auto* toolbar_ui = GetToolbarUI();
+  if (!toolbar_ui) {
+    return;
+  }
+
+  ContextualTasksUiService* ui_service = nullptr;
   if (browser_window_ && browser_window_->GetProfile()) {
-    if (auto* ui_service =
-            ContextualTasksUiServiceFactory::GetForBrowserContext(
-                browser_window_->GetProfile())) {
-      const GURL& previous_url =
-          navigation_handle->GetPreviousPrimaryMainFrameURL();
-      const bool was_on_srp = ui_service->IsSearchResultsUrl(previous_url) &&
-                              !ui_service->IsAiUrl(previous_url);
-      if (was_on_srp && ui_service->IsAiUrl(navigation_handle->GetURL())) {
-        if (auto* tab = browser_window_->GetActiveTabInterface()) {
-          if (auto* controller = LensSearchController::From(tab)) {
-            // TODO(crbug.com/566315172): Update to a dedicated dismissal source
-            // for SRP to AIM transitions.
-            controller->CloseLensAsync(lens::LensOverlayDismissalSource::
-                                           kContextualTasksQuerySubmitted);
-          }
+    ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+        browser_window_->GetProfile());
+  }
+
+  const GURL& url = navigation_handle->GetURL();
+  const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
+  toolbar_ui->SetIsAiPage(is_ai_url);
+
+  if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
+    toolbar_ui->SetThreadTitle(std::nullopt);
+  } else {
+    std::string query_value;
+    if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
+        !query_value.empty()) {
+      toolbar_ui->SetThreadTitle(query_value);
+    }
+  }
+
+  if (ui_service) {
+    const GURL& previous_url =
+        navigation_handle->GetPreviousPrimaryMainFrameURL();
+    const bool was_on_srp = ui_service->IsSearchResultsUrl(previous_url) &&
+                            !ui_service->IsAiUrl(previous_url);
+    if (was_on_srp && ui_service->IsAiUrl(navigation_handle->GetURL())) {
+      if (auto* tab = browser_window_->GetActiveTabInterface()) {
+        if (auto* controller = LensSearchController::From(tab)) {
+          // TODO(crbug.com/566315172): Update to a dedicated dismissal source
+          // for SRP to AIM transitions.
+          controller->CloseLensAsync(
+              lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
         }
       }
     }
@@ -531,6 +576,47 @@ bool ContextualTasksWebView::IsTaskWaitingForUrl() const {
       ContextualSearchWebContentsHelper::FromWebContents(web_contents());
   return ui_service && helper && helper->task_id().has_value() &&
          ui_service->IsTaskWaitingForUrl(helper->task_id().value());
+}
+
+ContextualTasksUIBase* ContextualTasksWebView::GetToolbarUI() const {
+  if (!toolbar_web_view_) {
+    return nullptr;
+  }
+  return ContextualTasksUIBase::FromWebContents(
+      toolbar_web_view_->web_contents());
+}
+
+void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
+    content::WebContents* wc,
+    bool use_last_committed_url) {
+  auto* toolbar_ui = GetToolbarUI();
+  if (!toolbar_ui) {
+    return;
+  }
+
+  if (!wc || !browser_window_ || !browser_window_->GetProfile()) {
+    toolbar_ui->SetIsAiPage(false);
+    toolbar_ui->SetThreadTitle(std::nullopt);
+    return;
+  }
+
+  auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+      browser_window_->GetProfile());
+  const GURL& url =
+      use_last_committed_url ? wc->GetLastCommittedURL() : wc->GetVisibleURL();
+  const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
+  toolbar_ui->SetIsAiPage(is_ai_url);
+
+  if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
+    toolbar_ui->SetThreadTitle(std::nullopt);
+    return;
+  }
+
+  std::string query_value;
+  if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
+      !query_value.empty()) {
+    toolbar_ui->SetThreadTitle(query_value);
+  }
 }
 
 BEGIN_METADATA(ContextualTasksWebView)

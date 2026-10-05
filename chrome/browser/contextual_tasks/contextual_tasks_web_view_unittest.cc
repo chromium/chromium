@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
@@ -442,7 +443,7 @@ TEST_F(ContextualTasksWebViewTest, RunFileChooserOpensFileDialog) {
   ui::FakeSelectFileDialog* dialog = factory->GetLastDialog();
   ASSERT_NE(dialog, nullptr);
 
-  // Close the dialog so that `FileSelectHelper` releases its self-reference.
+  // Close the dialog so that  releases its self-reference.
   dialog->CallFileSelectionCanceled();
   EXPECT_TRUE(listener->canceled());
 }
@@ -500,46 +501,6 @@ TEST_F(ContextualTasksWebViewTest,
       GURL("https://www.google.com/search?q=test&udm=50"),
       web_contents->GetPrimaryMainFrame());
   sim->CommitSameDocument();
-}
-
-TEST_F(ContextualTasksWebViewTest, InitialNavigationToAiPageDoesNotCloseLens) {
-  tabs::MockTabInterface mock_tab;
-  NiceMock<MockLensSearchController> mock_lens_controller(&mock_tab);
-  ON_CALL(*browser_window_, GetActiveTabInterface())
-      .WillByDefault(Return(&mock_tab));
-
-  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
-  web_view_->SetWebContents(web_contents.get());
-
-  EXPECT_CALL(mock_lens_controller, CloseLensAsync(_)).Times(0);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents.get(), GURL("https://ai.google.com/search?q=test"));
-}
-
-TEST_F(ContextualTasksWebViewTest,
-       SetWebContentsAlreadyOnSrpThenTransitionToAiPageClosesLens) {
-  tabs::MockTabInterface mock_tab;
-  NiceMock<MockLensSearchController> mock_lens_controller(&mock_tab);
-  ON_CALL(*browser_window_, GetActiveTabInterface())
-      .WillByDefault(Return(&mock_tab));
-
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents.get(), GURL("https://www.google.com/search?q=test"));
-
-  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
-  web_view_->SetWebContents(web_contents.get());
-
-  EXPECT_CALL(
-      mock_lens_controller,
-      CloseLensAsync(
-          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
-      .Times(1);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents.get(), GURL("https://ai.google.com/search?q=test"));
 }
 
 TEST_F(ContextualTasksWebViewTest,
@@ -789,6 +750,180 @@ TEST_F(ContextualTasksWebViewTest,
                                       base::NullCallback()));
 
   tab_contents->SetDelegate(nullptr);
+}
+
+TEST_F(ContextualTasksWebViewTest, PropagatesAiPageAndThreadTitleOnNavigation) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  auto* toolbar_ui = ContextualTasksUIBase::FromWebContents(
+      web_view_->toolbar_web_view()->GetWebContents());
+  ASSERT_NE(toolbar_ui, nullptr);
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+
+  // Navigate to an AI URL with a query parameter.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search?q=hello+world&mtid=1"),
+      web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "hello world");
+
+  // Follow-up AI navigation without  preserves the existing thread title.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search?mtid=1&mstk=2"),
+      web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "hello world");
+
+  // Starting a navigation to a non-AI URL immediately sets IsAiPage to false,
+  // and committing it clears the thread title.
+  auto srp_sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=srp+query"),
+      web_contents->GetPrimaryMainFrame());
+  srp_sim->Start();
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+
+  srp_sim->Commit();
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  // Navigating to an AI zero-state URL sets IsAiPage to true and clears title.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search"),
+      web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       SameDocumentNavigationUpdatesAiPageAndThreadTitle) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  auto* toolbar_ui = ContextualTasksUIBase::FromWebContents(
+      web_view_->toolbar_web_view()->GetWebContents());
+  ASSERT_NE(toolbar_ui, nullptr);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+
+  // Start at AI zero state.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search"),
+      web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  // Same-document SPA navigation to an active AI thread with query.
+  auto spa_sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ai.google.com/search?q=spa+query&mtid=123"),
+      web_contents->GetPrimaryMainFrame());
+  spa_sim->CommitSameDocument();
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "spa query");
+
+  // Same-document SPA navigation back to AI zero state clears title.
+  auto zero_state_sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ai.google.com/search"),
+      web_contents->GetPrimaryMainFrame());
+  zero_state_sim->CommitSameDocument();
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+}
+
+TEST_F(ContextualTasksWebViewTest, SetWebContentsUpdatesAiPageAndThreadTitle) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  auto* toolbar_ui = ContextualTasksUIBase::FromWebContents(
+      web_view_->toolbar_web_view()->GetWebContents());
+  ASSERT_NE(toolbar_ui, nullptr);
+
+  // WebContents 1: AI thread with query in the URL.
+  std::unique_ptr<content::WebContents> wc1 =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search?q=first+thread&mtid=1"),
+      wc1->GetPrimaryMainFrame());
+
+  // WebContents 2: Non-AI search results page.
+  std::unique_ptr<content::WebContents> wc2 =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://www.google.com/search?q=search+query"),
+      wc2->GetPrimaryMainFrame());
+
+  // WebContents 3: AI zero-state page.
+  std::unique_ptr<content::WebContents> wc3 =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search"), wc3->GetPrimaryMainFrame());
+
+  web_view_->SetWebContents(wc1.get());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "first thread");
+
+  web_view_->SetWebContents(wc2.get());
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  web_view_->SetWebContents(wc1.get());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "first thread");
+
+  web_view_->SetWebContents(wc3.get());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  web_view_->SetWebContents(nullptr);
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       FailedNavigationAndRedirectUpdateAiPageAndThreadTitle) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  auto* toolbar_ui = ContextualTasksUIBase::FromWebContents(
+      web_view_->toolbar_web_view()->GetWebContents());
+  ASSERT_NE(toolbar_ui, nullptr);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search?q=active+thread&mtid=1"),
+      web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "active thread");
+
+  // Starting a non-AI navigation sets IsAiPage to false; aborting it restores
+  // the committed AI page state.
+  auto aborted_sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=aborted"),
+      web_contents->GetPrimaryMainFrame());
+  aborted_sim->Start();
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+
+  aborted_sim->Fail(net::ERR_ABORTED);
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "active thread");
+
+  // Redirecting from an AI URL to a non-AI URL sets IsAiPage to false, and
+  // committing an error page clears both IsAiPage and ThreadTitle.
+  auto redirect_sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://ai.google.com/search?q=redirect"),
+      web_contents->GetPrimaryMainFrame());
+  redirect_sim->Start();
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+
+  redirect_sim->Redirect(GURL("https://www.google.com/search?q=redirect"));
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+
+  redirect_sim->Fail(net::ERR_FAILED);
+  redirect_sim->CommitErrorPage();
+  EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
 }
 
 }  // namespace

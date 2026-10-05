@@ -413,8 +413,6 @@ class ContextualTasksUI
   // changing, it is very likely that `task_id` should also change.
   std::optional<std::string> thread_id_;
 
-  std::optional<std::string> thread_title_;
-
   mojo::Remote<contextual_tasks::mojom::Page> page_;
 
   base::ObserverList<contextual_tasks::ContextualTasksUIInterface::Observer>

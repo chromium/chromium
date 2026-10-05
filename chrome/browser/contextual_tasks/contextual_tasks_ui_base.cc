@@ -293,6 +293,9 @@ void ContextualTasksUIBase::CreatePageHandler(
     }
   }
 #endif
+  if (IsAiPage()) {
+    NotifyAiPageStatusChanged(true);
+  }
 }
 
 void ContextualTasksUIBase::PinSidePanel() {
@@ -500,6 +503,19 @@ void ContextualTasksUIBase::NotifyPermissionDashboardStateChanged(
   for (auto& observer : toolbar_ui_observers_) {
     observer->OnPermissionDashboardStateChanged(state.Clone());
   }
+}
+
+void ContextualTasksUIBase::SetIsAiPage(bool is_ai_page) {
+  is_ai_page_ = is_ai_page;
+  NotifyAiPageStatusChanged(is_ai_page);
+}
+
+const std::optional<std::string>& ContextualTasksUIBase::GetThreadTitle() {
+  return thread_title_;
+}
+
+void ContextualTasksUIBase::SetThreadTitle(std::optional<std::string> title) {
+  thread_title_ = std::move(title);
 }
 
 void ContextualTasksUIBase::GetInitialState(GetInitialStateCallback callback) {
