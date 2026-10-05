@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -169,5 +170,38 @@ TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
       EXPECT_NSEQ(button, [header_view_ hitTest:top_point withEvent:nil]);
       EXPECT_NSEQ(button, [header_view_ hitTest:bottom_point withEvent:nil]);
     }
+  }
+}
+
+// Test that both the back and close buttons use `ExtendedTouchTargetButton`
+// (accepting touches within a 44pt diameter circle outside their 40x40pt
+// bounds) and set `tintColor` to `clearColor` to avoid a tinted glass rim.
+TEST_F(AssistantAIMHeaderViewTest,
+       BackAndCloseButtonsHaveClearTintAndExtendedTouchTarget) {
+  constexpr CGFloat kHeaderWidth = 400.0;
+  constexpr CGFloat kHeaderHeight = 40.0;
+  constexpr CGFloat kButtonCenter = 20.0;
+  constexpr CGFloat kExtendedPointOffset = -1.0;
+
+  header_view_.frame = CGRectMake(0, 0, kHeaderWidth, kHeaderHeight);
+  [header_view_ setMode:AssistantAIMState::kHistory];
+  [header_view_ setNeedsLayout];
+  [header_view_ layoutIfNeeded];
+
+  NSArray<NSString*>* identifiers = @[
+    kAssistantAIMBackButtonAccessibilityIdentifier,
+    kAssistantAIMCloseButtonAccessibilityIdentifier,
+  ];
+
+  for (NSString* identifier in identifiers) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(identifier));
+    ExtendedTouchTargetButton* button =
+        base::apple::ObjCCast<ExtendedTouchTargetButton>(
+            FindViewWithAccessibilityIdentifier(header_view_, identifier));
+    ASSERT_TRUE(button);
+    EXPECT_NSEQ([UIColor clearColor], button.tintColor);
+    EXPECT_TRUE([button
+        pointInside:CGPointMake(kButtonCenter, kExtendedPointOffset)
+          withEvent:nil]);
   }
 }

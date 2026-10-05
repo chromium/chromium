@@ -263,17 +263,19 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 }
 
 - (void)setUpBackButton {
-  UIImage* image =
-      SymbolWithPointSize(SymbolChevronBackward, kCloseButtonSymbolPointSize);
+  UIImage* image = SymbolTemplateWithPointSize(SymbolChevronBackward,
+                                               kCloseButtonSymbolPointSize);
   UIButtonConfiguration* buttonConfiguration =
       CreateHeaderButtonConfiguration(image);
 
-  _backButton = [UIButton buttonWithConfiguration:buttonConfiguration
-                                    primaryAction:nil];
+  _backButton =
+      [ExtendedTouchTargetButton buttonWithConfiguration:buttonConfiguration
+                                           primaryAction:nil];
   [_backButton addTarget:self
                   action:@selector(didTapBackButton)
         forControlEvents:UIControlEventTouchUpInside];
   _backButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _backButton.tintColor = [UIColor clearColor];
   _backButton.hidden = YES;
   _backButton.accessibilityIdentifier =
       kAssistantAIMBackButtonAccessibilityIdentifier;

@@ -53,6 +53,7 @@ source_set("unit_tests") {
     "//base",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
     "//ui/base",
