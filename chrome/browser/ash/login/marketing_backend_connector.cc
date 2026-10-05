@@ -98,19 +98,21 @@ void MarketingBackendConnector::UpdateEmailPreferences(
     return;
   }
 
-  auto* identity_manager = ash::IdentityManagerProvider::Get().Find(
-      CHECK_DEREF(ash::AnnotatedAccountId::Get(profile)));
-  scoped_refptr<MarketingBackendConnector> ref =
-      new MarketingBackendConnector(profile, identity_manager);
+  signin::IdentityManager& identity_manager =
+      CHECK_DEREF(ash::IdentityManagerProvider::Get().Find(
+          CHECK_DEREF(ash::AnnotatedAccountId::Get(profile))));
+  scoped_refptr<MarketingBackendConnector> ref = new MarketingBackendConnector(
+      profile->GetURLLoaderFactory(), identity_manager);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&MarketingBackendConnector::PerformRequest, ref,
                                 country_code));
 }
 
 MarketingBackendConnector::MarketingBackendConnector(
-    Profile* profile,
-    signin::IdentityManager* identity_manager)
-    : profile_(profile), identity_manager_(CHECK_DEREF(identity_manager)) {}
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager& identity_manager)
+    : identity_manager_(identity_manager),
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 void MarketingBackendConnector::PerformRequest(
     const std::string& country_code) {
@@ -183,7 +185,6 @@ void MarketingBackendConnector::SetTokenAndStartRequest() {
   simple_url_loader_->AttachStringForUpload(GetRequestContent(),
                                             "application/json");
 
-  url_loader_factory_ = profile_->GetURLLoaderFactory();
   simple_url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&MarketingBackendConnector::OnSimpleLoaderComplete, this),
