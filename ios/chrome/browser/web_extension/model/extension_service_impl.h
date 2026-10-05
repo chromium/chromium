@@ -14,6 +14,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
+#import "base/observer_list.h"
 #import "base/sequence_checker.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
@@ -50,6 +51,9 @@ class ExtensionServiceImpl final : public ExtensionService {
   void Initialize(web::UniversalOptOutState state) override;
   web::ExtensionController* GetExtensionController() const override
       API_AVAILABLE(ios(18.4));
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  bool HasLoadError() const override;
   bool IsReady() const override;
   bool WebExtensionsWereLoadedAtStartup() const override;
   base::CallbackListSubscription RunWhenReady(
@@ -70,6 +74,15 @@ class ExtensionServiceImpl final : public ExtensionService {
   // loaded state of the extension without modifying the startup readiness
   // state.
   void OnOptOutPrefChanged();
+
+  // Updates `has_load_error_` and notifies observers if changed.
+  void SetHasLoadError(bool has_load_error);
+
+  // List of observers.
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+
+  // Whether there was an error loading the extension.
+  bool has_load_error_ = false;
 
   // The `PrefService` used to query and observe opt-out preferences.
   const raw_ref<PrefService> pref_service_;

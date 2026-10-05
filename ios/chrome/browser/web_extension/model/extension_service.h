@@ -9,6 +9,7 @@
 
 #import "base/callback_list.h"
 #import "base/functional/callback_forward.h"
+#import "base/observer_list_types.h"
 #import "components/keyed_service/core/keyed_service.h"
 
 namespace web {
@@ -19,6 +20,13 @@ enum class UniversalOptOutState;
 // Pure interface for the profile-keyed service managing web extensions.
 class ExtensionService : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the extension loading error state changes.
+    virtual void OnExtensionLoadErrorChanged(ExtensionService* service,
+                                             bool has_load_error) {}
+  };
+
   // Initializes the service with the given `opt_out_state`, registers
   // preference observers, and initiates loading of extensions if enabled.
   virtual void Initialize(web::UniversalOptOutState opt_out_state) = 0;
@@ -26,6 +34,12 @@ class ExtensionService : public KeyedService {
   // Returns the `web::ExtensionController` owned by this service.
   virtual web::ExtensionController* GetExtensionController() const
       API_AVAILABLE(ios(18.4)) = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns whether there was an error loading the extension.
+  virtual bool HasLoadError() const = 0;
 
   // Returns whether the initial extensions have finished loading (or if there
   // are no extensions to load) during startup. Readiness is solely for startup;

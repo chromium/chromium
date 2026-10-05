@@ -9,6 +9,8 @@ source_set("model") {
     "extension_service_factory.mm",
     "extension_service_impl.h",
     "extension_service_impl.mm",
+    "extension_service_observer_bridge.h",
+    "extension_service_observer_bridge.mm",
   ]
   deps = [
     "//base",

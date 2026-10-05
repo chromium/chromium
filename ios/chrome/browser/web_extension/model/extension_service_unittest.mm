@@ -78,6 +78,23 @@ class API_AVAILABLE(ios(18.4)) FakeExtensionController
   base::OnceCallback<void(bool)> load_callback_;
 };
 
+// A test observer for ExtensionService.
+class TestExtensionServiceObserver : public ExtensionService::Observer {
+ public:
+  void OnExtensionLoadErrorChanged(ExtensionService* service,
+                                   bool has_load_error) override {
+    call_count_++;
+    last_has_load_error_ = has_load_error;
+  }
+
+  int call_count() const { return call_count_; }
+  bool last_has_load_error() const { return last_has_load_error_; }
+
+ private:
+  int call_count_ = 0;
+  bool last_has_load_error_ = false;
+};
+
 class ExtensionServiceTest : public PlatformTest {
  public:
   ExtensionServiceTest() {
@@ -536,6 +553,79 @@ API_AVAILABLE(ios(18.4)) {
   EXPECT_FALSE(service.WebExtensionsWereLoadedAtStartup());
   EXPECT_FALSE(raw_fake_controller->HasPendingLoad());
   EXPECT_EQ(raw_fake_controller->load_call_count(), 0);
+}
+
+// Tests that a failed extension load sets HasLoadError to true and notifies
+// observers, and that disabling the setting resets HasLoadError to false.
+TEST_F(ExtensionServiceTest, TestLoadFailureSetsLoadErrorAndResetOnDisable)
+API_AVAILABLE(ios(18.4)) {
+  SetOptedIn(true);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+  FakeExtensionController* raw_fake_controller = fake_controller.get();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  TestExtensionServiceObserver observer;
+  service.AddObserver(&observer);
+
+  service.Initialize(web::UniversalOptOutState::kEnabled);
+
+  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Fail extension load.
+  raw_fake_controller->CompleteLoad(/*success=*/false);
+  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_TRUE(observer.last_has_load_error());
+
+  // Disabling the setting should reset the load error.
+  SetOptedIn(false);
+  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 2);
+  EXPECT_FALSE(observer.last_has_load_error());
+
+  // Enabling the setting should trigger load attempt.
+  SetOptedIn(true);
+  EXPECT_FALSE(service.HasLoadError());
+  raw_fake_controller->CompleteLoad(/*success=*/true);
+  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 2);
+
+  service.RemoveObserver(&observer);
+}
+
+// Tests that timing out when loading an extension sets HasLoadError to true
+// and notifies observers.
+TEST_F(ExtensionServiceTest, TestLoadTimeoutSetsLoadError)
+API_AVAILABLE(ios(18.4)) {
+  SetOptedIn(true);
+
+  auto fake_controller = std::make_unique<FakeExtensionController>();
+
+  ExtensionServiceImpl service(pref_service_, std::move(fake_controller));
+  TestExtensionServiceObserver observer;
+  service.AddObserver(&observer);
+
+  service.Initialize(web::UniversalOptOutState::kEnabled);
+
+  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 0);
+
+  // Fast forward past the 10-second loading timeout.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_TRUE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 1);
+  EXPECT_TRUE(observer.last_has_load_error());
+
+  // Disabling the setting should reset the load error.
+  SetOptedIn(false);
+  EXPECT_FALSE(service.HasLoadError());
+  EXPECT_EQ(observer.call_count(), 2);
+  EXPECT_FALSE(observer.last_has_load_error());
+
+  service.RemoveObserver(&observer);
 }
 
 }  // namespace

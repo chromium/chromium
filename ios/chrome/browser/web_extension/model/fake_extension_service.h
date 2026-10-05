@@ -9,6 +9,7 @@
 
 #import "base/callback_list.h"
 #import "base/functional/callback.h"
+#import "base/observer_list.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 
 namespace web {
@@ -26,6 +27,9 @@ class FakeExtensionService final : public ExtensionService {
   // ExtensionService:
   void Initialize(web::UniversalOptOutState state) override;
   web::ExtensionController* GetExtensionController() const override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  bool HasLoadError() const override;
   bool IsReady() const override;
   bool WebExtensionsWereLoadedAtStartup() const override;
   base::CallbackListSubscription RunWhenReady(
@@ -38,6 +42,10 @@ class FakeExtensionService final : public ExtensionService {
   // Sets whether web extensions are considered loaded at startup.
   void SetWebExtensionsWereLoadedAtStartup(bool loaded);
 
+  // Sets whether the service has an extension load error and notifies
+  // observers if changed.
+  void SetHasLoadError(bool has_error);
+
   // Returns true if there are pending callbacks waiting for the service to
   // become ready.
   bool HasWaitingCallback() const;
@@ -46,6 +54,8 @@ class FakeExtensionService final : public ExtensionService {
   bool WasWaitedUpon() const;
 
  private:
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  bool has_load_error_ = false;
   bool is_ready_ = false;
   bool web_extensions_were_loaded_at_startup_ = false;
   bool was_waited_upon_ = false;

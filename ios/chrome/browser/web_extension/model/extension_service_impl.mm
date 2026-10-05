@@ -38,34 +38,14 @@ ExtensionServiceImpl::~ExtensionServiceImpl() {
 void ExtensionServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_loading_ = false;
+  has_load_error_ = false;
   loading_timer_.Stop();
   pref_change_registrar_.RemoveAll();
   ready_callbacks_.Clear();
+  observers_.Clear();
   extension_controller_.reset();
   extension_load_start_time_ = base::TimeTicks();
   initialization_start_time_ = base::TimeTicks();
-}
-
-web::ExtensionController* ExtensionServiceImpl::GetExtensionController() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return extension_controller_.get();
-}
-
-bool ExtensionServiceImpl::IsReady() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ready_;
-}
-
-bool ExtensionServiceImpl::WebExtensionsWereLoadedAtStartup() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return extension_load_started_at_startup_;
-}
-
-base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
-    base::OnceClosure callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!is_ready_);
-  return ready_callbacks_.Add(std::move(callback));
 }
 
 void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
@@ -121,6 +101,54 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
   }
 }
 
+web::ExtensionController* ExtensionServiceImpl::GetExtensionController() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return extension_controller_.get();
+}
+
+void ExtensionServiceImpl::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.AddObserver(observer);
+}
+
+void ExtensionServiceImpl::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  observers_.RemoveObserver(observer);
+}
+
+bool ExtensionServiceImpl::HasLoadError() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return has_load_error_;
+}
+
+void ExtensionServiceImpl::SetHasLoadError(bool has_load_error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (has_load_error_ == has_load_error) {
+    return;
+  }
+  has_load_error_ = has_load_error;
+  for (Observer& observer : observers_) {
+    observer.OnExtensionLoadErrorChanged(this, has_load_error_);
+  }
+}
+
+bool ExtensionServiceImpl::IsReady() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_ready_;
+}
+
+bool ExtensionServiceImpl::WebExtensionsWereLoadedAtStartup() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return extension_load_started_at_startup_;
+}
+
+base::CallbackListSubscription ExtensionServiceImpl::RunWhenReady(
+    base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!is_ready_);
+  return ready_callbacks_.Add(std::move(callback));
+}
+
 void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_loading_ = false;
@@ -134,6 +162,14 @@ void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
   }
   const bool is_silent =
       universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  const bool is_opt_out_enabled =
+      is_silent || pref_service_->GetBoolean(
+                       universal_optout::prefs::kUniversalOptOutEnabled);
+  if (!is_opt_out_enabled || success) {
+    SetHasLoadError(false);
+  } else {
+    SetHasLoadError(true);
+  }
   if (!is_silent && !pref_service_->GetBoolean(
                         universal_optout::prefs::kUniversalOptOutEnabled)) {
     if (extension_controller_ &&
@@ -152,6 +188,14 @@ void ExtensionServiceImpl::OnExtensionLoaded(bool success) {
 void ExtensionServiceImpl::OnExtensionLoadTimeout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   is_loading_ = false;
+  const bool is_silent =
+      universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
+  const bool is_opt_out_enabled =
+      is_silent || pref_service_->GetBoolean(
+                       universal_optout::prefs::kUniversalOptOutEnabled);
+  if (is_opt_out_enabled) {
+    SetHasLoadError(true);
+  }
   if (is_ready_) {
     return;
   }
@@ -190,8 +234,11 @@ void ExtensionServiceImpl::OnOptOutPrefChanged() {
           base::BindOnce(&ExtensionServiceImpl::OnExtensionLoaded,
                          weak_ptr_factory_.GetWeakPtr()));
     }
-  } else if (is_loaded) {
-    extension_controller_->UnloadBuiltInExtension(web::BuiltInExtension::kGPC,
-                                                  base::DoNothing());
+  } else {
+    SetHasLoadError(false);
+    if (is_loaded) {
+      extension_controller_->UnloadBuiltInExtension(web::BuiltInExtension::kGPC,
+                                                    base::DoNothing());
+    }
   }
 }

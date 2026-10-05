@@ -18,6 +18,18 @@ web::ExtensionController* FakeExtensionService::GetExtensionController() const {
   return nullptr;
 }
 
+void FakeExtensionService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FakeExtensionService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool FakeExtensionService::HasLoadError() const {
+  return has_load_error_;
+}
+
 bool FakeExtensionService::IsReady() const {
   return is_ready_;
 }
@@ -45,6 +57,16 @@ void FakeExtensionService::SetReady(bool ready) {
 
 void FakeExtensionService::SetWebExtensionsWereLoadedAtStartup(bool loaded) {
   web_extensions_were_loaded_at_startup_ = loaded;
+}
+
+void FakeExtensionService::SetHasLoadError(bool has_error) {
+  if (has_load_error_ == has_error) {
+    return;
+  }
+  has_load_error_ = has_error;
+  for (Observer& observer : observers_) {
+    observer.OnExtensionLoadErrorChanged(this, has_load_error_);
+  }
 }
 
 bool FakeExtensionService::HasWaitingCallback() const {
