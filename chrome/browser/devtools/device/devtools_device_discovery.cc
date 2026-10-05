@@ -244,7 +244,7 @@ AgentHostDelegate::GetOrCreateAgentHost(
     const std::string& target_path,
     const std::string& type,
     const base::DictValue* value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   scoped_refptr<DevToolsAgentHost> result =
       DevToolsAgentHost::GetForId(local_id);
   if (result) {
@@ -335,7 +335,7 @@ bool AgentHostDelegate::Activate() {
 }
 
 void AgentHostDelegate::Reload() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (target_path_.empty()) {
     return;
   }
@@ -405,7 +405,7 @@ class DevToolsDeviceDiscovery::DiscoveryRequest
 void DevToolsDeviceDiscovery::DiscoveryRequest::Start(
     AndroidDeviceManager* device_manager,
     base::OnceCallback<void(const CompleteDevices&)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto request =
       base::WrapRefCounted(new DiscoveryRequest(std::move(callback)));
   device_manager->QueryDevices(
@@ -415,22 +415,22 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::Start(
 DevToolsDeviceDiscovery::DiscoveryRequest::DiscoveryRequest(
     base::OnceCallback<void(const CompleteDevices&)> callback)
     : callback_(std::move(callback)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 DevToolsDeviceDiscovery::DiscoveryRequest::~DiscoveryRequest() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::move(callback_).Run(complete_devices_);
 }
 
 void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDevices(
     const AndroidDeviceManager::Devices& devices) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   for (const auto& device : devices) {
     switch (device->connected_state()) {
       case AndroidDeviceManager::DeviceInfo::kLocked:
         // We don't expect this state to be reported by AdbDeviceProvider.
-        DCHECK(false);
+        CHECK(false, base::NotFatalUntil::M161);
         ABSL_FALLTHROUGH_INTENDED;
       case AndroidDeviceManager::DeviceInfo::kUnauthorized:
       case AndroidDeviceManager::DeviceInfo::kOffline:
@@ -449,7 +449,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDevices(
 void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedDeviceInfo(
     scoped_refptr<AndroidDeviceManager::Device> device,
     const AndroidDeviceManager::DeviceInfo& device_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   AndroidDeviceManager::DeviceInfo device_info_copy = device_info;
   if (device_info.connected_state ==
       AndroidDeviceManager::DeviceInfo::kUnknown) {
@@ -509,7 +509,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedVersion(
     scoped_refptr<RemoteBrowser> browser,
     int result,
     const std::string& response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::string url = kPageListRequest;
   bool is_chrome = false;
@@ -529,7 +529,7 @@ void DevToolsDeviceDiscovery::DiscoveryRequest::ReceivedPages(
     scoped_refptr<RemoteBrowser> browser,
     int result,
     const std::string& response) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (result < 0) {
     return;
   }
@@ -647,17 +647,17 @@ DevToolsDeviceDiscovery::DevToolsDeviceDiscovery(
     : device_manager_(device_manager),
       callback_(std::move(callback)),
       task_scheduler_(base::BindRepeating(&ScheduleTaskDefault)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   RequestDeviceList();
 }
 
 DevToolsDeviceDiscovery::~DevToolsDeviceDiscovery() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void DevToolsDeviceDiscovery::SetScheduler(
     base::RepeatingCallback<void(base::OnceClosure)> scheduler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   task_scheduler_ = std::move(scheduler);
 }
 
@@ -739,7 +739,7 @@ DevToolsDeviceDiscovery::CreateBrowserAgentHost(
 }
 
 void DevToolsDeviceDiscovery::RequestDeviceList() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   DiscoveryRequest::Start(
       device_manager_,
       base::BindOnce(&DevToolsDeviceDiscovery::ReceivedDeviceList,
@@ -748,7 +748,7 @@ void DevToolsDeviceDiscovery::RequestDeviceList() {
 
 void DevToolsDeviceDiscovery::ReceivedDeviceList(
     const CompleteDevices& complete_devices) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   task_scheduler_.Run(base::BindOnce(
       &DevToolsDeviceDiscovery::RequestDeviceList, weak_factory_.GetWeakPtr()));
   // |callback_| should be run last as it may destroy |this|.

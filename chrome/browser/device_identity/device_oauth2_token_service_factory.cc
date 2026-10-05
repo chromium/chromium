@@ -39,7 +39,7 @@ std::unique_ptr<DeviceOAuth2TokenStore> CreatePlatformTokenStore(
 
 // static
 DeviceOAuth2TokenService* DeviceOAuth2TokenServiceFactory::Get() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return g_device_oauth2_token_service_;
 }
 
@@ -48,8 +48,8 @@ void DeviceOAuth2TokenServiceFactory::Initialize(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* local_state,
     os_crypt_async::OSCryptAsync* os_crypt_async) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!g_device_oauth2_token_service_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!g_device_oauth2_token_service_, base::NotFatalUntil::M161);
   g_device_oauth2_token_service_ = new DeviceOAuth2TokenService(
       url_loader_factory,
       CreatePlatformTokenStore(local_state, os_crypt_async));
@@ -57,7 +57,7 @@ void DeviceOAuth2TokenServiceFactory::Initialize(
 
 // static
 void DeviceOAuth2TokenServiceFactory::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (g_device_oauth2_token_service_) {
     delete g_device_oauth2_token_service_;
     g_device_oauth2_token_service_ = nullptr;

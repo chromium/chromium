@@ -76,7 +76,7 @@ void SubresourceFilterComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::DictValue manifest) {
-  DCHECK(!install_dir.empty());
+  CHECK(!install_dir.empty(), base::NotFatalUntil::M161);
   DVLOG(1) << "Subresource Filter Version Ready: " << install_dir.value();
   std::optional<int> ruleset_format =
       manifest.FindInt(kManifestRulesetFormatKey);

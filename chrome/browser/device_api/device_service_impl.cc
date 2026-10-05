@@ -213,7 +213,7 @@ void DeviceServiceImpl::Create(
     mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver,
     std::unique_ptr<DeviceAttributeApi> device_attribute_api) {
   CHECK(host);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (host->GetParentOrOuterDocumentOrEmbedder()) {
     mojo::ReportBadMessage(

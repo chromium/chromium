@@ -28,7 +28,7 @@ using content_settings::CookieControlsMode;
 // static
 scoped_refptr<content_settings::CookieSettings>
 CookieSettingsFactory::GetForProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return static_cast<content_settings::CookieSettings*>(
       GetInstance()->GetServiceForBrowserContext(profile, true).get());
 }

@@ -66,7 +66,7 @@ constexpr char kMetadataContentItemComponentKey[] = "component";
 
 // Gets current active user.
 const user_manager::User* GetActiveUser() {
-  DCHECK(user_manager::UserManager::Get());
+  CHECK(user_manager::UserManager::Get(), base::NotFatalUntil::M161);
 
   return user_manager::UserManager::Get()->GetActiveUser();
 }
@@ -74,7 +74,7 @@ const user_manager::User* GetActiveUser() {
 const std::string& GetRequiredStringFromDict(const base::Value& dict,
                                              std::string_view key) {
   const std::string* str = dict.GetDict().FindString(key);
-  DCHECK(str);
+  CHECK(str, base::NotFatalUntil::M161);
   return *str;
 }
 
@@ -82,8 +82,8 @@ const std::string& GetRequiredStringFromDict(const base::Value& dict,
 
 MetadataTable::MetadataTable(PrefService* pref_service)
     : pref_service_(pref_service) {
-  DCHECK(pref_service_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(pref_service_, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Load();
 }
@@ -144,12 +144,12 @@ bool MetadataTable::HasComponentForAnyUser(
 }
 
 MetadataTable::MetadataTable() : pref_service_(nullptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void MetadataTable::Load() {
-  DCHECK(pref_service_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(pref_service_, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   const base::DictValue& dict = pref_service_->GetDict(kMetadataPrefPath);
   const base::ListValue* installed_items = dict.FindList(kMetadataContentKey);
@@ -162,8 +162,8 @@ void MetadataTable::Load() {
 }
 
 void MetadataTable::Store() {
-  DCHECK(pref_service_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(pref_service_, base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ScopedDictPrefUpdate update(pref_service_, kMetadataPrefPath);
   update->Set(kMetadataContentKey, installed_items_.Clone());

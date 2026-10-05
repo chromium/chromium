@@ -15,7 +15,7 @@ namespace collaboration {
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_CollaborationServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   CollaborationService* service =
       CollaborationServiceFactory::GetForProfile(profile);
   return CollaborationService::GetJavaObject(service);

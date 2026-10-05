@@ -39,7 +39,8 @@ MixedContentSettingsTabHelper::~MixedContentSettingsTabHelper() = default;
 
 void MixedContentSettingsTabHelper::AllowRunningOfInsecureContent(
     RenderFrameHost& render_frame_host) {
-  DCHECK(!render_frame_host.IsNestedWithinFencedFrame());
+  CHECK(!render_frame_host.IsNestedWithinFencedFrame(),
+        base::NotFatalUntil::M161);
   auto* main_frame = render_frame_host.GetOutermostMainFrame();
   auto [it, inserted] = settings_.try_emplace(main_frame->GetSiteInstance());
   if (inserted) {
@@ -54,7 +55,8 @@ void MixedContentSettingsTabHelper::RenderFrameCreated(
     return;
 
   // Fenced Frames should never allow insecure content.
-  DCHECK(!render_frame_host->IsNestedWithinFencedFrame());
+  CHECK(!render_frame_host->IsNestedWithinFencedFrame(),
+        base::NotFatalUntil::M161);
   mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
   agent->SetAllowRunningInsecureContent();
@@ -99,7 +101,8 @@ bool MixedContentSettingsTabHelper::IsRunningInsecureContentAllowed(
 
 MixedContentSettingsTabHelper::SiteSettings::SiteSettings(
     RenderFrameHost* main_frame_host) {
-  DCHECK(!main_frame_host->GetParentOrOuterDocument());
+  CHECK(!main_frame_host->GetParentOrOuterDocument(),
+        base::NotFatalUntil::M161);
   if (main_frame_host->IsRenderFrameLive()) {
     // There is already a live RenderFrame using `main_frame_host`'s
     // SiteInstance, so set the RenderFrame count to 1, so that we will decrease
@@ -110,7 +113,7 @@ MixedContentSettingsTabHelper::SiteSettings::SiteSettings(
 
 void MixedContentSettingsTabHelper::SiteSettings::
     AllowRunningOfInsecureContent() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   is_running_insecure_content_allowed_ = true;
 }
 
@@ -119,7 +122,7 @@ void MixedContentSettingsTabHelper::SiteSettings::IncrementRenderFrameCount() {
 }
 
 void MixedContentSettingsTabHelper::SiteSettings::DecrementRenderFrameCount() {
-  DCHECK_GT(render_frame_count_, 0);
+  CHECK_GT(render_frame_count_, 0, base::NotFatalUntil::M161);
   render_frame_count_--;
 }
 

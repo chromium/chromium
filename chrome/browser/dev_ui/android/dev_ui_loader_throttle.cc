@@ -112,7 +112,7 @@ bool DevUiLoaderThrottle::ShouldInstallDevUiDfm(const GURL& url) {
 // static
 void DevUiLoaderThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto& handle = registry.GetNavigationHandle();
   if (!handle.IsInPrimaryMainFrame()) {
     return;

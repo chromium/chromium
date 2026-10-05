@@ -385,7 +385,7 @@ void AuthenticatorWin::CheckIfBiometricsAvailable(
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateCOMSTATaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-  DCHECK(background_task_runner);
+  CHECK(background_task_runner, base::NotFatalUntil::M161);
   background_task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(&GetBiometricAvailabilityFromWindows, std::move(callback),

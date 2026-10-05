@@ -113,7 +113,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
 
   auto* device_connection_tracker =
       device_system_tray_icon_->GetConnectionTracker(profile->GetWeakPtr());
-  DCHECK(device_connection_tracker);
+  CHECK(device_connection_tracker, base::NotFatalUntil::M161);
   auto delegate =
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(
@@ -127,7 +127,7 @@ DevicePinnedNotificationRenderer::CreateNotification(Profile* profile) {
                   return;
                 }
 
-                DCHECK_EQ(*button_index, 0);
+                CHECK_EQ(*button_index, 0, base::NotFatalUntil::M161);
                 connection_tracker->ShowContentSettingsExceptions();
               },
               device_connection_tracker));

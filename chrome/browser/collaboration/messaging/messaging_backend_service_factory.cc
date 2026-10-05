@@ -60,7 +60,7 @@ MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
 std::unique_ptr<KeyedService>
 MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
   Profile* profile = static_cast<Profile*>(context);
 
   // This service requires the data sharing and tab group sync service features

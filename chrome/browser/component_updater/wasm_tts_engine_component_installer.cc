@@ -71,7 +71,7 @@ class WasmTTSEngineDirectory {
   }
 
   void Get(base::OnceCallback<void(const base::FilePath&)> callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     callbacks_.push_back(std::move(callback));
     if (!dir_.empty()) {
       FireCallbacks();
@@ -79,20 +79,20 @@ class WasmTTSEngineDirectory {
   }
 
   void Set(const base::FilePath& new_dir) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     CHECK(!new_dir.empty());
     dir_ = new_dir;
     FireCallbacks();
   }
 
   bool IsSet() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     return !dir_.empty();
   }
 
  private:
   void FireCallbacks() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     CHECK(!dir_.empty());
     std::vector<base::OnceCallback<void(const base::FilePath&)>> callbacks;
     std::swap(callbacks, callbacks_);

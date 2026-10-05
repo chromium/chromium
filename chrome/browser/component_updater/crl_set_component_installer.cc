@@ -96,7 +96,7 @@ void CRLSetData::ConfigureCertVerifierServiceFactory() {
 }
 
 void CRLSetData::UpdateCRLSetOnUI(const std::string& crl_set_bytes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::GetCertVerifierServiceFactory()->UpdateCRLSet(
       base::as_byte_span(crl_set_bytes), base::DoNothing());

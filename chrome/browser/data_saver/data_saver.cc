@@ -73,7 +73,7 @@ bool IsDataSaverEnabled() {
     // it asynchronously and return the cached value immediately.
     FetchDataSaverOSSettingAsynchronously();
   }
-  DCHECK(g_cached_data_saver_setting);
+  CHECK(g_cached_data_saver_setting, base::NotFatalUntil::M161);
   return g_cached_data_saver_setting.value();
 #else
   return false;

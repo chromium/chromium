@@ -61,7 +61,7 @@ class DictationConnectorDirectory {
 
   base::CallbackListSubscription Get(
       base::OnceCallback<void(const base::FilePath&)> callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     // Use BindPostTaskToCurrentDefault to ensure the callback is posted
     // asynchronously when run from Notify.
     base::CallbackListSubscription subscription =
@@ -73,20 +73,20 @@ class DictationConnectorDirectory {
   }
 
   void Set(const base::FilePath& new_dir) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     CHECK(!new_dir.empty());
     dir_ = new_dir;
     NotifyCallbacksAsync();
   }
 
   void ResetForTesting() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     dir_ = base::FilePath();
   }
 
  private:
   void NotifyCallbacksAsync() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (!dir_.empty()) {
       callbacks_.Notify(dir_);
     }
@@ -145,7 +145,8 @@ void DictationConnectorComponentInstallerPolicy::ComponentReady(
 base::CallbackListSubscription
 DictationConnectorComponentInstallerPolicy::GetExtensionDirectory(
     base::OnceCallback<void(const base::FilePath&)> callback) {
-  DCHECK(base::FeatureList::IsEnabled(dictation::kDictation));
+  CHECK(base::FeatureList::IsEnabled(dictation::kDictation),
+        base::NotFatalUntil::M161);
   return DictationConnectorDirectory::GetInstance().Get(std::move(callback));
 }
 

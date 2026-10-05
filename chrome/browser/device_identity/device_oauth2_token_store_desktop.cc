@@ -172,8 +172,8 @@ void DeviceOAuth2TokenStoreDesktop::OnServiceAccountIdentityChanged() {
 }
 
 void DeviceOAuth2TokenStoreDesktop::DecryptToken() const {
-  DCHECK(!token_decrypted_);
-  DCHECK(!refresh_token_.empty());
+  CHECK(!token_decrypted_, base::NotFatalUntil::M161);
+  CHECK(!refresh_token_.empty(), base::NotFatalUntil::M161);
 
   std::string decrypted_token;
   CHECK(encryptor_) << "DecryptToken called before Init completed";

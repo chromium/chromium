@@ -153,7 +153,7 @@ void UsbDeviceManagerHelper::GetAndroidDevices(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M161);
   device_manager_->GetDevices(
       /*options=*/nullptr,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
@@ -167,7 +167,7 @@ void UsbDeviceManagerHelper::GetDevice(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M161);
   device_manager_->GetDevice(guid, /*blocked_interface_classes=*/{},
                              std::move(device_receiver),
                              /*device_client=*/mojo::NullRemote());
@@ -201,7 +201,7 @@ void UsbDeviceManagerHelper::CountDevicesInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureUsbDeviceManagerConnection();
 
-  DCHECK(device_manager_);
+  CHECK(device_manager_, base::NotFatalUntil::M161);
   auto countCb = base::BindOnce(&CountAndroidDevices, std::move(callback));
   device_manager_->GetDevices(
       /*options=*/nullptr,
@@ -213,7 +213,7 @@ void UsbDeviceManagerHelper::CountDevicesInternal(
 void UsbDeviceManagerHelper::SetUsbManagerForTestingInternal(
     mojo::PendingRemote<device::mojom::UsbDeviceManager> fake_usb_manager) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(fake_usb_manager);
+  CHECK(fake_usb_manager, base::NotFatalUntil::M161);
   testing_device_manager_ = std::move(fake_usb_manager);
 }
 

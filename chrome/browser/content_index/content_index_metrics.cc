@@ -38,7 +38,7 @@ void MaybeRecordUkmContentDeletedByUser(
 ContentIndexMetrics::ContentIndexMetrics(
     ukm::UkmBackgroundRecorderService* ukm_background_service)
     : ukm_background_service_(ukm_background_service) {
-  DCHECK(ukm_background_service_);
+  CHECK(ukm_background_service_, base::NotFatalUntil::M161);
 }
 
 ContentIndexMetrics::~ContentIndexMetrics() = default;

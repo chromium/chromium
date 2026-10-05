@@ -142,7 +142,7 @@ void DevToolsAndroidBridge::SendJsonRequest(const std::string& browser_id_str,
 
 void DevToolsAndroidBridge::OpenRemotePage(scoped_refptr<RemoteBrowser> browser,
                                            const std::string& input_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   GURL gurl(input_url);
   if (!gurl.is_valid()) {
     gurl = GURL("http://" + input_url);
@@ -162,7 +162,7 @@ DevToolsAndroidBridge::DevToolsAndroidBridge(Profile* profile)
     : profile_(profile),
       device_manager_(AndroidDeviceManager::Create()),
       port_forwarding_controller_(new PortForwardingController(profile)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kDevToolsDiscoverUsbDevicesEnabled,
@@ -187,7 +187,7 @@ DevToolsAndroidBridge::DevToolsAndroidBridge(Profile* profile)
 
 void DevToolsAndroidBridge::AddDeviceListListener(
     DeviceListListener* listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   bool polling_was_off = !NeedsDeviceListPolling();
   device_list_listeners_.push_back(listener);
   if (polling_was_off)
@@ -196,7 +196,7 @@ void DevToolsAndroidBridge::AddDeviceListListener(
 
 void DevToolsAndroidBridge::RemoveDeviceListListener(
     DeviceListListener* listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = std::ranges::find(device_list_listeners_, listener);
   CHECK(it != device_list_listeners_.end());
   device_list_listeners_.erase(it);
@@ -213,7 +213,7 @@ void DevToolsAndroidBridge::AddDeviceCountListener(
 
 void DevToolsAndroidBridge::RemoveDeviceCountListener(
     DeviceCountListener* listener) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = std::ranges::find(device_count_listeners_, listener);
   CHECK(it != device_count_listeners_.end());
   device_count_listeners_.erase(it);
@@ -239,10 +239,10 @@ void DevToolsAndroidBridge::RemovePortForwardingListener(
 }
 
 DevToolsAndroidBridge::~DevToolsAndroidBridge() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(device_list_listeners_.empty());
-  DCHECK(device_count_listeners_.empty());
-  DCHECK(port_forwarding_listeners_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(device_list_listeners_.empty(), base::NotFatalUntil::M161);
+  CHECK(device_count_listeners_.empty(), base::NotFatalUntil::M161);
+  CHECK(port_forwarding_listeners_.empty(), base::NotFatalUntil::M161);
 }
 
 void DevToolsAndroidBridge::StartDeviceListPolling() {
@@ -266,7 +266,7 @@ bool DevToolsAndroidBridge::NeedsDeviceListPolling() {
 
 void DevToolsAndroidBridge::ReceivedDeviceList(
     const CompleteDevices& complete_devices) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   device_map_.clear();
   RemoteDevices remote_devices;
@@ -301,7 +301,7 @@ void DevToolsAndroidBridge::StopDeviceCountPolling() {
 
 void DevToolsAndroidBridge::RequestDeviceCount(
     base::RepeatingCallback<void(int)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (device_count_listeners_.empty() || callback.IsCancelled())
     return;
@@ -310,7 +310,7 @@ void DevToolsAndroidBridge::RequestDeviceCount(
 }
 
 void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   DeviceCountListeners copy(device_count_listeners_);
   for (DevToolsAndroidBridge::DeviceCountListener* listener : copy) {

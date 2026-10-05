@@ -126,7 +126,7 @@ void SmartDimComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::DictValue manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // If IsDownloadWorkerReady(), newly downloaded components will take effect
   // on next reboot. This makes sure the updating happens at most once.
   if (ash::power::ml::SmartDimMlAgent::GetInstance()->IsDownloadWorkerReady()) {
@@ -134,7 +134,7 @@ void SmartDimComponentInstallerPolicy::ComponentReady(
     return;
   }
 
-  DCHECK(!install_dir.empty());
+  CHECK(!install_dir.empty(), base::NotFatalUntil::M161);
   DVLOG(1) << "Component ready, version " << version.GetString() << " in "
            << install_dir.value();
 
@@ -155,7 +155,7 @@ bool SmartDimComponentInstallerPolicy::VerifyInstallation(
   // Note: versions should not be treated as simple strings, for example,
   // base::Version("2020.02.06") == base::Version("2020.2.6").
   const std::string* version_string = manifest.FindString("version");
-  DCHECK(version_string);
+  CHECK(version_string, base::NotFatalUntil::M161);
   const base::Version component_version(*version_string);
   const base::Version expected_version(expected_version_);
   if (component_version != expected_version) {
@@ -177,7 +177,7 @@ base::FilePath SmartDimComponentInstallerPolicy::GetRelativeInstallDir() const {
 
 void SmartDimComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
-  DCHECK(hash);
+  CHECK(hash, base::NotFatalUntil::M161);
   hash->assign_range(kSmartDimPublicKeySHA256);
 }
 

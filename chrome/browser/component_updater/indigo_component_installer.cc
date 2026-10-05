@@ -57,7 +57,7 @@ base::RepeatingCallbackList<void()>& GetCallbackList() {
 
 base::CallbackListSubscription RegisterIndigoComponentReadyCallback(
     base::RepeatingClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return GetCallbackList().Add(std::move(callback));
 }
 
@@ -87,7 +87,7 @@ void IndigoComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::DictValue manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir;
   GetInstallDirStorage() = install_dir;
@@ -125,7 +125,7 @@ IndigoComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void RegisterIndigoComponent(ComponentUpdateService* cus) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!base::FeatureList::IsEnabled(features::kIndigoComponent)) {
     return;
   }
@@ -136,7 +136,7 @@ void RegisterIndigoComponent(ComponentUpdateService* cus) {
 }
 
 std::optional<base::FilePath> GetIndigoComponentInstallDir() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const base::FilePath& install_dir = GetInstallDirStorage();
   if (install_dir.empty()) {
     return std::nullopt;
@@ -145,7 +145,7 @@ std::optional<base::FilePath> GetIndigoComponentInstallDir() {
 }
 
 std::optional<base::FilePath> GetIndigoContentScriptPath() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   std::optional<base::FilePath> install_dir = GetIndigoComponentInstallDir();
   if (!install_dir.has_value()) {
     return std::nullopt;
@@ -154,7 +154,7 @@ std::optional<base::FilePath> GetIndigoContentScriptPath() {
 }
 
 void ResetIndigoInstallDirForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   GetInstallDirStorage() = base::FilePath();
 }
 

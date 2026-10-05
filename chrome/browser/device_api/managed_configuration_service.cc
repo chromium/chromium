@@ -17,7 +17,7 @@ ManagedConfigurationServiceImpl* ManagedConfigurationServiceImpl::Create(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::ManagedConfigurationService> receiver) {
   CHECK(host);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!base::FeatureList::IsEnabled(blink::features::kManagedConfiguration)) {
     mojo::ReportBadMessage(
         "Managed configuration access while the feature is not enabled.");

@@ -91,7 +91,7 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
   void Fetch(const std::string& data_url,
              base::OnceCallback<void(std::optional<std::string>)> callback) {
     // URLLoaders should be created at UI thread.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     auto resource_request = std::make_unique<network::ResourceRequest>();
     resource_request->url = GURL(data_url);
     resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;

@@ -69,7 +69,7 @@ ContextualCueingService::~ContextualCueingService() = default;
 
 void ContextualCueingService::WriteStatsToPref(CueTargetType type) {
   auto it = target_stats_.find(type);
-  DCHECK(it != target_stats_.end());
+  CHECK(it != target_stats_.end(), base::NotFatalUntil::M161);
   if (it == target_stats_.end()) {
     return;
   }

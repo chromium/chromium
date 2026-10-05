@@ -433,7 +433,7 @@ class ManifestAssetManagerDelegateImpl final
  public:
   base::CallbackListSubscription ListenForManifestReady(
       base::RepeatingCallback<void(base::FilePath)> on_ready) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     auto subscription = manifest_ready_callbacks_.Add(std::move(on_ready));
     if (!manifest_dir_.empty()) {
       manifest_ready_callbacks_.Notify(manifest_dir_);
@@ -451,7 +451,7 @@ class ManifestAssetManagerDelegateImpl final
   void GetInstalledAssets(
       base::OnceCallback<void(std::vector<InstalledAsset>)> callback)
       const override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&FindInstalledAssetsOnDisk,
@@ -465,7 +465,7 @@ class ManifestAssetManagerDelegateImpl final
       const std::string& component_name,
       base::WeakPtr<optimization_guide::ManifestAssetManager> manager)
       override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (!g_browser_process) {
       return;
     }
@@ -496,7 +496,7 @@ class ManifestAssetManagerDelegateImpl final
   void Uninstall(const std::string& public_key_hex,
                  base::WeakPtr<optimization_guide::ManifestAssetManager>
                      manager) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     std::string crx_id = GenerateIdFromPublicKeyHex(public_key_hex);
     if (!crx_id.empty() && g_browser_process &&
@@ -514,7 +514,7 @@ class ManifestAssetManagerDelegateImpl final
 
   void RequestUpdate(const std::string& public_key_hex,
                      bool is_background) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     if (!g_browser_process) {
       return;
     }

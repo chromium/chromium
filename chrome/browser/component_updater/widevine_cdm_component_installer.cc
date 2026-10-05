@@ -79,7 +79,7 @@ const char ImageLoaderComponentName[] = "WidevineCdm";
 void RegisterWidevineCdmWithChrome(const base::Version& cdm_version,
                                    const base::FilePath& cdm_path,
                                    base::DictValue manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // This check must be a subset of the check in VerifyInstallation() to
   // avoid the case where the CDM is accepted by the component updater
@@ -141,7 +141,7 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
 #if BUILDFLAG(IS_CHROMEOS)
 // This is called when ImageLoaderClient::RegisterComponent() is done.
 void OnImageRegistered(std::optional<bool> result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // `result` is false if the component fails verification, nullopt if an error
   // occurred. If registration fails there is not much we can do other than
@@ -156,7 +156,7 @@ void OnImageRegistered(std::optional<bool> result) {
 // downloaded.
 void RegisterImage(const std::string& version,
                    const base::FilePath& install_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__ << ": version=" << version << ", dir=" << install_dir;
 
   auto* loader = ash::ImageLoaderClient::Get();
@@ -207,7 +207,7 @@ void VerifyManifestAndUpdateHintFile(const std::string& image_dir) {
 // was successfully loaded, register it with Chrome via the hint file so that
 // it can be loaded next time ChromeOS restarts.
 void OnImageLoaded(std::optional<std::string> image_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Mounting should not fail, but if it does simply log a message. This will
   // be tried again next time the device reboots.

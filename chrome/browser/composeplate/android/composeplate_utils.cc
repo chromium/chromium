@@ -16,7 +16,7 @@
 // static
 static bool JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
                                                           Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   AimEligibilityService* aim_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   return aim_service != nullptr && aim_service->IsAimEligible();
@@ -25,7 +25,7 @@ static bool JNI_ComposeplateUtils_IsAimEntrypointEligible(JNIEnv* env,
 // static
 static bool JNI_ComposeplateUtils_IsEnabledByPolicy(JNIEnv* env,
                                                     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   // TODO(crbug.com/469142288): this should only disable sharing; for now the
   // resolution is that in M144 we disable all of the fusebox.
   return contextual_search::ContextualSearchService::IsContextSharingEnabled(

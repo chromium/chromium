@@ -166,7 +166,7 @@ void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<SodaLanguagePackComponentInstallerPolicy>(

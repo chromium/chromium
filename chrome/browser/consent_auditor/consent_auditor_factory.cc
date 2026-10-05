@@ -35,7 +35,7 @@ consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
   // soon disappear. Consents tied to the user's Google account should retrieve
   // account information from the original profile. In both cases, there is no
   // reason to support Incognito.
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   return static_cast<consent_auditor::ConsentAuditor*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

@@ -34,7 +34,7 @@ GURL GetURL(content::WebContents* contents) {
 // Returns true if |contents| is of an internal pages (such as
 // chrome://settings, chrome://extensions, ... etc).
 bool IsInternalPage(content::WebContents* contents) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M161);
 
   GURL url = GetURL(contents);
   if (url.is_empty()) {
@@ -99,7 +99,7 @@ bool UseDefaultFontSize(const GURL& url) {
 
 void OverrideFontSize(content::WebContents* contents,
                       blink::web_pref::WebPreferences* web_prefs) {
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M161);
   // Check the URL because |contents| may not yet be associated with a window,
   // SettingsWindowManager, etc.
   GURL url = GetURL(contents);

@@ -92,7 +92,8 @@ HostContentSettingsMapFactory::~HostContentSettingsMapFactory() = default;
 // static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForProfile(
     content::BrowserContext* browser_context) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   return static_cast<HostContentSettingsMap*>(
       GetInstance()->GetServiceForBrowserContext(browser_context, true).get());
@@ -107,7 +108,7 @@ HostContentSettingsMapFactory* HostContentSettingsMapFactory::GetInstance() {
 scoped_refptr<RefcountedKeyedService>
     HostContentSettingsMapFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Profile* profile = static_cast<Profile*>(context);
   // extensions::ContentSettingsService::Get() needs the original profile.

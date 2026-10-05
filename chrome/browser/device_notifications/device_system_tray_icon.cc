@@ -13,7 +13,7 @@ DeviceSystemTrayIcon::DeviceSystemTrayIcon(
 DeviceSystemTrayIcon::~DeviceSystemTrayIcon() = default;
 
 void DeviceSystemTrayIcon::StageProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = profiles_.find(profile);
   if (it != profiles_.end()) {
     // If the |profile| is tracked, it must be unstaging.
@@ -29,7 +29,7 @@ void DeviceSystemTrayIcon::StageProfile(Profile* profile) {
 }
 
 void DeviceSystemTrayIcon::UnstageProfile(Profile* profile, bool immediate) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = profiles_.find(profile);
   // The |profile| must be tracked. However, it can be unstaging. For example,
   // A profile is scheduled to be removed followed by profile destruction.
@@ -79,7 +79,7 @@ void DeviceSystemTrayIcon::NotifyConnectionCountUpdated(Profile* profile) {
 }
 
 void DeviceSystemTrayIcon::CleanUpProfile(base::WeakPtr<Profile> profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (profile) {
     auto it = profiles_.find(profile.get());
     if (it != profiles_.end() && !it->second) {

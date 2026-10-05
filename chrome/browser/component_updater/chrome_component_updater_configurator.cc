@@ -247,7 +247,7 @@ ChromeConfigurator::GetCrxDownloaderFactory() {
 scoped_refptr<update_client::UnzipperFactory>
 ChromeConfigurator::GetUnzipperFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!unzip_factory_) {
     unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
         base::BindRepeating(&unzip::LaunchUnzipper));
@@ -258,7 +258,7 @@ ChromeConfigurator::GetUnzipperFactory() {
 scoped_refptr<update_client::PatcherFactory>
 ChromeConfigurator::GetPatcherFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!patch_factory_) {
     patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
         base::BindRepeating(&patch::LaunchFilePatcher));

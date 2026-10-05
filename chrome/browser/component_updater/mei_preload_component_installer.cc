@@ -39,7 +39,7 @@ constexpr uint8_t kMeiPreloadPublicKeySHA256[32] = {
 constexpr char kMediaEngagementPreloadManifestName[] = "MEI Preload";
 
 void LoadPreloadedDataFromDisk(const base::FilePath& pb_path) {
-  DCHECK(!pb_path.empty());
+  CHECK(!pb_path.empty(), base::NotFatalUntil::M161);
   MediaEngagementPreloadedList::GetInstance()->LoadFromFile(pb_path);
 }
 

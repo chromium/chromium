@@ -70,7 +70,7 @@ DeviceStatusIconRenderer::DeviceStatusIconRenderer(
 DeviceStatusIconRenderer::~DeviceStatusIconRenderer() {
   if (status_icon_) {
     auto* status_tray = g_browser_process->status_tray();
-    DCHECK(status_tray);
+    CHECK(status_tray, base::NotFatalUntil::M161);
     std::unique_ptr<StatusIcon> removed_icon =
         status_tray->RemoveStatusIcon(status_icon_);
     status_icon_ = nullptr;
@@ -139,7 +139,7 @@ void DeviceStatusIconRenderer::ShowSiteSettings(base::WeakPtr<Profile> profile,
 void DeviceStatusIconRenderer::RefreshIcon() {
   command_id_callbacks_.clear();
   auto* status_tray = g_browser_process->status_tray();
-  DCHECK(status_tray);
+  CHECK(status_tray, base::NotFatalUntil::M161);
   if (device_system_tray_icon_->profiles().empty()) {
     if (status_icon_) {
       std::unique_ptr<StatusIcon> removed_icon =

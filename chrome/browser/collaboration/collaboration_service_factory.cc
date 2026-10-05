@@ -51,7 +51,7 @@ CollaborationServiceFactory::~CollaborationServiceFactory() = default;
 std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M161);
   if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       context->IsOffTheRecord()) {
     return std::make_unique<EmptyCollaborationService>();

@@ -84,7 +84,7 @@ bool ScreenAIComponentInstallerPolicy::VerifyInstallation(
   VLOG(1) << "Verifying Screen AI component in " << install_dir.value();
 
   base::Version version;
-  DCHECK(!version.IsValid());
+  CHECK(!version.IsValid(), base::NotFatalUntil::M161);
 
   const base::Value* version_value = manifest.Find("version");
   if (version_value && version_value->is_string()) {
@@ -136,7 +136,7 @@ void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
 }
 
 void RegisterScreenAIComponent(ComponentUpdateService* cus) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Only register once.
   if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=

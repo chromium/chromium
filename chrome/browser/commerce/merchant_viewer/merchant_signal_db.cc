@@ -34,7 +34,7 @@ void OnLoadCallbackSingleEntry(const base::android::JavaRef<jobject>& jcallback,
     base::android::RunObjectCallbackAndroid(jcallback, nullptr);
     return;
   }
-  DCHECK(data.size() == 1);
+  CHECK(data.size() == 1, base::NotFatalUntil::M161);
   MerchantSignalProto proto = std::move(data.at(0).second);
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> signal =

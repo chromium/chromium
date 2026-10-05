@@ -73,16 +73,16 @@ std::string EntryKey(const content::ContentIndexEntry& entry) {
 
 EntryKeyComponents GetEntryKeyComponents(const std::string& key) {
   size_t pos1 = key.find_first_of(kEntryKeySeparator);
-  DCHECK_NE(pos1, std::string::npos);
+  CHECK_NE(pos1, std::string::npos, base::NotFatalUntil::M161);
   size_t pos2 = key.find_first_of(kEntryKeySeparator, pos1 + 1);
-  DCHECK_NE(pos2, std::string::npos);
+  CHECK_NE(pos2, std::string::npos, base::NotFatalUntil::M161);
 
   int64_t service_worker_registration_id = -1;
   base::StringToInt64(std::string_view(key.data(), pos1),
                       &service_worker_registration_id);
 
   GURL origin(key.substr(pos1 + 1, pos2 - pos1 - 1));
-  DCHECK(origin.is_valid());
+  CHECK(origin.is_valid(), base::NotFatalUntil::M161);
 
   return {service_worker_registration_id, url::Origin::Create(origin),
           key.substr(pos2 + 1)};
@@ -129,7 +129,7 @@ void ContentIndexProviderImpl::Shutdown() {
 
 std::vector<gfx::Size> ContentIndexProviderImpl::GetIconSizes(
     blink::mojom::ContentCategory category) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (icon_sizes_for_testing_)
     return *icon_sizes_for_testing_;
@@ -144,7 +144,7 @@ std::vector<gfx::Size> ContentIndexProviderImpl::GetIconSizes(
 
 void ContentIndexProviderImpl::OnContentAdded(
     content::ContentIndexEntry entry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!entry.is_top_level_context)
     return;
@@ -165,7 +165,7 @@ void ContentIndexProviderImpl::OnContentDeleted(
     int64_t service_worker_registration_id,
     const url::Origin& origin,
     const std::string& description_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::string entry_key =
       EntryKey(service_worker_registration_id, origin, description_id);
@@ -284,7 +284,7 @@ void ContentIndexProviderImpl::GetAllItems(MultipleItemCallback callback) {
       [&](content::StoragePartition* partition) {
         storage_partitions.push_back(partition);
       });
-  DCHECK(!storage_partitions.empty());
+  CHECK(!storage_partitions.empty(), base::NotFatalUntil::M161);
 
   auto item_list = std::make_unique<OfflineItemList>();
   OfflineItemList* item_list_ptr = item_list.get();
@@ -389,7 +389,7 @@ void ContentIndexProviderImpl::DidGetIcons(const ContentId& id,
   auto visuals =
       std::make_unique<offline_items_collection::OfflineItemVisuals>();
   if (!icons.empty()) {
-    DCHECK_EQ(icons.size(), 1u);
+    CHECK_EQ(icons.size(), 1u, base::NotFatalUntil::M161);
     visuals->icon = gfx::Image::CreateFrom1xBitmap(std::move(icons.front()));
   }
   std::move(callback).Run(id, std::move(visuals));

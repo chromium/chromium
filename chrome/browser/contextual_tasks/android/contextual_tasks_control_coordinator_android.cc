@@ -29,7 +29,7 @@ ContextualTasksControlCoordinatorAndroid::
         const jni_zero::JavaRef<jobject>& obj,
         Profile* profile)
     : java_obj_(env, obj) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (auto* service = ContextualTasksServiceFactory::GetForProfile(profile)) {
     scoped_observation_.Observe(service);
   }

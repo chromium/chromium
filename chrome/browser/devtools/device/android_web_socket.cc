@@ -72,8 +72,8 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   WebSocketImpl& operator=(const WebSocketImpl&) = delete;
 
   void StartListening() {
-    DCHECK(thread_checker_.CalledOnValidThread());
-    DCHECK(socket_);
+    CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
+    CHECK(socket_, base::NotFatalUntil::M161);
 
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
     if (!response_buffer_.empty())
@@ -83,7 +83,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   }
 
   void SendFrame(const std::string& message) {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
     if (!socket_)
       return;
     int mask = base::RandIntInclusive(0, 0x7FFFFFFF);
@@ -107,7 +107,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   }
 
   void OnBytesRead(scoped_refptr<net::IOBuffer> io_buffer, int result) {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
     if (result <= 0) {
       Disconnect();
       return;
@@ -149,7 +149,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   }
 
   void SendPendingRequests(int result) {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
     if (result < 0) {
       Disconnect();
       return;
@@ -169,7 +169,7 @@ class AndroidDeviceManager::AndroidWebSocket::WebSocketImpl {
   }
 
   void Disconnect() {
-    DCHECK(thread_checker_.CalledOnValidThread());
+    CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
     socket_.reset();
     response_task_runner_->PostTask(
         FROM_HERE,
@@ -195,9 +195,9 @@ AndroidDeviceManager::AndroidWebSocket::AndroidWebSocket(
     : device_(device),
       socket_impl_(nullptr, base::OnTaskRunnerDeleter(device->task_runner_)),
       delegate_(delegate) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(delegate_);
-  DCHECK(device_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(delegate_, base::NotFatalUntil::M161);
+  CHECK(device_, base::NotFatalUntil::M161);
   device_->HttpUpgrade(
       socket_name, path, net::WebSocketEncoder::kClientExtensions,
       base::BindOnce(&AndroidWebSocket::Connected, weak_factory_.GetWeakPtr()));
@@ -207,9 +207,9 @@ AndroidDeviceManager::AndroidWebSocket::~AndroidWebSocket() = default;
 
 void AndroidDeviceManager::AndroidWebSocket::SendFrame(
     const std::string& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(socket_impl_);
-  DCHECK(device_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(socket_impl_, base::NotFatalUntil::M161);
+  CHECK(device_, base::NotFatalUntil::M161);
   device_->task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&WebSocketImpl::SendFrame,
                                 socket_impl_->GetWeakPtr(), message));
@@ -220,7 +220,7 @@ void AndroidDeviceManager::AndroidWebSocket::Connected(
     const std::string& extensions,
     const std::string& body_head,
     std::unique_ptr<net::StreamSocket> socket) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (result != net::OK || !socket.get()) {
     OnSocketClosed();
     return;
@@ -236,12 +236,12 @@ void AndroidDeviceManager::AndroidWebSocket::Connected(
 
 void AndroidDeviceManager::AndroidWebSocket::OnFrameRead(
     const std::string& message) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   delegate_->OnFrameRead(message);
 }
 
 void AndroidDeviceManager::AndroidWebSocket::OnSocketClosed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   delegate_->OnSocketClosed();
 }
 

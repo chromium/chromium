@@ -74,7 +74,7 @@ const ComponentConfig* FindConfig(const std::string& name) {
 void LogCustomUninstall(std::optional<bool> result) {}
 
 void FinishCustomUninstallOnUIThread(const std::string& name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   ash::ImageLoaderClient::Get()->UnmountComponent(
       name, base::BindOnce(&LogCustomUninstall));
@@ -122,8 +122,8 @@ CrOSComponentInstallerPolicy::CrOSComponentInstallerPolicy(
   }
 
   bool converted = base::HexStringToBytes(config.sha2hash, &sha2_hash_);
-  DCHECK(converted);
-  DCHECK_EQ(crypto::hash::kSha256Size, sha2_hash_.size());
+  CHECK(converted, base::NotFatalUntil::M161);
+  CHECK_EQ(crypto::hash::kSha256Size, sha2_hash_.size(), base::NotFatalUntil::M161);
 }
 
 CrOSComponentInstallerPolicy::~CrOSComponentInstallerPolicy() = default;
@@ -184,7 +184,7 @@ EnvVersionInstallerPolicy::EnvVersionInstallerPolicy(
     CrOSComponentInstaller* cros_component_installer)
     : CrOSComponentInstallerPolicy(config, cros_component_installer),
       env_version_(config.env_version) {
-  DCHECK(!env_version_.empty());
+  CHECK(!env_version_.empty(), base::NotFatalUntil::M161);
 }
 
 EnvVersionInstallerPolicy::~EnvVersionInstallerPolicy() = default;
@@ -290,7 +290,7 @@ CrOSComponentInstaller::CrOSComponentInstaller(
     ComponentUpdateService* component_updater)
     : metadata_table_(std::move(metadata_table)),
       component_updater_(component_updater) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 CrOSComponentInstaller::~CrOSComponentInstaller() {
@@ -537,7 +537,7 @@ void CrOSComponentInstaller::LoadInternal(const std::string& name,
   load_cache_[name].success = std::nullopt;
 
   const base::FilePath path = GetCompatiblePath(name);
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M161);
   ash::ImageLoaderClient::Get()->LoadComponentAtPath(
       name, path,
       base::BindOnce(&CrOSComponentInstaller::FinishLoad,

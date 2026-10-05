@@ -566,7 +566,7 @@ void ContextualTasksPageHandler::ReopenTabs() {
 
 void ContextualTasksPageHandler::PostAimMessage(
     const lens::ClientToAimMessage& message) {
-  DCHECK(web_ui_controller_->GetPageRemote());
+  CHECK(web_ui_controller_->GetPageRemote(), base::NotFatalUntil::M161);
   if (!web_ui_controller_->GetPageRemote()) {
     return;
   }

@@ -109,7 +109,7 @@ VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
 
 void VideoConferenceManagerClientImpl::RemoveMediaApp(
     const base::UnguessableToken& id) {
-  DCHECK(id_to_webcontents_.contains(id));
+  CHECK(id_to_webcontents_.contains(id), base::NotFatalUntil::M161);
   auto it = id_to_webcontents_.find(id);
   raw_ptr<content::WebContents> web_contents = it->second;
 
@@ -193,7 +193,7 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
       DCHECK(web_app)
           << "WebContents with no corresponding VideoConferenceWebApp.";
 
-      DCHECK(!web_app->state().is_capturing_camera);
+      CHECK(!web_app->state().is_capturing_camera, base::NotFatalUntil::M161);
       glic_capturing_microphone |= web_app->state().is_capturing_microphone;
     } else {
       has_media_app = true;

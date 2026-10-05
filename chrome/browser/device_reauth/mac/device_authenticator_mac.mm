@@ -73,7 +73,7 @@ void DeviceAuthenticatorMac::AuthenticateWithMessage(
     const std::u16string& message,
     AuthenticateCallback callback) {
   // Callers must ensure that previous authentication is canceled.
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M161);
   if (!NeedsToAuthenticate()) {
     RecordAuthResultSkipped();
     // No code should be run after the callback as the callback could already be

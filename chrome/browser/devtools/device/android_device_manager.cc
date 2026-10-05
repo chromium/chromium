@@ -520,13 +520,13 @@ AndroidDeviceManager::Device::~Device() {
 // static
 AndroidDeviceManager::HandlerThread*
 AndroidDeviceManager::HandlerThread::GetInstance() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   static base::NoDestructor<AndroidDeviceManager::HandlerThread> s_instance;
   return s_instance.get();
 }
 
 AndroidDeviceManager::HandlerThread::HandlerThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   thread_ = new base::Thread(kDevToolsAdbBridgeThreadName);
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
@@ -548,7 +548,7 @@ void AndroidDeviceManager::HandlerThread::StopThread(
 }
 
 AndroidDeviceManager::HandlerThread::~HandlerThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!thread_)
     return;
   // Shut down thread on a thread other than UI so it can join a thread.
@@ -580,7 +580,7 @@ void AndroidDeviceManager::QueryDevices(DevicesCallback callback) {
 
 void AndroidDeviceManager::CountDevices(
     base::OnceCallback<void(int)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   handler_thread_->message_loop()->PostTask(
       FROM_HERE,
       base::BindOnce(&UsbDeviceManagerHelper::CountDevices,

@@ -13,7 +13,7 @@
 
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_DataSharingServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   data_sharing::DataSharingService* service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   return data_sharing::DataSharingService::GetJavaObject(service);

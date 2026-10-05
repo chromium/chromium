@@ -153,7 +153,7 @@ void OnDeviceOpened(AndroidUsbDevices* devices,
   // for different interface.
   if (result->is_success() ||
       result->get_error() == device::mojom::UsbOpenDeviceError::ALREADY_OPEN) {
-    DCHECK(device);
+    CHECK(device, base::NotFatalUntil::M161);
     auto* device_raw = device.get();
     device_raw->ClaimInterface(
         android_device_info.interface_id,
@@ -219,7 +219,7 @@ AndroidUsbDevice::AndroidUsbDevice(
       is_connected_(false),
       signature_sent_(false),
       last_socket_id_(256) {
-  DCHECK(device_);
+  CHECK(device_, base::NotFatalUntil::M161);
   device_.set_disconnect_handler(
       base::BindOnce(&AndroidUsbDevice::Terminate, weak_factory_.GetWeakPtr()));
 }
@@ -258,12 +258,12 @@ void AndroidUsbDevice::Send(uint32_t command,
 }
 
 AndroidUsbDevice::~AndroidUsbDevice() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
   Terminate();
 }
 
 void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   // Queue header.
   std::vector<uint32_t> header;
@@ -283,7 +283,8 @@ void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
   header.push_back(body_length);
   header.push_back(Checksum(message->body));
   header.push_back(message->command ^ 0xffffffff);
-  DCHECK_EQ(kHeaderSize, base::as_byte_span(header).size());
+  CHECK_EQ(kHeaderSize, base::as_byte_span(header).size(),
+           base::NotFatalUntil::M161);
 
   // TODO(donna.wu@intel.com): eliminate the buffer copy here, needs to change
   // type BulkMessage.
@@ -312,7 +313,7 @@ void AndroidUsbDevice::Queue(std::unique_ptr<AdbMessage> message) {
 }
 
 void AndroidUsbDevice::ProcessOutgoing() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   if (outgoing_queue_.empty() || !device_)
     return;
@@ -336,7 +337,7 @@ void AndroidUsbDevice::OutgoingMessageSent(UsbTransferStatus status) {
 }
 
 void AndroidUsbDevice::ReadHeader() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
   if (!device_)
     return;
 
@@ -348,7 +349,7 @@ void AndroidUsbDevice::ReadHeader() {
 
 void AndroidUsbDevice::ParseHeader(UsbTransferStatus status,
                                    base::span<const uint8_t> buffer) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   if (status == UsbTransferStatus::TIMEOUT) {
     task_runner_->PostTask(FROM_HERE,
@@ -389,7 +390,7 @@ void AndroidUsbDevice::ParseHeader(UsbTransferStatus status,
 void AndroidUsbDevice::ReadBody(std::unique_ptr<AdbMessage> message,
                                 uint32_t data_length,
                                 uint32_t data_check) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   if (!device_.get()) {
     return;
@@ -406,7 +407,7 @@ void AndroidUsbDevice::ParseBody(std::unique_ptr<AdbMessage> message,
                                  uint32_t data_check,
                                  UsbTransferStatus status,
                                  base::span<const uint8_t> buffer) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   if (status == UsbTransferStatus::TIMEOUT) {
     task_runner_->PostTask(
@@ -435,7 +436,7 @@ void AndroidUsbDevice::ParseBody(std::unique_ptr<AdbMessage> message,
 }
 
 void AndroidUsbDevice::HandleIncoming(std::unique_ptr<AdbMessage> message) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   switch (message->command) {
     case AdbMessage::kCommandAUTH: {
@@ -492,13 +493,13 @@ void AndroidUsbDevice::HandleIncoming(std::unique_ptr<AdbMessage> message) {
 }
 
 void AndroidUsbDevice::TransferError(UsbTransferStatus status) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   Terminate();
 }
 
 void AndroidUsbDevice::Terminate() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   // Remove this AndroidUsbDevice from GetDevices().
   auto it = std::ranges::find(GetDevices(), this);
@@ -525,7 +526,7 @@ void AndroidUsbDevice::Terminate() {
        ++socket_it) {
     socket_it->second->Terminated(true);
   }
-  DCHECK(sockets_.empty());
+  CHECK(sockets_.empty(), base::NotFatalUntil::M161);
 
   auto* device_raw = device.get();
   device_raw->ReleaseInterface(
@@ -535,7 +536,7 @@ void AndroidUsbDevice::Terminate() {
 }
 
 void AndroidUsbDevice::SocketDeleted(uint32_t socket_id) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M161);
 
   sockets_.erase(socket_id);
 }

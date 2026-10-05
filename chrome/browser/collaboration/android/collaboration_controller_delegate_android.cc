@@ -96,7 +96,7 @@ static int64_t JNI_CollaborationControllerDelegateImpl_CreateNativeObject(
 
 CollaborationControllerDelegateAndroid::CollaborationControllerDelegateAndroid(
     const base::android::JavaRef<jobject>& j_object) {
-  DCHECK(j_object);
+  CHECK(j_object, base::NotFatalUntil::M161);
   java_obj_.Reset(base::android::ScopedJavaGlobalRef<jobject>(j_object));
 }
 

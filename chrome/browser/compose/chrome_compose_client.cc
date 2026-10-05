@@ -319,7 +319,7 @@ void ChromeComposeClient::ShowComposeDialog(
         GetWebContents().GetContainerBounds().OffsetFromOrigin());
 
     show_dialog_start_ = base::TimeTicks::Now();
-    DCHECK(active_compose_ids_.has_value());
+    CHECK(active_compose_ids_.has_value(), base::NotFatalUntil::M161);
     compose_dialog_controller_ = chrome::ShowComposeDialog(
         GetWebContents(), bounds_in_screen, active_compose_ids_.value());
   }

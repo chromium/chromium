@@ -77,7 +77,7 @@ std::optional<base::DictValue> LoadExtensionManifest(
 // Tries to stage `manifest` in Local State preferences for the next startup.
 void OnExtensionManifestLoaded(const base::FilePath& relative_path,
                                std::optional<base::DictValue> manifest) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!g_browser_process || !g_browser_process->local_state()) {
     return;
   }
@@ -129,7 +129,7 @@ void AimEligibilityComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::DictValue /* manifest */) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   VLOG(1) << "AIM Eligibility Component ready, version " << version.GetString()
           << " in " << install_dir;
@@ -165,7 +165,7 @@ AimEligibilityComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void ManageAimEligibilityComponentRegistration(ComponentUpdateService* cus) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (base::FeatureList::IsEnabled(
           omnibox::kAimEligibilityComponentExtension) &&
       omnibox::kAimEligibilityUseComponentUpdater.Get()) {

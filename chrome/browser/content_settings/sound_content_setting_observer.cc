@@ -195,7 +195,7 @@ SoundContentSettingObserver::GetSiteMutedReason() {
   host_content_settings_map_->GetWebsiteSetting(
       url, url, ContentSettingsType::SOUND, &info);
 
-  DCHECK_EQ(SettingSource::kUser, info.source);
+  CHECK_EQ(SettingSource::kUser, info.source, base::NotFatalUntil::M161);
 
   if (info.primary_pattern == ContentSettingsPattern::Wildcard() &&
       info.secondary_pattern == ContentSettingsPattern::Wildcard()) {

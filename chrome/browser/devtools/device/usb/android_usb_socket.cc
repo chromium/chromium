@@ -113,11 +113,11 @@ void AndroidUsbSocket::Terminated(bool closed_by_device) {
 int AndroidUsbSocket::Read(net::IOBuffer* buffer,
                            int length,
                            net::CompletionOnceCallback callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
   if (!is_connected_)
     return device_.get() ? net::ERR_SOCKET_NOT_CONNECTED : 0;
 
-  DCHECK(read_callback_.is_null());
+  CHECK(read_callback_.is_null(), base::NotFatalUntil::M161);
   if (read_buffer_.empty()) {
     read_callback_ = std::move(callback);
     read_io_buffer_ = buffer;
@@ -141,14 +141,14 @@ int AndroidUsbSocket::Write(
     int length,
     net::CompletionOnceCallback callback,
     const net::NetworkTrafficAnnotationTag& /*traffic_annotation*/) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
   if (!is_connected_)
     return net::ERR_SOCKET_NOT_CONNECTED;
 
   if (length > kMaxPayload)
     length = kMaxPayload;
 
-  DCHECK(write_callback_.is_null());
+  CHECK(write_callback_.is_null(), base::NotFatalUntil::M161);
   write_callback_ = std::move(callback);
   write_length_ = length;
   device_->Send(AdbMessage::kCommandWRTE, local_id_, remote_id_,
@@ -168,12 +168,12 @@ int AndroidUsbSocket::SetSendBufferSize(int32_t size) {
 
 int AndroidUsbSocket::Connect(net::CompletionOnceCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
   if (!device_.get())
     return net::ERR_FAILED;
 
-  DCHECK(!is_connected_);
-  DCHECK(connect_callback_.is_null());
+  CHECK(!is_connected_, base::NotFatalUntil::M161);
+  CHECK(connect_callback_.is_null(), base::NotFatalUntil::M161);
   connect_callback_ = std::move(callback);
   device_->Send(AdbMessage::kCommandOPEN, local_id_, 0, command_);
   return net::ERR_IO_PENDING;

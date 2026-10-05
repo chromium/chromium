@@ -238,7 +238,7 @@ DeviceOAuth2TokenService::CreateAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer,
     const std::string& token_binding_challenge) {
   std::string refresh_token = GetRefreshToken();
-  DCHECK(!refresh_token.empty());
+  CHECK(!refresh_token.empty(), base::NotFatalUntil::M161);
   return GaiaAccessTokenFetcher::
       CreateExchangeRefreshTokenForAccessTokenInstance(
           consumer, url_loader_factory, refresh_token);
@@ -264,7 +264,7 @@ void DeviceOAuth2TokenService::FireRefreshTokenAvailable() {
   if (!on_refresh_token_available_callback_)
     return;
 
-  DCHECK(!GetRobotAccountId().empty());
+  CHECK(!GetRobotAccountId().empty(), base::NotFatalUntil::M161);
   on_refresh_token_available_callback_.Run();
 }
 
@@ -364,8 +364,8 @@ std::string DeviceOAuth2TokenService::GetRefreshToken() const {
 }
 
 void DeviceOAuth2TokenService::StartValidation() {
-  DCHECK_EQ(state_, STATE_VALIDATION_PENDING);
-  DCHECK(!gaia_oauth_client_);
+  CHECK_EQ(state_, STATE_VALIDATION_PENDING, base::NotFatalUntil::M161);
+  CHECK(!gaia_oauth_client_, base::NotFatalUntil::M161);
 
   state_ = STATE_VALIDATION_STARTED;
 
