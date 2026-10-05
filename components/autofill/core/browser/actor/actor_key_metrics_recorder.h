@@ -60,36 +60,40 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
   // recorded yet.
   void RecordKeyMetrics(AutofillManager& manager, const FormStructure& form);
 
+  // Tracks the state of a form for a specific filling product.
+  struct FormState {
+    FormState();
+    FormState(FormState&&);
+    FormState& operator=(FormState&&);
+    ~FormState();
+
+    // Whether the actor obtained suggestions for this form.
+    bool with_actor_suggestions = false;
+
+    // Whether key metrics have already been recorded for this form.
+    bool recorded = false;
+
+    // Fields in this form that have been filled by the actor.
+    base::flat_set<FieldGlobalId> actor_filled_fields;
+  };
+
   // Tracks the state of a specific filling product (e.g. Address or Credit
   // Card) for the purpose of metrics recording.
   struct ProductState {
     ProductState();
     ProductState(const ProductState&) = delete;
     ProductState& operator=(const ProductState&) = delete;
-    ProductState(ProductState&&);
-    ProductState& operator=(ProductState&&);
     ~ProductState();
 
-    // Forms that actor obtained suggestions for.
-    base::flat_set<FormGlobalId> with_actor_suggestions;
-
-    // Forms for which key metrics have already been recorded. This ensures
-    // metrics are only recorded once per form.
-    base::flat_set<FormGlobalId> recorded_forms;
-
-    // Fields that have been filled by the actor.
-    base::flat_map<FormGlobalId, base::flat_set<FieldGlobalId>>
-        actor_filled_fields;
+    base::flat_map<FormGlobalId, FormState> forms;
   };
 
   // Records the "FillingAssistance" metric for a `form`.
   void RecordFillingAssistance(const FormStructure& form,
                                FillingProduct product);
   void RecordFillingCorrectness(const FormStructure& form,
-                                const ProductState& state,
                                 FillingProduct product);
-  void RecordFillingReadiness(const FormStructure& form,
-                              const ProductState& state,
+  void RecordFillingReadiness(const FormState& form_state,
                               FillingProduct product);
   void RecordPerfectFillingMetric(const FormStructure& form,
                                   FillingProduct product);

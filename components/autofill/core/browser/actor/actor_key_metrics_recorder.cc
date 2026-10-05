@@ -32,10 +32,13 @@ bool IsFieldOfProduct(const AutofillField& field, FillingProduct product) {
 
 }  // namespace
 
+ActorKeyMetricsRecorder::FormState::FormState() = default;
+ActorKeyMetricsRecorder::FormState::FormState(FormState&&) = default;
+ActorKeyMetricsRecorder::FormState&
+ActorKeyMetricsRecorder::FormState::operator=(FormState&&) = default;
+ActorKeyMetricsRecorder::FormState::~FormState() = default;
+
 ActorKeyMetricsRecorder::ProductState::ProductState() = default;
-ActorKeyMetricsRecorder::ProductState::ProductState(ProductState&&) = default;
-ActorKeyMetricsRecorder::ProductState&
-ActorKeyMetricsRecorder::ProductState::operator=(ProductState&&) = default;
 ActorKeyMetricsRecorder::ProductState::~ProductState() = default;
 
 ActorKeyMetricsRecorder::ActorKeyMetricsRecorder(AutofillClient* client) {
@@ -56,7 +59,9 @@ void ActorKeyMetricsRecorder::OnSuggestionsGenerated(
     FormGlobalId form_id,
     const base::flat_set<FillingProduct>& products) {
   for (FillingProduct product : products) {
-    states_[std::to_underlying(product)].with_actor_suggestions.insert(form_id);
+    states_[std::to_underlying(product)]
+        .forms[form_id]
+        .with_actor_suggestions = true;
   }
 }
 
@@ -67,9 +72,7 @@ void ActorKeyMetricsRecorder::OnAfterFormsSeen(
   for (const FormGlobalId& form_id : removed_forms) {
     forms_to_fill_.erase(form_id);
     for (ProductState& state : states_) {
-      state.recorded_forms.erase(form_id);
-      state.with_actor_suggestions.erase(form_id);
-      state.actor_filled_fields.erase(form_id);
+      state.forms.erase(form_id);
     }
   }
 }
@@ -98,14 +101,17 @@ void ActorKeyMetricsRecorder::OnFillOrPreviewForm(
       std::holds_alternative<const CreditCard*>(filling_payload)
           ? FillingProduct::kCreditCard
           : FillingProduct::kAddress;
-  states_[std::to_underlying(product)].actor_filled_fields[form_id].insert(
-      filled_field_ids.begin(), filled_field_ids.end());
+  states_[std::to_underlying(product)]
+      .forms[form_id]
+      .actor_filled_fields.insert(filled_field_ids.begin(),
+                                  filled_field_ids.end());
 }
 
 void ActorKeyMetricsRecorder::RecordKeyMetrics(AutofillManager& manager,
                                                const FormStructure& form) {
   DenseSet<FormType> form_types =
       form.GetFormTypes(GetAcUnrecognizedBehavior(manager.client()));
+  const FormGlobalId form_id = form.global_id();
 
   auto record_product_metrics = [&](FillingProduct product, bool is_fillable) {
     if (product != FillingProduct::kAddress &&
@@ -113,16 +119,17 @@ void ActorKeyMetricsRecorder::RecordKeyMetrics(AutofillManager& manager,
       return;
     }
     ProductState& state = states_[std::to_underlying(product)];
-    if (state.recorded_forms.contains(form.global_id())) {
+    FormState& form_state = state.forms[form_id];
+    if (form_state.recorded) {
       return;
     }
-    state.recorded_forms.insert(form.global_id());
+    form_state.recorded = true;
 
-    RecordFillingReadiness(form, state, product);
+    RecordFillingReadiness(form_state, product);
     RecordPerfectFillingMetric(form, product);
     if (is_fillable) {
       RecordFillingAssistance(form, product);
-      RecordFillingCorrectness(form, state, product);
+      RecordFillingCorrectness(form, product);
     }
   };
 
@@ -155,18 +162,17 @@ void ActorKeyMetricsRecorder::RecordFillingAssistance(const FormStructure& form,
       HasFilledFieldOfProduct(form, product));
 }
 
-void ActorKeyMetricsRecorder::RecordFillingReadiness(const FormStructure& form,
-                                                     const ProductState& state,
-                                                     FillingProduct product) {
+void ActorKeyMetricsRecorder::RecordFillingReadiness(
+    const FormState& form_state,
+    FillingProduct product) {
   base::UmaHistogramBoolean(
       base::StrCat({"Autofill.Actor.KeyMetrics.FillingReadiness.",
                     FillingProductToString(product)}),
-      state.with_actor_suggestions.contains(form.global_id()));
+      form_state.with_actor_suggestions);
 }
 
 void ActorKeyMetricsRecorder::RecordFillingCorrectness(
     const FormStructure& form,
-    const ProductState& state,
     FillingProduct product) {
   if (!HasFilledFieldOfProduct(form, product)) {
     return;
@@ -252,9 +258,9 @@ bool ActorKeyMetricsRecorder::WasFieldFilledByActor(
     FieldGlobalId field_id,
     std::optional<FillingProduct> product) const {
   auto check_state = [&](const ProductState& state) {
-    const base::flat_set<FieldGlobalId>* fields =
-        base::FindOrNull(state.actor_filled_fields, form.global_id());
-    return fields && fields->contains(field_id);
+    const FormState* form_state =
+        base::FindOrNull(state.forms, form.global_id());
+    return form_state && form_state->actor_filled_fields.contains(field_id);
   };
 
   if (product) {
