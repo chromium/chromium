@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -57,7 +58,7 @@ import java.util.Arrays;
 /** Tests for the SerialChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/344665244): Failing when batched, batch this again.
+@Batch(Batch.PER_CLASS)
 @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SerialChooserDialogTest {
     @Rule
@@ -107,6 +108,12 @@ public class SerialChooserDialogTest {
     @After
     public void tearDown() {
         LocationUtils.setFactory(null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mChooserDialog != null && mChooserDialog.mItemChooserDialog != null) {
+                        mChooserDialog.mItemChooserDialog.dismiss();
+                    }
+                });
     }
 
     private SerialChooserDialog createDialog() {
