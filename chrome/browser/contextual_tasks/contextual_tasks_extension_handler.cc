@@ -331,8 +331,6 @@ void ContextualTasksExtensionHandler::HandleOnSubmitQueryRequest() {
   UploadSnapshotTabContextIfPresent();
 
   std::optional<base::UnguessableToken> overlay_token = GetLensOverlayToken();
-  CloseLensOverlaySync(
-      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
 
   if (auto lens_added_context = GetLensAddedContext()) {
     *on_submit_response->add_added_contexts() = std::move(*lens_added_context);
@@ -343,12 +341,7 @@ void ContextualTasksExtensionHandler::HandleOnSubmitQueryRequest() {
 
   PostSearchMessage(response_message);
 
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = GetLensSearchController()) {
-    controller->CloseLensAsync(
-        lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
-  }
-#endif
+  DoSubmitQueryCleanup();
 }
 
 void ContextualTasksExtensionHandler::AppendTabContextsToOnSubmitQueryResponse(
@@ -505,6 +498,24 @@ ContextualTasksExtensionHandler::GetLensAddedContext() {
   return added;
 #else
   return std::nullopt;
+#endif
+}
+
+void ContextualTasksExtensionHandler::DoSubmitQueryCleanup() {
+  if (auto model = GetOrCreateInputStateModel()) {
+    model->RemoveLensCrop();
+  }
+
+  CloseLensAsync(
+      lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+}
+
+void ContextualTasksExtensionHandler::CloseLensAsync(
+    lens::LensOverlayDismissalSource dismissal_source) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    controller->CloseLensAsync(dismissal_source);
+  }
 #endif
 }
 
@@ -958,15 +969,6 @@ void ContextualTasksExtensionHandler::OnTabContextSnapshot(
   }
 }
 #endif
-
-void ContextualTasksExtensionHandler::CloseLensOverlaySync(
-    lens::LensOverlayDismissalSource dismissal_source) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (auto* controller = GetLensSearchController()) {
-    controller->CloseLensSync(dismissal_source);
-  }
-#endif
-}
 
 void ContextualTasksExtensionHandler::UploadSnapshotTabContextIfPresent() {
 #if !BUILDFLAG(IS_ANDROID)

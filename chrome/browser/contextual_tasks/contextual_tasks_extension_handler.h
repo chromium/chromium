@@ -267,7 +267,6 @@ class ContextualTasksExtensionHandler
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 #endif
   void UploadSnapshotTabContextIfPresent();
-  void CloseLensOverlaySync(lens::LensOverlayDismissalSource dismissal_source);
 
   void InitializeInputStateModel();
   void OnInputStateChanged(const omnibox::InputState& state);
@@ -282,6 +281,8 @@ class ContextualTasksExtensionHandler
       contextual_search::ContextualSearchSessionHandle* session_handle,
       const std::optional<base::UnguessableToken>& overlay_token);
   std::optional<lens::AddedContext> GetLensAddedContext();
+  void DoSubmitQueryCleanup();
+  void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source);
 
   enum class InjectedInputType {
     kContextLibrary,
