@@ -12411,6 +12411,7 @@ from previous Chrome versions.
   <int value="-769163822" label="AutofillAmbientAutofill:disabled"/>
   <int value="-768338958" label="CrosSeparateGeoApiKey:enabled"/>
   <int value="-768240392" label="CertificateTransparency2022Policy:enabled"/>
+  <int value="-768000056" label="AndroidKeyboardShortcutHints:enabled"/>
   <int value="-767903409" label="EarlyBodyLoad:enabled"/>
   <int value="-767460914"
       label="ExperimentalAccessibilityDictationCommands:disabled"/>
@@ -17924,6 +17925,7 @@ from previous Chrome versions.
   <int value="910363543" label="ArcSyncInstallPriority:disabled"/>
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
   <int value="910964036" label="ChangeUnfocusedPriority:disabled"/>
+  <int value="911212299" label="AndroidKeyboardShortcutHints:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="911991932" label="OnDeviceModelLitertLmBackend:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>

@@ -454,6 +454,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "android-keyboard-shortcut-hints",
+    "owners": ["mklw@google.com", "clank-large-form-factors@google.com"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-keyboard-shortcut-open-file",
     "owners": ["nehasapre@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 160
