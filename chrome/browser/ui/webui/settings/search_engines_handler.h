@@ -70,23 +70,40 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Called from WebUI.
   void HandleGetSaveGuestChoice(const base::ListValue& args);
 
-  // Removes the search engine at the given index. Called from WebUI.
+  // Removes a search engine. Called from WebUI.
+  // `args` contains:
+  //   [0]: TemplateURLID (int): The ID of the search engine to remove.
   void HandleRemoveSearchEngine(const base::ListValue& args);
 
-  // Sets the search engine at the given index to be default. Called from WebUI.
+  // Sets a search engine to be default. Called from WebUI.
+  // `args` contains:
+  //   [0]: TemplateURLID (int): The ID of the search engine to make default.
+  //   [1]: search_engines::ChoiceMadeLocation (int): Location where the choice
+  //        was made.
+  //   [2]: bool (optional): Whether to save the choice in guest mode.
   void HandleSetDefaultSearchEngine(const base::ListValue& args);
 
-  // Activates or deactivates the search engine at the given index. Called from
-  // WebUI.
+  // Activates or deactivates a search engine. Called from WebUI.
+  // `args` contains:
+  //   [0]: TemplateURLID (int): The ID of the search engine.
+  //   [1]: bool: True to activate, false to deactivate.
   void HandleSetIsActiveSearchEngine(const base::ListValue& args);
 
-  // Starts an edit session for the search engine at the given index. If the
-  // index is -1, starts editing a new search engine instead of an existing one.
-  // Called from WebUI.
+  // Starts an edit session for a search engine. If the ID is
+  // `kInvalidTemplateURLID`, starts editing a new search engine instead of
+  // an existing one. Called from WebUI.
+  // `args` contains:
+  //   [0]: TemplateURLID (int): The ID of the search engine to edit, or
+  //        `kInvalidTemplateURLID` to start editing a new search engine.
   void HandleSearchEngineEditStarted(const base::ListValue& args);
 
   // Validates the given search engine values, and reports the results back
   // to WebUI. Called from WebUI.
+  // `args` contains:
+  //   [0]: string: The callback ID to resolve with the validity result.
+  //   [1]: string: The field being validated ("searchEngine", "keyword", or
+  //        "queryUrl").
+  //   [2]: string: The field value to validate.
   void HandleValidateSearchEngineInput(const base::ListValue& args);
 
   // Checks whether the given user input field (searchEngine, keyword, queryUrl)
@@ -98,8 +115,11 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Called from WebUI.
   void HandleSearchEngineEditCancelled(const base::ListValue& args);
 
-  // Called when an edit is finished and should be saved.
-  // Called from WebUI.
+  // Called when an edit is finished and should be saved. Called from WebUI.
+  // `args` contains:
+  //   [0]: string: The search engine display name.
+  //   [1]: string: The keyword.
+  //   [2]: string: The search query URL.
   void HandleSearchEngineEditCompleted(const base::ListValue& args);
 
 #if BUILDFLAG(IS_CHROMEOS)

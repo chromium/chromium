@@ -65,7 +65,6 @@ std::unique_ptr<TemplateURL> CreateGoogleTemplateURL(
   TemplateURLData data;
   data.SetURL(url);
   data.suggestions_url = suggestions_url;
-  data.id = SEARCH_ENGINE_GOOGLE;
   return std::make_unique<TemplateURL>(data);
 }
 
