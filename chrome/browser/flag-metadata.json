@@ -2282,6 +2282,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "contextual-tasks-allow-signed-out-user-in-desktop-android",
+    "owners": [ "khanhtmn@google.com", "chrome-contextual-tasks-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "contextual-tasks-back-button-expands-side-panel",
     "owners": [
       "nguyenbryan@google.com",

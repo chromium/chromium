@@ -12351,6 +12351,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksBypassDismissedCap)},
 
+    {"contextual-tasks-allow-signed-out-user-in-desktop-android",
+     contextual_tasks::flag_descriptions::
+         kAllowSignedOutUserInDesktopAndroidName,
+     contextual_tasks::flag_descriptions::
+         kAllowSignedOutUserInDesktopAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kAllowSignedOutUserInDesktopAndroid)},
+
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDebugLogs)},

@@ -19395,6 +19395,7 @@ from previous Chrome versions.
       label="AutofillDoNotUploadSaveUnsupportedCards:enabled"/>
   <int value="1353113954" label="EnableMDRoundedCornersOnDialogs:enabled"/>
   <int value="1353178963" label="ProfileDiscOnAllPages:disabled"/>
+  <int value="1353353021" label="AllowSignedOutUserInDesktopAndroid:enabled"/>
   <int value="1353563409" label="WallpaperRefreshRevamp:disabled"/>
   <int value="1353629763" label="MediaSessionAccelerators:enabled"/>
   <int value="1353749554" label="QuickAnswersTranslation:enabled"/>
@@ -21442,6 +21443,7 @@ from previous Chrome versions.
   <int value="1975327115" label="NewBaseUrlInheritanceBehavior:disabled"/>
   <int value="1975657253" label="ScalableAppList:disabled"/>
   <int value="1975688036" label="UpdatePaddingForDisplayCalculation:disabled"/>
+  <int value="1976441710" label="AllowSignedOutUserInDesktopAndroid:disabled"/>
   <int value="1976644015" label="enable-forbid-sync-xhr-in-page-dismissal"/>
   <int value="1976800418" label="SubmenusInAppMenu:disabled"/>
   <int value="1976885976" label="DefaultChatWebApp:disabled"/>

@@ -1074,6 +1074,11 @@ const char kCopyTextJourneysDescription[] =
     "Enables offering to reopen a search answer in the Contextual Tasks side "
     "panel.";
 
+const char kAllowSignedOutUserInDesktopAndroidName[] =
+    "Contextual Tasks Allow Signed-Out User In Desktop Android";
+const char kAllowSignedOutUserInDesktopAndroidDescription[] =
+    "Allows signed-out users to use side panel cobrowse on Desktop Android.";
+
 }  // namespace flag_descriptions
 
 }  // namespace contextual_tasks
