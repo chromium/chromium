@@ -79,16 +79,6 @@ namespace {
 // both IE and FF restrict the max width of a menu.
 const int kMaxMenuWidth = 400;
 
-size_t GetSubmenuChildCount(const MenuItemView* menu) {
-  return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
-}
-
-size_t SubmenuIndexOf(const MenuItemView* parent, const views::View* child) {
-  std::optional<size_t> index = parent->GetSubmenu()->GetIndexOf(child);
-  CHECK(index.has_value());
-  return index.value();
-}
-
 ui::ImageModel GetFaviconForNode(BookmarkModel* model,
                                  const BookmarkNode* node) {
   const gfx::Image& image = model->GetFavicon(node);
@@ -1024,6 +1014,19 @@ int BookmarkMenuDelegate::GetAndIncrementNextMenuID() {
   const int current_id = next_menu_id_;
   next_menu_id_ += AppMenuModel::kNumUnboundedMenuTypes;
   return current_id;
+}
+
+// static
+size_t BookmarkMenuDelegate::GetSubmenuChildCount(const MenuItemView* menu) {
+  return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
+}
+
+// static
+size_t BookmarkMenuDelegate::SubmenuIndexOf(const MenuItemView* parent,
+                                            const views::View* child) {
+  std::optional<size_t> index = parent->GetSubmenu()->GetIndexOf(child);
+  CHECK(index.has_value());
+  return index.value();
 }
 
 MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {

@@ -279,6 +279,14 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
     menu_uses_mnemonics_ = menu_uses_mnemonics;
   }
 
+  // Returns the number of children in `menu`'s submenu, or 0 if it has none.
+  static size_t GetSubmenuChildCount(const views::MenuItemView* menu);
+
+  // Returns the index of `child` within `parent`'s submenu. `child` must be in
+  // that submenu.
+  static size_t SubmenuIndexOf(const views::MenuItemView* parent,
+                               const views::View* child);
+
  private:
   friend class BookmarkMenuDelegateTest;
 

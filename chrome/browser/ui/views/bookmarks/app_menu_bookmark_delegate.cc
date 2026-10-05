@@ -22,21 +22,6 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/view.h"
 
-namespace {
-
-size_t GetSubmenuChildCount(const views::MenuItemView* menu) {
-  return menu->HasSubmenu() ? menu->GetSubmenu()->children().size() : 0;
-}
-
-size_t SubmenuIndexOf(const views::MenuItemView* parent,
-                      const views::View* child) {
-  std::optional<size_t> index = parent->GetSubmenu()->GetIndexOf(child);
-  CHECK(index.has_value());
-  return index.value();
-}
-
-}  // namespace
-
 AppMenuBookmarkDelegate::AppMenuBookmarkDelegate(
     BrowserWindowInterface* browser,
     views::Widget* parent,
