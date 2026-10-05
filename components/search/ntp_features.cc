@@ -191,6 +191,10 @@ BASE_FEATURE(kNtpScaledActionChips, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, scaled merchandising action chips will be in a smaller format.
 BASE_FEATURE(kNtpScaledActionChipsSmall, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, sets a custom timeout for action chips suggestions requests.
+// This is a kill switch. Keep indefinitely.
+BASE_FEATURE(kNtpActionChipsSuggestTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, sharepoint module will be shown.
 BASE_FEATURE(kNtpSharepointModule,
 #if BUILDFLAG(IS_ANDROID)
@@ -431,6 +435,10 @@ const base::FeatureParam<bool> kNtpScaledActionChipsShowFallback(
     &ntp_features::kNtpScaledActionChips,
     "kNtpScaledActionChipsShowFallback",
     false);
+const base::FeatureParam<base::TimeDelta> kNtpActionChipsSuggestTimeoutParam(
+    &ntp_features::kNtpActionChipsSuggestTimeout,
+    "ActionChipsSuggestTimeout",
+    base::Seconds(2));
 
 const base::FeatureParam<int> kNtpCustomizeChromeAutoShownMaxCount(
     &ntp_features::kNtpCustomizeChromeAutoOpen,

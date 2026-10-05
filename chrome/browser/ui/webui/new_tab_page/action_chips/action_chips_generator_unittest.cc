@@ -790,6 +790,9 @@ TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpoint) {
                                       ActionChipsRequestStatus::kSuccess, 1);
   histogram_tester.ExpectUniqueSample("NewTabPage.ActionChips.SuggestionCount",
                                       3, 1);
+  histogram_tester.ExpectTotalCount("NewTabPage.ActionChips.RequestLatency", 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.ActionChips.RequestLatency.Success", 1);
 }
 
 TEST(ActionChipGeneratorTest, SteadyStateWithNewEndpointAndNoTab) {
@@ -913,6 +916,9 @@ TEST(ActionChipGeneratorTest, NewEndpointFailureFallsBackToStaticChips) {
   histogram_tester.ExpectUniqueSample(
       "NewTabPage.ActionChips.RequestStatus.NetworkError",
       std::abs(net::ERR_TIMED_OUT), 1);
+  histogram_tester.ExpectTotalCount("NewTabPage.ActionChips.RequestLatency", 1);
+  histogram_tester.ExpectTotalCount(
+      "NewTabPage.ActionChips.RequestLatency.NetworkError", 1);
 }
 
 TEST(ActionChipGeneratorTest,

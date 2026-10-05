@@ -9,6 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
@@ -60,6 +61,7 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
           callback);
 
   void GenerateActionChipsFromRemoteResponse(
+      base::TimeTicks request_start_time,
       action_chips::mojom::TabInfoPtr tab,
       std::optional<const omnibox::PageVertical> page_vertical,
       base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>

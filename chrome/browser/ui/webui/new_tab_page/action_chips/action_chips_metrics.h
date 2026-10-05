@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_METRICS_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_METRICS_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
@@ -25,8 +27,11 @@ enum class ActionChipsRequestStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ActionChipsRequestStatus)
 
+// Records status and optionally latency metrics for the action chips
+// suggestions request.
 void RecordActionChipsRequestStatus(
-    const RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult& result);
+    const RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult& result,
+    std::optional<base::TimeDelta> latency = std::nullopt);
 
 // Records impression metrics for the generated chips.
 void RecordImpressionMetrics(

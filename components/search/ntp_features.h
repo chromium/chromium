@@ -66,6 +66,7 @@ BASE_DECLARE_FEATURE(kNtpOutlookCalendarModule);
 BASE_DECLARE_FEATURE(kNtpOneGoogleBar);
 BASE_DECLARE_FEATURE(kNtpScaledActionChips);
 BASE_DECLARE_FEATURE(kNtpScaledActionChipsSmall);
+BASE_DECLARE_FEATURE(kNtpActionChipsSuggestTimeout);
 BASE_DECLARE_FEATURE(kNtpSharepointModule);
 enum class NtpSharepointModuleDataType {
   kTrendingInsights,
@@ -285,6 +286,10 @@ extern const base::FeatureParam<bool> kNtpScaledActionChipsSmallInTestMode;
 // Parameter determining if fallback action chips should be shown.
 // Used for local testing.
 extern const base::FeatureParam<bool> kNtpScaledActionChipsShowFallback;
+
+// Parameter determining the timeout for action chips suggestions requests.
+extern const base::FeatureParam<base::TimeDelta>
+    kNtpActionChipsSuggestTimeoutParam;
 
 // Parameter determining the minimum amount of time that must pass before
 // shortcuts staleness counters will be incremented.

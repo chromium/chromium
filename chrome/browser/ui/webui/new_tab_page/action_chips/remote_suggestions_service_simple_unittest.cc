@@ -17,9 +17,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/search/ntp_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_test_utils.h"
@@ -380,24 +382,67 @@ INSTANTIATE_TEST_SUITE_P(
         HappyPathTestCase{kEmptySuggestionsResponse, {}}));
 
 TEST(RemoteSuggestionsServiceSimpleTest,
-     GetDeepdiveChipSuggestionsForTabReturnsTimeoutError) {
+     GetDeepdiveChipSuggestionsForTabTimesOutAfterDefault2Seconds) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  bool callback_called = false;
   context.GetDeepdiveChipSuggestionsForTab(
       u"title", GURL("https://example.com/"),
       base::BindLambdaForTesting(
-          [&actual,
+          [&actual, &callback_called,
            &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
                      result) {
             actual = std::move(result);
+            callback_called = true;
             env.run_loop().Quit();
           }));
 
-  env.FastForwardBy(base::Seconds(100));
+  // Should not time out after 1.5 seconds (< 2s default).
+  env.FastForwardBy(base::Milliseconds(1500));
+  EXPECT_FALSE(callback_called);
+
+  // Should time out after reaching 2 seconds.
+  env.FastForwardBy(base::Milliseconds(600));
   env.run_loop().Run();
 
+  EXPECT_TRUE(callback_called);
+  EXPECT_THAT(actual, ErrorIs(VariantWith<NetworkError>(
+                          FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetDeepdiveChipSuggestionsForTabReturnsTimeoutErrorWhenKillSwitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ntp_features::kNtpActionChipsSuggestTimeout);
+
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  bool callback_called = false;
+  context.GetDeepdiveChipSuggestionsForTab(
+      u"title", GURL("https://example.com/"),
+      base::BindLambdaForTesting(
+          [&actual, &callback_called,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            callback_called = true;
+            env.run_loop().Quit();
+          }));
+
+  // Should not time out after 1.0 second (< 1.2s fallback).
+  env.FastForwardBy(base::Milliseconds(1000));
+  EXPECT_FALSE(callback_called);
+
+  // Should time out after reaching 1.2 seconds.
+  env.FastForwardBy(base::Milliseconds(300));
+  env.run_loop().Run();
+
+  EXPECT_TRUE(callback_called);
   EXPECT_THAT(actual, ErrorIs(VariantWith<NetworkError>(
                           FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
 }
@@ -680,11 +725,12 @@ TEST(RemoteSuggestionsServiceSimpleTest,
 }
 
 TEST(RemoteSuggestionsServiceSimpleTest,
-     GetActionChipSuggestionsReturnsTimeoutError) {
+     GetActionChipSuggestionsTimesOutAfterDefault2Seconds) {
   EnvironmentFixture env;
   ServiceTestContext context;
 
   RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  bool callback_called = false;
   const std::u16string title = u"title";
   const GURL url("https://example.com/");
   const std::vector<omnibox::ToolMode> allowed_tools = {
@@ -692,16 +738,62 @@ TEST(RemoteSuggestionsServiceSimpleTest,
   context.GetActionChipSuggestions(
       title, url, allowed_tools, std::nullopt,
       base::BindLambdaForTesting(
-          [&actual,
+          [&actual, &callback_called,
            &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
                      result) {
             actual = std::move(result);
+            callback_called = true;
             env.run_loop().Quit();
           }));
 
-  env.FastForwardBy(base::Seconds(100));
+  // Should not time out after 1.5 seconds (< 2s default).
+  env.FastForwardBy(base::Milliseconds(1500));
+  EXPECT_FALSE(callback_called);
+
+  // Should time out after reaching 2 seconds.
+  env.FastForwardBy(base::Milliseconds(600));
   env.run_loop().Run();
 
+  EXPECT_TRUE(callback_called);
+  EXPECT_THAT(actual, ErrorIs(VariantWith<NetworkError>(
+                          FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
+}
+
+TEST(RemoteSuggestionsServiceSimpleTest,
+     GetActionChipSuggestionsReturnsTimeoutErrorWhenKillSwitchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      ntp_features::kNtpActionChipsSuggestTimeout);
+
+  EnvironmentFixture env;
+  ServiceTestContext context;
+
+  RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult actual;
+  bool callback_called = false;
+  const std::u16string title = u"title";
+  const GURL url("https://example.com/");
+  const std::vector<omnibox::ToolMode> allowed_tools = {
+      omnibox::ToolMode::TOOL_MODE_IMAGE_GEN};
+  context.GetActionChipSuggestions(
+      title, url, allowed_tools, std::nullopt,
+      base::BindLambdaForTesting(
+          [&actual, &callback_called,
+           &env](RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&&
+                     result) {
+            actual = std::move(result);
+            callback_called = true;
+            env.run_loop().Quit();
+          }));
+
+  // Should not time out after 1.0 second (< 1.2s fallback).
+  env.FastForwardBy(base::Milliseconds(1000));
+  EXPECT_FALSE(callback_called);
+
+  // Should time out after reaching 1.2 seconds.
+  env.FastForwardBy(base::Milliseconds(300));
+  env.run_loop().Run();
+
+  EXPECT_TRUE(callback_called);
   EXPECT_THAT(actual, ErrorIs(VariantWith<NetworkError>(
                           FieldsAre(net::Error::ERR_TIMED_OUT, 0))));
 }

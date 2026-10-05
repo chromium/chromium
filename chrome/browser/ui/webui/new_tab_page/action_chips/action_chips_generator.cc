@@ -676,22 +676,25 @@ void ActionChipsGeneratorImpl::GenerateActionChipsFromNewEndpoint(
   std::optional<omnibox::PageVertical> page_vertical;
 
   auto [title, url] = GetTitleAndUrl(tab);
+  const base::TimeTicks request_start_time = base::TimeTicks::Now();
   loader_ = remote_suggestions_service_simple_->GetActionChipSuggestions(
       title, url, GetAllowedTools(aim_eligibility_service_),
       GetAllowedInputs(aim_eligibility_service_), page_vertical,
       base::BindOnce(
           &ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse,
-          this->weak_factory_.GetWeakPtr(),
+          this->weak_factory_.GetWeakPtr(), request_start_time,
           CreateTabInfo(*tab_id_generator_, tab), page_vertical,
           std::move(callback)));
 }
 
 void ActionChipsGeneratorImpl::GenerateActionChipsFromRemoteResponse(
+    base::TimeTicks request_start_time,
     TabInfoPtr tab,
     std::optional<const omnibox::PageVertical> page_vertical,
     base::OnceCallback<void(std::vector<ActionChipPtr>)> callback,
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
-  RecordActionChipsRequestStatus(result);
+  RecordActionChipsRequestStatus(result,
+                                 base::TimeTicks::Now() - request_start_time);
 
   std::vector<ActionChipPtr> chips;
   if (result.has_value()) {

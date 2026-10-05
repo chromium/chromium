@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/raw_ptr.h"
@@ -23,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/search/ntp_features.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "net/base/net_errors.h"
@@ -35,7 +37,16 @@
 namespace action_chips {
 
 namespace {
-constexpr base::TimeDelta kRemoteCallTimeout = base::Milliseconds(1200);
+constexpr base::TimeDelta kDefaultRemoteCallTimeout = base::Milliseconds(1200);
+
+base::TimeDelta GetSuggestTimeout() {
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpActionChipsSuggestTimeout)) {
+    return ntp_features::kNtpActionChipsSuggestTimeoutParam.Get();
+  }
+  return kDefaultRemoteCallTimeout;
+}
+
 std::u16string TruncateUTF16(const std::u16string_view input,
                              size_t max_length) {
   if (input.empty()) {
@@ -185,6 +196,7 @@ RemoteSuggestionsServiceSimpleImpl::GetDeepdiveChipSuggestionsForTab(
   const TemplateURLService* template_url_service =
       client_->GetTemplateURLService();
 
+  const base::TimeDelta timeout = GetSuggestTimeout();
   return client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartZeroPrefixSuggestionsRequest(
           RemoteRequestType::kZeroSuggestPrefetch, client_->IsOffTheRecord(),
@@ -193,8 +205,9 @@ RemoteSuggestionsServiceSimpleImpl::GetDeepdiveChipSuggestionsForTab(
           base::BindOnce(&RemoteSuggestionsServiceSimpleImpl::
                              HandleActionChipSuggestionsResponse,
                          this->weak_ptr_factory_.GetWeakPtr(),
-                         std::move(callback), /*allow_empty_suggestion=*/false),
-          kRemoteCallTimeout);
+                         std::move(callback),
+                         /*allow_empty_suggestion=*/false),
+          /*timeout=*/timeout);
 }
 
 void RemoteSuggestionsServiceSimpleImpl::HandleActionChipSuggestionsResponse(
@@ -238,6 +251,7 @@ RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
   const TemplateURLService* template_url_service =
       client_->GetTemplateURLService();
 
+  const base::TimeDelta timeout = GetSuggestTimeout();
   return client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartZeroPrefixSuggestionsRequest(
           RemoteRequestType::kZeroSuggestPrefetch, client_->IsOffTheRecord(),
@@ -247,7 +261,7 @@ RemoteSuggestionsServiceSimpleImpl::GetActionChipSuggestions(
                              HandleActionChipSuggestionsResponse,
                          this->weak_ptr_factory_.GetWeakPtr(),
                          std::move(callback), /*allow_empty_suggestion=*/true),
-          kRemoteCallTimeout);
+          /*timeout=*/timeout);
 }
 
 }  // namespace action_chips

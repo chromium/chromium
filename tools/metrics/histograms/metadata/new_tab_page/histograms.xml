@@ -22,6 +22,15 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="ActionChipsRequestStatus">
+  <variant name="" summary="all requests"/>
+  <variant name=".HttpError" summary="requests failing with an HTTP error"/>
+  <variant name=".NetworkError"
+      summary="requests failing with a network error"/>
+  <variant name=".ParseError" summary="requests failing with a parse error"/>
+  <variant name=".Success" summary="successful requests"/>
+</variants>
+
 <variants name="ContentSuggestionCategory">
   <variant name=".Articles" summary="Articles for you"/>
   <variant name=".Bookmarks" summary="Bookmarks"/>
@@ -144,6 +153,19 @@ chromium-metrics-reviews@google.com.
     and return the Action Chips, whether due to loading the NTP for the first
     time or due to subsequent user browsing and navigation.
   </summary>
+</histogram>
+
+<histogram
+    name="NewTabPage.ActionChips.RequestLatency{ActionChipsRequestStatus}"
+    units="ms" expires_after="2027-01-17">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The latency in milliseconds of a request to the action chips suggestions
+    service for {ActionChipsRequestStatus}, recorded when a response (or error)
+    is received.
+  </summary>
+  <token key="ActionChipsRequestStatus" variants="ActionChipsRequestStatus"/>
 </histogram>
 
 <histogram name="NewTabPage.ActionChips.RequestStatus"
