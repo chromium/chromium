@@ -83,9 +83,10 @@ class MediaEngagementContentsObserverTest
 
   bool IsTimerRunningForPlayer(int id) const {
     content::MediaPlayerId player_id(content::GlobalRenderFrameHostId(), id);
-    auto audible_row = contents_observer_->audible_players_.find(player_id);
-    return audible_row != contents_observer_->audible_players_.end() &&
-           audible_row->second.second;
+    auto state_it = contents_observer_->player_states_.find(player_id);
+    return state_it != contents_observer_->player_states_.end() &&
+           state_it->second.was_audible &&
+           state_it->second.significant_playback_timer;
   }
 
   bool IsAudioContextTimerRunning() const {
@@ -104,7 +105,9 @@ class MediaEngagementContentsObserverTest
   }
 
   size_t GetSignificantActivePlayersCount() const {
-    return contents_observer_->significant_players_.size();
+    return std::ranges::count_if(
+        contents_observer_->player_states_,
+        [](const auto& pair) { return pair.second.is_significant; });
   }
 
   size_t GetStoredPlayerStatesCount() const {

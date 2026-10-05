@@ -97,11 +97,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   // significant media playback.
   base::OneShotTimer playback_timer_;
 
-  // Set of active players that can produce a significant playback. In other
-  // words, whether this set is empty can be used to know if there is a
-  // significant playback.
-  std::set<content::MediaPlayerId> significant_players_;
-
   // Timer that will fire when the playback time of any audio context reaches
   // the minimum for significant media playback.
   base::OneShotTimer audio_context_timer_;
@@ -153,7 +148,11 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
     std::optional<bool> has_video;         // The media has a video track.
 
     bool reached_end_of_stream = false;
+    bool was_audible = false;
+    bool significant_playback_recorded = false;
+    bool is_significant = false;
     std::unique_ptr<PlaybackTimer> playback_timer;
+    std::unique_ptr<base::OneShotTimer> significant_playback_timer;
   };
   std::map<content::MediaPlayerId, PlayerState> player_states_;
   PlayerState& GetPlayerState(const content::MediaPlayerId& id);
@@ -184,11 +183,6 @@ class MediaEngagementContentsObserver : public content::WebContentsObserver {
   scoped_refptr<MediaEngagementSession> GetOrCreateSession(
       content::NavigationHandle* navigation_handle,
       content::WebContents* opener) const;
-
-  // Stores the ids of the players that were audible. The boolean will be true
-  // if the player was significant.
-  using AudiblePlayerRow = std::pair<bool, std::unique_ptr<base::OneShotTimer>>;
-  std::map<content::MediaPlayerId, AudiblePlayerRow> audible_players_;
 
   // The task runner to use when creating timers. It is used only for testing.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
