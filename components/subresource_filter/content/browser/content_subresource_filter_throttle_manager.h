@@ -10,7 +10,6 @@
 #include <optional>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -367,22 +366,26 @@ class ContentSubresourceFilterThrottleManager
   mojom::SubresourceFilterDisabledReason root_navigation_disabled_reason_ =
       mojom::SubresourceFilterDisabledReason::kUnknown;
 
-  // Set of frames that have been identified as ads, identified by FrameTreeNode
-  // ID. A RenderFrameHost is an ad frame iff the FrameAdEvidence
-  // corresponding to the frame indicates that it is.
-  base::flat_set<content::FrameTreeNodeId> ad_frames_;
+  struct TrackedFrame {
+    explicit TrackedFrame(bool parent_is_ad);
+    TrackedFrame(TrackedFrame&&);
+    TrackedFrame& operator=(TrackedFrame&&);
+    ~TrackedFrame();
 
-  // Map of child frames, keyed by FrameTreeNode ID, with value being the
-  // evidence for or against the frames being ads. This evidence is updated
-  // whenever a navigation's LoadPolicy is calculated.
-  std::map<content::FrameTreeNodeId, blink::FrameAdEvidence>
-      tracked_ad_evidence_;
+    // Evidence for or against the child frame being an ad. Updated whenever a
+    // navigation's LoadPolicy is calculated.
+    blink::FrameAdEvidence ad_evidence;
 
-  // Map of frames whose navigations have been identified as ads, keyed by
-  // FrameTreeNode ID. Contains information on the most current completed
-  // navigation for any given frames. If a frame is not present in the map, it
-  // has not had a navigation evaluated by the filter list.
-  std::map<content::FrameTreeNodeId, LoadPolicy> navigation_load_policies_;
+    // Most current completed navigation LoadPolicy evaluated by the filter
+    // list for this frame, if any.
+    std::optional<LoadPolicy> load_policy;
+
+    // Whether this frame has been identified as an ad.
+    bool is_ad = false;
+  };
+
+  // Per-frame ad tracking state, keyed by FrameTreeNode ID.
+  std::map<content::FrameTreeNodeId, TrackedFrame> tracked_frames_;
 
   // Receiver set for all RenderFrames in this throttle manager's page.
   content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;
