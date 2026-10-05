@@ -38,7 +38,12 @@ content::WebContents* VoiceFocusedContentsTrackerAndroid::GetActiveWebContents()
 }
 
 void VoiceFocusedContentsTrackerAndroid::OnTabModelAdded(TabModel* tab_model) {
-  if (tab_model && tab_model->GetProfile() == &profile_.get()) {
+  // Only standard models back a window with live tabs. Headless models (for
+  // persisted windows that aren't open, registered asynchronously on desktop
+  // Android) and archived models also report IsActiveModel(), but their tabs
+  // never have a WebContents, so binding to them loses the active tab.
+  if (tab_model && tab_model->GetProfile() == &profile_.get() &&
+      tab_model->GetTabModelType() == TabModel::TabModelType::kStandard) {
     tab_model_observations_.AddObservation(tab_model);
     if (tab_model->IsActiveModel()) {
       BindToTabModel(tab_model);
