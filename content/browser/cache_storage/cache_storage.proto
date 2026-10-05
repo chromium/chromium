@@ -79,6 +79,11 @@ message CacheResponse {
   optional string request_method = 14;
   optional int64 padding = 15;
   optional int64 side_data_padding = 16;
+  // Renderer-supplied via cache.put() and therefore NOT trustworthy: a
+  // compromised renderer can claim a credentialed response was
+  // credentialless. Read it through CreateResponse() in
+  // cache_storage_cache.cc, which sanitizes it for opaque responses, rather
+  // than consuming this field directly.
   optional bool request_include_credentials = 17;
   optional bool timing_allow_passed = 18;
 }

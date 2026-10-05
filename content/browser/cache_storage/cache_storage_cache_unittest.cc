@@ -2263,6 +2263,20 @@ TEST_P(CacheStorageCacheTestP, PutResponseType) {
       TestResponseType(network::mojom::FetchResponseType::kOpaqueRedirect));
 }
 
+// CreateResponse() forces `request_include_credentials` to true for opaque
+// responses, because the stored bit is renderer-supplied and an opaque
+// response's credential mode is not otherwise observable. Every other response
+// type must keep the value it was stored with.
+TEST_P(CacheStorageCacheTestP, NonOpaqueResponsePreserved) {
+  blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
+  ASSERT_NE(response->response_type,
+            network::mojom::FetchResponseType::kOpaque);
+  response->request_include_credentials = false;
+  EXPECT_TRUE(Put(body_request_, std::move(response)));
+  EXPECT_TRUE(Match(body_request_));
+  EXPECT_FALSE(callback_response_->request_include_credentials);
+}
+
 TEST_P(CacheStorageCacheTestP, PutWithSideData) {
   blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
 

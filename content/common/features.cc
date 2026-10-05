@@ -151,6 +151,13 @@ BASE_FEATURE(kCancelCompositionWhenWindowLosesFocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+// When enabled, forces opaque CacheStorage responses to be treated as
+// credentialed for the Cross-Origin-Resource-Policy (CORP) check.
+// TODO(crbug.com/568759904): Update the Fetch and Service Worker specs and
+// corresponding WPTs.
+BASE_FEATURE(kCacheStorageOpaqueResponseCredentialedForCorp,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, CDP method Page.captureScreenshot will increment
 // the LocalSurfaceId instead of waiting for ForceRedraw to complete.
 // This should avoid a possible stall due to frames not being presented.

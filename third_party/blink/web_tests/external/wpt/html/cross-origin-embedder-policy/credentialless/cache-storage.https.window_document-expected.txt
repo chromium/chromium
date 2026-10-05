@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [document] unsafe-none => credentialless (omit)
+  assert_equals: expected "retrieved" but got "error"
+[FAIL] [document] credentialless => credentialless
+  assert_equals: expected "retrieved" but got "error"
+Harness: the test ran to completion.
+

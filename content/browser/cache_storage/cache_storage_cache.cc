@@ -16,6 +16,7 @@
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -43,6 +44,7 @@
 #include "content/browser/cache_storage/cache_storage_scheduler.h"
 #include "content/browser/cache_storage/cache_storage_trace_utils.h"
 #include "content/common/background_fetch/background_fetch_types.h"
+#include "content/common/features.h"
 #include "crypto/hmac.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -486,10 +488,24 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
     padding = storage::ComputeRandomResponsePadding();
   }
 
+  network::mojom::FetchResponseType response_type =
+      ProtoResponseTypeToFetchResponseType(metadata.response().response_type());
+
+  // The stored `request_include_credentials` bit is supplied by the renderer
+  // via cache.put(), so it cannot be trusted for opaque responses, whose
+  // original credential mode is not otherwise observable. When the feature is
+  // enabled we treat them as credentialed, which disables the
+  // COEP:credentialless CORP exemption. This is the only place the stored bit
+  // is consumed, so sanitizing here covers every entry, including ones written
+  // before the feature was enabled.
+  bool stored_include_credentials =
+      !metadata.response().has_request_include_credentials() ||
+      metadata.response().request_include_credentials();
   bool request_include_credentials =
-      metadata.response().has_request_include_credentials()
-          ? metadata.response().request_include_credentials()
-          : true;
+      stored_include_credentials ||
+      (response_type == network::mojom::FetchResponseType::kOpaque &&
+       base::FeatureList::IsEnabled(
+           features::kCacheStorageOpaqueResponseCredentialedForCorp));
 
   // Default to true for existing cache entries stored before this field was
   // introduced. Downstream loaders will still check Timing-Allow-Origin headers
@@ -504,10 +520,9 @@ blink::mojom::FetchAPIResponsePtr CreateResponse(
 
   return blink::mojom::FetchAPIResponse::New(
       url_list, metadata.response().status_code(),
-      metadata.response().status_text(),
-      ProtoResponseTypeToFetchResponseType(metadata.response().response_type()),
-      padding, network::mojom::FetchResponseSource::kCacheStorage, headers,
-      mime_type, request_method, /*blob=*/nullptr,
+      metadata.response().status_text(), response_type, padding,
+      network::mojom::FetchResponseSource::kCacheStorage, headers, mime_type,
+      request_method, /*blob=*/nullptr,
       blink::mojom::ServiceWorkerResponseError::kUnknown, response_time,
       base::UTF16ToUTF8(cache_name),
       /*cache_storage_side_data_writer=*/mojo::NullRemote(),
@@ -2083,6 +2098,11 @@ void CacheStorageCache::PutDidCreateEntry(
         bucket_locator_, response_metadata, side_data_size);
   }
   response_metadata->set_side_data_padding(side_data_padding);
+  // Stored verbatim: this value is renderer-supplied via cache.put() and is
+  // not trusted. It is sanitized on read in CreateResponse(), which is the
+  // only consumer, so that disabling
+  // kCacheStorageOpaqueResponseCredentialedForCorp fully restores the previous
+  // behaviour for already-stored entries.
   response_metadata->set_request_include_credentials(
       put_context->response->request_include_credentials);
   response_metadata->set_timing_allow_passed(
