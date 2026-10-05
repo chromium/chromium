@@ -160,7 +160,7 @@ TTCAudioOutputDestination DestinationForPort(
 @end
 
 @implementation TTCAudioSessionManager {
-  // Audio session state active before TalkToChrome configured the session,
+  // Audio session state active before TTC configured the session,
   // fully restored upon teardown to preserve the user's prior audio session
   // state (category, mode, and categoryOptions).
   AVAudioSessionCategory _previousCategory;
@@ -345,13 +345,6 @@ TTCAudioOutputDestination DestinationForPort(
     return;
   }
 
-  [self recordPreviousAudioSessionStateIfNeeded];
-
-  TTCAudioOutputDestination destination = self.outputDestination;
-  AVAudioSessionMode mode = [self modeForDestination:destination];
-  AVAudioSessionCategoryOptions options =
-      [self categoryOptionsForDestination:destination];
-
   if (!_audioSessionTaskRunner) {
     NSError* error = [self configureAudioSession];
     if (completion) {
@@ -359,6 +352,13 @@ TTCAudioOutputDestination DestinationForPort(
     }
     return;
   }
+
+  [self recordPreviousAudioSessionStateIfNeeded];
+
+  TTCAudioOutputDestination destination = self.outputDestination;
+  AVAudioSessionMode mode = [self modeForDestination:destination];
+  AVAudioSessionCategoryOptions options =
+      [self categoryOptionsForDestination:destination];
 
   __weak TTCAudioSessionManager* weakSelf = self;
   auto configureBlock = ^{
@@ -431,33 +431,21 @@ TTCAudioOutputDestination DestinationForPort(
     return;
   }
 
+  if (!_audioSessionTaskRunner) {
+    NSError* sessionError = nil;
+    BOOL success = [self setOutputDestination:destination error:&sessionError];
+    if (completion) {
+      completion(success, sessionError);
+    }
+    return;
+  }
+
   [self recordPreviousAudioSessionStateIfNeeded];
   uint64_t generation = ++_destinationChangeGeneration;
 
   AVAudioSessionMode mode = [self modeForDestination:destination];
   AVAudioSessionCategoryOptions options =
       [self categoryOptionsForDestination:destination];
-
-  if (!_audioSessionTaskRunner) {
-    NSError* sessionError = ApplyAudioSessionCategoryAndMode(mode, options);
-    if (!sessionError) {
-      sessionError = ApplyAudioSessionPortOverride(destination);
-    }
-    if (sessionError) {
-      if (completion) {
-        completion(NO, sessionError);
-      }
-      return;
-    }
-
-    self.outputDestination = destination;
-    [self notifyRouteChanged];
-    [self notifyEngineReconfigurationRequested];
-    if (completion) {
-      completion(YES, nil);
-    }
-    return;
-  }
 
   __weak TTCAudioSessionManager* weakSelf = self;
   auto taskBlock = ^{
@@ -531,8 +519,6 @@ TTCAudioOutputDestination DestinationForPort(
     return;
   }
 
-  uint64_t generation = ++_preferredInputChangeGeneration;
-
   if (!_audioSessionTaskRunner) {
     NSError* sessionError = nil;
     BOOL success = [self setPreferredInput:port error:&sessionError];
@@ -541,6 +527,8 @@ TTCAudioOutputDestination DestinationForPort(
     }
     return;
   }
+
+  uint64_t generation = ++_preferredInputChangeGeneration;
 
   __weak TTCAudioSessionManager* weakSelf = self;
   auto taskBlock = ^{
@@ -794,7 +782,7 @@ TTCAudioOutputDestination DestinationForPort(
 }
 
 // Restores the previous audio session category, mode, and categoryOptions that
-// were recorded before TalkToChrome configuration, clears port overrides,
+// were recorded before TTC configuration, clears port overrides,
 // deactivates the session, and clears cached state.
 - (void)restoreAudioSessionCategoryInternal {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);

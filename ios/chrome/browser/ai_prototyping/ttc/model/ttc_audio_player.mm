@@ -20,7 +20,7 @@
 
 namespace {
 
-// Standard sample rate for Gemini Live response playback (24kHz).
+// Standard sample rate for backend response audio playback (24kHz).
 constexpr double kPlaybackSampleRate = 24000.0;
 
 // Extra frame capacity headroom allocated during sample rate conversion.

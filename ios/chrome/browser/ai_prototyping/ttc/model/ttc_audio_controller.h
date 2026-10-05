@@ -47,7 +47,7 @@
 
 @end
 
-// Defines the unified interface for the TalkToChrome audio subsystem,
+// Defines the unified interface for the TTC audio subsystem,
 // abstracting microphone capture, speaker playback, barge-in clearing, and
 // acoustic route inspection.
 @protocol TTCAudioController <NSObject>

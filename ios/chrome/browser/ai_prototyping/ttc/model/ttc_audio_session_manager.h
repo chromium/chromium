@@ -19,7 +19,7 @@ enum class TTCAudioSessionManagerErrorCode : NSInteger {
   kCancelled = -1,
 };
 
-// Audio output destination options for TalkToChrome.
+// Audio output destination options for TTC.
 enum class TTCAudioOutputDestination : NSInteger {
   // Built-in bottom loudspeaker.
   kSpeaker = 0,
@@ -30,7 +30,7 @@ enum class TTCAudioOutputDestination : NSInteger {
   kExternal,
 };
 
-// Manages the AVAudioSession lifecycle for TalkToChrome, encapsulating
+// Manages the AVAudioSession lifecycle for TTC, encapsulating
 // category activation, option configuration, category restoration upon
 // teardown, route inspection, and port selection.
 @interface TTCAudioSessionManager : NSObject
@@ -86,7 +86,7 @@ enum class TTCAudioOutputDestination : NSInteger {
     (void (^)(NSError* error))completion;
 
 // Restores the AVAudioSession category, mode, and categoryOptions that were
-// active prior to TalkToChrome configuration, clears port overrides, and
+// active prior to TTC configuration, clears port overrides, and
 // deactivates the session notifying other audio apps.
 - (void)restoreAudioSessionCategory;
 

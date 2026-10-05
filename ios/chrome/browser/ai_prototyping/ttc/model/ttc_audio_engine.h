@@ -25,7 +25,7 @@ enum class TTCAudioEngineErrorCode : NSInteger {
 
 // Audio engine managing audio hardware graph orchestration, session
 // configuration, and microphone capture and speaker playback delegation for
-// TalkToChrome.
+// TTC.
 @interface TTCAudioEngine : NSObject <TTCAudioController>
 
 // Designated initializer. Initializes with the specified audio recorder,
