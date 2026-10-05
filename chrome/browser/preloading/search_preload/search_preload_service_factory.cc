@@ -37,22 +37,14 @@ ProfileSelections GetProfileSelections() {
 // static
 SearchPreloadService* SearchPreloadServiceFactory::GetForProfile(
     Profile* profile) {
-  if (auto* self = GetInstance()) {
-    return static_cast<SearchPreloadService*>(
-        self->GetServiceForBrowserContext(profile, /*create=*/true));
-  }
-
-  return nullptr;
+  return static_cast<SearchPreloadService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 // static
 SearchPreloadServiceFactory* SearchPreloadServiceFactory::GetInstance() {
   static base::NoDestructor<SearchPreloadServiceFactory> factory;
-  if (features::IsDsePreload2Enabled()) {
-    return factory.get();
-  }
-
-  return nullptr;
+  return factory.get();
 }
 
 SearchPreloadServiceFactory::SearchPreloadServiceFactory()
@@ -64,6 +56,10 @@ SearchPreloadServiceFactory::~SearchPreloadServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SearchPreloadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!features::IsDsePreload2Enabled()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SearchPreloadService>(profile);
 }

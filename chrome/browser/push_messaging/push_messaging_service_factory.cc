@@ -28,11 +28,6 @@
 // static
 PushMessagingServiceImpl* PushMessagingServiceFactory::GetForProfile(
     content::BrowserContext* context) {
-  // The Push API is not currently supported in incognito mode.
-  // See https://crbug.com/41124656.
-  if (context->IsOffTheRecord())
-    return nullptr;
-
   return static_cast<PushMessagingServiceImpl*>(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
@@ -47,13 +42,15 @@ PushMessagingServiceFactory::PushMessagingServiceFactory()
     : ProfileKeyedServiceFactory(
           "PushMessagingProfileService",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
+              // The Push API is not currently supported in incognito/OTR mode.
+              // See https://crbug.com/41124656.
+              .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
-              .WithGuest(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOwnInstance)
+              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
   DependsOn(instance_id::InstanceIDProfileServiceFactory::GetInstance());
