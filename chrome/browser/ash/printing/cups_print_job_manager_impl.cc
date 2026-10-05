@@ -281,7 +281,9 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
         PurgeJobs();
       } else {
         // Backoff the polling frequency. Give CUPS a chance to recover.
-        CHECK_GE(1, retry_count_, base::NotFatalUntil::M160);
+        // TODO(crbug.com/568716672): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK_GE(1, retry_count_);
         ScheduleQuery(retry_count_);
       }
       return;
