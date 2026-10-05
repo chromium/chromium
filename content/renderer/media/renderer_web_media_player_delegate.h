@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 
 #include "base/containers/flat_set.h"
 #include "base/containers/id_map.h"
@@ -116,7 +115,7 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
   // Tracks which players have entered an idle state. After some period of
   // inactivity these players will be notified and become stale.
   std::map<int, base::TimeTicks> idle_player_map_;
-  std::set<int> stale_players_;
+  base::flat_set<int> stale_players_;
   base::OneShotTimer idle_cleanup_timer_;
 
   // Amount of time allowed to elapse after a player becomes idle before
@@ -133,11 +132,6 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate final
 
   // Players with a video track.
   base::flat_set<int> players_with_video_;
-
-  // The currently playing local videos. Used to determine whether
-  // OnMediaDelegatePlay() should allow the videos to play in the background or
-  // not.
-  base::flat_set<int> playing_videos_;
 
   // Determined at construction time based on system information; determines
   // when the idle cleanup timer should be fired more aggressively.
