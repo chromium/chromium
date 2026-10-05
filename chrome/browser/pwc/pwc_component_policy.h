@@ -38,6 +38,11 @@ enum class PrivilegedComponent {
 // bug can therefore narrow the effective policy but never widen it beyond
 // HTTPS origins, and never grant capability to a non-navigable origin.
 //
+// The one deliberate exception is AllowsInsecureDevOrigin(): a delegate may
+// opt a plain-HTTP origin in to *navigation* for local development. This is
+// an explicit, per-component decision (default: never); it does not affect
+// capability binding, which still requires literal HTTPS.
+//
 // Two-tier trust model: navigation is the set of origins the primary main
 // frame may ever commit; capability is the subset of those origins that
 // additionally receive the elevated capability bridge. A main frame
@@ -53,6 +58,13 @@ class PwcPolicyDelegate {
   // True iff a primary main frame committed to `origin` may receive the
   // elevated capability bridge.
   virtual bool IsCapabilityOrigin(const url::Origin& origin) const = 0;
+
+  // True iff the component permits the primary main frame to navigate to
+  // the insecure HTTP `origin` for local development. Only consulted for a
+  // non-opaque http: origin, and only to lift the HTTPS guardrail --
+  // IsNavigationAllowed() is still applied afterwards. Implementations should
+  // gate this on an explicit developer switch. Defaults to never.
+  virtual bool AllowsInsecureDevOrigin(const url::Origin& origin) const;
 };
 
 // A PwcPolicyDelegate that answers from fixed origin lists. Suitable for
@@ -115,8 +127,15 @@ class PwcComponentPolicy {
     return content_.disallow_shared_workers;
   }
 
+  // True iff `origin` is a plain-HTTP origin the delegate has opted in to
+  // navigation for local development (see
+  // PwcPolicyDelegate::AllowsInsecureDevOrigin). Navigation only: the
+  // capability bridge gate (pwc_api_binder.*) still requires literal HTTPS.
+  bool AllowsInsecureDevOrigin(const url::Origin& origin) const;
+
   // True iff the primary main frame may commit `origin`: `origin` is HTTPS
-  // and the delegate allows it.
+  // (or an HTTP dev origin per AllowsInsecureDevOrigin) and the delegate
+  // allows it.
   bool IsNavigationAllowed(const url::Origin& origin) const;
 
   // True iff a primary main frame committed to `origin` may receive the

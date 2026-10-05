@@ -29,6 +29,11 @@ PwcComponentPolicy::NewWindowPolicy NewWindowPolicyForComponent(
 
 }  // namespace
 
+bool PwcPolicyDelegate::AllowsInsecureDevOrigin(
+    const url::Origin& origin) const {
+  return false;
+}
+
 FixedPwcPolicyDelegate::FixedPwcPolicyDelegate(
     std::vector<url::Origin> navigation_allowlist,
     std::vector<url::Origin> capability_allowlist)
@@ -88,10 +93,22 @@ PwcComponentPolicy::ContentEnforcementForComponent(
   NOTREACHED();
 }
 
+bool PwcComponentPolicy::AllowsInsecureDevOrigin(
+    const url::Origin& origin) const {
+  // Only plain HTTP is ever eligible; every other non-HTTPS scheme (and an
+  // opaque origin) is denied before the delegate is asked.
+  return !origin.opaque() && origin.scheme() == url::kHttpScheme &&
+         delegate_->AllowsInsecureDevOrigin(origin);
+}
+
 bool PwcComponentPolicy::IsNavigationAllowed(const url::Origin& origin) const {
-  // Structural guardrail: only secure HTTPS origins may ever be blessed,
-  // regardless of what the delegate answers.
-  if (origin.opaque() || origin.scheme() != url::kHttpsScheme) {
+  if (origin.opaque()) {
+    return false;
+  }
+  // Structural guardrail: only HTTPS origins may be blessed, unless the
+  // delegate explicitly opts an HTTP origin in for local development.
+  if (origin.scheme() != url::kHttpsScheme &&
+      !AllowsInsecureDevOrigin(origin)) {
     return false;
   }
   return delegate_->IsNavigationAllowed(origin);

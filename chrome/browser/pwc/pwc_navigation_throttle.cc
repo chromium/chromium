@@ -74,8 +74,9 @@ PwcNavigationThrottle::CheckUrl() {
   // The throttle is only added for the primary main frame of a
   // PrivilegedWebContents (see MaybeCreateAndAdd).
   CHECK(privileged);
-  // IsNavigationAllowed structurally enforces HTTPS in addition to the
-  // component's navigation allowlist.
+  // IsNavigationAllowed structurally enforces HTTPS (unless the component's
+  // delegate opts an HTTP dev origin in via AllowsInsecureDevOrigin) in
+  // addition to the component's navigation allowlist.
   if (!privileged->policy().IsNavigationAllowed(
           url::Origin::Create(handle.GetURL()))) {
     return CANCEL_AND_IGNORE;

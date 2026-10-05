@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_pwc_permission_delegate.h"
+#include "chrome/browser/glic/host/glic_pwc_policy_delegate.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_source.h"
@@ -68,23 +69,6 @@
 namespace glic {
 
 namespace {
-class GlicPwcPolicyDelegate : public pwc::PwcPolicyDelegate {
- public:
-  explicit GlicPwcPolicyDelegate(Profile* profile) : profile_(profile) {}
-  ~GlicPwcPolicyDelegate() override = default;
-
-  bool IsNavigationAllowed(const url::Origin& origin) const override {
-    return IsGuestOriginAllowed(origin, profile_);
-  }
-
-  bool IsCapabilityOrigin(const url::Origin& origin) const override {
-    return IsOriginAllowedGlicApi(origin, profile_);
-  }
-
- private:
-  const raw_ptr<Profile> profile_;
-};
-
 content::WebContents::CreateParams MakeOverlayCreateParams(
     Profile* profile,
     bool initially_hidden) {
