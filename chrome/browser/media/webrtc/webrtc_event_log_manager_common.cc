@@ -125,7 +125,7 @@ class Budget {
       return true;
     }
 
-    DCHECK_LE(current_, max_.value());
+    CHECK_LE(current_, max_.value(), base::NotFatalUntil::M161);
 
     const size_t after_consumption = current_ + consumed;
 
@@ -143,7 +143,7 @@ class Budget {
 
   // Consume an additional |consumed| of the resource.
   void Consume(size_t consumed) {
-    DCHECK(ConsumeAllowed(consumed));
+    CHECK(ConsumeAllowed(consumed), base::NotFatalUntil::M161);
     current_ += consumed;
   }
 
@@ -228,7 +228,7 @@ BaseLogFileWriter::~BaseLogFileWriter() {
   if (!task_runner_->RunsTasksInCurrentSequence()) {
     // Chrome shut-down. The original task_runner_ is no longer running, so
     // no risk of concurrent access or races.
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
     task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   }
 
@@ -238,8 +238,8 @@ BaseLogFileWriter::~BaseLogFileWriter() {
 }
 
 bool BaseLogFileWriter::Init() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(state(), State::PRE_INIT);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_EQ(state(), State::PRE_INIT, base::NotFatalUntil::M161);
 
   // TODO(crbug.com/40545136): Use a temporary filename which will indicate
   // incompletion, and rename to something that is eligible for upload only
@@ -264,20 +264,20 @@ bool BaseLogFileWriter::Init() {
 }
 
 const base::FilePath& BaseLogFileWriter::path() const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   return path_;
 }
 
 bool BaseLogFileWriter::MaxSizeReached() const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(state(), State::ACTIVE);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_EQ(state(), State::ACTIVE, base::NotFatalUntil::M161);
   return !WithinBudget(1);
 }
 
 bool BaseLogFileWriter::Write(const std::string& input) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_EQ(state(), State::ACTIVE);
-  DCHECK(!MaxSizeReached());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_EQ(state(), State::ACTIVE, base::NotFatalUntil::M161);
+  CHECK(!MaxSizeReached(), base::NotFatalUntil::M161);
 
   if (input.empty()) {
     return true;
@@ -296,9 +296,9 @@ bool BaseLogFileWriter::Write(const std::string& input) {
 }
 
 bool BaseLogFileWriter::Close() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_NE(state(), State::CLOSED);
-  DCHECK_NE(state(), State::DELETED);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::CLOSED, base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::DELETED, base::NotFatalUntil::M161);
 
   const bool result = ((state() != State::ERRORED) && Finalize());
 
@@ -314,8 +314,8 @@ bool BaseLogFileWriter::Close() {
 }
 
 void BaseLogFileWriter::Delete() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_NE(state(), State::DELETED);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::DELETED, base::NotFatalUntil::M161);
 
   // The file should be closed before deletion. However, we do not want to go
   // through Finalize() and any potential production of a compression footer,
@@ -332,24 +332,25 @@ void BaseLogFileWriter::Delete() {
 }
 
 void BaseLogFileWriter::SetState(State state) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   state_ = state;
 }
 
 bool BaseLogFileWriter::WithinBudget(size_t bytes) const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   return budget_.ConsumeAllowed(bytes);
 }
 
 bool BaseLogFileWriter::WriteInternal(const std::string& input, bool metadata) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(state() == State::ACTIVE || (state() == State::FULL && metadata));
-  DCHECK(WithinBudget(input.length()));
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK(state() == State::ACTIVE || (state() == State::FULL && metadata),
+        base::NotFatalUntil::M161);
+  CHECK(WithinBudget(input.length()), base::NotFatalUntil::M161);
 
   // base::File's interface does not allow writing more than
   // numeric_limits<int>::max() bytes at a time.
-  DCHECK_LE(input.length(),
-            static_cast<size_t>(std::numeric_limits<int>::max()));
+  CHECK_LE(input.length(), static_cast<size_t>(std::numeric_limits<int>::max()),
+           base::NotFatalUntil::M161);
 
   if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(input))) {
     LOG(WARNING) << "WebRTC event log couldn't be written to the "
@@ -362,10 +363,10 @@ bool BaseLogFileWriter::WriteInternal(const std::string& input, bool metadata) {
 }
 
 bool BaseLogFileWriter::Finalize() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK_NE(state(), State::CLOSED);
-  DCHECK_NE(state(), State::DELETED);
-  DCHECK_NE(state(), State::ERRORED);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::CLOSED, base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::DELETED, base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::ERRORED, base::NotFatalUntil::M161);
   return true;
 }
 
@@ -398,8 +399,9 @@ GzippedLogFileWriter::GzippedLogFileWriter(
     : BaseLogFileWriter(path, max_file_size_bytes),
       compressor_(std::move(compressor)) {
   // Factory validates size before instantiation.
-  DCHECK(!max_file_size_bytes.has_value() ||
-         max_file_size_bytes.value() >= kGzipOverheadBytes);
+  CHECK(!max_file_size_bytes.has_value() ||
+            max_file_size_bytes.value() >= kGzipOverheadBytes,
+        base::NotFatalUntil::M161);
 }
 
 bool GzippedLogFileWriter::Init() {
@@ -420,7 +422,7 @@ bool GzippedLogFileWriter::Init() {
 }
 
 bool GzippedLogFileWriter::MaxSizeReached() const {
-  DCHECK_EQ(state(), State::ACTIVE);
+  CHECK_EQ(state(), State::ACTIVE, base::NotFatalUntil::M161);
 
   // Note that the overhead used (footer only) assumes state() is State::ACTIVE,
   // as DCHECKed above.
@@ -428,8 +430,8 @@ bool GzippedLogFileWriter::MaxSizeReached() const {
 }
 
 bool GzippedLogFileWriter::Write(const std::string& input) {
-  DCHECK_EQ(state(), State::ACTIVE);
-  DCHECK(!MaxSizeReached());
+  CHECK_EQ(state(), State::ACTIVE, base::NotFatalUntil::M161);
+  CHECK(!MaxSizeReached(), base::NotFatalUntil::M161);
 
   if (input.empty()) {
     return true;
@@ -461,9 +463,9 @@ bool GzippedLogFileWriter::Write(const std::string& input) {
 }
 
 bool GzippedLogFileWriter::Finalize() {
-  DCHECK_NE(state(), State::CLOSED);
-  DCHECK_NE(state(), State::DELETED);
-  DCHECK_NE(state(), State::ERRORED);
+  CHECK_NE(state(), State::CLOSED, base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::DELETED, base::NotFatalUntil::M161);
+  CHECK_NE(state(), State::ERRORED, base::NotFatalUntil::M161);
 
   std::string footer;
   if (!compressor_->CreateFooter(&footer)) {
@@ -541,7 +543,7 @@ GzipLogCompressor::GzipLogCompressor(
   const int result =
       deflateInit2(&stream_, Z_DEFAULT_COMPRESSION, Z_DEFLATED, MAX_WBITS + 16,
                    kDefaultMemLevel, Z_DEFAULT_STRATEGY);
-  DCHECK_EQ(result, Z_OK);
+  CHECK_EQ(result, Z_OK, base::NotFatalUntil::M161);
 }
 
 GzipLogCompressor::~GzipLogCompressor() {
@@ -549,26 +551,27 @@ GzipLogCompressor::~GzipLogCompressor() {
   // Z_DATA_ERROR reports that the stream was not properly terminated,
   // but nevertheless correctly released. That happens when we don't
   // write the footer.
-  DCHECK(result == Z_OK ||
-         (result == Z_DATA_ERROR && state_ != State::POST_FOOTER));
+  CHECK(result == Z_OK ||
+            (result == Z_DATA_ERROR && state_ != State::POST_FOOTER),
+        base::NotFatalUntil::M161);
 }
 
 void GzipLogCompressor::CreateHeader(std::string* output) {
-  DCHECK(output);
-  DCHECK(output->empty());
-  DCHECK_EQ(state_, State::PRE_HEADER);
+  CHECK(output, base::NotFatalUntil::M161);
+  CHECK(output->empty(), base::NotFatalUntil::M161);
+  CHECK_EQ(state_, State::PRE_HEADER, base::NotFatalUntil::M161);
 
   const Result result = CompressInternal(std::string(), output,
                                          /*budgeted=*/false, /*last=*/false);
-  DCHECK_EQ(result, Result::OK);
-  DCHECK_EQ(output->size(), kGzipHeaderBytes);
+  CHECK_EQ(result, Result::OK, base::NotFatalUntil::M161);
+  CHECK_EQ(output->size(), kGzipHeaderBytes, base::NotFatalUntil::M161);
 
   state_ = State::ACTIVE;
 }
 
 LogCompressor::Result GzipLogCompressor::Compress(const std::string& input,
                                                   std::string* output) {
-  DCHECK_EQ(state_, State::ACTIVE);
+  CHECK_EQ(state_, State::ACTIVE, base::NotFatalUntil::M161);
 
   if (input.empty()) {
     return Result::OK;
@@ -592,14 +595,15 @@ LogCompressor::Result GzipLogCompressor::Compress(const std::string& input,
 }
 
 bool GzipLogCompressor::CreateFooter(std::string* output) {
-  DCHECK(output);
-  DCHECK(output->empty());
-  DCHECK(state_ == State::ACTIVE || state_ == State::FULL);
+  CHECK(output, base::NotFatalUntil::M161);
+  CHECK(output->empty(), base::NotFatalUntil::M161);
+  CHECK(state_ == State::ACTIVE || state_ == State::FULL,
+        base::NotFatalUntil::M161);
 
   const Result result = CompressInternal(std::string(), output,
                                          /*budgeted=*/false, /*last=*/true);
   if (result != Result::OK) {  // !budgeted -> Result::DISALLOWED impossible.
-    DCHECK_EQ(result, Result::ERROR_ENCOUNTERED);
+    CHECK_EQ(result, Result::ERROR_ENCOUNTERED, base::NotFatalUntil::M161);
     // An error message was logged by CompressInternal().
     state_ = State::ERRORED;
     return false;
@@ -621,7 +625,8 @@ std::optional<size_t> GzipLogCompressor::SizeAfterOverheadReservation(
   if (!max_size_bytes.has_value()) {
     return std::optional<size_t>();
   } else {
-    DCHECK_GE(max_size_bytes.value(), kGzipHeaderBytes + kGzipFooterBytes);
+    CHECK_GE(max_size_bytes.value(), kGzipHeaderBytes + kGzipFooterBytes,
+             base::NotFatalUntil::M161);
     return max_size_bytes.value() - (kGzipHeaderBytes + kGzipFooterBytes);
   }
 }
@@ -631,10 +636,11 @@ LogCompressor::Result GzipLogCompressor::CompressInternal(
     std::string* output,
     bool budgeted,
     bool last) {
-  DCHECK(output);
-  DCHECK(output->empty());
-  DCHECK(state_ == State::PRE_HEADER || state_ == State::ACTIVE ||
-         (!budgeted && state_ == State::FULL));
+  CHECK(output, base::NotFatalUntil::M161);
+  CHECK(output->empty(), base::NotFatalUntil::M161);
+  CHECK(state_ == State::PRE_HEADER || state_ == State::ACTIVE ||
+            (!budgeted && state_ == State::FULL),
+        base::NotFatalUntil::M161);
 
   // Avoid writing to |output| unless the return value is OK.
   std::string temp_output;
@@ -648,14 +654,15 @@ LogCompressor::Result GzipLogCompressor::CompressInternal(
   }
 
   if (last) {
-    DCHECK(input.empty());
+    CHECK(input.empty(), base::NotFatalUntil::M161);
     stream_.next_in = nullptr;
   } else {
     stream_.next_in = reinterpret_cast<z_const Bytef*>(input.c_str());
   }
 
-  DCHECK_LE(input.length(),
-            static_cast<size_t>(std::numeric_limits<uInt>::max()));
+  CHECK_LE(input.length(),
+           static_cast<size_t>(std::numeric_limits<uInt>::max()),
+           base::NotFatalUntil::M161);
   stream_.avail_in = static_cast<uInt>(input.length());
 
   const bool result = Deflate(last ? Z_FINISH : Z_SYNC_FLUSH, &temp_output);
@@ -681,9 +688,10 @@ LogCompressor::Result GzipLogCompressor::CompressInternal(
 }
 
 bool GzipLogCompressor::Deflate(int flush, std::string* output) {
-  DCHECK((flush != Z_FINISH && stream_.next_in != nullptr) ||
-         (flush == Z_FINISH && stream_.next_in == nullptr));
-  DCHECK(output->empty());
+  CHECK((flush != Z_FINISH && stream_.next_in != nullptr) ||
+            (flush == Z_FINISH && stream_.next_in == nullptr),
+        base::NotFatalUntil::M161);
+  CHECK(output->empty(), base::NotFatalUntil::M161);
 
   bool success = true;  // Result of this method.
   int z_result;         // Result of the zlib function.
@@ -703,7 +711,7 @@ bool GzipLogCompressor::Deflate(int flush, std::string* output) {
 
     z_result = deflate(&stream_, flush);
 
-    DCHECK_GE(kCompressionBuffer, stream_.avail_out);
+    CHECK_GE(kCompressionBuffer, stream_.avail_out, base::NotFatalUntil::M161);
     const size_t compressed_size = kCompressionBuffer - stream_.avail_out;
 
     if (flush != Z_FINISH) {
@@ -741,7 +749,7 @@ bool GzipLogCompressor::Deflate(int flush, std::string* output) {
 // ID in integer form. If the textual representation does not name a valid
 // web-app ID, return kInvalidWebRtcEventLogWebAppId.
 size_t ExtractWebAppId(std::string_view str) {
-  DCHECK_EQ(str.length(), kWebAppIdLength);
+  CHECK_EQ(str.length(), kWebAppIdLength, base::NotFatalUntil::M161);
 
   // Avoid leading '+', etc.
   if (!std::ranges::all_of(str, absl::ascii_isdigit)) {
@@ -879,20 +887,21 @@ std::string CreateWebRtcEventLogId() {
   // convert, even if the current implementation does not require it.
   std::string log_id =
       base::ToUpperASCII(base::UnguessableToken::Create().ToString());
-  DCHECK_EQ(log_id.size(), kWebRtcEventLogIdLength);
-  DCHECK_EQ(log_id.find_first_not_of("0123456789ABCDEF"), std::string::npos);
+  CHECK_EQ(log_id.size(), kWebRtcEventLogIdLength, base::NotFatalUntil::M161);
+  CHECK_EQ(log_id.find_first_not_of("0123456789ABCDEF"), std::string::npos,
+           base::NotFatalUntil::M161);
   return log_id;
 }
 
 BrowserContextId GetBrowserContextId(
     const content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return reinterpret_cast<BrowserContextId>(browser_context);
 }
 
 BrowserContextId GetBrowserContextId(
     content::ChildProcessId render_process_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::RenderProcessHost* const host =
       content::RenderProcessHost::FromID(render_process_id);
@@ -914,12 +923,12 @@ base::FilePath WebRtcEventLogPath(const base::FilePath& remote_logs_dir,
                                   const std::string& log_id,
                                   size_t web_app_id,
                                   base::FilePath::StringViewType extension) {
-  DCHECK_GE(web_app_id, kMinWebRtcEventLogWebAppId);
-  DCHECK_LE(web_app_id, kMaxWebRtcEventLogWebAppId);
+  CHECK_GE(web_app_id, kMinWebRtcEventLogWebAppId, base::NotFatalUntil::M161);
+  CHECK_LE(web_app_id, kMaxWebRtcEventLogWebAppId, base::NotFatalUntil::M161);
 
   static_assert(kWebAppIdLength == 2u, "Fix the code below.");
   const std::string web_app_id_str = base::StringPrintf("%02zu", web_app_id);
-  DCHECK_EQ(web_app_id_str.length(), kWebAppIdLength);
+  CHECK_EQ(web_app_id_str.length(), kWebAppIdLength, base::NotFatalUntil::M161);
 
   const std::string filename =
       std::string(kRemoteBoundWebRtcEventLogFileNamePrefix) + "_" +
@@ -1031,7 +1040,7 @@ std::string ExtractRemoteBoundWebRtcEventLogLocalIdFromPath(
       std::size(kRemoteBoundWebRtcEventLogFileNamePrefix) - 1;
   const size_t log_id_start = kPrefixLength + 1 + kWebAppIdLength + 1;
 
-  DCHECK_GE(filename.length(), log_id_start);
+  CHECK_GE(filename.length(), log_id_start, base::NotFatalUntil::M161);
   return filename.substr(log_id_start);
 }
 
@@ -1049,7 +1058,8 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
 
   // The +1 is for the underscore between the prefix and the web-app ID.
   // Length verified by above call to IsValidRemoteBoundLogFilename().
-  DCHECK_GE(filename.length(), kPrefixLength + 1 + kWebAppIdLength);
+  CHECK_GE(filename.length(), kPrefixLength + 1 + kWebAppIdLength,
+           base::NotFatalUntil::M161);
   std::string_view id_str(&filename[kPrefixLength + 1], kWebAppIdLength);
 
   return ExtractWebAppId(id_str);

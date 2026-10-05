@@ -36,7 +36,7 @@ constexpr bad_message::BadMessageReason
 
 MediaStreamFocusDelegate::MediaStreamFocusDelegate(
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!web_contents) {
     return;
   }
@@ -59,14 +59,14 @@ MediaStreamFocusDelegate::MediaStreamFocusDelegate(
 }
 
 MediaStreamFocusDelegate::~MediaStreamFocusDelegate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void MediaStreamFocusDelegate::SetFocus(const content::DesktopMediaID& media_id,
                                         bool focus,
                                         bool is_from_microtask,
                                         bool is_from_timer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!capturing_web_contents_) {
     return;
@@ -101,13 +101,14 @@ void MediaStreamFocusDelegate::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   focus_window_of_opportunity_open_ = false;
 }
 
 bool MediaStreamFocusDelegate::IsBrowserActive() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(capturing_web_contents_);  // Tested by caller.
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(capturing_web_contents_,
+        base::NotFatalUntil::M161);  // Tested by caller.
 
   // Use BrowserWindowInterface::IsActive() rather than
   // RenderWidgetHostView::HasFocus(). When the screen picker dialog is accepted
@@ -123,7 +124,7 @@ bool MediaStreamFocusDelegate::IsBrowserActive() const {
 
 void MediaStreamFocusDelegate::FocusTab(
     const content::DesktopMediaID& media_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
       media_id.web_contents_id.render_process_id,
@@ -153,7 +154,7 @@ void MediaStreamFocusDelegate::FocusTab(
 
 void MediaStreamFocusDelegate::FocusWindow(
     const content::DesktopMediaID& media_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::unique_ptr<webrtc::DesktopCapturer> window_capturer =
       window_capturer_for_testing_ != nullptr
@@ -168,13 +169,15 @@ void MediaStreamFocusDelegate::FocusWindow(
 bool MediaStreamFocusDelegate::ValidateCall(bool focus,
                                             bool is_from_microtask,
                                             bool is_from_timer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(capturing_web_contents_);               // Tested by caller.
-  DCHECK(!is_from_microtask || !is_from_timer);  // Can't be both.
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(capturing_web_contents_,
+        base::NotFatalUntil::M161);  // Tested by caller.
+  CHECK(!is_from_microtask || !is_from_timer,
+        base::NotFatalUntil::M161);  // Can't be both.
 
   const bool explicit_decision = (!is_from_microtask && !is_from_timer);
   // Invocations from the microtask/timer focus the captured display surface.
-  DCHECK(explicit_decision || focus);
+  CHECK(explicit_decision || focus, base::NotFatalUntil::M161);
 
   if (explicit_decision) {
     if (explicit_decision_) {
@@ -192,7 +195,8 @@ bool MediaStreamFocusDelegate::ValidateCall(bool focus,
   }
 
   if (is_from_timer) {
-    DCHECK(!timer_expired_);  // The timer can only expire once.
+    CHECK(!timer_expired_,
+          base::NotFatalUntil::M161);  // The timer can only expire once.
     timer_expired_ = true;
   }
 

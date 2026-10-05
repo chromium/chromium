@@ -49,14 +49,14 @@ namespace {
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
 bool VerifySettings(WebRtcLoggingController* controller,
                     const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const std::optional<WebRtcLoggingController::WebApiSettings>& settings =
       controller->web_api_settings();
   return settings.has_value() && settings->origin.IsSameOriginWith(origin);
 }
 
 WebRtcLoggingController* GetController(content::RenderFrameHost& frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderProcessHost* process_host = frame_host.GetProcess();
   return process_host
              ? WebRtcLoggingController::FromRenderProcessHost(process_host)
@@ -65,7 +65,7 @@ WebRtcLoggingController* GetController(content::RenderFrameHost& frame_host) {
 
 WebRtcLoggingController* GetControllerAndVerifySettings(
     content::RenderFrameHost& frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto* controller = GetController(frame_host);
   if (!controller) {
     return nullptr;
@@ -78,7 +78,7 @@ WebRtcLoggingController* GetControllerAndVerifySettings(
 
 bool IsDiagnosticEventLogCollectionAllowed(
     content::RenderFrameHost& frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const Profile* profile =
       Profile::FromBrowserContext(frame_host.GetBrowserContext());
   if (!profile) {
@@ -157,7 +157,7 @@ void ExecuteStartRtcDiagnosticLogging(
     bool should_upload_on_stop,
     base::flat_map<std::string, std::string> metadata,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(frame_id);
   if (!frame_host) {
@@ -222,7 +222,7 @@ void ExecuteFinishRtcDiagnosticLogging(
     content::GlobalRenderFrameHostId frame_id,
     base::flat_map<std::string, std::string> metadata,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(frame_id);
   if (!frame_host) {
@@ -252,7 +252,7 @@ void ExecuteFinishRtcDiagnosticLogging(
 void ExecuteCancelRtcDiagnosticLogging(
     content::GlobalRenderFrameHostId frame_id,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(frame_id);
   if (!frame_host) {
@@ -293,7 +293,7 @@ void ExecuteStartRtcPeerConnectionEventDiagnosticLogging(
     content::GlobalRenderFrameHostId frame_id,
     std::string session_id,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(frame_id);
   if (!frame_host) {
@@ -340,7 +340,7 @@ void StartRtcDiagnosticLogging(
     bool should_upload_on_stop,
     const base::flat_map<std::string, std::string>& metadata,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   if (auto* controller = GetController(frame_host)) {
     controller->EnqueueWebApiOperation(
@@ -358,7 +358,7 @@ void FinishRtcDiagnosticLogging(
     content::RenderFrameHost& frame_host,
     const base::flat_map<std::string, std::string>& metadata,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   if (auto* controller = GetController(frame_host)) {
     controller->EnqueueWebApiOperation(
@@ -373,7 +373,7 @@ void FinishRtcDiagnosticLogging(
 
 void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
                                 base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   if (auto* controller = GetController(frame_host)) {
     controller->EnqueueWebApiOperation(
@@ -390,7 +390,7 @@ void StartRtcPeerConnectionEventDiagnosticLogging(
     content::RenderFrameHost& frame_host,
     const std::string& session_id,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if WEBRTC_DIAGNOSTIC_LOGGING_SUPPORTED
   if (auto* controller = GetController(frame_host)) {
     controller->EnqueueWebApiOperation(

@@ -74,7 +74,7 @@ constexpr int IDC_MEDIA_CONTEXT_MEDIA_STREAM_CAPTURE_LIST_LAST =
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const extensions::Extension* GetExtension(WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents)
     return nullptr;
@@ -115,7 +115,7 @@ std::unique_ptr<SameOriginObserver> MaybeCreateSameOriginObserverForTabCapture(
 }
 
 std::u16string GetTitle(WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents)
     return std::u16string();
@@ -284,9 +284,10 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
         application_title_(std::move(application_title)),
         stop_callback_id_(MediaStreamCaptureIndicator::g_stop_callback_id_++) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(devices_.audio_device.has_value() ||
-           devices_.video_device.has_value());
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+    CHECK(
+        devices_.audio_device.has_value() || devices_.video_device.has_value(),
+        base::NotFatalUntil::M161);
 
     // base::Unretained is safe here because `same_origin_observer_` is owned by
     // `this`, so the callback will not be invoked after `this` is destroyed.
@@ -374,7 +375,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
   void OnRegionCaptureRectChanged(
       const std::optional<gfx::Rect>& region_capture_rect) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     if (ui_) {
       ui_->OnRegionCaptureRectChanged(region_capture_rect);
     }
@@ -399,7 +400,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void AddDataProtectionHandler(const content::DesktopMediaID& media_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     if (!base::FeatureList::IsEnabled(
             enterprise_data_protection::kEnableTabSharingProtection)) {
       return;
@@ -422,7 +423,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
   }
 
   void RemoveDataProtectionHandler(const content::DesktopMediaID& media_id) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     if (media_id.type == content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
       data_protection_handlers_.erase(media_id.web_contents_id);
     }
@@ -452,7 +453,7 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 bool MediaStreamCaptureIndicator::HasDataProtectionHandlerForTesting(
     const content::MediaStreamUI* ui,
     const content::DesktopMediaID& media_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!ui ||
       media_id.type != content::DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
     return false;
@@ -469,7 +470,7 @@ MediaStreamCaptureIndicator::WebContentsDeviceUsage::RegisterMediaStream(
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title,
     const std::optional<content::DesktopMediaID>& media_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   return std::make_unique<UIDelegate>(
       web_contents(), weak_factory_.GetWeakPtr(), devices, std::move(ui),
@@ -607,7 +608,7 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::AddDevice(
 
   if (web_contents() && stream_count == 1) {
     ObserverMethod obs_func = GetObserverMethodToCall(device);
-    DCHECK(obs_func);
+    CHECK(obs_func, base::NotFatalUntil::M161);
     for (Observer& obs : indicator_->observers_)
       (obs.*obs_func)(web_contents(), true);
   }
@@ -617,11 +618,11 @@ void MediaStreamCaptureIndicator::WebContentsDeviceUsage::RemoveDevice(
     const blink::MediaStreamDevice& device) {
   int& stream_count = GetStreamCount(device);
   --stream_count;
-  DCHECK_GE(stream_count, 0);
+  CHECK_GE(stream_count, 0, base::NotFatalUntil::M161);
 
   if (web_contents() && stream_count == 0) {
     ObserverMethod obs_func = GetObserverMethodToCall(device);
-    DCHECK(obs_func);
+    CHECK(obs_func, base::NotFatalUntil::M161);
     for (Observer& obs : indicator_->observers_)
       (obs.*obs_func)(web_contents(), false);
   }
@@ -653,7 +654,7 @@ MediaStreamCaptureIndicator::GetMediaType(blink::mojom::MediaStreamType type) {
 }
 
 MediaStreamCaptureIndicator::Observer::~Observer() {
-  DCHECK(!IsInObserverList());
+  CHECK(!IsInObserverList(), base::NotFatalUntil::M161);
 }
 
 int MediaStreamCaptureIndicator::g_stop_callback_id_ = 0;
@@ -666,8 +667,9 @@ MediaStreamCaptureIndicator::~MediaStreamCaptureIndicator() {
   // thread may be stopped before CaptureDevicesClosed() posts the task to
   // invoke DoDevicesClosedOnUIThread().  In this case, usage_map_ won't be
   // empty like it should.
-  DCHECK(usage_map_.empty() ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(usage_map_.empty() ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M161);
 }
 
 std::unique_ptr<content::MediaStreamUI>
@@ -677,8 +679,8 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
     std::unique_ptr<MediaStreamUI> ui,
     const std::u16string application_title,
     std::optional<content::DesktopMediaID> media_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(web_contents);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   auto& usage = usage_map_[web_contents];
   if (!usage)
@@ -690,12 +692,13 @@ MediaStreamCaptureIndicator::RegisterMediaStream(
 
 void MediaStreamCaptureIndicator::ExecuteCommand(int command_id,
                                                  int event_flags) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   const int index =
       command_id - IDC_MEDIA_CONTEXT_MEDIA_STREAM_CAPTURE_LIST_FIRST;
-  DCHECK_LE(0, index);
-  DCHECK_GT(static_cast<int>(command_targets_.size()), index);
+  CHECK_LE(0, index, base::NotFatalUntil::M161);
+  CHECK_GT(static_cast<int>(command_targets_.size()), index,
+           base::NotFatalUntil::M161);
   WebContents* web_contents = command_targets_[index];
   if (usage_map_.contains(web_contents)) {
     web_contents->GetDelegate()->ActivateContents(web_contents);
@@ -720,7 +723,7 @@ bool MediaStreamCaptureIndicator::CheckUsage(
 
 bool MediaStreamCaptureIndicator::IsCapturingUserMedia(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, [](const WebContentsDeviceUsage* usage) {
     return usage->IsCapturingAudio() || usage->IsCapturingVideo();
   });
@@ -728,44 +731,44 @@ bool MediaStreamCaptureIndicator::IsCapturingUserMedia(
 
 bool MediaStreamCaptureIndicator::IsCapturingVideo(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingVideo);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingAudio(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingAudio);
 }
 
 bool MediaStreamCaptureIndicator::IsBeingMirrored(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsMirroring);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingTab(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingTab);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingWindow(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingWindow);
 }
 
 bool MediaStreamCaptureIndicator::IsCapturingDisplay(
     content::WebContents* web_contents) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return CheckUsage(web_contents, &WebContentsDeviceUsage::IsCapturingDisplay);
 }
 
 void MediaStreamCaptureIndicator::StopMediaCapturing(
     content::WebContents* web_contents,
     int media_type) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // AllScreensMedia is an managed device feature, and should not be stopped
   // unless fully discussed.
   CHECK(!(media_type & MediaType::kAllScreensMedia))
@@ -812,7 +815,7 @@ void MediaStreamCaptureIndicator::UnregisterWebContents(
 
 void MediaStreamCaptureIndicator::MaybeCreateStatusTrayIcon(bool audio,
                                                             bool video) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (status_icon_)
     return;
@@ -828,15 +831,15 @@ void MediaStreamCaptureIndicator::MaybeCreateStatusTrayIcon(bool audio,
   gfx::ImageSkia image;
   std::u16string tool_tip;
   GetStatusTrayIconInfo(audio, video, &image, &tool_tip);
-  DCHECK(!image.isNull());
-  DCHECK(!tool_tip.empty());
+  CHECK(!image.isNull(), base::NotFatalUntil::M161);
+  CHECK(!tool_tip.empty(), base::NotFatalUntil::M161);
 
   status_icon_ = status_tray->CreateStatusIcon(
       StatusTray::MEDIA_STREAM_CAPTURE_ICON, image, tool_tip);
 }
 
 void MediaStreamCaptureIndicator::MaybeDestroyStatusTrayIcon() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!status_icon_)
     return;
@@ -855,7 +858,7 @@ void MediaStreamCaptureIndicator::MaybeDestroyStatusTrayIcon() {
 }
 
 void MediaStreamCaptureIndicator::UpdateNotificationUserInterface() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::unique_ptr<StatusIconMenuModel> menu(new StatusIconMenuModel(this));
   bool audio = false;
@@ -914,10 +917,10 @@ void MediaStreamCaptureIndicator::GetStatusTrayIconInfo(
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else   // !BUILDFLAG(IS_ANDROID)
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(audio || video);
-  DCHECK(image);
-  DCHECK(tool_tip);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(audio || video, base::NotFatalUntil::M161);
+  CHECK(image, base::NotFatalUntil::M161);
+  CHECK(tool_tip, base::NotFatalUntil::M161);
 
   int message_id = 0;
   const gfx::VectorIcon* icon = nullptr;

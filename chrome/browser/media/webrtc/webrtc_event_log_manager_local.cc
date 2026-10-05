@@ -43,12 +43,12 @@ struct WebRtcLocalEventLogManager::LogFiles {
 WebRtcLocalEventLogManager::WebRtcLocalEventLogManager(
     WebRtcLocalEventLogsObserver* observer)
     : observer_(observer), clock_for_testing_(nullptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DETACH_FROM_SEQUENCE(io_task_sequence_checker_);
 }
 
 WebRtcLocalEventLogManager::~WebRtcLocalEventLogManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 bool WebRtcLocalEventLogManager::OnPeerConnectionAdded(

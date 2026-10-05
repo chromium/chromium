@@ -92,11 +92,11 @@ TabDesktopMediaList::TabDesktopMediaList(
 TabDesktopMediaList::~TabDesktopMediaList() {
   // previewed_source_visible_keepalive_ is expected to be destructed on the UI
   // thread.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void TabDesktopMediaList::CompleteRefreshAfterThumbnailProcessing() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // OnRefreshComplete() needs to be called after all calls to
   // UpdateSourceThumbnail() have completed. Therefore, a DoNothing task is
   // posted to the same sequenced task runner to which
@@ -108,8 +108,8 @@ void TabDesktopMediaList::CompleteRefreshAfterThumbnailProcessing() {
 }
 
 void TabDesktopMediaList::Refresh(bool update_thumbnails) {
-  DCHECK(can_refresh());
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(can_refresh(), base::NotFatalUntil::M161);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   Profile* profile;
   if (web_contents_.has_value()) {
@@ -147,12 +147,12 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
   // Enumerate all tabs for a user profile.
   for (BrowserWindowInterface* const browser : browsers) {
     const TabStripModel* tab_strip_model = browser->GetTabStripModel();
-    DCHECK(tab_strip_model);
+    CHECK(tab_strip_model, base::NotFatalUntil::M161);
 
     for (int i = 0; i < tab_strip_model->count(); i++) {
       // Create id for tab.
       WebContents* contents = tab_strip_model->GetWebContentsAt(i);
-      DCHECK(contents);
+      CHECK(contents, base::NotFatalUntil::M161);
       contents_list.push_back(contents);
     }
   }
@@ -177,7 +177,7 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
       continue;
     }
     content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
-    DCHECK(main_frame);
+    CHECK(main_frame, base::NotFatalUntil::M161);
 
     DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
                             DesktopMediaID::kNullId,
@@ -278,7 +278,7 @@ void TabDesktopMediaList::Refresh(bool update_thumbnails) {
 void TabDesktopMediaList::TriggerScreenshot(
     int remaining_retries,
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!previewed_source_.has_value()) {
     // The selection must have been cleared while waiting to retry. Nothing to
@@ -324,7 +324,7 @@ void TabDesktopMediaList::ScreenshotReceived(
     const content::DesktopMediaID& id,
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
     const content::CopyFromSurfaceResult& result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (id != previewed_source_) {
     // Selection has changed since triggering this screenshot. Quit early to
     // avoid rescaling the image unnecessarily.
@@ -363,7 +363,7 @@ void TabDesktopMediaList::OnPreviewCaptureHandled(
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
     uint32_t new_hash,
     const gfx::ImageSkia& image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (new_hash != last_hash_) {
     last_hash_ = new_hash;
@@ -373,8 +373,8 @@ void TabDesktopMediaList::OnPreviewCaptureHandled(
 
 void TabDesktopMediaList::SetPreviewedSource(
     const std::optional<content::DesktopMediaID>& id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!(id.has_value() && id.value().is_null()));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!(id.has_value() && id.value().is_null()), base::NotFatalUntil::M161);
 
   previewed_source_ = id;
   previewed_source_visible_keepalive_.RunAndReset();

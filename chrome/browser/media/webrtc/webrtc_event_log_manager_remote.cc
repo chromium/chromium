@@ -81,9 +81,10 @@ base::TimeDelta GetUploadDelay() {
 bool TimePointInRange(const base::Time& time_point,
                       const base::Time& range_begin,
                       const base::Time& range_end) {
-  DCHECK(!time_point.is_null());
-  DCHECK(range_begin.is_null() || range_end.is_null() ||
-         range_begin <= range_end);
+  CHECK(!time_point.is_null(), base::NotFatalUntil::M161);
+  CHECK(
+      range_begin.is_null() || range_end.is_null() || range_begin <= range_end,
+      base::NotFatalUntil::M161);
   return (range_begin.is_null() || range_begin <= time_point) &&
          (range_end.is_null() || time_point < range_end);
 }
@@ -143,7 +144,7 @@ UploadList::UploadInfo CreateActivelyCapturedLogEntry(
     const base::Time& capture_time) {
   using State = UploadList::UploadInfo::State;
   const std::string filename = path.BaseName().MaybeAsASCII();
-  DCHECK(!filename.empty());
+  CHECK(!filename.empty(), base::NotFatalUntil::M161);
   return UploadList::UploadInfo(std::string(), base::Time(), filename,
                                 capture_time, State::Pending);
 }
@@ -152,7 +153,7 @@ UploadList::UploadInfo CreatePendingLogEntry(
     const WebRtcLogFileInfo& log_info) {
   using State = UploadList::UploadInfo::State;
   const std::string filename = log_info.path.BaseName().MaybeAsASCII();
-  DCHECK(!filename.empty());
+  CHECK(!filename.empty(), base::NotFatalUntil::M161);
   return UploadList::UploadInfo(std::string(), base::Time(), filename,
                                 log_info.last_modified, State::Pending);
 }
@@ -161,7 +162,7 @@ UploadList::UploadInfo CreateLocalOnlyLogEntry(
     const WebRtcLogFileInfo& log_info) {
   using State = UploadList::UploadInfo::State;
   const std::string filename = log_info.path.BaseName().MaybeAsASCII();
-  DCHECK(!filename.empty());
+  CHECK(!filename.empty(), base::NotFatalUntil::M161);
   return UploadList::UploadInfo(std::string(), base::Time(), filename,
                                 log_info.last_modified, State::NotUploaded);
 }
@@ -171,7 +172,7 @@ UploadList::UploadInfo CreateActivelyUploadedLogEntry(
     const base::Time& upload_time) {
   using State = UploadList::UploadInfo::State;
   const std::string filename = log_info.path.BaseName().MaybeAsASCII();
-  DCHECK(!filename.empty());
+  CHECK(!filename.empty(), base::NotFatalUntil::M161);
   return UploadList::UploadInfo(std::string(), upload_time, filename,
                                 log_info.last_modified, State::Pending);
 }
@@ -220,14 +221,14 @@ WebRtcRemoteEventLogManager::WebRtcRemoteEventLogManager(
       weak_ptr_factory_(
           std::make_unique<base::WeakPtrFactory<WebRtcRemoteEventLogManager>>(
               this)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // Proactive pruning would not do anything at the moment; it will be started
   // with the first enabled browser context. This will all have the benefit
   // of doing so on |task_runner_| rather than the UI thread.
 }
 
 WebRtcRemoteEventLogManager::~WebRtcRemoteEventLogManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   // TODO(crbug.com/40545136): Purge from disk files which were being uploaded
   // while destruction took place, thereby avoiding endless attempts to upload
   // the same file.
@@ -255,9 +256,9 @@ WebRtcRemoteEventLogManager::~WebRtcRemoteEventLogManager() {
 
 void WebRtcRemoteEventLogManager::SetNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(network_connection_tracker);
-  DCHECK(!network_connection_tracker_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK(network_connection_tracker, base::NotFatalUntil::M161);
+  CHECK(!network_connection_tracker_, base::NotFatalUntil::M161);
 
   // |this| is only destroyed (on the UI thread) after |task_runner_| stops,
   // so AddNetworkConnectionObserver() is safe.
@@ -278,14 +279,14 @@ void WebRtcRemoteEventLogManager::SetNetworkConnectionTracker(
 
   // Because this happens while enabling the first browser context, there is no
   // necessity to consider uploading yet.
-  DCHECK_EQ(enabled_browser_contexts_.size(), 0u);
+  CHECK_EQ(enabled_browser_contexts_.size(), 0u, base::NotFatalUntil::M161);
 }
 
 void WebRtcRemoteEventLogManager::SetLogFileWriterFactory(
     std::unique_ptr<LogFileWriter::Factory> log_file_writer_factory) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(log_file_writer_factory);
-  DCHECK(!log_file_writer_factory_);
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
+  CHECK(log_file_writer_factory, base::NotFatalUntil::M161);
+  CHECK(!log_file_writer_factory_, base::NotFatalUntil::M161);
   log_file_writer_factory_ = std::move(log_file_writer_factory);
 }
 

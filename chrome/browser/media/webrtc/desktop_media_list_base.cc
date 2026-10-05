@@ -33,24 +33,24 @@ DesktopMediaListBase::DesktopMediaListBase(base::TimeDelta update_period,
 DesktopMediaListBase::~DesktopMediaListBase() = default;
 
 void DesktopMediaListBase::SetUpdatePeriod(base::TimeDelta period) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!observer_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!observer_, base::NotFatalUntil::M161);
   update_period_ = period;
 }
 
 void DesktopMediaListBase::SetThumbnailSize(const gfx::Size& thumbnail_size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   thumbnail_size_ = thumbnail_size;
 }
 
 void DesktopMediaListBase::SetViewDialogWindowId(DesktopMediaID dialog_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   view_dialog_id_ = dialog_id;
 }
 
 void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!observer_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!observer_, base::NotFatalUntil::M161);
   observer_ = observer;
 
   // If there is a delegated source list, it may not have been started yet.
@@ -64,35 +64,35 @@ void DesktopMediaListBase::StartUpdating(DesktopMediaListObserver* observer) {
     }
   }
 
-  DCHECK(!refresh_callback_);
+  CHECK(!refresh_callback_, base::NotFatalUntil::M161);
   refresh_callback_ = base::BindOnce(&DesktopMediaListBase::ScheduleNextRefresh,
                                      weak_factory_.GetWeakPtr());
   Refresh(true);
 }
 
 void DesktopMediaListBase::Update(UpdateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(sources_.empty());
-  DCHECK(!refresh_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(sources_.empty(), base::NotFatalUntil::M161);
+  CHECK(!refresh_callback_, base::NotFatalUntil::M161);
   refresh_callback_ = std::move(callback);
   Refresh(false);
 }
 
 int DesktopMediaListBase::GetSourceCount() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return sources_.size();
 }
 
 const DesktopMediaList::Source& DesktopMediaListBase::GetSource(
     int index) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_GE(index, 0);
-  DCHECK_LT(index, static_cast<int>(sources_.size()));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_GE(index, 0, base::NotFatalUntil::M161);
+  CHECK_LT(index, static_cast<int>(sources_.size()), base::NotFatalUntil::M161);
   return sources_[index];
 }
 
 DesktopMediaList::Type DesktopMediaListBase::GetMediaListType() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return type_;
 }
 
@@ -116,7 +116,7 @@ DesktopMediaListBase::SourceDescription::SourceDescription(
 
 void DesktopMediaListBase::UpdateSourcesList(
     const std::vector<SourceDescription>& new_sources) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   typedef std::set<DesktopMediaID> SourceSet;
   SourceSet new_source_set;
@@ -150,7 +150,7 @@ void DesktopMediaListBase::UpdateSourcesList(
       }
     }
   }
-  DCHECK_EQ(new_sources.size(), sources_.size());
+  CHECK_EQ(new_sources.size(), sources_.size(), base::NotFatalUntil::M161);
 
   // Find the moved/changed sources.
   size_t pos = 0;
@@ -163,7 +163,8 @@ void DesktopMediaListBase::UpdateSourcesList(
         if (sources_[old_pos].id == new_sources[pos].id)
           break;
       }
-      DCHECK(sources_[old_pos].id == new_sources[pos].id);
+      CHECK(sources_[old_pos].id == new_sources[pos].id,
+            base::NotFatalUntil::M161);
 
       // Move the source from |old_pos| to |pos|.
       Source temp = sources_[old_pos];
@@ -194,13 +195,13 @@ void DesktopMediaListBase::UpdateSourcesList(
 
 void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
                                                  const gfx::ImageSkia& image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Unlike other methods that check can_refresh(), this one won't cause
   // OnRefreshComplete() to be called, but the caller is expected to schedule a
   // call to OnRefreshComplete() after this method and UpdateSourcePreview()
   // have been called as many times as needed, so the check is still valid.
-  DCHECK(can_refresh());
+  CHECK(can_refresh(), base::NotFatalUntil::M161);
 
   for (size_t i = 0; i < sources_.size(); ++i) {
     if (sources_[i].id == id) {
@@ -214,13 +215,13 @@ void DesktopMediaListBase::UpdateSourceThumbnail(const DesktopMediaID& id,
 
 void DesktopMediaListBase::UpdateSourcePreview(const DesktopMediaID& id,
                                                const gfx::ImageSkia& image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Unlike other methods that check can_refresh(), this one won't cause
   // OnRefreshComplete() to be called, but the caller is expected to schedule a
   // call to OnRefreshComplete() after this method and UpdateSourceThumbnail()
   // have been called as many times as needed, so the check is still valid.
-  DCHECK(can_refresh());
+  CHECK(can_refresh(), base::NotFatalUntil::M161);
 
   for (size_t i = 0; i < sources_.size(); ++i) {
     if (sources_[i].id == id) {
@@ -234,21 +235,21 @@ void DesktopMediaListBase::UpdateSourcePreview(const DesktopMediaID& id,
 
 // static
 uint32_t DesktopMediaListBase::GetImageHash(const gfx::Image& image) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   SkBitmap bitmap = image.AsBitmap();
   return base::FastHash(UNSAFE_TODO(base::span(
       static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize())));
 }
 
 void DesktopMediaListBase::OnRefreshComplete() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(refresh_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(refresh_callback_, base::NotFatalUntil::M161);
   std::move(refresh_callback_).Run();
 }
 
 void DesktopMediaListBase::ScheduleNextRefresh() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!refresh_callback_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!refresh_callback_, base::NotFatalUntil::M161);
   refresh_callback_ = base::BindOnce(&DesktopMediaListBase::ScheduleNextRefresh,
                                      weak_factory_.GetWeakPtr());
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
@@ -259,8 +260,8 @@ void DesktopMediaListBase::ScheduleNextRefresh() {
 }
 
 void DesktopMediaListBase::OnDelegatedSourceListSelection() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsSourceListDelegated());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(IsSourceListDelegated(), base::NotFatalUntil::M161);
   if (observer_)
     observer_->OnDelegatedSourceListSelection();
 
@@ -268,8 +269,8 @@ void DesktopMediaListBase::OnDelegatedSourceListSelection() {
 }
 
 void DesktopMediaListBase::OnDelegatedSourceListDismissed() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(IsSourceListDelegated());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(IsSourceListDelegated(), base::NotFatalUntil::M161);
   if (observer_)
     observer_->OnDelegatedSourceListDismissed();
 

@@ -198,7 +198,7 @@ void TabCaptureAccessHandler::HandleRequest(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const extensions::Extension* extension) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -330,8 +330,8 @@ void TabCaptureAccessHandler::AcceptRequest(
     content::MediaResponseCallback callback,
     bool is_allowlisted_extension,
     std::unique_ptr<MediaStreamUI> media_ui) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   // TOOD(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesSet stream_devices_set;
@@ -341,8 +341,9 @@ void TabCaptureAccessHandler::AcceptRequest(
       *stream_devices_set.stream_devices[0];
   std::unique_ptr<content::MediaStreamUI> ui = GetMediaStreamUI(
       request, web_contents, std::move(media_ui), stream_devices);
-  DCHECK(stream_devices.audio_device.has_value() ||
-         stream_devices.video_device.has_value());
+  CHECK(stream_devices.audio_device.has_value() ||
+            stream_devices.video_device.has_value(),
+        base::NotFatalUntil::M161);
 
   UpdateExtensionTrusted(request, is_allowlisted_extension);
   std::move(callback).Run(stream_devices_set,
@@ -356,7 +357,7 @@ void TabCaptureAccessHandler::OnDlpRestrictionChecked(
     std::unique_ptr<PendingAccessRequest> pending_request,
     std::unique_ptr<MediaStreamUI> media_ui,
     bool is_dlp_allowed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!web_contents) {
     return;

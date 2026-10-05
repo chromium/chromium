@@ -105,7 +105,7 @@ GetPipIdToExcludeFromScreenCaptureOnUIThread(
     PipWebContentsGetter pip_web_contents_getter,
     PipWindowToExcludeForScreenCaptureGetter
         pip_window_to_exclude_for_screen_capture_getter) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents = pip_web_contents_getter.Run();
   if (!web_contents) {
@@ -282,7 +282,7 @@ ScreenshotManagerCapturer::ScreenshotManagerCapturer(
 void ScreenshotManagerCapturer::SelectSources(
     const std::vector<ThumbnailCapturer::SourceId>& ids,
     gfx::Size thumbnail_size) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   thumbnail_size_ = thumbnail_size;
 
@@ -310,7 +310,7 @@ void ScreenshotManagerCapturer::SelectSources(
 }
 
 void ScreenshotManagerCapturer::OnRecurrentCaptureTimer() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   if (capture_queue_.empty()) {
     return;
   }
@@ -359,7 +359,7 @@ void ScreenshotManagerCapturer::CaptureSource(
 void ScreenshotManagerCapturer::OnCapturedFrame(
     base::apple::ScopedCFTypeRef<CGImageRef> cg_image,
     ThumbnailCapturer::SourceId source_id) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   // Schedule a new capture of this window since we got a callback.
   CHECK_GT(capture_calls_in_flight_, 0u);
@@ -375,7 +375,7 @@ void ScreenshotManagerCapturer::SCScreenshotCaptureSource(
     SCContentFilter* filter,
     CGRect frame,
     ThumbnailCapturer::SourceId source_id) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   // Create SCStreamConfiguration.
   SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
@@ -575,7 +575,7 @@ void ThumbnailCapturerMac::SetMaxFrameRate(uint32_t max_frame_rate) {
 }
 
 bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   sources->clear();
 
@@ -596,7 +596,7 @@ bool ThumbnailCapturerMac::GetSourceList(SourceList* sources) {
 }
 
 void ThumbnailCapturerMac::GetDisplaySourceList(SourceList* sources) const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   // Add relevant sources.
   for (SCDisplay* display in shareable_displays_) {
     sources->push_back(
@@ -605,7 +605,7 @@ void ThumbnailCapturerMac::GetDisplaySourceList(SourceList* sources) const {
 }
 
 void ThumbnailCapturerMac::GetWindowSourceList(SourceList* sources) const {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   // Discover how many windows are associated with each application,
   // so as to use this as part of the set of conditions for which
   // windows are valid sources.
@@ -639,7 +639,7 @@ void ThumbnailCapturerMac::GetWindowSourceList(SourceList* sources) const {
 }
 
 void ThumbnailCapturerMac::UpdateWindowsList() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   if (update_in_progress_) {
     return;
@@ -665,7 +665,7 @@ void ThumbnailCapturerMac::UpdateWindowsList() {
 
 void ThumbnailCapturerMac::GetPipIds(scoped_refptr<UpdateContext> context,
                                      base::RepeatingClosure barrier) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   std::vector<content::DesktopMediaID::Id> screen_ids;
   for (SCDisplay* display in shareable_displays_) {
@@ -691,7 +691,7 @@ void ThumbnailCapturerMac::GetPipIds(scoped_refptr<UpdateContext> context,
 void ThumbnailCapturerMac::GetShareableContent(
     scoped_refptr<UpdateContext> context,
     base::RepeatingClosure barrier) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
 
   auto handler = base::CallbackToBlock(base::BindOnce(
       [](scoped_refptr<UpdateContext> context, base::RepeatingClosure barrier,
@@ -713,7 +713,7 @@ void ThumbnailCapturerMac::GetShareableContent(
 
 void ThumbnailCapturerMac::OnUpdateComplete(
     scoped_refptr<UpdateContext> context) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   update_in_progress_ = false;
   std::map<content::DesktopMediaID::Id,
            std::optional<content::DesktopMediaID::Id>>
@@ -843,7 +843,7 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::FilterOutUnshareable(
 
 void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
                                          gfx::Size thumbnail_size) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK(task_runner_->RunsTasksInCurrentSequence(), base::NotFatalUntil::M161);
   CHECK(screenshot_manager_capturer_);
   screenshot_manager_capturer_->SelectSources(ids, thumbnail_size);
 }

@@ -71,8 +71,8 @@ base::Time StringToTime(const std::string& time) {
 bool ParseTime(const std::string& line,
                const std::string& prefix,
                base::Time* out) {
-  DCHECK(line.starts_with(prefix));
-  DCHECK(out);
+  CHECK(line.starts_with(prefix), base::NotFatalUntil::M161);
+  CHECK(out, base::NotFatalUntil::M161);
 
   if (!out->is_null()) {
     LOG(WARNING) << "Repeated line.";
@@ -93,8 +93,8 @@ bool ParseTime(const std::string& line,
 bool ParseString(const std::string& line,
                  const std::string& prefix,
                  std::string* out) {
-  DCHECK(line.starts_with(prefix));
-  DCHECK(out);
+  CHECK(line.starts_with(prefix), base::NotFatalUntil::M161);
+  CHECK(out, base::NotFatalUntil::M161);
 
   if (!out->empty()) {
     LOG(WARNING) << "Repeated line.";
@@ -128,7 +128,7 @@ WebRtcEventLogHistoryFileWriter::WebRtcEventLogHistoryFileWriter(
     : path_(path), valid_(false) {}
 
 bool WebRtcEventLogHistoryFileWriter::Init() {
-  DCHECK(!valid_);
+  CHECK(!valid_, base::NotFatalUntil::M161);
 
   if (base::PathExists(path_)) {
     if (!base::DeleteFile(path_)) {
@@ -156,7 +156,7 @@ bool WebRtcEventLogHistoryFileWriter::Init() {
 
 bool WebRtcEventLogHistoryFileWriter::WriteCaptureTime(
     base::Time capture_time) {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M161);
 
   if (capture_time.is_null()) {
     valid_ = false;
@@ -180,7 +180,7 @@ bool WebRtcEventLogHistoryFileWriter::WriteCaptureTime(
 }
 
 bool WebRtcEventLogHistoryFileWriter::WriteUploadTime(base::Time upload_time) {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M161);
 
   if (upload_time.is_null()) {
     valid_ = false;
@@ -204,9 +204,10 @@ bool WebRtcEventLogHistoryFileWriter::WriteUploadTime(base::Time upload_time) {
 
 bool WebRtcEventLogHistoryFileWriter::WriteUploadId(
     const std::string& upload_id) {
-  DCHECK(valid_);
-  DCHECK(!upload_id.empty());
-  DCHECK_LE(upload_id.length(), kWebRtcEventLogMaxUploadIdBytes);
+  CHECK(valid_, base::NotFatalUntil::M161);
+  CHECK(!upload_id.empty(), base::NotFatalUntil::M161);
+  CHECK_LE(upload_id.length(), kWebRtcEventLogMaxUploadIdBytes,
+           base::NotFatalUntil::M161);
 
   const bool written = Write(kUploadIdLinePrefix + upload_id + kEOL);
   if (!written) {
@@ -226,14 +227,16 @@ void WebRtcEventLogHistoryFileWriter::Delete() {
 }
 
 base::FilePath WebRtcEventLogHistoryFileWriter::path() const {
-  DCHECK(valid_);  // Can be performed on invalid objects, but likely shouldn't.
+  CHECK(valid_, base::NotFatalUntil::M161);  // Can be performed on invalid
+                                             // objects, but likely shouldn't.
   return path_;
 }
 
 bool WebRtcEventLogHistoryFileWriter::Write(const std::string& str) {
-  DCHECK(valid_);
-  DCHECK(!str.empty());
-  DCHECK_LE(str.length(), static_cast<size_t>(std::numeric_limits<int>::max()));
+  CHECK(valid_, base::NotFatalUntil::M161);
+  CHECK(!str.empty(), base::NotFatalUntil::M161);
+  CHECK_LE(str.length(), static_cast<size_t>(std::numeric_limits<int>::max()),
+           base::NotFatalUntil::M161);
 
   if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(str))) {
     LOG(WARNING) << "Writing to history file failed.";
@@ -279,7 +282,7 @@ WebRtcEventLogHistoryFileReader::WebRtcEventLogHistoryFileReader(
 }
 
 bool WebRtcEventLogHistoryFileReader::Init() {
-  DCHECK(!valid_);
+  CHECK(!valid_, base::NotFatalUntil::M161);
 
   if (local_id_.empty()) {
     LOG(WARNING) << "Unknown local ID.";
@@ -331,38 +334,38 @@ bool WebRtcEventLogHistoryFileReader::Init() {
 }
 
 std::string WebRtcEventLogHistoryFileReader::LocalId() const {
-  DCHECK(valid_);
-  DCHECK(!local_id_.empty());
+  CHECK(valid_, base::NotFatalUntil::M161);
+  CHECK(!local_id_.empty(), base::NotFatalUntil::M161);
   return local_id_;
 }
 
 base::Time WebRtcEventLogHistoryFileReader::CaptureTime() const {
-  DCHECK(valid_);
-  DCHECK(!capture_time_.is_null());
+  CHECK(valid_, base::NotFatalUntil::M161);
+  CHECK(!capture_time_.is_null(), base::NotFatalUntil::M161);
   return capture_time_;
 }
 
 base::Time WebRtcEventLogHistoryFileReader::UploadTime() const {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M161);
   return upload_time_;  // May be null (which indicates "unset").
 }
 
 std::string WebRtcEventLogHistoryFileReader::UploadId() const {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M161);
   return upload_id_;
 }
 
 base::FilePath WebRtcEventLogHistoryFileReader::path() const {
-  DCHECK(valid_);
+  CHECK(valid_, base::NotFatalUntil::M161);
   return path_;
 }
 
 bool WebRtcEventLogHistoryFileReader::operator<(
     const WebRtcEventLogHistoryFileReader& other) const {
-  DCHECK(valid_);
-  DCHECK(!capture_time_.is_null());
-  DCHECK(other.valid_);
-  DCHECK(!other.capture_time_.is_null());
+  CHECK(valid_, base::NotFatalUntil::M161);
+  CHECK(!capture_time_.is_null(), base::NotFatalUntil::M161);
+  CHECK(other.valid_, base::NotFatalUntil::M161);
+  CHECK(!other.capture_time_.is_null(), base::NotFatalUntil::M161);
   if (capture_time_ == other.capture_time_) {
     // Resolve ties arbitrarily, but consistently (Local IDs are unique).
     return LocalId() < other.LocalId();
@@ -371,10 +374,10 @@ bool WebRtcEventLogHistoryFileReader::operator<(
 }
 
 bool WebRtcEventLogHistoryFileReader::Parse(const std::string& file_contents) {
-  DCHECK(!valid_);
-  DCHECK(capture_time_.is_null());
-  DCHECK(upload_time_.is_null());
-  DCHECK(upload_id_.empty());
+  CHECK(!valid_, base::NotFatalUntil::M161);
+  CHECK(capture_time_.is_null(), base::NotFatalUntil::M161);
+  CHECK(upload_time_.is_null(), base::NotFatalUntil::M161);
+  CHECK(upload_id_.empty(), base::NotFatalUntil::M161);
 
   const std::vector<std::string> lines =
       base::SplitString(file_contents, kEOL, base::TRIM_WHITESPACE,
