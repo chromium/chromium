@@ -10119,6 +10119,21 @@
             ]
         }
     ],
+    "HeliosQuizzes": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiQuizzes"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosZeroStateSuggestionsExpansion": [
         {
             "platforms": [
