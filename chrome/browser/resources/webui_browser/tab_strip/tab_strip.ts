@@ -24,7 +24,7 @@ import type {TabStripObserver} from '/tab_strip_api/tab_strip_observer.js';
 import {DropTargetReceiver, DropTargetRegistrationRemote, TabDragService} from '../tab_drag_api.mojom-webui.js';
 import type {DropTargetInterface, DropTargetRegistrationRemote as DropTargetRegistrationRemoteType, TabDragServiceRemote} from '../tab_drag_api.mojom-webui.js';
 
-import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './events.js';
+import type {TabAdded, TabClosed, TabUpdated} from './events.js';
 import type {TabGroupItem, TabItem, TabStripItem} from './items.js';
 import type {TabElement} from './tab.js';
 import {TabDragDelegate} from './tab_drag_delegate.js';
@@ -337,14 +337,10 @@ export class TabStripElement extends CrLitElement implements
   }
 
   protected activateTab(tabId: NodeId) {
-    const item = this.findItem_<TabItem>(tabId, 'tab');
-    if (!item) {
-      return;
-    }
-
-    this.setActiveTab_(tabId);
+    // Only request the activation. The active state is applied when the
+    // browser reports the change through OnDataChanged (see updateTab()), so
+    // the UI never disagrees with the TabStripModel.
     this.tabStripService_.activateTab(tabId);
-    this.fire<TabActivated>('tab-activated', {...item.tabData, isActive: true});
   }
 
   // TODO(webium): implement this.

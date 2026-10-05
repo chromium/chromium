@@ -7,8 +7,6 @@ import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
 
 export type TabClosed = NodeId;
 
-export type TabActivated = TabData;
-
 export type TabUpdated = TabData;
 
 export interface TabAdded {

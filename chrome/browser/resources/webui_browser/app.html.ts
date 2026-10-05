@@ -15,7 +15,6 @@ export function getHtml(this: WebuiBrowserAppElement) {
       <div class="tabstripDiv" style="margin-left:${this.tabStripInset_}px">
         <webui-browser-tab-strip id="tabstrip"
             ?inactive-frame="${this.inactive_}"
-            @tab-activated="${this.onTabActivated_}"
             @tab-added="${this.onTabAdded_}"
             @tab-closed="${this.onTabClosed_}"
             @tab-updated="${this.onTabUpdated_}">
