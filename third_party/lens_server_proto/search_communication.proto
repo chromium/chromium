@@ -21,7 +21,7 @@ message ClientToSearchMessage {
   message InjectChromeInput {
     // Ephemeral random client ID for indexing and keeping data in sync between
     // Chrome and Search.
-    string data_id = 1;
+    string data_id = 1 [deprecated = true];
 
     enum InputType {
       INPUT_TYPE_UNSPECIFIED = 0;
@@ -29,6 +29,8 @@ message ClientToSearchMessage {
       LENS_CHIP = 1;
       // Context library / added tabs container.
       CONTEXT_LIBRARY = 2;
+      // Lens button / selection active state.
+      LENS_BUTTON = 3;
     }
     InputType input_type = 2;
 
@@ -78,6 +80,49 @@ message SearchToClientMessage {
   // answers with an OnSubmitQueryResponse.
   message OnSubmitQueryRequest {}
 
+  // Message sent by Search Web to Chrome to synchronize the thread's context
+  // library upon restoration or update.
+  message UpdateThreadContextLibrary {
+    // Context input for AIM threads.
+    message Context {
+      message Image {
+        string title = 1;
+        string url = 2;
+      }
+
+      message Pdf {
+        string title = 1;
+        string url = 2;
+      }
+
+      message Webpage {
+        string title = 1;
+        string url = 2;
+      }
+
+      // Unique identifier for the user uploaded context (e.g. PDF). This is
+      // created during context upload.
+      int64 context_id = 1;
+
+      oneof context_input {
+        Image image = 2;
+        Pdf pdf = 3;
+        Webpage webpage = 4;
+      }
+
+      // True if the context/media is derived from a Chrome tab.
+      bool has_chrome_tab_data = 23;
+    }
+
+    repeated Context contexts = 1;
+  }
+
+  // Message sent by Search Web to Chrome to notify to open a link in side
+  // panel mode.
+  message OpenLinkInSidePanelMode {
+    string url = 1;
+  }
+
   oneof event_message {
     // Handshake response sent by Search Web acknowledging readiness.
     HandshakeResponse handshake_response = 1;
@@ -85,6 +130,13 @@ message SearchToClientMessage {
     // Sent when the user submits a query, requesting Chrome to finalize the
     // context attached to it.
     OnSubmitQueryRequest on_submit_query_request = 2;
+
+    // Sent when restoring or updating a thread to synchronize the thread's
+    // context library with Chrome.
+    UpdateThreadContextLibrary update_thread_context_library = 3;
+
+    // Sent to notify Chrome to open a link in side panel mode.
+    OpenLinkInSidePanelMode open_link_in_side_panel_mode = 4;
   }
 }
 

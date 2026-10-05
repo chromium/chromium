@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -35,6 +36,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -257,10 +259,25 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   }
 
   void EmbedHandlerInSidePanel() {
-    side_panel_task_id_ = base::Uuid::GenerateRandomV4();
+    auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
+    ASSERT_NE(tasks_service, nullptr);
+    ContextualTask task = tasks_service->CreateTask();
+    side_panel_task_id_ = task.GetTaskId();
+    tasks_service->AssociateTabWithTask(
+        *side_panel_task_id_,
+        sessions::SessionTabHelper::IdForTab(web_contents_));
+
     auto panel_contents = content::WebContents::Create(
         content::WebContents::CreateParams(web_contents_->GetBrowserContext()));
     content::WebContents* raw_panel_contents = panel_contents.get();
+    ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+        raw_panel_contents)
+        ->SetTaskSession(
+            *side_panel_task_id_,
+            std::make_unique<NiceMock<
+                contextual_search::MockContextualSearchSessionHandle>>(),
+            /*input_state_model=*/nullptr);
     ContextualTasksPanelController::From(browser())->TransferWebContentsFromTab(
         *side_panel_task_id_, std::move(panel_contents));
 
@@ -268,6 +285,10 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     ContextualTasksExtensionHandler::CreateForCurrentDocument(rfh);
     handler_ = ContextualTasksExtensionHandler::GetForCurrentDocument(rfh);
     ASSERT_NE(handler_, nullptr);
+
+    mojo::PendingReceiver<mojom::ExtensionPageHandler> page_handler_receiver;
+    handler_->CreateExtensionPageHandler(mock_panel_page_.BindAndGetRemote(),
+                                         std::move(page_handler_receiver));
 
     composebox_handler_remote_.reset();
     mock_searchbox_page_.receiver_.reset();
@@ -289,6 +310,7 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   raw_ptr<ContextualTasksExtensionHandler> handler_ = nullptr;
   std::optional<base::Uuid> side_panel_task_id_;
   NiceMock<MockContextualTasksExtensionPage> mock_page_;
+  NiceMock<MockContextualTasksExtensionPage> mock_panel_page_;
   NiceMock<MockSearchboxPage> mock_searchbox_page_;
   raw_ptr<contextual_search::MockContextualSearchSessionHandle>
       mock_session_handle_ = nullptr;
@@ -2078,4 +2100,110 @@ IN_PROC_BROWSER_TEST_F(
   ui_service->OnLensOverlayStateChanged(browser(), true, std::nullopt);
   mock_page_.FlushForTesting();
 }
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_SearchToClientMessageOpenLinkInSidePanelMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  EmbedHandlerInSidePanel();
+  ASSERT_TRUE(side_panel_task_id_.has_value());
+  content::WebContents* original_tab_contents = web_contents_;
+
+  lens::SearchToClientMessage message;
+  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message);
+
+  // The link is opened in a new active tab next to the side panel and
+  // associated with the side panel's task.
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(active_contents, nullptr);
+  EXPECT_NE(active_contents, original_tab_contents);
+  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
+
+  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
+  ASSERT_NE(tasks_service, nullptr);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+  std::optional<ContextualTask> task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_SearchToClientMessageOpenLinkInSidePanelMode_InvalidUrlIgnored) {
+  EmbedHandlerInSidePanel();
+
+  // Non-HTTP(S) URL should be ignored.
+  {
+    lens::SearchToClientMessage message;
+    message.mutable_open_link_in_side_panel_mode()->set_url(
+        "javascript:alert(1)");
+    const size_t size = message.ByteSizeLong();
+    std::vector<uint8_t> serialized_message(size);
+    message.SerializeToArray(serialized_message.data(), size);
+    handler_->OnWebviewMessage(serialized_message);
+  }
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            web_contents_);
+
+  // Malformed URL should be ignored.
+  {
+    lens::SearchToClientMessage message;
+    message.mutable_open_link_in_side_panel_mode()->set_url("not a valid url");
+    const size_t size = message.ByteSizeLong();
+    std::vector<uint8_t> serialized_message(size);
+    message.SerializeToArray(serialized_message.data(), size);
+    handler_->OnWebviewMessage(serialized_message);
+  }
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            web_contents_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    OnWebviewMessage_AimToClientMessageOpenLinkInSidePanelMode) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
+
+  EmbedHandlerInSidePanel();
+  ASSERT_TRUE(side_panel_task_id_.has_value());
+  content::WebContents* original_tab_contents = web_contents_;
+
+  lens::AimToClientMessage message;
+  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
+  const size_t size = message.ByteSizeLong();
+  std::vector<uint8_t> serialized_message(size);
+  message.SerializeToArray(serialized_message.data(), size);
+
+  handler_->OnWebviewMessage(serialized_message);
+
+  content::WebContents* active_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_NE(active_contents, nullptr);
+  EXPECT_NE(active_contents, original_tab_contents);
+  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
+
+  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
+  ASSERT_NE(tasks_service, nullptr);
+  SessionID active_tab_id =
+      sessions::SessionTabHelper::IdForTab(active_contents);
+  std::optional<ContextualTask> task =
+      tasks_service->GetContextualTaskForTab(active_tab_id);
+  ASSERT_TRUE(task.has_value());
+  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
+}
+
 }  // namespace contextual_tasks
