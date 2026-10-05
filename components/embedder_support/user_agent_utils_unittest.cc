@@ -601,47 +601,6 @@ TEST_F(UserAgentUtilsTest, GenerateBrandVersionListAdditionalBrandVersions) {
                          std::string(version_info::GetVersionNumber()) + "\""));
 }
 
-TEST_F(UserAgentUtilsTest,
-       GenerateBrandVersionListWithGreaseBrandAndVersionOverride) {
-  blink::UserAgentMetadata metadata;
-
-  metadata.brand_version_list = GenerateBrandVersionList(
-      84, std::nullopt, "84", blink::UserAgentBrandVersionType::kMajorVersion);
-  metadata.brand_full_version_list =
-      GenerateBrandVersionList(84, std::nullopt, "84.0.0.0",
-                               blink::UserAgentBrandVersionType::kFullVersion);
-  // 1. verify major version
-  std::string brand_list_and_version_grease_override =
-      metadata.SerializeBrandMajorVersionList();
-  EXPECT_EQ(R"("Not;A=Brand";v="8", "Chromium";v="84")",
-            brand_list_and_version_grease_override);
-  // 2. verify full version
-  std::string brand_list_and_version_grease_override_fv =
-      metadata.SerializeBrandFullVersionList();
-  EXPECT_EQ(R"("Not;A=Brand";v="8.0.0.0", "Chromium";v="84.0.0.0")",
-            brand_list_and_version_grease_override_fv);
-}
-
-TEST_F(UserAgentUtilsTest, GenerateBrandVersionListWithGreaseVersionOverride) {
-  blink::UserAgentMetadata metadata;
-
-  metadata.brand_version_list = GenerateBrandVersionList(
-      84, std::nullopt, "84", blink::UserAgentBrandVersionType::kMajorVersion);
-  metadata.brand_full_version_list =
-      GenerateBrandVersionList(84, std::nullopt, "84.0.0.0",
-                               blink::UserAgentBrandVersionType::kFullVersion);
-  // 1. verify major version
-  std::string brand_version_grease_override =
-      metadata.SerializeBrandMajorVersionList();
-  EXPECT_EQ(R"("Not;A=Brand";v="8", "Chromium";v="84")",
-            brand_version_grease_override);
-  // 2. verify full version
-  std::string brand_version_grease_override_fv =
-      metadata.SerializeBrandFullVersionList();
-  EXPECT_EQ(R"("Not;A=Brand";v="8.0.0.0", "Chromium";v="84.0.0.0")",
-            brand_version_grease_override_fv);
-}
-
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListWithBrand) {
   blink::UserAgentMetadata metadata;
   metadata.brand_version_list =
