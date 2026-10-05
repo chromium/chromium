@@ -34,8 +34,9 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
     // strictly according to the pre-set policies.
     kEnforce,
     // If the page is about to activate, MojoBinderPolicyApplier will switch to
-    // the kPrepareToGrantAll mode, and all non-kGrant binders will be
-    // deferred.
+    // the kPrepareToGrantAll mode. In this mode, kGrant, kCancel, kUnexpected,
+    // and synchronous kDefer binders are granted immediately, while other
+    // kDefer binders continue to be deferred until GrantAll() is called.
     kPrepareToGrantAll,
     // In the kGrantAll mode, MojoBinderPolicyApplier grants all binding
     // requests regardless of their policies.
@@ -70,13 +71,15 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // interface.
   // - In kEnforce mode:
   //   - kGrant: Runs `binder_callback` immediately.
-  //   - kDefer: Saves `binder_callback` and runs it when GrantAll() is called.
+  //   - kDefer: Saves `binder_callback` and runs it when GrantAll() is called,
+  //     or when PrepareToGrantAll() is called if the interface declares sync
+  //     methods.
   //   - kCancel: Drops `binder_callback` and runs `cancel_callback_`.
-  //   - kUnexpected: Unimplemented now.
+  //   - kUnexpected: Reports a bad message and runs `cancel_callback_`.
   // - In the kPrepareToGrantAll mode:
-  //   - kGrant: Runs `binder_callback` immediately.
-  //   - kDefer, kCancel and kUnexpected: Saves `binder_callback` and runs it
-  //   when GrantAll() is called.
+  //   - kGrant, kCancel and kUnexpected: Runs `binder_callback` immediately.
+  //   - kDefer: Saves `binder_callback` and runs it when GrantAll() is called,
+  //     or runs it immediately if the interface declares sync methods.
   // - In the kGrantAll mode: this always runs the callback immediately.
   void ApplyPolicyToNonAssociatedBinder(const std::string& interface_name,
                                         base::OnceClosure binder_callback);
@@ -98,7 +101,8 @@ class CONTENT_EXPORT MojoBinderPolicyApplier {
   // requests, i.e., it stops applying the policies.
 
   void GrantAll();
-  // Deletes all deferred binders without running them.
+  // Deletes all deferred binders (including `deferred_sync_binders_`) without
+  // running them.
   void DropDeferredBinders();
 
  private:

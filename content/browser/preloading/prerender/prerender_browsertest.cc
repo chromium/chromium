@@ -119,6 +119,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -7748,6 +7749,137 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, MojoCapabilityControl_LoosenMode) {
     prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
     remote.FlushForTesting();
   }
+}
+
+class PrerenderLazyBrowserInterfaceBrokerBrowserTest
+    : public PrerenderBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PrerenderLazyBrowserInterfaceBrokerBrowserTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kLazyBrowserInterfaceBroker);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kLazyBrowserInterfaceBroker);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrerenderLazyBrowserInterfaceBrokerBrowserTest,
+                         testing::Bool());
+
+// Tests that tearing down the Mojo connection on a prerendering frame (which
+// destroys `broker_holder_` when `kLazyBrowserInterfaceBroker` is enabled)
+// drops pending deferred binders and does not cause a use-after-free or CHECK
+// failure when the prerendered page is subsequently activated.
+IN_PROC_BROWSER_TEST_P(
+    PrerenderLazyBrowserInterfaceBrokerBrowserTest,
+    MojoCapabilityControl_TearDownMojoConnectionBeforeActivation) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/page_with_iframe.html");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* main_rfh = GetPrerenderedMainFrameHost(host_id);
+  ASSERT_GE(main_rfh->child_count(), 1U);
+  RenderFrameHostImpl* child_rfh = main_rfh->child_at(0U)->current_frame_host();
+
+  base::RunLoop run_loop;
+
+  // Queue a kDefer interface request on the main frame.
+  mojo::Remote<mojom::TestInterfaceForDefer> main_defer_remote;
+  main_rfh->browser_interface_broker_receiver_for_testing()
+      .internal_state()
+      ->impl()
+      ->GetInterface(main_defer_remote.BindNewPipeAndPassReceiver());
+  main_defer_remote->Ping(run_loop.QuitClosure());
+
+  // Queue a kDefer interface request and a sync kDefer interface request on the
+  // child frame.
+  mojo::Remote<mojom::TestInterfaceForDefer> child_defer_remote;
+  child_rfh->browser_interface_broker_receiver_for_testing()
+      .internal_state()
+      ->impl()
+      ->GetInterface(child_defer_remote.BindNewPipeAndPassReceiver());
+  mojo::MessagePipe sync_defer_pipe;
+  child_rfh->browser_interface_broker_receiver_for_testing()
+      .internal_state()
+      ->impl()
+      ->GetInterface(
+          mojo::GenericPendingReceiver("blink.mojom.NotificationService",
+                                       std::move(sync_defer_pipe.handle0)));
+
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(), 0U);
+
+  // Tear down the child frame's Mojo connection before activation. When
+  // `kLazyBrowserInterfaceBroker` is enabled, this resets `broker_holder_` and
+  // destroys `BrowserInterfaceBrokerImpl`, which must drop all deferred binders
+  // (including `deferred_sync_binders_`) rather than leaving dangling
+  // `base::Unretained` callbacks.
+  child_rfh->TearDownMojoConnection();
+  EXPECT_EQ(child_rfh->has_broker_holder_for_testing(), !GetParam());
+
+  // Simulate prerender activation on both frames.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  main_rfh->RendererWillActivateForPrerendering();
+  child_rfh->RendererWillActivateForPrerendering();
+  main_rfh->RendererDidActivateForPrerendering();
+  child_rfh->RendererDidActivateForPrerendering();
+
+  run_loop.Run();
+  EXPECT_EQ(test_browser_client.GetDeferReceiverSetSize(),
+            GetParam() ? 1U : 2U);
+}
+
+// Tests that rebinding the BrowserInterfaceBroker receiver during prerendering
+// preserves the existing `BrokerHolder` and `MojoBinderPolicyApplier` state
+// (such as `Mode::kPrepareToGrantAll`).
+IN_PROC_BROWSER_TEST_P(
+    PrerenderLazyBrowserInterfaceBrokerBrowserTest,
+    MojoCapabilityControl_RebindPreservesBrokerAndPolicyApplier) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender1");
+
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  PrerenderHostId host_id = AddPrerender(prerendering_url);
+  RenderFrameHostImpl* main_rfh = GetPrerenderedMainFrameHost(host_id);
+
+  blink::mojom::BrowserInterfaceBroker* initial_broker =
+      main_rfh->browser_interface_broker_receiver_for_testing()
+          .internal_state()
+          ->impl();
+  ASSERT_NE(initial_broker, nullptr);
+
+  // Switch the policy applier to `Mode::kPrepareToGrantAll`.
+  main_rfh->RendererWillActivateForPrerendering();
+
+  // Rebind the BrowserInterfaceBroker receiver.
+  ASSERT_TRUE(main_rfh->ResetBrowserInterfaceBrokerReceiverForTesting());
+  EXPECT_TRUE(main_rfh->has_broker_holder_for_testing());
+  mojo::Remote<blink::mojom::BrowserInterfaceBroker> remote_broker;
+  main_rfh->BindBrowserInterfaceBrokerReceiver(
+      remote_broker.BindNewPipeAndPassReceiver());
+
+  // The broker instance and policy applier mode (`kPrepareToGrantAll`) should
+  // be preserved across the rebind, so a `kCancel` interface request should be
+  // granted rather than canceling prerendering.
+  EXPECT_EQ(main_rfh->browser_interface_broker_receiver_for_testing()
+                .internal_state()
+                ->impl(),
+            initial_broker);
+  mojo::Remote<mojom::TestInterfaceForCancel> cancel_remote;
+  remote_broker->GetInterface(cancel_remote.BindNewPipeAndPassReceiver());
+  remote_broker.FlushForTesting();
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  main_rfh->RendererDidActivateForPrerendering();
 }
 
 // Test that prerenders triggered by speculation rules are canceled when a

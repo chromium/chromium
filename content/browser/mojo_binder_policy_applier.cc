@@ -173,6 +173,7 @@ void MojoBinderPolicyApplier::GrantAll() {
 
 void MojoBinderPolicyApplier::DropDeferredBinders() {
   deferred_binders_.clear();
+  deferred_sync_binders_.clear();
 }
 
 MojoBinderNonAssociatedPolicy

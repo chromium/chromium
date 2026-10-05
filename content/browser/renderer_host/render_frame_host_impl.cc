@@ -2604,6 +2604,15 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     set_nav_entry_id(parent_->nav_entry_id());
   }
 
+  if (frame_tree_->is_prerendering()) {
+    // TODO(crbug.com/40150746): Check the prerendering page is
+    // same-origin to the prerender trigger page.
+    mojo_binder_policy_applier_ =
+        MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
+            &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
+            base::Unretained(this)));
+  }
+
   if (!base::FeatureList::IsEnabled(features::kLazyBrowserInterfaceBroker)) {
     CreateBrokerHolder();
   }
@@ -5167,8 +5176,9 @@ void RenderFrameHostImpl::RendererDidActivateForPrerendering() {
     // As per `ReleaseMojoBinderPolicies` method requirement, the policy applier
     // owner should call the method when destroying the object, so we first
     // need to call this method before resetting the unique pointer.
-    CHECK(broker_holder_);
-    broker_holder_->broker().ReleaseMojoBinderPolicies();
+    if (broker_holder_) {
+      broker_holder_->broker().ReleaseMojoBinderPolicies();
+    }
     mojo_binder_policy_applier_.reset();
   }
 }
@@ -10207,12 +10217,20 @@ void RenderFrameHostImpl::SetCloseListener(
 void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
   // TODO(crbug.com/458719426): Move this call to SetUpMojoConnection.
-  if (base::FeatureList::IsEnabled(features::kLazyBrowserInterfaceBroker)) {
+  if (base::FeatureList::IsEnabled(features::kLazyBrowserInterfaceBroker) &&
+      !broker_holder_) {
     CreateBrokerHolder();
   }
 
   CHECK(receiver.is_valid());
   if (frame_tree()->is_prerendering()) {
+    CHECK(mojo_binder_policy_applier_)
+        << "prerendering pages should have a policy applier";
+  }
+  // Check `mojo_binder_policy_applier_` separately from `is_prerendering()`, as
+  // the policy applier remains alive during prerender activation until
+  // `RendererDidActivateForPrerendering()` is called.
+  if (mojo_binder_policy_applier_) {
     // RenderFrameHostImpl will rebind the receiver end of
     // BrowserInterfaceBroker if it receives a new one sent from renderer
     // processes. It happens when renderer processes navigate to a new document,
@@ -10220,8 +10238,6 @@ void RenderFrameHostImpl::BindBrowserInterfaceBrokerReceiver(
     // RenderFrameHostImpl::DidCommitNavigation(). So before binding a new
     // receiver end of BrowserInterfaceBroker, RenderFrameHostImpl should drop
     // all deferred binders to avoid connecting Mojo pipes with old documents.
-    CHECK(mojo_binder_policy_applier_)
-        << "prerendering pages should have a policy applier";
     mojo_binder_policy_applier_->DropDeferredBinders();
   }
 
@@ -10234,11 +10250,7 @@ bool RenderFrameHostImpl::ResetBrowserInterfaceBrokerReceiverForTesting() {
   if (!broker_holder_) {
     return true;
   }
-  bool is_valid = broker_holder_->broker_receiver().Unbind().is_valid();
-  if (base::FeatureList::IsEnabled(features::kLazyBrowserInterfaceBroker)) {
-    broker_holder_.reset();
-  }
-  return is_valid;
+  return broker_holder_->broker_receiver().Unbind().is_valid();
 }
 
 void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
@@ -13915,13 +13927,7 @@ void RenderFrameHostImpl::CreateBrokerHolder() {
   CHECK(!broker_holder_);
 
   broker_holder_.emplace(this);
-  if (frame_tree_->is_prerendering()) {
-    // TODO(crbug.com/40150746): Check the prerendering page is
-    // same-origin to the prerender trigger page.
-    mojo_binder_policy_applier_ =
-        MojoBinderPolicyApplier::CreateForSameOriginPrerendering(base::BindOnce(
-            &RenderFrameHostImpl::CancelPrerenderingByMojoBinderPolicy,
-            base::Unretained(this)));
+  if (mojo_binder_policy_applier_) {
     broker_holder_->broker().ApplyMojoBinderPolicies(
         mojo_binder_policy_applier_.get());
   }
@@ -17589,15 +17595,8 @@ void RenderFrameHostImpl::DidCommitNavigation(
   }
 
   if (interface_params) {
-    if (base::FeatureList::IsEnabled(features::kLazyBrowserInterfaceBroker)) {
-      // Reset the broker holder so it is entirely re-created in
-      // BindBrowserInterfaceBrokerReceiver.
-      broker_holder_.reset();
-    } else {
-      CHECK(broker_holder_);
-      if (broker_holder_->broker_receiver().is_bound()) {
-        broker_holder_->broker_receiver().reset();
-      }
+    if (broker_holder_) {
+      broker_holder_->broker_receiver().reset();
     }
     BindBrowserInterfaceBrokerReceiver(
         std::move(interface_params->browser_interface_broker_receiver));
@@ -17611,8 +17610,9 @@ void RenderFrameHostImpl::DidCommitNavigation(
     // hence possibly from a different security origin, will no longer be
     // dispatched.
     if (!frame_tree_node_->is_on_initial_empty_document()) {
-      CHECK(broker_holder_);
-      broker_holder_->broker_receiver().reset();
+      if (broker_holder_) {
+        broker_holder_->broker_receiver().reset();
+      }
       bad_message::ReceivedBadMessage(
           process, bad_message::RFH_INTERFACE_PROVIDER_MISSING);
 

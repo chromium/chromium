@@ -46,6 +46,12 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
     internal::PopulateBinderMapWithContext(host, &binder_map_with_context_);
   }
 
+  ~BrowserInterfaceBrokerImpl() override {
+    if (policy_applier_) {
+      policy_applier_->DropDeferredBinders();
+    }
+  }
+
   // Disallows copy and move operations.
   BrowserInterfaceBrokerImpl(const BrowserInterfaceBrokerImpl& other) = delete;
   BrowserInterfaceBrokerImpl& operator=(
@@ -60,7 +66,8 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
       BindInterface(std::move(receiver));
     } else {
       std::string interface_name = receiver.interface_name().value();
-      // base::Unretained is safe because `this` outlives `policy_applier_`.
+      // base::Unretained is safe because `~BrowserInterfaceBrokerImpl()` drops
+      // all deferred binders from `policy_applier_` upon destruction.
       policy_applier_->ApplyPolicyToNonAssociatedBinder(
           interface_name,
           base::BindOnce(&BrowserInterfaceBrokerImpl::BindInterface,
@@ -102,9 +109,9 @@ class BrowserInterfaceBrokerImpl : public blink::mojom::BrowserInterfaceBroker {
   mojo::BinderMap binder_map_;
   mojo::BinderMapWithContext<InterfaceBinderContext> binder_map_with_context_;
 
-  // The lifetime of `policy_applier_` is managed by the owner of this instance.
-  // The owner should call `ReleaseMojoBinderPolicies()` when it destroys the
-  // applier.
+  // The lifetime of `policy_applier_` is managed by the owner of this instance,
+  // and `policy_applier_` must outlive this instance unless the owner calls
+  // `ReleaseMojoBinderPolicies()` before destroying the applier.
   raw_ptr<MojoBinderPolicyApplier> policy_applier_ = nullptr;
 };
 

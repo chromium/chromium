@@ -1745,7 +1745,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     CHECK(broker_holder_);
     return broker_holder_->broker_receiver();
   }
-  bool has_broker_holder_for_testing() { return broker_holder_.has_value(); }
+  bool has_broker_holder_for_testing() const {
+    return broker_holder_.has_value();
+  }
   const blink::mojom::LocalResourceLoaderConfigPtr&
   local_resource_loader_config_for_testing() const {
     return local_resource_loader_config_;
@@ -4923,6 +4925,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // and AssociatedInterfaceRegistry before invoking their binders.
   // Currently, it is non-null pointer only if this RenderFrameHost is being
   // prerendered.
+  //
+  // NOTE: `mojo_binder_policy_applier_` must be declared before
+  // `broker_holder_` so that it outlives `BrowserInterfaceBrokerImpl`, whose
+  // destructor calls `DropDeferredBinders()` on `mojo_binder_policy_applier_`.
   std::unique_ptr<MojoBinderPolicyApplier> mojo_binder_policy_applier_;
 
   // IPC-friendly token that represents this host.
@@ -5421,6 +5427,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*> broker_;
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_;
   };
+  // Must be declared after `mojo_binder_policy_applier_` so that `broker_` is
+  // destroyed before `mojo_binder_policy_applier_`.
   std::optional<BrokerHolder> broker_holder_;
 
   // The listener should be moved from the `NavigationRequest` when committing

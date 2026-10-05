@@ -108,6 +108,10 @@ class MojoBinderPolicyApplierTest : public testing::Test,
     return policy_applier_.deferred_binders_;
   }
 
+  std::vector<base::OnceClosure>& deferred_sync_binders() {
+    return policy_applier_.deferred_sync_binders_;
+  }
+
   // Calls MojoBinderPolicyApplier::GrantAll() inside a Mojo message dispatch
   // stack.
   void RunGrantAll() {
@@ -349,7 +353,8 @@ TEST_F(MojoBinderPolicyApplierTest, BindInterfacesAfterResolving) {
   EXPECT_EQ(0U, deferred_binders().size());
 }
 
-// Verifies that DropDeferredBinders() deletes all deferred binders.
+// Verifies that DropDeferredBinders() deletes all deferred binders, including
+// deferred sync binders.
 TEST_F(MojoBinderPolicyApplierTest, DropDeferredBinders) {
   // Initialize Mojo interfaces.
   mojo::Remote<mojom::TestInterfaceForDefer> defer_remote;
@@ -363,10 +368,23 @@ TEST_F(MojoBinderPolicyApplierTest, DropDeferredBinders) {
       base::BindOnce(&TestReceiverCollector::BindDeferInterface,
                      base::Unretained(&collector_),
                      defer_receiver.As<mojom::TestInterfaceForDefer>()));
+
+  bool sync_binder_called = false;
+  policy_applier_.ApplyPolicyToNonAssociatedBinder(
+      "blink.mojom.NotificationService",
+      base::BindLambdaForTesting([&]() { sync_binder_called = true; }));
+
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
+  EXPECT_FALSE(sync_binder_called);
   EXPECT_EQ(1U, deferred_binders().size());
+  EXPECT_EQ(1U, deferred_sync_binders().size());
+
   policy_applier_.DropDeferredBinders();
   EXPECT_EQ(0U, deferred_binders().size());
+  EXPECT_EQ(0U, deferred_sync_binders().size());
+
+  policy_applier_.PrepareToGrantAll();
+  EXPECT_FALSE(sync_binder_called);
   RunGrantAll();
   EXPECT_FALSE(collector_.IsDeferReceiverBound());
 }
