@@ -423,6 +423,10 @@ class RemoteActorCredentialSharingImplTest
       mock_match_helper_;
 
  private:
+  policy::ScopedManagementServiceOverrideForTesting
+      platform_management_service_override_{
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::NONE};
   base::test::ScopedFeatureList feature_list_{
       ::features::kRemoteActorCredentialSharing};
 };
