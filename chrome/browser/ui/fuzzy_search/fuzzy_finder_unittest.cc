@@ -176,6 +176,10 @@ TEST_F(FuzzyFinderTest, TrimsLeadingAndTrailingWhitespace) {
 
   // 1 character padded with spaces (trims to 1 char, < 2) returns empty
   EXPECT_THAT(finder.FuzzyFind(u" t ", /*max_results=*/3), IsEmpty());
+
+  // 2 characters padded with spaces (trims to 2 chars) succeeds
+  results = finder.FuzzyFind(u"  ta  ", /*max_results=*/3);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"New Tab"));
 }
 
 TEST_F(FuzzyFinderTest, CaseInsensitiveMatching) {
@@ -214,6 +218,9 @@ TEST_F(FuzzyFinderTest, AccentsAndDiacriticsIgnoring) {
   EXPECT_THAT(ExtractResultTitles(results),
               ElementsAre(u"Café Mode"));
   EXPECT_LE(results.size(), 1u);
+
+  results = finder.FuzzyFind(u"CAFE", /*max_results=*/1);
+  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Café Mode"));
 
   // Query with accents matches title without accents
   auto ascii_items = CreateItems({{u"Cafe Mode"}});
@@ -479,32 +486,6 @@ TEST_F(FuzzyFinderTest, FuzzyFindStableTieBreakingPreservesOrder) {
       ElementsAre(u"Bookmark Tab", u"Bookmark All Tabs", u"Bookmark Bar"));
 }
 
-TEST_F(FuzzyFinderTest, FuzzyFindQueryLengthAndWhitespaceConstraints) {
-  auto items = CreateItems({{u"New Tab"}, {u"Bookmarks"}});
-  FuzzyFinder finder(items);
-
-  // Queries under 2 characters or whitespace-only return empty.
-  EXPECT_THAT(finder.FuzzyFind(u"", /*max_results=*/5), IsEmpty());
-  EXPECT_THAT(finder.FuzzyFind(u"T", /*max_results=*/5), IsEmpty());
-  EXPECT_THAT(finder.FuzzyFind(u"   ", /*max_results=*/5), IsEmpty());
-  EXPECT_THAT(finder.FuzzyFind(u" t ", /*max_results=*/5), IsEmpty());
-
-  // 2-character query with whitespace trimming succeeds.
-  auto results = finder.FuzzyFind(u"  ta  ", /*max_results=*/3);
-  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"New Tab"));
-}
-
-TEST_F(FuzzyFinderTest, FuzzyFindMaxResultsCapping) {
-  auto items = CreateItems({{u"Tab 1"}, {u"Tab 2"}, {u"Tab 3"}, {u"Tab 4"}});
-  FuzzyFinder finder(items);
-
-  EXPECT_THAT(finder.FuzzyFind(u"Tab", /*max_results=*/0), IsEmpty());
-
-  auto results = finder.FuzzyFind(u"Tab", /*max_results=*/2);
-  EXPECT_EQ(results.size(), 2u);
-  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Tab 1", u"Tab 2"));
-}
-
 TEST_F(FuzzyFinderTest, FuzzyFindSecondaryTextMatch) {
   // Query matches secondary text when title does not match.
   auto items = CreateItems({
@@ -554,17 +535,6 @@ TEST_F(FuzzyFinderTest, FuzzyFindSynonymPrioritizedOverSecondaryText) {
               ElementsAre(u"Password Manager", u"Passkey Settings"));
   ASSERT_EQ(results.size(), 2u);
   EXPECT_GT(results[0].score, results[1].score);
-}
-
-TEST_F(FuzzyFinderTest, FuzzyFindCaseAndAccentInsensitive) {
-  auto items = CreateItems({{u"Résumé Settings"}, {u"Café Mode"}});
-  FuzzyFinder finder(items);
-
-  auto results = finder.FuzzyFind(u"resume", /*max_results=*/1);
-  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Résumé Settings"));
-
-  results = finder.FuzzyFind(u"CAFE", /*max_results=*/1);
-  EXPECT_THAT(ExtractResultTitles(results), ElementsAre(u"Café Mode"));
 }
 
 TEST_F(FuzzyFinderTest, ContiguousDominanceOverScatteredSubsequences) {
