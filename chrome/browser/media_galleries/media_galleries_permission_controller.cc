@@ -81,7 +81,7 @@ MediaGalleriesPermissionController::MediaGalleriesPermissionController(
 }
 
 void MediaGalleriesPermissionController::OnPreferencesInitialized() {
-  DCHECK(StorageMonitor::GetInstance());
+  CHECK(StorageMonitor::GetInstance(), base::NotFatalUntil::M161);
   StorageMonitor::GetInstance()->AddObserver(this);
 
   // |preferences_| may be NULL in tests.
@@ -107,7 +107,7 @@ MediaGalleriesPermissionController::MediaGalleriesPermissionController(
 }
 
 MediaGalleriesPermissionController::~MediaGalleriesPermissionController() {
-  DCHECK(StorageMonitor::GetInstance());
+  CHECK(StorageMonitor::GetInstance(), base::NotFatalUntil::M161);
   StorageMonitor::GetInstance()->RemoveObserver(this);
 
   // |preferences_| may be NULL in tests.
@@ -171,7 +171,8 @@ MediaGalleriesPermissionController::GetSectionHeaders() const {
 // Note: sorts by display criterion: GalleriesVectorComparator.
 MediaGalleriesDialogController::Entries
 MediaGalleriesPermissionController::GetSectionEntries(size_t index) const {
-  DCHECK_GT(2U, index);  // This dialog only has two sections.
+  CHECK_GT(2U, index,
+           base::NotFatalUntil::M161);  // This dialog only has two sections.
 
   bool existing = !index;
   MediaGalleriesDialogController::Entries result;
@@ -244,7 +245,7 @@ void MediaGalleriesPermissionController::DidToggleEntry(
 void MediaGalleriesPermissionController::DidForgetEntry(
     GalleryDialogId gallery_id) {
   if (!new_galleries_.erase(gallery_id)) {
-    DCHECK(known_galleries_.contains(gallery_id));
+    CHECK(known_galleries_.contains(gallery_id), base::NotFatalUntil::M161);
     forgotten_galleries_.insert(gallery_id);
   }
   dialog_->UpdateGalleries();
@@ -289,7 +290,7 @@ void MediaGalleriesPermissionController::FileSelected(
 
   // Try to find it in the prefs.
   MediaGalleryPrefInfo gallery;
-  DCHECK(preferences_);
+  CHECK(preferences_, base::NotFatalUntil::M161);
   bool gallery_exists =
       preferences_->LookUpGalleryByPath(file.path(), &gallery);
   if (gallery_exists && !gallery.IsBlockListedType()) {
@@ -370,7 +371,7 @@ void MediaGalleriesPermissionController::OnGalleryRemoved(
 void MediaGalleriesPermissionController::OnGalleryInfoUpdated(
     MediaGalleriesPreferences* prefs,
     MediaGalleryPrefId pref_id) {
-  DCHECK(preferences_);
+  CHECK(preferences_, base::NotFatalUntil::M161);
   const MediaGalleriesPrefInfoMap& pref_galleries =
       preferences_->known_galleries();
   auto pref_it = pref_galleries.find(pref_id);
@@ -382,7 +383,7 @@ void MediaGalleriesPermissionController::OnGalleryInfoUpdated(
 
 void MediaGalleriesPermissionController::InitializePermissions() {
   known_galleries_.clear();
-  DCHECK(preferences_);
+  CHECK(preferences_, base::NotFatalUntil::M161);
   const MediaGalleriesPrefInfoMap& galleries = preferences_->known_galleries();
   for (auto iter = galleries.begin(); iter != galleries.end(); ++iter) {
     const MediaGalleryPrefInfo& gallery = iter->second;
@@ -399,7 +400,7 @@ void MediaGalleriesPermissionController::InitializePermissions() {
   for (auto iter = pref_permitted_galleries_.begin();
        iter != pref_permitted_galleries_.end(); ++iter) {
     GalleryDialogId gallery_id = GetDialogId(*iter);
-    DCHECK(known_galleries_.contains(gallery_id));
+    CHECK(known_galleries_.contains(gallery_id), base::NotFatalUntil::M161);
     known_galleries_[gallery_id].selected = true;
   }
 
@@ -412,7 +413,7 @@ void MediaGalleriesPermissionController::InitializePermissions() {
 }
 
 void MediaGalleriesPermissionController::SavePermissions() {
-  DCHECK(preferences_);
+  CHECK(preferences_, base::NotFatalUntil::M161);
   for (GalleryPermissionsMap::const_iterator iter = known_galleries_.begin();
        iter != known_galleries_.end(); ++iter) {
     MediaGalleryPrefId pref_id = GetPrefId(iter->first);
@@ -512,7 +513,7 @@ MediaGalleriesPermissionController::DialogIdMap::GetDialogId(
     return it->second;
 
   GalleryDialogId result = next_dialog_id_++;
-  DCHECK_EQ(result, forward_mapping_.size());
+  CHECK_EQ(result, forward_mapping_.size(), base::NotFatalUntil::M161);
   forward_mapping_.push_back(pref_id);
   if (pref_id != kInvalidMediaGalleryPrefId)
     back_map_[pref_id] = result;
@@ -522,7 +523,7 @@ MediaGalleriesPermissionController::DialogIdMap::GetDialogId(
 MediaGalleryPrefId
 MediaGalleriesPermissionController::DialogIdMap::GetPrefId(
     GalleryDialogId id) const {
-  DCHECK_LT(id, next_dialog_id_);
+  CHECK_LT(id, next_dialog_id_, base::NotFatalUntil::M161);
   return forward_mapping_[id];
 }
 

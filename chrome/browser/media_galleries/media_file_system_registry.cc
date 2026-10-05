@@ -159,7 +159,7 @@ class ExtensionGalleriesHost {
   void GetMediaFileSystems(const MediaGalleryPrefIdSet& galleries,
                            const MediaGalleriesPrefInfoMap& galleries_info,
                            MediaFileSystemsCallback callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
     // Extract all the device ids so we can make sure they are attached.
     MediaStorageUtil::DeviceIdSet* device_ids =
@@ -276,7 +276,7 @@ class ExtensionGalleriesHost {
       CleanUp();
     }
 
-    DCHECK_EQ(pref_id_map_.size(), result.size());
+    CHECK_EQ(pref_id_map_.size(), result.size(), base::NotFatalUntil::M161);
     std::move(callback).Run(result);
   }
 
@@ -362,7 +362,8 @@ void MediaFileSystemRegistry::GetMediaFileSystemsForExtension(
     content::WebContents* contents,
     const extensions::Extension* extension,
     MediaFileSystemsCallback callback) {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   MediaGalleriesPreferences* preferences = GetPreferences(profile);
@@ -390,8 +391,8 @@ void MediaFileSystemRegistry::RegisterMediaFileSystemForExtension(
     const extensions::Extension* extension,
     MediaGalleryPrefId pref_id,
     base::OnceCallback<void(base::File::Error result)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(kInvalidMediaGalleryPrefId, pref_id);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_NE(kInvalidMediaGalleryPrefId, pref_id, base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
   MediaGalleriesPreferences* preferences = GetPreferences(profile);
@@ -422,7 +423,8 @@ MediaGalleriesPreferences* MediaFileSystemRegistry::GetPreferences(
   // Create an empty ExtensionHostMap for this profile on first initialization.
   if (!extension_hosts_map_.contains(profile)) {
     extension_hosts_map_[profile] = ExtensionHostMap();
-    DCHECK(!profile_subscription_map_.contains(profile));
+    CHECK(!profile_subscription_map_.contains(profile),
+          base::NotFatalUntil::M161);
     profile_subscription_map_[profile] =
         MediaFileSystemRegistryShutdownNotifierFactory::GetInstance()
             ->Get(profile)
@@ -442,7 +444,7 @@ GalleryWatchManager* MediaFileSystemRegistry::gallery_watch_manager() {
 
 void MediaFileSystemRegistry::OnRemovableStorageDetached(
     const StorageInfo& info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Since revoking a gallery in the ExtensionGalleriesHost may cause it
   // to be removed from the map and therefore invalidate any iterator pointing
@@ -535,8 +537,9 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   bool RegisterFileSystemForMassStorage(const std::string& device_id,
                                         const std::string& fs_name,
                                         const base::FilePath& path) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(StorageInfo::IsMassStorageDevice(device_id));
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+    CHECK(StorageInfo::IsMassStorageDevice(device_id),
+          base::NotFatalUntil::M161);
 
     // Sanity checks for |path|.
     CHECK(path.IsAbsolute());
@@ -550,8 +553,9 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   bool RegisterFileSystemForMTPDevice(const std::string& device_id,
                                       const std::string fs_name,
                                       const base::FilePath& path) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(!StorageInfo::IsMassStorageDevice(device_id));
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+    CHECK(!StorageInfo::IsMassStorageDevice(device_id),
+          base::NotFatalUntil::M161);
 
     // Sanity checks for |path|.
     CHECK(MediaStorageUtil::CanCreateFileSystem(device_id, path));
@@ -577,7 +581,7 @@ MediaFileSystemRegistry::MediaFileSystemRegistry()
 }
 
 MediaFileSystemRegistry::~MediaFileSystemRegistry() {
-  DCHECK(StorageMonitor::GetInstance());
+  CHECK(StorageMonitor::GetInstance(), base::NotFatalUntil::M161);
   StorageMonitor::GetInstance()->RemoveObserver(this);
 }
 
@@ -658,13 +662,13 @@ ExtensionGalleriesHost* MediaFileSystemRegistry::GetExtensionGalleryHost(
 
 void MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty(
     Profile* profile, const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto extension_hosts = extension_hosts_map_.find(profile);
   CHECK(extension_hosts != extension_hosts_map_.end());
   ExtensionHostMap::size_type erase_count =
       extension_hosts->second.erase(extension_id);
-  DCHECK_EQ(1U, erase_count);
+  CHECK_EQ(1U, erase_count, base::NotFatalUntil::M161);
   if (extension_hosts->second.empty()) {
     // When a profile has no ExtensionGalleriesHosts left, remove the
     // matching gallery-change-watcher since it is no longer needed. Leave the
@@ -676,7 +680,7 @@ void MediaFileSystemRegistry::OnExtensionGalleriesHostEmpty(
 }
 
 void MediaFileSystemRegistry::OnProfileShutdown(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto extension_hosts_it = extension_hosts_map_.find(profile);
   CHECK(extension_hosts_it != extension_hosts_map_.end());

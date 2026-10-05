@@ -27,7 +27,7 @@ DesktopSessionDurationObserver::~DesktopSessionDurationObserver() {
 std::unique_ptr<DesktopSessionDurationObserver>
 DesktopSessionDurationObserver::MaybeCreate(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   if (!DesktopSessionDurationTracker::IsInitialized()) {
     return nullptr;

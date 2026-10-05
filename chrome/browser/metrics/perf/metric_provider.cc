@@ -112,7 +112,7 @@ void MetricProvider::Init() {
 
 bool MetricProvider::GetSampledProfiles(
     std::vector<SampledProfile>* sampled_profiles) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (cached_profile_data_.empty()) {
     base::UmaHistogramExactLinear(upload_uma_histogram_, 0,
                                   kMaxValueUploadReports);
@@ -134,7 +134,7 @@ bool MetricProvider::GetSampledProfiles(
 }
 
 void MetricProvider::OnUserLoggedIn() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   const base::TimeTicks now = base::TimeTicks::Now();
   collector_task_runner_->PostTask(
@@ -144,7 +144,7 @@ void MetricProvider::OnUserLoggedIn() {
 }
 
 void MetricProvider::Deactivate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Notifies the collector to turn off the timer. Does not delete any data that
   // was already collected and stored in |cached_profile_data|.
@@ -154,7 +154,7 @@ void MetricProvider::Deactivate() {
 }
 
 void MetricProvider::SuspendDone(base::TimeDelta sleep_duration) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   collector_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MetricCollector::ScheduleSuspendDoneCollection,
                                 base::Unretained(metric_collector_.get()),
@@ -162,7 +162,7 @@ void MetricProvider::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void MetricProvider::OnSessionRestoreDone(int num_tabs_restored) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   collector_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MetricCollector::ScheduleSessionRestoreCollection,
@@ -192,12 +192,12 @@ void MetricProvider::OnJankStopped() {
 }
 
 void MetricProvider::EnableRecording() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   recording_enabled_ = true;
 }
 
 void MetricProvider::DisableRecording() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   recording_enabled_ = false;
 }
 
@@ -250,7 +250,7 @@ MetricProvider::RecordAttemptStatus MetricProvider::GetAppSyncState() {
 
 void MetricProvider::AddProfileToCache(
     std::unique_ptr<SampledProfile> sampled_profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!recording_enabled_) {
     base::UmaHistogramEnumeration(record_uma_histogram_,
                                   RecordAttemptStatus::kRecordingDisabled);

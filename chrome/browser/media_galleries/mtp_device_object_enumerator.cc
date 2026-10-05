@@ -50,7 +50,7 @@ base::Time MTPDeviceObjectEnumerator::LastModifiedTime() {
 }
 
 bool MTPDeviceObjectEnumerator::GetEntryId(uint32_t* entry_id) const {
-  DCHECK(entry_id);
+  CHECK(entry_id, base::NotFatalUntil::M161);
   if (!IsIndexReadyAndInRange()) {
     return false;
   }

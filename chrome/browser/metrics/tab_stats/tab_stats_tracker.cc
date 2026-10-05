@@ -88,7 +88,7 @@ TabStatsTracker* g_tab_stats_tracker_instance = nullptr;
 void UmaHistogramCounts10000WithBatteryStateVariant(const char* histogram_name,
                                                     size_t value) {
   auto* power_monitor = base::PowerMonitor::GetInstance();
-  DCHECK(power_monitor->IsInitialized());
+  CHECK(power_monitor->IsInitialized(), base::NotFatalUntil::M161);
 
   base::UmaHistogramCounts10000(histogram_name, value);
 
@@ -411,7 +411,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
           // Empty to skip recording the daily event type histogram.
           /* histogram_name=*/std::string())),
       tab_watcher_(std::make_unique<TabWatcher>(*this)) {
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M161);
 
   AddObserverAndSetInitialState(tab_stats_data_store_.get());
 
@@ -754,7 +754,8 @@ void TabStatsTracker::OnTabReplaced(content::WebContents* old_contents,
 void TabStatsTracker::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(web_contents_usage_observers_.contains(web_contents));
+  CHECK(web_contents_usage_observers_.contains(web_contents),
+        base::NotFatalUntil::M161);
   web_contents_usage_observers_.erase(
       web_contents_usage_observers_.find(web_contents));
   for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {

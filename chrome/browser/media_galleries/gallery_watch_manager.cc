@@ -109,7 +109,7 @@ class GalleryWatchManager::FileWatchManager {
 GalleryWatchManager::FileWatchManager::FileWatchManager(
     const base::FilePathWatcher::Callback& callback)
     : callback_(callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Bind to the sequenced task runner, not the UI thread.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -150,7 +150,7 @@ void GalleryWatchManager::FileWatchManager::RemoveFileWatch(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t erased = watchers_.erase(path);
-  DCHECK_EQ(erased, 1u);
+  CHECK_EQ(erased, 1u, base::NotFatalUntil::M161);
 }
 
 base::WeakPtr<GalleryWatchManager::FileWatchManager>
@@ -195,7 +195,7 @@ GalleryWatchManager::GalleryWatchManager()
     : storage_monitor_observed_(false),
       watch_manager_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   watch_manager_ = std::make_unique<FileWatchManager>(base::BindRepeating(
       &GalleryWatchManager::OnFilePathChanged, weak_factory_.GetWeakPtr()));
 }
@@ -204,7 +204,8 @@ GalleryWatchManager::~GalleryWatchManager() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (storage_monitor_observed_) {
-    DCHECK(storage_monitor::StorageMonitor::GetInstance());
+    CHECK(storage_monitor::StorageMonitor::GetInstance(),
+          base::NotFatalUntil::M161);
     storage_monitor::StorageMonitor::GetInstance()->RemoveObserver(this);
   }
 
@@ -213,22 +214,22 @@ GalleryWatchManager::~GalleryWatchManager() {
 
 void GalleryWatchManager::AddObserver(BrowserContext* browser_context,
                                       GalleryWatchManagerObserver* observer) {
-  DCHECK(browser_context);
-  DCHECK(observer);
-  DCHECK(!observers_.contains(browser_context));
+  CHECK(browser_context, base::NotFatalUntil::M161);
+  CHECK(observer, base::NotFatalUntil::M161);
+  CHECK(!observers_.contains(browser_context), base::NotFatalUntil::M161);
   observers_[browser_context] = observer;
 }
 
 void GalleryWatchManager::RemoveObserver(BrowserContext* browser_context) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
   size_t erased = observers_.erase(browser_context);
-  DCHECK_EQ(erased, 1u);
+  CHECK_EQ(erased, 1u, base::NotFatalUntil::M161);
 }
 
 void GalleryWatchManager::ShutdownBrowserContext(
     BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   MediaGalleriesPreferences* preferences =
       g_browser_process->media_file_system_registry()->GetPreferences(
@@ -255,9 +256,9 @@ void GalleryWatchManager::AddWatch(BrowserContext* browser_context,
                                    const extensions::Extension* extension,
                                    MediaGalleryPrefId gallery_id,
                                    ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
-  DCHECK(extension);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context, base::NotFatalUntil::M161);
+  CHECK(extension, base::NotFatalUntil::M161);
 
   WatchOwner owner(browser_context, extension->id(), gallery_id);
   if (watches_.contains(owner)) {
@@ -315,8 +316,8 @@ void GalleryWatchManager::AddWatch(BrowserContext* browser_context,
 void GalleryWatchManager::RemoveWatch(BrowserContext* browser_context,
                                       const std::string& extension_id,
                                       MediaGalleryPrefId gallery_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   WatchOwner owner(browser_context, extension_id, gallery_id);
   auto it = watches_.find(owner);
@@ -328,8 +329,8 @@ void GalleryWatchManager::RemoveWatch(BrowserContext* browser_context,
 
 void GalleryWatchManager::RemoveAllWatches(BrowserContext* browser_context,
                                            const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   auto it = watches_.begin();
   while (it != watches_.end()) {
@@ -346,8 +347,8 @@ void GalleryWatchManager::RemoveAllWatches(BrowserContext* browser_context,
 MediaGalleryPrefIdSet GalleryWatchManager::GetWatchSet(
     BrowserContext* browser_context,
     const std::string& extension_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   MediaGalleryPrefIdSet result;
   for (WatchesMap::const_iterator it = watches_.begin(); it != watches_.end();
@@ -375,7 +376,7 @@ void GalleryWatchManager::EnsureBrowserContextSubscription(
 
 void GalleryWatchManager::DeactivateFileWatch(const WatchOwner& owner,
                                               const base::FilePath& path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = watched_paths_.find(path);
   if (it == watched_paths_.end())
     return;
@@ -450,7 +451,7 @@ void GalleryWatchManager::OnFilePathChanged(const base::FilePath& path,
   for (it = notification_info->second.owners.begin();
        it != notification_info->second.owners.end();
        ++it) {
-    DCHECK(watches_.contains(*it));
+    CHECK(watches_.contains(*it), base::NotFatalUntil::M161);
     if (auto observer_it = observers_.find(it->browser_context);
         observer_it != observers_.end()) {
       observer_it->second->OnGalleryChanged(it->extension_id, it->gallery_id);

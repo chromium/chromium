@@ -23,11 +23,11 @@ MTPDeviceTaskHelperMapService* MTPDeviceTaskHelperMapService::GetInstance() {
 MTPDeviceTaskHelper* MTPDeviceTaskHelperMapService::CreateDeviceTaskHelper(
     const std::string& storage_name,
     const bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!storage_name.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!storage_name.empty(), base::NotFatalUntil::M161);
   const MTPDeviceTaskHelperKey key =
       GetMTPDeviceTaskHelperKey(storage_name, read_only);
-  DCHECK(!task_helper_map_.contains(key));
+  CHECK(!task_helper_map_.contains(key), base::NotFatalUntil::M161);
   MTPDeviceTaskHelper* task_helper = new MTPDeviceTaskHelper();
   task_helper_map_[key] = task_helper;
   return task_helper;
@@ -36,7 +36,7 @@ MTPDeviceTaskHelper* MTPDeviceTaskHelperMapService::CreateDeviceTaskHelper(
 void MTPDeviceTaskHelperMapService::DestroyDeviceTaskHelper(
     const std::string& storage_name,
     const bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   const MTPDeviceTaskHelperKey key =
       GetMTPDeviceTaskHelperKey(storage_name, read_only);
   TaskHelperMap::iterator it = task_helper_map_.find(key);
@@ -50,8 +50,8 @@ void MTPDeviceTaskHelperMapService::DestroyDeviceTaskHelper(
 MTPDeviceTaskHelper* MTPDeviceTaskHelperMapService::GetDeviceTaskHelper(
     const std::string& storage_name,
     const bool read_only) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!storage_name.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!storage_name.empty(), base::NotFatalUntil::M161);
   const MTPDeviceTaskHelperKey key =
       GetMTPDeviceTaskHelperKey(storage_name, read_only);
   TaskHelperMap::const_iterator it = task_helper_map_.find(key);

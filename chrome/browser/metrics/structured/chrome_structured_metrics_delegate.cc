@@ -120,7 +120,7 @@ void ChromeStructuredMetricsDelegate::Initialize() {
 }
 
 void ChromeStructuredMetricsDelegate::RecordEvent(Event&& event) {
-  DCHECK(IsReadyToRecord());
+  CHECK(IsReadyToRecord(), base::NotFatalUntil::M161);
   delegate_->RecordEvent(std::move(event));
 }
 

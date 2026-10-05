@@ -35,7 +35,7 @@ PerfOutputCall::PerfOutputCall(ash::DebugDaemonClient* debug_daemon_client,
   base::ScopedFD pipe_write_end =
       perf_data_pipe_reader_->StartIO(base::BindOnce(
           &PerfOutputCall::OnIOComplete, weak_factory_.GetWeakPtr()));
-  DCHECK(debug_daemon_client_);
+  CHECK(debug_daemon_client_, base::NotFatalUntil::M161);
   debug_daemon_client_->GetPerfOutput(
       quipper_args_, disable_cpu_idle_, pipe_write_end.get(),
       base::BindOnce(&PerfOutputCall::OnGetPerfOutput,
@@ -95,7 +95,7 @@ void PerfOutputCall::OnGetPerfOutput(std::optional<uint64_t> result) {
 }
 
 void PerfOutputCall::StopImpl() {
-  DCHECK(perf_session_id_);
+  CHECK(perf_session_id_, base::NotFatalUntil::M161);
   debug_daemon_client_->StopPerf(*perf_session_id_, base::DoNothing());
 }
 

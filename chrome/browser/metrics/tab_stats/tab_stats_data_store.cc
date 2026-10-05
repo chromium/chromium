@@ -28,7 +28,7 @@ TabStatsDataStore::TabsStats& TabStatsDataStore::TabsStats::operator=(
 
 TabStatsDataStore::TabStatsDataStore(PrefService* pref_service)
     : pref_service_(pref_service) {
-  DCHECK(pref_service);
+  CHECK(pref_service, base::NotFatalUntil::M161);
   tab_stats_.total_tab_count_max =
       pref_service->GetInteger(::prefs::kTabStatsTotalTabCountMax);
   tab_stats_.max_tab_per_window =
@@ -81,13 +81,13 @@ void TabStatsDataStore::OnWindowAdded() {
 
 void TabStatsDataStore::OnWindowRemoved() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(tab_stats_.window_count, 0U);
+  CHECK_GT(tab_stats_.window_count, 0U, base::NotFatalUntil::M161);
   tab_stats_.window_count--;
 }
 
 void TabStatsDataStore::OnTabAdded(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   ++tab_stats_.total_tab_count;
   RecordSamplingMetaData();
   UpdateTotalTabCountMaxIfNeeded();
@@ -95,8 +95,8 @@ void TabStatsDataStore::OnTabAdded(content::WebContents* web_contents) {
 
 void TabStatsDataStore::OnTabRemoved(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(web_contents);
-  DCHECK_GT(tab_stats_.total_tab_count, 0U);
+  CHECK(web_contents, base::NotFatalUntil::M161);
+  CHECK_GT(tab_stats_.total_tab_count, 0U, base::NotFatalUntil::M161);
   --tab_stats_.total_tab_count;
   RecordSamplingMetaData();
 }

@@ -46,10 +46,11 @@ int64_t CalculateDischargeRateMilliwatts(
     const base::BatteryLevelProvider::BatteryState& previous_battery_state,
     const base::BatteryLevelProvider::BatteryState& new_battery_state,
     base::TimeDelta interval_duration) {
-  DCHECK(previous_battery_state.charge_unit.has_value());
-  DCHECK(new_battery_state.charge_unit.has_value());
-  DCHECK_EQ(previous_battery_state.charge_unit.value(),
-            new_battery_state.charge_unit.value());
+  CHECK(previous_battery_state.charge_unit.has_value(),
+        base::NotFatalUntil::M161);
+  CHECK(new_battery_state.charge_unit.has_value(), base::NotFatalUntil::M161);
+  CHECK_EQ(previous_battery_state.charge_unit.value(),
+           new_battery_state.charge_unit.value(), base::NotFatalUntil::M161);
 
   const int64_t discharge_capacity =
       (new_battery_state.full_charged_capacity.value() -
@@ -63,8 +64,9 @@ int64_t CalculateDischargeRateMilliwatts(
       return discharge_capacity;
     }
 
-    DCHECK_EQ(new_battery_state.charge_unit.value(),
-              base::BatteryLevelProvider::BatteryLevelUnit::kMAh);
+    CHECK_EQ(new_battery_state.charge_unit.value(),
+             base::BatteryLevelProvider::BatteryLevelUnit::kMAh,
+             base::NotFatalUntil::M161);
     const uint64_t average_mv = (previous_battery_state.voltage_mv.value() +
                                  new_battery_state.voltage_mv.value()) /
                                 2;
@@ -222,7 +224,8 @@ void ReportBatteryHistograms(
           battery_discharge.mode);
       for (const char* battery_saver_suffix : battery_saver_suffixes) {
         if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-          DCHECK(battery_discharge.rate_milliwatts.has_value());
+          CHECK(battery_discharge.rate_milliwatts.has_value(),
+                base::NotFatalUntil::M161);
           base::UmaHistogramCounts100000(
               base::StrCat({kBatteryDischargeRateMilliwattsHistogramName,
                             scenario_suffix, interval_type_suffix,
@@ -238,7 +241,8 @@ void ReportBatteryHistograms(
                 *battery_discharge.rate_milliwatts_with_precise_granularity);
           }
 #endif  // BUILDFLAG(IS_WIN)
-          DCHECK(battery_discharge.rate_relative.has_value());
+          CHECK(battery_discharge.rate_relative.has_value(),
+                base::NotFatalUntil::M161);
           base::UmaHistogramCounts1000(
               base::StrCat({kBatteryDischargeRateRelativeHistogramName,
                             scenario_suffix, interval_type_suffix,
@@ -257,7 +261,8 @@ void ReportBatteryHistogramsTenMinutesInterval(
   base::UmaHistogramEnumeration(kBatteryDischargeModeTenMinutesHistogramName,
                                 battery_discharge.mode);
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-    DCHECK(battery_discharge.rate_milliwatts.has_value());
+    CHECK(battery_discharge.rate_milliwatts.has_value(),
+          base::NotFatalUntil::M161);
     base::UmaHistogramCounts100000(
         kBatteryDischargeRateMilliwattsTenMinutesHistogramName,
         *battery_discharge.rate_milliwatts);

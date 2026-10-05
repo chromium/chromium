@@ -119,7 +119,7 @@ void AshStructuredMetricsRecorder::OnExternalMetricsCollected(
     const EventsProto& events) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "StructuredMetrics.OnExternalMetricsCollectedDuration");
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M161);
   if (!recording_enabled()) {
     return;
   }

@@ -20,9 +20,9 @@ StructuredMetricsKeyEventsObserver::StructuredMetricsKeyEventsObserver(
     : user_manager_(user_manager),
       session_termination_manager_(session_termination_manager),
       power_manager_client_(power_manager_client) {
-  DCHECK(user_manager_);
-  DCHECK(session_termination_manager_);
-  DCHECK(power_manager_client_);
+  CHECK(user_manager_, base::NotFatalUntil::M161);
+  CHECK(session_termination_manager_, base::NotFatalUntil::M161);
+  CHECK(power_manager_client_, base::NotFatalUntil::M161);
   user_manager_->AddSessionStateObserver(this);
   session_termination_manager_->AddObserver(this);
   power_manager_client_->AddObserver(this);

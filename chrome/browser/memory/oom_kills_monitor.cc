@@ -80,7 +80,7 @@ void OOMKillsMonitor::Initialize(PrefService* pref_service) {
   VLOG(2) << "Starting OOM kills monitor from thread "
           << base::PlatformThread::CurrentId();
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (monitoring_started_) {
     NOTREACHED() << "OOM kiils monitor should only be initialized once";
@@ -118,8 +118,8 @@ void OOMKillsMonitor::Initialize(PrefService* pref_service) {
 }
 
 void OOMKillsMonitor::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!is_shutdown_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!is_shutdown_, base::NotFatalUntil::M161);
 
   if (!monitoring_started_) {
     return;
@@ -139,8 +139,8 @@ void OOMKillsMonitor::Shutdown() {
 //
 // TODO(vovoy): Log ARCVM oom kills to a new histogram.
 void OOMKillsMonitor::LogArcOOMKill(unsigned long current_oom_kills) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(monitoring_started_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(monitoring_started_, base::NotFatalUntil::M161);
 
   unsigned long oom_kills_delta = current_oom_kills - last_arc_oom_kills_count_;
   if (oom_kills_delta == 0)
@@ -170,8 +170,8 @@ void OOMKillsMonitor::CheckOOMKill() {
 }
 
 void OOMKillsMonitor::CheckOOMKillImpl(unsigned long current_oom_kills) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(monitoring_started_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(monitoring_started_, base::NotFatalUntil::M161);
 
   unsigned long oom_kills_delta = current_oom_kills - last_oom_kills_count_;
   if (oom_kills_delta == 0)

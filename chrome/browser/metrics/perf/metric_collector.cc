@@ -311,7 +311,7 @@ void MetricCollector::SaveSerializedPerfProto(
   sampled_profile->mutable_perf_data()->Swap(&perf_data_proto);
 
   sampled_profile->set_ms_after_boot(base::SysInfo::Uptime().InMilliseconds());
-  DCHECK(!login_time_.is_null());
+  CHECK(!login_time_.is_null(), base::NotFatalUntil::M161);
   sampled_profile->set_ms_after_login(
       (base::TimeTicks::Now() - login_time_).InMilliseconds());
 

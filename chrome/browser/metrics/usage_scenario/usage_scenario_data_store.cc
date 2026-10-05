@@ -82,23 +82,25 @@ void UsageScenarioDataStoreImpl::OnTabAdded() {
 
 void UsageScenarioDataStoreImpl::OnTabClosed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(current_tab_count_, 0U);
+  CHECK_GT(current_tab_count_, 0U, base::NotFatalUntil::M161);
   --current_tab_count_;
-  DCHECK_GE(current_tab_count_, current_visible_window_count_);
+  CHECK_GE(current_tab_count_, current_visible_window_count_,
+           base::NotFatalUntil::M161);
   ++interval_data_.tabs_closed_during_interval;
 }
 
 void UsageScenarioDataStoreImpl::OnWindowVisible() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++current_visible_window_count_;
-  DCHECK_GE(current_tab_count_, current_visible_window_count_);
+  CHECK_GE(current_tab_count_, current_visible_window_count_,
+           base::NotFatalUntil::M161);
   interval_data_.max_visible_window_count = std::max(
       interval_data_.max_visible_window_count, current_visible_window_count_);
 }
 
 void UsageScenarioDataStoreImpl::OnWindowHidden() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(current_visible_window_count_, 0U);
+  CHECK_GT(current_visible_window_count_, 0U, base::NotFatalUntil::M161);
   --current_visible_window_count_;
 }
 
@@ -132,18 +134,21 @@ void UsageScenarioDataStoreImpl::OnWebRTCConnectionOpened() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Grab the current timestamp if there's no other WebRTC connection.
   if (webrtc_open_connection_count_ == 0) {
-    DCHECK(has_opened_webrtc_connection_since_.is_null());
+    CHECK(has_opened_webrtc_connection_since_.is_null(),
+          base::NotFatalUntil::M161);
     has_opened_webrtc_connection_since_ = tick_clock_->NowTicks();
   }
   ++webrtc_open_connection_count_;
-  DCHECK_GE(current_tab_count_, webrtc_open_connection_count_);
+  CHECK_GE(current_tab_count_, webrtc_open_connection_count_,
+           base::NotFatalUntil::M161);
 }
 
 void UsageScenarioDataStoreImpl::OnWebRTCConnectionClosed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(webrtc_open_connection_count_, 0U);
+  CHECK_GT(webrtc_open_connection_count_, 0U, base::NotFatalUntil::M161);
   --webrtc_open_connection_count_;
-  DCHECK_GE(current_tab_count_, webrtc_open_connection_count_);
+  CHECK_GE(current_tab_count_, webrtc_open_connection_count_,
+           base::NotFatalUntil::M161);
 
   // If this was the last tab using WebRTC then the interval data should be
   // updated.

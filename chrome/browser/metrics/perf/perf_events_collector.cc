@@ -233,7 +233,7 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     const CPUIdentity& cpuid) {
   using WeightAndValue = RandomSelector::WeightAndValue;
   std::vector<WeightAndValue> cmds;
-  DCHECK_EQ(cpuid.arch, "x86_64");
+  CHECK_EQ(cpuid.arch, "x86_64", base::NotFatalUntil::M161);
   const std::string cpu_uarch = GetCpuUarch(cpuid);
 
   // We use different perf events for iTLB, dTLB and LBR profiling on different
@@ -545,7 +545,7 @@ std::unique_ptr<PerfOutputCall> PerfCollector::CreatePerfOutputCall(
     const std::vector<std::string>& perf_args,
     bool disable_cpu_idle,
     PerfOutputCall::DoneCallback callback) {
-  DCHECK(debugd_client_provider_.get());
+  CHECK(debugd_client_provider_.get(), base::NotFatalUntil::M161);
   return std::make_unique<PerfOutputCall>(
       debugd_client_provider_->debug_daemon_client(), perf_args,
       disable_cpu_idle, std::move(callback));
@@ -594,7 +594,7 @@ void PerfCollector::ParseOutputProtoIfValid(
       base::BindOnce(&PerfCollector::SaveSerializedPerfProto,
                      weak_factory_.GetWeakPtr(), std::move(sampled_profile),
                      std::move(perf_stdout)));
-  DCHECK(posted);
+  CHECK(posted, base::NotFatalUntil::M161);
 }
 
 // static.
@@ -726,7 +726,7 @@ void PerfCollector::CollectProfile(
       kPerfCommandDelimiter, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   auto event_type = CommandEventType(command);
 
-  DCHECK(sampled_profile->has_trigger_event());
+  CHECK(sampled_profile->has_trigger_event(), base::NotFatalUntil::M161);
   current_trigger_ = sampled_profile->trigger_event();
 
   perf_output_call_ = CreatePerfOutputCall(
@@ -762,7 +762,7 @@ void PerfCollector::ParseCPUFrequencies(
     }
     base::StrAppend(&path, {kCPUMaxFreqPathRel});
     if (ReadFileToString(base::FilePath(path), &content)) {
-      DCHECK(!content.empty());
+      CHECK(!content.empty(), base::NotFatalUntil::M161);
       base::StringToUint(content, &frequency_khz);
     }
     if (frequency_khz == 0) {

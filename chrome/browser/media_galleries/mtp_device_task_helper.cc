@@ -34,10 +34,10 @@ namespace {
 void SplitFileIds(const std::vector<uint32_t>& file_ids,
                   std::vector<uint32_t>* file_ids_to_read_now,
                   std::vector<uint32_t>* file_ids_to_read_later) {
-  DCHECK(file_ids_to_read_now);
-  DCHECK(file_ids_to_read_now->empty());
-  DCHECK(file_ids_to_read_later);
-  DCHECK(file_ids_to_read_later->empty());
+  CHECK(file_ids_to_read_now, base::NotFatalUntil::M161);
+  CHECK(file_ids_to_read_now->empty(), base::NotFatalUntil::M161);
+  CHECK(file_ids_to_read_later, base::NotFatalUntil::M161);
+  CHECK(file_ids_to_read_later->empty(), base::NotFatalUntil::M161);
 
   // When reading directory entries, this is the number of entries for
   // GetFileInfo() to read in one operation. If set too low, efficiency goes
@@ -79,18 +79,18 @@ base::File::Info FileInfoFromMTPFileEntry(
 }  // namespace
 
 MTPDeviceTaskHelper::MTPDeviceTaskHelper() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 MTPDeviceTaskHelper::~MTPDeviceTaskHelper() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void MTPDeviceTaskHelper::OpenStorage(const std::string& storage_name,
                                       const bool read_only,
                                       OpenStorageCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!storage_name.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!storage_name.empty(), base::NotFatalUntil::M161);
   if (!device_handle_.empty()) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
@@ -109,7 +109,7 @@ void MTPDeviceTaskHelper::GetFileInfo(
     uint32_t file_id,
     GetFileInfoSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return HandleDeviceError(std::move(error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -128,7 +128,7 @@ void MTPDeviceTaskHelper::CreateDirectory(
     const std::string& directory_name,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return HandleDeviceError(std::move(error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -145,7 +145,7 @@ void MTPDeviceTaskHelper::ReadDirectory(
     const uint32_t directory_id,
     ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return HandleDeviceError(std::move(error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -178,7 +178,7 @@ void MTPDeviceTaskHelper::CheckDirectoryEmpty(
 void MTPDeviceTaskHelper::WriteDataIntoSnapshotFile(
     SnapshotRequestInfo request_info,
     const base::File::Info& snapshot_file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return HandleDeviceError(std::move(request_info.error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -193,7 +193,7 @@ void MTPDeviceTaskHelper::WriteDataIntoSnapshotFile(
 
 void MTPDeviceTaskHelper::ReadBytes(
     MTPDeviceAsyncDelegate::ReadBytesRequest request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return HandleDeviceError(std::move(request.error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -211,7 +211,7 @@ void MTPDeviceTaskHelper::RenameObject(
     const std::string& new_name,
     RenameObjectSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   GetMediaTransferProtocolManager()->RenameObject(
       device_handle_, object_id, new_name,
@@ -230,7 +230,7 @@ void MTPDeviceTaskHelper::CopyFileFromLocal(
     const std::string& file_name,
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   GetMediaTransferProtocolManager()->CopyFileFromLocal(
       device_handle_, source_file_descriptor, parent_id, file_name,
@@ -243,7 +243,7 @@ void MTPDeviceTaskHelper::DeleteObject(
     const uint32_t object_id,
     DeleteObjectSuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   GetMediaTransferProtocolManager()->DeleteObject(
       device_handle_, object_id,
@@ -253,7 +253,7 @@ void MTPDeviceTaskHelper::DeleteObject(
 }
 
 void MTPDeviceTaskHelper::CloseStorage() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (device_handle_.empty()) {
     return;
   }
@@ -265,7 +265,7 @@ void MTPDeviceTaskHelper::OnDidOpenStorage(
     OpenStorageCallback completion_callback,
     const std::string& device_handle,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   device_handle_ = device_handle;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(completion_callback), !error));
@@ -276,7 +276,7 @@ void MTPDeviceTaskHelper::OnGetFileInfo(
     ErrorCallback error_callback,
     std::vector<device::mojom::MtpFileEntryPtr> entries,
     bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error || entries.size() != 1) {
     return HandleDeviceError(std::move(error_callback),
                              base::File::FILE_ERROR_NOT_FOUND);
@@ -292,7 +292,7 @@ void MTPDeviceTaskHelper::OnCreateDirectory(
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
@@ -309,7 +309,7 @@ void MTPDeviceTaskHelper::OnReadDirectoryEntryIdsToReadDirectory(
     ErrorCallback error_callback,
     const std::vector<uint32_t>& file_ids,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (error) {
     return HandleDeviceError(std::move(error_callback),
@@ -342,7 +342,7 @@ void MTPDeviceTaskHelper::OnGotDirectoryEntries(
     const std::vector<uint32_t>& file_ids_to_read,
     std::vector<device::mojom::MtpFileEntryPtr> file_entries,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (error) {
     return HandleDeviceError(std::move(error_callback),
@@ -369,7 +369,7 @@ void MTPDeviceTaskHelper::OnGotDirectoryEntries(
     MTPEntry entry;
     entry.name = storage::VirtualPath::BaseName(current).value();
     bool ret = file_enum.GetEntryId(&entry.file_id);
-    DCHECK(ret);
+    CHECK(ret, base::NotFatalUntil::M161);
     entry.file_info.is_directory = file_enum.IsDirectory();
     entry.file_info.size = file_enum.Size();
     entry.file_info.last_modified = file_enum.LastModifiedTime();
@@ -403,7 +403,7 @@ void MTPDeviceTaskHelper::OnCheckedDirectoryEmpty(
     ErrorCallback error_callback,
     const std::vector<uint32_t>& file_ids,
     bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     return HandleDeviceError(std::move(error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -417,10 +417,10 @@ void MTPDeviceTaskHelper::OnGetFileInfoToReadBytes(
     MTPDeviceAsyncDelegate::ReadBytesRequest request,
     std::vector<device::mojom::MtpFileEntryPtr> entries,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(request.buf.get());
-  DCHECK_GE(request.buf_len, 0);
-  DCHECK_GE(request.offset, 0);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(request.buf.get(), base::NotFatalUntil::M161);
+  CHECK_GE(request.buf_len, 0, base::NotFatalUntil::M161);
+  CHECK_GE(request.offset, 0, base::NotFatalUntil::M161);
   if (error || entries.size() != 1) {
     return HandleDeviceError(std::move(request.error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -461,7 +461,7 @@ void MTPDeviceTaskHelper::OnDidReadBytes(
     const base::File::Info& file_info,
     const std::string& data,
     bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     return HandleDeviceError(std::move(request.error_callback),
                              base::File::FILE_ERROR_FAILED);
@@ -479,7 +479,7 @@ void MTPDeviceTaskHelper::OnRenameObject(
     RenameObjectSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
@@ -495,7 +495,7 @@ void MTPDeviceTaskHelper::OnCopyFileFromLocal(
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
@@ -511,7 +511,7 @@ void MTPDeviceTaskHelper::OnDeleteObject(
     DeleteObjectSuccessCallback success_callback,
     ErrorCallback error_callback,
     const bool error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (error) {
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(error_callback),
@@ -525,7 +525,7 @@ void MTPDeviceTaskHelper::OnDeleteObject(
 
 void MTPDeviceTaskHelper::HandleDeviceError(ErrorCallback error_callback,
                                             base::File::Error error) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(error_callback), error));
 }

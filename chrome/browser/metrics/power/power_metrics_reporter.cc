@@ -37,8 +37,9 @@ int64_t GetBucketForSample(base::TimeDelta value) {
   // length is 120 seconds, with an exponent base of 1.3 the bucket for this
   // value includes all values in the [113, 146] range.
   constexpr int64_t kOverflowBucket = 147;
-  DCHECK_EQ(kOverflowBucket,
-            ukm::GetExponentialBucketMin(kOverflowBucket, kBucketSpacing));
+  CHECK_EQ(kOverflowBucket,
+           ukm::GetExponentialBucketMin(kOverflowBucket, kBucketSpacing),
+           base::NotFatalUntil::M161);
   return std::min(
       ukm::GetExponentialBucketMin(value.InSeconds(), kBucketSpacing),
       kOverflowBucket);
@@ -74,7 +75,7 @@ std::string GetMetricSuffixFromProcessInfoKey(ProcessInfo::Key key) {
   }
 
   // Only utility processes have subtypes
-  DCHECK(key.type == MonitoredProcessType::kUtility);
+  CHECK(key.type == MonitoredProcessType::kUtility, base::NotFatalUntil::M161);
   auto subtype_suffix = *key.subtype == "" ? "Unknown" : *key.subtype;
   return base::StrCat(
       {GetMetricSuffixFromProcessType(key.type), ".", subtype_suffix});
@@ -122,7 +123,7 @@ void PowerMetricsReporter::OnFirstBatteryStateSampled(
     const std::optional<base::BatteryLevelProvider::BatteryState>&
         battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(battery_level_provider_);
+  CHECK(battery_level_provider_, base::NotFatalUntil::M161);
   battery_state_ = battery_state;
 }
 
@@ -182,7 +183,7 @@ void PowerMetricsReporter::OnBatteryAndAggregatedProcessMetricsSampled(
     const std::optional<base::BatteryLevelProvider::BatteryState>&
         new_battery_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(battery_level_provider_);
+  CHECK(battery_level_provider_, base::NotFatalUntil::M161);
 
   // Evaluate battery discharge mode and rate.
   auto previous_battery_state =
@@ -225,7 +226,7 @@ void PowerMetricsReporter::ReportBatterySpecificMetrics(
     base::TimeDelta interval_duration,
     const ProcessMonitor::Metrics& aggregated_process_metrics,
     BatteryDischarge battery_discharge) {
-  DCHECK(battery_level_provider_);
+  CHECK(battery_level_provider_, base::NotFatalUntil::M161);
 
   // Report UKMs.
   ReportBatteryUKMs(long_interval_data, aggregated_process_metrics,
@@ -264,7 +265,8 @@ void PowerMetricsReporter::ReportBatteryUKMs(
       interval_data.uptime_at_interval_end.InSeconds()));
   builder.SetBatteryDischargeMode(static_cast<int64_t>(battery_discharge.mode));
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-    DCHECK(battery_discharge.rate_relative.has_value());
+    CHECK(battery_discharge.rate_relative.has_value(),
+          base::NotFatalUntil::M161);
     builder.SetBatteryDischargeRate(*battery_discharge.rate_relative);
   }
   if (metrics.cpu_usage.has_value()) {

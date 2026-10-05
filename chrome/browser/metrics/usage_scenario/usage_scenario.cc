@@ -114,7 +114,8 @@ const ScenarioParams& GetScenarioParamsWithVisibleWindow(
     const UsageScenarioDataStore::IntervalData& interval_data) {
   // The order of the conditions is important. See the full description of each
   // scenario in the histograms.xml file.
-  DCHECK_GT(interval_data.max_visible_window_count, 0);
+  CHECK_GT(interval_data.max_visible_window_count, 0,
+           base::NotFatalUntil::M161);
 
   if (!interval_data.time_capturing_video.is_zero()) {
     return kVideoCaptureParams;

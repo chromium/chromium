@@ -38,8 +38,8 @@ uint32_t WriteDataChunkIntoSnapshotFileOnFileThread(
 
 MTPReadFileWorker::MTPReadFileWorker(const std::string& device_handle)
     : device_handle_(device_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!device_handle_.empty());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!device_handle_.empty(), base::NotFatalUntil::M161);
 }
 
 MTPReadFileWorker::~MTPReadFileWorker() = default;
@@ -47,15 +47,15 @@ MTPReadFileWorker::~MTPReadFileWorker() = default;
 void MTPReadFileWorker::WriteDataIntoSnapshotFile(
     SnapshotRequestInfo request_info,
     const base::File::Info& snapshot_file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   ReadDataChunkFromDeviceFile(std::make_unique<SnapshotFileDetails>(
       std::move(request_info), snapshot_file_info));
 }
 
 void MTPReadFileWorker::ReadDataChunkFromDeviceFile(
     std::unique_ptr<SnapshotFileDetails> snapshot_file_details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(snapshot_file_details.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(snapshot_file_details.get(), base::NotFatalUntil::M161);
 
   // To avoid calling |snapshot_file_details| methods and passing ownership of
   // |snapshot_file_details| in the same_line.
@@ -76,8 +76,8 @@ void MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile(
     std::unique_ptr<SnapshotFileDetails> snapshot_file_details,
     const std::string& data,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(snapshot_file_details.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(snapshot_file_details.get(), base::NotFatalUntil::M161);
   snapshot_file_details->set_error_occurred(
       error || (data.size() != snapshot_file_details->BytesToRead()));
   if (snapshot_file_details->error_occurred()) {
@@ -100,8 +100,8 @@ void MTPReadFileWorker::OnDidReadDataChunkFromDeviceFile(
 void MTPReadFileWorker::OnDidWriteDataChunkIntoSnapshotFile(
     std::unique_ptr<SnapshotFileDetails> snapshot_file_details,
     uint32_t bytes_written) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(snapshot_file_details.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(snapshot_file_details.get(), base::NotFatalUntil::M161);
   if (snapshot_file_details->AddBytesWritten(bytes_written)) {
     if (!snapshot_file_details->IsSnapshotFileWriteComplete()) {
       ReadDataChunkFromDeviceFile(std::move(snapshot_file_details));
@@ -115,8 +115,8 @@ void MTPReadFileWorker::OnDidWriteDataChunkIntoSnapshotFile(
 
 void MTPReadFileWorker::OnDidWriteIntoSnapshotFile(
     std::unique_ptr<SnapshotFileDetails> snapshot_file_details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(snapshot_file_details.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(snapshot_file_details.get(), base::NotFatalUntil::M161);
 
   if (snapshot_file_details->error_occurred()) {
     content::GetIOThreadTaskRunner({})->PostTask(

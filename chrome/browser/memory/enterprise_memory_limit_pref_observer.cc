@@ -23,8 +23,9 @@ const int kMinimalResidentSetLimitMb = 1024;
 EnterpriseMemoryLimitPrefObserver::EnterpriseMemoryLimitPrefObserver(
     PrefService* pref_service)
     : pref_service_(pref_service) {
-  DCHECK(pref_service_);
-  DCHECK(memory_pressure::MultiSourceMemoryPressureMonitor::Get());
+  CHECK(pref_service_, base::NotFatalUntil::M161);
+  CHECK(memory_pressure::MultiSourceMemoryPressureMonitor::Get(),
+        base::NotFatalUntil::M161);
   evaluator_ = std::make_unique<EnterpriseMemoryLimitEvaluator>(
       memory_pressure::MultiSourceMemoryPressureMonitor::Get()->CreateVoter());
 

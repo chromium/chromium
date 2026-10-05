@@ -60,7 +60,8 @@ void TouchUIControllerStatsTracker::TouchModeChanged() {
   }
 
   auto switch_time = base::TimeTicks::Now();
-  DCHECK_GE(switch_time, last_touch_mode_switch_in_session_);
+  CHECK_GE(switch_time, last_touch_mode_switch_in_session_,
+           base::NotFatalUntil::M161);
 
   // If we changed to non-touch mode, we were in touch mode in the span
   // of time from last_touch_mode_switch_in_session_ to switch_time.
@@ -79,7 +80,8 @@ void TouchUIControllerStatsTracker::TabletModeChanged() {
   }
 
   auto switch_time = base::TimeTicks::Now();
-  DCHECK_GE(switch_time, last_tablet_mode_switch_in_session_);
+  CHECK_GE(switch_time, last_tablet_mode_switch_in_session_,
+           base::NotFatalUntil::M161);
 
   // If we changed to desktop mode, we were in tablet mode in the span
   // of time from last_tablet_mode_switch_in_session_ to switch_time.

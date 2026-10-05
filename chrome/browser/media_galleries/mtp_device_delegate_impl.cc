@@ -1442,10 +1442,10 @@ void MTPDeviceDelegateImpl::RunTask(PendingTaskInfo task_info) {
 
 void MTPDeviceDelegateImpl::WriteDataIntoSnapshotFile(
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(current_snapshot_request_info_.get());
-  DCHECK_GT(file_info.size, 0);
-  DCHECK(task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(current_snapshot_request_info_.get(), base::NotFatalUntil::M161);
+  CHECK_GT(file_info.size, 0, base::NotFatalUntil::M161);
+  CHECK(task_in_progress_, base::NotFatalUntil::M161);
   SnapshotRequestInfo request_info(
       current_snapshot_request_info_->file_id,
       current_snapshot_request_info_->snapshot_file_path,
@@ -1462,15 +1462,15 @@ void MTPDeviceDelegateImpl::WriteDataIntoSnapshotFile(
 }
 
 void MTPDeviceDelegateImpl::PendingRequestDone() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(task_in_progress_, base::NotFatalUntil::M161);
   task_in_progress_ = false;
   ProcessNextPendingRequest();
 }
 
 void MTPDeviceDelegateImpl::ProcessNextPendingRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(!task_in_progress_, base::NotFatalUntil::M161);
   if (pending_tasks_.empty()) {
     return;
   }
@@ -1481,7 +1481,7 @@ void MTPDeviceDelegateImpl::ProcessNextPendingRequest() {
 }
 
 void MTPDeviceDelegateImpl::OnInitCompleted(bool succeeded) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   init_state_ = succeeded ? kInitialized : kUninitialized;
   PendingRequestDone();
 }
@@ -1489,7 +1489,7 @@ void MTPDeviceDelegateImpl::OnInitCompleted(bool succeeded) {
 void MTPDeviceDelegateImpl::OnDidGetFileInfo(
     GetFileInfoSuccessCallback success_callback,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   std::move(success_callback).Run(file_info);
   PendingRequestDone();
 }
@@ -1499,7 +1499,7 @@ void MTPDeviceDelegateImpl::OnPathAlreadyExistsForCreateSingleDirectory(
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (!file_info.is_directory || exclusive) {
     std::move(error_callback).Run(base::File::FILE_ERROR_EXISTS);
@@ -1513,7 +1513,7 @@ void MTPDeviceDelegateImpl::OnPathDoesNotExistForCreateSingleDirectory(
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (error != base::File::FILE_ERROR_NOT_FOUND) {
     std::move(error_callback).Run(base::File::FILE_ERROR_NOT_FOUND);
@@ -1547,8 +1547,8 @@ void MTPDeviceDelegateImpl::OnDidGetFileInfoToReadDirectory(
     ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(task_in_progress_, base::NotFatalUntil::M161);
   if (!file_info.is_directory) {
     return HandleDeviceFileError(std::move(error_callback), dir_id,
                                  base::File::FILE_ERROR_NOT_A_DIRECTORY);
@@ -1569,10 +1569,10 @@ void MTPDeviceDelegateImpl::OnDidGetFileInfoToReadDirectory(
 void MTPDeviceDelegateImpl::OnDidGetFileInfoToCreateSnapshotFile(
     std::unique_ptr<SnapshotRequestInfo> snapshot_request_info,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!current_snapshot_request_info_.get());
-  DCHECK(snapshot_request_info.get());
-  DCHECK(task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(!current_snapshot_request_info_.get(), base::NotFatalUntil::M161);
+  CHECK(snapshot_request_info.get(), base::NotFatalUntil::M161);
+  CHECK(task_in_progress_, base::NotFatalUntil::M161);
   base::File::Error error = base::File::FILE_OK;
   if (file_info.is_directory) {
     error = base::File::FILE_ERROR_NOT_A_FILE;
@@ -1604,7 +1604,7 @@ void MTPDeviceDelegateImpl::OnDidGetFileInfoToCreateSnapshotFile(
 void MTPDeviceDelegateImpl::OnDidGetDestFileInfoToCopyFileFromLocal(
     ErrorCallback error_callback,
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (file_info.is_directory) {
     std::move(error_callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
@@ -1619,7 +1619,7 @@ void MTPDeviceDelegateImpl::OnGetDestFileInfoErrorToCopyFileFromLocal(
     CopyFileFromLocalSuccessCallback success_callback,
     ErrorCallback error_callback,
     const base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (error != base::File::FILE_ERROR_NOT_FOUND) {
     std::move(error_callback).Run(error);
@@ -1637,7 +1637,7 @@ void MTPDeviceDelegateImpl::OnGetDestFileInfoErrorToCopyFileFromLocal(
 void MTPDeviceDelegateImpl::OnDidCreateSingleDirectory(
     const base::FilePath& directory_path,
     CreateDirectorySuccessCallback success_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   std::move(success_callback).Run();
   NotifyFileChange(directory_path.DirName(),
@@ -1651,7 +1651,7 @@ void MTPDeviceDelegateImpl::OnDidCreateParentDirectoryToCreateDirectory(
     const bool exclusive,
     CreateDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   // In case of error, only one callback will be called.
   auto split_error_callback =
@@ -1677,7 +1677,7 @@ void MTPDeviceDelegateImpl::OnDidCreateParentDirectoryToCreateDirectory(
 void MTPDeviceDelegateImpl::OnCreateParentDirectoryErrorToCreateDirectory(
     ErrorCallback callback,
     const base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   std::move(callback).Run(base::File::FILE_ERROR_FAILED);
 }
@@ -1687,7 +1687,7 @@ void MTPDeviceDelegateImpl::OnDidReadDirectory(
     ReadDirectorySuccessCallback success_callback,
     const MTPDeviceTaskHelper::MTPEntries& mtp_entries,
     bool has_more) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   storage::AsyncFileUtil::EntryList file_list;
 
@@ -1751,8 +1751,8 @@ void MTPDeviceDelegateImpl::OnDidReadDirectory(
 void MTPDeviceDelegateImpl::OnDidWriteDataIntoSnapshotFile(
     const base::File::Info& file_info,
     const base::FilePath& snapshot_file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(current_snapshot_request_info_.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(current_snapshot_request_info_.get(), base::NotFatalUntil::M161);
   std::move(current_snapshot_request_info_->success_callback)
       .Run(file_info, snapshot_file_path);
   current_snapshot_request_info_.reset();
@@ -1761,8 +1761,8 @@ void MTPDeviceDelegateImpl::OnDidWriteDataIntoSnapshotFile(
 
 void MTPDeviceDelegateImpl::OnWriteDataIntoSnapshotFileError(
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(current_snapshot_request_info_.get());
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(current_snapshot_request_info_.get(), base::NotFatalUntil::M161);
   std::move(current_snapshot_request_info_->error_callback).Run(error);
   current_snapshot_request_info_.reset();
   PendingRequestDone();
@@ -1772,7 +1772,7 @@ void MTPDeviceDelegateImpl::OnDidReadBytes(
     ReadBytesSuccessCallback success_callback,
     const base::File::Info& file_info,
     int bytes_read) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   std::move(success_callback).Run(file_info, bytes_read);
   PendingRequestDone();
 }
@@ -1781,12 +1781,12 @@ void MTPDeviceDelegateImpl::OnDidFillFileCache(
     const base::FilePath& path,
     storage::AsyncFileUtil::EntryList /* entries */,
     bool has_more) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   if (pending_tasks_.empty()) {
     return;
   }
 
-  DCHECK(path.IsParent(pending_tasks_.front().path));
+  CHECK(path.IsParent(pending_tasks_.front().path), base::NotFatalUntil::M161);
   if (has_more) {
     return;  // Wait until all entries have been read.
   }
@@ -1795,7 +1795,7 @@ void MTPDeviceDelegateImpl::OnDidFillFileCache(
 
 void MTPDeviceDelegateImpl::OnFillFileCacheFailed(
     base::File::Error /* error */) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   if (pending_tasks_.empty()) {
     return;
   }
@@ -1813,7 +1813,7 @@ void MTPDeviceDelegateImpl::OnDidCreateTemporaryFileToCopyFileLocal(
     CopyFileLocalSuccessCallback success_callback,
     ErrorCallback error_callback,
     const base::FilePath& temporary_file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (temporary_file_path.empty()) {
     std::move(error_callback).Run(base::File::FILE_ERROR_FAILED);
@@ -1843,7 +1843,7 @@ void MTPDeviceDelegateImpl::OnDidCreateSnapshotFileOfCopyFileLocal(
     ErrorCallback error_callback,
     const base::File::Info& file_info,
     const base::FilePath& temporary_file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   // Consider that half of copy is completed by creating a temporary file.
   progress_callback.Run(file_info.size / 2);
@@ -1863,7 +1863,7 @@ void MTPDeviceDelegateImpl::OnDidCreateSnapshotFileOfCopyFileLocal(
 void MTPDeviceDelegateImpl::OnDidCopyFileFromLocalOfCopyFileLocal(
     CopyFileFromLocalSuccessCallback success_callback,
     const base::FilePath& temporary_file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   DeleteTemporaryFile(temporary_file_path);
   std::move(success_callback).Run();
@@ -1873,7 +1873,7 @@ void MTPDeviceDelegateImpl::OnDidMoveFileLocalWithRename(
     MoveFileLocalSuccessCallback success_callback,
     const base::FilePath& source_file_path,
     const uint32_t file_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   EvictCachedPathToId(file_id);
   std::move(success_callback).Run();
@@ -1888,7 +1888,7 @@ void MTPDeviceDelegateImpl::OnDidCopyFileFromLocal(
     CopyFileFromLocalSuccessCallback success_callback,
     const base::FilePath& file_path,
     const int source_file_descriptor) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -1904,7 +1904,7 @@ void MTPDeviceDelegateImpl::HandleCopyFileLocalError(
     ErrorCallback error_callback,
     const base::FilePath& temporary_file_path,
     const base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   DeleteTemporaryFile(temporary_file_path);
   std::move(error_callback).Run(error);
@@ -1914,7 +1914,7 @@ void MTPDeviceDelegateImpl::HandleCopyFileFromLocalError(
     ErrorCallback error_callback,
     const int source_file_descriptor,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -1928,7 +1928,7 @@ void MTPDeviceDelegateImpl::OnDidDeleteObject(
     const base::FilePath& object_path,
     const uint32_t object_id,
     DeleteObjectSuccessCallback success_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   EvictCachedPathToId(object_id);
   std::move(success_callback).Run();
@@ -1941,7 +1941,7 @@ void MTPDeviceDelegateImpl::OnDidDeleteObject(
 void MTPDeviceDelegateImpl::HandleDeleteFileOrDirectoryError(
     ErrorCallback error_callback,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   std::move(error_callback).Run(error);
   PendingRequestDone();
@@ -1950,7 +1950,7 @@ void MTPDeviceDelegateImpl::HandleDeleteFileOrDirectoryError(
 void MTPDeviceDelegateImpl::HandleDeviceFileError(ErrorCallback error_callback,
                                                   uint32_t file_id,
                                                   base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   EvictCachedPathToId(file_id);
   std::move(error_callback).Run(error);
@@ -1960,8 +1960,9 @@ void MTPDeviceDelegateImpl::HandleDeviceFileError(ErrorCallback error_callback,
 base::FilePath MTPDeviceDelegateImpl::NextUncachedPathComponent(
     const base::FilePath& path,
     const base::FilePath& cached_path) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(cached_path.empty() || cached_path.IsParent(path));
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(cached_path.empty() || cached_path.IsParent(path),
+        base::NotFatalUntil::M161);
 
   base::FilePath uncached_path;
   std::string device_relpath = GetDeviceRelativePath(device_path_, path);
@@ -1969,7 +1970,7 @@ base::FilePath MTPDeviceDelegateImpl::NextUncachedPathComponent(
     uncached_path = device_path_;
     std::vector<std::string> device_relpath_components = base::SplitString(
         device_relpath, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    DCHECK(!device_relpath_components.empty());
+    CHECK(!device_relpath_components.empty(), base::NotFatalUntil::M161);
     bool all_components_cached = true;
     const MTPFileNode* current_node = root_node_.get();
     for (const std::string& component : device_relpath_components) {
@@ -1992,8 +1993,8 @@ base::FilePath MTPDeviceDelegateImpl::NextUncachedPathComponent(
 }
 
 void MTPDeviceDelegateImpl::FillFileCache(const base::FilePath& uncached_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(task_in_progress_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(task_in_progress_, base::NotFatalUntil::M161);
 
   ReadDirectorySuccessCallback success_callback =
       base::BindRepeating(&MTPDeviceDelegateImpl::OnDidFillFileCache,
@@ -2035,7 +2036,7 @@ void MTPDeviceDelegateImpl::EvictCachedPathToId(uint32_t id) {
 
   if (MTPFileNode* const parent = it->second->parent()) {
     const bool ok = parent->DeleteChild(id);
-    DCHECK(ok);
+    CHECK(ok, base::NotFatalUntil::M161);
   }
 }
 
@@ -2043,7 +2044,7 @@ void CreateMTPDeviceAsyncDelegate(
     const std::string& device_location,
     const bool read_only,
     CreateMTPDeviceAsyncDelegateCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   std::move(callback).Run(
       new MTPDeviceDelegateImpl(device_location, read_only));
 }

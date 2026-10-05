@@ -50,7 +50,7 @@ WindowedIncognitoMonitor* WindowedIncognitoMonitor::Get() {
 
 WindowedIncognitoMonitor::WindowedIncognitoMonitor()
     : num_active_incognito_windows_(0), num_incognito_window_opened_(0) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   RegisterInstance();
 }
 
@@ -82,7 +82,7 @@ void WindowedIncognitoMonitor::UnregisterInstance() {
   // |running_sessions_| is only accessed on the UI thread in RegisterInstance
   // and UnregisterInstance. Therefore, we don't need to explicitly synchronize
   // access to it.
-  DCHECK_GT(running_sessions_, 0);
+  CHECK_GT(running_sessions_, 0, base::NotFatalUntil::M161);
   if (!--running_sessions_) {
     browser_collection_observation_.Reset();
   }
@@ -130,7 +130,7 @@ void WindowedIncognitoMonitor::OnBrowserClosed(
   }
 
   base::AutoLock lock(lock_);
-  DCHECK(num_active_incognito_windows_ > 0);
+  CHECK(num_active_incognito_windows_ > 0, base::NotFatalUntil::M161);
   num_active_incognito_windows_--;
 }
 

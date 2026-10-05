@@ -67,8 +67,8 @@ std::unique_ptr<KeyedService> DesktopProfileSessionDurationsServiceFactory::
     return nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  DCHECK(!profile->IsSystemProfile());
-  DCHECK(!profile->IsGuestSession());
+  CHECK(!profile->IsSystemProfile(), base::NotFatalUntil::M161);
+  CHECK(!profile->IsGuestSession(), base::NotFatalUntil::M161);
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);

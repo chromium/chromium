@@ -18,12 +18,12 @@ EnterpriseMemoryLimitEvaluator::EnterpriseMemoryLimitEvaluator(
     : voter_(std::move(voter)), weak_ptr_factory_(this) {}
 
 EnterpriseMemoryLimitEvaluator::~EnterpriseMemoryLimitEvaluator() {
-  DCHECK(!observer_);
+  CHECK(!observer_, base::NotFatalUntil::M161);
 }
 
 void EnterpriseMemoryLimitEvaluator::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!observer_);
+  CHECK(!observer_, base::NotFatalUntil::M161);
   auto observer =
       std::make_unique<EnterpriseMemoryLimitEvaluator::GraphObserver>(
           base::BindRepeating(
@@ -37,7 +37,7 @@ void EnterpriseMemoryLimitEvaluator::Start() {
 
 std::unique_ptr<EnterpriseMemoryLimitEvaluator::GraphObserver>
 EnterpriseMemoryLimitEvaluator::StartForTesting() {
-  DCHECK(!observer_);
+  CHECK(!observer_, base::NotFatalUntil::M161);
   auto observer =
       std::make_unique<EnterpriseMemoryLimitEvaluator::GraphObserver>(
           base::BindRepeating(
@@ -50,7 +50,7 @@ EnterpriseMemoryLimitEvaluator::StartForTesting() {
 
 void EnterpriseMemoryLimitEvaluator::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M161);
   // Start by invalidating all the WeakPtrs that have been served, this will
   // invalidate the callback owned by the observer.
   weak_ptr_factory_.InvalidateWeakPtrs();
