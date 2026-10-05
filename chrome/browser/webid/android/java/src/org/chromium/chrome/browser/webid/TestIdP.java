@@ -17,6 +17,9 @@ import android.os.Messenger;
 import android.os.RemoteException;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,12 +29,14 @@ import java.util.concurrent.Executors;
  *
  * <p>It is only used in Android browser tests and is not exposed in clank.
  */
+@NullMarked
 public class TestIdP extends Service {
     // Use constants from IdentityProviderService.
 
-    private Messenger mMessenger;
+    private @MonotonicNonNull Messenger mMessenger;
     private ExecutorService mExecutor;
 
+    @Initializer
     @Override
     public void onCreate() {
         super.onCreate();

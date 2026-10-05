@@ -15,7 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
@@ -28,7 +28,7 @@ import java.util.Locale;
  * AppLocaleUtils#getAppLanguagePref} to override the locales in {@link ChromeApplication} and
  * {@link ChromeActivity} and default Locale.
  */
-@NullUnmarked
+@NullMarked
 public class GlobalAppLocaleController {
     private static final GlobalAppLocaleController INSTANCE = new GlobalAppLocaleController();
 
@@ -102,6 +102,7 @@ public class GlobalAppLocaleController {
      */
     public Configuration getOverrideConfig(Context base) {
         assert mIsOverridden : "Can only call GlobalAppLocaleController.getConfig if overridden";
+        assert mOverrideLanguage != null;
 
         Configuration config = new Configuration();
         // Pre-Android O, fontScale gets initialized to 1 in the constructor. Set it to 0 so
@@ -179,7 +180,7 @@ public class GlobalAppLocaleController {
      */
     @VisibleForTesting
     static @OverrideLanguageStatus int getOverrideVsSystemLanguageStatus(
-            String overrideLanguage, String systemLanguage) {
+            @Nullable String overrideLanguage, String systemLanguage) {
         // When following the system language there is no override so Chrome tracks the System UI.
         if (AppLocaleUtils.isFollowSystemLanguage(overrideLanguage)) {
             return OverrideLanguageStatus.NO_OVERRIDE;
@@ -202,7 +203,8 @@ public class GlobalAppLocaleController {
      * @return Whether or not the app locale should be overridden.
      */
     @VisibleForTesting
-    static boolean shouldOverrideAppLocale(String overrideLanguage, String systemLanguage) {
+    static boolean shouldOverrideAppLocale(
+            @Nullable String overrideLanguage, String systemLanguage) {
         return !TextUtils.isEmpty(overrideLanguage)
                 && !TextUtils.equals(systemLanguage, overrideLanguage);
     }

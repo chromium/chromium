@@ -38,6 +38,7 @@ public class TabGroupingActionProvider implements ContextualPageActionController
 
         var controller = assumeNonNull(mGroupSuggestionsButtonControllerSupplier.get());
         if (action == AdaptiveToolbarButtonVariant.TAB_GROUPING) {
+            assert tab != null;
             controller.onButtonShown(tab);
         } else {
             controller.onButtonHidden();

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_suggestion.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
  * GroupSuggestionsButtonDataProvider and it informs the backend of the outcome (button suppressed,
  * ignored, clicked, etc).
  */
+@NullMarked
 public interface GroupSuggestionsButtonController {
 
     /**
