@@ -78,7 +78,6 @@ source_set("core") {
   public_deps = [
     ":features",
     "//base",
-    "//components/actor/core/proto:actuation_transport_proto",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/content_settings/core/common",
     "//components/page_content_annotations/core",

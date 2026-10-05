@@ -14,3 +14,6 @@ to allow it to be shared on iOS.
   all platforms, including iOS.
 - `renderer/`: Code running within the renderer processes. Used only on
   platforms that use the Blink rendering engine.
+- `transport/`: Cross-platform actuation transport layer shared by all
+  platforms, including iOS.
+
