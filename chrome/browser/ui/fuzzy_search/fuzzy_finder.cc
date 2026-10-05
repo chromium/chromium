@@ -283,45 +283,10 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   // holds the alignment of query prefix 0..j with candidate prefix 0..i.
   alignment_matrix_.assign(m * n, AlignmentCell());
 
-  // --- Row 0: Align the first query character (j = 0) ---
-  // The first character represents the base case where a new match begins.
-  // Matching at a word boundary receives an initial boundary bonus.
-  // Substitutions on the first character are disallowed; non-matching
-  // characters remain gaps.
-  bool in_gap = false;
-  for (size_t i = 0; i < n; ++i) {
-    const int penalty = in_gap ? kGapExtensionPenalty : kGapStartPenalty;
-    const int left_score =
-        (i > 0) ? alignment_matrix_[i - 1].score - penalty : 0;
-
-    if (query[0] == candidate[i]) {
-      const int match_score =
-          kMatchScore +
-          (IsWordBoundary(candidate, i) ? kInitialBoundaryBonus : 0);
-      if (left_score > match_score) {
-        alignment_matrix_[i] = {left_score, 0, MatchStep::kSkipCandidate};
-        in_gap = true;
-      } else {
-        alignment_matrix_[i] = {match_score, 1, MatchStep::kExactMatch};
-        in_gap = false;
-      }
-    } else {
-      if (left_score > 0) {
-        alignment_matrix_[i] = {left_score, 0, MatchStep::kSkipCandidate};
-        in_gap = true;
-      } else {
-        alignment_matrix_[i] = AlignmentCell();
-        in_gap = false;
-      }
-    }
-  }
-
-  // --- Rows 1 to M - 1: Align remaining query characters ---
-  for (size_t j = 1; j < m; ++j) {
-    in_gap = false;
+  for (size_t j = 0; j < m; ++j) {
+    bool in_gap = false;
     for (size_t i = j; i < n; ++i) {
       const size_t idx = i + (j * n);
-      const size_t diag_idx = (i - 1) + ((j - 1) * n);
 
       // 1. Horizontal step (skip candidate character / gap propagation).
       int left_score = (i > 0) ? alignment_matrix_[idx - 1].score : 0;
@@ -341,8 +306,17 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
       // 2. Diagonal match steps:
       // Only allow diagonal steps if the previous query prefix had a
       // valid alignment (score > 0) to ensure full query coverage.
-      const AlignmentCell& diag = alignment_matrix_[diag_idx];
-      if (is_exact_match) {
+      if (is_exact_match && j == 0) {
+        // The first query character is the base case where a new match
+        // begins. Matching at a word boundary receives an initial boundary
+        // bonus.
+        diagonal_score =
+            kMatchScore +
+            (IsWordBoundary(candidate, i) ? kInitialBoundaryBonus : 0);
+        consecutive = 1;
+        diag_step = MatchStep::kExactMatch;
+      } else if (is_exact_match) {
+        const AlignmentCell& diag = alignment_matrix_[idx - n - 1];
         if (diag.score > 0) {
           diagonal_score = diag.score + kMatchScore;
           if (IsWordBoundary(candidate, i)) {
@@ -370,9 +344,10 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
             diag_step = MatchStep::kTransposition;
           }
         }
-      } else if (m > 3) {
+      } else if (j > 0 && m > 3) {
         // Mismatch / substitution typo: disallowed entirely for short queries
         // (m <= 3) and disallowed on the first character (j == 0).
+        const AlignmentCell& diag = alignment_matrix_[idx - n - 1];
         if (diag.score > 0) {
           diagonal_score = diag.score + kTypoPenalty;
           consecutive = 0;
