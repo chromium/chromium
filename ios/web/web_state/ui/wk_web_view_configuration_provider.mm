@@ -231,7 +231,14 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   if (@available(iOS 27, *)) {
     bool is_universal_opt_out_enabled =
         GetWebClient()->IsUniversalOptOutEnabled(browser_state_);
-    SetUniversalOptOutEnabled(is_universal_opt_out_enabled);
+    // On early versions of iOS 27 betas,
+    // `-[WKWebPagePreferences setGlobalPrivacyControlEnabled:]` was not defined
+    // correctly, causing crashes. As a workaround, only set the preference if
+    // Universal Opt-Out is enabled. Resetting the value to false using this
+    // method is not supported.
+    if (is_universal_opt_out_enabled) {
+      SetUniversalOptOutEnabled(true);
+    }
   }
 }
 
