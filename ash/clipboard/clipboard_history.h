@@ -57,10 +57,10 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
   const std::list<ClipboardHistoryItem>& GetItems() const;
   std::list<ClipboardHistoryItem>& GetItems();
 
-  // Deletes every item in the clipboard history. The clipboard is cleared as
-  // well to ensure that its contents stay in sync with the first item in the
-  // clipboard history.
-  void Clear();
+  // Deletes every item in the clipboard history. If `reset_system_clipboard` is
+  // true, the system clipboard is cleared as well to ensure that its contents
+  // stay in sync with the first item in the clipboard history.
+  void Clear(bool reset_system_clipboard = true);
 
   // Returns whether the clipboard history of the active account is empty.
   bool IsEmpty() const;

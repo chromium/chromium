@@ -679,8 +679,7 @@ TEST_F(ClipboardHistoryTest, RecordControlVMetrics) {
 TEST_F(ClipboardHistoryTest, PolicyDisabledPreventsRecordingHistory) {
   base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
 
-  auto* prefs =
-      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   ASSERT_TRUE(prefs);
 
   // Disable clipboard history via policy.

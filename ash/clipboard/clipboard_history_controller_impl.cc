@@ -842,6 +842,25 @@ void ClipboardHistoryControllerImpl::OnLoginStatusChanged(
   PostItemUpdateNotificationTask();
 }
 
+void ClipboardHistoryControllerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  if (pref_service !=
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
+    return;
+  }
+  if (pref_change_registrar_) {
+    return;
+  }
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      prefs::kClipboardHistoryEnabled,
+      base::BindRepeating(
+          &ClipboardHistoryControllerImpl::OnClipboardHistoryEnabledPrefChanged,
+          base::Unretained(this)));
+  OnClipboardHistoryEnabledPrefChanged();
+}
+
 void ClipboardHistoryControllerImpl::PostItemUpdateNotificationTask() {
   // Uses the async task to debounce multiple clipboard history changes in
   // short duration. Restart the timer if it is running.
@@ -1139,6 +1158,16 @@ void ClipboardHistoryControllerImpl::OnMenuClosed() {
               controller_weak_ptr->context_menu_.reset();
           },
           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ClipboardHistoryControllerImpl::OnClipboardHistoryEnabledPrefChanged() {
+  if (!clipboard_history_util::IsEnabledByPolicy()) {
+    // Intentionally preserve the system clipboard buffer here: last copied item
+    // stays in the system buffer leaving plain Ctrl+C/Ctrl+V even if a policy
+    // disables multi-paste mid-session. Clearing the history also closes the
+    // menu because there's nothing to show.
+    clipboard_history_->Clear(/*reset_system_clipboard=*/false);
+  }
 }
 
 }  // namespace ash

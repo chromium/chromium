@@ -25,6 +25,8 @@
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_types.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class PrefRegistrySimple;
@@ -191,6 +193,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
   void OnLoginStatusChanged(LoginStatus login_status) override;
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // Posts a task to notify `observers_` of updates to clipboard history items.
   void PostItemUpdateNotificationTask();
@@ -258,6 +261,10 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // Called when the contextual menu is closed.
   void OnMenuClosed();
 
+  // Called when the primary profile's ClipboardHistoryEnabled policy changes.
+  // If disabled, clears existing history and closes the menu.
+  void OnClipboardHistoryEnabledPrefChanged();
+
   // Either the browser-implemented or test-implemented delegate depending on
   // whether we are running in an Ash-only test context.
   const std::unique_ptr<ClipboardHistoryControllerDelegate> delegate_;
@@ -278,6 +285,9 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   std::unique_ptr<ClipboardHistoryMenuModelAdapter> context_menu_;
   // Handles events on the `context_menu_`.
   std::unique_ptr<MenuDelegate> menu_delegate_;
+
+  // Observes primary profile preference changes.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // How the user last caused the `context_menu_` to show.
   chromeos::clipboard_history::ShowSource last_menu_source_ =

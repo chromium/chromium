@@ -44,6 +44,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/models/image_model.h"
@@ -372,6 +373,9 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenuDisabledByPolicy) {
       prefs::kClipboardHistoryEnabled,
       static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
 
+  // Writing new items to clipboard buffer should be recorded again.
+  WriteTextToClipboardAndConfirm(u"test3");
+
   // Now the menu can be shown.
   ShowMenu();
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
@@ -381,9 +385,64 @@ TEST_F(ClipboardHistoryControllerTest, ShowMenuDisabledByPolicy) {
   // Hide the menu.
   PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+}
 
-  // Writing new items to clipboard buffer should be recorded again.
-  WriteTextToClipboardAndConfirm(u"test3");
+// Tests that dynamically disabling the clipboard history policy clears history
+// buffer.
+TEST_F(ClipboardHistoryControllerTest, DynamicPolicyChangeClearsHistory) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+
+  // Write items into clipboard history while policy is enabled.
+  WriteTextToClipboardAndConfirm(u"item1");
+  WriteTextToClipboardAndConfirm(u"item2");
+  EXPECT_EQ(2u, GetHistoryValues().size());
+
+  // Dynamically disable clipboard history policy.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
+
+  // The history buffer should be cleared immediately.
+  EXPECT_TRUE(GetHistoryValues().empty());
+
+  // The 1-item system clipboard (Ctrl+V) data remains intact.
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  const auto* clipboard_data =
+      ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(
+          &data_dst);
+  ASSERT_TRUE(clipboard_data);
+  EXPECT_EQ("item2", clipboard_data->text());
+
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kEnabled));
+  WriteTextToClipboardAndConfirm(u"item3");
+  EXPECT_EQ(1u, GetHistoryValues().size());
+}
+
+// Tests that dynamically disabling the clipboard history policy closes an open
+// menu.
+TEST_F(ClipboardHistoryControllerTest, DynamicPolicyChangeCancelsMenu) {
+  base::test::ScopedFeatureList feature_list(features::kClipboardHistoryPolicy);
+
+  auto* prefs = Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+
+  // Write an item into clipboard history and open the menu.
+  WriteTextToClipboardAndConfirm(u"item1");
+  ShowMenu();
+  EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Dynamically disable clipboard history policy.
+  prefs->SetInteger(
+      prefs::kClipboardHistoryEnabled,
+      static_cast<int>(clipboard_history_util::PolicyValue::kDisabled));
+
+  // The open menu should be cancelled.
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
 // Verifies that the clipboard history is disabled in some user modes, which

@@ -48,9 +48,12 @@ std::list<ClipboardHistoryItem>& ClipboardHistory::GetItems() {
   return history_list_;
 }
 
-void ClipboardHistory::Clear() {
+void ClipboardHistory::Clear(bool reset_system_clipboard) {
+  commit_data_weak_factory_.InvalidateWeakPtrs();
   history_list_ = std::list<ClipboardHistoryItem>();
-  SyncClipboardToClipboardHistory();
+  if (reset_system_clipboard) {
+    SyncClipboardToClipboardHistory();
+  }
   for (auto& observer : observers_)
     observer.OnClipboardHistoryCleared();
 }
@@ -97,7 +100,6 @@ void ClipboardHistory::OnClipboardDataChanged() {
     // `clipboard_data` is only empty when the clipboard is cleared. This is
     // done to prevent data leakage into or from locked states (e.g., locked
     // fullscreen). Clipboard history should also be cleared in this case.
-    commit_data_weak_factory_.InvalidateWeakPtrs();
     Clear();
     return;
   }
