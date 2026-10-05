@@ -106,6 +106,7 @@ class SafeBrowsingDatabaseManager;
 namespace extensions {
 
 class Blocklist;
+class BrowserContextLifetimeTracker;
 class CrxInstaller;
 class ComponentExtensionResourceManager;
 class Extension;
@@ -270,6 +271,10 @@ class ExtensionsBrowserClient {
   virtual bool CanExtensionCrossIncognito(
       const extensions::Extension* extension,
       content::BrowserContext* context) const = 0;
+
+  // Returns a tracker for watching a BrowserContext's off-the-record
+  // sibling's lifecycle, or null if this embedder does not support it.
+  virtual BrowserContextLifetimeTracker* GetBrowserContextLifetimeTracker() = 0;
 
   // Return the resource relative path and id for the given request.
   virtual base::FilePath GetBundleResourcePath(

@@ -342,11 +342,22 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, TestGetPartitionKeyContextIsolation) {
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, OTRReceiverMojoConnectionError) {
-  // Test that simulates a mojo connection error with an existing OTR profile.
-  // This test verifies that the fix for crbug.com/472076020 works correctly:
-  // when MaybeStartListening() is called after a connection error, it should
-  // not try to add an observation for the OTR profile again because
-  // OnOffTheRecordProfileCreated() already added it.
+  // This test replays the scenario from crbug.com/472076020: an OTR profile
+  // already exists when a mojo connection error triggers
+  // MaybeStartListening(). The original bug was that MaybeStartListening()
+  // would try to add an observation for the OTR profile again, even though
+  // OnOffTheRecordProfileCreated() had already added it.
+  //
+  // Since the OTR-profile observation moved out of CookiesEventRouter into
+  // ChromeBrowserContextLifetimeTracker (reached via
+  // ExtensionsBrowserClient::GetBrowserContextLifetimeTracker()),
+  // MaybeStartListening() no longer touches that observation at all on
+  // reconnect, so this test can't exercise a double-add of it directly.
+  // That invariant is instead guarded by the DCHECK in
+  // ChromeBrowserContextLifetimeTracker::StartObserving(), which would catch
+  // a future regression that reintroduces a call from the reconnect path
+  // back into StartObserving(). This test's own assertions below only cover
+  // that the mojo receiver itself recovers from the connection error.
 
   // First, install an extension with cookie permissions to trigger
   // CookiesEventRouter creation.
@@ -386,23 +397,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, OTRReceiverMojoConnectionError) {
       cookies_api->GetCookiesEventRouterForTesting();
   ASSERT_TRUE(event_router);
 
-  // Create an OTR profile. This should trigger OnOffTheRecordProfileCreated()
-  // which starts observing the OTR profile and binds the OTR mojo receiver.
+  // Create an OTR profile. This should trigger the tracker's
+  // OnRelatedOffTheRecordBrowserContextCreated() notification, which starts
+  // observing the OTR profile and binds the OTR mojo receiver.
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   mojo::Receiver<network::mojom::CookieChangeListener>& otr_receiver =
       event_router->otr_receiver_;
-  const base::ScopedObservation<Profile, ProfileObserver>&
-      otr_profile_observation = event_router->otr_profile_observation_;
   ASSERT_TRUE(otr_profile);
-  EXPECT_TRUE(otr_profile_observation.IsObservingSource(otr_profile));
   EXPECT_TRUE(otr_receiver.is_bound());
 
   // Simulate a mojo connection error and verify that the OTR receiver is
-  // re-bound and the observation is still active.
+  // re-bound.
   event_router->OnConnectionError(&otr_receiver);
   EXPECT_TRUE(otr_receiver.is_bound());
-  EXPECT_TRUE(otr_profile_observation.IsObservingSource(otr_profile));
 }
 
 class CookiesCrashApiTest : public ExtensionApiTest {

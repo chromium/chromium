@@ -17,11 +17,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/window_controller.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -230,12 +227,6 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
         cookie, details, extension, match_vector,
         CookiePartitionKeyCollectionFromApiPartitionKey(
             details->partition_key));
-  }
-}
-
-void AppendToTabIdList(WindowController* window, base::ListValue& tab_ids) {
-  for (int i = 0; i < window->GetTabCount(); ++i) {
-    tab_ids.Append(ExtensionTabUtil::GetTabId(window->GetWebContentsAt(i)));
   }
 }
 

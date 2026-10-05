@@ -52,6 +52,7 @@ namespace extensions {
 class AutomationInternalApiDelegate;
 class AppViewGuestDelegate;
 class ContentRulesRegistry;
+class CookiesApiDelegate;
 class DisplayInfoProvider;
 class ExtensionOptionsGuest;
 class ExtensionOptionsGuestDelegate;
@@ -221,6 +222,9 @@ class ExtensionsAPIClient {
 
   // Returns a delegate for embedder-specific extension messaging.
   virtual MessagingDelegate* GetMessagingDelegate();
+
+  // Returns a delegate for embedder-specific chrome.cookies behavior.
+  virtual CookiesApiDelegate* GetCookiesApiDelegate();
 
 // The APIs that need these methods are not supported on desktop Android.
 #if !BUILDFLAG(IS_ANDROID)

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/automation_internal/chrome_automation_internal_api_delegate.h"
+#include "chrome/browser/extensions/api/cookies/chrome_cookies_api_delegate.h"
 #include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 #include "chrome/browser/extensions/api/declarative_content/default_content_predicate_evaluators.h"
 #include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
@@ -464,6 +465,13 @@ MessagingDelegate* ChromeExtensionsAPIClient::GetMessagingDelegate() {
     messaging_delegate_ = std::make_unique<ChromeMessagingDelegate>();
   }
   return messaging_delegate_.get();
+}
+
+CookiesApiDelegate* ChromeExtensionsAPIClient::GetCookiesApiDelegate() {
+  if (!cookies_api_delegate_) {
+    cookies_api_delegate_ = std::make_unique<ChromeCookiesApiDelegate>();
+  }
+  return cookies_api_delegate_.get();
 }
 
 // The APIs that require these methods are not supported on Android.

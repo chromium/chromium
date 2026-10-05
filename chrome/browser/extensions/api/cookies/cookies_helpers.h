@@ -33,7 +33,6 @@ class CanonicalCookie;
 namespace extensions {
 
 class Extension;
-class WindowController;
 
 namespace cookies_helpers {
 
@@ -97,10 +96,6 @@ void AppendMatchingCookiesFromCookieAccessResultListToVector(
     api::cookies::GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<api::cookies::Cookie>* match_vector);
-
-// Appends the IDs of all tabs belonging to the given browser to the
-// given list.
-void AppendToTabIdList(WindowController* window, base::ListValue& tab_ids);
 
 // The extensions API allows the caller to provide an incomplete
 // partitionKey that does not contain a hasCrossSiteAncestor value. If the key

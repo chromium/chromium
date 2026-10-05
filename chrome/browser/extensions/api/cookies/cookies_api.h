@@ -14,11 +14,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/extensions/api/cookies.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/browser_context_lifetime_observer.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -28,13 +27,13 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "url/gurl.h"
 
-class Profile;
-
 namespace extensions {
+
+class BrowserContextLifetimeTracker;
 
 // Observes CookieManager Mojo messages and routes them as events to the
 // extension system.
-class CookiesEventRouter : public ProfileObserver {
+class CookiesEventRouter : public BrowserContextLifetimeObserver {
  public:
   explicit CookiesEventRouter(content::BrowserContext* context);
 
@@ -43,9 +42,11 @@ class CookiesEventRouter : public ProfileObserver {
 
   ~CookiesEventRouter() override;
 
-  // ProfileObserver:
-  void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
-  void OnProfileWillBeDestroyed(Profile* profile) override;
+  // BrowserContextLifetimeObserver:
+  void OnRelatedOffTheRecordBrowserContextCreated(
+      content::BrowserContext& off_the_record_context) override;
+  void OnRelatedOffTheRecordBrowserContextDestroyed(
+      content::BrowserContext& off_the_record_context) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionApiTest, OTRReceiverMojoConnectionError);
@@ -75,7 +76,7 @@ class CookiesEventRouter : public ProfileObserver {
   void MaybeStartListening();
   void BindToCookieManager(
       mojo::Receiver<network::mojom::CookieChangeListener>* receiver,
-      Profile* profile);
+      content::BrowserContext& context);
   void OnConnectionError(
       mojo::Receiver<network::mojom::CookieChangeListener>* receiver);
   void OnCookieChange(bool otr, const net::CookieChangeInfo& change);
@@ -87,11 +88,11 @@ class CookiesEventRouter : public ProfileObserver {
                      base::ListValue event_args,
                      const GURL& cookie_domain);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_;
-
-  base::ScopedObservation<Profile, ProfileObserver> otr_profile_observation_;
+  // May be null if this embedder doesn't support tracking off-the-record
+  // context lifetimes.
+  raw_ptr<BrowserContextLifetimeTracker> browser_context_lifetime_tracker_;
 
   // To listen to cookie changes in both the original and the off the record
   // profiles, we need a pair of bindings, as well as a pair of

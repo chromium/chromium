@@ -234,6 +234,8 @@ source_set("browser_sources") {
     "bookmark_app_util.cc",
     "bookmark_app_util.h",
     "browser_context_keyed_api_factory.h",
+    "browser_context_lifetime_observer.h",
+    "browser_context_lifetime_tracker.h",
     "browser_frame_context_data.cc",
     "browser_frame_context_data.h",
     "browser_process_context_data.cc",

@@ -19,10 +19,9 @@ source_set("cookies") {
     ":helpers",
     "//base",
     "//chrome/browser/extensions",
-    "//chrome/browser/profiles",
-    "//chrome/browser/safe_browsing",
-    "//components/safe_browsing/core/common:features",
     "//extensions/browser",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/browser/api/cookies",
   ]
 }
 
@@ -36,9 +35,9 @@ source_set("helpers") {
 
   deps = [
     "//base",
-    "//chrome/browser/extensions",
-    "//chrome/browser/profiles",
     "//chrome/common/extensions/api",
+    "//content/public/browser",
+    "//extensions/browser",
     "//extensions/common",
     "//net",
     "//url",

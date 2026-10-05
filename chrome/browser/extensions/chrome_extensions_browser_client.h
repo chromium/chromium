@@ -125,6 +125,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool CanExtensionCrossIncognito(
       const Extension* extension,
       content::BrowserContext* context) const override;
+  BrowserContextLifetimeTracker* GetBrowserContextLifetimeTracker() override;
   base::FilePath GetBundleResourcePath(
       const network::ResourceRequest& request,
       const base::FilePath& extension_resources_path,

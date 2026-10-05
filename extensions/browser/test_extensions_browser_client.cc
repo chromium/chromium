@@ -241,6 +241,11 @@ bool TestExtensionsBrowserClient::CanExtensionCrossIncognito(
   return false;
 }
 
+BrowserContextLifetimeTracker*
+TestExtensionsBrowserClient::GetBrowserContextLifetimeTracker() {
+  return nullptr;
+}
+
 base::FilePath TestExtensionsBrowserClient::GetBundleResourcePath(
     const network::ResourceRequest& request,
     const base::FilePath& extension_resources_path,

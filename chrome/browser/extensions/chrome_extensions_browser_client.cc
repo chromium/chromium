@@ -38,6 +38,7 @@
 #include "chrome/browser/extensions/api/proxy_override_rules/proxy_override_rules_transformer.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
+#include "chrome/browser/extensions/chrome_browser_context_lifetime_tracker.h"
 #include "chrome/browser/extensions/chrome_component_extension_resource_manager.h"
 #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -423,6 +424,11 @@ bool ChromeExtensionsBrowserClient::CanExtensionCrossIncognito(
     const Extension* extension,
     content::BrowserContext* context) const {
   return IsGuestSession(context) || util::CanCrossIncognito(extension, context);
+}
+
+BrowserContextLifetimeTracker*
+ChromeExtensionsBrowserClient::GetBrowserContextLifetimeTracker() {
+  return ChromeBrowserContextLifetimeTracker::GetInstance();
 }
 
 base::FilePath ChromeExtensionsBrowserClient::GetBundleResourcePath(
