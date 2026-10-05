@@ -1,6 +1,9 @@
 {
   "entries": [
     {
+      "path": "agents/skills/android-do-not-mock"
+    },
+    {
       "path": "agents/skills/android-test-batching"
     },
     {

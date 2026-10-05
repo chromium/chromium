@@ -43,23 +43,9 @@ unit tests (`chrome_public_unit_test_apk`), follow these key rules:
    (such as `CurrencyFormatter` in `PriceUtils.formatPrice`) that cannot be
    mocked, place it in `chrome_public_unit_test_apk` (`unit_device_javatests`)
    instead of `chrome_junit_tests`.
-4. **Do NOT `@Mock` `android.view.View`, `View` Subclasses, or `Activity`:**
-   Mockito's subclass mock maker (`mockito-subclass` / ByteBuddy) eagerly
-   generates an `$auxiliary$` helper class for **every non-abstract overridable
-   method** on a mocked type during `MockitoAnnotations.openMocks`. Because
-   `android.view.View` and its subclasses (`ViewGroup`, `TextView`, custom
-   layouts/views) have ~1,000–1,300 overridable methods (`Activity` has ~600),
-   mocking a single distinct `View` type generates ~1,000+ auxiliary classes and
-   costs **~0.4–0.5s locally** (and **1–3s+ on CI / code-coverage builders**),
-   compared to **~5–40ms** for interfaces or small classes. Across a test class,
-   this aggregates quickly (e.g., 10 mocked `View` types add ~4–5s locally and
-   can trigger 30s `TestTimedOutException` timeouts on CI).
-   - **In Robolectric (`chrome_junit_tests`):** Instantiate real views using
-     `ApplicationProvider.getApplicationContext()` (e.g., `new View(context)`,
-     `new FrameLayout(context)`, `new TextView(context)`).
-   - **In MVC / Mediator tests:** Drive state through `PropertyModel` or mock
-     narrow interfaces/delegates rather than concrete `View` or `Activity`
-     subclasses.
+4. **Do not mock `android.view.View`, or `Activity` (or subclasses)**. Use
+   `//agents/skills/android-do-not-mock/SKILL.md` for examples of how to write
+   tests without mocking them.
 
 ______________________________________________________________________
 
