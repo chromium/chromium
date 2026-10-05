@@ -133,6 +133,26 @@ class CORE_EXPORT PseudoElement : public Element {
 
   void RetargetAnimations();
 
+  // Disallow `Wrap()` and `AssociateWithWrapper()` and crash instead.
+  //
+  // V8 wrapper creation (using `ToV8Traits<Node>` or `ToV8Traits<Element>`)
+  // would normally Just Work™ since `PseudoElement` inherits from `Element`;
+  // however, this inheritance is an implementation detail of Blink and not
+  // meant to be web-exposed. Allowing `PseudoElement`s to be exposed to JS via
+  // Node or Element wrappers would allow mutating the DOM in a way that would
+  // break invariants (e.g. pseudo-elements are not allowed to be part of a
+  // `ContainerNode`'s children list).
+  //
+  // Pseudo-elements **can** be exposed to script (see the experimental
+  // `CSSPseudoElementInterface` feature and `Element::pseudo()`), but they are
+  // represented via the separate `CSSPseudoElement` proxy class instead of
+  // wrapping `PseudoElement` directly.
+  v8::Local<v8::Value> Wrap(ScriptState*) override;
+  v8::Local<v8::Object> AssociateWithWrapper(
+      v8::Isolate*,
+      const WrapperTypeInfo*,
+      v8::Local<v8::Object> wrapper) override;
+
  protected:
   void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
 

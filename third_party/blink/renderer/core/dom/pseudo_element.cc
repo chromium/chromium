@@ -920,4 +920,15 @@ void PseudoElement::DefaultEventHandler(Event& event) {
   Element::DefaultEventHandler(event);
 }
 
+v8::Local<v8::Value> PseudoElement::Wrap(ScriptState*) {
+  NOTREACHED();
+}
+
+v8::Local<v8::Object> PseudoElement::AssociateWithWrapper(
+    v8::Isolate*,
+    const WrapperTypeInfo*,
+    v8::Local<v8::Object> wrapper) {
+  NOTREACHED();
+}
+
 }  // namespace blink

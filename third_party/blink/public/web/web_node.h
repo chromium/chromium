@@ -94,6 +94,11 @@ class BLINK_EXPORT WebNode {
     kKeypress,
   };
 
+  // Resolves a DOMNodeId to a WebNode, or returns a null WebNode if no
+  // matching node exists.
+  //
+  // This can return internal Blink pseudo-elements (e.g. `::before`,
+  // `::after`, `::scroll-button`), which inherit from `blink::Element`.
   static WebNode FromDomNodeId(int dom_node_id);
 
   virtual ~WebNode();
@@ -144,6 +149,8 @@ class BLINK_EXPORT WebNode {
   bool IsTextNode() const;
   bool IsFocusable() const;
   bool IsContentEditable() const;
+  // Note that this will return `true` for pseudo-elements, as internally,
+  // `blink::PseudoElement` inherits from `blink::Element`.
   bool IsElementNode() const;
   void SimulateClick();
 
@@ -181,6 +188,12 @@ class BLINK_EXPORT WebNode {
 
   bool IsInsideFocusableElementOrARIAWidget() const;
 
+  // Returns the V8 wrapper for this node in the current realm of `isolate`.
+  //
+  // Returns an empty handle if:
+  // - `this` is logically null (i.e. `IsNull()` is true)
+  // - or if `this` wraps a pseudo-element, as it is unsafe to expose a
+  //   `blink::PseudoElement` via a Node or Element wrapper
   v8::Local<v8::Value> ToV8Value(v8::Isolate*);
 
   int GetDomNodeId() const;
