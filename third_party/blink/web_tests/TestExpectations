@@ -9439,3 +9439,5 @@ crbug.com/531170669 [ Linux ] fast/canvas/canvas-drawImage-live-video.html [ Fai
 
 crbug.com/510232476 [ Mac13 ] external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-002.html [ Failure Pass ]
 
+# Gardener 2026-10-05
+crbug.com/549230312 [ Mac26-arm64 ] virtual/text-antialias/* [ Failure Pass ]
