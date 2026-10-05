@@ -389,9 +389,11 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // depending on the capabilities of the OS. Synchronous flushes are allowed
   // only from threads that are allowed to do I/O but since `sync` is only
   // advisory, all flushes should be done on IO-capable threads.
-  // TODO: Since `sync` is ignored on Windows, consider making it re-post on a
-  // background thread with `sync` set to true so that `sync` is not just
-  // advisory.
+  //
+  // Thread-safety note: Flush() flushes memory up to used() (the current value
+  // of freeptr). It does not hold a lock over the allocator, so concurrent
+  // allocations by other threads may advance freeptr or write new records
+  // during or after the flush.
   void Flush(bool sync);
 
   // Direct access to underlying memory segment. If the segment is shared
