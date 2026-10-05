@@ -495,24 +495,11 @@ template("proto_library") {
     }
     if (defined(invoker.deps)) {
       # This is to propagate input deps for imported proto to ancestor targets.
+      # Depend on the _input_group targets so as to propagate .proto inputs
+      # without blocking on the dependency's protoc action (_gen).
       foreach(_dep, invoker.deps) {
         _dep = get_label_info(_dep, "label_no_toolchain")
-
-        # TODO(agrieve): Update perfetto to follow naming scheme.
-        if (filter_exclude([ _dep ],
-                           [ "//third_party/perfetto/*source_set" ]) == []) {
-          # Perfetto's *source_set targets are pure input groups and do not have
-          # a corresponding _gen target. Other Perfetto proto targets (:cpp,
-          # :ipc, :zero, :lite) invoke proto_library() and do have _gen targets.
-          public_deps += [
-            "${_dep}_input_group",
-            _dep,
-          ]
-        } else {
-          # Depend directly on the _gen targets so as to not unnecessarily block
-          # on compile (by depending on source_set targets).
-          public_deps += [ "${_dep}_gen" ]
-        }
+        public_deps += [ "${_dep}_input_group" ]
       }
     }
   }
