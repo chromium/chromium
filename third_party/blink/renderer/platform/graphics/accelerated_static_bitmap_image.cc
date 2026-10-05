@@ -158,7 +158,7 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
     image_provider.ReleaseLockedImages();
     image_provider.UnbindTextureBackedImages();
   }
-  if (!resource_provider->IsValid()) {
+  if (context_provider_wrapper->ContextProvider().IsContextLost()) {
     return nullptr;
   }
 
