@@ -13,6 +13,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/mahi/mahi_utils.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/scoped_observation.h"
@@ -23,11 +24,13 @@
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/signin/identity_manager_provider.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -244,8 +247,11 @@ void MagicBoostState::RegisterPrefChanges(PrefService* pref_service) {
     return;
   }
 
+  // A guest session's active profile is off the record, and the AccountId is
+  // annotated on the original one.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
+          ash::AnnotatedAccountId::Get(profile->GetOriginalProfile())));
   if (!identity_manager) {
     // `identity_manager` is not available under a certain condition, e.g.,
     // guest session, test code. Run check immediately for those cases.
