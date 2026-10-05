@@ -1626,7 +1626,7 @@ class Module:
       imported_module.Stylize(stylizer)
 
   def Dump(self, f):
-    pickle.dump(self, f)
+    _MojomPickler(f).dump(self)
 
   @property
   def include_send_validation(self):
@@ -1641,6 +1641,63 @@ class Module:
     result = pickle.load(f)
     assert isinstance(result, Module)
     return result
+
+
+def _Identity(x):
+  return x
+
+
+class _MojomPickler(pickle.Pickler):
+  """Custom pickler that deduplicates transitive Module, Kind, and NamedValue
+  instances by module path and spec. When multiple .mojom-module dependencies
+  are loaded independently, shared transitive modules are unpickled as distinct
+  objects, which would otherwise cause exponential duplication when
+  re-dumped."""
+
+  def __init__(self, f):
+    super().__init__(f, protocol=pickle.HIGHEST_PROTOCOL)
+    self._modules = {}
+    self._kinds = {}
+
+  def reducer_override(self, obj):
+    if isinstance(obj, Module) and obj.path is not None:
+      canon = self._modules.setdefault(obj.path, obj)
+      if obj is not canon:
+        return (_Identity, (canon,))
+    elif (
+      isinstance(obj, Kind)
+      and obj.module is not None
+      and obj.module.path is not None
+    ):
+      canon_mod = self._modules.setdefault(obj.module.path, obj.module)
+      base_spec = obj.spec[1:] if obj.spec.startswith('?') else obj.spec
+      if base_spec in canon_mod.kinds:
+        canon_kind = canon_mod.kinds[base_spec]
+        if obj.spec.startswith('?'):
+          # Cache nullable kinds in self._kinds so that multiple references
+          # share the exact same nullable Kind instance.
+          key = (canon_mod.path, obj.spec)
+          cached = self._kinds.get(key)
+          if cached is None:
+            cached = (
+              obj if obj.module is canon_mod else canon_kind.MakeNullableKind()
+            )
+            self._kinds[key] = cached
+          canon_kind = cached
+        if obj is not canon_kind:
+          return (_Identity, (canon_kind,))
+    elif (
+      isinstance(obj, NamedValue)
+      and obj.module is not None
+      and obj.module.path is not None
+    ):
+      canon_mod = self._modules.setdefault(obj.module.path, obj.module)
+      spec = obj.GetSpec()
+      if spec in canon_mod.values:
+        canon_val = canon_mod.values[spec]
+        if obj is not canon_val:
+          return (_Identity, (canon_val,))
+    return NotImplemented
 
 
 def IsBoolKind(kind):
