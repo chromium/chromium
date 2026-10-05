@@ -189,7 +189,7 @@ export class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   // </if>
 
   // <if expr="not is_chromeos">
-  protected onFocusHighlightSettingBooleanControlChange_(event: Event) {
+  protected onFocusHighlightSettingsBooleanControlChange_(event: Event) {
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.FocusHighlight.ToggleEnabled',
         (event.target as SettingsToggleButtonElement).checked);

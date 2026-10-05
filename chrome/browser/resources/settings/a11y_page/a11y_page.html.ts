@@ -47,8 +47,8 @@ export function getHtml(this: SettingsA11yPageElement) {
         <settings-toggle-button
             class="hr"
             pref-key="settings.a11y.focus_highlight"
-            @setting-boolean-control-change="${
-                this.onFocusHighlightSettingBooleanControlChange_}"
+            @settings-boolean-control-change="${
+                this.onFocusHighlightSettingsBooleanControlChange_}"
             label="$i18n{focusHighlightLabel}">
         </settings-toggle-button>
         <settings-toggle-button

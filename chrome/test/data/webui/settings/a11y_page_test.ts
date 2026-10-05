@@ -227,6 +227,34 @@ suite('A11yPage', () => {
     // Logged metrics for both pref changes.
     assertEquals(2, metrics.count('Toast.FrequencyPrefChanged'));
   });
+
+  test('focus highlight toggle records metric', async () => {
+    const toggle =
+        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
+            'settings-toggle-button[pref-key="settings.a11y.focus_highlight"]');
+    assertTrue(!!toggle);
+    assertFalse(toggle.checked);
+    assertFalse(
+        prefService.getPref<boolean>('settings.a11y.focus_highlight').value);
+    assertEquals(
+        0, metrics.count('Accessibility.FocusHighlight.ToggleEnabled'));
+
+    toggle.click();
+    await microtasksFinished();
+    assertTrue(
+        prefService.getPref<boolean>('settings.a11y.focus_highlight').value);
+    assertEquals(
+        1, metrics.count('Accessibility.FocusHighlight.ToggleEnabled', true));
+
+    toggle.click();
+    await microtasksFinished();
+    assertFalse(
+        prefService.getPref<boolean>('settings.a11y.focus_highlight').value);
+    assertEquals(
+        1, metrics.count('Accessibility.FocusHighlight.ToggleEnabled', false));
+    assertEquals(
+        2, metrics.count('Accessibility.FocusHighlight.ToggleEnabled'));
+  });
   // </if>
 
   // TODO(crbug.com/40940496): Add more test cases to improve code coverage.
