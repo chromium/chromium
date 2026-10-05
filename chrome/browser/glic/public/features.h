@@ -184,6 +184,8 @@ extern const base::FeatureParam<int> kGlicMaxLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
 
 BASE_DECLARE_FEATURE(kGlicContextualCueingV2AutoSubmit);
+BASE_DECLARE_FEATURE(kGlicContextualCuesHandleEdu);
+BASE_DECLARE_FEATURE(kGlicContextualCuesHandleShopping);
 BASE_DECLARE_FEATURE(kGlicContextualCueV2ActiveUserBackoff);
 extern const base::FeatureParam<int> kMinDaysSinceLastInvocation;
 
