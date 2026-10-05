@@ -2162,6 +2162,13 @@ std::optional<journeys::Journey> HistoryBackend::GetJourneyWithVisits(
   return journeys::GetJourneyWithResolvedVisits(*db_, journey_id);
 }
 
+size_t HistoryBackend::GetUnresolvableJourneysCountForFishfood() {
+  if (!db_) {
+    return 0;
+  }
+  return journeys::GetUnresolvableJourneysCountForFishfood(*db_);
+}
+
 bool HistoryBackend::DeleteAllJourneys() {
   if (!db_) {
     return false;

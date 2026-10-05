@@ -790,6 +790,13 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   std::optional<journeys::Journey> GetJourneyWithVisits(
       const std::string& journey_id);
 
+  // Returns the count of stored journeys that cannot be resolved due to at
+  // least one missing visit on this device. Temporary for Topics fishfood
+  // evaluation; will not stay in production code.
+  // TODO(crbug.com/568422896): Remove once Topics fishfood evaluation is
+  // complete.
+  size_t GetUnresolvableJourneysCountForFishfood();
+
   // Deleting ------------------------------------------------------------------
 
   void DeleteURLs(const std::vector<GURL>& urls);

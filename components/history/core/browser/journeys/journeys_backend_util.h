@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_JOURNEYS_JOURNEYS_BACKEND_UTIL_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_JOURNEYS_JOURNEYS_BACKEND_UTIL_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <vector>
@@ -39,6 +41,22 @@ std::optional<Journey> GetJourneyWithResolvedVisits(
 // history entries resolved to URLs and titles via the `visits` and `urls`
 // tables. Journeys with unresolved visits are excluded.
 std::vector<Journey> GetAllJourneysWithResolvedVisits(HistoryDatabase& db);
+
+// Returns the number of stored journeys in `db` that cannot be resolved on
+// this device because at least one of their visit timestamps is missing in the
+// local `visits` and `urls` tables. Inspects at most a fixed number of the most
+// recently created journeys to bound the work on the History backend thread.
+// Note: This helper is temporary for the Topics fishfood feedback export flow
+// and will not stay in production code. It iterates over stored journeys and
+// performs per-visit database lookups (`O(N_journeys * M_visits)`).
+// TODO(crbug.com/568422896): Remove once Topics fishfood evaluation is
+// complete.
+size_t GetUnresolvableJourneysCountForFishfood(HistoryDatabase& db);
+
+// Same as `GetUnresolvableJourneysCountForFishfood()`, but inspects at most
+// `max_journeys` journeys. Exposed only so tests can exercise the bound.
+size_t GetUnresolvableJourneysCountForFishfoodForTesting(HistoryDatabase& db,
+                                                         size_t max_journeys);
 
 }  // namespace journeys
 }  // namespace history

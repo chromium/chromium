@@ -43,15 +43,17 @@ class JourneysBackendUtilTest : public testing::Test {
     return db_.AddURL(url_row);
   }
 
-  VisitID AddTestVisit(
-      URLID url_id,
-      base::Time visit_time,
-      ui::PageTransition transition = ui::PAGE_TRANSITION_LINK) {
+  VisitID AddTestVisit(URLID url_id,
+                       base::Time visit_time,
+                       ui::PageTransition transition = ui::PAGE_TRANSITION_LINK,
+                       const std::string& originator_cache_guid = "") {
     VisitRow visit_row;
     visit_row.url_id = url_id;
     visit_row.visit_time = visit_time;
     visit_row.transition = transition;
-    visit_row.source = SOURCE_BROWSED;
+    visit_row.source =
+        originator_cache_guid.empty() ? SOURCE_BROWSED : SOURCE_SYNCED;
+    visit_row.originator_cache_guid = originator_cache_guid;
     return db_.AddVisit(&visit_row) ? visit_row.visit_id : 0;
   }
 
@@ -102,9 +104,9 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
       /*overview=*/"Overview text", /*short_overview=*/"Short overview",
       /*visits=*/
       {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1",
-                    visit_time_1),
+                    visit_time_1, /*is_foreign=*/false),
        JourneyVisit(GURL("http://www.example.com/page2"), u"Page 2",
-                    visit_time_2)},
+                    visit_time_2, /*is_foreign=*/false)},
       /*continuation_queries=*/{JourneyContinuationQuery("query", "prompt")});
   EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
 }
@@ -175,7 +177,7 @@ TEST_F(JourneysBackendUtilTest,
       /*short_overview=*/std::nullopt,
       /*visits=*/
       {JourneyVisit(GURL("http://www.example.com/dest"), u"Destination",
-                    shared_visit_time)});
+                    shared_visit_time, /*is_foreign=*/false)});
   EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
 }
 
@@ -263,8 +265,8 @@ TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_Found) {
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
       /*visits=*/
-      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1",
-                    visit_time)});
+      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1", visit_time,
+                    /*is_foreign=*/false)});
   EXPECT_THAT(GetJourneyWithResolvedVisits(db_, "journey_b"),
               Optional(expected_journey));
 }
@@ -287,6 +289,73 @@ TEST_F(JourneysBackendUtilTest,
 
   EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_incomplete"),
             std::nullopt);
+}
+
+TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
+  URLID local_url_id =
+      AddTestURL(GURL("http://www.example.com/local"), u"Local");
+  URLID foreign_url_id =
+      AddTestURL(GURL("http://www.example.com/foreign"), u"Foreign");
+  ASSERT_NE(local_url_id, 0);
+  ASSERT_NE(foreign_url_id, 0);
+
+  base::Time t1 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time t2 =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  ASSERT_NE(AddTestVisit(local_url_id, t1), 0);
+  ASSERT_NE(AddTestVisit(foreign_url_id, t2, ui::PAGE_TRANSITION_LINK,
+                         /*originator_cache_guid=*/"remote_device_guid"),
+            0);
+
+  base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  JourneyRow row = CreateJourneyRow("journey_foreign", "Mixed Devices",
+                                    creation_time, {t1, t2});
+
+  Journey expected_journey(
+      "journey_foreign", "Mixed Devices", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*visits=*/
+      {JourneyVisit(GURL("http://www.example.com/local"), u"Local", t1,
+                    /*is_foreign=*/false),
+       JourneyVisit(GURL("http://www.example.com/foreign"), u"Foreign", t2,
+                    /*is_foreign=*/true)});
+  EXPECT_THAT(ResolveJourneyVisits(db_, row), Optional(expected_journey));
+}
+
+TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
+  EXPECT_EQ(GetUnresolvableJourneysCountForFishfood(db_), 0u);
+
+  URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
+  ASSERT_NE(url_id, 0);
+  base::Time resolved_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time missing_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  ASSERT_NE(AddTestVisit(url_id, resolved_time), 0);
+
+  JourneyRow complete_journey = CreateJourneyRow(
+      "journey_complete", "Complete",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(7000)),
+      /*visit_times=*/{resolved_time});
+  JourneyRow unresolvable_journey_1 = CreateJourneyRow(
+      "journey_unresolvable_1", "Unresolvable 1",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000)),
+      /*visit_times=*/{resolved_time, missing_time});
+  JourneyRow unresolvable_journey_2 = CreateJourneyRow(
+      "journey_unresolvable_2", "Unresolvable 2",
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      /*visit_times=*/{missing_time});
+
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {complete_journey, unresolvable_journey_1, unresolvable_journey_2}));
+
+  EXPECT_EQ(GetUnresolvableJourneysCountForFishfood(db_), 2u);
+  EXPECT_EQ(GetUnresolvableJourneysCountForFishfoodForTesting(
+                db_, /*max_journeys=*/2),
+            1u);
 }
 
 }  // namespace history::journeys

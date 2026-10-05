@@ -1585,7 +1585,9 @@ TEST_F(HistoryServiceTest, GetAllJourneys) {
       "test_journey", "Example Journey", creation_time,
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
-      /*visits=*/{journeys::JourneyVisit(visited_url, page_title, visit_time)});
+      /*visits=*/
+      {journeys::JourneyVisit(visited_url, page_title, visit_time,
+                              /*is_foreign=*/false)});
   EXPECT_THAT(future.Take(), testing::ElementsAre(expected_journey));
 }
 
@@ -1642,7 +1644,8 @@ TEST_F(HistoryServiceTest, GetJourney) {
         /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
         /*short_overview=*/std::nullopt,
         /*visits=*/
-        {journeys::JourneyVisit(visited_url, page_title, visit_time)});
+        {journeys::JourneyVisit(visited_url, page_title, visit_time,
+                                /*is_foreign=*/false)});
     EXPECT_THAT(future.Take(), testing::Optional(expected_journey));
   }
 
@@ -1652,6 +1655,48 @@ TEST_F(HistoryServiceTest, GetJourney) {
     history->GetJourney("unresolved_journey", future.GetCallback(), &tracker_);
     EXPECT_EQ(future.Take(), std::nullopt);
   }
+}
+
+TEST_F(HistoryServiceTest, GetUnresolvableJourneysCountForFishfood) {
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  const GURL visited_url("https://www.example.com/test");
+  const base::Time visit_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  history->AddPage(visited_url, visit_time, /*context_id=*/0,
+                   /*nav_entry_id=*/0, GURL(), history::RedirectList(),
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404,
+                   /*did_replace_entry=*/false);
+
+  const base::Time creation_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  journeys::JourneyRow resolved_journey_row(
+      "resolved_journey", "Resolved Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(visit_time)});
+
+  // A journey whose visit timestamp has no matching local visit.
+  const base::Time unvisited_time =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  journeys::JourneyRow unresolved_journey_row(
+      "unresolved_journey", "Unresolved Journey", creation_time,
+      /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
+      /*short_overview=*/std::nullopt,
+      /*history_entries=*/{journeys::JourneyHistoryEntry(unvisited_time)});
+
+  history->ScheduleDBTask(
+      FROM_HERE,
+      std::make_unique<AddJourneysDBTask>(std::vector<journeys::JourneyRow>{
+          resolved_journey_row, unresolved_journey_row}),
+      &tracker_);
+
+  base::test::TestFuture<size_t> future;
+  history->GetUnresolvableJourneysCountForFishfood(future.GetCallback(),
+                                                   &tracker_);
+  EXPECT_EQ(future.Take(), 1u);
 }
 
 // This class mocks the VisitDelegate in HistoryService to ensure that

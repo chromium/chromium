@@ -19,7 +19,10 @@ namespace history::journeys {
 // and title in the history database.
 struct JourneyVisit {
   JourneyVisit();
-  JourneyVisit(GURL url, std::u16string title, base::Time visit_time);
+  JourneyVisit(GURL url,
+               std::u16string title,
+               base::Time visit_time,
+               bool is_foreign);
   ~JourneyVisit();
   JourneyVisit(const JourneyVisit&);
   JourneyVisit& operator=(const JourneyVisit&);
@@ -36,6 +39,11 @@ struct JourneyVisit {
 
   // Time of the visit. It identifies the visit in the history database.
   base::Time visit_time;
+
+  // True when the visit originated on another device and arrived via sync
+  // (i.e. has a non-empty `originator_cache_guid` in the `visits` table).
+  // Local visits are never foreign, even once uploaded to the sync server.
+  bool is_foreign = false;
 };
 
 // Represents a fully resolved journey with URLs and titles resolved from the

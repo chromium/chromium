@@ -6948,7 +6948,9 @@ TEST_F(HistoryBackendJourneysSyncTest,
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
-      /*visits=*/{journeys::JourneyVisit(visited_url, page_title, visit_time)});
+      /*visits=*/
+      {journeys::JourneyVisit(visited_url, page_title, visit_time,
+                              /*is_foreign=*/false)});
   EXPECT_THAT(backend_->GetAllJourneysWithVisits(),
               testing::ElementsAre(expected_journey));
 }

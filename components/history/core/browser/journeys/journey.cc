@@ -12,8 +12,12 @@ JourneyVisit::JourneyVisit() = default;
 
 JourneyVisit::JourneyVisit(GURL url,
                            std::u16string title,
-                           base::Time visit_time)
-    : url(std::move(url)), title(std::move(title)), visit_time(visit_time) {}
+                           base::Time visit_time,
+                           bool is_foreign)
+    : url(std::move(url)),
+      title(std::move(title)),
+      visit_time(visit_time),
+      is_foreign(is_foreign) {}
 
 JourneyVisit::~JourneyVisit() = default;
 JourneyVisit::JourneyVisit(const JourneyVisit&) = default;

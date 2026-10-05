@@ -2488,7 +2488,8 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
       "Test Topic Short Description",
       {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
                                        u"Test Visit Title",
-                                       base::Time::FromTimeT(500))},
+                                       base::Time::FromTimeT(500),
+                                       /*is_foreign=*/false)},
       {history::journeys::JourneyContinuationQuery(
           "Test Continuation Query Title", "Test Continuation Query Prompt")});
 
@@ -2547,7 +2548,8 @@ TEST_F(ContextHubPageHandlerTest, GetTopic_MapsResolvedJourney) {
       "Test Topic Short Description",
       {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
                                        u"Test Visit Title",
-                                       base::Time::FromTimeT(500))},
+                                       base::Time::FromTimeT(500),
+                                       /*is_foreign=*/false)},
       {history::journeys::JourneyContinuationQuery(
           "Test Continuation Query Title", "Test Continuation Query Prompt")});
 

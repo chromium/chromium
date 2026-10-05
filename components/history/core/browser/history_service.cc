@@ -458,6 +458,21 @@ base::CancelableTaskTracker::TaskId HistoryService::GetAllJourneys(
       std::move(callback));
 }
 
+base::CancelableTaskTracker::TaskId
+HistoryService::GetUnresolvableJourneysCountForFishfood(
+    GetUnresolvableJourneysCountForFishfoodCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  TRACE_EVENT0("browser",
+               "HistoryService::GetUnresolvableJourneysCountForFishfood");
+  CHECK(backend_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      GetBackendTaskRunner(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetUnresolvableJourneysCountForFishfood,
+                     history_backend_),
+      std::move(callback));
+}
+
 void HistoryService::AddObserver(HistoryServiceObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!is_cleaned_up_) << "History service being called after cleanup";

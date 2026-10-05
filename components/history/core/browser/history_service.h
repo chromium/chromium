@@ -738,6 +738,20 @@ class HistoryService : public KeyedService,
       GetAllJourneysCallback callback,
       base::CancelableTaskTracker* tracker);
 
+  using GetUnresolvableJourneysCountForFishfoodCallback =
+      base::OnceCallback<void(size_t)>;
+  // Retrieves the count of stored journeys that cannot be resolved due to at
+  // least one missing visit on this device. `callback` is invoked on the
+  // calling sequence. Temporary for Topics fishfood evaluation; will not stay
+  // in production code.
+  // TODO(crbug.com/568422896): Remove once Topics fishfood evaluation is
+  // complete.
+  // Note: Virtual needed for mocking.
+  virtual base::CancelableTaskTracker::TaskId
+  GetUnresolvableJourneysCountForFishfood(
+      GetUnresolvableJourneysCountForFishfoodCallback callback,
+      base::CancelableTaskTracker* tracker);
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
