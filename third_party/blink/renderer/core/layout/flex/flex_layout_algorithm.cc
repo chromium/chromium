@@ -1404,7 +1404,11 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
-  SetReadingFlowNodes(flex_lines);
+  // // Reading flow is set on the first layout pass, which will cover all
+  // items.
+  if (!IsBreakInside(GetBreakToken())) {
+    SetReadingFlowNodes(flex_lines);
+  }
   HandleOutOfFlowPositionedItems(total_intrinsic_block_size, oof_children);
 
   // For rows, the break-before of the first row and the break-after of the
