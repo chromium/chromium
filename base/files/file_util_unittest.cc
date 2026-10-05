@@ -1911,7 +1911,7 @@ TEST_F(FileUtilTest, ContentUriGetInfo) {
   EXPECT_EQ(12u, content_uri_document_info.size);
   EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
   // Java InMemory provider sets last-modified to unix epoch.
-  EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::FromTimeT(0));
+  EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::UnixEpoch());
   // Java DocumentProvider only does resolution to seconds.
   EXPECT_EQ(info.last_modified.ToTimeT(),
             content_uri_document_info.last_modified.ToTimeT());

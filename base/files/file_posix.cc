@@ -72,6 +72,13 @@ namespace {
 
 static_assert(sizeof(int64_t) == sizeof(OffsetType));
 
+Time TimeFromStatTimestamp(time_t seconds, int64_t nanoseconds) {
+  // Unlike Time::FromTimeT(), preserve zero seconds as the Unix epoch rather
+  // than treating it as a null time.
+  return Time::UnixEpoch() + Seconds(seconds) +
+         Microseconds(nanoseconds / Time::kNanosecondsPerMicrosecond);
+}
+
 bool IsReadWriteRangeValid(int64_t offset, int size) {
   if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
       !IsValueInRangeForNumericType<OffsetType>(offset + size - 1)) {
@@ -232,17 +239,11 @@ void File::Info::FromStat(const stat_wrapper_t& stat_info) {
   int64_t creation_time_nsec = 0;
 #endif
 
-  last_modified =
-      Time::FromTimeT(last_modified_sec) +
-      Microseconds(last_modified_nsec / Time::kNanosecondsPerMicrosecond);
+  last_modified = TimeFromStatTimestamp(last_modified_sec, last_modified_nsec);
 
-  last_accessed =
-      Time::FromTimeT(last_accessed_sec) +
-      Microseconds(last_accessed_nsec / Time::kNanosecondsPerMicrosecond);
+  last_accessed = TimeFromStatTimestamp(last_accessed_sec, last_accessed_nsec);
 
-  creation_time =
-      Time::FromTimeT(creation_time_sec) +
-      Microseconds(creation_time_nsec / Time::kNanosecondsPerMicrosecond);
+  creation_time = TimeFromStatTimestamp(creation_time_sec, creation_time_nsec);
 }
 
 bool File::IsValid() const {
