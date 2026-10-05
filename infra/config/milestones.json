@@ -9,11 +9,6 @@
         "project": "chromium-m150",
         "ref": "refs/branch-heads/7871"
     },
-    "151": {
-        "name": "m151",
-        "project": "chromium-m151",
-        "ref": "refs/branch-heads/7922"
-    },
     "152": {
         "name": "m152",
         "project": "chromium-m152",
