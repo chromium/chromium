@@ -92,10 +92,32 @@ public class SigninTestRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
                 setUpRule();
+                Throwable testError = null;
                 try {
                     statement.evaluate();
-                } finally {
+                } catch (Throwable t) {
+                    testError = t;
+                }
+
+                Throwable teardownError = null;
+                try {
                     tearDownRule();
+                } catch (Throwable t) {
+                    teardownError = t;
+                }
+
+                // If both the test and teardown fail (e.g. sign-out timeout), attach the
+                // teardown error as suppressed so it does not mask the test's original failure.
+                if (teardownError != null) {
+                    if (testError != null) {
+                        testError.addSuppressed(teardownError);
+                    } else {
+                        throw teardownError;
+                    }
+                }
+
+                if (testError != null) {
+                    throw testError;
                 }
             }
         };
@@ -115,8 +137,6 @@ public class SigninTestRule implements TestRule {
 
     /** Resets the fake account management and sign-in state to pristine condition. */
     private void cleanUpAccountsAndSignOut() {
-        // TODO(crbug.com/40743432): Handle teardown failures. See comment:
-        // crrev.com/c/8493752/comment/d0bb43e9_c67bcd9c/
         if (mIsSignedIn || (ProfileManager.isInitialized() && getPrimaryAccount() != null)) {
             forceSignOut();
         }
