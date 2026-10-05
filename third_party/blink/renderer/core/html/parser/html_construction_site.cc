@@ -267,9 +267,9 @@ void HTMLConstructionSite::FlushPendingText() {
   pending_text_.Discard();
 }
 
-bool HTMLConstructionSite::ShouldInsertChild(ContainerNode* parent,
+bool HTMLConstructionSite::ShouldInsertChild(const InsertionLocation& location,
                                              Node* child) {
-  if (!parent->IsDocumentNode()) {
+  if (!location.parent->IsDocumentNode()) {
     if (auto* active_sanitizer = ActiveSanitizer(child)) {
       if (!active_sanitizer->Sanitize(child)) {
         return false;
@@ -346,12 +346,13 @@ void HTMLConstructionSite::Attach(InsertionLocation location,
   }
 
   DCHECK(location.parent);
-  if (!ShouldInsertChild(location.parent, child)) {
+  InsertionLocation adjusted_location = AdjustInsertionLocation(location);
+  if (!ShouldInsertChild(adjusted_location, child)) {
     return;
   }
 
   FlushPendingText();
-  Insert(AdjustInsertionLocation(location), child);
+  Insert(adjusted_location, child);
 
   if (auto* element_child = DynamicTo<Element>(child)) {
     element_child->BeginParsingChildren();
@@ -739,6 +740,18 @@ HTMLConstructionSite::CurrentInsertionLocation() {
              : InsertionLocation{CurrentNode(), nullptr};
 }
 
+// Returns true if `item` is an open element that the sanitizer replaces with
+// its children, so that nodes parsed under it are hoisted to its parent. A
+// <template> has no light-tree children: its parsed content is dropped along
+// with it, matching Sanitizer::ReplaceWithChildren for already-parsed trees.
+static bool IsUnwrappedBySanitizer(StreamingSanitizer* sanitizer,
+                                   HTMLStackItem* item) {
+  return item && item->IsElementNode() && item->NextItemInStack() &&
+         !IsA<HTMLTemplateElement>(item->GetNode()) &&
+         sanitizer->CheckSanitizerAction(item->GetNode()) ==
+             Sanitizer::Action::kReplaceWithChildren;
+}
+
 HTMLConstructionSite::InsertionLocation
 HTMLConstructionSite::AdjustInsertionLocation(InsertionLocation location) {
   if (!RuntimeEnabledFeatures::StreamingSanitizerEnabled()) {
@@ -748,19 +761,16 @@ HTMLConstructionSite::AdjustInsertionLocation(InsertionLocation location) {
     return location;
   }
   if (auto* active_sanitizer = ActiveSanitizer()) {
-    // Find the first inclusive ancestor of location.parent that is not replaced
-    // with its children by the sanitizer.
-    // Using Find here as it might not be the topmost item due to foster
-    // parenting.
-    // TODO(nrosenthal): See if we can refactor this to be more efficient by
-    // doing this at the same time as foster parenting.
     for (HTMLStackItem* parent_item =
              open_elements_.Find(DynamicTo<Element>(location.parent));
-         parent_item &&
-         active_sanitizer->CheckSanitizerAction(location.parent) ==
-             Sanitizer::Action::kReplaceWithChildren;
+         IsUnwrappedBySanitizer(active_sanitizer, parent_item);
          parent_item = parent_item->NextItemInStack()) {
-      location.parent = parent_item->GetNode();
+      if (parent_item->IsReplacedWithChildren()) {
+        location = {parent_item->ReplacedInsertionParent(),
+                    parent_item->ReplacedInsertionNextChild()};
+        break;
+      }
+      location.parent = parent_item->NextItemInStack()->GetNode();
     }
 
     // This can happen if the reference node moved right before closing the
@@ -890,7 +900,9 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   bool should_attach_template = true;
 
   if (!declarative_shadow_root_mode.IsNull() &&
-      IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
+      IsA<Element>(open_elements_.TopStackItem()->GetNode()) &&
+      CheckSanitizerAction(open_elements_.TopStackItem()->GetNode()) !=
+          Sanitizer::Action::kReplaceWithChildren) {
     auto focus_delegation = template_element->FastHasAttribute(
                                 html_names::kShadowrootdelegatesfocusAttr)
                                 ? FocusDelegation::kDelegateFocus
@@ -1115,11 +1127,11 @@ void HTMLConstructionSite::Reparent(HTMLStackItem* new_parent,
   if (RemoveChildIfValidForRemoval(parent_node, child_node)) {
     return;
   }
-  if (!ShouldInsertChild(parent_node, child_node)) {
+  InsertionLocation location = AdjustInsertionLocation({parent_node, nullptr});
+  if (!ShouldInsertChild(location, child_node)) {
     return;
   }
-  InsertionLocation location = AdjustInsertionLocation({parent_node, nullptr});
-  location.parent->ParserAppendChild(child_node);
+  Insert(location, child_node);
 }
 
 void HTMLConstructionSite::InsertAlreadyParsedChild(HTMLStackItem* new_parent,
@@ -1134,10 +1146,10 @@ void HTMLConstructionSite::InsertAlreadyParsedChild(HTMLStackItem* new_parent,
   if (RemoveChildIfValidForRemoval(parent_node, child_node)) {
     return;
   }
-  if (!ShouldInsertChild(parent_node, child_node)) {
+  InsertionLocation location = AdjustInsertionLocation({parent_node, nullptr});
+  if (!ShouldInsertChild(location, child_node)) {
     return;
   }
-  InsertionLocation location = AdjustInsertionLocation({parent_node, nullptr});
   Insert(location, child_node);
 }
 
@@ -1175,7 +1187,8 @@ Document& HTMLConstructionSite::OwnerDocumentForCurrentNode() {
   // be re-targeted to the .content() document of the template. This function is
   // used in those places. The spec needs to be updated to reflect this
   // behavior, and when that happens, a link to the spec should be placed here.
-  ContainerNode* parent = CurrentNode();
+  ContainerNode* parent =
+      AdjustInsertionLocation(CurrentInsertionLocation()).parent;
   while (auto* template_element = DynamicTo<HTMLTemplateElement>(parent)) {
     if (auto* patch = template_element->GetPatch()) {
       if (!patch->is_buffered()) {
@@ -1254,8 +1267,20 @@ Element* HTMLConstructionSite::CreateElement(
   // Look up intended parent's custom element registry. Note that if the
   // intended parent is a template element, which means it will create a
   // document fragment, the custom element registry should be null.
-  if (open_elements_.StackDepth() > 1) {
-    if (auto* tmpl = DynamicTo<HTMLTemplateElement>(CurrentNode())) {
+  ContainerNode* intended_parent = CurrentNode();
+  if (active_sanitizer) {
+    for (HTMLStackItem* parent_item = CurrentStackItem();
+         IsUnwrappedBySanitizer(active_sanitizer, parent_item);
+         parent_item = parent_item->NextItemInStack()) {
+      if (parent_item->IsReplacedWithChildren()) {
+        intended_parent = parent_item->ReplacedInsertionParent();
+        break;
+      }
+      intended_parent = parent_item->NextItemInStack()->GetNode();
+    }
+  }
+  if (intended_parent != open_elements_.RootNode()) {
+    if (auto* tmpl = DynamicTo<HTMLTemplateElement>(intended_parent)) {
       if (tmpl->GetPatch() && !tmpl->GetPatch()->is_buffered()) {
         // Keep custom_element_registry_
       } else if (tmpl->IsShadowRootModeTemplate()) {
@@ -1281,7 +1306,11 @@ Element* HTMLConstructionSite::CreateElement(
       // the cached custom_element_registry_: during fragment parsing, when
       // scoped registries are in use, or when a script has moved the current
       // node to a different document mid-parse (stale cached registry).
-      registry = CurrentElement()->customElementRegistry();
+      if (auto* element = DynamicTo<Element>(intended_parent)) {
+        registry = element->customElementRegistry();
+      } else if (auto* shadow = DynamicTo<ShadowRoot>(intended_parent)) {
+        registry = shadow->customElementRegistry();
+      }
     }
   }
   // If the token has the "customelementregistry" content attribute, override
@@ -1531,6 +1560,11 @@ void HTMLConstructionSite::FindFosterSite(InsertionLocation& location) {
   }
 
   // 2.5
+  if (last_table->IsReplacedWithChildren()) {
+    location.parent = last_table->ReplacedInsertionParent();
+    location.next_child = last_table->ReplacedInsertionNextChild();
+    return;
+  }
   if (ContainerNode* parent = last_table->GetElement()->parentNode()) {
     location.parent = parent;
     if (!IsA<HTMLTemplateElement>(parent)) {
@@ -1553,11 +1587,20 @@ void HTMLConstructionSite::FosterParent(Node* node) {
   InsertionLocation location;
   FindFosterSite(location);
   DCHECK(location.parent);
-  if (!ShouldInsertChild(location.parent, node)) {
+  InsertionLocation adjusted_location = AdjustInsertionLocation(location);
+  if (!ShouldInsertChild(adjusted_location, node)) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (HTMLStackItem* item = open_elements_.Find(element);
+          item && CheckSanitizerAction(element) ==
+                      Sanitizer::Action::kReplaceWithChildren) {
+        item->SetReplacedInsertionLocation(adjusted_location.parent,
+                                           adjusted_location.next_child);
+      }
+    }
     return;
   }
   FlushPendingText();
-  Insert(AdjustInsertionLocation(location), node);
+  Insert(adjusted_location, node);
   if (auto* element_child = DynamicTo<Element>(node)) {
     element_child->BeginParsingChildren();
   }
@@ -1570,11 +1613,12 @@ void HTMLConstructionSite::FosterParentAlreadyParsedChild(Node* child) {
   if (RemoveChildIfValidForRemoval(location.parent, child)) {
     return;
   }
-  if (!ShouldInsertChild(location.parent, child)) {
+  InsertionLocation adjusted_location = AdjustInsertionLocation(location);
+  if (!ShouldInsertChild(adjusted_location, child)) {
     return;
   }
   FlushPendingText();
-  Insert(AdjustInsertionLocation(location), child);
+  Insert(adjusted_location, child);
 }
 
 void HTMLConstructionSite::PendingText::Trace(Visitor* visitor) const {

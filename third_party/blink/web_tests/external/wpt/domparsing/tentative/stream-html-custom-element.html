@@ -208,6 +208,34 @@ for (const method of [
   "streamAppendHTML", "streamAppendHTMLUnsafe",
   "streamPrependHTML", "streamPrependHTMLUnsafe",
 ]) {
+  // D5: replaceWithChildrenElements preserves scoped customElementRegistry for children
+  promise_test(async (t) => {
+    const container = document.getElementById("container");
+    t.add_cleanup(() => container.replaceChildren());
+
+    const scoped = new CustomElementRegistry();
+    const scopedLog = [];
+    scoped.define("scoped-replaced-child", class extends HTMLElement {
+      constructor() { super(); scopedLog.push("constructed"); }
+      connectedCallback() { scopedLog.push("connected"); }
+    });
+
+    const inner = document.createElement("div", { customElementRegistry: scoped });
+    container.append(inner);
+
+    const writer = inner[method]({
+      sanitizer: {
+        elements: ["scoped-replaced-child"],
+        replaceWithChildrenElements: ["div"],
+      },
+    }).getWriter();
+    await writer.write("<div><scoped-replaced-child></scoped-replaced-child></div>");
+    await writer.close();
+
+    assert_array_equals(scopedLog, ["constructed", "connected"],
+      `${method} with replaceWithChildrenElements must preserve scoped customElementRegistry`);
+  }, `${method} with replaceWithChildrenElements preserves scoped customElementRegistry`);
+
   promise_test(async (t) => {
     const container = document.getElementById("container");
     t.add_cleanup(() => container.replaceChildren());

@@ -360,11 +360,26 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     visitor->Trace(node_);
     visitor->Trace(next_item_in_stack_);
     visitor->Trace(sanitizer_);
+    visitor->Trace(replaced_insertion_parent_);
+    visitor->Trace(replaced_insertion_next_child_);
   }
 
   void SetSanitizer(StreamingSanitizer* sanitizer) { sanitizer_ = sanitizer; }
 
   StreamingSanitizer* GetSanitizer() const { return sanitizer_.Get(); }
+
+  void SetReplacedInsertionLocation(ContainerNode* parent, Node* next_child) {
+    is_replaced_with_children_ = true;
+    replaced_insertion_parent_ = parent;
+    replaced_insertion_next_child_ = next_child;
+  }
+  bool IsReplacedWithChildren() const { return is_replaced_with_children_; }
+  ContainerNode* ReplacedInsertionParent() const {
+    return replaced_insertion_parent_.Get();
+  }
+  Node* ReplacedInsertionNextChild() const {
+    return replaced_insertion_next_child_.Get();
+  }
 
  private:
   void SetNextItemInStack(HTMLStackItem* item) {
@@ -405,11 +420,14 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
   Member<HTMLStackItem> next_item_in_stack_{nullptr};
 
   Member<StreamingSanitizer> sanitizer_;
+  Member<ContainerNode> replaced_insertion_parent_;
+  Member<Node> replaced_insertion_next_child_;
 
   HTMLTokenName token_name_;
   AtomicString namespace_uri_;
   wtf_size_t num_token_attributes_ = 0;
   bool is_document_fragment_node_;
+  bool is_replaced_with_children_ = false;
 
   // Maintained by HTMLElementStack.
   bool has_p_element_in_button_scope_ = false;
