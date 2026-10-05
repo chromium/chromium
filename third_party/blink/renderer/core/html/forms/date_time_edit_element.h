@@ -28,6 +28,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
@@ -72,7 +73,7 @@ class DateTimeEditElement final : public HTMLDivElement,
     String fallback_date_time_format;
     // The Locale must be owned by the Document and come from
     // Document::GetCachedLocale.
-    Locale* locale;
+    raw_ptr<Locale, UnprotectedInRelease> locale;
     const StepRange step_range;
     DateComponents minimum;
     DateComponents maximum;
