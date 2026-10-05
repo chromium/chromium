@@ -38,6 +38,10 @@ fieldset, legend {
 <div title="The target width should be shrunk"
      data-expected-width="100">abc defgh</div>
 
+<div title="The margin should reduce the constrained inline-size"
+     style="margin-right: 20px;"
+     data-expected-width="80">abc defg</div>
+
 <div title="The target width should not be smaller than min-width"
      style="min-width: 120px;"
      data-expected-width="120">abc defgh</div>

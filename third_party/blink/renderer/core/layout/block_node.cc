@@ -1050,6 +1050,7 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
     const FragmentGeometry& fragment_geometry = IntrinsicFragmentGeometry();
     const BoxStrut border_padding =
         fragment_geometry.border + fragment_geometry.padding;
+    const BoxStrut margins = ComputeMarginsForSelf(constraint_space, Style());
     const MinMaxSizes min_max = ComputeMinMaxInlineSizes(
         constraint_space, *this, border_padding,
         /* auto_min_length */ nullptr, [](SizeType) -> MinMaxSizesResult {
@@ -1062,7 +1063,8 @@ MinMaxSizesResult BlockNode::ComputeMinMaxSizes(
             : constraint_space.AvailableSize().inline_size;
     updated_input.constrained_inline_size =
         (min_max.ClampSizeToMinAndMax(available_inline_size) -
-         (border_padding + fragment_geometry.scrollbar).InlineSum())
+         (border_padding + fragment_geometry.scrollbar).InlineSum() -
+         margins.InlineSum())
             .ClampNegativeToZero();
   }
 
