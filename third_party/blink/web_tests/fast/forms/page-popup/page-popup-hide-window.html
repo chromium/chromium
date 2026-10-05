@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<p id="description"></p>
+<div id="console"></div>
+
+<input type="date" id="date">
+
+<script>
+description('Test for hideWindow() function in page-popups.');
+
+openPickerDeprecatedJsTest(document.getElementById('date'), test);
+
+function test() {
+    internals.pagePopupWindow.addEventListener('didHide', function() {
+        testPassed('didHide event was dispatched.');
+        finishJSTest();
+    }, false);
+    internals.pagePopupWindow.hideWindow();
+
+    setTimeout(function() {
+        testFailed('didHide event was not dispatched.');
+        finishJSTest();
+    }, 5000);
+}
+
+</script>
+</body>
+</html>

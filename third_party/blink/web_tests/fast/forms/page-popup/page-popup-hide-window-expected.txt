@@ -1,0 +1,9 @@
+Test for hideWindow() function in page-popups.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS didHide event was dispatched.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
