@@ -281,7 +281,7 @@ def main(
         # omitted when include_deps_hash is False.
         if include_deps_hash:
             extra_paths = []
-            for p in version_deps:
+            for p in version_deps or []:
                 extra_paths += _all_files(_resolve_dep_path(p))
             deps_hash = scripthash.compute(extra_paths=extra_paths)
             version = f'{version}.{deps_hash}'
