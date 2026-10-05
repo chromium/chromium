@@ -500,6 +500,8 @@ class CORE_EXPORT ContentSecurityPolicy final
   FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest, NonceSinglePolicy);
   FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest, NonceMultiplePolicy);
   FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest, EmptyCSPIsNoOp);
+  FRIEND_TEST_ALL_PREFIXES(ContentSecurityPolicyTest,
+                           ReportViolationBypassingScheme);
   FRIEND_TEST_ALL_PREFIXES(BaseFetchContextTest, CanRequest);
   FRIEND_TEST_ALL_PREFIXES(BaseFetchContextTest, CheckCSPForRequest);
   FRIEND_TEST_ALL_PREFIXES(BaseFetchContextTest,

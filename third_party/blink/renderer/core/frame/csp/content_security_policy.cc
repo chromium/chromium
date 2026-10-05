@@ -1426,12 +1426,15 @@ void ContentSecurityPolicy::ReportViolation(
       blocked_url, header, header_type, violation_type, source_location, source,
       source_prefix, eval_hash, url_hash);
 
+  // Suppress reports pointing at extension URLs loaded outside of extensions.
+  //
   // TODO(mkwst): Obviously, we shouldn't hit this check, as extension-loaded
   // resources should be allowed regardless. We apparently do, however, so
   // we should at least stop spamming reporting endpoints. See
   // https://crbug.com/524356 for detail.
-  if (!violation_data->sourceFile().empty() &&
-      ShouldBypassContentSecurityPolicy(KURL(violation_data->sourceFile()))) {
+  if (source_location &&
+      ShouldBypassContentSecurityPolicy(KURL(source_location->Url())) &&
+      !ShouldBypassContentSecurityPolicy(relevant_delegate->Url())) {
     return;
   }
   PostViolationReport(violation_data, context_frame, report_endpoints,

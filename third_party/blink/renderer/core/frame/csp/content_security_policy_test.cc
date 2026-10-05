@@ -2004,4 +2004,44 @@ TEST_F(ContentSecurityPolicyTest, AddHashReportSanitization) {
   EXPECT_EQ("https://example.test/script.js", body->subresourceURL());
 }
 
+TEST_F(ContentSecurityPolicyTest, ReportViolationBypassingScheme) {
+  SchemeRegistry::RegisterURLSchemeAsBypassingContentSecurityPolicy(
+      "chrome-extension");
+
+  auto* policy = MakeGarbageCollected<ContentSecurityPolicy>();
+  policy->BindToDelegate(execution_context->GetContentSecurityPolicyDelegate());
+  policy->AddPolicies(ParseContentSecurityPolicies(
+      "script-src 'none'", ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicySource::kHTTP, *secure_origin));
+
+  const KURL chrome_extension_url("chrome-extension://abcdefg/script.js");
+  SourceLocation* source_location = MakeGarbageCollected<SourceLocation>(
+      chrome_extension_url.GetString(), String(), 1, 1, nullptr);
+
+  // Trigger a CSP violation report for a chrome-extension resource in
+  // example.test. The report should be dropped.
+  execution_context->SetURL(KURL("https://example.test"));
+  policy->ReportViolation(
+      "script-src 'none'", CSPDirectiveName::ScriptSrc, "Blocked", KURL(),
+      Vector<String>(), false, "script-src 'none'",
+      ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicyViolationType::kInlineViolation, source_location);
+
+  EXPECT_EQ(0u, policy->violation_reports_sent_.size());
+
+  // Trigger a CSP violation report for a chrome-extension resource in
+  // chrome-extension itself. Now the report should be sent.
+  execution_context->SetURL(KURL("chrome-extension://abcdefg"));
+  policy->ReportViolation(
+      "script-src 'none'", CSPDirectiveName::ScriptSrc, "Blocked", KURL(),
+      Vector<String>(), false, "script-src 'none'",
+      ContentSecurityPolicyType::kEnforce,
+      ContentSecurityPolicyViolationType::kInlineViolation, source_location);
+  EXPECT_EQ(1u, policy->violation_reports_sent_.size());
+
+  SchemeRegistry::
+      RemoveURLSchemeRegisteredAsBypassingContentSecurityPolicyForTest(
+          "chrome-extension");
+}
+
 }  // namespace blink
