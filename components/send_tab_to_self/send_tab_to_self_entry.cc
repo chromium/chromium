@@ -316,17 +316,4 @@ bool SendTabToSelfEntry::IsExpired(base::Time current_time) const {
           kExpiryTime);
 }
 
-std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromRequiredFields(
-    std::string guid,
-    const GURL& url,
-    std::string target_device_sync_cache_guid) {
-  if (guid.empty() || !IsValidUrl(url)) {
-    return nullptr;
-  }
-  return std::make_unique<SendTabToSelfEntry>(
-      std::move(guid), url, "", base::Time(), "",
-      std::move(target_device_sync_cache_guid), PageContext{},
-      NavigationHistory{});
-}
-
 }  // namespace send_tab_to_self

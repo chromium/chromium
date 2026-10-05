@@ -150,23 +150,6 @@ TEST(SendTabToSelfEntry, AsProto) {
   EXPECT_FALSE(specifics.has_activated_time_windows_epoch_micros());
 }
 
-// Tests that the send tab to self entry is correctly created from the required
-// fields
-TEST(SendTabToSelfEntry, FromRequiredFields) {
-  EXPECT_THAT(
-      SendTabToSelfEntry::FromRequiredFields("1", GURL("http://example.com"),
-                                             "target_device"),
-      Pointee(MatchesEntry(
-          "1", GURL("http://example.com"), "", "", "target_device",
-          MatchesPageContext(IsEmpty()),
-          MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
-
-  EXPECT_EQ(nullptr, SendTabToSelfEntry::FromRequiredFields(
-                         "1", GURL("chrome://flags"), "target_device"));
-  EXPECT_EQ(nullptr, SendTabToSelfEntry::FromRequiredFields(
-                         "1", GURL("about:blank"), "target_device"));
-}
-
 // Tests that the send tab to self entry is correctly parsed from
 // sync_pb::SendTabToSelfSpecifics.
 TEST(SendTabToSelfEntry, FromProto) {
@@ -191,6 +174,7 @@ TEST(SendTabToSelfEntry, FromProto) {
   EXPECT_FALSE(entry->IsActivated());
 }
 
+// Tests that `FromProto` rejects entries with non-HTTP(S) or invalid URLs.
 TEST(SendTabToSelfEntry, FromProto_InvalidUrl) {
   sync_pb::SendTabToSelfSpecifics pb_entry;
   pb_entry.set_guid("1");
@@ -200,6 +184,10 @@ TEST(SendTabToSelfEntry, FromProto_InvalidUrl) {
 
   // Invalid scheme.
   pb_entry.set_url("chrome://flags");
+  EXPECT_EQ(nullptr,
+            SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)));
+
+  pb_entry.set_url("about:blank");
   EXPECT_EQ(nullptr,
             SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)));
 
