@@ -40,16 +40,17 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -101,10 +102,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
-@DoNotBatch(
-        reason =
-                "https://crbug.com/40854790: Side effects are causing flakes in CI and failures"
-                        + " locally. Unbatched to isolate flakes before batching again.")
+@Batch(Batch.PER_CLASS)
 public class TabsTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
@@ -148,9 +146,10 @@ public class TabsTest {
 
     @After
     public void tearDown() {
-        mActivityTestRule
-                .getActivity()
-                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        if (activity != null && !activity.isActivityFinishingOrDestroyed()) {
+            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        }
     }
 
     private String getUrl(String filePath) {
@@ -854,6 +853,7 @@ public class TabsTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @RequiresRestart("Destroys Activity to test model destruction")
     public void testTabsAreDestroyedOnModelDestruction() throws Exception {
         final Tab tab = mActivityTestRule.getActivityTab();
 
@@ -890,6 +890,7 @@ public class TabsTest {
     @LargeTest
     @Feature({"Android-TabSwitcher"})
     @EnableFeatures(ChromeFeatureList.TAB_ANDROID_GRACEFUL_SHUTDOWN)
+    @RequiresRestart("Destroys Activity to test shutdown")
     public void testTabsWithUnloadHandlerAreKeptAliveOnShutdown() throws Exception {
         final Tab tab = mActivityTestRule.getActivityTab();
 
@@ -941,6 +942,7 @@ public class TabsTest {
     @MediumTest
     @Feature({"Android-TabSwitcher"})
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/471243722
+    @RequiresRestart("Recreates Activity and mutates disk tab state")
     public void testIncognitoTabsNotRestoredAfterSwipe() throws Exception {
         mActivityTestRule.loadUrl(getUrl(TEST_PAGE_FILE_PATH));
 
@@ -973,21 +975,29 @@ public class TabsTest {
                                 runOnUiThreadBlocking(() -> incognitoModel.getTabAt(0)).getId(),
                                 true,
                                 /* isFlatBuffer= */ true));
+        try {
+            assertFileExists(normalTabFile, true);
+            assertFileExists(incognitoTabFile, true);
 
-        assertFileExists(normalTabFile, true);
-        assertFileExists(incognitoTabFile, true);
+            // Although we're destroying the activity, the Application will still live on
+            // because it is in the same process as this test.
+            ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
+            if (incognitoWebPage.getActivity().isIncognitoWindow()) {
+                ApplicationTestUtils.finishActivity(incognitoWebPage.getActivity());
+            }
 
-        // Although we're destroying the activity, the Application will still live on since its in
-        // the same process as this test.
-        ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());
-        if (incognitoWebPage.getActivity().isIncognitoWindow()) {
-            ApplicationTestUtils.finishActivity(incognitoWebPage.getActivity());
+            // Activity will be started without a savedInstanceState.
+            mActivityTestRule.getActivityTestRule().startMainActivityOnBlankPage();
+            assertFileExists(normalTabFile, true);
+            assertFileExists(incognitoTabFile, false);
+        } finally {
+            if (normalTabFile.exists()) {
+                normalTabFile.delete();
+            }
+            if (incognitoTabFile.exists()) {
+                incognitoTabFile.delete();
+            }
         }
-
-        // Activity will be started without a savedInstanceState.
-        mActivityTestRule.getActivityTestRule().startMainActivityOnBlankPage();
-        assertFileExists(normalTabFile, true);
-        assertFileExists(incognitoTabFile, false);
     }
 
     @Test
