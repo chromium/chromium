@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -16,6 +17,7 @@
 #include "components/enterprise/device_trust/core/device_trust_connector_service.h"
 #include "components/enterprise/device_trust/core/device_trust_service.h"
 #include "components/enterprise/device_trust/core/signals/signals_service.h"
+#include "components/enterprise/isolated_mode/isolated_mode_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "content/public/browser/browser_context.h"
@@ -103,6 +105,9 @@ DeviceTrustServiceFactory::DeviceTrustServiceFactory()
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
+              // Gated by kEnterpriseIsolatedModeMilestone2 in
+              // BuildServiceInstanceForBrowserContext().
+              .WithIsolatedMode(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(DeviceTrustConnectorServiceFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
@@ -126,6 +131,12 @@ std::unique_ptr<KeyedService>
 DeviceTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
+
+  if (profile->IsEnterpriseIsolatedModeProfile() &&
+      !base::FeatureList::IsEnabled(
+          enterprise_isolated_mode::kEnterpriseIsolatedModeMilestone2)) {
+    return nullptr;
+  }
 
   if (!IsProfileManaged(profile)) {
     // Return nullptr since the current management configuration isn't
