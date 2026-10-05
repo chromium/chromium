@@ -2,8 +2,8 @@ Name: minigbm
 Short Name: minigbm
 URL: https://chromium.googlesource.com/chromiumos/platform/minigbm
 Version: N/A
-Revision: 9d21b5cb5896c0cde186b54d430131f9f537104c
-Update Mechanism: Manual
+Revision: a2d42f09d696b04e6ded5ad38596d8554ffd8988
+Update Mechanism: Autoroll
 License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes
