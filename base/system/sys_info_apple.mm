@@ -6,6 +6,10 @@
 
 #include <sys/sysctl.h>
 
+#include <algorithm>
+#include <optional>
+#include <string>
+
 #include "base/posix/sysctl.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info_internal.h"
@@ -29,23 +33,49 @@ std::optional<int> GetSysctlIntValue(const char* key_name) {
 
 }  // namespace internal
 
+namespace {
+
+bool IsEfficiencyPerfLevel(int level, int num_perf_levels) {
+  std::optional<std::string> name =
+      StringSysctlByName(StringPrintf("hw.perflevel%d.name", level).c_str());
+  if (name == "Efficiency") {
+    return true;
+  }
+  if (name == "Super" || name == "Performance" || name == "Standard") {
+    return false;
+  }
+  // Fallback for a level whose name is missing or unfamiliar: the slowest
+  // level holds the efficiency cores.
+  return level == num_perf_levels - 1;
+}
+
+}  // namespace
+
 // static
 int SysInfo::NumberOfEfficientProcessorsImpl() {
   int num_perf_levels =
       internal::GetSysctlIntValue("hw.nperflevels").value_or(1);
-  if (num_perf_levels == 1) {
+  if (num_perf_levels <= 1) {
     return 0;
   }
-  DCHECK_GE(num_perf_levels, 2);
 
-  // Lower values of perflevel indicate higher-performance core types. See
+  // Lower values of perflevel indicate higher-performance core types, but a
+  // level's index does not identify the kind of core it holds: a chip with
+  // Super and Performance cores (e.g. M5 Pro/Max) and a chip with Performance
+  // and Efficiency cores both report two levels. Check `hw.perflevel<N>.name`
+  // to accurately count Efficiency cores. See
   // https://developer.apple.com/documentation/kernel/1387446-sysctlbyname/determining_system_capabilities?changes=l__5
-  int num_of_efficient_processors =
-      internal::GetSysctlIntValue(
-          StringPrintf("hw.perflevel%d.logicalcpu", num_perf_levels - 1)
-              .c_str())
-          .value_or(0);
-  DCHECK_GE(num_of_efficient_processors, 0);
+  int num_of_efficient_processors = 0;
+  for (int level = 0; level < num_perf_levels; ++level) {
+    if (!IsEfficiencyPerfLevel(level, num_perf_levels)) {
+      continue;
+    }
+    int cores = internal::GetSysctlIntValue(
+                    StringPrintf("hw.perflevel%d.logicalcpu", level).c_str())
+                    .value_or(0);
+    DCHECK_GE(cores, 0);
+    num_of_efficient_processors += cores;
+  }
 
   return num_of_efficient_processors;
 }
