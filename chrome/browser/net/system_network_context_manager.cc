@@ -191,6 +191,7 @@ network::mojom::HttpAuthDynamicParamsPtr CreateHttpAuthDynamicParams(
       auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies
           .push_back(item.GetString());
     }
+  // TODO(crbug.com/568728957): Remove once all users are on M161+.
   } else if (CHROME_VERSION_MAJOR < 161) {
     auth_dynamic_params->patterns_allowed_to_use_all_schemes_for_proxies =
         auth_dynamic_params->patterns_allowed_to_use_all_schemes;
