@@ -11,14 +11,17 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/network_service_util.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/base/url_util.h"
@@ -288,6 +291,32 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
   reports = GetReceivedReports();
   ASSERT_EQ(reports.size(), 2u);
   EXPECT_TRUE(reports[1].contains("session-end"));
+}
+
+// Verifies that when a renderer process crashes or is killed
+// (crbug.com/558351483), DeclarativePerformanceObserver::OnFrameDeleted()
+// queues the performance-observer report before
+// RenderFrameHostImpl::RenderProcessGone() calls SendReportsAndRemoveSource(),
+// resulting in immediate delivery to the reporting endpoint.
+IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
+                       SendsReportImmediatelyOnRendererCrash) {
+  GURL declarative_performance_observer_url =
+      https_server()->GetURL("origin1.com", "/dpo-page");
+  EXPECT_TRUE(NavigateToURL(shell(), declarative_performance_observer_url));
+
+  base::RunLoop report_loop;
+  SetReportQuitClosure(report_loop.QuitClosure());
+
+  RenderFrameHost* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  ScopedAllowRendererCrashes allow_renderer_crashes(main_frame);
+  main_frame->GetProcess()->Shutdown(RESULT_CODE_KILLED);
+
+  report_loop.Run();
+
+  std::vector<std::string> reports = GetReceivedReports();
+  ASSERT_EQ(reports.size(), 1u);
+  EXPECT_TRUE(reports[0].contains("performance-observer"));
+  EXPECT_TRUE(reports[0].contains("session-end"));
 }
 
 }  // namespace content

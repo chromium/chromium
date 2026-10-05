@@ -19,7 +19,7 @@ namespace content {
 // a time. Centralizing WebContentsObserver calls in this single tab-scoped
 // coordinator avoids redundant event dispatching to background pages and routes
 // updates specifically to the intended active frame.
-class DeclarativePerformanceObserverCoordinator
+class CONTENT_EXPORT DeclarativePerformanceObserverCoordinator
     : public WebContentsObserver,
       public WebContentsUserData<DeclarativePerformanceObserverCoordinator> {
  public:

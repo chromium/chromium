@@ -9,15 +9,19 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/browser/declarative_performance_observer/declarative_performance_observer_coordinator.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_storage_partition.h"
@@ -63,6 +67,11 @@ class TestNetworkContext : public network::TestNetworkContext {
     base::DictValue body;
   };
 
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {
+    expired_sources_.insert(reporting_source);
+  }
+
   void QueueReport(
       const std::string& type,
       const std::string& group,
@@ -70,6 +79,14 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::optional<base::UnguessableToken>& reporting_source,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       base::DictValue body) override {
+    // Mirror net::ReportingCacheImpl::AddReport, which silently drops reports
+    // whose reporting_source has already been marked expired by
+    // SendReportsAndRemoveSource.
+    if (reporting_source.has_value() &&
+        expired_sources_.contains(*reporting_source)) {
+      dropped_reports_due_to_expired_source_++;
+      return;
+    }
     reports_.emplace_back(type, group, url, std::move(body));
     if (quit_closure_) {
       std::move(quit_closure_).Run();
@@ -88,9 +105,19 @@ class TestNetworkContext : public network::TestNetworkContext {
 
   const std::vector<Report>& reports() const { return reports_; }
 
+  const base::flat_set<base::UnguessableToken>& expired_sources() const {
+    return expired_sources_;
+  }
+
+  size_t dropped_reports_due_to_expired_source() const {
+    return dropped_reports_due_to_expired_source_;
+  }
+
   void ClearReports() {
     reports_.clear();
     send_reports_for_source_calls_.clear();
+    expired_sources_.clear();
+    dropped_reports_due_to_expired_source_ = 0;
   }
 
   void SetQuitClosure(base::OnceClosure quit_closure) {
@@ -100,6 +127,8 @@ class TestNetworkContext : public network::TestNetworkContext {
  private:
   std::vector<Report> reports_;
   std::vector<base::UnguessableToken> send_reports_for_source_calls_;
+  base::flat_set<base::UnguessableToken> expired_sources_;
+  size_t dropped_reports_due_to_expired_source_ = 0;
   base::OnceClosure quit_closure_;
 };
 
@@ -1531,6 +1560,125 @@ TEST_F(DeclarativePerformanceObserverTest, SanitizesReportUrlsInLcpEntry) {
   const std::string* url = lcp_entry->FindString("url");
   ASSERT_TRUE(url);
   EXPECT_EQ(*url, "https://example.com/hero.png");
+}
+
+// Verifies that when a renderer crashes (crbug.com/558351483),
+// DeclarativePerformanceObserver::OnFrameDeleted() queues its final report
+// before RenderFrameHostImpl::RenderProcessGone() expires the reporting source
+// via SendReportsAndRemoveSource().
+TEST_F(DeclarativePerformanceObserverTest,
+       FlushesBeforeSourceRemovalOnRenderProcessGone) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL);
+
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver(
+      &network_context_);
+  static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition())
+      ->SetNetworkContextForTesting(
+          network_context_receiver.BindNewPipeAndPassRemote());
+
+  DeclarativePerformanceObserverCoordinator::CreateForWebContents(
+      web_contents());
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  // Create the observer directly without overriding StoragePartition so that
+  // FlushMetrics() and RenderFrameHostImpl::RenderProcessGone() share
+  // main_rfh()->GetStoragePartition()'s NetworkContext Mojo pipe.
+  DeclarativePerformanceObserver::CreateForCurrentDocument(main_rfh(),
+                                                           &navigation_handle);
+  const base::UnguessableToken reporting_source =
+      main_rfh()->GetReportingSource();
+
+  static_cast<MockRenderProcessHost*>(main_rfh()->GetProcess())
+      ->SimulateCrash();
+  main_rfh()->GetStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  EXPECT_TRUE(network_context_.expired_sources().contains(reporting_source));
+  EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
+  EXPECT_THAT(
+      network_context_.reports(),
+      testing::Contains(testing::Field(&TestNetworkContext::Report::type,
+                                       testing::Eq("performance-observer"))));
+}
+
+class DeclarativePerformanceObserverSameRFHTest
+    : public DeclarativePerformanceObserverTest {
+ public:
+  DeclarativePerformanceObserverSameRFHTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kRenderDocument,
+                               features::kBackForwardCache});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that when a cross-document navigation commits in the same
+// RenderFrameHost (crbug.com/558351483), replacing document_associated_data_
+// flushes ~DeclarativePerformanceObserver() before
+// RenderFrameHostImpl::DidCommitNavigationInternal() expires the previous
+// document's reporting source via SendReportsAndRemoveSource().
+TEST_F(DeclarativePerformanceObserverSameRFHTest,
+       FlushesBeforeSourceRemovalOnSameRFHNavigation) {
+  const GURL kPageURL1("https://example.com/index.html");
+  const GURL kPageURL2("https://example.com/page2.html");
+  const std::string kEndpoint("telemetry");
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL1);
+
+  mojo::Receiver<network::mojom::NetworkContext> network_context_receiver(
+      &network_context_);
+  static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition())
+      ->SetNetworkContextForTesting(
+          network_context_receiver.BindNewPipeAndPassRemote());
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL1, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::CreateForCurrentDocument(main_rfh(),
+                                                           &navigation_handle);
+
+  RenderFrameHost* const old_rfh = main_rfh();
+  const base::UnguessableToken old_reporting_source =
+      main_rfh()->GetReportingSource();
+
+  NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), kPageURL2);
+  EXPECT_EQ(old_rfh, main_rfh());
+  main_rfh()->GetStoragePartition()->FlushNetworkInterfaceForTesting();
+
+  EXPECT_TRUE(
+      network_context_.expired_sources().contains(old_reporting_source));
+  EXPECT_FALSE(network_context_.expired_sources().contains(
+      main_rfh()->GetReportingSource()));
+  EXPECT_EQ(network_context_.dropped_reports_due_to_expired_source(), 0u);
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  EXPECT_EQ(network_context_.reports()[0].type, "performance-observer");
 }
 
 }  // namespace
