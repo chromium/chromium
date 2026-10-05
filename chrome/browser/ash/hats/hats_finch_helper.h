@@ -8,11 +8,10 @@
 #include <limits.h>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 
-class Profile;
+class PrefService;
 
 namespace ash {
 struct HatsConfig;
@@ -37,7 +36,9 @@ class HatsFinchHelper {
   // is set to "true".
   static bool IsEnabledForGooglers(const HatsConfig& config);
 
-  explicit HatsFinchHelper(Profile* profile, const HatsConfig& config);
+  // `prefs` stores the survey cycle state. It must be non-null and must
+  // outlive `this`.
+  HatsFinchHelper(PrefService* prefs, const HatsConfig& config);
   ~HatsFinchHelper();
 
   bool IsDeviceSelectedForCurrentCycle() const {
@@ -109,7 +110,7 @@ class HatsFinchHelper {
   // current survey cycle. This is set by |CheckForDeviceSelection()|.
   bool device_is_selected_for_cycle_ = false;
 
-  const raw_ptr<Profile> profile_;
+  const raw_ref<PrefService> prefs_;
 
   const raw_ref<const HatsConfig> hats_config_;
 };

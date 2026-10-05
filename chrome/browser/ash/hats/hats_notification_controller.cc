@@ -267,7 +267,7 @@ bool HatsNotificationController::ShouldShowSurveyToProfile(
   const bool is_enterprise_enrolled =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
-  HatsFinchHelper hats_finch_helper(profile, hats_config);
+  HatsFinchHelper hats_finch_helper(profile->GetPrefs(), hats_config);
 
   // Do not show survey to enterprise users.
   // Exceptions for Googlers if the survey wants Googlers participation.

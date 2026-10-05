@@ -72,7 +72,7 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_ValidValues) {
       "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 1.0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, 7);
@@ -89,7 +89,7 @@ TEST_F(HatsFinchHelperTest, InitFinchSeed_Invalidalues) {
   SetFeatureParams(params);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0.0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);
@@ -108,7 +108,7 @@ TEST_F(HatsFinchHelperTest, TestComputeNextDate) {
 
   base::Time current_time = base::Time::Now();
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   // Case 1
   base::Time start_date = current_time - base::Days(10);
@@ -141,7 +141,7 @@ TEST_F(HatsFinchHelperTest, ResetSurveyCycle) {
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);
@@ -168,7 +168,7 @@ TEST_F(HatsFinchHelperTest, ResetHats) {
                          initial_timestamp);
 
   base::Time current_time = base::Time::Now();
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.probability_of_pick_, 0);
   EXPECT_EQ(hats_finch_helper.survey_cycle_length_, INT_MAX);
@@ -188,7 +188,7 @@ TEST_F(HatsFinchHelperTest, NoCustomClientData) {
       "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.GetCustomClientDataAsString(kHatsGeneralSurvey),
             std::string());
@@ -199,7 +199,7 @@ TEST_F(HatsFinchHelperTest, CustomClientData) {
       "1.0", "7", "1475613895337", "false", "false", kValidTriggerId, "12345");
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.GetCustomClientDataAsString(kHatsGeneralSurvey),
             "12345");
@@ -210,7 +210,7 @@ TEST_F(HatsFinchHelperTest, NoEnabledForGooglersConfig) {
       "1.0", "7", "1475613895337", "false", "false", kValidTriggerId);
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.IsEnabledForGooglers(kHatsGeneralSurvey), false);
 }
@@ -221,7 +221,7 @@ TEST_F(HatsFinchHelperTest, EnabledForGooglers) {
                      kValidTriggerId, "", "true");
   SetFeatureParams(params);
 
-  HatsFinchHelper hats_finch_helper(&profile_, kHatsGeneralSurvey);
+  HatsFinchHelper hats_finch_helper(profile_.GetPrefs(), kHatsGeneralSurvey);
 
   EXPECT_EQ(hats_finch_helper.IsEnabledForGooglers(kHatsGeneralSurvey), true);
 }
