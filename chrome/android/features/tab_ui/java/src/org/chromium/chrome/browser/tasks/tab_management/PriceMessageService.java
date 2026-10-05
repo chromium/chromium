@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,8 +32,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class PriceMessageService extends MessageService<@MessageType Integer, @UiType Integer> {
-    private static final String WELCOME_MESSAGE_METRICS_IDENTIFIER = "PriceWelcomeMessageCard";
-
     // PRICE_WELCOME and PRICE_ALERTS are added to {@link TabListModel} at a different time and the
     // insertion positions are different as well. Right now PRICE_WELCOME is added via {@link
     // TabSwitcherCoordinator#appendNextMessage}, while PRICE_ALERTS is added via {@link
@@ -43,28 +40,6 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
     @Retention(RetentionPolicy.SOURCE)
     public @interface PriceMessageType {
         int PRICE_WELCOME = 0;
-    }
-
-    /**
-     * The reason why we disable the message in grid tab switcher and no longer show it.
-     *
-     * <p>Needs to stay in sync with GridTabSwitcherMessageDisableReason in enums.xml. These values
-     * are persisted to logs. Entries should not be renumbered and numeric values should never be
-     * reused.
-     */
-    @IntDef({
-        MessageDisableReason.UNKNOWN,
-        MessageDisableReason.MESSAGE_ACCEPTED,
-        MessageDisableReason.MESSAGE_DISMISSED,
-        MessageDisableReason.MESSAGE_IGNORED
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface MessageDisableReason {
-        int UNKNOWN = 0;
-        int MESSAGE_ACCEPTED = 1;
-        int MESSAGE_DISMISSED = 2;
-        int MESSAGE_IGNORED = 3;
-        int MAX_VALUE = 3;
     }
 
     /** Provides the binding tab ID and the price drop of the binding tab. */
@@ -195,7 +170,6 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
         PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
         if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
                 > MAX_PRICE_MESSAGE_SHOW_COUNT) {
-            logMessageDisableMetrics(MessageDisableReason.MESSAGE_IGNORED);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             return false;
         }
@@ -242,7 +216,6 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
             assert priceWelcomeMessageReviewActionProvider != null;
             priceWelcomeMessageReviewActionProvider.scrollToTab(bindingTabIndex);
             priceWelcomeMessageProvider.showPriceDropTooltip(bindingTabIndex);
-            logMessageDisableMetrics(MessageDisableReason.MESSAGE_ACCEPTED);
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
             RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Reviewed");
@@ -251,20 +224,10 @@ public class PriceMessageService extends MessageService<@MessageType Integer, @U
 
     @VisibleForTesting
     public void dismiss() {
-        logMessageDisableMetrics(MessageDisableReason.MESSAGE_DISMISSED);
         PriceTrackingUtilities.disablePriceWelcomeMessageCard();
         mPriceTabData = null;
         RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
         dismissShownMessage();
-    }
-
-    private void logMessageDisableMetrics(@MessageDisableReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                String.format(
-                        "GridTabSwitcher.%s.DisableReason",
-                        PriceMessageService.WELCOME_MESSAGE_METRICS_IDENTIFIER),
-                reason,
-                MessageDisableReason.MAX_VALUE + 1);
     }
 
     @Nullable PriceTabData getPriceTabDataForTesting() {

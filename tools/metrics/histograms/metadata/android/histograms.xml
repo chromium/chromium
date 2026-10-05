@@ -124,13 +124,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Shrink" summary="Tab to Grid"/>
 </variants>
 
-<variants name="GridTabSwitcherMessageType">
-  <variant name="PriceAlertsMessageCard"
-      summary="the promo message for price notifications"/>
-  <variant name="PriceWelcomeMessageCard"
-      summary="the message introducing price chips"/>
-</variants>
-
 <variants name="HandoffEnableTrigger">
   <variant name="TabSwitch" summary="First tab init and tab switch"/>
   <variant name="UrlNavigation" summary="URL navigation"/>
@@ -10309,18 +10302,6 @@ chromium-metrics-reviews@google.com.
     This histogram records the maximum interval between rendered frames during
     the transition animation between Tab and Grid Tab Switcher.
     {GridTabSwitcherAnimationType}
-  </summary>
-</histogram>
-
-<histogram name="GridTabSwitcher.{GridTabSwitcherMessageType}.DisableReason"
-    enum="GridTabSwitcherMessageDisableReason" expires_after="2022-10-01">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>wychen@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <summary>
-    Records why the {GridTabSwitcherMessageType} is disabled in GridTabSwitcher
-    and will no longer be shown to users. Recorded when the message is disabled.
-    Implemented for Android.
   </summary>
 </histogram>
 

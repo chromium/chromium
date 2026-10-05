@@ -4787,13 +4787,6 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Used, relocked"/>
 </enum>
 
-<enum name="GridTabSwitcherMessageDisableReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="User taps the primary button on message"/>
-  <int value="2" label="User dismisses the message"/>
-  <int value="3" label="User ignores the message many times"/>
-</enum>
-
 <enum name="GuestOsFailureClasses">
   <int value="0" label="Concierge"/>
   <int value="1" label="Cicerone"/>
