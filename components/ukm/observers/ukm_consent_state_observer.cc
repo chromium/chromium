@@ -120,10 +120,12 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
     state.SetConsentType(APPS);
   }
 #else
-  // This separation isn't actually needed for non-ChromeOS devices. But for
-  // clarity it is added.
+  // On non-ChromeOS platforms, `syncer::DataType::APPS` is deprecated, so
+  // `APPS` consent checks `syncer::DataType::WEB_APPS`, which is in the same
+  // sync toggle (`syncer::UserSelectableType::kApps`).
   if (msbb_consent &&
-      CanUploadUkmForType(sync_service, syncer::DataType::APPS, msbb_consent)) {
+      CanUploadUkmForType(sync_service, syncer::DataType::WEB_APPS,
+                          msbb_consent)) {
     state.SetConsentType(APPS);
   }
 #endif
