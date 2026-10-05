@@ -416,8 +416,7 @@ public class FuseboxMediatorUnitTest {
         mInputStateSupplier.set(inputState);
     }
 
-    /* Useful for testing logic in the mediator's constructor. */
-    private void recreateMediator() {
+    private void createMediator() {
         if (mMediator != null) {
             mMediator.destroy();
         }
@@ -438,6 +437,11 @@ public class FuseboxMediatorUnitTest {
                         mOnFirstPickerInteractionCanceledCallback,
                         mHasAttachmentsSupplier,
                         mUrlTextWrappingSupplier);
+    }
+
+    /* Useful for testing logic in the mediator's constructor. */
+    private void recreateMediator() {
+        createMediator();
         mMediator.beginInput(mSession);
     }
 
@@ -767,6 +771,17 @@ public class FuseboxMediatorUnitTest {
 
         mUrlTextWrappingSupplier.set(false);
         assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE));
+    }
+
+    @Test
+    public void constructor_doesNotResetFuseboxStateBeforeBeginInput() {
+        mMediator.destroy();
+        mMediator = null;
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+
+        createMediator();
+
+        assertEquals(FuseboxState.COMPACT, mFuseboxStateSupplier.get().intValue());
     }
 
     @Test

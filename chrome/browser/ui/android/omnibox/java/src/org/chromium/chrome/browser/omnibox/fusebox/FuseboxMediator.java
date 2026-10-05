@@ -196,7 +196,7 @@ import java.util.function.Supplier;
         mIsDesktopPlatform = OmniboxCapabilities.isDesktopPlatform();
         mHasAttachmentsSupplier = hasAttachmentsSupplier;
         mUrlTextWrappingSupplier = urlTextWrappingSupplier;
-        mUrlTextWrappingSupplier.addSyncObserverAndCallIfNonNull(mOnTextWrappingChanged);
+        mUrlTextWrappingSupplier.addSyncObserver(mOnTextWrappingChanged);
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
