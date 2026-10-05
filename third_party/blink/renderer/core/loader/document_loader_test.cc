@@ -385,7 +385,7 @@ class DocumentLoaderSimTest : public SimTest {
 
  private:
   static void ReenterThunk(const v8::FunctionCallbackInfo<v8::Value>& info) {
-    v8::Local<v8::External> external_that = info.Data().As<v8::External>();
+    v8::Local<v8::External> external_that = info.DataV2().As<v8::External>();
     DocumentLoaderSimTest* that = static_cast<DocumentLoaderSimTest*>(
         external_that->Value(gin::kExternalPointerTypeTagDefaultTag));
     that->Reenter();

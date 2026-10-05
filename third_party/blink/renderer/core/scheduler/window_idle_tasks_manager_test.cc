@@ -36,7 +36,7 @@ class MockIdleTask : public IdleTask {
 };
 
 void IncrementCallCount(const v8::FunctionCallbackInfo<v8::Value>& info) {
-  auto* call_count = static_cast<int*>(info.Data().As<v8::External>()->Value(
+  auto* call_count = static_cast<int*>(info.DataV2().As<v8::External>()->Value(
       v8::kExternalPointerTypeTagDefault));
   ++(*call_count);
 }

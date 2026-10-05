@@ -53,7 +53,7 @@ class CORE_EXPORT FunctionHolder final : public ScriptWrappable {
   static void CallCallback(const v8::FunctionCallbackInfo<v8::Value>& args) {
     RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(args.GetIsolate(),
                                                  "Blink_CallCallback");
-    v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(args.Data());
+    v8::Local<v8::Object> data = args.DataV2().As<v8::Value>().As<v8::Object>();
     v8::Isolate* isolate = args.GetIsolate();
     auto* holder = ToScriptWrappable<FunctionHolder>(isolate, data);
     ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);

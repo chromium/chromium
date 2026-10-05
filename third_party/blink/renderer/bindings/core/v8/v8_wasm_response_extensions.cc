@@ -500,7 +500,7 @@ void StreamFromResponseCallback(
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                       "v8.wasm.streamFromResponseCallback");
   std::shared_ptr<v8::WasmStreaming> streaming =
-      v8::WasmStreaming::Unpack(args.GetIsolate(), args.Data());
+      v8::WasmStreaming::Unpack(args.GetIsolate(), args.DataV2());
 
   ScriptState* script_state = ScriptState::ForCurrentRealm(args);
   if (!script_state->ContextIsValid()) {
