@@ -27,6 +27,7 @@ static_library("first_run") {
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/experiences/arc",
     "//components/pref_registry",

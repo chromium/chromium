@@ -7,6 +7,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/help_app_ui/help_app_prefs.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -26,6 +28,7 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_registry.h"
@@ -43,8 +46,8 @@ namespace {
 // Returns true if this user type is probably a human who wants to configure
 // their device through the help app. Other user types are robots, guests or
 // public accounts.
-bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
-  switch (user_manager->GetActiveUser()->GetType()) {
+bool IsRegularUserOrSupervisedChild(const user_manager::User& user) {
+  switch (user.GetType()) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       return true;
@@ -54,13 +57,14 @@ bool IsRegularUserOrSupervisedChild(user_manager::UserManager* user_manager) {
 }
 
 // Getting started module is shown to unmanaged regular and child accounts.
-bool ShouldShowGetStarted(Profile* profile,
-                          user_manager::UserManager* user_manager) {
+bool ShouldShowGetStarted(Profile* profile, const user_manager::User& user) {
+  // TODO(crbug.com/278643115): IsChild() is redundant with UserType::kChild.
+  // Drop it and use user.is_managed() so this no longer needs the Profile.
   // Child users return true for IsManaged. These are not EDU accounts though,
   // should still see the getting started module.
   if (profile->IsChild())
     return true;
-  switch (user_manager->GetActiveUser()->GetType()) {
+  switch (user.GetType()) {
     case user_manager::UserType::kRegular:
       return !profile->GetProfilePolicyConnector()->IsManaged();
     default:
@@ -118,14 +122,15 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 bool ShouldLaunchHelpApp(Profile* profile) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+  PrefService& prefs = CHECK_DEREF(user.GetProfilePrefs());
   // Even if we don't launch the help app now, define the preferences for what
   // should be shown in the app when it is launched.
-  profile->GetPrefs()->SetBoolean(
-      ash::help_app::prefs::kHelpAppShouldShowGetStarted,
-      ShouldShowGetStarted(profile, user_manager));
-  profile->GetPrefs()->SetBoolean(
-      ash::help_app::prefs::kHelpAppTabletModeDuringOobe,
-      display::Screen::Get()->InTabletMode());
+  prefs.SetBoolean(ash::help_app::prefs::kHelpAppShouldShowGetStarted,
+                   ShouldShowGetStarted(profile, user));
+  prefs.SetBoolean(ash::help_app::prefs::kHelpAppTabletModeDuringOobe,
+                   display::Screen::Get()->InTabletMode());
 
   if (WizardController::default_controller())
     WizardController::default_controller()->PrepareFirstRunPrefs();
@@ -133,8 +138,9 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   if (!SystemWebAppManager::Get(profile))
     return false;
 
-  if (!IsRegularUserOrSupervisedChild(user_manager))
+  if (!IsRegularUserOrSupervisedChild(user)) {
     return false;
+  }
 
   if (switches::ShouldSkipOobePostLogin())
     return false;
@@ -157,7 +163,7 @@ bool ShouldLaunchHelpApp(Profile* profile) {
   if (!user_manager->IsCurrentUserNew())
     return false;
 
-  if (profile->GetPrefs()->GetBoolean(ash::prefs::kFirstRunTutorialShown)) {
+  if (prefs.GetBoolean(ash::prefs::kFirstRunTutorialShown)) {
     return false;
   }
 

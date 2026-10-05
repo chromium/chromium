@@ -330,18 +330,20 @@ ChromeShellDelegate::GetMediaSessionService() {
 
 bool ChromeShellDelegate::IsSessionRestoreInProgress() const {
   // Must be called with an active user.
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(active_user);
+  const session_manager::Session* const active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  CHECK(active_session);
+  const user_manager::User& active_user = CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUser(active_session->account_id()));
 
   // User profile is not yet loaded. Consider loading user profile is part of
   // session restore.
-  if (!active_user->is_profile_created()) {
+  if (!active_user.is_profile_created()) {
     return true;
   }
 
   return SessionRestore::IsRestoring(Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user)));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(&active_user)));
 }
 
 void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
@@ -420,14 +422,15 @@ bool ChromeShellDelegate::IsLoggingRedirectDisabled() const {
 }
 
 base::FilePath ChromeShellDelegate::GetPrimaryUserDownloadsFolder() const {
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
+  const session_manager::Session* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return base::FilePath();
   }
 
   content::BrowserContext* browser_context =
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user);
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id());
   if (browser_context) {
     return file_manager::util::GetDownloadsFolderForProfile(
         Profile::FromBrowserContext(browser_context));

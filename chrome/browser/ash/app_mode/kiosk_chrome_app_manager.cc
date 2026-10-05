@@ -60,7 +60,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user_manager.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
@@ -407,7 +406,7 @@ void KioskChromeAppManager::OnKioskSessionStarted(const KioskAppId& app_id) {
     // restarted - e.g. due to crash. For example, this will ensure restarted
     // app session restores auto-launched state.
     UserSessionManager::GetInstance()->SetSwitchesForUser(
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
+        app_id.account_id,
         UserSessionManager::CommandLineSwitchesType::kPolicyAndKioskControl,
         flags);
   }
