@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,7 @@ public class BottomSheetManagerUnitTest {
     @Mock private Supplier<OverlayPanelManager> mOverlayManager;
     @Mock private BottomControlsStacker mBottomControlsStacker;
     @Mock private BottomSheetContent mSheetContent;
+    @Mock private Tab mTab;
 
     private final ActivityTabProvider mTabProvider = new ActivityTabProvider();
     private final SettableMonotonicObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
@@ -71,6 +73,10 @@ public class BottomSheetManagerUnitTest {
 
     @Before
     public void setUp() {
+        when(mTab.isUserInteractable()).thenReturn(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.setForTesting(mTab);
+
         mBottomSheetManager =
                 new BottomSheetManager(
                         mSheetController,
@@ -287,5 +293,307 @@ public class BottomSheetManagerUnitTest {
         when(mSheetController.isFullWidth()).thenReturn(true);
         when(mSheetController.getSheetBackgroundColor()).thenReturn(Color.RED);
         assertEquals(Color.RED, (int) mLayer.getBackgroundColor());
+    }
+
+    @Test
+    public void testOnSheetHidden_topControlsScrolledOff_animates() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetHidden_topControlsShown_doesNotAnimate() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetHidden_noTopControls_doesNotAnimate() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(0);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetHidden_heightChanged_doesNotAnimate() {
+        when(mSheetContent.actsAsBrowserControls()).thenReturn(true);
+        when(mSheetController.isFullWidth()).thenReturn(true);
+        when(mSheetController.getCurrentPeekHeightPx()).thenReturn(100);
+        showSheetInPeekState();
+        assertEquals(100, mLayer.getHeight());
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        hideSheetAndAssertHidden();
+        assertEquals(0, mLayer.getHeight());
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testInitialUpdate_hidden_doesNotRequestUpdate() {
+        // The initial HIDDEN/0 snapshot already matches a hidden sheet, so no update is needed.
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-100);
+        when(mSheetController.getSheetState()).thenReturn(BottomSheetController.SheetState.HIDDEN);
+        BottomControlsLayer layer = createManagerAndCaptureLayer();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, layer.getLayerVisibility());
+        assertEquals(0, layer.getHeight());
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+    }
+
+    @Test
+    public void testInitialUpdate_visibleZeroHeight_requestsUpdate() {
+        clearInvocations(mBottomControlsStacker);
+        when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mSheetContent.actsAsBrowserControls()).thenReturn(false);
+        when(mSheetController.getSheetState()).thenReturn(BottomSheetController.SheetState.PEEK);
+        BottomControlsLayer layer = createManagerAndCaptureLayer();
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, layer.getLayerVisibility());
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testInitialUpdate_hidingTopControlsShown_hidden() {
+        // Created mid-hide, the initial HIDDEN snapshot latches the layer hidden since the sheet
+        // is going away, so no update is needed.
+        clearInvocations(mBottomControlsStacker);
+        when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.SCROLLING);
+        when(mSheetController.isSheetHiding()).thenReturn(true);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        BottomControlsLayer layer = createManagerAndCaptureLayer();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, layer.getLayerVisibility());
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+    }
+
+    @Test
+    public void testOnSheetHidden_topControlsScrolledOff_nativePage_doesNotAnimate() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mTab.isNativePage()).thenReturn(true);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetHidden_topControlsScrolledOff_nullTab_doesNotAnimate() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        mTabProvider.setForTesting(null);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetHidden_topControlsScrolledOff_notInteractable_doesNotAnimate() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mTab.isUserInteractable()).thenReturn(false);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testGetLayerVisibility_hiding_topControlsScrolledOff_hidden() {
+        showSheetInPeekState();
+
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testGetLayerVisibility_hiding_topControlsShown_visible() {
+        showSheetInPeekState();
+
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testGetLayerVisibility_hiding_noTopControls_visible() {
+        showSheetInPeekState();
+
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(0);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testGetLayerVisibility_hiding_topControlsShownMidHide_staysHidden() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ true);
+
+        // The top controls return mid-hide. A stacker pull triggered by a sibling layer must
+        // still see HIDDEN, and further sheet callbacks must not re-pin the bottom controls.
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+        mObserver.onContainerSizeChanged(200, 400);
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+    }
+
+    @Test
+    public void testGetLayerVisibility_hideCancelledMidHide_visible() {
+        showSheetInPeekState();
+
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+
+        // The hide is cancelled while the sheet is still scrolling.
+        clearInvocations(mBottomControlsStacker);
+        when(mSheetController.isSheetHiding()).thenReturn(false);
+        mObserver.onContainerSizeChanged(200, 400);
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ false);
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testGetLayerVisibility_secondHideTopControlsShown_latchDoesNotCarryOver() {
+        showSheetInPeekState();
+
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+        hideSheetAndAssertHidden();
+
+        // Re-show, then start a second hide with the top controls shown.
+        showSheetInPeekState();
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(0);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+    }
+
+    @Test
+    public void testGetLayerVisibility_hidingWithoutStateChange_returnsCommittedSnapshot() {
+        showSheetInPeekState();
+
+        // A drag dismiss moves SCROLLING -> hiding without an onSheetStateChanged callback. A
+        // stacker pull must see the last committed visibility rather than live sheet state.
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        when(mSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.SCROLLING);
+        when(mSheetController.isSheetHiding()).thenReturn(true);
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+
+        // The animated update is requested once the sheet reaches HIDDEN.
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ true);
+    }
+
+    @Test
+    public void testOnSheetStartedHiding_topControlsScrolledOff_animates() {
+        showSheetInPeekState();
+
+        clearInvocations(mBottomControlsStacker);
+        when(mControlsVisibilityManager.getTopControlsHeight()).thenReturn(100);
+        when(mControlsVisibilityManager.getTopControlOffset()).thenReturn(-50);
+        startHidingSheet();
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+        verify(mBottomControlsStacker).requestLayerUpdate(/* animate= */ true);
+
+        // Visibility is already HIDDEN, so the end of the hide animation is a no-op.
+        clearInvocations(mBottomControlsStacker);
+        hideSheetAndAssertHidden();
+        verify(mBottomControlsStacker, never()).requestLayerUpdate(anyBoolean());
+    }
+
+    private void showSheetInPeekState() {
+        when(mSheetController.getCurrentSheetContent()).thenReturn(mSheetContent);
+        when(mSheetController.getSheetState()).thenReturn(BottomSheetController.SheetState.PEEK);
+        mObserver.onSheetStateChanged(
+                BottomSheetController.SheetState.PEEK,
+                BottomSheetController.StateChangeReason.NONE);
+        assertEquals(BottomControlsStacker.LayerVisibility.VISIBLE, mLayer.getLayerVisibility());
+    }
+
+    private void startHidingSheet() {
+        when(mSheetController.isSheetHiding()).thenReturn(true);
+        when(mSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.SCROLLING);
+        mObserver.onSheetStateChanged(
+                BottomSheetController.SheetState.SCROLLING,
+                BottomSheetController.StateChangeReason.NONE);
+    }
+
+    private void hideSheetAndAssertHidden() {
+        when(mSheetController.isSheetHiding()).thenReturn(false);
+        when(mSheetController.getSheetState()).thenReturn(BottomSheetController.SheetState.HIDDEN);
+        mObserver.onSheetStateChanged(
+                BottomSheetController.SheetState.HIDDEN,
+                BottomSheetController.StateChangeReason.NONE);
+        assertEquals(BottomControlsStacker.LayerVisibility.HIDDEN, mLayer.getLayerVisibility());
+    }
+
+    private BottomControlsLayer createManagerAndCaptureLayer() {
+        new BottomSheetManager(
+                mSheetController,
+                mTabProvider,
+                mControlsVisibilityManager,
+                mExpandedSheetHelper,
+                mOmniboxFocusStateSupplier,
+                mOverlayManager,
+                mLayoutStateProviderSupplier,
+                mBottomControlsStacker,
+                /* isBottomSheetAsBrowserControlsEnabled= */ true);
+        ArgumentCaptor<BottomControlsLayer> captor =
+                ArgumentCaptor.forClass(BottomControlsLayer.class);
+        verify(mBottomControlsStacker).addLayer(captor.capture());
+        return captor.getValue();
     }
 }

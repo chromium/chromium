@@ -331,7 +331,7 @@ class BottomSheetManager implements BottomSheetObserver, DestroyObserver {
     // controls, making the controls non-scrollable.
     private class BottomSheetLayer implements BottomSheetObserver, BottomControlsLayer {
         private int mContributedHeight;
-        private int mContributedVisibility;
+        private @LayerVisibility int mContributedVisibility = LayerVisibility.HIDDEN;
 
         @Override
         public void onSheetOpened(int reason) {
@@ -378,10 +378,8 @@ class BottomSheetManager implements BottomSheetObserver, DestroyObserver {
         }
 
         @Override
-        public int getLayerVisibility() {
-            return mSheetController.getSheetState() == BottomSheetController.SheetState.HIDDEN
-                    ? LayerVisibility.HIDDEN
-                    : LayerVisibility.VISIBLE;
+        public @LayerVisibility int getLayerVisibility() {
+            return mContributedVisibility;
         }
 
         @Override
@@ -408,13 +406,55 @@ class BottomSheetManager implements BottomSheetObserver, DestroyObserver {
 
         private void maybeUpdateLayerHeight() {
             int currentHeight = calculateContributedHeight();
-            int currentVisibility = getLayerVisibility();
+            @LayerVisibility int currentVisibility = calculateLayerVisibility();
             if (currentHeight != mContributedHeight
                     || currentVisibility != mContributedVisibility) {
+                // The sheet pins the bottom controls, so their min height equals their height.
+                // When the sheet hides while the top controls are scrolled off, only the bottom
+                // min height drops. Animate so cc animates the bottom controls down to the new
+                // min height; otherwise the renderer keeps them fully shown. The top offset is
+                // used because the bottom controls cannot scroll while pinned. Only animate when
+                // the renderer drives the animation, as the browser-driven fallback requires
+                // fully shown controls.
+                boolean animate =
+                        mContributedVisibility != LayerVisibility.HIDDEN
+                                && currentVisibility == LayerVisibility.HIDDEN
+                                && currentHeight == mContributedHeight
+                                && areTopControlsScrolledOff()
+                                && canRendererAnimateControls();
                 mContributedHeight = currentHeight;
                 mContributedVisibility = currentVisibility;
-                mBottomControlsStacker.requestLayerUpdate(false);
+                mBottomControlsStacker.requestLayerUpdate(animate);
             }
+        }
+
+        private @LayerVisibility int calculateLayerVisibility() {
+            if (mSheetController.getSheetState() == BottomSheetController.SheetState.HIDDEN) {
+                return LayerVisibility.HIDDEN;
+            }
+            // When the sheet starts hiding while the top controls are scrolled off, release the
+            // bottom controls immediately so they animate out alongside the sheet instead of
+            // popping when the hide animation ends. Once released, stay released for the rest of
+            // the hide even if the top controls are shown again, so the bottom controls are not
+            // re-pinned mid-hide. The early release only applies when a hide starts via a state
+            // callback; other hides (e.g. swipe dismiss) release at SheetState.HIDDEN.
+            if (mSheetController.isSheetHiding()
+                    && (mContributedVisibility == LayerVisibility.HIDDEN
+                            || areTopControlsScrolledOff())) {
+                return LayerVisibility.HIDDEN;
+            }
+            return LayerVisibility.VISIBLE;
+        }
+
+        private boolean areTopControlsScrolledOff() {
+            return mBrowserControlsVisibilityManager.getTopControlsHeight() > 0
+                    && mBrowserControlsVisibilityManager.getTopControlOffset() < 0;
+        }
+
+        // Mirrors BrowserControlsManager#canAnimateNativeBrowserControls().
+        private boolean canRendererAnimateControls() {
+            Tab tab = mTabProvider.get();
+            return tab != null && tab.isUserInteractable() && !tab.isNativePage();
         }
 
         private int calculateContributedHeight() {
