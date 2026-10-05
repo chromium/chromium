@@ -11,7 +11,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,8 +41,7 @@ public class ItemDividerBase extends RecyclerView.ItemDecoration {
      * @param state The current state of RecyclerView.
      */
     @Override
-    public void onDraw(
-            @NonNull Canvas canvas, RecyclerView parent, @NonNull RecyclerView.State state) {
+    public void onDraw(Canvas canvas, RecyclerView parent, RecyclerView.State state) {
         assumeNonNull(parent.getAdapter());
         int itemCount = Objects.requireNonNull(parent.getAdapter()).getItemCount();
         for (int position = 0; position < parent.getChildCount(); position++) {

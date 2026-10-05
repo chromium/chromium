@@ -10,7 +10,6 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.ServiceWorkerController;
 import android.webkit.WebStorage;
 
-import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -89,14 +88,13 @@ public interface ProfileBoundaryInterface {
     @Deprecated
     void setOriginMatchedHeader(String headerName, String headerValue, Set<String> originRules);
 
-    void addOriginMatchedHeader(
-            @NonNull String name, @NonNull String value, @NonNull Set<String> rules);
+    void addOriginMatchedHeader(String name, String value, Set<String> rules);
 
     boolean hasOriginMatchedHeader(String headerName);
 
-    @NonNull /* List<OriginMatchedBoundaryInterface> */
-            List<InvocationHandler> getOriginMatchedHeaders(
-                    @Nullable String headerName, @Nullable String headerValue);
+    /* List<OriginMatchedBoundaryInterface> */
+    List<InvocationHandler> getOriginMatchedHeaders(
+            @Nullable String headerName, @Nullable String headerValue);
 
     /**
      * @deprecated Can be removed along with {@link
@@ -105,7 +103,7 @@ public interface ProfileBoundaryInterface {
     @Deprecated
     void clearOriginMatchedHeader(String headerName);
 
-    void clearOriginMatchedHeader(@NonNull String headerName, @Nullable String headerValue);
+    void clearOriginMatchedHeader(String headerName, @Nullable String headerValue);
 
     void clearAllOriginMatchedHeaders();
 
@@ -117,13 +115,13 @@ public interface ProfileBoundaryInterface {
      * <p>This method is non-blocking and does not force native Chromium startup. The request is
      * queued and executed once native initialization completes.
      */
-    void enqueuePreconnect(@NonNull String url);
+    void enqueuePreconnect(String url);
 
     void addQuicHints(Set<String> origins);
 
     /* HttpCacheBoundaryInterface */ InvocationHandler getHttpCache();
 
-    void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns);
+    void setCrossOriginIsolatedAllowList(Set<String> originPatterns);
 
-    @NonNull Set<String> getCrossOriginIsolatedAllowList();
+    Set<String> getCrossOriginIsolatedAllowList();
 }

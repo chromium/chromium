@@ -32,7 +32,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
@@ -1928,7 +1927,7 @@ public class PdfCoordinator
     }
 
     @Override
-    public void onUrlChanged(@NonNull String url) {
+    public void onUrlChanged(String url) {
         mUrl = url;
     }
 

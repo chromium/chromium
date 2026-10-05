@@ -829,10 +829,17 @@ class MarkImportsAsUsed<T extends @Nullable Object> {}
         self._check()
 
     @java("""
-class MarkImportsAsUsed<T extends @NonNull Object> {}
+import org.chromium.build.annotations.NullMarked;
+@NullMarked class MarkImportsAsUsed<T extends @NonNull Object> {}
 """)
     def test_NonNull(self):
         self._check('Values are @NonNull by default. Use @NonNull')
+
+    @java("""
+class MarkImportsAsUsed<T extends @NonNull Object> {}
+""")
+    def test_NonNull_NonNullMarked(self):
+        self._check()
 
 
 class _MockAffectedFile:

@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
@@ -276,7 +275,7 @@ public class NotificationWrapperCompatBuilder implements NotificationWrapperBuil
 
     @Override
     public NotificationWrapperBuilder setBigPictureStyle(
-            @NonNull Bitmap bigPicture, @Nullable CharSequence summaryText) {
+            Bitmap bigPicture, @Nullable CharSequence summaryText) {
         bigPicture = resizeBitmapByMemory(bigPicture, BIG_PICTURE_BITMAP_MAX_SIZE_IN_KB);
 
         NotificationCompat.BigPictureStyle style =

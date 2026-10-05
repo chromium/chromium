@@ -21,8 +21,7 @@ import java.util.function.Supplier;
 /** Utilities for interactions with Suppliers. */
 @NullMarked
 public class SupplierUtils {
-    @SuppressWarnings("NullAway") // Might be fixed by https://github.com/uber/NullAway/issues/1455
-    private static final Supplier<?> NULL_SUPPLIER = () -> null;
+    private static final Supplier<? extends @Nullable Object> NULL_SUPPLIER = () -> null;
 
     private static final Supplier<Boolean> TRUE_SUPPLIER = () -> true;
     private static final Supplier<Boolean> FALSE_SUPPLIER = () -> false;
@@ -121,7 +120,7 @@ public class SupplierUtils {
     }
 
     public static <T extends @Nullable Object> @NonNull T getOr(
-            @Nullable Supplier<T> sup, T value) {
+            @Nullable Supplier<T> sup, @NonNull T value) {
         T ret = sup == null ? null : sup.get();
         return ret == null ? value : ret;
     }

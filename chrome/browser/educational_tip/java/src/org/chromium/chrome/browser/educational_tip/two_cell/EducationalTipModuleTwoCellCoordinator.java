@@ -24,7 +24,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import org.chromium.base.CallbackController;
-import org.chromium.build.annotations.NonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
@@ -164,7 +163,6 @@ public class EducationalTipModuleTwoCellCoordinator implements ModuleProvider {
         }
     }
 
-    @NonNull
     private EducationalTipSetupListBottomSheetCoordinator
             getEducationalTipSetupListBottomSheetCoordinator() {
         Supplier<List<EducationalTipSetupListBottomSheetItem>> bottomSheetSupplier =

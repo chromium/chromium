@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -32,9 +31,9 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class MissingDeviceLockCoordinator {
     /** The {@link ModalDialogManager} which launches the Missing Device Lock dialog. */
-    private final @NonNull ModalDialogManager mModalDialogManager;
+    private final ModalDialogManager mModalDialogManager;
 
-    /**The {@link PropertyModel} of the underlying dialog where the view would be shown.*/
+    /** The {@link PropertyModel} of the underlying dialog where the view would be shown. */
     private final PropertyModel mModalDialogPropertyModel;
 
     private final MissingDeviceLockMediator mMediator;

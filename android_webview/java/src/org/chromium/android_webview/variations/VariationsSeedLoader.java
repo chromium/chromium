@@ -15,7 +15,6 @@ import android.os.RemoteException;
 import android.os.SystemClock;
 
 import androidx.annotation.GuardedBy;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -310,7 +309,6 @@ public class VariationsSeedLoader {
      * <p>This method should be posted to a background thread to ensure that other initialization
      * work can happen concurrently.
      */
-    @NonNull
     private SeedLoadResult loadSeedFile() {
         File newSeedFile = VariationsUtils.getNewSeedFile();
         File oldSeedFile = VariationsUtils.getSeedFile();

@@ -4,8 +4,6 @@
 
 package org.chromium.ui;
 
-import androidx.annotation.NonNull;
-
 import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
@@ -33,12 +31,12 @@ public final class BrowserControlsOffsetTagDefinitions {
     }
 
     @CalledByNative
-    public @NonNull BrowserControlsOffsetTags getTags() {
+    public BrowserControlsOffsetTags getTags() {
         return mTags;
     }
 
     @CalledByNative
-    public @NonNull BrowserControlsOffsetTagConstraints getConstraints() {
+    public BrowserControlsOffsetTagConstraints getConstraints() {
         return mConstraints;
     }
 

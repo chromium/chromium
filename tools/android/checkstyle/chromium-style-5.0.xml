@@ -297,13 +297,12 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
     </module>
-    <module name="RegexpSinglelineJava">
-      <property name="id" value="NoNonNull"/>
-      <property name="severity" value="warning"/>
-      <property name="format" value="@NonNull\b"/>
-      <property name="ignoreComments" value="true"/>
-      <property name="message" value="Values are @NonNull by default. Use @NonNull only in the context of nullable generic parameters (ignore if this is the case)." />
-    </module>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="NoNonNull"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="^\s*@NullMarked\s[\s\S]*@NonNull\s"/>
+    <property name="message" value="Values are @NonNull by default. Use @NonNull only in the context of nullable generic parameters (ignore if this is the case)." />
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>

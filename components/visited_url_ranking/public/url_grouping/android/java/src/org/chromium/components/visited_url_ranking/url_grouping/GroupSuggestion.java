@@ -4,8 +4,6 @@
 
 package org.chromium.components.visited_url_ranking.url_grouping;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -18,9 +16,9 @@ public class GroupSuggestion {
     public final int[] tabIds;
     public final int suggestionId;
     public final int suggestionReason;
-    public final @NonNull String suggestedName;
-    public final @NonNull String promoHeader;
-    public final @NonNull String promoContents;
+    public final String suggestedName;
+    public final String promoHeader;
+    public final String promoContents;
 
     public GroupSuggestion(
             int[] tabIds,

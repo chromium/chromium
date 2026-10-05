@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.pdf;
 import android.net.Uri;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -56,7 +54,7 @@ public interface PdfCoordinatorInterface {
      *
      * @param url The new URL.
      */
-    void onUrlChanged(@NonNull String url);
+    void onUrlChanged(String url);
 
     /** Build structured data including content uri and grant permission. */
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile);
