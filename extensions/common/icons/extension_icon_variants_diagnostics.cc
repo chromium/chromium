@@ -45,13 +45,6 @@ constexpr Diagnostic diagnostics[] = {
     },
     {
         Feature::kIconVariants,
-        Id::kIconVariantSizeInvalid,
-        Surface::kManifest,
-        Severity::kWarning,
-        "Icon variant `color_scheme` is not valid.",
-    },
-    {
-        Feature::kIconVariants,
         Id::kIconVariantsInvalid,
         Surface::kManifest,
         Severity::kWarning,
