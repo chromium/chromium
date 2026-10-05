@@ -192,7 +192,11 @@ class StreamingWebSocketClientTest : public ::testing::Test {
                 TRAFFIC_ANNOTATION_FOR_TESTS,
                 &delegate_) {}
 
-  TestConnection CompleteHandshake() {
+  // Completes the handshake for the pending connection. If
+  // `client_to_server_capacity` is non-zero, the pipe the client writes into
+  // is created with that capacity in bytes instead of the default, which
+  // forces the client to write large messages in several pieces.
+  TestConnection CompleteHandshake(uint32_t client_to_server_capacity = 0) {
     EXPECT_TRUE(network_context_.create_called);
     EXPECT_TRUE(network_context_.pending_handshake_client.is_valid());
 
@@ -208,9 +212,20 @@ class StreamingWebSocketClientTest : public ::testing::Test {
              MOJO_RESULT_OK);
 
     mojo::ScopedDataPipeProducerHandle writable_producer;
-    CHECK_EQ(mojo::CreateDataPipe(nullptr, writable_producer,
-                                  conn.client_to_server_consumer),
-             MOJO_RESULT_OK);
+    if (client_to_server_capacity == 0) {
+      CHECK_EQ(mojo::CreateDataPipe(nullptr, writable_producer,
+                                    conn.client_to_server_consumer),
+               MOJO_RESULT_OK);
+    } else {
+      MojoCreateDataPipeOptions options{};
+      options.struct_size = sizeof(options);
+      options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+      options.element_num_bytes = 1;
+      options.capacity_num_bytes = client_to_server_capacity;
+      CHECK_EQ(mojo::CreateDataPipe(&options, writable_producer,
+                                    conn.client_to_server_consumer),
+               MOJO_RESULT_OK);
+    }
 
     handshake_client->OnConnectionEstablished(
         conn.websocket_receiver->BindNewPipeAndPassRemote(),
@@ -224,6 +239,28 @@ class StreamingWebSocketClientTest : public ::testing::Test {
                                                                           3}) {
     client_.Send(std::move(initial_data));
     return CompleteHandshake();
+  }
+
+  // Reads from `consumer` until `expected_size` bytes have been received,
+  // letting the client refill the pipe in between reads.
+  std::vector<uint8_t> DrainPipe(mojo::ScopedDataPipeConsumerHandle& consumer,
+                                 size_t expected_size) {
+    std::vector<uint8_t> received;
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      std::vector<uint8_t> chunk(expected_size - received.size());
+      size_t bytes_read = 0;
+      MojoResult result = consumer->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                             base::span(chunk), bytes_read);
+      if (result == MOJO_RESULT_OK) {
+        received.insert(received.end(), chunk.begin(),
+                        chunk.begin() + bytes_read);
+      } else if (result != MOJO_RESULT_SHOULD_WAIT) {
+        ADD_FAILURE() << "Unexpected read result: " << result;
+        return true;
+      }
+      return received.size() == expected_size;
+    }));
+    return received;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -465,6 +502,60 @@ TEST_F(StreamingWebSocketClientTest, PreConnectionQueueing) {
             MOJO_RESULT_OK);
   EXPECT_EQ(bytes_read, expected_combined.size());
   EXPECT_EQ(read_buffer, expected_combined);
+}
+
+TEST_F(StreamingWebSocketClientTest, MessageLargerThanPipeIsWrittenInPieces) {
+  constexpr uint32_t kPipeCapacity = 16;
+  std::vector<uint8_t> payload(kPipeCapacity * 5);
+  for (size_t i = 0; i < payload.size(); ++i) {
+    payload[i] = static_cast<uint8_t>(i);
+  }
+
+  client_.Send(payload);
+  auto conn = CompleteHandshake(kPipeCapacity);
+
+  // One frame is announced for the whole message even though the bytes are
+  // written in several pieces.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return conn.fake_websocket->sent_messages.size() == 1u; }));
+  EXPECT_EQ(conn.fake_websocket->sent_messages[0].data_length, payload.size());
+
+  EXPECT_EQ(DrainPipe(conn.client_to_server_consumer, payload.size()), payload);
+  EXPECT_FALSE(delegate_.error_message.has_value());
+}
+
+TEST_F(StreamingWebSocketClientTest,
+       MessagesQueuedBehindPartialWriteKeepOrder) {
+  constexpr uint32_t kPipeCapacity = 8;
+  std::vector<uint8_t> first(kPipeCapacity * 3, 0xAA);
+  std::vector<uint8_t> second = {1, 2, 3};
+  std::vector<uint8_t> third(kPipeCapacity * 2, 0xBB);
+
+  // `first` is flushed when the handshake completes but only partially fits
+  // in the pipe. The handshake is delivered asynchronously, so wait until the
+  // frame has been announced, which means the client is open and `first` is
+  // stuck in the pipe.
+  client_.Send(first);
+  auto conn = CompleteHandshake(kPipeCapacity);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return conn.fake_websocket->sent_messages.size() == 1u; }));
+
+  // Sent while `first` is still stuck in the pipe; they must not interleave.
+  client_.Send(second);
+  client_.Send(third);
+
+  std::vector<uint8_t> expected;
+  expected.insert(expected.end(), first.begin(), first.end());
+  expected.insert(expected.end(), second.begin(), second.end());
+  expected.insert(expected.end(), third.begin(), third.end());
+  EXPECT_EQ(DrainPipe(conn.client_to_server_consumer, expected.size()),
+            expected);
+
+  ASSERT_EQ(conn.fake_websocket->sent_messages.size(), 3u);
+  EXPECT_EQ(conn.fake_websocket->sent_messages[0].data_length, first.size());
+  EXPECT_EQ(conn.fake_websocket->sent_messages[1].data_length, second.size());
+  EXPECT_EQ(conn.fake_websocket->sent_messages[2].data_length, third.size());
+  EXPECT_FALSE(delegate_.error_message.has_value());
 }
 
 TEST_F(StreamingWebSocketClientTest, MojoPipeDisconnect) {

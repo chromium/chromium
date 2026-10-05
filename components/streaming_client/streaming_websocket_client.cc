@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -46,7 +47,8 @@ StreamingWebSocketClient::StreamingWebSocketClient(
       network_context_getter_(std::move(network_context_getter)),
       traffic_annotation_(traffic_annotation),
       delegate_(delegate),
-      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
+      readable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
+      writable_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL) {}
 
 StreamingWebSocketClient::~StreamingWebSocketClient() = default;
 
@@ -59,15 +61,22 @@ void StreamingWebSocketClient::Send(std::vector<uint8_t> request) {
     return;
   }
 
-  if (state_ != State::kOpen) {
-    pending_write_data_.push(std::move(request));
-    if (state_ == State::kInitialized) {
-      Connect();
-    }
+  // Always queue: a previous message may still be partially written, in which
+  // case this one must wait its turn to keep message framing intact.
+  pending_write_data_.push(std::move(request));
+
+  if (state_ == State::kInitialized) {
+    Connect();
     return;
   }
 
-  InternalWrite(request);
+  // Only start a drain if nothing was already queued. Otherwise the head
+  // message is partially written and `writable_watcher_` is armed, so it will
+  // continue draining the queue (including this message) once the pipe has
+  // room.
+  if (state_ == State::kOpen && pending_write_data_.size() == 1) {
+    WriteToDataPipe(MOJO_RESULT_OK, mojo::HandleSignalsState());
+  }
 }
 
 void StreamingWebSocketClient::Close() {
@@ -136,16 +145,54 @@ void StreamingWebSocketClient::Connect() {
       /*target_network=*/std::nullopt);
 }
 
-void StreamingWebSocketClient::InternalWrite(base::span<const uint8_t> data) {
+void StreamingWebSocketClient::WriteToDataPipe(
+    MojoResult result,
+    const mojo::HandleSignalsState& state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_ == State::kOpen);
 
-  // Use the BINARY message type because the message is a binary-encoded
-  // protobuf. The TEXT message type would be used for JSON.
-  websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
-                          data.size());
-  MojoResult result = writable_->WriteAllData(data);
   if (result != MOJO_RESULT_OK) {
     OnError("Failed to write to WebSocket.");
+    return;
+  }
+
+  while (!pending_write_data_.empty()) {
+    const std::vector<uint8_t>& message = pending_write_data_.front();
+    if (!head_message_announced_) {
+      // Use the BINARY message type because the message is a binary-encoded
+      // protobuf. The TEXT message type would be used for JSON. The network
+      // service reads exactly `message.size()` bytes from the pipe for this
+      // frame, so the remainder of the message may be written in pieces as
+      // the pipe drains.
+      websocket_->SendMessage(network::mojom::WebSocketMessageType::BINARY,
+                              message.size());
+      head_message_announced_ = true;
+    }
+
+    size_t bytes_written = 0;
+    const MojoResult write_result =
+        writable_->WriteData(base::span(message).subspan(current_write_offset_),
+                             MOJO_WRITE_DATA_FLAG_NONE, bytes_written);
+    if (write_result == MOJO_RESULT_SHOULD_WAIT) {
+      // The pipe is full. Resume from `current_write_offset_` once the
+      // consumer has made room.
+      writable_watcher_.ArmOrNotify();
+      return;
+    }
+    if (write_result != MOJO_RESULT_OK) {
+      OnError("Failed to write to WebSocket.");
+      return;
+    }
+
+    current_write_offset_ += bytes_written;
+    if (current_write_offset_ < message.size()) {
+      writable_watcher_.ArmOrNotify();
+      return;
+    }
+
+    pending_write_data_.pop();
+    current_write_offset_ = 0;
+    head_message_announced_ = false;
   }
 }
 
@@ -183,6 +230,14 @@ void StreamingWebSocketClient::OnConnectionEstablished(
                                    base::Unretained(this))),
            MOJO_RESULT_OK);
   writable_ = std::move(writable);
+  // base::Unretained(this) is safe because writable_watcher_ is owned by
+  // `this`.
+  CHECK_EQ(writable_watcher_.Watch(
+               writable_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+               MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+               base::BindRepeating(&StreamingWebSocketClient::WriteToDataPipe,
+                                   base::Unretained(this))),
+           MOJO_RESULT_OK);
   client_receiver_.Bind(std::move(client_receiver));
 
   // `handshake_receiver_` will disconnect soon. In order to catch network
@@ -198,14 +253,9 @@ void StreamingWebSocketClient::OnConnectionEstablished(
   state_ = State::kOpen;
   connection_open_time_ = base::TimeTicks::Now();
 
-  while (!pending_write_data_.empty()) {
-    InternalWrite(pending_write_data_.front());
-    // Writing might fail which will close the socket.
-    if (state_ != State::kOpen) {
-      return;
-    }
-    pending_write_data_.pop();
-  }
+  // Flush messages queued before the connection opened. Writing might fail
+  // which will close the socket.
+  WriteToDataPipe(MOJO_RESULT_OK, mojo::HandleSignalsState());
 
   if (state_ == State::kOpen) {
     delegate_->OnConnected();
@@ -307,10 +357,13 @@ void StreamingWebSocketClient::ClosePipe() {
   websocket_.reset();
   readable_watcher_.Cancel();
   readable_.reset();
+  writable_watcher_.Cancel();
   writable_.reset();
   client_receiver_.reset();
   handshake_receiver_.reset();
   pending_write_data_ = {};
+  current_write_offset_ = 0;
+  head_message_announced_ = false;
   pending_read_data_index_ = 0;
   pending_read_finished_ = false;
   pending_read_data_.clear();

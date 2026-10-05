@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -106,7 +105,11 @@ class StreamingWebSocketClient
     kDisconnected,
   };
 
-  void InternalWrite(base::span<const uint8_t> data);
+  // Drains `pending_write_data_` into `writable_` for as long as the pipe
+  // accepts data. Invoked directly and by `writable_watcher_` once the pipe
+  // becomes writable again after a partial write.
+  void WriteToDataPipe(MojoResult result,
+                       const mojo::HandleSignalsState& state);
   void ReadFromDataPipe(MojoResult result,
                         const mojo::HandleSignalsState& state);
   void ProcessCompletedResponse();
@@ -148,6 +151,13 @@ class StreamingWebSocketClient
   bool pending_read_finished_ = false;
 
   std::queue<std::vector<uint8_t>> pending_write_data_;
+  // Number of bytes of `pending_write_data_.front()` already written to
+  // `writable_`. Non-zero only while a message is partially written.
+  size_t current_write_offset_ = 0;
+  // Whether SendMessage() has been issued for `pending_write_data_.front()`.
+  // Tracked separately from the offset because a full pipe can leave the
+  // offset at zero after the frame was already announced.
+  bool head_message_announced_ = false;
 
   mojo::Receiver<network::mojom::WebSocketHandshakeClient> handshake_receiver_{
       this};
@@ -156,6 +166,7 @@ class StreamingWebSocketClient
   mojo::ScopedDataPipeConsumerHandle readable_;
   mojo::SimpleWatcher readable_watcher_;
   mojo::ScopedDataPipeProducerHandle writable_;
+  mojo::SimpleWatcher writable_watcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
