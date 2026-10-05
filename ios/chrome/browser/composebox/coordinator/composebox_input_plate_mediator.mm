@@ -1008,6 +1008,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                                           kComposeboxInputItemTypeImage
                               assetID:assetID
                                source:source];
+  item.uploadIndex = _imageUploadCount++;
   [self addItem:item];
   item.imageProvider = itemProvider;
   __block base::UnguessableToken identifier = item.identifier;
@@ -1502,6 +1503,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       [self removeItem:item];
     }
   }
+  _imageUploadCount = 0;
 }
 
 // Sends a Cobrowse text followup.
@@ -2458,6 +2460,9 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     }
   }
   [_items removeItems:invalidatedItems];
+  if (mode == ComposeboxMode::kRegularSearch) {
+    _imageUploadCount = 0;
+  }
 
   if (invalidatedItems.count > 0) {
     [self notifyContextChanged];

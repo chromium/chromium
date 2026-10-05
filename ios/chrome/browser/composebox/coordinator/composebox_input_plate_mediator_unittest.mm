@@ -1654,4 +1654,40 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(consumer.items.firstObject.serverToken, expected_server_token);
 }
 
+// Test that adding image items assigns sequential `uploadIndex` values, and
+// removing an earlier image does not reuse its index for subsequent images.
+TEST_F(ComposeboxInputPlateMediatorTest, ImageAttachmentUploadIndex) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+
+  UIImage* image = [[UIImage alloc] init];
+  NSItemProvider* provider = [[NSItemProvider alloc] initWithObject:image];
+
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"1"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"2"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  ASSERT_EQ(consumer_.items.count, 2U);
+  EXPECT_EQ(consumer_.items[0].uploadIndex, 0);
+  EXPECT_EQ(consumer_.items[1].uploadIndex, 1);
+
+  [mediator_ removeItem:consumer_.items[0]];
+  ASSERT_EQ(consumer_.items.count, 1U);
+  EXPECT_EQ(consumer_.items[0].uploadIndex, 1);
+
+  [mediator_
+      processImageItemProvider:provider
+                       assetID:@"3"
+                        source:ComposeboxInputItemSource::kGalleryPicker];
+
+  ASSERT_EQ(consumer_.items.count, 2U);
+  EXPECT_EQ(consumer_.items[0].uploadIndex, 1);
+  EXPECT_EQ(consumer_.items[1].uploadIndex, 2);
+}
+
 }  // namespace
