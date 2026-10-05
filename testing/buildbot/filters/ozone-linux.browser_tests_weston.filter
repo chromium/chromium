@@ -15,6 +15,10 @@
 -PreservedWindowPlacement.Test
 -ProfileHelperTest.OpenNewWindowForProfile
 
+# TODO(b/569815188): Times out because the test relies on programmatic window
+# re-activation (BrowserWindow::Activate()).
+-PageContextMonitorBrowserTest.SwitchingBrowserWindowsAndClosingAllWindows
+
 # Screen capture on Wayland is tricky.
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/Standard_Accept
 -All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/Standard_Accept
