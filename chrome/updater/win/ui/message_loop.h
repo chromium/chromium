@@ -9,6 +9,8 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace updater::ui {
 
 // A message filter is given the chance to handle every Win32 message pulled
@@ -47,7 +49,7 @@ class MessageLoop {
   // them claimed the message.
   bool RunFilters(MSG* msg);
 
-  std::vector<MessageFilter*> filters_;
+  std::vector<raw_ptr<MessageFilter>> filters_;
 
   // Non-zero while `RunFilters` is iterating `filters_`. When non-zero,
   // `RemoveMessageFilter` nulls slots in place instead of erasing them so
