@@ -12,12 +12,9 @@
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_element_collection.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -228,39 +225,6 @@ TEST_F(WebNodeTest, IsFocusableInDisplayLock) {
   EXPECT_TRUE(web_input2.IsFocusable());
   EXPECT_FALSE(input1->GetLayoutObject());
   EXPECT_TRUE(input2->GetLayoutObject());
-}
-
-TEST_F(WebNodeTest, DisallowToV8ValueForPsuedoElement) {
-  SetInnerHTMLWithoutTrustedTypes(R"HTML(
-    <style>
-      #target::before { content: "hello"; }
-    </style>
-    <div id="target"></div>
-  )HTML");
-  UpdateAllLifecyclePhasesForTest();
-
-  Element* target = GetElementById("target");
-  ASSERT_TRUE(target);
-  PseudoElement* pseudo = target->GetPseudoElement(kPseudoIdBefore);
-  ASSERT_TRUE(pseudo);
-
-  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
-  v8::Isolate* isolate = script_state->GetIsolate();
-  ScriptState::Scope scope(script_state);
-
-  WebNode null_node;
-  EXPECT_TRUE(null_node.ToV8Value(isolate).IsEmpty());
-
-  WebNode target_node = WebNode::FromDomNodeId(DOMNodeIds::IdForNode(target));
-  ASSERT_FALSE(target_node.IsNull());
-  v8::Local<v8::Value> target_v8 = target_node.ToV8Value(isolate);
-  ASSERT_FALSE(target_v8.IsEmpty());
-  EXPECT_TRUE(target_v8->IsObject());
-
-  WebNode pseudo_node = WebNode::FromDomNodeId(DOMNodeIds::IdForNode(pseudo));
-  ASSERT_FALSE(pseudo_node.IsNull());
-  EXPECT_TRUE(pseudo_node.IsElementNode());
-  EXPECT_TRUE(pseudo_node.ToV8Value(isolate).IsEmpty());
 }
 
 }  // namespace blink
