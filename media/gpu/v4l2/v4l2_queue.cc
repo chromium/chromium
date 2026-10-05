@@ -13,6 +13,7 @@
 #include <sys/mman.h>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
@@ -194,7 +195,7 @@ class V4L2Buffer {
 
   const IoctlAsCallback ioctl_cb_;
   const MmapAsCallback mmap_cb_;
-  std::vector<void*> plane_mappings_;
+  std::vector<raw_ptr<void>> plane_mappings_;
 
   // V4L2 data as queried by QUERYBUF.
   struct v4l2_buffer v4l2_buffer_ = {};
