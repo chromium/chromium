@@ -740,6 +740,16 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2140268492" label="CSS.startRuleUsageTracking"/>
 </enum>
 
+<!-- LINT.IfChange(DeveloperToolsAvailability) -->
+
+<enum name="DeveloperToolsAvailability">
+  <int value="0" label="DisallowedForForceInstalledExtensions (default)"/>
+  <int value="1" label="Allowed"/>
+  <int value="2" label="Disallowed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/policy/core/browser/developer_tools_availability.h:DeveloperToolsAvailability) -->
+
 <enum name="DevToolsAction">
   <int value="1" label="Window docked"/>
   <int value="2" label="Window undocked"/>

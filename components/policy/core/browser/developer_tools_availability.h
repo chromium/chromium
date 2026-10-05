@@ -9,6 +9,9 @@ namespace policy {
 
 // Developer tools availability as set by policy. The values must match the
 // 'DeveloperToolsAvailability' policy definition.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(DeveloperToolsAvailability)
 enum class DeveloperToolsAvailability {
   // Default: Developer tools are allowed, except for policy-installed
   // extensions and, if this is a managed profile, component extensions.
@@ -20,6 +23,7 @@ enum class DeveloperToolsAvailability {
   // Maximal valid value for range checking.
   kMaxValue = kDisallowed
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/dev/enums.xml:DeveloperToolsAvailability)
 
 }  // namespace policy
 
