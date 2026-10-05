@@ -3840,6 +3840,7 @@ test("ash_unittests") {
     "frame/caption_buttons/frame_size_button_unittest.cc",
     "frame/default_frame_header_unittest.cc",
     "frame/frame_view_ash_unittest.cc",
+    "frame/highlight_border_overlay_unittest.cc",
     "frame/multitask_menu_nudge_controller_unittest.cc",
     "frame_sink/frame_sink_holder_unittest.cc",
     "frame_sink/frame_sink_host_unittest.cc",

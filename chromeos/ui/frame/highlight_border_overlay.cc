@@ -210,8 +210,8 @@ void HighlightBorderOverlay::UpdateLayerVisibilityAndBounds() {
 
   const bool show_border_in_tablet_mode =
       in_tablet_mode &&
-      window_state_type == chromeos::WindowStateType::kFloated &&
-      window_state_type == chromeos::WindowStateType::kPip;
+      (window_state_type == chromeos::WindowStateType::kFloated ||
+       window_state_type == chromeos::WindowStateType::kPip);
   const bool show_border_in_clamshell_mode =
       !in_tablet_mode &&
       window_state_type != chromeos::WindowStateType::kFullscreen;
