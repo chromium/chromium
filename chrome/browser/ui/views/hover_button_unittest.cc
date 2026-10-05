@@ -42,13 +42,13 @@ namespace {
 constexpr int kButtonWidth = 150;
 
 struct TitleSubtitlePair {
-  const std::u16string title;
-  const std::u16string subtitle;
+  const char16_t* title;
+  const char16_t* subtitle;
   // Whether the HoverButton is expected to have a tooltip for this text.
   bool tooltip;
 };
 
-const std::array<TitleSubtitlePair, 4> kTitleSubtitlePairs{
+constexpr std::array<TitleSubtitlePair, 4> kTitleSubtitlePairs{
     // Two short strings that will fit in the space given.
     {
         {u"Clap!", u"Clap!", false},

@@ -2017,3 +2017,69 @@ if (!is_chromeos_device) {
     }
   }
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bubble_anchor_util_views_unittest.cc",
+    "confirm_bubble_views_unittest.cc",
+    "content_setting_bubble_contents_unittest.cc",
+    "content_setting_site_row_view_unittest.cc",
+    "device_chooser_content_view_unittest.cc",
+    "hover_button_unittest.cc",
+    "intent_picker_bubble_view_unittest.cc",
+    "layout_provider_unittest.cc",
+    "task_manager_search_bar_view_unittest.cc",
+  ]
+  deps = [
+    ":bubble_anchor_util_views",
+    ":chrome_constrained_window_views_client",
+    ":confirm_bubble",
+    ":content_setting_bubble_contents",
+    ":content_setting_site_row_view",
+    ":device_chooser_content_view",
+    ":intent_picker_bubble_view",
+    ":layout_provider",
+    ":task_manager_search_bar_view",
+    "//base/test:test_support",
+    "//chrome/browser/apps/link_capturing:test_support",
+    "//chrome/browser/ui:confirm_bubble",
+    "//chrome/browser/ui/test:confirm_bubble",
+    "//chrome/browser/ui/views/controls",
+    "//chrome/browser/web_applications:features",
+    "//chrome/test/base:testing_profile",
+    "//chrome/test/views",
+    "//components/permissions:test_support",
+    "//components/user_education/views",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/events:test_support",
+    "//ui/views:test_support",
+  ]
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
+      "//ui/strings:app_locale_settings",
+      "//ui/strings:ui_strings",
+    ]
+  }
+  if (is_linux) {
+    sources += [ "eula_dialog_linux_unittest.cc" ]
+    deps += [
+      ":eula_dialog_linux",
+      "//chrome/browser/first_run",
+    ]
+  }
+  if (use_nss_certs && use_aura) {
+    sources += [ "crypto_module_password_dialog_view_unittest.cc" ]
+    deps += [ ":crypto_module_password_dialog_view" ]
+  }
+  if (is_win) {
+    sources += [ "uninstall_view_unittest.cc" ]
+    deps += [
+      ":uninstall_browser_prompt",
+      "//chrome/common:constants",
+    ]
+  }
+}

@@ -5365,7 +5365,6 @@ test("unit_tests") {
   if (is_win) {
     assert(toolkit_views)
     sources += [
-      "../browser/ui/views/uninstall_view_unittest.cc",
       "../common/win/delay_load_failure_hook_unittest.cc",
       "../common/win/delay_load_notify_hook_unittest.cc",
     ]
@@ -5388,11 +5387,9 @@ test("unit_tests") {
       "//chrome/browser/os_crypt",
       "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
-      "//chrome/browser/ui:uninstall_browser_prompt",
       "//chrome/browser/ui:view_ids",
       "//chrome/browser/ui/search_promotion:unit_tests",
       "//chrome/browser/ui/views:critical_notification_bubble_view",
-      "//chrome/browser/ui/views:uninstall_browser_prompt",
       "//chrome/browser/ui/views/frame:windows_caption_button",
       "//chrome/browser/ui/webui/version:unit_tests",
       "//chrome/browser/win:chrome_process_finder",
@@ -5978,11 +5975,7 @@ test("unit_tests") {
       data_deps += [ "//chrome:packed_resources" ]
     }
     if (is_linux) {
-      sources += [ "../browser/ui/views/eula_dialog_linux_unittest.cc" ]
-      deps += [
-        "//chrome/browser/ui/views:eula_dialog_linux",
-        "//ui/linux:linux_ui_factory",
-      ]
+      deps += [ "//ui/linux:linux_ui_factory" ]
     }
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
@@ -6974,14 +6967,11 @@ test("unit_tests") {
       "//chrome/browser/ui/toolbar:unit_tests",
       "//chrome/browser/ui/toolbar/cast",
       "//chrome/browser/ui/views",
-      "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views:chrome_constrained_window_views_client",
-      "//chrome/browser/ui/views:confirm_bubble",
       "//chrome/browser/ui/views:content_setting_site_row_view",
-      "//chrome/browser/ui/views:device_chooser_content_view",
-      "//chrome/browser/ui/views:intent_picker_bubble_view",
       "//chrome/browser/ui/views:layout_provider",
       "//chrome/browser/ui/views:tab_icon_view",
+      "//chrome/browser/ui/views:unit_tests",
       "//chrome/browser/ui/views/apps/app_info_dialog:unit_tests",
       "//chrome/browser/ui/views/autofill/payments:dialog_view_ids",
       "//chrome/browser/ui/views/autofill/payments:save_and_fill_dialog",
@@ -7094,18 +7084,9 @@ test("unit_tests") {
       "../browser/ui/views/bubble/webui_bubble_dialog_view_unittest.cc",
       "../browser/ui/views/bubble/webui_bubble_manager_unittest.cc",
       "../browser/ui/views/bubble/webui_bubble_reopen_suppressor_unittest.cc",
-      "../browser/ui/views/bubble_anchor_util_views_unittest.cc",
-      "../browser/ui/views/confirm_bubble_views_unittest.cc",
-      "../browser/ui/views/content_setting_bubble_contents_unittest.cc",
-      "../browser/ui/views/content_setting_site_row_view_unittest.cc",
-      "../browser/ui/views/device_chooser_content_view_unittest.cc",
       "../browser/ui/views/hats/hats_next_web_dialog_unittest.cc",
-      "../browser/ui/views/hover_button_unittest.cc",
-      "../browser/ui/views/intent_picker_bubble_view_unittest.cc",
-      "../browser/ui/views/layout_provider_unittest.cc",
       "../browser/ui/views/location_bar/selected_keyword_view_unittest.cc",
       "../browser/ui/views/location_bar/webui_location_bar_unittest.cc",
-      "../browser/ui/views/task_manager_search_bar_view_unittest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/callback_delayer_unittest.cc",
       "../browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller_unittest.cc",
     ]
@@ -7120,8 +7101,6 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_list_bridge",
-      "//chrome/browser/ui/views:content_setting_bubble_contents",
-      "//chrome/browser/ui/views:task_manager_search_bar_view",
       "//chrome/browser/ui/views/extensions:unit_tests",
       "//chrome/browser/ui/views/frame:web_contents_close_handler",
       "//chrome/browser/ui/views/profiles:unit_tests",
@@ -7156,13 +7135,6 @@ test("unit_tests") {
         "//ui/views:test_support",
         "//ui/wm",
       ]
-      if (use_nss_certs) {
-        sources += [
-          "../browser/ui/views/crypto_module_password_dialog_view_unittest.cc",
-        ]
-        deps +=
-            [ "//chrome/browser/ui/views:crypto_module_password_dialog_view" ]
-      }
     }
   }
   if (!is_android && use_nss_certs) {
