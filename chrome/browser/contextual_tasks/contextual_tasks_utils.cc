@@ -351,6 +351,15 @@ CaptureAndUploadTabContext(
           return;
         }
         if (delay_upload) {
+          // TODO(crbug.com/568013317): Track delayed tabs in the session
+          // handle and upload them at submit via QueryContextualizer instead
+          // of handing a snapshot to `on_snapshot`.
+          if (page_content_data->tab_session_id.has_value()) {
+            session_handle->AddDelayedTabContext(
+                context_token, page_content_data->tab_session_id->id(),
+                page_content_data->page_url.value_or(GURL()),
+                page_content_data->page_title.value_or(""));
+          }
           if (on_snapshot) {
             std::move(on_snapshot)
                 .Run(context_token, std::move(page_content_data));

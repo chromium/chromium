@@ -2380,6 +2380,12 @@ void ContextualSearchboxHandler::SnapshotTabContext(
         contextual_session_handle->GetUploadedContextFileInfos().size() > 0
             ? std::nullopt
             : std::optional(*page_content_data);
+    if (page_content_data->tab_session_id.has_value()) {
+      contextual_session_handle->AddDelayedTabContext(
+          context_token, page_content_data->tab_session_id->id(),
+          page_content_data->page_url.value_or(GURL()),
+          page_content_data->page_title.value_or(""));
+    }
   }
   tab_context_snapshot_.emplace(context_token, std::move(page_content_data));
 
