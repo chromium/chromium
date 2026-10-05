@@ -9,7 +9,6 @@
 #import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_custom_ui_view_controller.h"
 #import "ios/chrome/browser/backend_promo/ui_bundled/backend_promo_user_action.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface BackendPromoCustomUICoordinator () <ConfirmationAlertActionHandler>
@@ -33,13 +32,6 @@
 }
 
 - (void)start {
-  if (!IsIOSBackendPromoCustomUIEnabled()) {
-    [self.delegate
-        backendPromoCustomUICoordinator:self
-                   didDismissWithAction:BackendPromoUserActionCancelled];
-    return;
-  }
-
   _viewController =
       [BackendPromoCustomUIViewController viewControllerWithParams:_params
                                                      actionHandler:self];

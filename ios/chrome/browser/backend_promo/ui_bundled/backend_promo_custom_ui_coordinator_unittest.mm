@@ -455,28 +455,3 @@ TEST_F(BackendPromoCustomUICoordinatorTest,
 
   [coordinator stop];
 }
-
-// Tests that coordinator start does not present view controller when feature is
-// disabled, and notifies delegate to stop coordinator.
-TEST_F(BackendPromoCustomUICoordinatorTest, TestStartWhenFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(kIOSBackendPromoCustomUI);
-
-  BackendPromoCustomUIParams* params =
-      [[BackendPromoCustomUIParams alloc] init];
-  params.title = @"Test Title";
-  params.body = @"Test Body";
-
-  BackendPromoCustomUICoordinator* coordinator =
-      [[BackendPromoCustomUICoordinator alloc]
-          initWithBaseViewController:base_view_controller_
-                             browser:browser_.get()
-                              params:params];
-  coordinator.delegate = delegate_;
-
-  [coordinator start];
-
-  EXPECT_EQ(base_view_controller_.presentedViewController, nil);
-  EXPECT_TRUE(delegate_.delegateCalled);
-  EXPECT_EQ(delegate_.userAction, BackendPromoUserActionCancelled);
-}
