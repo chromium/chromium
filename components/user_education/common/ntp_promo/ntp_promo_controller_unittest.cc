@@ -462,7 +462,39 @@ TEST_F(NtpPromoControllerTest, DismissedPromoPreventsOtherPromosInSameSession) {
   EXPECT_TRUE(ShowsPromo(kPromo2Id));
 }
 
-TEST_F(NtpPromoControllerTest, MaxShowTermsExhaustionCycle) {
+TEST_F(NtpPromoControllerTest, ImpressionCapsSinglePromo) {
+  RegisterPromo(kPromoId, kEligible);
+
+  auto params = GetNtpPromoControllerParams();
+  params.max_sessions_per_term = 3;
+  params.max_terms = 3;
+  params.cool_off_duration = base::Days(180);
+  CreateController(params);
+
+  for (int term = 0; term < params.max_terms; ++term) {
+    for (int session = 0; session < params.max_sessions_per_term; ++session) {
+      AdvanceSession();
+      EXPECT_TRUE(ShowsPromo(kPromoId));
+    }
+
+    // After finishing its term, the promo should not show in the next session
+    // because it is in its cool-off period.
+    AdvanceSession();
+    EXPECT_FALSE(ShowsAnyPromo());
+
+    // Advance time to satisfy the cool-off period so the next term can begin.
+    task_environment_.AdvanceClock(params.cool_off_duration);
+  }
+
+  // At this point, the promo has used up its term limit.
+  // Verify that advancing sessions and clearing the cool-off duration no longer
+  // allows it to show.
+  AdvanceSession();
+  task_environment_.AdvanceClock(params.cool_off_duration);
+  EXPECT_FALSE(ShowsAnyPromo());
+}
+
+TEST_F(NtpPromoControllerTest, ImpressionCapsMultiPromo) {
   // This test walks through two promos burning through their session and term
   // limits, to ensure that they both eventually become non-showable. Two promos
   // are used to verify the expected ordering between them.

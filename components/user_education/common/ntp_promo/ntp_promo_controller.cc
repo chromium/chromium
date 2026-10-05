@@ -229,9 +229,17 @@ void NtpPromoController::OnPromoShown(const NtpPromoIdentifier& id) {
   auto data = storage_service_->ReadNtpPromoData(id).value_or(NtpPromoData());
 
   if (data.last_session != current_session) {
-    // If this promo is reclaiming the top spot, or starting a new term, start
-    // a fresh count.
-    if (id != GetMostRecentTopSpotPromo()) {
+    // A promo starts a fresh term if:
+    // 1. It is taking over from another promo (or appearing for the first
+    // time).
+    // 2. Its cool-off duration has elapsed since the term began.
+    const bool is_reclaiming_top_spot = (id != GetMostRecentTopSpotPromo());
+    const bool is_cool_off_elapsed =
+        !data.term_start_time.is_null() &&
+        (storage_service_->GetCurrentTime() - data.term_start_time) >=
+            params_.cool_off_duration;
+
+    if (is_reclaiming_top_spot || is_cool_off_elapsed) {
       data.session_count_in_term = 0;
       data.term_count++;
       data.term_start_time = storage_service_->GetCurrentTime();
