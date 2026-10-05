@@ -2342,6 +2342,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Overlay.DisplayDuration" units="ms"
+    expires_after="2027-04-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Measures the duration for which the Glic loading or error overlay was
+    displayed to the user.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Overlay.DisplayDuration.{OverlayState}" units="ms"
+    expires_after="2027-04-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Measures the duration for which the Glic {OverlayState} overlay was
+    displayed to the user.
+  </summary>
+  <token key="OverlayState">
+    <variant name="DisabledByAdmin"
+        summary="disabled by administrator error panel"/>
+    <variant name="Error" summary="generic or timeout error panel"/>
+    <variant name="IneligibleAccount" summary="ineligible account error panel"/>
+    <variant name="Loading"
+        summary="loading skeleton that did not finish (e.g. was closed,
+                 hidden, or timed out)"/>
+    <variant name="LoadingAndCompleted"
+        summary="loading skeleton that finished and swapped into the ready
+                 guest"/>
+    <variant name="LocationMismatch" summary="location mismatch error panel"/>
+    <variant name="Offline" summary="offline error panel"/>
+    <variant name="SignIn" summary="sign-in error panel"/>
+    <variant name="Unavailable" summary="unavailable error panel"/>
+  </token>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.GetAnnotatedPageContent" units="ms"
     expires_after="2027-02-07">
   <owner>carlosk@chromium.org</owner>

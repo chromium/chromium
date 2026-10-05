@@ -249,6 +249,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   base::OneShotTimer& loading_timer_for_testing() { return loading_timer_; }
 
  private:
+  class Metrics;
   // Ensures that the overlay WebContents exists and returns it.
   content::WebContents* EnsureOverlayContents();
 
@@ -331,6 +332,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   raw_ptr<Profile> profile_;
   raw_ptr<GlicEnabling> enabling_ = nullptr;
   raw_ptr<Host> host_ = nullptr;
+  std::unique_ptr<Metrics> metrics_;
 
   // Lifecycle state of the guest WebContents.
   ObservableValue<GuestState> guest_state_{GuestState::kLoading};

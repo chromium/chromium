@@ -13928,6 +13928,51 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Overlay.IneligibleAccountHelpClicked">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicked the help button on the Glic overlay
+    ineligible account error panel.
+  </description>
+</action>
+
+<action name="Glic.Overlay.LocationMismatchHelpClicked">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicked the help button on the Glic overlay location
+    mismatch error panel.
+  </description>
+</action>
+
+<action name="Glic.Overlay.ProfilePickerClicked">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicked the switch profile button on the Glic overlay
+    unavailable error panel.
+  </description>
+</action>
+
+<action name="Glic.Overlay.RetryClicked">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicked the retry button on a Glic overlay error
+    panel.
+  </description>
+</action>
+
+<action name="Glic.Overlay.SignInClicked">
+  <owner>harringtond@chromium.org</owner>
+  <owner>glic+metrics@google.com</owner>
+  <description>
+    Recorded when the user clicked the sign-in button on the Glic overlay
+    sign-in error panel.
+  </description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

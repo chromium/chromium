@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/json/string_escape.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -186,7 +187,137 @@ bool IsTransientError(mojom::ErrorPanelType error_type) {
   }
 }
 
+const char* ErrorPanelTypeToHistogramSuffix(mojom::ErrorPanelType error_type) {
+  switch (error_type) {
+    case mojom::ErrorPanelType::kOffline:
+      return "Offline";
+    case mojom::ErrorPanelType::kError:
+      return "Error";
+    case mojom::ErrorPanelType::kUnavailable:
+      return "Unavailable";
+    case mojom::ErrorPanelType::kIneligibleAccount:
+      return "IneligibleAccount";
+    case mojom::ErrorPanelType::kDisabledByAdmin:
+    case mojom::ErrorPanelType::kDisabledByAdminWithLink:
+      return "DisabledByAdmin";
+    case mojom::ErrorPanelType::kSignIn:
+      return "SignIn";
+    case mojom::ErrorPanelType::kLocationMismatch:
+      return "LocationMismatch";
+  }
+}
+
 }  // namespace
+
+class GlicNoWebviewContentsManager::Metrics {
+ public:
+  void SetDisplayState(DisplayState prev_state,
+                       DisplayState next_state,
+                       std::optional<mojom::ErrorPanelType> active_error) {
+    base::TimeTicks now = base::TimeTicks::Now();
+
+    if (prev_state == DisplayState::kShowingOverlay) {
+      if (total_overlay_show_start_time_) {
+        base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration",
+                                      now - *total_overlay_show_start_time_,
+                                      base::Milliseconds(1), base::Seconds(60),
+                                      50);
+      }
+      if (next_state == DisplayState::kShowingGuest) {
+        if (loading_show_start_time_) {
+          base::UmaHistogramCustomTimes(
+              "Glic.Overlay.DisplayDuration.LoadingAndCompleted",
+              now - *loading_show_start_time_, base::Milliseconds(1),
+              base::Seconds(60), 50);
+        }
+      } else {
+        if (loading_show_start_time_) {
+          base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration.Loading",
+                                        now - *loading_show_start_time_,
+                                        base::Milliseconds(1),
+                                        base::Seconds(60), 50);
+        }
+        if (error_show_start_time_ && active_error_type_) {
+          base::UmaHistogramLongTimes(
+              base::StrCat(
+                  {"Glic.Overlay.DisplayDuration.",
+                   ErrorPanelTypeToHistogramSuffix(*active_error_type_)}),
+              now - *error_show_start_time_);
+        }
+      }
+    }
+
+    switch (next_state) {
+      case DisplayState::kWarming:
+      case DisplayState::kAttachedHidden:
+      case DisplayState::kShowingGuest:
+        total_overlay_show_start_time_.reset();
+        loading_show_start_time_.reset();
+        error_show_start_time_.reset();
+        active_error_type_.reset();
+        break;
+
+      case DisplayState::kShowingOverlay:
+        if (!total_overlay_show_start_time_) {
+          total_overlay_show_start_time_ = now;
+        }
+        if (active_error.has_value()) {
+          active_error_type_ = active_error;
+          error_show_start_time_ = now;
+          loading_show_start_time_.reset();
+        } else {
+          active_error_type_.reset();
+          loading_show_start_time_ = now;
+          error_show_start_time_.reset();
+        }
+        break;
+    }
+  }
+
+  void OnErrorChanged(std::optional<mojom::ErrorPanelType> new_error,
+                      bool is_visible) {
+    if (!is_visible) {
+      active_error_type_ = new_error;
+      error_show_start_time_.reset();
+      return;
+    }
+
+    base::TimeTicks now = base::TimeTicks::Now();
+
+    // If an error occurred while the loading overlay was displayed, the loading
+    // attempt did not finish.
+    if (new_error.has_value() && loading_show_start_time_) {
+      base::UmaHistogramCustomTimes("Glic.Overlay.DisplayDuration.Loading",
+                                    now - *loading_show_start_time_,
+                                    base::Milliseconds(1), base::Seconds(60),
+                                    50);
+      loading_show_start_time_.reset();
+    }
+
+    // If an error panel was displayed and is now cleared or changed:
+    if (active_error_type_.has_value() && error_show_start_time_) {
+      base::UmaHistogramLongTimes(
+          base::StrCat({"Glic.Overlay.DisplayDuration.",
+                        ErrorPanelTypeToHistogramSuffix(*active_error_type_)}),
+          now - *error_show_start_time_);
+      error_show_start_time_.reset();
+    }
+
+    active_error_type_ = new_error;
+    if (new_error.has_value()) {
+      error_show_start_time_ = now;
+      loading_show_start_time_.reset();
+    } else {
+      loading_show_start_time_ = now;
+    }
+  }
+
+ private:
+  std::optional<base::TimeTicks> total_overlay_show_start_time_;
+  std::optional<base::TimeTicks> loading_show_start_time_;
+  std::optional<base::TimeTicks> error_show_start_time_;
+  std::optional<mojom::ErrorPanelType> active_error_type_;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // GlicNoWebviewContentsManager::OverlayContentsManager:
@@ -403,6 +534,7 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::OnRetryClicked() {
+  base::RecordAction(base::UserMetricsAction("Glic.Overlay.RetryClicked"));
   if (owner_->host_) {
     // Asynchronously request reload on the host so that Mojo message dispatch
     // and caller promises complete before this manager is destroyed.
@@ -412,6 +544,7 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OnRetryClicked() {
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::OnSignInClicked() {
+  base::RecordAction(base::UserMetricsAction("Glic.Overlay.SignInClicked"));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   std::string email;
   if (identity_manager) {
@@ -430,6 +563,8 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OnSignInClicked() {
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
     OnProfilePickerClicked() {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Overlay.ProfilePickerClicked"));
   GlicProfileManager::GetInstance()->ShowProfilePicker();
 }
 
@@ -444,11 +579,15 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::OpenUrlAndClosePanel(
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
     OnIneligibleAccountHelpClicked() {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Overlay.IneligibleAccountHelpClicked"));
   OpenUrlAndClosePanel(GURL(features::kGlicIneligibleAccountHelpUrl.Get()));
 }
 
 void GlicNoWebviewContentsManager::OverlayContentsManager::
     OnLocationMismatchHelpClicked() {
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Overlay.LocationMismatchHelpClicked"));
   OpenUrlAndClosePanel(GURL(features::kGlicLocationMismatchHelpUrl.Get()));
 }
 
@@ -488,6 +627,7 @@ GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
     bool initially_hidden)
     : profile_(profile),
       enabling_(enabling),
+      metrics_(std::make_unique<Metrics>()),
       guest_state_{GuestState::kLoading},
       overlay_manager_(profile, this, guest_state_),
       privileged_guest_contents_(pwc::PrivilegedWebContents::Create(
@@ -844,6 +984,7 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
   if (state_ == next_state) {
     return;
   }
+  metrics_->SetDisplayState(state_, next_state, overlay_manager_.error_type());
   state_ = next_state;
 
   switch (state_) {
@@ -900,6 +1041,8 @@ void GlicNoWebviewContentsManager::SetErrorState(
     pending_client_load_error_ = reason;
   }
   overlay_manager_.SetError(error_type);
+  metrics_->OnErrorChanged(error_type, is_visible_);
+
   // An error occurred; transition to overlay if visible, or record for when
   // shown.
   UpdateDisplayState();
@@ -908,6 +1051,7 @@ void GlicNoWebviewContentsManager::SetErrorState(
 void GlicNoWebviewContentsManager::ClearErrorState() {
   pending_client_load_error_.reset();
   overlay_manager_.ClearError();
+  metrics_->OnErrorChanged(std::nullopt, is_visible_);
   UpdateDisplayState();
 }
 
