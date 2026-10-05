@@ -179,6 +179,23 @@ public class GroupedLayoutDelegateUnitTest {
     @Test
     public void testGetInsertionIndexOfTab() {
         createAndAddPropertyModel(TAB1_ID);
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        setupTabsInModel(mTab1, mTab2, mTab3);
+
+        int insertionIndex1 = mDelegate.getInsertionIndexOfTab(mTab1);
+        int insertionIndex2 = mDelegate.getInsertionIndexOfTab(mTab2);
+        int insertionIndex3 = mDelegate.getInsertionIndexOfTab(mTab3);
+
+        assertEquals(0, insertionIndex1);
+        assertEquals(TabList.INVALID_TAB_INDEX, insertionIndex2);
+        assertEquals(1, insertionIndex3);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_UI_REFACTOR)
+    public void testGetInsertionIndexOfTab_featureDisabled() {
+        createAndAddPropertyModel(TAB1_ID);
 
         when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
         setupRepresentativeTab(mTab1, mTab1, 0);
@@ -202,15 +219,13 @@ public class GroupedLayoutDelegateUnitTest {
 
         // Add a regular tab model card at index 1.
         createAndAddPropertyModel(TAB1_ID);
-
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
 
         int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab1);
 
         // Insertion index should be offset by 1 (due to archived card) and return 1.
         assertEquals(1, insertionIndex);
-        // Non-representative tab should return INVALID_TAB_INDEX even with an archived card.
+        // Non-present tab should return INVALID_TAB_INDEX even with an archived card.
         assertEquals(TabModel.INVALID_TAB_INDEX, mDelegate.getInsertionIndexOfTab(mTab2));
     }
 
@@ -222,8 +237,7 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testOnTabAdded_NewTab_Standalone() {
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
 
         int index = mDelegate.onTabAdded(mTab1);
 
@@ -232,10 +246,9 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testOnTabAdded_NewTabInGroup_RepresentativeTab() {
+    public void testOnTabAdded_NewTabInGroup_FirstTabInGroup() {
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
 
         int index = mDelegate.onTabAdded(mTab1);
 
@@ -244,10 +257,10 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testOnTabAdded_NewTabInGroup_NonRepresentativeTab() {
+    public void testOnTabAdded_NewTabInGroup_SubsequentTabInGroup() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab2, mTab1, 0);
+        setupTabsInModel(mTab1, mTab2);
 
         int index = mDelegate.onTabAdded(mTab2);
 
@@ -267,8 +280,7 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testDidAddTab_NormalLaunch() {
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
 
         mDelegate.didAddTab(mTab1, TabLaunchType.FROM_CHROME_UI);
 
@@ -309,8 +321,7 @@ public class GroupedLayoutDelegateUnitTest {
 
     @Test
     public void testTabClosureUndone_StandaloneTab() {
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
 
         mDelegate.tabClosureUndone(mTab1);
 
@@ -734,9 +745,7 @@ public class GroupedLayoutDelegateUnitTest {
         when(mTab1.getTabGroupId()).thenReturn(null);
         createAndAddPropertyModel(TAB1_ID);
         createAndAddPropertyModel(TAB2_ID);
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
-        setupRepresentativeTab(mTab2, mTab2, 0);
-        setupRepresentativeTab(mTab1, mTab1, 1);
+        setupTabsInModel(mTab2, mTab1);
 
         mDelegate.didMoveTab(mTab1, 1, 0);
 
@@ -862,8 +871,8 @@ public class GroupedLayoutDelegateUnitTest {
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
 
         when(mTabModel.getTabCountForGroup(null)).thenReturn(1);
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
-        setupRepresentativeTab(mTab1, mTab1, 1);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        setupTabsInModel(mTab2, mTab1);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab2));
 
         delegate.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
@@ -914,8 +923,7 @@ public class GroupedLayoutDelegateUnitTest {
     public void testDidMoveTabOutOfGroup_UngroupTab_AddsCard() {
         // When a tab is ungrouped, a new card must be added to the model because the TAB_GROUP
         // card will be deleted by didRemoveTabGroup.
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(1);
-        setupRepresentativeTab(mTab1, mTab1, 0);
+        setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTabModel.getTabCountForGroup(null)).thenReturn(0);
         when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of());
@@ -989,9 +997,7 @@ public class GroupedLayoutDelegateUnitTest {
                         .build();
         mModelList.add(new ListItem(TabProperties.UiType.TAB_GROUP, groupCardModel));
 
-        when(mTabModel.getIndividualTabAndGroupCount()).thenReturn(2);
-        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getRepresentativeTabAt(1)).thenReturn(mTab2);
+        setupTabsInModel(mTab1, mTab2);
         when(mTab1.getTabGroupId()).thenReturn(null);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
 
@@ -1735,6 +1741,7 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     private void setupTabsInModel(Tab... tabs) {
+        when(mTabModel.getCount()).thenReturn(tabs.length);
         for (int i = 0; i < tabs.length; i++) {
             when(mTabModel.indexOf(tabs[i])).thenReturn(i);
             when(mTabModel.getTabAtChecked(i)).thenReturn(tabs[i]);

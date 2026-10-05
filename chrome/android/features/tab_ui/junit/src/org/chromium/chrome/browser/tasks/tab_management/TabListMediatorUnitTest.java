@@ -966,7 +966,7 @@ public class TabListMediatorUnitTest {
         when(mNavigationHandle.isSameDocument()).thenReturn(false);
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, ntpUrl);
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
+        mockTabIndexes(mTab1, mTab2, newTab);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -1709,7 +1709,6 @@ public class TabListMediatorUnitTest {
         // TabListModel has been cleaned out before the restoring happens. This case could happen
         // within a incognito tab group when user switches between light/dark mode.
         createTabGroup(List.of(mTab1, mTab2), TAB_GROUP_ID);
-        mockRepresentativeTabs(mTab1);
         mModelList.clear();
 
         mTabModelObserverCaptor
@@ -1766,7 +1765,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabAddition_GroupedLayout() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
+        mockTabIndexes(mTab1, mTab2, newTab);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -1786,7 +1785,9 @@ public class TabListMediatorUnitTest {
     public void tabAddition_GroupedLayout_Skip() {
         // Add a new tab to the group with mTab2.
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        mockRepresentativeTabs(mTab1, mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        when(newTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        mockTabIndexes(mTab1, mTab2, newTab);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -1803,7 +1804,7 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabAddition_GroupedLayout_Middle() {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        mockRepresentativeTabs(mTab1, newTab, mTab2);
+        mockTabIndexes(mTab1, newTab, mTab2);
         assertThat(mModelList.size(), equalTo(2));
 
         mTabModelObserverCaptor
@@ -2049,7 +2050,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(1));
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
-        mockRepresentativeTabs(newTab);
+        mockTabIndexes(newTab);
 
         mTabModelObserverCaptor
                 .getValue()
@@ -2088,7 +2089,6 @@ public class TabListMediatorUnitTest {
 
         // Assume that moveTab in TabModel is finished.
         mockTabIndexes(mTab2, mTab1);
-        mockRepresentativeTabs(mTab2, mTab1);
 
         assertThat(mModelList.size(), equalTo(2));
         assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
@@ -2169,7 +2169,6 @@ public class TabListMediatorUnitTest {
 
         // Assume that moveTab in TabModel is finished.
         mockTabIndexes(mTab2, mTab1);
-        mockRepresentativeTabs(mTab2, mTab1);
 
         // Mock UI still thinking the tab is grouped via group card.
         mModelList.get(1).model.set(TabProperties.TAB_GROUP_HEADER_ID, new Token(1, 1));
@@ -2783,7 +2782,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(2));
 
         // Assume undo grouping mTab2 with mTab1.
-        mockRepresentativeTabs(mTab1, mTab2, tab3);
+        mockTabIndexes(mTab1, mTab2, tab3);
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, TAB_GROUP_ID);
 
@@ -2802,7 +2801,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(2));
 
         // Assume undo grouping tab3 with mTab1.
-        mockRepresentativeTabs(mTab1, mTab2, tab3);
+        mockTabIndexes(mTab1, mTab2, tab3);
         when(mTabModel.isTabInTabGroup(tab3)).thenReturn(false);
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, TAB_GROUP_ID);
@@ -2822,7 +2821,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.size(), equalTo(2));
 
         // Assume undo grouping mTab1 from mTab2.
-        mockRepresentativeTabs(mTab1, mTab2, tab3);
+        mockTabIndexes(mTab1, mTab2, tab3);
         when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(false);
 
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
@@ -2906,17 +2905,9 @@ public class TabListMediatorUnitTest {
         // Assume undo grouping tab3 with mTab1.
 
         // Undo tab 3.
-        mockRepresentativeTabs(mTab1, tab3);
         createTabGroup(List.of(mTab1, mTab2, tab4), groupId1);
         createTabGroup(List.of(tab3), TAB_GROUP_ID);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab1);
-        when(mTabModel.getTabAt(1)).thenReturn(mTab2);
-        when(mTabModel.getTabAt(2)).thenReturn(tab4);
-        when(mTabModel.getTabAt(3)).thenReturn(tab3);
-        when(mTabModel.indexOf(mTab1)).thenReturn(0);
-        when(mTabModel.indexOf(mTab2)).thenReturn(1);
-        when(mTabModel.indexOf(tab4)).thenReturn(2);
-        when(mTabModel.indexOf(tab3)).thenReturn(3);
+        mockTabIndexes(mTab1, mTab2, tab4, tab3);
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(tab3, groupId1);
         mTabGroupObserverCaptor.getValue().didMergeTabToGroup(tab3, /* isDestinationTab= */ true);
         assertThat(mModelList.size(), equalTo(2));
@@ -6418,7 +6409,7 @@ public class TabListMediatorUnitTest {
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         setUpActorState(newTab, TabIndicatorStatus.STATIC);
 
-        mockRepresentativeTabs(mTab1, mTab2, newTab);
+        mockTabIndexes(mTab1, mTab2, newTab);
 
         mTabModelObserverCaptor
                 .getValue()
