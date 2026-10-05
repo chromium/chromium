@@ -8555,6 +8555,7 @@ from previous Chrome versions.
   <int value="-1939644261" label="LensUpdatedFeedbackEntrypoint:disabled"/>
   <int value="-1939554947" label="DisableSlowMSAAInGraphite:enabled"/>
   <int value="-1939525844" label="AssistantTimersV2:enabled"/>
+  <int value="-1939115597" label="ClankStartupTabOptimizations:disabled"/>
   <int value="-1939016096"
       label="OmniboxUIExperimentHideSuggestionUrlTrivialSubdomains:enabled"/>
   <int value="-1939003674" label="NetworkServiceInProcess:disabled"/>
@@ -11874,6 +11875,7 @@ from previous Chrome versions.
   <int value="-938463322" label="DrawChromePagesEdgeToEdge:enabled"/>
   <int value="-938457958" label="CaptionsOnBrailleDisplay:disabled"/>
   <int value="-938178614" label="enable-suggestions-with-substring-match"/>
+  <int value="-937818862" label="ClankStartupTabOptimizations:enabled"/>
   <int value="-937430451" label="IntensiveWakeUpThrottling:disabled"/>
   <int value="-937116841" label="OktaSSO:enabled"/>
   <int value="-936652950"

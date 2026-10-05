@@ -488,6 +488,7 @@ public abstract class ChromeFeatureList {
     public static final String CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION =
             "ClankOmniboxSameOriginMinimization";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
+    public static final String CLANK_STARTUP_TAB_OPTIMIZATIONS = "ClankStartupTabOptimizations";
     public static final String CLANK_WHATS_NEW = "ClankWhatsNew";
     public static final String CLEAR_INTENT_WHEN_RECREATED = "ClearIntentWhenRecreated";
     public static final String COMMAND_LINE_ON_NON_ROOTED = "CommandLineOnNonRooted";
@@ -1116,6 +1117,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION, false);
     public static final CachedFlag sClankStartupLatencyInjection =
             newCachedFlag(CLANK_STARTUP_LATENCY_INJECTION, false);
+    public static final CachedFlag sClankStartupTabOptimizations =
+            newCachedFlag(CLANK_STARTUP_TAB_OPTIMIZATIONS, false);
     public static final CachedFlag sClearIntentWhenRecreated =
             newCachedFlag(CLEAR_INTENT_WHEN_RECREATED, /* defaultValue= */ false);
     public static final CachedFlag sCommandLineOnNonRooted =
@@ -1568,6 +1571,7 @@ public abstract class ChromeFeatureList {
                     sClankMiniOmnibox,
                     sClankOmniboxSameOriginMinimization,
                     sClankStartupLatencyInjection,
+                    sClankStartupTabOptimizations,
                     sClearIntentWhenRecreated,
                     sCommandLineOnNonRooted,
                     sCompositorViewRemeasureFix,

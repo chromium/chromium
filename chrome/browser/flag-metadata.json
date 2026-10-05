@@ -1967,6 +1967,11 @@
     "expiry_milestone": 157
   },
   {
+    "name": "clank-startup-tab-optimizations",
+    "owners": [ "mfiaz@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "client-side-detection-ios",
     "owners": [
       "jdh@chromium.org",

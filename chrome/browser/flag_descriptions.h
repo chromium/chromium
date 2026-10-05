@@ -6009,6 +6009,12 @@ inline constexpr char kClankOmniboxSameOriginMinimizationDescription[] =
     "Suppresses Omnibox expansion during same-origin navigations when the user "
     "has scrolled down (Variants A1/A2/A3).";
 
+inline constexpr char kClankStartupTabOptimizationsName[] =
+    "Clank startup and tab creation optimizations";
+inline constexpr char kClankStartupTabOptimizationsDescription[] =
+    "Enables optimizations for Clank startup, cold session restore, and "
+    "WebContents creation paths.";
+
 inline constexpr char kCompositorViewRemeasureFixName[] =
     "compositor-view-remeasure-fix";
 inline constexpr char kCompositorViewRemeasureFixDescription[] =

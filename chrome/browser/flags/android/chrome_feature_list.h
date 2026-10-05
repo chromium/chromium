@@ -157,6 +157,7 @@ BASE_DECLARE_FEATURE(kClankGlicContextMenu);
 BASE_DECLARE_FEATURE(kClankMiniOmnibox);
 BASE_DECLARE_FEATURE(kClankOmniboxSameOriginMinimization);
 BASE_DECLARE_FEATURE(kClankStartupLatencyInjection);
+BASE_DECLARE_FEATURE(kClankStartupTabOptimizations);
 BASE_DECLARE_FEATURE(kClankWhatsNew);
 BASE_DECLARE_FEATURE(kClearIntentWhenRecreated);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
