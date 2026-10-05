@@ -44,7 +44,8 @@ class CORE_EXPORT OutlinePainter {
 
   static void PaintFocusRingPath(GraphicsContext&,
                                  const Path&,
-                                 const ComputedStyle&);
+                                 const ComputedStyle&,
+                                 const Color&);
 
   static int OutlineOutsetExtent(const ComputedStyle&,
                                  const LayoutObject::OutlineInfo&);

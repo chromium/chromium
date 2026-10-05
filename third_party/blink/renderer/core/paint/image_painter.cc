@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/image_painter.h"
 
 #include "third_party/blink/renderer/core/animation/css/css_image_animations.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_node_animation_info.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_cache_skipper.h"
@@ -108,8 +110,15 @@ void ImagePainter::PaintAreaElementFocusRing(const PaintInfo& paint_info) {
   PhysicalRect focus_rect = layout_image_.PhysicalContentBoxRect();
   focus_rect.Move(paint_offset);
   paint_info.context.Clip(ToPixelSnappedRect(focus_rect));
+  const auto& outline_color_property = GetCSSPropertyOutlineColor();
+  const Color outline_color =
+      paint_info.IsPrivacyPreserving()
+          ? outline_color_property.ColorIncludingFallback(
+                /*visited_link=*/false, *area_element_style,
+                /*is_current_color=*/nullptr)
+          : area_element_style->VisitedDependentColor(outline_color_property);
   OutlinePainter::PaintFocusRingPath(paint_info.context, path,
-                                     *area_element_style);
+                                     *area_element_style, outline_color);
   paint_info.context.Restore();
 }
 

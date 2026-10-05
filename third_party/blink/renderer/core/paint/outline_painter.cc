@@ -1041,7 +1041,8 @@ void OutlinePainter::PaintOutlineRects(
 
 void OutlinePainter::PaintFocusRingPath(GraphicsContext& context,
                                         const Path& focus_ring_path,
-                                        const ComputedStyle& style) {
+                                        const ComputedStyle& style,
+                                        const Color& color) {
   if (!style.OutlineStyleIsAuto()) {
     return;
   }
@@ -1049,9 +1050,8 @@ void OutlinePainter::PaintFocusRingPath(GraphicsContext& context,
   // right angle focus rings, which requires SkPathOps to support expanding and
   // shrinking generic paths.
   context.DrawFocusRingPath(
-      focus_ring_path.GetSkPath(),
-      style.VisitedDependentColor(GetCSSPropertyOutlineColor()),
-      FocusRingStrokeWidth(style), DefaultFocusRingCornerRadius(style),
+      focus_ring_path.GetSkPath(), color, FocusRingStrokeWidth(style),
+      DefaultFocusRingCornerRadius(style),
       PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
 }
 
