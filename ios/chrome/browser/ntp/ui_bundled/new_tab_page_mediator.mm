@@ -108,7 +108,6 @@
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -325,8 +324,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // Service vending the AI Mode button configuration.
   raw_ptr<AIModeButtonServiceIOS> _aiModeButtonServiceIOS;
-  // AIM eligibility subscription.
-  base::CallbackListSubscription _aimEligibilitySubscription;
+  // AI Mode button state change subscription.
+  base::CallbackListSubscription _aiModeButtonStateSubscription;
   // Whether AIM is currently allowed.
   BOOL _isAIMAllowed;
   // Listen for default search engine changes.
@@ -475,10 +474,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     _tracker = tracker;
     _aimEligibilityService = aimEligibilityService;
     _aiModeButtonServiceIOS = aiModeButtonServiceIOS;
-    if (_aimEligibilityService) {
+    if (_aiModeButtonServiceIOS) {
       __weak __typeof(self) weakSelf = self;
-      _aimEligibilitySubscription =
-          _aimEligibilityService->RegisterEligibilityChangedCallback(
+      _aiModeButtonStateSubscription =
+          _aiModeButtonServiceIOS->RegisterStateChangedCallback(
               base::BindRepeating(^(void) {
                 [weakSelf updateAIMAvailability];
               }));
@@ -637,7 +636,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   _syncService = nullptr;
   _regionalCapabilitiesService = nullptr;
   _identityManager = nullptr;
-  _aimEligibilitySubscription = {};
+  _aiModeButtonStateSubscription = {};
   _aimEligibilityService = nullptr;
   _aiModeButtonServiceIOS = nullptr;
   _isAIMAllowed = NO;
@@ -853,11 +852,10 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 - (void)updateAIMAvailability {
   BOOL aimAllowed = NO;
   BOOL fuseboxEligible = NO;
+  if (_aiModeButtonServiceIOS) {
+    aimAllowed = _aiModeButtonServiceIOS->IsButtonAvailable();
+  }
   if (_aimEligibilityService) {
-    const BOOL allowedOnDevice =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
-        IsAIMNTPEntrypointTabletEnabled();
-    aimAllowed = _aimEligibilityService->IsAimEligible() && allowedOnDevice;
     fuseboxEligible = _aimEligibilityService->IsFuseboxEligible();
   }
 

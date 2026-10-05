@@ -10,9 +10,11 @@ source_set("aim_button_service") {
     "ai_mode_button_service_ios_factory.mm",
   ]
   deps = [
+    ":aim_availability",
     "//base",
     "//components/keyed_service/core",
     "//components/lens:lens_url_utils",
+    "//components/omnibox/browser",
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
@@ -20,6 +22,7 @@ source_set("aim_button_service") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//third_party/omnibox_proto",
     "//ui/base",

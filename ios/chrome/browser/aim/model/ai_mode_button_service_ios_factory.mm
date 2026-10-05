@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios_factory.h"
 
 #import "ios/chrome/browser/aim/model/ai_mode_button_service_ios.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -25,6 +26,7 @@ AIModeButtonServiceIOSFactory::AIModeButtonServiceIOSFactory()
     : ProfileKeyedServiceFactoryIOS("AIModeButtonServiceIOS",
                                     ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
+  DependsOn(IOSChromeAimEligibilityServiceFactory::GetInstance());
 }
 
 AIModeButtonServiceIOSFactory::~AIModeButtonServiceIOSFactory() = default;
@@ -33,5 +35,6 @@ std::unique_ptr<KeyedService>
 AIModeButtonServiceIOSFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
   return std::make_unique<AIModeButtonServiceIOS>(
-      ios::TemplateURLServiceFactory::GetForProfile(profile));
+      ios::TemplateURLServiceFactory::GetForProfile(profile),
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile));
 }
