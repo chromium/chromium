@@ -4489,6 +4489,34 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_WebUI_NotSignedIn_NoRedirect_WhenPinnedToolbarButton) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+       {lens::features::kLensSidePanelUnification,
+        {{"allow-signed-out", "true"}}}},
+      {});
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL webui_url = net::AppendOrReplaceQueryParameter(
+      GURL(chrome::kChromeUIContextualTasksURL), kTaskQueryParam,
+      task_id.AsLowercaseString());
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  auto* eligibility_manager = service_for_nav_->GetFakeEligibilityManager();
+  eligibility_manager->SetIsEligible(false);
+  eligibility_manager->SetIsEligibleWithoutIdentity(true);
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true, /*is_mobile_ua=*/false, std::nullopt,
+      std::nullopt, blink::mojom::WindowFeatures()));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_WebUI_DefaultSearchNotGoogle_Redirects) {
   base::test::ScopedFeatureList scoped_feature_list(
       contextual_tasks::kContextualTasks);

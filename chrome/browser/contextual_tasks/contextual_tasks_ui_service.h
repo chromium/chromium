@@ -559,7 +559,8 @@ class ContextualTasksUiService : public KeyedService {
 
   // Returns whether the given WebContents is currently hosted within the side
   // panel.
-  virtual bool IsWebContentsInSidePanel(content::WebContents* web_contents);
+  virtual bool IsWebContentsInSidePanel(
+      content::WebContents* web_contents) const;
 
   // Returns whether the URL is allowed to navigate and commit within the side
   // panel (e.g. Google AI URL, valid Google Search results page, Google

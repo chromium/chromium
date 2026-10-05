@@ -153,25 +153,12 @@ std::string GetContextualTasksArmShortName() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<content::WebContents> CreateWebContents(
-    BrowserWindowInterface* browser_window,
-    GURL url) {
+    BrowserWindowInterface* browser_window) {
   content::WebContents::CreateParams create_params(
       browser_window->GetProfile());
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
-
-  // Apply required side panel URL changes to the url being loaded into the
-  // WebContents. This is important since loading begins before the WebContents
-  // is attached to a side panel and therefore the navigation handler won't
-  // trigger.
-  if (contextual_tasks::IsContextualTasksSidePanelRearchitectureEnabled()) {
-    url = contextual_tasks::ContextualTasksUiService::
-        AddRequiredSidePanelUrlChanges(url, web_contents.get());
-  }
-  web_contents->GetController().LoadURL(url, content::Referrer(),
-                                        ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                        std::string());
 
   // Create PermissionRequestManager explicitly for this WebContents.
   // The permission bubble will anchor to the browser window via
@@ -1170,18 +1157,29 @@ void ContextualTasksSidePanelCoordinator::MaybeCreateCachedWebContents(
       url = ui_service->GetContextualTaskUrlForTask(task_id);
     }
     std::unique_ptr<content::WebContents> wc =
-        CreateWebContents(browser_window_, url);
+        CreateWebContents(browser_window_);
+    content::WebContents* web_contents = wc.get();
     if (IsContextualTasksSidePanelRearchitectureEnabled()) {
       UpdateContextualSearchWebContentsHelperForTask(
           contextual_search_service_, browser_window_,
-          contextual_tasks_service_, this, wc.get(), task_id);
+          contextual_tasks_service_, this, web_contents, task_id);
+      // Apply required side panel URL params before the initial load, as the
+      // `WebContents` is not attached to a side panel yet.
+      url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+          url, web_contents);
     }
+    // Insert into `task_id_to_web_contents_cache_` before calling `LoadURL()`
+    // so that `IsWebContentsInPanel()` returns true during the initial
+    // navigation check.
     task_id_to_web_contents_cache_[task_id] =
         std::make_unique<WebContentsCacheItem>(
             std::move(wc), /*is_open=*/true,
             base::BindOnce(&ContextualTasksSidePanelCoordinator::
                                RecordTimeToFirstContentfulPaint,
                            weak_ptr_factory_.GetWeakPtr()));
+    web_contents->GetController().LoadURL(url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                                          std::string());
   }
 }
 
@@ -1192,14 +1190,20 @@ void ContextualTasksSidePanelCoordinator::CreateCachedWebContentsForTesting(
   CHECK(!task_id_to_web_contents_cache_.contains(task_id));
 
   if (auto* ui_service = GetUiService()) {
+    std::unique_ptr<content::WebContents> wc =
+        CreateWebContents(browser_window_);
+    content::WebContents* web_contents = wc.get();
+    // Cache before `LoadURL()` so `IsWebContentsInPanel()` returns true on the
+    // initial load.
     task_id_to_web_contents_cache_[task_id] =
         std::make_unique<WebContentsCacheItem>(
-            CreateWebContents(browser_window_,
-                              ui_service->GetContextualTaskUrlForTask(task_id)),
-            is_open,
+            std::move(wc), is_open,
             base::BindOnce(&ContextualTasksSidePanelCoordinator::
                                RecordTimeToFirstContentfulPaint,
                            weak_ptr_factory_.GetWeakPtr()));
+    web_contents->GetController().LoadURL(
+        ui_service->GetContextualTaskUrlForTask(task_id), content::Referrer(),
+        ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
   }
 }
 

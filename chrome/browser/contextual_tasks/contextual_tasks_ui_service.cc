@@ -1336,6 +1336,14 @@ bool ContextualTasksUiService::ShouldRedirectIneligibleRequest(
 bool ContextualTasksUiService::IsSessionAllowedWhileIneligible(
     content::WebContents* web_contents,
     const base::Uuid& task_id) const {
+  // Allow if the side panel is available and the request is destined for the
+  // side panel.
+  if (eligibility_manager_ && eligibility_manager_->IsSidePanelAvailable()) {
+    if (web_contents && IsWebContentsInSidePanel(web_contents)) {
+      return true;
+    }
+  }
+
   if (!lens::features::IsLensSidePanelUnificationEnabled()) {
     return false;
   }
@@ -1589,7 +1597,7 @@ GURL ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
 }
 
 bool ContextualTasksUiService::IsWebContentsInSidePanel(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents) const {
   return ContextualTasksPanelController::IsWebContentsInPanel(web_contents);
 }
 

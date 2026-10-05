@@ -1608,4 +1608,61 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSignedOutAlignmentInteractiveUiTest,
       }));
 }
 
+class ContextualTasksSignedOutPinnedButtonInteractiveUiTest
+    : public ContextualTasksSignedOutAlignmentInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    for (const auto& feature : GetDefaultEnabledFeatures()) {
+      if (feature.feature == lens::features::kLensSidePanelUnification) {
+        base::FieldTrialParams params = feature.params;
+        params["allow-signed-out"] = "true";
+        enabled_features.emplace_back(lens::features::kLensSidePanelUnification,
+                                      params);
+      } else {
+        enabled_features.push_back(feature);
+      }
+    }
+    enabled_features.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
+    std::vector<base::test::FeatureRef> disabled_features =
+        GetDefaultDisabledFeatures();
+    disabled_features.push_back(kContextualTasksForceEntryPointEligibility);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksSignedOutPinnedButtonInteractiveUiTest,
+                       SignedOutOpenInZeroState_DoesNotRedirectAndShowsToolbar) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  const WebContentsInteractionTestUtil::DeepQuery kTopToolbarQuery = {
+      "contextual-tasks-app", "top-toolbar#toolbar"};
+
+  Profile* profile = browser()->GetProfile();
+  EXPECT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile));
+
+  auto* coordinator = ContextualTasksSidePanelCoordinator::From(browser());
+  ASSERT_NE(coordinator, nullptr);
+  RunTestSequence(
+      Do([&]() { coordinator->OpenInZeroState(); }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      WaitForJsResultAt(kSidePanelWebContentsId, kTopToolbarQuery,
+                        "el => !!el"),
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            coordinator->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        EXPECT_TRUE(ContextualTasksUiService::IsContextualTasksUrl(
+            side_panel_contents->GetLastCommittedURL()));
+      }));
+}
+
 }  // namespace contextual_tasks
+

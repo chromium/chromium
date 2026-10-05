@@ -143,7 +143,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                BrowserWindowInterface* browser),
               (override));
 
-  bool IsWebContentsInSidePanel(content::WebContents* web_contents) override {
+  bool IsWebContentsInSidePanel(
+      content::WebContents* web_contents) const override {
     if (is_web_contents_in_side_panel_override_.has_value()) {
       return *is_web_contents_in_side_panel_override_;
     }
