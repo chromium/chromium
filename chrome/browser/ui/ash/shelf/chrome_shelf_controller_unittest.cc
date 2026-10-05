@@ -53,6 +53,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -3982,9 +3983,12 @@ TEST_F(ChromeShelfControllerWithArcTest, ShelfItemWithMultipleWindows) {
   // opposite order. Last created goes in front.
   auto items = item_delegate->GetAppMenuItems(0, base::NullCallback());
   ASSERT_EQ(items.size(), 2U);
-  EXPECT_EQ(window2->GetNativeWindow(), item_delegate->GetAppMenuItemWindow(0));
-  EXPECT_EQ(window1->GetNativeWindow(), item_delegate->GetAppMenuItemWindow(1));
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ValueIs(window2->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(window1->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
+              base::test::ErrorIs(std::u16string()));
 
   // Execute command 1 to activate the first window.
   item_delegate->ExecuteCommand(false, 1, ui::EF_NONE,

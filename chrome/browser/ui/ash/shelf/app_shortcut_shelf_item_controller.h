@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "url/gurl.h"
 
@@ -57,7 +59,8 @@ class AppShortcutShelfItemController : public ash::ShelfItemDelegate,
   AppMenuItems GetAppMenuItems(
       int event_flags,
       const ItemFilterPredicate& filter_predicate) override;
-  aura::Window* GetAppMenuItemWindow(int command_id) override;
+  base::expected<aura::Window*, std::u16string> GetAppMenuItemWindow(
+      int command_id) override;
   void GetContextMenu(int64_t display_id,
                       GetContextMenuCallback callback) override;
   void ExecuteCommand(bool from_context_menu,

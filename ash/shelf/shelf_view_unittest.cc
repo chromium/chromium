@@ -74,6 +74,7 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -303,14 +304,15 @@ class AppMenuTestShelfItemDelegate : public ShelfItemDelegate,
     std::move(callback).Run(SHELF_ACTION_NONE, std::move(items));
   }
 
-  aura::Window* GetAppMenuItemWindow(int command_id) override {
-    if (command_id == 0) {
+  base::expected<aura::Window*, std::u16string> GetAppMenuItemWindow(
+      int command_id) override {
+    if (command_id == 0 && w1_.GetSource()) {
       return w1_.GetSource();
     }
-    if (command_id == 1) {
+    if (command_id == 1 && w2_.GetSource()) {
       return w2_.GetSource();
     }
-    return nullptr;
+    return base::unexpected(std::u16string());
   }
 
   void ExecuteCommand(bool, int64_t, int32_t, int64_t) override {}

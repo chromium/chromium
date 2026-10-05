@@ -231,12 +231,17 @@ AppWindowShelfItemController::GetAppMenuItems(
   return items;
 }
 
-aura::Window* AppWindowShelfItemController::GetAppMenuItemWindow(
-    int command_id) {
+base::expected<aura::Window*, std::u16string>
+AppWindowShelfItemController::GetAppMenuItemWindow(int command_id) {
   if (command_id < 0 || static_cast<size_t>(command_id) >= windows_.size()) {
-    return nullptr;
+    return base::unexpected(std::u16string());
   }
-  return (*std::next(windows_.begin(), command_id))->GetNativeWindow();
+  aura::Window* window =
+      (*std::next(windows_.begin(), command_id))->GetNativeWindow();
+  if (!window) {
+    return base::unexpected(std::u16string());
+  }
+  return window;
 }
 
 void AppWindowShelfItemController::GetContextMenu(

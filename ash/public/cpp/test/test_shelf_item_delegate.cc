@@ -4,8 +4,10 @@
 
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 
+#include <string>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "ui/aura/window.h"
 
 namespace ash {
@@ -35,9 +37,10 @@ ShelfItemDelegate::AppMenuItems TestShelfItemDelegate::GetAppMenuItems(
   return items;
 }
 
-aura::Window* TestShelfItemDelegate::GetAppMenuItemWindow(int command_id) {
+base::expected<aura::Window*, std::u16string>
+TestShelfItemDelegate::GetAppMenuItemWindow(int command_id) {
   if (command_id < 0 || static_cast<size_t>(command_id) >= windows_.size()) {
-    return nullptr;
+    return base::unexpected(std::u16string());
   }
   return windows_[command_id];
 }

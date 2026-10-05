@@ -520,7 +520,8 @@ aura::Window* ShelfView::GetSingleOpenWindowForShelfView(
     return nullptr;
   }
 
-  return delegate->GetAppMenuItemWindow(menu_items[0].command_id);
+  return delegate->GetAppMenuItemWindow(menu_items[0].command_id)
+      .value_or(nullptr);
 }
 
 std::u16string ShelfView::GetTitleForView(const views::View* view) const {

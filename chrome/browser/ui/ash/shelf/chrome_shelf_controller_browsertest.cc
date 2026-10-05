@@ -48,6 +48,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -3259,11 +3260,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   ash::ShelfItemDelegate* item_delegate =
       shelf_model()->GetShelfItemDelegate(item_browser.id);
   ASSERT_TRUE(item_delegate);
-  EXPECT_EQ(browser1->GetWindow()->GetNativeWindow(),
-            item_delegate->GetAppMenuItemWindow(0));
-  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
-            item_delegate->GetAppMenuItemWindow(1));
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ValueIs(browser1->GetWindow()->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(browser2->GetWindow()->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
+              base::test::ErrorIs(std::u16string()));
 
   // With shift, the menu lists tabs. Only active tabs map to the window of
   // their browser.
@@ -3271,11 +3273,12 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   ASSERT_EQ(3U, item_delegate
                     ->GetAppMenuItems(ui::EF_SHIFT_DOWN, base::NullCallback())
                     .size());
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
-  EXPECT_EQ(browser1->GetWindow()->GetNativeWindow(),
-            item_delegate->GetAppMenuItemWindow(1));
-  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
-            item_delegate->GetAppMenuItemWindow(2));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ErrorIs(std::u16string()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(browser1->GetWindow()->GetNativeWindow()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
+              base::test::ValueIs(browser2->GetWindow()->GetNativeWindow()));
 
   CloseBrowserSynchronously(browser2);
   CloseBrowserSynchronously(browser1);
@@ -3458,16 +3461,22 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuItemWindow) {
   ASSERT_TRUE(item_delegate);
   aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
   ASSERT_TRUE(browser_window);
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
-  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(1));
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(-1));
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ErrorIs(std::u16string()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ValueIs(browser_window));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(-1),
+              base::test::ErrorIs(std::u16string()));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(2),
+              base::test::ErrorIs(std::u16string()));
 
   // Destroy the second tab while the menu is still open. The first tab becomes
   // active.
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
-  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(0));
-  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(0),
+              base::test::ValueIs(browser_window));
+  EXPECT_THAT(item_delegate->GetAppMenuItemWindow(1),
+              base::test::ErrorIs(std::u16string()));
 }
 
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, PRE_PersistShelfItemPositions) {

@@ -83,6 +83,7 @@ void ShelfMenuModelAdapter::OnMenuItemSelectedChanged(
     aura::Window* window =
         item_delegate_
             ? item_delegate_->GetAppMenuItemWindow(item->GetCommand())
+                  .value_or(nullptr)
             : nullptr;
     if (window) {
       preview_anchor_view_ = item;
@@ -126,7 +127,8 @@ void ShelfMenuModelAdapter::ShowPreviewBubble() {
     return;
   }
   aura::Window* window =
-      item_delegate_->GetAppMenuItemWindow(anchor_view->GetCommand());
+      item_delegate_->GetAppMenuItemWindow(anchor_view->GetCommand())
+          .value_or(nullptr);
   if (!window) {
     return;
   }

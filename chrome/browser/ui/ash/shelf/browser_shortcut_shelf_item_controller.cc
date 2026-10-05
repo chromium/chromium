@@ -334,15 +334,15 @@ BrowserShortcutShelfItemController::GetAppMenuItems(
   return items;
 }
 
-aura::Window* BrowserShortcutShelfItemController::GetAppMenuItemWindow(
-    int command_id) {
+base::expected<aura::Window*, std::u16string>
+BrowserShortcutShelfItemController::GetAppMenuItemWindow(int command_id) {
   if (command_id < 0 ||
       static_cast<size_t>(command_id) >= app_menu_items_.size()) {
-    return nullptr;
+    return base::unexpected(std::u16string());
   }
   ash::BrowserDelegate* browser = app_menu_items_[command_id].first;
   if (!browser) {
-    return nullptr;
+    return base::unexpected(std::u16string());
   }
   // The browser window only shows its active tab, so other tabs have no window
   // to preview.
@@ -350,10 +350,14 @@ aura::Window* BrowserShortcutShelfItemController::GetAppMenuItemWindow(
   if (tab_index.has_value()) {
     content::WebContents* tab = browser->GetWebContentsAt(*tab_index);
     if (!tab || tab != browser->GetActiveWebContents()) {
-      return nullptr;
+      return base::unexpected(std::u16string());
     }
   }
-  return browser->GetNativeWindow();
+  aura::Window* window = browser->GetNativeWindow();
+  if (!window) {
+    return base::unexpected(std::u16string());
+  }
+  return window;
 }
 
 void BrowserShortcutShelfItemController::GetContextMenu(

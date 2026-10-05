@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -77,9 +78,11 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
                             ItemSelectedCallback callback,
                             const ItemFilterPredicate& filter_predicate);
 
-  // Returns the window associated with the application menu item for
-  // |command_id|, or nullptr if no window is associated with this item.
-  virtual aura::Window* GetAppMenuItemWindow(int command_id);
+  // Returns the window to preview for the application menu item for
+  // |command_id|. If there is no window to preview, returns the tooltip to show
+  // for the item instead, or an empty string to show neither.
+  virtual base::expected<aura::Window*, std::u16string> GetAppMenuItemWindow(
+      int command_id);
 
   // Returns items for the application menu; used for convenience and testing.
   // |filter_predicate| is used to filter items out of the menu based on their

@@ -5,11 +5,13 @@
 #ifndef ASH_PUBLIC_CPP_TEST_TEST_SHELF_ITEM_DELEGATE_H_
 #define ASH_PUBLIC_CPP_TEST_TEST_SHELF_ITEM_DELEGATE_H_
 
+#include <string>
 #include <vector>
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/types/expected.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -27,7 +29,8 @@ class TestShelfItemDelegate : public ShelfItemDelegate,
   AppMenuItems GetAppMenuItems(
       int event_flags,
       const ItemFilterPredicate& filter_predicate) override;
-  aura::Window* GetAppMenuItemWindow(int command_id) override;
+  base::expected<aura::Window*, std::u16string> GetAppMenuItemWindow(
+      int command_id) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,

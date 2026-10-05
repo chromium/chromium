@@ -28,8 +28,9 @@ ShelfItemDelegate::AppMenuItems ShelfItemDelegate::GetAppMenuItems(
   return {};
 }
 
-aura::Window* ShelfItemDelegate::GetAppMenuItemWindow(int command_id) {
-  return nullptr;
+base::expected<aura::Window*, std::u16string>
+ShelfItemDelegate::GetAppMenuItemWindow(int command_id) {
+  return base::unexpected(std::u16string());
 }
 
 void ShelfItemDelegate::GetContextMenu(int64_t display_id,
