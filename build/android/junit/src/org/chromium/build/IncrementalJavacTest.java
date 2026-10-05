@@ -9,16 +9,13 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 
 import test.NoSignatureChangeIncrementalJavacTestHelper;
 
 /**
- * Checks that build picked up changes to
- * {@link NoSignatureChangeIncrementalJavacTestHelper#foo()}.
+ * Checks that build picked up changes to {@link NoSignatureChangeIncrementalJavacTestHelper#foo()}.
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public final class IncrementalJavacTest {
     @Test
     public void testNoSignatureChange() {
