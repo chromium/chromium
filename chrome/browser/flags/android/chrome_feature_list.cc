@@ -368,6 +368,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kClearIntentWhenRecreated,
     &kCommandLineOnNonRooted,
     &kCompositorViewRemeasureFix,
+    &kCompositorViewShrinkWhenKeyboardHidden,
     &kContextualPanelCloseButton,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchSuppressShortView,
@@ -796,6 +797,7 @@ BASE_FEATURE(kClankWhatsNew, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kClearIntentWhenRecreated, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCommandLineOnNonRooted, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCompositorViewRemeasureFix, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCompositorViewShrinkWhenKeyboardHidden, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualPanelCloseButton, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualSearchDisableOnlineDetection, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kContextualSearchSuppressShortView, base::FEATURE_DISABLED_BY_DEFAULT);

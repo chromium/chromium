@@ -13027,6 +13027,8 @@ from previous Chrome versions.
       label="WebAuthenticationPasskeysUIExperiment:enabled"/>
   <int value="-583193481" label="AndroidHubSearchTabGroups:enabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
+  <int value="-582745629"
+      label="CompositorViewShrinkWhenKeyboardHidden:disabled"/>
   <int value="-582570706" label="PPAPISharedImagesSwapChain:disabled"/>
   <int value="-582300629" label="UserNotes:enabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
@@ -15548,6 +15550,8 @@ from previous Chrome versions.
   <int value="184274661" label="LensAimSuggestions:enabled"/>
   <int value="185146045" label="TabClosureCommittedMethodRefactor:disabled"/>
   <int value="185991204" label="enable-webrtc-srtp-encrypted-headers"/>
+  <int value="186385247"
+      label="CompositorViewShrinkWhenKeyboardHidden:enabled"/>
   <int value="186463628" label="DnsOverHttps:disabled"/>
   <int value="187109402" label="SyncingCompromisedCredentials:enabled"/>
   <int value="188213654" label="PageInfoHideSiteSettings:disabled"/>

@@ -2177,6 +2177,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "compositor-view-shrink-when-keyboard-hidden",
+    "owners": ["ckitagawa@chromium.org", "clank-tab-dev@google.com"],
+    "expiry_milestone": 162
+  },
+  {
     "name": "conch",
     "owners": ["hsuanling@google.com", "chromeos-recorder-app@google.com"],
     "expiry_milestone": 160

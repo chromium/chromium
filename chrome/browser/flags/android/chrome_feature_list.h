@@ -161,6 +161,7 @@ BASE_DECLARE_FEATURE(kClankWhatsNew);
 BASE_DECLARE_FEATURE(kClearIntentWhenRecreated);
 BASE_DECLARE_FEATURE(kCommandLineOnNonRooted);
 BASE_DECLARE_FEATURE(kCompositorViewRemeasureFix);
+BASE_DECLARE_FEATURE(kCompositorViewShrinkWhenKeyboardHidden);
 BASE_DECLARE_FEATURE(kContextualPanelCloseButton);
 BASE_DECLARE_FEATURE(kContextualSearchDisableOnlineDetection);
 BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);

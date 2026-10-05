@@ -13004,6 +13004,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCompositorViewRemeasureFixDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCompositorViewRemeasureFix)},
 
+    {"compositor-view-shrink-when-keyboard-hidden",
+     flag_descriptions::kCompositorViewShrinkWhenKeyboardHiddenName,
+     flag_descriptions::kCompositorViewShrinkWhenKeyboardHiddenDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCompositorViewShrinkWhenKeyboardHidden)},
+
     {"debug-toolbar-positioning",
      flag_descriptions::kDebugToolbarPositioningName,
      flag_descriptions::kDebugToolbarPositioningDescription, kOsAndroid,

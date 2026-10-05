@@ -171,8 +171,9 @@ public class CompositorView extends FrameLayout
     /**
      * Creates a {@link CompositorView}. This can be called only after the native library is
      * properly loaded.
-     * @param c        The Context to create this {@link CompositorView} in.
-     * @param host     The renderer host owning this view.
+     *
+     * @param c The Context to create this {@link CompositorView} in.
+     * @param host The renderer host owning this view.
      */
     public CompositorView(Context c, LayoutRenderHost host) {
         super(c);
@@ -258,11 +259,23 @@ public class CompositorView extends FrameLayout
 
             // If the measured width is the same as the allowed width (i.e. the orientation has
             // not changed) and multi-window mode is off, use the largest measured height seen thus
-            // far.  This will prevent surface resizes as a result of showing the keyboard.
-            if (!topChanged
-                    && !isMultiWindow
-                    && getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)
-                    && getMeasuredHeight() > MeasureSpec.getSize(heightMeasureSpec)) {
+            // far. This prevents surface resizes as a result of showing the keyboard, so it only
+            // applies while the keyboard is showing: a smaller spec with the keyboard hidden is a
+            // real layout change (e.g. the bottom insets being re-applied once the omnibox stops
+            // consuming them, see crbug.com/542078043) and must be honoured, otherwise the surface
+            // stays oversized and draws under the system navigation bar.
+            boolean retainHeight =
+                    !topChanged
+                            && !isMultiWindow
+                            && getMeasuredWidth() == MeasureSpec.getSize(widthMeasureSpec)
+                            && getMeasuredHeight() > MeasureSpec.getSize(heightMeasureSpec);
+            if (retainHeight
+                    && ChromeFeatureList.sCompositorViewShrinkWhenKeyboardHidden.isEnabled()) {
+                retainHeight =
+                        mWindowAndroid != null
+                                && mWindowAndroid.getKeyboardDelegate().isKeyboardShowing(this);
+            }
+            if (retainHeight) {
                 heightMeasureSpec =
                         MeasureSpec.makeMeasureSpec(getMeasuredHeight(), MeasureSpec.EXACTLY);
             }
@@ -802,9 +815,9 @@ public class CompositorView extends FrameLayout
     }
 
     /**
-     * Called by LayoutRenderHost to inform whether it needs `didSwapBuffers` calls.
-     * Note the implementation is asynchronous so it may miss already pending calls when enabled
-     * and can have a few trailing calls when disabled.
+     * Called by LayoutRenderHost to inform whether it needs `didSwapBuffers` calls. Note the
+     * implementation is asynchronous so it may miss already pending calls when enabled and can have
+     * a few trailing calls when disabled.
      */
     public void setRenderHostNeedsDidSwapBuffersCallback(boolean enable) {
         if (mRenderHostNeedsDidSwapBuffersCallback == enable) return;

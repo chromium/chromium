@@ -6042,6 +6042,13 @@ inline constexpr char kCompositorViewRemeasureFixDescription[] =
     "in its onMeasure pass, with the goal of fixing certain measure "
     "calculations.";
 
+inline constexpr char kCompositorViewShrinkWhenKeyboardHiddenName[] =
+    "compositor-view-shrink-when-keyboard-hidden";
+inline constexpr char kCompositorViewShrinkWhenKeyboardHiddenDescription[] =
+    "When enabled, the CompositorView only keeps its largest measured height "
+    "while the soft keyboard is showing, and shrinks to the requested height "
+    "once the keyboard is hidden.";
+
 inline constexpr char kContextualSearchSuppressShortViewName[] =
     "Contextual Search suppress short view";
 inline constexpr char kContextualSearchSuppressShortViewDescription[] =
