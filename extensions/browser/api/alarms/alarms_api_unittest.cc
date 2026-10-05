@@ -116,6 +116,11 @@ class ExtensionAlarmsTest : public ApiUnitTest {
         base::MakeRefCounted<AlarmsCreateFunction>(&test_clock_), args);
   }
 
+  void ClearAllAlarms() {
+    RunFunctionAndReturnValue(base::MakeRefCounted<AlarmsClearAllFunction>(),
+                              "[]");
+  }
+
   // Takes a JSON result from a function and converts it to a vector of
   // JsAlarms.
   std::vector<JsAlarm> ToAlarmList(const std::optional<base::Value>& value) {
@@ -1047,6 +1052,66 @@ TEST_F(ExtensionAlarmsSchedulingTest, PollWritesToStorageOncePerExtension) {
   EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
   EXPECT_EQ(1, write_counter.write_counts[extension2->id()]);
   EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
+}
+
+TEST_F(ExtensionAlarmsSchedulingTest, ClearAll) {
+  test_clock_.SetNow(base::Time::UnixEpoch());
+
+  scoped_refptr<const Extension> extension1(extension_ref());
+  scoped_refptr<const Extension> extension2 = ExtensionBuilder("Test2").Build();
+  scoped_refptr<const Extension> extension3 = ExtensionBuilder("Test3").Build();
+
+  // Extension 1 has one session and one persistent alarm.
+  set_extension(extension1);
+  CreateAlarm(
+      "[\"session\", {\"when\": 10000, \"persistAcrossSessions\": false}]");
+  CreateAlarm("[\"persistent\", {\"when\": 10000}]");
+
+  // Extension 2 has only a session alarm.
+  set_extension(extension2);
+  CreateAlarm(
+      "[\"session\", {\"when\": 10000, \"persistAcrossSessions\": false}]");
+
+  // Extension 3 has no alarms.
+  set_extension(extension3);
+
+  // Install the StateStore after the alarms are created, so that only the
+  // writes resulting from alarms.clearAll() calls are observed.
+  extension_system()->SetStateStore(std::make_unique<StateStore>(
+      browser_context(),
+      base::MakeRefCounted<value_store::TestValueStoreFactory>(),
+      StateStore::BackendType::STATE, /*deferred_load=*/false));
+  AlarmsStorageWriteCounter write_counter;
+  base::ScopedObservation<StateStore, StateStore::TestObserver>
+      write_observation(&write_counter);
+  write_observation.Observe(extension_system()->state_store());
+
+  // After clearing alarms of extension 1, storage should be written and
+  // timer still set.
+  set_extension(extension1);
+  ClearAllAlarms();
+  EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension2->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10000),
+            alarm_manager_->next_poll_time_);
+
+  // After clearing of session alarm of extension 2, storage should not be
+  // written and timer stopped.
+  set_extension(extension2);
+  ClearAllAlarms();
+  EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension2->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
+  EXPECT_EQ(base::Time(), alarm_manager_->next_poll_time_);
+
+  // Since extension 3 has no alarms, alarms.clarAll() call is a no-op.
+  set_extension(extension3);
+  ClearAllAlarms();
+  EXPECT_EQ(1, write_counter.write_counts[extension1->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension2->id()]);
+  EXPECT_EQ(0, write_counter.write_counts[extension3->id()]);
+  EXPECT_EQ(base::Time(), alarm_manager_->next_poll_time_);
 }
 
 }  // namespace extensions

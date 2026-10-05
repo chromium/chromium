@@ -156,6 +156,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
                            PollFrequencyFromStoredAlarm);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest,
                            PollWritesToStorageOncePerExtension);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsSchedulingTest, ClearAll);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAlarmsTest, OldPersistentAlarmFromStorage);
   friend class BrowserContextKeyedAPIFactory<AlarmManager>;
 
@@ -211,6 +212,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   void AddAlarmImpl(const ExtensionId& extension_id, Alarm alarm);
 
   // Internal helper to remove all alarms for an extension from memory.
+  // Returns true if an extension had at least one persistent alarm.
   bool RemoveAllAlarmsInternal(const ExtensionId& extension_id);
 
   // Syncs our alarm data for the given extension to/from the state storage.
@@ -234,6 +236,10 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // Executes `action` for given extension, making sure that the extension's
   // alarm data has been synced from the storage.
   void RunWhenReady(const ExtensionId& extension_id, ReadyAction action);
+
+  // Helper function which stops internal timer and resets next poll timestamp.
+  // Caller should call this only when there are no registered alarms.
+  void StopTimer();
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

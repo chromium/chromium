@@ -233,18 +233,28 @@ void AlarmManager::RemoveAllAlarmsWhenReady(RemoveAllAlarmsCallback callback,
 }
 
 bool AlarmManager::RemoveAllAlarmsInternal(const ExtensionId& extension_id) {
+  bool has_persistent = false;
   auto list = alarms_.find(extension_id);
   if (list != alarms_.end()) {
-    // Note: I'm using indices rather than iterators here because
-    // RemoveAlarmIterator will delete the list when it becomes empty.
-    for (size_t i = 0, size = list->second.size(); i < size; ++i) {
-      RemoveAlarmIterator(AlarmIterator(list, list->second.begin()));
+    // In single pass, determine if extension has at least one persistent alarm.
+    const AlarmList& alarms = list->second;
+    for (const Alarm& alarm : alarms) {
+      CHECK(alarm.js_alarm);
+      if (alarm.js_alarm->persist_across_sessions) {
+        has_persistent = true;
+        break;
+      }
     }
 
-    CHECK(alarms_.find(extension_id) == alarms_.end());
-    return true;
+    // Clear all alarms for this extension at once and cancel the shared timer
+    // if no other extension has alarms.
+    const bool found = alarms_.erase(extension_id);
+    DCHECK(found);
+    if (alarms_.empty()) {
+      StopTimer();
+    }
   }
-  return false;
+  return has_persistent;
 }
 
 AlarmManager::AlarmIterator AlarmManager::GetAlarmIterator(
@@ -299,8 +309,7 @@ void AlarmManager::RemoveAlarmIterator(const AlarmIterator& iter) {
   // We don't need to reschedule the poll otherwise, because in
   // the worst case we would just poll one extra time.
   if (alarms_.empty()) {
-    timer_.Stop();
-    next_poll_time_ = base::Time();
+    StopTimer();
   }
 }
 
@@ -385,11 +394,16 @@ void AlarmManager::SetNextPollTime(const base::Time& time) {
   timer_.Start(FROM_HERE, time, this, &AlarmManager::PollAlarms);
 }
 
+void AlarmManager::StopTimer() {
+  DCHECK(alarms_.empty());
+  timer_.Stop();
+  next_poll_time_ = base::Time();
+}
+
 void AlarmManager::ScheduleNextPoll() {
   // If there are no alarms, stop the timer.
   if (alarms_.empty()) {
-    timer_.Stop();
-    next_poll_time_ = base::Time();
+    StopTimer();
     return;
   }
 
