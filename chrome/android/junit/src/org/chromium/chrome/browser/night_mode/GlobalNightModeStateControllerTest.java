@@ -53,6 +53,7 @@ public class GlobalNightModeStateControllerTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NightModeStateProvider.Observer mObserver;
+    @Mock private GlobalNightModeStateController.Natives mNativeMock;
 
     private GlobalNightModeStateController mGlobalNightModeStateController;
 
@@ -64,6 +65,7 @@ public class GlobalNightModeStateControllerTest {
     public void setUp() {
         captureObservers();
 
+        GlobalNightModeStateControllerJni.setInstanceForTesting(mNativeMock);
         SystemNightModeMonitor.setInstanceForTesting(mSystemNightModeMonitor);
         mGlobalNightModeStateController = new GlobalNightModeStateController();
 
@@ -171,6 +173,26 @@ public class GlobalNightModeStateControllerTest {
         ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
         assertTrue(mGlobalNightModeStateController.isInNightMode());
         verify(mObserver, times(2)).onNightModeStateChanged();
+    }
+
+    @Test
+    public void testNativeNotifiedOnThemeSettingChange() {
+        // Notified when the setting changes night mode.
+        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
+        verify(mNativeMock, times(1)).onThemeSettingChanged();
+
+        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.LIGHT);
+        verify(mNativeMock, times(2)).onThemeSettingChanged();
+
+        // Notified when the setting changes without changing night mode.
+        ChromeSharedPreferences.getInstance().writeInt(UI_THEME_SETTING, ThemeType.SYSTEM_DEFAULT);
+        assertFalse(mGlobalNightModeStateController.isInNightMode());
+        verify(mNativeMock, times(3)).onThemeSettingChanged();
+
+        // Not notified when only system night mode changes.
+        setSystemNightMode(true);
+        assertTrue(mGlobalNightModeStateController.isInNightMode());
+        verify(mNativeMock, times(3)).onThemeSettingChanged();
     }
 
     /**

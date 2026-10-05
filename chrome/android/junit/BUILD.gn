@@ -1824,6 +1824,7 @@ if (is_android) {
       "//chrome/browser/settings:search_java",
       "//chrome/browser/ui/android/multiwindow:multi_instance_data_proto_java",
       "//chrome/browser/ui/android/native_page:junit",
+      "//chrome/browser/ui/android/night_mode:jni_headers_java",
       "//chrome/browser/ui/android/pdf:pdf_info_java",
       "//chrome/browser/ui/android/pdf:pdf_page_java",
       "//chrome/browser/ui/android/pdf:pdf_utils_java",

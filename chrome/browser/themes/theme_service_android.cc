@@ -7,11 +7,14 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/android/jni_android.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
+#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/jni_zero/jni_zero.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
+#include "chrome/browser/ui/android/night_mode/jni_headers/GlobalNightModeStateController_jni.h"
 #include "chrome/browser/ui/android/night_mode/jni_headers/NightModeUtils_jni.h"
 
 // The values of ThemeType.java must match BrowserColorScheme.
@@ -22,11 +25,40 @@ static_assert(std::to_underlying(ThemeService::BrowserColorScheme::kLight) ==
 static_assert(std::to_underlying(ThemeService::BrowserColorScheme::kDark) ==
               2);  // ThemeType.DARK
 
+namespace {
+
+// All live instances (one per profile). Accessed only on the UI thread.
+base::flat_set<ThemeServiceAndroid*>& GetInstances() {
+  static base::NoDestructor<base::flat_set<ThemeServiceAndroid*>> instances;
+  return *instances;
+}
+
+void SetThemeSetting(ThemeService::BrowserColorScheme color_scheme) {
+  // This synchronously detaches tabs and schedules activity recreation (when
+  // the effective night mode changes), and notifies observers via
+  // GlobalNightModeStateController.
+  NightModeUtilsJni::setThemeSetting(jni_zero::AttachCurrentThread(),
+                                     static_cast<int32_t>(color_scheme));
+}
+
+}  // namespace
+
 ThemeServiceAndroid::ThemeServiceAndroid(Profile* profile,
                                          const ThemeHelper& theme_helper)
-    : ThemeService(profile, theme_helper) {}
+    : ThemeService(profile, theme_helper) {
+  GetInstances().insert(this);
+}
 
-ThemeServiceAndroid::~ThemeServiceAndroid() = default;
+ThemeServiceAndroid::~ThemeServiceAndroid() {
+  GetInstances().erase(this);
+}
+
+// static
+void ThemeServiceAndroid::OnThemeSettingChanged() {
+  for (ThemeServiceAndroid* instance : GetInstances()) {
+    instance->NotifyThemeChanged();
+  }
+}
 
 void ThemeServiceAndroid::SetBrowserColorScheme(
     BrowserColorScheme color_scheme) {
@@ -35,27 +67,21 @@ void ThemeServiceAndroid::SetBrowserColorScheme(
   // Changing the setting can detach tabs and recreate activities, so post to
   // avoid doing so from within the caller's stack (e.g. a Mojo dispatch).
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ThemeServiceAndroid::ApplyBrowserColorScheme,
-                                weak_ptr_factory_.GetWeakPtr(), color_scheme));
+      FROM_HERE, base::BindOnce(&SetThemeSetting, color_scheme));
 }
 
 ThemeService::BrowserColorScheme ThemeServiceAndroid::GetBrowserColorScheme()
     const {
   return static_cast<BrowserColorScheme>(
-      night_mode::Java_NightModeUtils_getThemeSetting(
-          base::android::AttachCurrentThread()));
+      NightModeUtilsJni::getThemeSetting(jni_zero::AttachCurrentThread()));
 }
 
-void ThemeServiceAndroid::ApplyBrowserColorScheme(
-    BrowserColorScheme color_scheme) {
-  // This synchronously detaches tabs and schedules activity recreation (when
-  // the effective night mode changes). Observers are notified afterwards so
-  // that GetBrowserColorScheme() returns the new value; WebContents (and their
-  // WebUI handlers) survive the recreation.
-  night_mode::Java_NightModeUtils_setThemeSetting(
-      base::android::AttachCurrentThread(), static_cast<int32_t>(color_scheme));
-  // TODO(agrieve): Also notify when the setting is changed from Java (e.g. in
-  // Settings), and notify the ThemeServices of other profiles, since the
-  // setting is app-wide.
-  NotifyThemeChanged();
+namespace night_mode {
+
+static void JNI_GlobalNightModeStateController_OnThemeSettingChanged() {
+  ThemeServiceAndroid::OnThemeSettingChanged();
 }
+
+}  // namespace night_mode
+
+DEFINE_JNI(GlobalNightModeStateController)

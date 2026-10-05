@@ -11,13 +11,18 @@ import android.text.TextUtils;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Maintains and provides the night mode state for the entire application. */
+@JNINamespace("night_mode")
 @NullMarked
 class GlobalNightModeStateController
         implements NightModeStateProvider,
@@ -30,6 +35,9 @@ class GlobalNightModeStateController
      * initialized yet.
      */
     private Boolean mNightModeOn;
+
+    /** The last observed theme setting. If null, it has not been read yet. */
+    private @ThemeType @Nullable Integer mThemeSetting;
 
     private final SharedPreferences.OnSharedPreferenceChangeListener mPreferenceListener;
 
@@ -119,17 +127,30 @@ class GlobalNightModeStateController
 
     private void updateNightMode() {
         final int theme = NightModeUtils.getThemeSetting();
+        final boolean themeSettingChanged = mThemeSetting != null && theme != mThemeSetting;
+        mThemeSetting = theme;
         final boolean newNightModeOn =
                 (theme == ThemeType.SYSTEM_DEFAULT
                                 && SystemNightModeMonitor.getInstance().isSystemNightModeOn())
                         || theme == ThemeType.DARK;
-        if (mNightModeOn != null && newNightModeOn == mNightModeOn) return;
+        if (mNightModeOn == null || newNightModeOn != mNightModeOn) {
+            mNightModeOn = newNightModeOn;
+            AppCompatDelegate.setDefaultNightMode(
+                    mNightModeOn
+                            ? AppCompatDelegate.MODE_NIGHT_YES
+                            : AppCompatDelegate.MODE_NIGHT_NO);
+            for (Observer observer : mObservers) observer.onNightModeStateChanged();
 
-        mNightModeOn = newNightModeOn;
-        AppCompatDelegate.setDefaultNightMode(
-                mNightModeOn ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO);
-        for (Observer observer : mObservers) observer.onNightModeStateChanged();
+            NightModeMetrics.recordNightModeState(mNightModeOn);
+        }
 
-        NightModeMetrics.recordNightModeState(mNightModeOn);
+        if (themeSettingChanged) {
+            GlobalNightModeStateControllerJni.get().onThemeSettingChanged();
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onThemeSettingChanged();
     }
 }
