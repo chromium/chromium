@@ -5674,7 +5674,10 @@ test("unit_tests") {
     }
 
     if (enable_webui_ntp) {
-      deps += [ "//chrome/browser/ui/webui:favicon_source_unit_tests" ]
+      deps += [
+        "//chrome/browser/ui/search:android_unit_tests",
+        "//chrome/browser/ui/webui:favicon_source_unit_tests",
+      ]
     }
 
     if (enable_chrome_android_internal) {

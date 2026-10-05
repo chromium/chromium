@@ -21,6 +21,7 @@
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "content/public/browser/reload_type.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -95,6 +96,17 @@ class SearchTabHelper : public content::WebContentsObserver,
   void NavigationEntryCommitted(
       const content::LoadCommittedDetails& load_details) override;
 
+  // Android has no Browser / InstantController yet, so the logic is replicated
+  // here. On desktop those call OnTabActivated() / OnTabDeactivated() on tab
+  // selection and push the NTP theme and Most Visited info to the Instant NTP
+  // when it commits.
+#if BUILDFLAG(IS_ANDROID)
+  // Equivalent to Browser::OnTabActivated() / OnTabDeactivated().
+  void OnVisibilityChanged(content::Visibility visibility) override;
+  // Equivalent to InstantController::TabObserver::NavigationEntryCommitted.
+  void UpdateInfoForInstantNtp();
+#endif
+
   // Overridden from SearchIPCRouter::Delegate:
   void FocusOmnibox(bool focus) override;
   void OnDeleteMostVisitedItem(const GURL& url) override;
@@ -139,6 +151,10 @@ class SearchTabHelper : public content::WebContentsObserver,
   raw_ptr<InstantService> instant_service_;
 
   bool is_setting_title_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  content::Visibility last_visibility_ = content::Visibility::HIDDEN;
+#endif
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   ui::ScopedUnownedUserData<SearchTabHelper> scoped_unowned_user_data_;

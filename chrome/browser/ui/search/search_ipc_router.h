@@ -136,6 +136,8 @@ class SearchIPCRouter : public search::mojom::EmbeddedSearch {
     embedded_search_client_factory_ = std::move(factory);
   }
 
+  bool is_active_tab_for_testing() const { return is_active_tab_; }
+
  private:
   friend class SearchIPCRouterPolicyBrowserTest;
   friend class SearchIPCRouterTest;

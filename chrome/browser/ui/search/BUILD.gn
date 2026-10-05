@@ -247,3 +247,35 @@ if (!is_android) {
     ]
   }
 }
+
+if (is_android && enable_webui_ntp) {
+  source_set("android_unit_tests") {
+    testonly = true
+    sources = [ "search_tab_helper_android_unittest.cc" ]
+    deps = [
+      ":impl",
+      ":search",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/common",
+      "//chrome/common/search:mojo_bindings",
+      "//chrome/test:test_support",
+      "//chrome/test/base:browser_test_waiters",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//components/search",
+      "//components/search_engines",
+      "//components/tabs:public",
+      "//components/tabs:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//mojo/public/cpp/bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

@@ -318,11 +318,13 @@ bool InstantService::ShouldServiceRequest(
 }
 
 void InstantService::SetNtpElementsNtpTheme() {
+  // Always make sure `theme_` is built, since UpdateNtpTheme() notifies
+  // observers right after this, even on platforms without a ThemeService.
+  GetInitializedNtpTheme();
 #if !BUILDFLAG(IS_ANDROID)
-  NtpTheme* theme = GetInitializedNtpTheme();
   const ui::ThemeProvider& theme_provider =
       ThemeService::GetThemeProviderForProfile(profile_);
-  theme->logo_alternate = theme_provider.GetDisplayProperty(
-                              ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
+  theme_->logo_alternate = theme_provider.GetDisplayProperty(
+                               ThemeProperties::NTP_LOGO_ALTERNATE) == 1;
 #endif
 }

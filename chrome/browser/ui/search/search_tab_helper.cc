@@ -112,6 +112,13 @@ SearchTabHelper::SearchTabHelper(tabs::TabInterface& tab,
     instant_service_->AddObserver(this);
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  last_visibility_ = web_contents->GetVisibility();
+  if (last_visibility_ != content::Visibility::HIDDEN) {
+    ipc_router_.OnTabActivated();
+  }
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
   OmniboxTabHelper::CreateForWebContents(web_contents, profile());
   OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
@@ -241,12 +248,42 @@ void SearchTabHelper::NavigationEntryCommitted(
 
   if (search::IsInstantNTP(web_contents())) {
     ipc_router_.SetInputInProgress(IsInputInProgress());
+
+#if BUILDFLAG(IS_ANDROID)
+    UpdateInfoForInstantNtp();
+#endif
   }
 
   if (InInstantProcess(instant_service_, web_contents())) {
     ipc_router_.OnNavigationEntryCommitted();
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void SearchTabHelper::OnVisibilityChanged(content::Visibility visibility) {
+  const bool was_hidden = last_visibility_ == content::Visibility::HIDDEN;
+  last_visibility_ = visibility;
+
+  // Visibility changed from any state to HIDDEN.
+  if (visibility == content::Visibility::HIDDEN) {
+    OnTabDeactivated();
+    return;
+  }
+
+  // Visibility changed from HIDDEN to any state.
+  if (was_hidden) {
+    OnTabActivated();
+  }
+}
+
+void SearchTabHelper::UpdateInfoForInstantNtp() {
+  if (instant_service_) {
+    instant_service_->UpdateNtpTheme();
+    instant_service_->UpdateMostVisitedInfo();
+    instant_service_->OnNewTabPageOpened();
+  }
+}
+#endif
 
 void SearchTabHelper::NtpThemeChanged(NtpTheme theme) {
   // Populate theme colors for this tab.
