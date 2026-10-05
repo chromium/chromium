@@ -309,6 +309,8 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         updateBrowserControlsHeight(animate);
         updateBackgroundColorFromLayers();
         if (mBrowserControlsSizer.offsetOverridden()) {
+            // Reposition immediately when offsets are overridden so layers receive updated resting
+            // offsets without waiting for a subsequent offset frame.
             repositionLayers(
                     mBrowserControlsSizer.getBottomControlOffset(),
                     mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -494,6 +496,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         int minHeightBottomOffset = mTotalHeight - bottomControlsMinHeightOffset;
 
         boolean isAnimating = mCurrentlyAnimating;
+        // While the browser overrides offsets and no height animation is running, `bottomOffset`
+        // is the browser-driven scroll-off offset rather than a height transition, so layers use
+        // their resting offsets (consumers such as BottomControlsMediator add the browser offset
+        // themselves).
+        boolean isOverriddenAtRest = !isAnimating && mBrowserControlsSizer.offsetOverridden();
+        boolean useRestingOffsets =
+                isOverriddenAtRest || (!isAnimating && !offsetsAppliedByBrowser);
 
         // STEP 1: Calculate the height for each layer. Given we have limited number of layers,
         // looping through layers shouldn't be too costly.
@@ -530,7 +539,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             //
             // When the offsets are applied by the browser, the browser should be in full control of
             // the layers' positions, and the behavior is identical to having BCIV disabled.
-            if (!offsetsAppliedByBrowser && !isAnimating) {
+            if (useRestingOffsets) {
                 layerYOffset = mLayerRestingOffsets.get(type);
             } else {
                 if (shouldScrollOff) {
@@ -582,7 +591,9 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         // the screen. `animated` is only true when the android views for the browser controls are
         // visible, or when there is a browser driven animation in progress (meaning there are no
         // composited views present.)
-        if ((isAnimating || animated) && bottomOffset != 0) {
+        //
+        // When isOverriddenAtRest, `bottomOffset` is a scroll-off offset, not a height delta.
+        if ((isAnimating || animated) && bottomOffset != 0 && !isOverriddenAtRest) {
             // When bottomOffset is negative, the browser controls is going through a height
             // reduction.
             //

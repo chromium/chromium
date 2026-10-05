@@ -40,6 +40,7 @@ import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
@@ -2338,5 +2339,284 @@ public class BottomControlsStackerUnitTest {
         assertTrue(
                 "No height mismatch warning should be logged before first requestLayerUpdate.",
                 logs.stream().noneMatch(item -> item.msg.contains("Height mismatch observed")));
+    }
+
+    @Test
+    public void testRequestLayerUpdate_offsetOverriddenMidScroll_doesNotBakeOffsetIntoYOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+
+        // Trigger requestLayerUpdate(false) mid-scroll at offset 30.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        mBottomControlsStacker.requestLayerUpdate(false);
+        assertLayerYOffset(bar, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+    }
+
+    @Test
+    public void
+            testRequestLayerUpdate_offsetOverriddenMidScroll_withChin_doesNotBakeOffsetIntoYOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        48,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, -48);
+            assertLayerYOffset(chin, 0);
+        }
+
+        // Trigger requestLayerUpdate(false) mid-scroll at offset 30.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        mBottomControlsStacker.requestLayerUpdate(false);
+        assertLayerYOffset(bar, -48);
+        assertLayerYOffset(chin, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, -48);
+            assertLayerYOffset(chin, 0);
+        }
+    }
+
+    @Test
+    public void
+            testRequestLayerUpdate_offsetOverriddenMidScroll_chinHides_updatesToRestingOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        48,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, -48);
+            assertLayerYOffset(chin, 0);
+        }
+
+        // Trigger requestLayerUpdate(false) mid-scroll at offset 30 with chin hidden.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        chin.setVisibility(LayerVisibility.HIDDEN);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        assertLayerYOffset(bar, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+    }
+
+    @Test
+    public void
+            testRequestLayerUpdate_offsetOverriddenMidScroll_chinShows_updatesToRestingOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        48,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.HIDDEN);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+
+        // Trigger requestLayerUpdate(false) mid-scroll at offset 30 with chin shown.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        chin.setVisibility(LayerVisibility.VISIBLE);
+        mBottomControlsStacker.requestLayerUpdate(false);
+        assertLayerYOffset(bar, -48);
+        assertLayerYOffset(chin, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, -48);
+            assertLayerYOffset(chin, 0);
+        }
+    }
+
+    @Test
+    public void
+            testOnBottomControlsHeightChanged_offsetOverriddenMidScroll_doesNotBakeOffsetIntoYOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        doReturn(false).when(mBrowserControlsSizer).shouldAnimateBrowserControlsHeightChanges();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+
+        // Trigger onBottomControlsHeightChanged mid-scroll at offset 30.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        mBottomControlsStacker.onBottomControlsHeightChanged(60, 0);
+        assertLayerYOffset(bar, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+    }
+
+    @Test
+    public void
+            testOnOffsetTagsInfoChanged_offsetOverriddenMidScroll_doesNotBakeOffsetIntoYOffset() {
+        doReturn(true).when(mBrowserControlsSizer).offsetOverridden();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                null, new BrowserControlsOffsetTagsInfo(), BrowserControlsState.SHOWN, false);
+
+        TestLayer bar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        60,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bar);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        for (int bottomOffset : new int[] {0, 15, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
+
+        // Trigger onOffsetTagsInfoChanged with shouldUpdateOffsets=true mid-scroll at offset 30.
+        doReturn(30).when(mBrowserControlsSizer).getBottomControlOffset();
+        doReturn(0).when(mBrowserControlsSizer).getBottomControlsMinHeightOffset();
+        mBottomControlsStacker.onOffsetTagsInfoChanged(
+                new BrowserControlsOffsetTagsInfo(),
+                new BrowserControlsOffsetTagsInfo(),
+                BrowserControlsState.SHOWN,
+                /* shouldUpdateOffsets= */ true);
+        assertLayerYOffset(bar, 0);
+
+        for (int bottomOffset : new int[] {45, 60, 30}) {
+            onBottomControlsOffsetChanged(
+                    bottomOffset,
+                    /* bottomControlsMinHeightOffset= */ 0,
+                    /* requestNewFrame= */ true,
+                    /* isVisibilityForced= */ true);
+            assertLayerYOffset(bar, 0);
+        }
     }
 }
