@@ -207,20 +207,19 @@ double FuzzyFinder::ScoreItem(const FuzzySearchItem* item,
   return best_score;
 }
 
-// Evaluates a candidate string against a query with typo, transposition, and
-// boundary tolerance. Returns a normalized confidence score in [0.0, 1.0].
+// Matrix Representation Example:
+// Query "tab" (M=3) vs. Candidate "tabs" (N=4). Rows are query characters (j)
+// and columns are candidate characters (i). Cells with i < j are never
+// evaluated ("-").
 //
 // clang-format off
-// Matrix Representation Example:
-// Query "tab" (M=3) vs. Candidate "tabs" (N=4):
-//
-//   Query       't' (i=0)     'a' (i=1)     'b' (i=2)     's' (i=3)
+//   Candidate   't' (i=0)     'a' (i=1)     'b' (i=2)     's' (i=3)
 //             +-------------+-------------+-------------+-------------+
 //   't' (j=0) | 32 (match)  | 26 (gap -6) | 24 (gap -2) | 22 (gap -2) |
 //             +-------------+-------------+-------------+-------------+
-//   'a' (j=1) |  0 (no diag)| 54 (match)  | 48 (gap -6) | 46 (gap -2) |
+//   'a' (j=1) |      -      | 54 (match)  | 48 (gap -6) | 46 (gap -2) |
 //             +-------------+-------------+-------------+-------------+
-//   'b' (j=2) |  0 (no diag)|  0 (no diag)| 76 (match)  | 70 (gap -6) |
+//   'b' (j=2) |      -      |      -      | 76 (match)  | 70 (gap -6) |
 //             +-------------+-------------+-------------+-------------+
 // clang-format on
 //
@@ -252,11 +251,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   const size_t m = query.length();
   const size_t n = candidate.length();
 
-  // Guard against empty strings or queries that exceed the candidate length.
-  // Because the inner alignment loop for row j starts at candidate index i = j,
-  // when m > n the final row (m - 1) is never evaluated (i = j >= n is
-  // false), meaning m > n can never produce a match. Early exiting here
-  // avoids unnecessary heap matrix allocations.
+  // Row j starts at candidate index i = j, so a query longer than the candidate
+  // can never be fully aligned.
   //
   // TODO(crbug.com/549169077): Support queries longer than candidate strings.
   if (m == 0 || m > n) {
@@ -287,8 +283,8 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
                                   query[j - 1] == candidate[i]);
 
       // 2. Diagonal match steps:
-      // Only allow diagonal steps if the previous query prefix had a
-      // valid alignment (score > 0) to ensure full query coverage.
+      // For j > 0, only allow diagonal steps if the previous query prefix had
+      // a valid alignment (score > 0) to ensure full query coverage.
       if (is_exact_match && j == 0) {
         // The first query character is the base case where a new match
         // begins. Matching at a word boundary receives an initial boundary
@@ -351,10 +347,9 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   }
 
   // --- Final Score Extraction ---
-  // The query matching process must account for all M characters of the query.
-  // Row (M - 1) holds the scores where the full query has been matched. The
-  // match can finish at any character in the candidate string, so we find the
-  // maximum score across all columns in the final row.
+  // Row M - 1 holds alignments of the full query. The match may end at any
+  // candidate position, so take the best score in that row, breaking ties in
+  // favor of the longer consecutive run.
   const size_t last_row = (m - 1) * n;
   int max_score = 0;
   size_t best_i = 0;
@@ -425,14 +420,9 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   }
 
   // --- Score Normalization ---
-  // `max_possible` represents the theoretical maximum score for a query of
-  // length M matching ideal word boundaries across multi-word items.
-  // Normalizing to [0.0, 1.0] makes confidence scores scale-invariant across
-  // different query lengths.
-  // The baseline bias (kScoreBias) ensures that any candidate that
-  // successfully aligns the full query (via exact matches, adjacent
-  // transpositions, or substitutions) maps to [0.25, 1.0], keeping it
-  // distinctly above non-matches (0.0).
+  // `max_possible` is the score of a query whose every character matches at a
+  // word boundary. Normalizing by it keeps scores comparable across query
+  // lengths, and kScoreBias lifts any full alignment above non-matches.
   const double max_possible =
       kInitialBoundaryBonus + kMatchScore +
       (kBoundaryBonus + kMatchScore) * static_cast<double>(m - 1);

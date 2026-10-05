@@ -108,18 +108,17 @@ class FuzzyFinder {
                    std::vector<gfx::Range>& match_ranges);
 
   // Evaluates a candidate string against a query with typo, transposition, and
-  // boundary tolerance using reusable scratch buffers. Returns a normalized
-  // confidence score in [0.0, 1.0]. If `match_ranges` is provided, populates
-  // it with exact match character spans via backtracking.
+  // boundary tolerance. Returns a normalized confidence score in [0.0, 1.0].
+  // If `match_ranges` is provided, populates it with exact match character
+  // spans via backtracking.
   double MatchCandidate(std::u16string_view query,
                         std::u16string_view candidate,
                         std::vector<gfx::Range>* match_ranges = nullptr);
 
   std::vector<raw_ptr<FuzzySearchItem>> searchable_items_;
 
-  // Scratch buffer instantiated once upon FuzzyFinder construction and reused
-  // across candidate alignments to eliminate dynamic heap allocations during
-  // searches.
+  // Alignment matrix scratch buffer, reused across MatchCandidate() calls so
+  // that it is only reallocated when a larger matrix is needed.
   std::vector<AlignmentCell> alignment_matrix_;
 };
 
