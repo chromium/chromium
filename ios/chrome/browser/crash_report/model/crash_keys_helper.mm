@@ -174,24 +174,13 @@ void SetCurrentlySignedIn(bool signedIn) {
 }
 
 void SetConnectedScenesCount(int connectedScenes) {
-  if (connectedScenes > 1) {
-    [[CrashReportUserApplicationState sharedInstance] setValue:kConnectedScenes
-                                                     withValue:connectedScenes];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance]
-        removeValue:kConnectedScenes];
-  }
+  [[CrashReportUserApplicationState sharedInstance] setValue:kConnectedScenes
+                                                   withValue:connectedScenes];
 }
 
 void SetForegroundScenesCount(int foregroundScenes) {
-  if (foregroundScenes > 1) {
-    [[CrashReportUserApplicationState sharedInstance]
-         setValue:kForegroundScenes
-        withValue:foregroundScenes];
-  } else {
-    [[CrashReportUserApplicationState sharedInstance]
-        removeValue:kForegroundScenes];
-  }
+  [[CrashReportUserApplicationState sharedInstance] setValue:kForegroundScenes
+                                                   withValue:foregroundScenes];
 }
 
 void SetRegularTabCount(int tabCount) {

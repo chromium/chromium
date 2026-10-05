@@ -62,10 +62,10 @@ void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 // values from 0 to 2).
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
 
-// Sets the number of connected scenes. Only reported if not 1.
+// Sets the number of connected scenes.
 void SetConnectedScenesCount(int connectedScenes);
 
-// Sets the number of foreground scenes. Only reported if not 1.
+// Sets the number of foreground scenes.
 void SetForegroundScenesCount(int connectedScenes);
 
 // Sets a key in profile dictionary to store the count of regular tabs.
