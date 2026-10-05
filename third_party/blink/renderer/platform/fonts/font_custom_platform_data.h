@@ -76,11 +76,16 @@ class PLATFORM_EXPORT FontCustomPlatformData
   // adjusted_specified_size should come from AdjustedSpecifiedSize() of
   // FontDescription. The latter is needed for correctly applying
   // font-optical-sizing: auto; independent of zoom level.
+  //
+  // synthesize_italic - Requests faux (synthetic) italic slanting.
+  // is_italic_keyword - True only for the `font-style: italic` keyword (not
+  //     `oblique`); drives the OpenType `ital` variation axis.
   const FontPlatformData* GetFontPlatformData(
       float size,
       float adjusted_specified_size,
       bool bold,
-      bool italic,
+      bool synthesize_italic,
+      bool is_italic_keyword,
       const FontSelectionRequest&,
       const FontSelectionCapabilities&,
       const OpticalSizing& optical_sizing,

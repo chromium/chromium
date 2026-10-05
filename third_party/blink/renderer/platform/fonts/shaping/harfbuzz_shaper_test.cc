@@ -2332,7 +2332,7 @@ class IftTestFontSelector final : public FontSelector {
     const FontPlatformData* platform_data =
         custom_platform_data->GetFontPlatformData(
             font_description.EffectiveFontSize(),
-            font_description.AdjustedSpecifiedSize(), false, false,
+            font_description.AdjustedSpecifiedSize(), false, false, false,
             font_description.GetFontSelectionRequest(), normal_capabilities,
             font_description.FontOpticalSizing(),
             font_description.TextRendering(), {},

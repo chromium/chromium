@@ -350,6 +350,8 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
               font_description.SyntheticBoldAllowed(),
           font_description.IsSyntheticItalic() &&
               font_description.SyntheticItalicAllowed(),
+          font_description.GetStyleSyntax() ==
+              FontDescription::StyleSyntax::kItalicKeyword,
           font_description.GetFontSelectionRequest(),
           font_selection_capabilities, font_description.FontOpticalSizing(),
           font_description.TextRendering(),

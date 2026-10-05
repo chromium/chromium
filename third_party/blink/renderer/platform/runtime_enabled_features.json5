@@ -3378,6 +3378,10 @@
       status: "stable",
     },
     {
+      name: "FontVariableItalicAxis",
+      status: "stable",
+    },
+    {
       // crbug.com/40398871
       name: "FontVariationSettingsDescriptor",
       status: "stable",
