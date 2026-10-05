@@ -1509,11 +1509,11 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.FileTypeUpdate.DynamicUpdateResult"
-    enum="SBFileTypeUpdateResult" expires_after="2026-11-15">
+    enum="SBFileTypeUpdateResult" expires_after="2027-11-15">
 <!-- Note to owner: This histogram can be renewed 1 full year if it is still
 useful for Chirp alerts (go/crca-alerts). -->
 
-  <owner>drubery@chromium.org</owner>
+  <owner>yawfrempong@google.com</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     The result of reading/parsing/accepting a new proto for the FileTypePolices
