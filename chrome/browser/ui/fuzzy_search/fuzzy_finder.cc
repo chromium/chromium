@@ -390,8 +390,18 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
   }
 
   // --- Backtracking for Match Spans ---
+  // Matched candidate indices are visited in strictly decreasing order, so
+  // adjacent indices are merged into ranges as they are found and the ranges
+  // are reversed into ascending order at the end.
   if (match_ranges) {
-    std::vector<size_t> matched_indices;
+    auto add_matched_index = [match_ranges](size_t index) {
+      if (!match_ranges->empty() && match_ranges->back().start() == index + 1) {
+        match_ranges->back().set_start(index);
+      } else {
+        match_ranges->emplace_back(index, index + 1);
+      }
+    };
+
     int curr_j = static_cast<int>(m) - 1;
     int curr_i = static_cast<int>(best_i);
 
@@ -401,13 +411,13 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
           static_cast<size_t>(curr_i) + static_cast<size_t>(curr_j) * n;
       switch (alignment_matrix_[idx].step) {
         case MatchStep::kExactMatch:
-          matched_indices.push_back(static_cast<size_t>(curr_i));
+          add_matched_index(static_cast<size_t>(curr_i));
           --curr_j;
           --curr_i;
           break;
         case MatchStep::kTransposition:
-          matched_indices.push_back(static_cast<size_t>(curr_i));
-          matched_indices.push_back(static_cast<size_t>(curr_i - 1));
+          add_matched_index(static_cast<size_t>(curr_i));
+          add_matched_index(static_cast<size_t>(curr_i - 1));
           curr_j -= 2;
           curr_i -= 2;
           break;
@@ -427,26 +437,7 @@ double FuzzyFinder::MatchCandidate(std::u16string_view query,
       }
     }
 
-    if (!matched_indices.empty()) {
-      std::sort(matched_indices.begin(), matched_indices.end());
-      matched_indices.erase(
-          std::unique(matched_indices.begin(), matched_indices.end()),
-          matched_indices.end());
-
-      size_t range_start = matched_indices[0];
-      size_t range_end = range_start + 1;
-
-      for (size_t k = 1; k < matched_indices.size(); ++k) {
-        if (matched_indices[k] == range_end) {
-          ++range_end;
-        } else {
-          match_ranges->emplace_back(range_start, range_end);
-          range_start = matched_indices[k];
-          range_end = range_start + 1;
-        }
-      }
-      match_ranges->emplace_back(range_start, range_end);
-    }
+    std::ranges::reverse(*match_ranges);
   }
 
   // --- Score Normalization ---
