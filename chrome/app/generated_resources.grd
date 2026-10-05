@@ -8703,7 +8703,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Ask AI Mode
       </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NO_NAME" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed out.">
-        Hi, what's on your mind?
+        What's on your mind?
       </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NAMED" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed in.">
         Hi <ph name="FIRST_NAME">$1<ex>Camille</ex></ph>, what's on your mind?
