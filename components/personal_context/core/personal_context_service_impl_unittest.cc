@@ -193,8 +193,14 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   // 1780605015s = 2026-06-04T20:30:15Z.
   proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
   gmail_ref->mutable_gmail_message()->set_subject("Your Passport Application");
-  gmail_ref->mutable_gmail_message()->set_message_url(
-      "https://mail.google.com/mail/u/0/#inbox/123");
+  gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_desktop_web_url("https://mail.google.com/mail/#inbox/123");
+  gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_mobile_web_url("https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
+  gmail_ref->mutable_gmail_message()->set_message_id(111);
+  gmail_ref->mutable_gmail_message()->set_thread_id(222);
   *gmail_ref->mutable_gmail_message()->mutable_timestamp() =
       CreateTimestamp(1780605015, 123456789);
 
@@ -230,8 +236,14 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntitySuccess_Passport) {
   ASSERT_EQ(result->source_references_size(), 2);
   EXPECT_EQ(result->source_references(0).gmail().subject(),
             "Your Passport Application");
-  EXPECT_EQ(result->source_references(0).gmail().message_url(),
-            "https://mail.google.com/mail/u/0/#inbox/123");
+  EXPECT_EQ(
+      result->source_references(0).gmail().message_urls().desktop_web_url(),
+      "https://mail.google.com/mail/#inbox/123");
+  EXPECT_EQ(
+      result->source_references(0).gmail().message_urls().mobile_web_url(),
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
+  EXPECT_EQ(result->source_references(0).gmail().message_id(), 111);
+  EXPECT_EQ(result->source_references(0).gmail().thread_id(), 222);
   EXPECT_THAT(result->source_references(0).gmail().timestamp(),
               EqualsProto(CreateDateTime(2026, 6, 4, 20, 30, 15, 123456789)));
   EXPECT_EQ(result->source_references(1).drive().name(), "passport_scan.pdf");
@@ -335,10 +347,15 @@ TEST_F(PersonalContextServiceImplTest, DecryptEntity_IgnoresUnspecifiedAndEmptyF
   decrypted_entity.mutable_passport()->set_number("  unspecified  ");
   decrypted_entity.mutable_passport()->set_issuing_country("");
 
-  // Gmail reference with unspecified message_url should be ignored.
+  // Gmail reference with unspecified message_urls should be ignored.
   proto::DecryptedReference* gmail_ref = decrypted_entity.add_references();
   gmail_ref->mutable_gmail_message()->set_subject("Subject");
-  gmail_ref->mutable_gmail_message()->set_message_url("UNSPECIFIED");
+  gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_desktop_web_url("UNSPECIFIED");
+  gmail_ref->mutable_gmail_message()
+      ->mutable_message_urls()
+      ->set_mobile_web_url("UNSPECIFIED");
 
   // Drive reference with unspecified name should only set url.
   proto::DecryptedReference* drive_ref = decrypted_entity.add_references();

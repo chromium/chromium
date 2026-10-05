@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/data_model_util.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
@@ -855,11 +856,11 @@ std::vector<MemoryEntrySource> ExtractSources(
   for (const personal_context::proto::SourceReference& proto_source :
        proto_result.sources()) {
     if (proto_source.has_gmail()) {
-      std::string_view message_url = proto_source.gmail().message_url();
+      GURL message_url = GetGmailSourceUrl(proto_source.gmail());
       sources.emplace_back(MemoryEntrySourceType::kGmail,
-                           message_url.empty()
+                           message_url.is_empty()
                                ? std::nullopt
-                               : std::make_optional<std::string>(message_url));
+                               : std::make_optional(message_url.spec()));
     } else if (proto_source.has_photos()) {
       std::string_view photos_url = proto_source.photos().photos_url();
       sources.emplace_back(MemoryEntrySourceType::kPhotos,

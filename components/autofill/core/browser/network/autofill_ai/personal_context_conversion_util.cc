@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -131,7 +132,7 @@ PersonalContextSourceReferenceToSource(
   switch (source_reference.source_reference_case()) {
     case personal_context::proto::SourceReference::kGmail:
       source =
-          Source{.url = GURL(source_reference.gmail().message_url()),
+          Source{.url = GetGmailSourceUrl(source_reference.gmail()),
                  .metadata = GmailSourceMetadata{
                      .title = std::string(source_reference.gmail().subject())}};
       break;
@@ -378,6 +379,18 @@ EntityInstance PersonalContextKnownTravelerNumberToEntityInstance(
 }
 
 }  // namespace
+
+GURL GetGmailSourceUrl(const personal_context::proto::GmailReference& gmail) {
+  // Large form factors (such as tablets and Android desktop form factors) use
+  // the desktop Gmail URL instead of the mobile one.
+  const ui::DeviceFormFactor form_factor = ui::GetDeviceFormFactor();
+  if (form_factor != ui::DEVICE_FORM_FACTOR_DESKTOP &&
+      form_factor != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return GURL(gmail.message_urls().mobile_web_url());
+  }
+
+  return GURL(gmail.message_urls().desktop_web_url());
+}
 
 void MaskSpiiEntityFields(personal_context::proto::Entity& entity) {
   auto GetMaskedValue = [](std::string_view value) {

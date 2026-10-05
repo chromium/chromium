@@ -8,11 +8,15 @@
 #include <optional>
 
 #include "components/personal_context/proto/features/common_data.pb.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
 class EntityInstance;
 class EntityType;
+
+// Returns the platform- and form-factor-appropriate URL for `gmail`.
+GURL GetGmailSourceUrl(const personal_context::proto::GmailReference& gmail);
 
 // Converts an Autofill AI EntityType to a Personal Context proto EntityType.
 personal_context::proto::EntityType

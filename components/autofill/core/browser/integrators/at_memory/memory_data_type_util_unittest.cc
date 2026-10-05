@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
+#include "components/autofill/core/browser/network/autofill_ai/personal_context_conversion_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
@@ -222,8 +223,10 @@ TEST(MemoryDataTypeUtilTest, ExtractSourcesFromProto) {
   personal_context::proto::AtMemorySearchResult proto_result;
   personal_context::proto::SourceReference* source_gmail =
       proto_result.add_sources();
-  source_gmail->mutable_gmail()->set_message_url(
-      "https://mail.google.com/mail/u/0/#inbox/123");
+  source_gmail->mutable_gmail()->mutable_message_urls()->set_desktop_web_url(
+      "https://mail.google.com/mail/#inbox/123");
+  source_gmail->mutable_gmail()->mutable_message_urls()->set_mobile_web_url(
+      "https://mail.google.com/mail/mu/mp/#cv/Inbox/123");
 
   personal_context::proto::SourceReference* source_photos =
       proto_result.add_sources();
@@ -234,7 +237,7 @@ TEST(MemoryDataTypeUtilTest, ExtractSourcesFromProto) {
   ASSERT_EQ(sources.size(), 2u);
   EXPECT_EQ(sources[0].type, MemoryEntrySourceType::kGmail);
   EXPECT_EQ(sources[0].deeplink_url,
-            "https://mail.google.com/mail/u/0/#inbox/123");
+            GetGmailSourceUrl(source_gmail->gmail()).spec());
   EXPECT_EQ(sources[1].type, MemoryEntrySourceType::kPhotos);
   EXPECT_EQ(sources[1].deeplink_url, "https://photos.google.com/photo/456");
 }
