@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 /** Tests for MediaSession. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add(MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY)
+@Batch(Batch.PER_CLASS)
 public class MediaSessionTest {
     @Rule
     public ContentShellActivityTestRule mActivityTestRule = new ContentShellActivityTestRule();
@@ -154,6 +156,19 @@ public class MediaSessionTest {
 
     @After
     public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (mObserver != null) {
+                        mObserver.stopObserving();
+                    }
+                    if (mActivityTestRule.getActivity() != null
+                            && mActivityTestRule.getActivity().getShellManager() != null) {
+                        mActivityTestRule
+                                .getActivity()
+                                .getShellManager()
+                                .launchShell("about:blank");
+                    }
+                });
         mAudioFocusChangeListener.abandonAudioFocus();
     }
 
