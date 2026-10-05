@@ -24,6 +24,7 @@ import org.chromium.components.segmentation_platform.prediction_status.Predictio
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * Controller for coordinating the app rating promotion based on user engagement. This class handles
@@ -46,24 +47,30 @@ public class AppRatingPromoController {
      *
      * @param profile The current user profile.
      * @param activity The current activity.
+     * @param countryCode The variations country code, or null if unavailable.
      * @return Whether we launched an asynchronous process to check the segmentation result and show
      *     the promo if the user is eligible.
      */
-    public static boolean maybeShowPromo(Profile profile, Activity activity) {
+    public static boolean maybeShowPromo(
+            Profile profile, Activity activity, @Nullable String countryCode) {
         if (!ChromeFeatureList.sAndroidAppRatingPrompt.isEnabled()
                 || !UserPrefs.areNativePrefsLoaded(profile)) {
             return false;
         }
 
-        // Bypasses all eligibility checks (Segmentation, prefs, etc.) for manual QA.
+        // Bypasses all eligibility checks (country, Segmentation, prefs, etc.) for manual QA.
         if (ChromeFeatureList.sAndroidAppRatingPromptBypassChecks.getValue()) {
             if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                triggerAppRatingReviewFlow(activity, profile, null);
+                triggerAppRatingReviewFlow(activity, profile, /* tracker= */ null);
             }
             return true;
         }
 
-        // Ensure the prompt is only shown once
+        if (!Locale.CANADA.getCountry().equalsIgnoreCase(countryCode)) {
+            return false;
+        }
+
+        // Ensure the prompt is only shown once.
         if (UserPrefs.get(profile).getBoolean(Pref.APP_RATING_PROMPT_SHOWN)) {
             return false;
         }

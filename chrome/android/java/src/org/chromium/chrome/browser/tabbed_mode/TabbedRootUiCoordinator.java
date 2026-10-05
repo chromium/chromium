@@ -3058,7 +3058,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        if (AppRatingPromoController.maybeShowPromo(profile, mActivity)) {
+        if (AppRatingPromoController.maybeShowPromo(
+                profile,
+                mActivity,
+                ChromeActivitySessionTracker.getInstance().getVariationsLatestCountry())) {
             UserEducationUtils.recordOptionalPromoType(OptionalPromoType.APP_RATING_PROMPT);
             return true;
         }
