@@ -51,7 +51,7 @@ namespace blink {
 
 // Multiplying the floating point size by 100 gives two decimal point
 // precision which should be sufficient.
-static constexpr unsigned kFontSizePrecisionMultiplier = 100;
+static constexpr wtf_size_t kFontSizePrecisionMultiplier = 100;
 
 struct FontCacheKey {
   DISALLOW_NEW();
@@ -61,7 +61,7 @@ struct FontCacheKey {
   FontCacheKey(
       FontFaceCreationParams creation_params,
       float font_size,
-      unsigned options,
+      uint32_t options,
       float device_scale_factor,
       FontSizeAdjust size_adjust,
       scoped_refptr<const FontVariationSettings> variation_settings,
@@ -69,7 +69,7 @@ struct FontCacheKey {
       scoped_refptr<const FontVariantAlternates> font_variant_alternates,
       bool is_unique_match)
       : creation_params_(creation_params),
-        font_size_(base::saturated_cast<unsigned>(
+        font_size_(base::saturated_cast<wtf_size_t>(
             font_size * kFontSizePrecisionMultiplier)),
         options_(options),
         device_scale_factor_(device_scale_factor),
@@ -80,11 +80,11 @@ struct FontCacheKey {
         is_unique_match_(is_unique_match) {}
 
   FontCacheKey(HashTableDeletedValueType)
-      : font_size_(std::numeric_limits<unsigned>::max()),
+      : font_size_(std::numeric_limits<wtf_size_t>::max()),
         device_scale_factor_(std::numeric_limits<float>::max()) {}
 
   bool IsHashTableDeletedValue() const {
-    return font_size_ == std::numeric_limits<unsigned>::max() &&
+    return font_size_ == std::numeric_limits<wtf_size_t>::max() &&
            device_scale_factor_ == std::numeric_limits<float>::max();
   }
 
@@ -128,7 +128,7 @@ struct FontCacheKey {
            is_unique_match_ == other.is_unique_match_;
   }
 
-  static constexpr unsigned PrecisionMultiplier() {
+  static constexpr wtf_size_t PrecisionMultiplier() {
     return kFontSizePrecisionMultiplier;
   }
 
@@ -142,8 +142,8 @@ struct FontCacheKey {
 
  private:
   FontFaceCreationParams creation_params_;
-  unsigned font_size_ = 0;
-  unsigned options_ = 0;
+  wtf_size_t font_size_ = 0;
+  uint32_t options_ = 0;
   // FontCacheKey is the key to retrieve FontPlatformData entries from the
   // FontCache. FontPlatformData queries the platform's font render style, which
   // is dependent on the device scale factor. That's why we need

@@ -182,7 +182,7 @@ TEST_F(FontCacheTest, MAYBE_GetLargerThanMaxUnsignedFont) {
   FontDescription font_description;
   font_description.SetGenericFamily(FontDescription::kStandardFamily);
   font_description.SetComputedSize(
-      static_cast<float>(std::numeric_limits<unsigned>::max()) + 1.f);
+      static_cast<float>(std::numeric_limits<wtf_size_t>::max()) + 1.0f);
   FontFaceCreationParams creation_params;
   const blink::SimpleFontData* font_data =
       font_cache.GetFontData(font_description, AtomicString());

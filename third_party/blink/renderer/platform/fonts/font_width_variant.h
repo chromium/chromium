@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -39,7 +40,7 @@ enum FontWidthVariant {
   kLastFontWidthVariant = kQuarterWidth
 };
 
-const unsigned kFontWidthVariantWidth = 2;
+const wtf_size_t kFontWidthVariantWidth = 2;
 
 static_assert(kLastFontWidthVariant >> kFontWidthVariantWidth == 0,
               "FontWidthVariantWidth must be correct");

@@ -45,11 +45,11 @@ enum class FontOrientation : uint8_t {
   // i.e., writing-mode: vertical-*, text-orientation: upright
   kVerticalUpright = 3,
 };
-const unsigned kFontOrientationBitCount = 2;
-const unsigned kFontOrientationAnyUprightMask = 2;
+const wtf_size_t kFontOrientationBitCount = 2;
+const uint32_t kFontOrientationAnyUprightMask = 2;
 
 inline bool IsVerticalAnyUpright(FontOrientation orientation) {
-  return static_cast<unsigned>(orientation) & kFontOrientationAnyUprightMask;
+  return static_cast<uint32_t>(orientation) & kFontOrientationAnyUprightMask;
 }
 inline bool IsVerticalNonCJKUpright(FontOrientation orientation) {
   return orientation == FontOrientation::kVerticalUpright;

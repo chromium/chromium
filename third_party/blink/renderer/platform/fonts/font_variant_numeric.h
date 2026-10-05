@@ -35,7 +35,7 @@ class FontVariantNumeric {
 
   FontVariantNumeric() : fields_as_unsigned_(0) {}
 
-  static FontVariantNumeric InitializeFromUnsigned(unsigned init_value) {
+  static FontVariantNumeric InitializeFromUnsigned(uint32_t init_value) {
     return FontVariantNumeric(init_value);
   }
 
@@ -78,21 +78,22 @@ class FontVariantNumeric {
   String ToString() const;
 
  private:
-  FontVariantNumeric(unsigned init_value) : fields_as_unsigned_(init_value) {}
+  explicit FontVariantNumeric(uint32_t init_value)
+      : fields_as_unsigned_(init_value) {}
 
   struct BitFields {
-    unsigned numeric_figure_ : 2;
-    unsigned numeric_spacing_ : 2;
-    unsigned numeric_fraction_ : 2;
-    unsigned ordinal_ : 1;
-    unsigned slashed_zero_ : 1;
+    uint32_t numeric_figure_ : 2;
+    uint32_t numeric_spacing_ : 2;
+    uint32_t numeric_fraction_ : 2;
+    uint32_t ordinal_ : 1;
+    uint32_t slashed_zero_ : 1;
   };
 
   union {
     BitFields fields_;
-    unsigned fields_as_unsigned_;
+    uint32_t fields_as_unsigned_;
   };
-  static_assert(sizeof(BitFields) == sizeof(unsigned),
+  static_assert(sizeof(BitFields) == sizeof(uint32_t),
                 "Mapped union types must match in size.");
 
   // Used in SetVariant to store the value in m_fields.m_variantNumeric;

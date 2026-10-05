@@ -112,7 +112,7 @@ class PLATFORM_EXPORT FontFallbackList
     return cached_primary_simple_font_data_for_tab_size_;
   }
 
-  const FontData* FontDataAt(const FontDescription&, unsigned index);
+  const FontData* FontDataAt(const FontDescription&, wtf_size_t index);
 
   base::span<const FontFeatureRange> GetFontFeatures(const FontDescription&);
   bool HasSimpleFontFeatures(const FontDescription&);

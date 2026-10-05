@@ -36,7 +36,7 @@ class FontVariantEastAsian {
 
   FontVariantEastAsian() : fields_as_unsigned_(0) {}
 
-  static FontVariantEastAsian InitializeFromUnsigned(unsigned init_value) {
+  static FontVariantEastAsian InitializeFromUnsigned(uint32_t init_value) {
     return FontVariantEastAsian(init_value);
   }
 
@@ -61,20 +61,21 @@ class FontVariantEastAsian {
   String ToString() const;
 
  private:
-  FontVariantEastAsian(unsigned init_value) : fields_as_unsigned_(init_value) {}
+  explicit FontVariantEastAsian(uint32_t init_value)
+      : fields_as_unsigned_(init_value) {}
 
   struct BitFields {
-    unsigned form_ : 3;
-    unsigned width_ : 2;
-    unsigned ruby_ : 1;
+    uint32_t form_ : 3;
+    uint32_t width_ : 2;
+    uint32_t ruby_ : 1;
     // Ensure |FontDescription| has enough bits when adding values.
   };
 
   union {
     BitFields fields_;
-    unsigned fields_as_unsigned_;
+    uint32_t fields_as_unsigned_;
   };
-  static_assert(sizeof(BitFields) == sizeof(unsigned),
+  static_assert(sizeof(BitFields) == sizeof(uint32_t),
                 "Mapped union types must match in size.");
 
   // Used in setVariant to store the value in m_fields.m_variantNumeric;

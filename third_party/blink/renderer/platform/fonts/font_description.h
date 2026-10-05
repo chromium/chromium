@@ -163,10 +163,10 @@ class PLATFORM_EXPORT FontDescription {
 
     String ToString() const;
 
-    unsigned common : 2;
-    unsigned discretionary : 2;
-    unsigned historical : 2;
-    unsigned contextual : 2;
+    uint32_t common : 2;
+    uint32_t discretionary : 2;
+    uint32_t historical : 2;
+    uint32_t contextual : 2;
 
     bool operator==(const VariantLigatures& other) const {
       return common == other.common && discretionary == other.discretionary
@@ -183,8 +183,8 @@ class PLATFORM_EXPORT FontDescription {
 
     String ToString() const;
 
-    unsigned keyword : 4;      // FontDescription::KeywordSize
-    unsigned is_absolute : 1;  // FontDescription::IsAbsoluteSize
+    uint32_t keyword : 4;      // FontDescription::KeywordSize
+    uint32_t is_absolute : 1;  // FontDescription::IsAbsoluteSize
     float value;               // FontDescription::SpecifiedSize
   };
 
@@ -283,7 +283,7 @@ class PLATFORM_EXPORT FontDescription {
   LigaturesState ContextualLigaturesState() const {
     return static_cast<LigaturesState>(fields_.contextual_ligatures_state_);
   }
-  unsigned KeywordSize() const { return fields_.keyword_size_; }
+  wtf_size_t KeywordSize() const { return fields_.keyword_size_; }
   FontSmoothingMode FontSmoothing() const {
     return static_cast<FontSmoothingMode>(fields_.font_smoothing_);
   }
@@ -401,9 +401,9 @@ class PLATFORM_EXPORT FontDescription {
     UpdateTypesettingFeatures();
   }
   void SetTextSpacingTrim(TextSpacingTrim text_spacing_trim) {
-    fields_.text_spacing_trim_ = static_cast<unsigned>(text_spacing_trim);
+    fields_.text_spacing_trim_ = static_cast<uint32_t>(text_spacing_trim);
   }
-  void SetKeywordSize(unsigned s) { fields_.keyword_size_ = s; }
+  void SetKeywordSize(wtf_size_t s) { fields_.keyword_size_ = s; }
   void SetFontSmoothing(FontSmoothingMode smoothing) {
     fields_.font_smoothing_ = smoothing;
   }
@@ -552,50 +552,50 @@ class PLATFORM_EXPORT FontDescription {
 
     String ToString() const;
 
-    unsigned orientation_ : kFontOrientationBitCount;
+    uint32_t orientation_ : kFontOrientationBitCount;
 
-    unsigned width_variant_ : 2;  // FontWidthVariant
+    uint32_t width_variant_ : 2;  // FontWidthVariant
 
-    unsigned variant_caps_ : 3;  // FontVariantCaps
-    unsigned
-        is_absolute_size_ : 1;  // Whether or not CSS specified an explicit size
+    uint32_t variant_caps_ : 3;  // FontVariantCaps
+    // Whether or not CSS specified an explicit size
     // (logical sizes like "medium" don't count).
-    unsigned generic_family_ : 3;  // GenericFamilyType
+    uint32_t is_absolute_size_ : 1;
+    uint32_t generic_family_ : 3;  // GenericFamilyType
 
-    unsigned kerning_ : 2;  // Kerning
+    uint32_t kerning_ : 2;  // Kerning
 
-    unsigned common_ligatures_state_ : 2;
-    unsigned discretionary_ligatures_state_ : 2;
-    unsigned historical_ligatures_state_ : 2;
-    unsigned contextual_ligatures_state_ : 2;
+    uint32_t common_ligatures_state_ : 2;
+    uint32_t discretionary_ligatures_state_ : 2;
+    uint32_t historical_ligatures_state_ : 2;
+    uint32_t contextual_ligatures_state_ : 2;
 
     // We cache whether or not a font is currently represented by a CSS keyword
     // (e.g., medium).  If so, then we can accurately translate across different
     // generic families to adjust for different preference settings (e.g., 13px
     // monospace vs. 16px everything else).  Sizes are 1-8 (like the HTML size
     // values for <font>).
-    unsigned keyword_size_ : 4;
+    uint32_t keyword_size_ : 4;
 
-    unsigned font_smoothing_ : 2;  // FontSmoothingMode
-    unsigned text_rendering_ : 2;  // TextRenderingMode
-    unsigned synthetic_bold_ : 1;
-    unsigned synthetic_italic_ : 1;
-    unsigned synthetic_oblique_ : 1;
-    unsigned font_synthesis_weight_ : 1;
-    unsigned font_synthesis_style_ : 1;
-    unsigned font_synthesis_small_caps_ : 1;
-    unsigned subpixel_text_position_ : 1;
-    unsigned typesetting_features_ : 3;
-    unsigned variant_numeric_ : 8;
-    unsigned variant_east_asian_ : 6;
-    unsigned subpixel_ascent_descent_ : 1;
-    unsigned font_optical_sizing_ : 1;
-    unsigned has_size_adjust_descriptor_ : 1;
-    unsigned variant_position_ : 2;
-    unsigned variant_emoji_ : 2;
-    unsigned text_spacing_trim_ : kTextSpacingTrimBitCount;
+    uint32_t font_smoothing_ : 2;  // FontSmoothingMode
+    uint32_t text_rendering_ : 2;  // TextRenderingMode
+    uint32_t synthetic_bold_ : 1;
+    uint32_t synthetic_italic_ : 1;
+    uint32_t synthetic_oblique_ : 1;
+    uint32_t font_synthesis_weight_ : 1;
+    uint32_t font_synthesis_style_ : 1;
+    uint32_t font_synthesis_small_caps_ : 1;
+    uint32_t subpixel_text_position_ : 1;
+    uint32_t typesetting_features_ : 3;
+    uint32_t variant_numeric_ : 8;
+    uint32_t variant_east_asian_ : 6;
+    uint32_t subpixel_ascent_descent_ : 1;
+    uint32_t font_optical_sizing_ : 1;
+    uint32_t has_size_adjust_descriptor_ : 1;
+    uint32_t variant_position_ : 2;
+    uint32_t variant_emoji_ : 2;
+    uint32_t text_spacing_trim_ : kTextSpacingTrimBitCount;
 
-    unsigned hash_category_ : 2;  // HashCategory
+    uint32_t hash_category_ : 2;  // HashCategory
   };
 
   static_assert(sizeof(BitFields) == sizeof(FieldsAsUnsignedType),

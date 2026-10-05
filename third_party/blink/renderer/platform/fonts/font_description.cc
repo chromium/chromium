@@ -97,7 +97,7 @@ FontDescription::FontDescription()
       font_selection_request_(kNormalWeightValue,
                               kNormalWidthValue,
                               kNormalSlopeValue) {
-  fields_.orientation_ = static_cast<unsigned>(FontOrientation::kHorizontal);
+  fields_.orientation_ = static_cast<uint32_t>(FontOrientation::kHorizontal);
   fields_.width_variant_ = kRegularWidth;
   fields_.variant_caps_ = kCapsNormal;
   fields_.is_absolute_size_ = false;
@@ -126,7 +126,7 @@ FontDescription::FontDescription()
   fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
   fields_.variant_position_ = kNormalVariantPosition;
   fields_.variant_emoji_ = kNormalVariantEmoji;
-  fields_.text_spacing_trim_ = static_cast<unsigned>(TextSpacingTrim::kInitial);
+  fields_.text_spacing_trim_ = static_cast<uint32_t>(TextSpacingTrim::kInitial);
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -308,16 +308,16 @@ FontDescription FontDescription::SizeAdjustedFontDescription(
 FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
     bool is_unique_match) const {
-  unsigned options =
-      static_cast<unsigned>(fields_.variant_emoji_) << 10 |         // bit 11-12
-      static_cast<unsigned>(fields_.font_synthesis_style_) << 9 |   // bit 10
-      static_cast<unsigned>(fields_.font_synthesis_weight_) << 8 |  // bit 9
-      static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |    // bit 8
-      static_cast<unsigned>(fields_.synthetic_italic_) << 6 |       // bit 7
-      static_cast<unsigned>(fields_.synthetic_bold_) << 5 |         // bit 6
-      static_cast<unsigned>(fields_.text_rendering_) << 3 |         // bits 4-5
-      static_cast<unsigned>(fields_.orientation_) << 1 |            // bit 2-3
-      static_cast<unsigned>(fields_.subpixel_text_position_);       // bit 1
+  uint32_t options =
+      static_cast<uint32_t>(fields_.variant_emoji_) << 10 |         // bit 11-12
+      static_cast<uint32_t>(fields_.font_synthesis_style_) << 9 |   // bit 10
+      static_cast<uint32_t>(fields_.font_synthesis_weight_) << 8 |  // bit 9
+      static_cast<uint32_t>(fields_.font_optical_sizing_) << 7 |    // bit 8
+      static_cast<uint32_t>(fields_.synthetic_italic_) << 6 |       // bit 7
+      static_cast<uint32_t>(fields_.synthetic_bold_) << 5 |         // bit 6
+      static_cast<uint32_t>(fields_.text_rendering_) << 3 |         // bits 4-5
+      static_cast<uint32_t>(fields_.orientation_) << 1 |            // bit 2-3
+      static_cast<uint32_t>(fields_.subpixel_text_position_);       // bit 1
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   float device_scale_factor_for_key = FontCache::DeviceScaleFactor();
@@ -394,12 +394,10 @@ void FontDescription::UpdateTypesettingFeatures() {
 
 uint32_t FontDescription::StyleHashWithoutFamilyList() const {
   uint32_t hash = 0;
-  const FontFeatureSettings* settings = FeatureSettings();
-  if (settings) {
-    unsigned num_features = settings->size();
-    for (unsigned i = 0; i < num_features; ++i) {
-      AddIntToHash(hash, settings->at(i).Tag());
-      AddIntToHash(hash, settings->at(i).Value());
+  if (const FontFeatureSettings* settings = FeatureSettings()) {
+    for (const auto& feature : *settings) {
+      AddIntToHash(hash, feature.Tag());
+      AddIntToHash(hash, feature.Value());
     }
   }
 
@@ -428,7 +426,7 @@ uint32_t FontDescription::StyleHashWithoutFamilyList() const {
   AddIntToHash(hash, fields_as_unsigned_.parts[0]);
   AddIntToHash(hash, fields_as_unsigned_.parts[1]);
   AddIntToHash(hash, font_selection_request_.GetHash());
-  AddIntToHash(hash, static_cast<unsigned>(style_syntax_));
+  AddIntToHash(hash, static_cast<uint32_t>(style_syntax_));
   AddIntToHash(hash, size_adjust_.GetHash());
 
   return hash;
@@ -447,7 +445,7 @@ uint32_t FontDescription::GetHash() const {
 }
 
 void FontDescription::SetOrientation(FontOrientation orientation) {
-  fields_.orientation_ = static_cast<unsigned>(orientation);
+  fields_.orientation_ = static_cast<uint32_t>(orientation);
   UpdateSyntheticOblique();
 }
 

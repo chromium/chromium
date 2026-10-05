@@ -16,6 +16,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -106,7 +107,7 @@ class PLATFORM_EXPORT FontPerformance {
   static base::TimeDelta system_fallback_initial_duration_;
   static uint32_t shape_cache_hit_count_;
   static uint32_t shape_cache_miss_count_;
-  static unsigned in_style_;
+  static wtf_size_t in_style_;
 };
 
 }  // namespace blink

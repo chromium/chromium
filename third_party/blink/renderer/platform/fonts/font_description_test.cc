@@ -67,14 +67,14 @@ TEST_F(FontDescriptionTest, TestHashCollision) {
       std::to_array<FontSelectionValue>({kNormalSlopeValue, kItalicSlopeValue});
 
   FontDescription source;
-  Vector<unsigned> hashes;
-  for (size_t i = 0; i < std::size(weights); i++) {
-    source.SetWeight(weights[i]);
-    for (size_t j = 0; j < std::size(stretches); j++) {
-      source.SetStretch(stretches[j]);
-      for (size_t k = 0; k < std::size(slopes); k++) {
-        source.SetStyle(slopes[k]);
-        unsigned hash = source.StyleHashWithoutFamilyList();
+  Vector<uint32_t> hashes;
+  for (const auto& weight : weights) {
+    source.SetWeight(weight);
+    for (const auto& stretch : stretches) {
+      source.SetStretch(stretch);
+      for (const auto& slope : slopes) {
+        source.SetStyle(slope);
+        uint32_t hash = source.StyleHashWithoutFamilyList();
         ASSERT_FALSE(hashes.Contains(hash));
         hashes.push_back(hash);
       }
