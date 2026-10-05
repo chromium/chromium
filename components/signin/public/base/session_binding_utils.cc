@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
@@ -25,6 +24,7 @@
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
@@ -33,46 +33,6 @@
 namespace signin {
 
 namespace {
-
-// Source: JSON Web Signature and Encryption Algorithms
-// https://www.iana.org/assignments/jose/jose.xhtml,
-// RFC 8037 (EdDSA in JOSE), and RFC 9964 (ML-DSA in JOSE).
-std::optional<std::string_view> SignatureAlgorithmToString(
-    crypto::sign::SignatureKind algorithm) {
-  switch (algorithm) {
-    case crypto::sign::RSA_PKCS1_SHA1:
-      return "RS1";
-    case crypto::sign::RSA_PKCS1_SHA256:
-      return "RS256";
-    case crypto::sign::RSA_PKCS1_SHA384:
-      return "RS384";
-    case crypto::sign::RSA_PKCS1_SHA512:
-      return "RS512";
-    case crypto::sign::RSA_PSS_SHA256:
-      return "PS256";
-    case crypto::sign::RSA_PSS_SHA384:
-      return "PS384";
-    case crypto::sign::RSA_PSS_SHA512:
-      return "PS512";
-    case crypto::sign::ECDSA_SHA1:
-      // SHA-1 with ECDSA has no standard JWA representation.
-      return std::nullopt;
-    case crypto::sign::ECDSA_SHA256:
-      return "ES256";
-    case crypto::sign::ECDSA_SHA384:
-      return "ES384";
-    case crypto::sign::ECDSA_SHA512:
-      return "ES512";
-    case crypto::sign::ED25519:
-      return "EdDSA";
-    case crypto::sign::MLDSA_44:
-      return "ML-DSA-44";
-    case crypto::sign::MLDSA_65:
-      return "ML-DSA-65";
-    case crypto::sign::MLDSA_87:
-      return "ML-DSA-87";
-  }
-}
 
 std::string Base64UrlEncode(std::string_view data) {
   std::string output;
@@ -108,7 +68,8 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     crypto::sign::SignatureKind algorithm,
     std::string_view schema,
     const base::DictValue& payload) {
-  ASSIGN_OR_RETURN(std::string_view alg, SignatureAlgorithmToString(algorithm));
+  ASSIGN_OR_RETURN(std::string_view alg,
+                   net::device_bound_sessions::ToJoseAlgorithm(algorithm));
   auto header = base::DictValue().Set("alg", alg).Set("typ", "jwt");
   if (!schema.empty()) {
     header.Set("schema", schema);
@@ -141,19 +102,6 @@ GURL RemoveQueryAndFragment(const GURL& original) {
 
 }  // namespace
 
-std::optional<crypto::sign::SignatureKind> SignatureAlgorithmFromString(
-    std::string_view algorithm) {
-  if (base::EqualsCaseInsensitiveASCII(algorithm, "ES256")) {
-    return crypto::sign::ECDSA_SHA256;
-  }
-
-  if (base::EqualsCaseInsensitiveASCII(algorithm, "RS256")) {
-    return crypto::sign::RSA_PKCS1_SHA256;
-  }
-
-  return std::nullopt;
-}
-
 std::vector<crypto::sign::SignatureKind> ParseSignatureAlgorithmList(
     std::string_view algorithm_list) {
   std::vector<crypto::sign::SignatureKind> result;
@@ -161,7 +109,7 @@ std::vector<crypto::sign::SignatureKind> ParseSignatureAlgorithmList(
            algorithm_list, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
            base::SplitResult::SPLIT_WANT_NONEMPTY)) {
     std::optional<crypto::sign::SignatureKind> algorithm =
-        signin::SignatureAlgorithmFromString(algorithm_str);
+        net::device_bound_sessions::FromJoseAlgorithm(algorithm_str);
     if (algorithm) {
       result.push_back(*algorithm);
     }

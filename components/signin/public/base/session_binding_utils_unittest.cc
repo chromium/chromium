@@ -67,19 +67,6 @@ std::string Base64UrlEncode(std::string_view input) {
 
 }  // namespace
 
-TEST(SessionBindingUtilsTest, SignatureAlgorithmFromString) {
-  using enum crypto::sign::SignatureKind;
-  EXPECT_EQ(SignatureAlgorithmFromString("ES256"), ECDSA_SHA256);
-  EXPECT_EQ(SignatureAlgorithmFromString("es256"), ECDSA_SHA256);
-
-  EXPECT_EQ(SignatureAlgorithmFromString("RS256"), RSA_PKCS1_SHA256);
-  EXPECT_EQ(SignatureAlgorithmFromString("rs256"), RSA_PKCS1_SHA256);
-
-  EXPECT_EQ(SignatureAlgorithmFromString("ES256 blah"), std::nullopt);
-  EXPECT_EQ(SignatureAlgorithmFromString("AB512"), std::nullopt);
-  EXPECT_EQ(SignatureAlgorithmFromString(""), std::nullopt);
-}
-
 TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
   using enum crypto::sign::SignatureKind;
   EXPECT_THAT(ParseSignatureAlgorithmList("ES256 RS256"),
@@ -93,6 +80,8 @@ TEST(SessionBindingUtilsTest, ParseSignatureAlgorithmList) {
   // Unknown algorithms are skipped.
   EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 ES256 WAT2 RS256 WAT3"),
               ElementsAre(ECDSA_SHA256, RSA_PKCS1_SHA256));
+  // Algorithm names are case-sensitive.
+  EXPECT_THAT(ParseSignatureAlgorithmList("es256 rs256"), ElementsAre());
   EXPECT_THAT(ParseSignatureAlgorithmList(""), ElementsAre());
   // All unknown -- empty result.
   EXPECT_THAT(ParseSignatureAlgorithmList("WAT1 WAT2 WAT3"), ElementsAre());

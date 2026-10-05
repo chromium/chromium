@@ -28,11 +28,6 @@ using TokenBindingAuthCode =
 using TokenBindingChallenge =
     base::StrongAlias<class TokenBindingChallengeTag, std::string>;
 
-// Converts a known algorithm string into `crypto::sign::SignatureKind`.
-// Returns std::nullopt if algorithm is not recognized.
-std::optional<crypto::sign::SignatureKind> SignatureAlgorithmFromString(
-    std::string_view algorithm);
-
 // Parses the space-separated list of algorithms into a vector of
 // `crypto::sign::SignatureKind`. Unrecognized algorithms aren't included in the
 // result.

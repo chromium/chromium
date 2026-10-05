@@ -74,6 +74,7 @@ static_library("base") {
     # launches.
     "//components/wallet/core/common:features",
     "//crypto",
+    "//net",
     "//third_party/boringssl",
     "//third_party/icu:icui18n",
     "//third_party/re2",

@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
-#include "components/signin/public/base/session_binding_utils.h"
+#include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
 #include "url/gurl.h"
 
@@ -85,7 +85,7 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
       continue;
     }
     std::optional<crypto::sign::SignatureKind> algo =
-        signin::SignatureAlgorithmFromString(*token);
+        net::device_bound_sessions::FromJoseAlgorithm(*token);
     if (algo) {
       supported_algos.push_back(*algo);
     }
