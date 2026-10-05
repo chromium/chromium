@@ -1256,18 +1256,20 @@ void FilePersistentMemoryAllocator::FlushPartial(size_t length, bool sync) {
   scoped_blocking_call.emplace(FROM_HERE, base::BlockingType::MAY_BLOCK);
   BOOL success = ::FlushViewOfFile(data(), length);
   DPCHECK(success);
+#elif BUILDFLAG(IS_FUCHSIA)
+  // Fuchsia's POSIX compatibility layer does not implement msync().
 #elif BUILDFLAG(IS_APPLE)
   // On OSX, "invalidate" removes all cached pages, forcing a re-read from
   // disk. That's not applicable to "flush" so omit it.
   int result =
       ::msync(const_cast<void*>(data()), length, sync ? MS_SYNC : MS_ASYNC);
-  DCHECK_NE(EINVAL, result);
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  DPCHECK(result == 0);
+#elif BUILDFLAG(IS_POSIX)
   // On POSIX, "invalidate" forces _other_ processes to recognize what has
   // been written to disk and so is applicable to "flush".
   int result = ::msync(const_cast<void*>(data()), length,
                        MS_INVALIDATE | (sync ? MS_SYNC : MS_ASYNC));
-  DCHECK_NE(EINVAL, result);
+  DPCHECK(result == 0);
 #else
 #error Unsupported OS.
 #endif
