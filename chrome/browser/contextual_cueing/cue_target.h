@@ -35,7 +35,8 @@ enum class CueTargetType {
   kGlic = 0,
   kTestSource = 1,
   kIndigo = 2,
-  kMaxValue = kIndigo
+  kContextualSearch = 3,
+  kMaxValue = kContextualSearch
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:CueTargetType)
 
@@ -64,7 +65,24 @@ struct GlicCueActionData {
   GlicCueActionData& operator=(const GlicCueActionData&);
 };
 
-using CueActionData = std::variant<std::monostate, GlicCueActionData>;
+// ContextualSearch-specific click data.
+struct ContextualSearchCueActionData {
+  // Query to be submitted to contextual search upon opening.
+  std::string query;
+  // Tabs that should be shared as context with contextual search.
+  std::vector<tabs::TabHandle> tabs_to_share;
+
+  ContextualSearchCueActionData();
+  ~ContextualSearchCueActionData();
+  ContextualSearchCueActionData(const ContextualSearchCueActionData&);
+  ContextualSearchCueActionData(ContextualSearchCueActionData&&);
+  ContextualSearchCueActionData& operator=(
+      const ContextualSearchCueActionData&);
+};
+
+using CueActionData = std::variant<std::monostate,
+                                   GlicCueActionData,
+                                   ContextualSearchCueActionData>;
 
 struct CueAction {
   CueActionData data;

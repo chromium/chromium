@@ -1050,6 +1050,73 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest, ShowCueAndClick) {
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
+                       ShowCueAndClick_ContextualSearchSurface) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP()
+      << "Contextual cueing anchored message not implemented for Android";
+#endif
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Make kGlic ineligible for the page and register a kContextualSearch target
+  // that is eligible for the page.
+  cue_target()->page_eligible = false;
+  class TestContextualSearchCueTarget : public TestCueTarget {
+   public:
+    CueActionData CueActionDataFromResponse(
+        const optimization_guide::proto::ContextualCue& cue,
+        std::vector<tabs::TabHandle> tabs_to_show) const override {
+      ContextualSearchCueActionData data;
+      if (cue.has_contextual_search_surface()) {
+        data.query = cue.contextual_search_surface().query();
+      }
+      data.tabs_to_share = std::move(tabs_to_show);
+      return data;
+    }
+    optimization_guide::proto::ContextualCueingSurface GetSurface()
+        const override {
+      return optimization_guide::proto::
+          CONTEXTUAL_CUEING_SURFACE_CONTEXTUAL_SEARCH;
+    }
+  };
+  auto contextual_search_target =
+      std::make_unique<TestContextualSearchCueTarget>();
+  TestCueTarget* contextual_search_target_ptr = contextual_search_target.get();
+  contextual_cueing_controller()->RegisterCueTarget(
+      CueTargetType::kContextualSearch, std::move(contextual_search_target));
+
+  optimization_guide::proto::ContextualCueingResponse response;
+  auto* cue = response.add_contextual_cues();
+  cue->mutable_anchored_message_cue()->set_action_text("Search action");
+  cue->mutable_anchored_message_cue()->set_anchored_message_text(
+      "Search message");
+  cue->mutable_contextual_search_surface()->set_query("Search query");
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(response);
+  SimulateFilterPassed();
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
+
+  auto* action =
+      actions::ActionManager::Get().FindAction(kActionAnchoredContextualCue);
+  ASSERT_TRUE(action);
+  action->InvokeAction();
+
+  ASSERT_TRUE(contextual_search_target_ptr->HasClickData());
+  EXPECT_EQ("Search query",
+            std::get<ContextualSearchCueActionData>(
+                contextual_search_target_ptr->click_data)
+                .query);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        ShowCueAndClick_DoesNotHideIfIsPersistent) {
 #if BUILDFLAG(IS_ANDROID)
   GTEST_SKIP()

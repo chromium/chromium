@@ -98,6 +98,8 @@ std::optional<CueTargetType> GetTargetType(
   switch (fulfillment_surface_case) {
     case kGeminiInChromeSurface:
       return CueTargetType::kGlic;
+    case kContextualSearchSurface:
+      return CueTargetType::kContextualSearch;
     default:
       return std::nullopt;
   }
@@ -323,19 +325,33 @@ void ContextualCueingController::RunGlicSingleSourcePath(
     return;
   }
 
-  // Delegate page-level classification to the registered Glic target, which
-  // owns the edu/shopping threshold logic.
+  // Delegate page-level classification to the registered category-classifier
+  // targets (Glic and ContextualSearch), which own the edu/shopping threshold
+  // logic.
   CueTarget* glic_target = GetTarget(CueTargetType::kGlic);
-  if (!glic_target) {
+  CueTarget* contextual_search_target =
+      GetTarget(CueTargetType::kContextualSearch);
+  if (!glic_target && !contextual_search_target) {
     CUEING_LOG(base::StringPrintf(
-        "%s ineligible for cue: Target feature kGlic not registered.",
+        "%s ineligible for cue: Target feature not registered.",
         active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
         ContextualCueingDecision::kTargetFeatureNotRegistered);
     return;
   }
 
-  if (!glic_target->IsPageEligible(result, active_web_contents)) {
+  std::optional<CueTargetType> winning_target_type;
+  for (CueTargetType type :
+       {CueTargetType::kGlic, CueTargetType::kContextualSearch}) {
+    CueTarget* target = GetTarget(type);
+    if (target && target->IsEligible() &&
+        target->IsPageEligible(result, active_web_contents)) {
+      winning_target_type = type;
+      break;
+    }
+  }
+
+  if (!winning_target_type) {
     CUEING_LOG(base::StringPrintf(
         "%s ineligible for cue: Failed category classification.",
         active_web_contents->GetLastCommittedURL().spec()));
@@ -358,7 +374,7 @@ void ContextualCueingController::RunGlicSingleSourcePath(
       base::StringPrintf("%s eligible for cue: Category classification "
                          "succeeded. Initiating model execution request.",
                          active_web_contents->GetLastCommittedURL().spec()));
-  InitiateModelExecutionRequest(CueTargetType::kGlic);
+  InitiateModelExecutionRequest(*winning_target_type);
 }
 
 void ContextualCueingController::OnTabRemoved(TabListInterface& tab_list,
@@ -727,15 +743,13 @@ void ContextualCueingController::InitiateModelExecutionRequest(
   CUEING_LOG(base::StringPrintf("Requesting %d background tabs.",
                                 request.background_tabs_size()));
 
-  // In V2, restrict the MES request to only the winning target's surface.
-  if (base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
-    CueTarget* winner = GetTarget(winning_target_type);
-    if (winner &&
-        winner->GetSurface() !=
-            optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
-      request.add_supported_surfaces(winner->GetSurface());
-    }
-  } else {
+  // Restrict the MES request to only the winning target's surface.
+  CueTarget* winner = GetTarget(winning_target_type);
+  if (winner &&
+      winner->GetSurface() !=
+          optimization_guide::proto::CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED) {
+    request.add_supported_surfaces(winner->GetSurface());
+  } else if (!base::FeatureList::IsEnabled(kContextualCueingV2MultiSource)) {
     auto eligible_cue_surfaces = GetEligibleCueSurfaces();
     *request.mutable_supported_surfaces() = {eligible_cue_surfaces.begin(),
                                              eligible_cue_surfaces.end()};
@@ -1023,7 +1037,12 @@ ContextualCueingController::GetTabsToShow(
   CueTabMetrics tab_metrics;
   auto& tab_handle_factory = tabs::SessionMappedTabHandleFactory::GetInstance();
   auto* window = tab_->GetBrowserWindowInterface();
-  for (auto& tab : cue.anchored_message_cue().tabs_to_show()) {
+  const auto& proto_tabs =
+      (!cue.anchored_message_cue().tabs_to_show().empty() ||
+       !cue.has_contextual_search_surface())
+          ? cue.anchored_message_cue().tabs_to_show()
+          : cue.contextual_search_surface().tabs_to_share();
+  for (const auto& tab : proto_tabs) {
     SessionID session_id = SessionID::FromSerializedValue(
         static_cast<SessionID::id_type>(tab.tab_id()));
     if (!session_id.is_valid()) {
@@ -1184,6 +1203,9 @@ void ContextualCueingController::ShowCue(
   if (cue.has_gemini_in_chrome_surface() &&
       cue.gemini_in_chrome_surface().has_prompt()) {
     cue_log->prompt = cue.gemini_in_chrome_surface().prompt();
+  } else if (cue.has_contextual_search_surface() &&
+             cue.contextual_search_surface().has_query()) {
+    cue_log->prompt = cue.contextual_search_surface().query();
   }
   contextual_cueing_service_->LogCueShownMetadata(std::move(cue_log));
 

@@ -17,6 +17,15 @@ GlicCueActionData::GlicCueActionData(GlicCueActionData&&) = default;
 GlicCueActionData& GlicCueActionData::operator=(const GlicCueActionData&) =
     default;
 
+ContextualSearchCueActionData::ContextualSearchCueActionData() = default;
+ContextualSearchCueActionData::~ContextualSearchCueActionData() = default;
+ContextualSearchCueActionData::ContextualSearchCueActionData(
+    const ContextualSearchCueActionData&) = default;
+ContextualSearchCueActionData::ContextualSearchCueActionData(
+    ContextualSearchCueActionData&&) = default;
+ContextualSearchCueActionData& ContextualSearchCueActionData::operator=(
+    const ContextualSearchCueActionData&) = default;
+
 bool CueTarget::SupportsEditPrompt() const {
   return false;
 }
@@ -37,6 +46,8 @@ const char* GetName(CueTargetType type) {
       return "TestSource";
     case CueTargetType::kIndigo:
       return "Indigo";
+    case CueTargetType::kContextualSearch:
+      return "ContextualSearch";
   }
 }
 

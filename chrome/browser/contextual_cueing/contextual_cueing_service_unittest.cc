@@ -343,6 +343,12 @@ TEST_F(ContextualCueingServiceV2Test, HatsSurveyCategoryResolution) {
             ContextualCueSurveyCategory::kUnknown);
   EXPECT_EQ(GetSurveyCategory(CueTargetType::kGlic, "TRAVEL"),
             ContextualCueSurveyCategory::kUnknown);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kContextualSearch, "SHOPPING"),
+            ContextualCueSurveyCategory::kShopping);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kContextualSearch, "LEARNING"),
+            ContextualCueSurveyCategory::kEducation);
+  EXPECT_EQ(GetSurveyCategory(CueTargetType::kContextualSearch, "TRAVEL"),
+            ContextualCueSurveyCategory::kUnknown);
   EXPECT_EQ(GetSurveyCategory(CueTargetType::kTestSource, "Test"),
             ContextualCueSurveyCategory::kUnknown);
 

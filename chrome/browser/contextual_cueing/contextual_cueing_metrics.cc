@@ -125,6 +125,9 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
   if (cue.has_gemini_in_chrome_surface()) {
     event.mutable_cue_details()->set_prompt(
         cue.gemini_in_chrome_surface().prompt());
+  } else if (cue.has_contextual_search_surface()) {
+    event.mutable_cue_details()->set_prompt(
+        cue.contextual_search_surface().query());
   }
 
   return event;
