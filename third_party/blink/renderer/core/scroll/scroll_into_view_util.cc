@@ -64,6 +64,17 @@ ScrollMarkerPseudoElement* FindScrollMarkerForTargetedScroll(
     }
   }
 
+  // The target may be the scroll container that `group` belongs to, e.g.
+  // when a ::column::scroll-marker is activated the scroller itself is the
+  // box being scrolled. There is no scroll target inside the scroller to map
+  // to a scroll marker in that case. Searching backwards in layout order from
+  // the scroller must also be avoided, since it would walk into the
+  // ::scroll-marker-group box if it is laid out before the scroller and pick
+  // up its last ::scroll-marker.
+  if (target_element == &group->UltimateOriginatingElement()) {
+    return nullptr;
+  }
+
   LayoutObject* target_obj = target_element->GetLayoutObject();
   if (!target_obj) {
     return nullptr;
@@ -377,7 +388,7 @@ BubblingScrollResult PerformBubblingScrollIntoViewWithResult(
         }
         if (ScrollMarkerPseudoElement* marker =
                 FindScrollMarkerForTargetedScroll(target_element, group)) {
-          group->PinSelectedMarker(marker);
+          group->PinSelectedMarker(marker, /*apply_snap_alignment=*/true);
         } else {
           group->UnPinSelectedMarker();
         }

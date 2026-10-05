@@ -55,9 +55,10 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement {
 
   // When a "targeted" scroll occurs, we should consider the selected scroll
   // marker pinned until a non-targeted scroll occurs.
-  void PinSelectedMarker(ScrollMarkerPseudoElement* scroll_marker);
+  void PinSelectedMarker(ScrollMarkerPseudoElement* scroll_marker,
+                         bool apply_snap_alignment);
   void UnPinSelectedMarker();
-  bool SelectedMarkerIsPinned() const;
+  CORE_EXPORT bool SelectedMarkerIsPinned() const;
 
   void ScrollSelectedIntoView(bool apply_snap_alignment);
 

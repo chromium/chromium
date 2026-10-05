@@ -120,8 +120,8 @@ class ScrollMarkerGroupData : public GarbageCollected<ScrollMarkerGroupData>,
 
   // When a "targeted" scroll occurs, we should consider the selected scroll
   // marker pinned until a non-targeted scroll occurs.
-  void PinSelectedMarker(Element* scroll_marker) {
-    SetPendingSelectedMarker(scroll_marker, /*apply_snap_alignment=*/true);
+  void PinSelectedMarker(Element* scroll_marker, bool apply_snap_alignment) {
+    SetPendingSelectedMarker(scroll_marker, apply_snap_alignment);
     selected_marker_is_pinned_ = true;
   }
   void UnPinSelectedMarker() { selected_marker_is_pinned_ = false; }

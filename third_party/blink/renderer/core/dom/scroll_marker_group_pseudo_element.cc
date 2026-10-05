@@ -128,7 +128,13 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       !scroll_marker->parentElement()) {
     return;
   }
-  SetSelected(*scroll_marker, apply_snap_alignment);
+  // Activating a scroll marker is a targeted scroll to its scroll target, so
+  // the marker must become selected and stay selected until a non-targeted
+  // scroll happens. Don't rely on the scroll-into-view above to pin the
+  // marker: it infers the targeted marker from the box being scrolled, which
+  // for a ::column::scroll-marker is the scroll container itself, and thus
+  // cannot identify the marker.
+  PinSelectedMarker(scroll_marker, apply_snap_alignment);
   // If the scroller's scroll-marker-group property is set to `links`,
   // per https://drafts.csswg.org/css-overflow-5/#scroll-target-focus
   // we want to start our search from scroll target of ::scroll-marker,
@@ -154,8 +160,10 @@ ScrollMarkerPseudoElement* ScrollMarkerGroupPseudoElement::Selected() const {
 }
 
 void ScrollMarkerGroupPseudoElement::PinSelectedMarker(
-    ScrollMarkerPseudoElement* scroll_marker) {
-  scroll_marker_group_data_->PinSelectedMarker(scroll_marker);
+    ScrollMarkerPseudoElement* scroll_marker,
+    bool apply_snap_alignment) {
+  scroll_marker_group_data_->PinSelectedMarker(scroll_marker,
+                                               apply_snap_alignment);
 }
 
 void ScrollMarkerGroupPseudoElement::UnPinSelectedMarker() {
