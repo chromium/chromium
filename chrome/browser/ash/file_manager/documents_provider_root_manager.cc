@@ -103,19 +103,19 @@ DocumentsProviderRootManager::~DocumentsProviderRootManager() {
 }
 
 void DocumentsProviderRootManager::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(observer, base::NotFatalUntil::M161);
   observer_list_.AddObserver(observer);
 }
 
 void DocumentsProviderRootManager::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(observer);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(observer, base::NotFatalUntil::M161);
   observer_list_.RemoveObserver(observer);
 }
 
 void DocumentsProviderRootManager::SetEnabled(bool enabled) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (enabled == is_enabled_) {
     return;
   }

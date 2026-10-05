@@ -28,10 +28,10 @@ const char kUserTypeManagedGuest[] = "managed_guest";
 const char kUserTypeUnmanaged[] = "unmanaged";
 
 std::string DetermineUserType(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (profile->IsGuestSession())
     return kUserTypeGuest;
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   if (profile->IsChild())
     return kUserTypeChild;
   if (profile->GetProfilePolicyConnector()->IsManaged()) {

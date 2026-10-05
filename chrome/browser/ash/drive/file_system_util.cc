@@ -48,7 +48,7 @@ using user_manager::UserManager;
 namespace {
 
 ConnectionStatus GetDeviceOnlineStatus() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   using enum ConnectionStatus;
 
   if (!ash::NetworkHandler::IsInitialized()) {
@@ -58,7 +58,7 @@ ConnectionStatus GetDeviceOnlineStatus() {
 
   ash::NetworkStateHandler* const handler =
       ash::NetworkHandler::Get()->network_state_handler();
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M161);
 
   const ash::NetworkState* const network = handler->DefaultNetwork();
   if (!network) {
@@ -133,7 +133,7 @@ base::FilePath GetCacheRootPath(const Profile* const profile) {
 
 DriveAvailability CheckDriveAvailabilityForProfile(
     const Profile* const profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Disable Drive for non-Gaia accounts.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -258,7 +258,7 @@ static ConnectionStatus connection_status_for_testing;
 static bool has_connection_status_for_testing = false;
 
 void SetDriveConnectionStatusForTesting(const ConnectionStatus status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   VLOG(1) << "SetDriveConnectionStatusForTesting: " << status;
   connection_status_for_testing = status;
   has_connection_status_for_testing = true;
@@ -266,7 +266,7 @@ void SetDriveConnectionStatusForTesting(const ConnectionStatus status) {
 
 ConnectionStatus GetDriveConnectionStatus(Profile* const profile,
                                           bool* is_online) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   using enum ConnectionStatus;
 
   if (has_connection_status_for_testing) {
@@ -285,7 +285,7 @@ ConnectionStatus GetDriveConnectionStatus(Profile* const profile,
     return kNoService;
   }
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   if (online_status == kMetered &&
       !profile->GetPrefs()->GetBoolean(prefs::kDisableDriveOverCellular)) {
     VLOG(1) << "GetDriveConnectionStatus: metered, but still enabled";

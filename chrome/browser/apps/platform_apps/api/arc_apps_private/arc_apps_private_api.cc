@@ -41,7 +41,8 @@ void ArcAppsPrivateAPI::Shutdown() {
 
 void ArcAppsPrivateAPI::OnListenerAdded(
     const extensions::EventListenerInfo& details) {
-  DCHECK_EQ(details.event_name, api::arc_apps_private::OnInstalled::kEventName);
+  CHECK_EQ(details.event_name, api::arc_apps_private::OnInstalled::kEventName,
+           base::NotFatalUntil::M161);
   auto* prefs = ArcAppListPrefs::Get(Profile::FromBrowserContext(context_));
   if (prefs && !scoped_prefs_observation_.IsObservingSource(prefs))
     scoped_prefs_observation_.Observe(prefs);

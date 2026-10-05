@@ -179,7 +179,7 @@ FileError InitializeMetadata(
     return FILE_ERROR_FAILED;
   }
 
-  DCHECK(metadata_storage);
+  CHECK(metadata_storage, base::NotFatalUntil::M161);
   if (!internal::ResourceMetadataStorage::UpgradeOldDB(
           metadata_storage->directory_path())) {
     LOG(ERROR) << "Cannot upgrade the metadata storage "
@@ -353,7 +353,7 @@ void UmaEmitFirstLaunch(const base::TimeTicks& time_started) {
 // Clears the cache folder at |cache_path|, but preserve |logs_path|.
 // |logs_path| should be a descendent of |cache_path|.
 bool ClearCache(base::FilePath cache_path, base::FilePath logs_path) {
-  DCHECK(cache_path.IsParent(logs_path));
+  CHECK(cache_path.IsParent(logs_path), base::NotFatalUntil::M161);
   bool success = true;
   base::FileEnumerator content_enumerator(
       cache_path, false,
@@ -661,8 +661,8 @@ DriveIntegrationService::DriveIntegrationService(
           identity_manager,
           this,
           std::move(test_drivefs_mojo_listener_factory))) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(profile && !profile->IsOffTheRecord());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile && !profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
@@ -688,7 +688,7 @@ DriveIntegrationService::DriveIntegrationService(
 DriveIntegrationService::~DriveIntegrationService() = default;
 
 void DriveIntegrationService::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   bulk_pinning_pref_sampling_ = false;
@@ -750,7 +750,7 @@ bool DriveIntegrationService::IsMounted() const {
   base::FilePath unused;
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  DCHECK(mount_points);
+  CHECK(mount_points, base::NotFatalUntil::M161);
   return mount_points->GetRegisteredPath(mount_point_name_, &unused);
 }
 
@@ -792,7 +792,7 @@ bool DriveIntegrationService::IsSharedDrive(
 
 void DriveIntegrationService::ClearCacheAndRemountFileSystem(
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (in_clear_cache_) {
     std::move(callback).Run(false);
     return;
@@ -846,8 +846,8 @@ DriveFs* DriveIntegrationService::GetDriveFsInterface() const {
 void DriveIntegrationService::AddBackDriveMountPoint(
     base::OnceCallback<void(bool)> callback,
     FileError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(callback);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(callback, base::NotFatalUntil::M161);
 
   state_ = error == FILE_ERROR_OK ? State::kInitialized : State::kNone;
 
@@ -878,9 +878,9 @@ DriveIntegrationService::EnsureDirectoryExists(const base::FilePath& data_dir) {
 }
 
 void DriveIntegrationService::AddDriveMountPoint() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(State::kInitialized, state_);
-  DCHECK(enabled_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(State::kInitialized, state_, base::NotFatalUntil::M161);
+  CHECK(enabled_, base::NotFatalUntil::M161);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   bulk_pinning_pref_sampling_ = false;
@@ -959,7 +959,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
   }
   storage::ExternalMountPoints* const mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
-  DCHECK(mount_points);
+  CHECK(mount_points, base::NotFatalUntil::M161);
   drivefs_consecutive_failures_count_ = 0;
 
   bool success = mount_points->RegisterFileSystem(
@@ -981,7 +981,7 @@ bool DriveIntegrationService::AddDriveMountPointAfterMounted() {
 }
 
 void DriveIntegrationService::RemoveDriveMountPoint() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
   remount_when_online_ = false;
@@ -1001,7 +1001,7 @@ void DriveIntegrationService::RemoveDriveMountPoint() {
 void DriveIntegrationService::MaybeRemountFileSystem(
     std::optional<TimeDelta> remount_delay,
     bool failed_to_mount) {
-  DCHECK_EQ(State::kInitialized, state_);
+  CHECK_EQ(State::kInitialized, state_, base::NotFatalUntil::M161);
 
   RemoveDriveMountPoint();
 
@@ -1079,7 +1079,7 @@ void DriveIntegrationService::OnMounted(const base::FilePath& mount_path) {
 }
 
 void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!util::IsDriveFsBulkPinningAvailable(profile_)) {
     if (pinning_manager_) {
@@ -1097,7 +1097,7 @@ void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
   }
 
   // Instantiate a PinningManager.
-  DCHECK(!pinning_manager_);
+  CHECK(!pinning_manager_, base::NotFatalUntil::M161);
   pinning_manager_ = std::make_unique<PinningManager>(
       profile_->GetPath(), GetMountPointPath(), GetDriveFsInterface(),
       ash::features::GetDriveFsBulkPinningQueueSize());
@@ -1125,8 +1125,8 @@ void DriveIntegrationService::CreateOrDeleteBulkPinningManager() {
 }
 
 void DriveIntegrationService::SampleBulkPinningPref() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(bulk_pinning_pref_sampling_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(bulk_pinning_pref_sampling_, base::NotFatalUntil::M161);
   const bool enabled = GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled);
   VLOG(1) << "Bulk-pinning is currently " << (enabled ? "en" : "dis")
           << "abled";
@@ -1170,9 +1170,9 @@ void DriveIntegrationService::OnProgress(const Progress& progress) {
 }
 
 void DriveIntegrationService::Initialize() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(State::kNone, state_);
-  DCHECK(enabled_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(State::kNone, state_, base::NotFatalUntil::M161);
+  CHECK(enabled_, base::NotFatalUntil::M161);
 
   state_ = State::kInitializing;
 
@@ -1188,8 +1188,8 @@ void DriveIntegrationService::Initialize() {
 
 void DriveIntegrationService::InitializeAfterMetadataInitialized(
     FileError error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(State::kInitializing, state_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(State::kInitializing, state_, base::NotFatalUntil::M161);
 
   if (error != FILE_ERROR_OK) {
     GetPrefs()->SetBoolean(prefs::kDriveFsPinnedMigrated, true);
@@ -1235,7 +1235,7 @@ void DriveIntegrationService::PinFiles(
 }
 
 void DriveIntegrationService::StartOrStopBulkPinning() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!pinning_manager_) {
     VLOG(1) << "Cannot toggle the state of the bulk-pinning manager: "
@@ -1641,7 +1641,7 @@ void DriveIntegrationService::GetReadOnlyAuthenticationToken(
 }
 
 PinningManager* DriveIntegrationService::GetPinningManager() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   return pinning_manager_.get();
 }
 

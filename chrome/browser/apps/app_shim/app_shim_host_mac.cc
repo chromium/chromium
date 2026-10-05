@@ -122,7 +122,7 @@ void AppShimHost::OnShimProcessLaunched(
     base::Process shim_process) {
   // If a bootstrap connected, then it should have invalidated all weak
   // pointers, preventing this from being called.
-  DCHECK(!bootstrap_);
+  CHECK(!bootstrap_, base::NotFatalUntil::M161);
 
   // If the shim process was created, then await either an AppShimHostBootstrap
   // connecting or the process exiting.
@@ -141,7 +141,7 @@ void AppShimHost::OnShimProcessLaunched(
 void AppShimHost::OnShimProcessTerminated(
     web_app::LaunchShimUpdateBehavior update_behavior,
     web_app::ShimLaunchMode launch_mode) {
-  DCHECK(!bootstrap_);
+  CHECK(!bootstrap_, base::NotFatalUntil::M161);
 
   if (auto* provider = metrics::SubprocessMetricsProvider::GetInstance()) {
     provider->DeregisterSubprocessAllocator(child_process_id_);
@@ -205,7 +205,7 @@ void AppShimHost::OnBootstrapConnected(
 
   MaybeRecordLaunchResult(LaunchResult::kSuccess);
 
-  DCHECK(!bootstrap_);
+  CHECK(!bootstrap_, base::NotFatalUntil::M161);
   bootstrap_ = std::move(bootstrap);
   bootstrap_->OnConnectedToHost(std::move(app_shim_receiver_));
 
@@ -306,7 +306,7 @@ void AppShimHost::NotificationPermissionStatusChanged(
 
 base::FilePath AppShimHost::GetProfilePath() const {
   // This should only be used by single-profile-app paths.
-  DCHECK(!profile_path_.empty());
+  CHECK(!profile_path_.empty(), base::NotFatalUntil::M161);
   return profile_path_;
 }
 

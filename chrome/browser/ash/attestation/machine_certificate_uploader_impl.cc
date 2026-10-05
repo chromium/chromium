@@ -65,7 +65,7 @@ MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
     policy::CloudPolicyClient* policy_client)
     : MachineCertificateUploaderImpl(policy_client,
                                      /*attestation_flow=*/nullptr) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
@@ -75,11 +75,11 @@ MachineCertificateUploaderImpl::MachineCertificateUploaderImpl(
       attestation_flow_(attestation_flow),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 MachineCertificateUploaderImpl::~MachineCertificateUploaderImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void MachineCertificateUploaderImpl::UploadCertificateIfNeeded(

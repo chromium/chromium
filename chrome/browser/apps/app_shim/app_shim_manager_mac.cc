@@ -308,7 +308,7 @@ bool AppShimManager::AppShimObserver::OnNotificationAction(
 }
 
 void SetMacShimStartupDoneCallbackForTesting(base::OnceClosure callback) {
-  DCHECK(!GetShimStartupDoneCallback());
+  CHECK(!GetShimStartupDoneCallback(), base::NotFatalUntil::M161);
   GetShimStartupDoneCallback() = std::move(callback);
 }
 
@@ -391,7 +391,8 @@ AppShimManager::ProfileState::ProfileState(
       single_profile_host(std::move(in_single_profile_host)) {
   // Assert that the ProfileState and AppState agree about whether or not this
   // is a multi-profile shim.
-  DCHECK_NE(!!single_profile_host, !!app_state->multi_profile_host);
+  CHECK_NE(!!single_profile_host, !!app_state->multi_profile_host,
+           base::NotFatalUntil::M161);
 }
 
 AppShimHost* AppShimManager::ProfileState::GetHost() const {
@@ -529,13 +530,13 @@ void AppShimManager::UpdateAppBadge(
     return;
   }
   AppState* app_state = found_app->second.get();
-  DCHECK(app_state);
+  CHECK(app_state, base::NotFatalUntil::M161);
   auto found_profile = app_state->profiles.find(profile);
   if (found_profile == app_state->profiles.end()) {
     return;
   }
   ProfileState* profile_state = found_profile->second.get();
-  DCHECK(profile_state);
+  CHECK(profile_state, base::NotFatalUntil::M161);
 
   profile_state->badge = badge;
   UpdateApplicationBadge(profile_state);
@@ -779,7 +780,7 @@ void AppShimManager::OnShimLaunchRequested(
         std::move(terminated_callback).Run();
         return;
       }
-      DCHECK(!app_state->profiles.empty());
+      CHECK(!app_state->profiles.empty(), base::NotFatalUntil::M161);
       profile = app_state->profiles.begin()->first;
     } else {
       profile = ProfileForPath(host->GetProfilePath());
@@ -808,7 +809,8 @@ void AppShimManager::OnShimLaunchRequested(
 
 void AppShimManager::OnShimProcessConnected(
     std::unique_ptr<AppShimHostBootstrap> bootstrap) {
-  DCHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()));
+  CHECK(crx_file::id_util::IdIsValid(bootstrap->GetAppId()),
+        base::NotFatalUntil::M161);
   if (app_shim_observer_) {
     app_shim_observer_->OnShimProcessConnected(bootstrap->GetAppShimPid());
   }
@@ -923,8 +925,8 @@ void AppShimManager::LoadAndLaunchApp(
   if (LoadAndLaunchApp_TryExistingProfileStates(
           profile_path, params, profiles_with_handlers, &launch_callback)) {
     // If we used an existing profile, |launch_callback| should have been run.
-    DCHECK(!launch_callback);
-    DCHECK(!GetShimStartupDoneCallback());
+    CHECK(!launch_callback, base::NotFatalUntil::M161);
+    CHECK(!GetShimStartupDoneCallback(), base::NotFatalUntil::M161);
     return;
   }
 
@@ -955,7 +957,7 @@ void AppShimManager::LoadAndLaunchApp(
         best_path = profile;
       }
     }
-    DCHECK(!best_path.empty());
+    CHECK(!best_path.empty(), base::NotFatalUntil::M161);
     profile_paths_to_launch.push_back(best_path);
   } else {
     profile_paths_to_launch.insert(profile_paths_to_launch.end(),
@@ -1049,7 +1051,7 @@ bool AppShimManager::LoadAndLaunchApp_TryExistingProfileStates(
   if (!profile_state) {
     return false;
   }
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // Launch the app, if appropriate.
   LoadAndLaunchApp_LaunchIfAppropriate(
@@ -1175,13 +1177,13 @@ void AppShimManager::OnShimProcessConnectedAndAllLaunchesDone(
   // to connect to, then quit the shim. This may not represent an actual
   // failure (e.g, open-in-a-tab bookmarks return kSuccessAndDisconnect).
   if (result != chrome::mojom::AppShimLaunchResult::kSuccess) {
-    DCHECK(!profile_state);
+    CHECK(!profile_state, base::NotFatalUntil::M161);
     bootstrap->OnFailedToConnectToHost(result);
     return;
   }
-  DCHECK(profile_state);
+  CHECK(profile_state, base::NotFatalUntil::M161);
   AppShimHost* host = profile_state->GetHost();
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M161);
 
   audit_token_t audit_token = bootstrap->GetAppShimAuditToken();
   IsAcceptablyCodeSigned(
@@ -1311,7 +1313,7 @@ void AppShimManager::LoadProfileAndApp_OnProfileLoaded(
     LoadProfileAndAppCallback callback,
     Profile* profile) {
   // It may be that the profile fails to load.
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!profile) {
     LOG(ERROR) << "Failed to load profile from " << profile_path.value() << ".";
     std::move(callback).Run(nullptr);
@@ -1435,7 +1437,7 @@ void AppShimManager::WaitForAppRegistryReadyAsync(
     Profile* profile,
     base::OnceCallback<void()> callback) {
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
   if (provider->on_registry_ready().is_signaled()) {
     std::move(callback).Run();
   } else {
@@ -1493,14 +1495,15 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   auto found_app = apps_.find(app_id);
   CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
-  DCHECK(app_state);
+  CHECK(app_state, base::NotFatalUntil::M161);
 
   app_state->MaybeSaveLastActiveProfiles();
 
   // For multi-profile apps, just delete the AppState, which will take down
   // |host| and all profiles' state.
   if (app_state->IsMultiProfile()) {
-    DCHECK_EQ(host, app_state->multi_profile_host.get());
+    CHECK_EQ(host, app_state->multi_profile_host.get(),
+             base::NotFatalUntil::M161);
     apps_.erase(found_app);
     if (apps_.empty()) {
       MaybeTerminate();
@@ -1519,7 +1522,8 @@ void AppShimManager::OnShimProcessDisconnected(AppShimHost* host) {
   auto found_profile = app_state->profiles.find(profile);
   CHECK(found_profile != app_state->profiles.end());
   ProfileState* profile_state = found_profile->second.get();
-  DCHECK_EQ(host, profile_state->single_profile_host.get());
+  CHECK_EQ(host, profile_state->single_profile_host.get(),
+           base::NotFatalUntil::M161);
   app_state->profiles.erase(found_profile);
   host = nullptr;
 
@@ -1649,13 +1653,14 @@ void AppShimManager::OnShimWillTerminate(AppShimHost* host) {
   auto found_app = apps_.find(host->GetAppId());
   CHECK(found_app != apps_.end());
   AppState* app_state = found_app->second.get();
-  DCHECK(app_state);
+  CHECK(app_state, base::NotFatalUntil::M161);
 
   auto* notification_bridge = static_cast<NotificationPlatformBridgeMac*>(
       g_browser_process->notification_platform_bridge());
   notification_bridge->AppShimWillTerminate(host->GetAppId());
 
-  DCHECK(!app_state->did_save_last_active_profiles_on_terminate);
+  CHECK(!app_state->did_save_last_active_profiles_on_terminate,
+        base::NotFatalUntil::M161);
   app_state->MaybeSaveLastActiveProfiles();
   app_state->did_save_last_active_profiles_on_terminate = true;
 }
@@ -1912,12 +1917,12 @@ void AppShimManager::RebuildProfileMenuItemsFromAvatarMenu() {
 void AppShimManager::OnAvatarMenuChanged(AvatarMenu* menu) {
   // Rebuild the profile menu to reflect changes (e.g, added or removed
   // profiles).
-  DCHECK_EQ(avatar_menu_.get(), menu);
+  CHECK_EQ(avatar_menu_.get(), menu, base::NotFatalUntil::M161);
   UpdateAllProfileMenus();
 }
 
 void AppShimManager::UpdateAppProfileMenu(AppState* app_state) {
-  DCHECK(app_state->IsMultiProfile());
+  CHECK(app_state->IsMultiProfile(), base::NotFatalUntil::M161);
   // Include in |items| the profiles from |profile_menu_items_| for which this
   // app is installed, sorted by |menu_index|.
   std::vector<chrome::mojom::ProfileMenuItemPtr> items;

@@ -56,19 +56,19 @@ EnrollmentIdUploadManager::EnrollmentIdUploadManager(
       num_retries_(0),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   device_settings_service_->AddObserver(this);
   Start();
 }
 
 EnrollmentIdUploadManager::~EnrollmentIdUploadManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(device_settings_service_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(device_settings_service_, base::NotFatalUntil::M161);
   device_settings_service_->RemoveObserver(this);
 }
 
 void EnrollmentIdUploadManager::DeviceSettingsUpdated() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   num_retries_ = 0;
   Start();
 }
@@ -88,7 +88,7 @@ void EnrollmentIdUploadManager::Start() {
 
 void EnrollmentIdUploadManager::ObtainAndUploadEnrollmentId(
     UploadManagerCallback callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   bool start = upload_manager_callbacks_.empty();
   upload_manager_callbacks_.push(std::move(callback));

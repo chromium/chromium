@@ -36,7 +36,8 @@ using IndexedButton = ExtendedUpdatesNotification::IndexedButton;
 void AddButton(message_center::RichNotificationData& data,
                IndexedButton button,
                int title_id) {
-  DCHECK_EQ(data.buttons.size(), static_cast<size_t>(button));
+  CHECK_EQ(data.buttons.size(), static_cast<size_t>(button),
+           base::NotFatalUntil::M161);
   data.buttons.emplace_back(l10n_util::GetStringUTF16(title_id));
 }
 

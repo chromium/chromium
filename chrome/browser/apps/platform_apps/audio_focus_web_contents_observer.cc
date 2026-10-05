@@ -57,7 +57,7 @@ void AudioFocusWebContentsObserver::PrimaryPageChanged(content::Page& page) {
   } else {
     AudioFocusWebContentsObserver* observer =
         AudioFocusWebContentsObserver::FromWebContents(host->host_contents());
-    DCHECK(observer);
+    CHECK(observer, base::NotFatalUntil::M161);
 
     audio_focus_group_id_ = observer->audio_focus_group_id_;
   }

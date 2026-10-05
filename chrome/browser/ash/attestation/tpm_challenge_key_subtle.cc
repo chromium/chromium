@@ -81,7 +81,7 @@ TpmChallengeKeySubtleFactory::CreateForPreparedKey(
 // static
 void TpmChallengeKeySubtleFactory::SetForTesting(
     std::unique_ptr<TpmChallengeKeySubtle> next_result) {
-  DCHECK(next_result_for_testing_ == nullptr);
+  CHECK(next_result_for_testing_ == nullptr, base::NotFatalUntil::M161);
   // unique_ptr itself cannot be stored in a static variable because of its
   // complex destructor.
   next_result_for_testing_ = next_result.release();
@@ -197,14 +197,15 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
     const std::string& public_key,
     Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!will_register_key || !public_key.empty());
+  CHECK(!will_register_key || !public_key.empty(), base::NotFatalUntil::M161);
 
   // Ensure that the selected flow type is supported
   CHECK(flow_type == VerifiedAccessFlow::ENTERPRISE_MACHINE ||
         flow_type == VerifiedAccessFlow::ENTERPRISE_USER);
 
   // For the ENTERPRISE_USER flow, a |profile| is strictly necessary.
-  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
+  CHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile,
+        base::NotFatalUntil::M161);
 
   // For DEVICE_TRUST_CONNECTOR, a key name is required and registering a key is
   // not allowed.
@@ -230,7 +231,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     TpmChallengeKeyCallback callback,
     const std::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
   // For ENTERPRISE_MACHINE: if |will_register_key| is true, |key_name| should
   // not be empty, if |register_key| is false, |key_name| will not be used.
@@ -239,7 +240,8 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
       << "Invalid arguments: " << will_register_key << " " << !key_name.empty();
 
   // For ENTERPRISE_USER, a |profile| is strictly necessary.
-  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
+  CHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile,
+        base::NotFatalUntil::M161);
 
   // For DEVICE_TRUST_CONNECTOR, a key name is required and registering a key is
   // not allowed.
@@ -650,7 +652,7 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
     const std::string& challenge,
     TpmChallengeKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback_.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
 
   callback_ = std::move(callback);
 
@@ -708,8 +710,8 @@ void TpmChallengeKeySubtleImpl::SignChallengeCallback(
 void TpmChallengeKeySubtleImpl::StartRegisterKeyStep(
     TpmChallengeKeyCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback_.is_null());
-  DCHECK(will_register_key_);
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
+  CHECK(will_register_key_, base::NotFatalUntil::M161);
 
   callback_ = std::move(callback);
 
@@ -735,7 +737,8 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
     return;
   }
 
-  DCHECK(flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE || profile_);
+  CHECK(flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE || profile_,
+        base::NotFatalUntil::M161);
 
   platform_keys::KeyPermissionsManager* key_permissions_manager = nullptr;
   switch (flow_type_) {
@@ -751,7 +754,7 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
       NOTREACHED();
   }
 
-  DCHECK(!public_key_.empty());
+  CHECK(!public_key_.empty(), base::NotFatalUntil::M161);
   key_permissions_manager->AllowKeyForUsage(
       base::BindOnce(&TpmChallengeKeySubtleImpl::MarkCorporateKeyCallback,
                      weak_factory_.GetWeakPtr()),

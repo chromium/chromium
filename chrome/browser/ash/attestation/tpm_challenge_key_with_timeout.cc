@@ -25,7 +25,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name_for_spkac,
     const std::optional<std::string>& signals) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M161);
   callback_ = std::move(callback);
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

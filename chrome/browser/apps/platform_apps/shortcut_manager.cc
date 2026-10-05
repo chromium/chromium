@@ -60,9 +60,10 @@ void AppShortcutManager::SuppressShortcutsForTesting() {
 AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
   // Use of g_browser_process requires that we are either on the UI thread, or
   // there are no threads initialized (such as in unit tests).
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));

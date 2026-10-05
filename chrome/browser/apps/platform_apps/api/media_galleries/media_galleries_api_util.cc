@@ -27,7 +27,7 @@ void SetValueOptional(std::string value,
 
 base::DictValue SerializeMediaMetadata(
     chrome::mojom::MediaMetadataPtr metadata) {
-  DCHECK(metadata);
+  CHECK(metadata, base::NotFatalUntil::M161);
   media_galleries::MediaMetadata extension_metadata;
   extension_metadata.mime_type = std::move(metadata->mime_type);
   if (metadata->height >= 0 && metadata->width >= 0) {

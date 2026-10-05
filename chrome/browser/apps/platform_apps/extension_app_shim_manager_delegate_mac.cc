@@ -192,7 +192,7 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
   base::ScopedClosureRunner run_launch_finished(
       std::move(launch_finished_callback));
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
   extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_CMD_LINE_APP,
                                   extension->GetType());
 
@@ -227,7 +227,7 @@ void ExtensionAppShimManagerDelegate::LaunchShim(
     apps::ShimLaunchedCallback launched_callback,
     apps::ShimTerminatedCallback terminated_callback) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M161);
   // Only force recreation of shims when RemoteViews is in use (that is, for
   // PWAs). Otherwise, shims may be created unexpectedly.
   // https://crbug.com/41446487

@@ -22,8 +22,8 @@ DriveFsFileSystemBackendDelegate::~DriveFsFileSystemBackendDelegate() = default;
 
 storage::AsyncFileUtil* DriveFsFileSystemBackendDelegate::GetAsyncFileUtil(
     storage::FileSystemType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_EQ(storage::kFileSystemTypeDriveFs, type);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK_EQ(storage::kFileSystemTypeDriveFs, type, base::NotFatalUntil::M161);
   return async_file_util_.get();
 }
 

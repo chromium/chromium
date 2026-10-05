@@ -76,7 +76,7 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
     if (app_id) {
       const web_app::WebApp* web_app =
           provider->registrar_unsafe().GetAppById(*app_id);
-      DCHECK(web_app);
+      CHECK(web_app, base::NotFatalUntil::M161);
       if (web_app->user_display_mode() ==
               web_app::mojom::UserDisplayMode::kBrowser &&
           !web_app->is_uninstalling()) {

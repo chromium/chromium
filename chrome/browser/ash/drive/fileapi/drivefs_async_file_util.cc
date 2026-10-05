@@ -68,11 +68,12 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
         callback_(std::move(callback)),
         origin_task_runner_(std::move(origin_task_runner)),
         async_file_util_(std::move(async_file_util)) {
-    DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(origin_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
   }
 
   void Start() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     auto* drive_integration_service =
         drive::util::GetIntegrationServiceByProfile(profile_);
@@ -100,7 +101,7 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
   ~CopyOperation() = default;
 
   void CopyComplete(drive::FileError error) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     switch (error) {
       case drive::FILE_ERROR_NOT_FOUND:
@@ -119,7 +120,8 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
   }
 
   void FallbackToNativeCopyOnOriginThread() {
-    DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(origin_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
 
     if (!async_file_util_) {
       std::move(callback_).Run(base::File::FILE_ERROR_ABORT);
@@ -158,13 +160,14 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
         callback_(std::move(callback)),
         origin_task_runner_(std::move(origin_task_runner)),
         blocking_task_runner_(std::move(blocking_task_runner)) {
-    DCHECK(origin_task_runner_->RunsTasksInCurrentSequence());
+    CHECK(origin_task_runner_->RunsTasksInCurrentSequence(),
+          base::NotFatalUntil::M161);
   }
 
   void Start() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-    DCHECK(!drive_);
+    CHECK(!drive_, base::NotFatalUntil::M161);
     drive_ = drive::util::GetIntegrationServiceByProfile(profile_);
     base::FilePath relative_path;
     if (!drive_ || !drive_->GetMountPointPath().IsParent(path_)) {
@@ -195,12 +198,12 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
 
   void OnGotMetadata(const drive::FileError error,
                      const drivefs::mojom::FileMetadataPtr metadata) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     if (error != drive::FILE_ERROR_OK) {
       LOG(ERROR) << "Cannot get metadata of '" << drive_path_ << "': " << error;
     } else {
-      DCHECK(metadata);
+      CHECK(metadata, base::NotFatalUntil::M161);
       id_ = Id(metadata->stable_id);
     }
 
@@ -227,7 +230,7 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
   }
 
   void OnDeleted() {
-    DCHECK(drive_);
+    CHECK(drive_, base::NotFatalUntil::M161);
     if (PinningManager* const pinning_manager = drive_->GetPinningManager()) {
       // TODO(b/267225898) Local delete events are currently not sent via
       // DriveFS, so for now we notify the `PinningManager` for local deletes.

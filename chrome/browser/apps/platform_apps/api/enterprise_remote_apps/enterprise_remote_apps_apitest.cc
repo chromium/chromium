@@ -174,13 +174,13 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
 
   bool IsAppListItemInFront(const std::string& id) {
     const int index = GetAppListItemIndex(id);
-    DCHECK_GE(index, 0);
+    CHECK_GE(index, 0, base::NotFatalUntil::M161);
     return index == 0;
   }
 
   bool IsAppListItemLast(const std::string& id) {
     const int index = GetAppListItemIndex(id);
-    DCHECK_GE(index, 0);
+    CHECK_GE(index, 0, base::NotFatalUntil::M161);
     const int model_size = ash::AppListModelProvider::Get()
                                ->model()
                                ->top_level_item_list()

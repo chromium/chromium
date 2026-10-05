@@ -101,7 +101,8 @@ TpmChallengeKeyResult TpmChallengeKeyResult::MakeSuccess() {
 // static
 TpmChallengeKeyResult TpmChallengeKeyResult::MakeError(
     TpmChallengeKeyResultCode error_code) {
-  DCHECK_NE(error_code, TpmChallengeKeyResultCode::kSuccess);
+  CHECK_NE(error_code, TpmChallengeKeyResultCode::kSuccess,
+           base::NotFatalUntil::M161);
   return TpmChallengeKeyResult{/*result_code=*/error_code,
                                /*public_key=*/"",
                                /*challenge_response=*/""};

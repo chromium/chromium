@@ -39,8 +39,8 @@ void DBusPrivacyCACallback(
     const base::Location& from_here,
     AttestationStatus status,
     const std::string& data) {
-  DCHECK(on_success);
-  DCHECK(on_failure);
+  CHECK(on_success, base::NotFatalUntil::M161);
+  CHECK(on_failure, base::NotFatalUntil::M161);
 
   if (status == ATTESTATION_SUCCESS) {
     on_success.Run(data);
@@ -59,16 +59,16 @@ EnrollmentCertificateUploaderImpl::EnrollmentCertificateUploaderImpl(
     : policy_client_(policy_client),
       retry_limit_(kRetryLimit),
       retry_delay_(kRetryDelay) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 EnrollmentCertificateUploaderImpl::~EnrollmentCertificateUploaderImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void EnrollmentCertificateUploaderImpl::ObtainAndUploadCertificate(
     UploadCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bool start = callbacks_.empty();
   callbacks_.push(std::move(callback));
   if (start) {

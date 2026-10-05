@@ -55,7 +55,7 @@ PickerEntryType GetPickerEntryType(AppType app_type) {
 }
 
 void CloseOrGoBack(content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   if (web_contents->GetController().CanGoBack()) {
     web_contents->GetController().GoBack();
   } else {

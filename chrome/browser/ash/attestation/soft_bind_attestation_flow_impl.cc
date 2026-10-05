@@ -178,7 +178,7 @@ void SoftBindAttestationFlowImpl::SetAttestationFlowForTesting(
 void SoftBindAttestationFlowImpl::GetCertificate(Callback callback,
                                                  const AccountId& account_id,
                                                  const std::string& user_key) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!IsAttestationAllowedByPolicy()) {
     LOG(ERROR) << "Attestation not allowed by device policy";
     std::move(callback).Run(

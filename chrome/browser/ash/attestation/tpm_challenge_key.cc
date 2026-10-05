@@ -72,8 +72,8 @@ void TpmChallengeKeyImpl::BuildResponse(
     const std::string& key_name,
     const std::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback_.is_null());
-  DCHECK(!callback.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   // For device key: if |register_key| is true, |key_name| should not be empty.
   DCHECK((flow_type != ::attestation::ENTERPRISE_MACHINE) ||

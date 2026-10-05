@@ -145,8 +145,9 @@ bool IsCapturableLinkNavigation(ui::PageTransition page_transition,
   // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
   // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
   if (is_in_fenced_frame_tree) {
-    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
-                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    CHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                       ui::PAGE_TRANSITION_AUTO_SUBFRAME),
+          base::NotFatalUntil::M161);
     return has_user_gesture;
   }
 
@@ -414,7 +415,7 @@ ChromeOsReimplNavigationCapturingThrottle::WillStartRequest() {
 
 ThrottleCheckResult
 ChromeOsReimplNavigationCapturingThrottle::WillRedirectRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return HandleRequest();
 }
 
@@ -425,7 +426,7 @@ ChromeOsReimplNavigationCapturingThrottle::
     : content::NavigationThrottle(registry), profile_(*profile) {}
 
 ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(&profile_.get());
   if (!proxy) {

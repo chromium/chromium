@@ -152,7 +152,7 @@ void AttestationCAClient::OnURLLoadComplete(
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(*it);
   url_loaders_.erase(it);
 
-  DCHECK(url_loader);
+  CHECK(url_loader, base::NotFatalUntil::M161);
 
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     int response_code = url_loader->ResponseInfo()->headers->response_code();
@@ -234,7 +234,7 @@ void AttestationCAClient::CheckIfAnyProxyPresent(
     ProxyPresenceCallback callback) {
   GURL url(GetType() == TEST_PCA ? kTestEnrollRequestURL
                                  : kDefaultEnrollRequestURL);
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M161);
 
   network::mojom::NetworkContext* network_context = nullptr;
   // Uses the injected network context if present.

@@ -128,7 +128,7 @@ FileDefinitionListConverter::FileDefinitionListConverter(
       file_definition_list_(file_definition_list),
       callback_(std::move(callback)),
       result_(new EntryDefinitionList) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Deletes the converter, once the scoped pointer gets out of scope. It is
   // either, if the conversion is finished, or ResolveURL() is terminated, and
@@ -180,7 +180,7 @@ void FileDefinitionListConverter::OnResolvedURL(
     const storage::FileSystemInfo& info,
     const base::FilePath& file_path,
     storage::FileSystemContext::ResolvedEntryType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (error != base::File::FILE_OK) {
     OnIteratorConverted(std::move(self_deleter), iterator,
@@ -215,8 +215,9 @@ void FileDefinitionListConverter::OnResolvedURL(
     return;
   }
   const base::FilePath root_virtual_path = fs_url.virtual_path();
-  DCHECK(root_virtual_path == iterator->virtual_path ||
-         root_virtual_path.IsParent(iterator->virtual_path));
+  CHECK(root_virtual_path == iterator->virtual_path ||
+            root_virtual_path.IsParent(iterator->virtual_path),
+        base::NotFatalUntil::M161);
   base::FilePath full_path;
   root_virtual_path.AppendRelativePath(iterator->virtual_path, &full_path);
   entry_definition.full_path = full_path;
@@ -237,7 +238,7 @@ void FileDefinitionListConverter::OnIteratorConverted(
 void OnConvertFileDefinitionDone(
     EntryDefinitionCallback callback,
     std::unique_ptr<EntryDefinitionList> entry_definition_list) {
-  DCHECK_EQ(1u, entry_definition_list->size());
+  CHECK_EQ(1u, entry_definition_list->size(), base::NotFatalUntil::M161);
   std::move(callback).Run(entry_definition_list->at(0));
 }
 
@@ -275,7 +276,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
       const SelectedFileInfoList& selected_info_list,
       FileChooserFileInfoListCallback callback)
       : context_(context), callback_(std::move(callback)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
     Lifetime lifetime(this);
     bool need_fill_metadata = false;

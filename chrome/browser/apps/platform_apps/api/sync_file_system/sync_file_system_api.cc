@@ -92,7 +92,7 @@ SyncFileSystemRequestFileSystemFunction::Run() {
 
 storage::FileSystemContext*
 SyncFileSystemRequestFileSystemFunction::GetFileSystemContext() {
-  DCHECK(render_frame_host());
+  CHECK(render_frame_host(), base::NotFatalUntil::M161);
   return browser_context()
       ->GetStoragePartition(render_frame_host()->GetSiteInstance())
       ->GetFileSystemContext();
@@ -104,7 +104,7 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
     base::File::Error error) {
   // Repost to switch from IO thread to UI thread for SendResponse().
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         BindOnce(&SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem,
@@ -112,7 +112,7 @@ void SyncFileSystemRequestFileSystemFunction::DidOpenFileSystem(
     return;
   }
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (error != base::File::FILE_OK) {
     Respond(Error(
         ErrorToString(::sync_file_system::FileErrorToSyncStatusCode(error))));
@@ -179,7 +179,7 @@ void SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota(
     int64_t quota) {
   // Repost to switch from IO thread to UI thread for SendResponse().
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         BindOnce(&SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota,
@@ -187,7 +187,7 @@ void SyncFileSystemGetUsageAndQuotaFunction::DidGetUsageAndQuota(
     return;
   }
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (status != blink::mojom::QuotaStatusCode::kOk) {
     Respond(Error(QuotaStatusCodeToString(status)));
     return;

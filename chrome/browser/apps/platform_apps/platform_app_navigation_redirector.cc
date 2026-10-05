@@ -35,8 +35,8 @@ void LaunchAppWithUrl(
     bool should_run_async,
     navigation_interception::InterceptNavigationThrottle::ResultCallback
         result_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(navigation_handle->IsInMainFrame());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(navigation_handle->IsInMainFrame(), base::NotFatalUntil::M161);
   CHECK(!should_run_async);
 
   // Redirect top-level navigations only. This excludes iframes and webviews
@@ -65,9 +65,10 @@ void LaunchAppWithUrl(
   }
 
   // These are guaranteed by MaybeCreateThrottleFor below.
-  DCHECK(UrlHandlers::CanPlatformAppHandleUrl(app.get(),
-                                              navigation_handle->GetURL()));
-  DCHECK(!navigation_handle->IsPost());
+  CHECK(UrlHandlers::CanPlatformAppHandleUrl(app.get(),
+                                             navigation_handle->GetURL()),
+        base::NotFatalUntil::M161);
+  CHECK(!navigation_handle->IsPost(), base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
@@ -86,13 +87,13 @@ void LaunchAppWithUrl(
 // static
 void PlatformAppNavigationRedirector::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   DVLOG(1) << "Considering URL for redirection: " << handle.GetURL().spec();
 
   content::BrowserContext* browser_context =
       handle.GetWebContents()->GetBrowserContext();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
 
   if (!handle.IsInOutermostMainFrame()) {
     DVLOG(1) << "Skip redirection: navigation is from an iframe or inner page";

@@ -95,7 +95,7 @@ BootTimesRecorder* BootTimesRecorder::GetIfCreated() {
 }
 
 void BootTimesRecorder::LoginDone(bool is_user_new) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (login_done_)
     return;
 
@@ -113,8 +113,9 @@ void BootTimesRecorder::WriteLogoutTimes() {
   // Either we're on the browser thread, or (more likely) Chrome is in the
   // process of shutting down and we're on the main thread but the message loop
   // has already been terminated.
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M161);
   LoginEventRecorder::Get()->WriteLogoutTimes(
       kLogoutTimes, (restart_requested_ ? kUmaRestart : kUmaLogout),
       kUmaLogoutPrefix);
@@ -179,7 +180,7 @@ void BootTimesRecorder::RecordChromeMainStats() {
 }
 
 void BootTimesRecorder::RecordLoginAttempted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (login_done_)
     return;
 

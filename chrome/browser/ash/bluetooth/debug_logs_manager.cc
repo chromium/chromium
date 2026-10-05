@@ -92,7 +92,8 @@ DebugLogsManager::GenerateRemote() {
 }
 
 void DebugLogsManager::ChangeDebugLogsState(bool should_debug_logs_be_enabled) {
-  DCHECK_NE(GetDebugLogsState(), DebugLogsState::kNotSupported);
+  CHECK_NE(GetDebugLogsState(), DebugLogsState::kNotSupported,
+           base::NotFatalUntil::M161);
 
   pref_service_->SetBoolean(kVerboseLoggingEnablePrefName,
                             should_debug_logs_be_enabled);

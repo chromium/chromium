@@ -281,8 +281,8 @@ content::WebContents* GetWebContentsForPrompt(
 MediaGalleriesEventRouter::MediaGalleriesEventRouter(
     content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(profile_, base::NotFatalUntil::M161);
 
   extensions::EventRouter::Get(profile_)->RegisterObserver(
       this, MediaGalleries::OnGalleryChanged::kEventName);
@@ -293,7 +293,7 @@ MediaGalleriesEventRouter::MediaGalleriesEventRouter(
 MediaGalleriesEventRouter::~MediaGalleriesEventRouter() = default;
 
 void MediaGalleriesEventRouter::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   weak_ptr_factory_.InvalidateWeakPtrs();
 
   extensions::EventRouter::Get(profile_)->UnregisterObserver(this);
@@ -314,9 +314,10 @@ MediaGalleriesEventRouter::GetFactoryInstance() {
 // static
 MediaGalleriesEventRouter* MediaGalleriesEventRouter::Get(
     content::BrowserContext* context) {
-  DCHECK(media_file_system_registry()
-             ->GetPreferences(Profile::FromBrowserContext(context))
-             ->IsInitialized());
+  CHECK(media_file_system_registry()
+            ->GetPreferences(Profile::FromBrowserContext(context))
+            ->IsInitialized(),
+        base::NotFatalUntil::M161);
   return extensions::BrowserContextKeyedAPIFactory<
       MediaGalleriesEventRouter>::Get(context);
 }
@@ -332,7 +333,7 @@ void MediaGalleriesEventRouter::DispatchEventToExtension(
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
     base::ListValue event_args) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   extensions::EventRouter* router = extensions::EventRouter::Get(profile_);
   if (!router->ExtensionHasEventListener(extension_id, event_name))
@@ -487,7 +488,8 @@ void MediaGalleriesGetMediaFileSystemsFunction::GetMediaFileSystemsForExtension(
   }
   MediaFileSystemRegistry* registry = media_file_system_registry();
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  DCHECK(registry->GetPreferences(profile)->IsInitialized());
+  CHECK(registry->GetPreferences(profile)->IsInitialized(),
+        base::NotFatalUntil::M161);
   registry->GetMediaFileSystemsForExtension(GetSenderWebContents(), extension(),
                                             std::move(cb));
 }
@@ -594,9 +596,9 @@ void MediaGalleriesAddUserSelectedFolderFunction::
     return;
   }
   MediaFileSystemRegistry* registry = media_file_system_registry();
-  DCHECK(
-      registry->GetPreferences(Profile::FromBrowserContext(browser_context()))
-          ->IsInitialized());
+  CHECK(registry->GetPreferences(Profile::FromBrowserContext(browser_context()))
+            ->IsInitialized(),
+        base::NotFatalUntil::M161);
   registry->GetMediaFileSystemsForExtension(GetSenderWebContents(), extension(),
                                             std::move(cb));
 }
@@ -634,7 +636,7 @@ ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
 void MediaGalleriesGetMetadataFunction::OnPreferencesInit(
     MediaGalleries::GetMetadataType metadata_type,
     const std::string& blob_uuid) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   BlobReader::Read(
       browser_context()->GetBlobRemote(blob_uuid),
@@ -648,7 +650,7 @@ void MediaGalleriesGetMetadataFunction::GetMetadata(
     const std::string& blob_uuid,
     std::string blob_header,
     int64_t total_blob_length) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::string mime_type;
   bool mime_type_sniffed =
@@ -692,15 +694,15 @@ void MediaGalleriesGetMetadataFunction::OnSafeMediaMetadataParserDone(
     bool parse_success,
     chrome::mojom::MediaMetadataPtr metadata,
     std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!parse_success) {
     Respond(Error("Could not parse media metadata."));
     return;
   }
 
-  DCHECK(metadata);
-  DCHECK(attached_images);
+  CHECK(metadata, base::NotFatalUntil::M161);
+  CHECK(attached_images, base::NotFatalUntil::M161);
 
   base::DictValue result_dictionary;
   result_dictionary.Set(kMetadataKey,
@@ -725,13 +727,13 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
     std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images,
     std::vector<blink::mojom::SerializedBlobPtr> blobs,
     std::unique_ptr<content::BlobHandle> current_blob) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
-  DCHECK(attached_images.get());
-  DCHECK(current_blob.get());
+  CHECK(attached_images.get(), base::NotFatalUntil::M161);
+  CHECK(current_blob.get(), base::NotFatalUntil::M161);
 
-  DCHECK(!attached_images->empty());
-  DCHECK_LT(blobs.size(), attached_images->size());
+  CHECK(!attached_images->empty(), base::NotFatalUntil::M161);
+  CHECK_LT(blobs.size(), attached_images->size(), base::NotFatalUntil::M161);
 
   blobs.push_back(current_blob->Serialize());
 
@@ -763,10 +765,10 @@ MediaGalleriesAddGalleryWatchFunction::
     ~MediaGalleriesAddGalleryWatchFunction() = default;
 
 ExtensionFunction::ResponseAction MediaGalleriesAddGalleryWatchFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
@@ -808,7 +810,7 @@ void MediaGalleriesAddGalleryWatchFunction::OnPreferencesInit(
 void MediaGalleriesAddGalleryWatchFunction::HandleResponse(
     MediaGalleryPrefId gallery_id,
     const std::string& error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // If an app added a file watch without any event listeners on the
   // onGalleryChanged event, that's an error.
@@ -839,7 +841,7 @@ MediaGalleriesRemoveGalleryWatchFunction::
 
 ExtensionFunction::ResponseAction
 MediaGalleriesRemoveGalleryWatchFunction::Run() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));

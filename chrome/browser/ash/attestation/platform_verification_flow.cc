@@ -101,7 +101,7 @@ PlatformVerificationFlow::PlatformVerificationFlow()
       attestation_client_(AttestationClient::Get()),
       delegate_(nullptr),
       timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   std::unique_ptr<ServerProxy> attestation_ca_client(new AttestationCAClient());
   default_attestation_flow_ = std::make_unique<AttestationFlowAdaptive>(
       std::move(attestation_ca_client));
@@ -118,7 +118,7 @@ PlatformVerificationFlow::PlatformVerificationFlow(
       attestation_client_(attestation_client),
       delegate_(delegate),
       timeout_delay_(base::Seconds(kTimeoutInSeconds)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!delegate_) {
     default_delegate_ = std::make_unique<DefaultDelegate>();
     delegate_ = default_delegate_.get();
@@ -160,7 +160,7 @@ void PlatformVerificationFlow::ChallengePlatformKey(
     const std::string& service_id,
     const std::string& challenge,
     ChallengeCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Note: The following checks are performed when use of the protected media
   // identifier is indicated. The first two in GetPermissionStatus and the third
