@@ -67,6 +67,15 @@ const base::FeatureParam<size_t>
 
 BASE_FEATURE(kPrefetchCanaryCheckerParams, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrefetchSchedulerBurstQueryParam,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kPrefetchSchedulerBurstQueryParamKey{
+    &kPrefetchSchedulerBurstQueryParam, "key", ""};
+const base::FeatureParam<std::string> kPrefetchSchedulerBurstQueryParamValue{
+    &kPrefetchSchedulerBurstQueryParam, "value", ""};
+const base::FeatureParam<size_t> kPrefetchSchedulerBurstQueryParamExtraLimit{
+    &kPrefetchSchedulerBurstQueryParam, "extra_limit", 1u};
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase,
              base::FEATURE_DISABLED_BY_DEFAULT);

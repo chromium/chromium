@@ -72,13 +72,23 @@ enum class PrefetchSchedulerPriority {
   // (`kBurstForPrefetchPriority`).
   kBurstAheadOfPrerender = 13,
 
+  // Burst priority for prefetches with a specific query parameter.
+  //
+  // Assigned when `kPrefetchSchedulerBurstQueryParam` is enabled and the
+  // prefetch URL matches the configured query parameter. This is a targeted
+  // override for specific high-value URLs, taking precedence over general
+  // speculative prefetches (`kBurstForPrefetchPriority` and
+  // `kBurstAheadOfPrerender`), while remaining below
+  // `kBurstAheadOfImminentNavigation`.
+  kBurstForQueryParam = 14,
+
   // Burst priority for prefetch ahead of imminent navigation.
   //
   // This directly serves an imminent user-visible navigation (e.g. mouse/touch
   // down on a suggestion), so it takes the highest precedence over all
-  // speculative prefetches (including prerender and explicit
-  // `PrefetchPriority::kHighest`).
-  kBurstAheadOfImminentNavigation = 14,
+  // speculative prefetches (including prerender, query-param burst, and
+  // explicit `PrefetchPriority::kHighest`).
+  kBurstAheadOfImminentNavigation = 15,
 };
 
 // Priority queue for prefetches

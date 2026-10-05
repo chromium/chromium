@@ -5,6 +5,7 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 
 #include "base/byte_size.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -49,6 +50,7 @@
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/url_request/redirect_util.h"
@@ -219,6 +221,27 @@ void RecordPrefetchProxyPrefetchMainframeNetError(int net_error) {
 void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
   UMA_HISTOGRAM_COUNTS_10M("PrefetchProxy.Prefetch.Mainframe.BodyLength",
                            body_length);
+}
+
+bool CalculateMatchesBurstQueryParam(const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrefetchSchedulerBurstQueryParam)) {
+    return false;
+  }
+
+  const std::string& key = features::kPrefetchSchedulerBurstQueryParamKey.Get();
+  if (key.empty()) {
+    return false;
+  }
+
+  std::string param_value;
+  if (!net::GetValueForKeyInQuery(url, key, &param_value)) {
+    return false;
+  }
+
+  const std::string& expected_value =
+      features::kPrefetchSchedulerBurstQueryParamValue.Get();
+  return expected_value.empty() || param_value == expected_value;
 }
 
 bool CalculateIsLikelyAheadOfPrerender(
@@ -566,7 +589,9 @@ PrefetchContainer::PrefetchContainer(
     std::unique_ptr<PrePrefetchContainer> pre_prefetch_container)
     : request_(std::move(prefetch_request)),
       is_constructed_from_pre_prefetch_(pre_prefetch_container != nullptr),
-      container_id_for_testing_(base::UnguessableToken::Create().ToString()) {
+      container_id_for_testing_(base::UnguessableToken::Create().ToString()),
+      matches_burst_query_param_(CalculateMatchesBurstQueryParam(
+          CHECK_DEREF(request_.get()).key().url())) {
   CHECK(request_);
   TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
                     request().preload_pipeline_info().GetTrack());

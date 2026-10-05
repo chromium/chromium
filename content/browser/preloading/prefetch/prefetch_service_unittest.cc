@@ -519,6 +519,13 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
         std::move(prefetch_request));
   }
 
+  // Starts browser-initiated prefetch request.
+  //
+  // Note: The default `priority` is `PrefetchPriority::kHighest` for backward
+  // compatibility with existing tests, which means it will be treated as burst
+  // priority (`kBurstForPrefetchPriority`) by default. When testing normal
+  // (non-burst) scheduling behavior, explicitly pass
+  // `PrefetchPriority::kMedium` (or another non-burst priority).
   [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
   MakePrefetchFromBrowserContext(
       const GURL& url,
@@ -526,10 +533,11 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       base::TimeDelta ttl = base::Seconds(/* 10 minutes */ 60 * 10),
-      bool should_disable_block_until_head_timeout = false) {
+      bool should_disable_block_until_head_timeout = false,
+      PrefetchPriority priority = PrefetchPriority::kHighest) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, test::kPreloadingEmbedderHistogramSuffixForTesting, true,
-        no_vary_search_data, PrefetchPriority::kHighest,
+        no_vary_search_data, priority,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         additional_headers, std::move(request_status_listener), ttl,
@@ -8629,6 +8637,142 @@ TEST_P(PrefetchServiceTest,
 
   ASSERT_EQ(pc_p2->GetLoadState(), PrefetchContainer::LoadState::kStarted);
   ASSERT_EQ(pc_p3->GetLoadState(), PrefetchContainer::LoadState::kStarted);
+}
+
+// Tests query parameter based burst behavior.
+//
+// Scenario:
+//
+// - Base limit is 1, extra burst limit is 1 (burst limit is 2).
+// - Two normal prefetches (`url_1`, `url_2`) are triggered.
+// - `PrefetchScheduler` starts `url_1`, while `url_2` is queued.
+// - A prefetch with a non-matching query param (`url_3`, pf=other) is triggered
+//   and queued.
+// - A first prefetch with the matching query param (`url_4`, pf=op) is
+//   triggered.
+// - `PrefetchScheduler` starts `url_4` immediately using the burst capacity
+//   (active set size reaches 2).
+// - A second prefetch with the matching query param (`url_5`, pf=op) is
+//   triggered and queued as the burst limit (2) is reached.
+// - `url_1` ended.
+// - `PrefetchScheduler` starts `url_5` ahead of the earlier queued normal
+//   prefetches (`url_2`, `url_3`).
+// - `url_4` ended.
+// - `PrefetchScheduler` does not start `url_2` or `url_3` as `url_5` is still
+//   running and `ActiveSetSizeLimitForBase` is 1.
+// - `url_5` ended.
+// - `PrefetchScheduler` starts `url_2`.
+TEST_P(PrefetchServiceTest, PrefetchScheduler_QueryParamBurst) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {
+          {features::kPrefetchSchedulerBurstQueryParam,
+           {{"key", "pf"}, {"value", "op"}, {"extra_limit", "1"}}},
+      },
+      {features::kPrefetchSchedulerTesting,
+       features::kPrefetchMultipleActiveSetSizeLimitForBase});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  const auto url_1 = GURL("https://example.com/normal1");
+  const auto url_2 = GURL("https://example.com/normal2");
+  const auto url_3 = GURL("https://example.com/other?pf=other");
+  const auto url_4 = GURL("https://example.com/target?pf=op");
+  const auto url_5 = GURL("https://example.com/target2?pf=op");
+
+  auto handle_1 = MakePrefetchFromBrowserContext(
+      url_1, std::nullopt, {}, nullptr, base::Seconds(60 * 10), false,
+      PrefetchPriority::kMedium);
+  auto handle_2 = MakePrefetchFromBrowserContext(
+      url_2, std::nullopt, {}, nullptr, base::Seconds(60 * 10), false,
+      PrefetchPriority::kMedium);
+  auto handle_3 = MakePrefetchFromBrowserContext(
+      url_3, std::nullopt, {}, nullptr, base::Seconds(60 * 10), false,
+      PrefetchPriority::kMedium);
+  task_environment()->RunUntilIdle();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container1, prefetch_container2,
+      prefetch_container3, prefetch_container4, prefetch_container5;
+  std::tie(std::ignore, prefetch_container1) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_1))[0];
+  std::tie(std::ignore, prefetch_container2) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_2))[0];
+  std::tie(std::ignore, prefetch_container3) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_3))[0];
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  auto handle_4 = MakePrefetchFromBrowserContext(
+      url_4, std::nullopt, {}, nullptr, base::Seconds(60 * 10), false,
+      PrefetchPriority::kMedium);
+  auto handle_5 = MakePrefetchFromBrowserContext(
+      url_5, std::nullopt, {}, nullptr, base::Seconds(60 * 10), false,
+      PrefetchPriority::kMedium);
+  task_environment()->RunUntilIdle();
+
+  std::tie(std::ignore, prefetch_container4) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_4))[0];
+  std::tie(std::ignore, prefetch_container5) =
+      prefetch_service().GetAllForUrlWithoutRefAndQueryForTesting(
+          PrefetchKey(std::nullopt, url_5))[0];
+
+  ASSERT_EQ(prefetch_container1->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container4->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container5->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+
+  handle_1.reset();
+  EXPECT_FALSE(prefetch_container1);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container4->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container5->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+
+  handle_4.reset();
+  EXPECT_FALSE(prefetch_container4);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
+  ASSERT_EQ(prefetch_container5->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+
+  handle_5.reset();
+  EXPECT_FALSE(prefetch_container5);
+  // Resolve `PrefetchScheduler::ProgressAsync()`.
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(prefetch_container2->GetLoadState(),
+            PrefetchContainer::LoadState::kStarted);
+  ASSERT_EQ(prefetch_container3->GetLoadState(),
+            PrefetchContainer::LoadState::kEligible);
 }
 
 TEST_P(PrefetchServiceTest,

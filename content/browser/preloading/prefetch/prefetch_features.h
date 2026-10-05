@@ -80,6 +80,15 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // Controls field trials parameters for prefetch canary checker.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCanaryCheckerParams);
 
+// Burst prefetches with a specific query parameter (e.g., pf=op).
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchSchedulerBurstQueryParam);
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kPrefetchSchedulerBurstQueryParamKey;
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kPrefetchSchedulerBurstQueryParamValue;
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kPrefetchSchedulerBurstQueryParamExtraLimit;
+
 // Allows multiple base limit on `PrefetchScheduler`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>

@@ -222,6 +222,10 @@ class CONTENT_EXPORT PrefetchContainer
   // Equivalent to `request().key().url()`.
   const GURL& GetURL() const override;
 
+  // Returns true if the prefetch URL matches the query parameter configured for
+  // burst (e.g., pf=op).
+  bool MatchesBurstQueryParam() const { return matches_burst_query_param_; }
+
   // Equivalent to `request().no_vary_search_hint()`.
   // Exposed for `PrefetchMatchResolver`.
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint()
@@ -866,6 +870,7 @@ class CONTENT_EXPORT PrefetchContainer
       base::ObserverListPolicy::EXISTING_ONLY};
 
   bool is_likely_ahead_of_prerender_ = false;
+  const bool matches_burst_query_param_;
 
   // The time that the latest earlier prefetch unmatch happened that this
   // prefetch could've been served to.
