@@ -531,6 +531,15 @@ bool IsStateless() {
     didRegisterFormActivity:(const autofill::FormActivityParams&)params
                     inFrame:(web::WebFrame*)frame {
   DCHECK_EQ(_webState, webState);
+
+  // Ignore form_changed events to prevent gestureless form changes from
+  // invalidating the accessory view or overwriting the active keyboard
+  // accessory's target web frame ID.
+  if (params.type == ActivityType::kFormChanged) {
+    return;
+  }
+
+  BOOL hadValidActivity = self.validActivityForAccessoryView;
   self.validActivityForAccessoryView = NO;
 
   // Return early if `params` is not complete.
@@ -554,12 +563,6 @@ bool IsStateless() {
   // Return early and reset if frame is missing or can't call JS.
   if (!frame) {
     [self reset];
-    return;
-  }
-
-  // Ignore form_changed events to prevent gestureless form changes from
-  // overwriting the active keyboard accessory's target web frame ID.
-  if (params.type == ActivityType::kFormChanged) {
     return;
   }
 
@@ -594,10 +597,11 @@ bool IsStateless() {
   }
 
   // Check if we need to reload input views after using an input which did not
-  // require the keyboard accessory to show up. Err on the side of calling
-  // "reloadInputViews" if the input field types are unrecognized.
-  if (!InputTriggersKeyboard(_lastSeenParams.field_type,
-                             /*default_value=*/false) &&
+  // require the keyboard accessory to show up, or if the accessory view was
+  // previously inactive. Err on the side of calling `reloadInputViews` if the
+  // input field types are unrecognized.
+  if ((!hadValidActivity || !InputTriggersKeyboard(_lastSeenParams.field_type,
+                                                   /*default_value=*/false)) &&
       InputTriggersKeyboard(params.field_type, /*default_value=*/true)) {
     [self reloadFirstResponderInputViews];
   }
