@@ -622,6 +622,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":x8-lut_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
       ":x8-lut_x64",
       ":x8-packq_x64",
+      ":x8-packw_f16c-fma-avx2",
       ":x8-packw_x64",
       ":x8-transposec_f16c-fma-avx2",
       ":x8-transposec_sse2-no-sse3",
@@ -1209,6 +1210,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       ":x8-lut_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
       ":x8-lut_x64_standalone",
       ":x8-packq_x64_standalone",
+      ":x8-packw_f16c-fma-avx2_standalone",
       ":x8-packw_x64_standalone",
       ":x8-transposec_f16c-fma-avx2_standalone",
       ":x8-transposec_sse2-no-sse3_standalone",
@@ -26106,7 +26108,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -26134,7 +26135,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -39054,6 +39054,71 @@ if (current_cpu == "x64" || current_cpu == "x86") {
   }
 
   if (build_with_chromium) {
+    source_set("x8-packw_f16c-fma-avx2") {
+      cflags = [
+        "-mavx2",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-avx2-u16.c",
+        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-avx2-u16.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+    }
+  }
+
+  # This is a target that cannot depend on //base.
+  if (build_with_internal_optimization_guide) {
+    source_set("x8-packw_f16c-fma-avx2_standalone") {
+      cflags = [
+        "-mavx2",
+        "-mf16c",
+        "-mfma",
+      ]
+
+      sources = [
+        "src/include/xnnpack.h",
+        "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-avx2-u16.c",
+        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-avx2-u16.c",
+      ]
+
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+      configs += [ ":xnnpack_private_config" ]
+
+      deps = [
+        "//third_party/cpuinfo",
+        "//third_party/fp16",
+        "//third_party/fxdiv",
+        "//third_party/pthreadpool:pthreadpool_standalone",
+      ]
+
+      public_configs = [ ":xnnpack_public_config" ]
+
+      if (!(is_android && use_order_profiling)) {
+        assert_no_deps = [ "//base" ]
+      }
+    }
+  }
+
+  if (build_with_chromium) {
     source_set("x8-packw_x64") {
       cflags = []
 
@@ -39062,7 +39127,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
@@ -39095,7 +39159,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
@@ -50025,11 +50088,13 @@ if (current_cpu == "arm64") {
         "src/include/xnnpack.h",
         "src/src/qs8-packw/gen/qs8-packw-x16c4-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-gio-scalar.c",
+        "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-neon.c",
         "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x4c8-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x4c8-gemm-goi-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x8c4-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x8c8-gemm-gio-scalar.c",
+        "src/src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-neon.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -50057,11 +50122,13 @@ if (current_cpu == "arm64") {
         "src/include/xnnpack.h",
         "src/src/qs8-packw/gen/qs8-packw-x16c4-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-gio-scalar.c",
+        "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-neon.c",
         "src/src/qs8-packw/gen/qs8-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x4c8-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x4c8-gemm-goi-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x8c4-gemm-gio-scalar.c",
         "src/src/qs8-packw/gen/qs8-packw-x8c8-gemm-gio-scalar.c",
+        "src/src/qs8-packw/gen/qs8-packw-x8c8-gemm-goi-neon.c",
       ]
 
       configs -= [ "//build/config/compiler:chromium_code" ]
@@ -50384,7 +50451,7 @@ if (current_cpu == "arm64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
+        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-neon-prfm.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -50412,7 +50479,7 @@ if (current_cpu == "arm64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
+        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-neon-prfm.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -54495,10 +54562,10 @@ if (current_cpu == "arm64") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
+        "src/src/x8-packw/gen/x8-packw-x8-gemm-goi-neon-u16-prfm.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-goi-scalar-u2.c",
       ]
 
@@ -54528,10 +54595,10 @@ if (current_cpu == "arm64") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
+        "src/src/x8-packw/gen/x8-packw-x8-gemm-goi-neon-u16-prfm.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-goi-scalar-u2.c",
       ]
 
@@ -64863,7 +64930,6 @@ if (current_cpu == "riscv64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -64891,7 +64957,6 @@ if (current_cpu == "riscv64") {
       sources = [
         "src/include/xnnpack.h",
         "src/src/qs8-qc4w-packw/gen/qs8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
-        "src/src/qs8-qc4w-packw/gen/qs8-qc4w-packw-x16c8-gemm-goi-scalar.c",
         "src/src/qs8-qc4w-packw/gen/qs8-to-qu8-qc4uw-packw-x16c8-gemm-goi-scalar.c",
       ]
 
@@ -70268,7 +70333,6 @@ if (current_cpu == "riscv64") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
@@ -70301,7 +70365,6 @@ if (current_cpu == "riscv64") {
         "src/src/x8-packw/gen/x8-packw-x16-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x16-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x32-gemm-gio-scalar.c",
-        "src/src/x8-packw/gen/x8-packw-x32-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-gio-scalar.c",
         "src/src/x8-packw/gen/x8-packw-x4-gemm-goi-scalar-u2.c",
         "src/src/x8-packw/gen/x8-packw-x8-gemm-gio-scalar.c",
