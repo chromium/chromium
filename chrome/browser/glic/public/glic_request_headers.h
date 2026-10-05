@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_CORS_EXEMPT_HEADERS_H_
-#define CHROME_BROWSER_GLIC_PUBLIC_GLIC_CORS_EXEMPT_HEADERS_H_
+#ifndef CHROME_BROWSER_GLIC_PUBLIC_GLIC_REQUEST_HEADERS_H_
+#define CHROME_BROWSER_GLIC_PUBLIC_GLIC_REQUEST_HEADERS_H_
 
 namespace network::mojom {
 class NetworkContextParams;
@@ -25,4 +25,4 @@ void UpdateCorsExemptHeaders(network::mojom::NetworkContextParams* params);
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_CORS_EXEMPT_HEADERS_H_
+#endif  // CHROME_BROWSER_GLIC_PUBLIC_GLIC_REQUEST_HEADERS_H_

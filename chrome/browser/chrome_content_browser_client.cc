@@ -104,7 +104,7 @@
 #include "chrome/browser/glic/host/glic_url_loader_throttle.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/public/glic_cors_exempt_headers.h"
+#include "chrome/browser/glic/public/glic_request_headers.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/history/history_service_factory.h"

@@ -13,10 +13,10 @@ source_set("features") {
   ]
 }
 
-source_set("cors_exempt_headers") {
+source_set("request_headers") {
   sources = [
-    "glic_cors_exempt_headers.cc",
-    "glic_cors_exempt_headers.h",
+    "glic_request_headers.cc",
+    "glic_request_headers.h",
   ]
   deps = [ "//services/network/public/mojom" ]
 }

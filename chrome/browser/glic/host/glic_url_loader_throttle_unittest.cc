@@ -8,7 +8,7 @@
 #include <string>
 
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/public/glic_cors_exempt_headers.h"
+#include "chrome/browser/glic/public/glic_request_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/testing_profile.h"
