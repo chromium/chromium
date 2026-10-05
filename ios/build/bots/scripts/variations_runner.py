@@ -72,7 +72,6 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     self,
     app_path,
     host_app_path,
-    iossim_path,
     version,
     platform,
     out_dir,
@@ -80,7 +79,7 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
     **kwargs,
   ):
     super(VariationsSimulatorParallelTestRunner, self).__init__(
-      app_path, host_app_path, iossim_path, version, platform, out_dir, **kwargs
+      app_path, host_app_path, version, platform, out_dir, **kwargs
     )
     self.variations_seed_path = variations_seed_path
     self.host_app_bundle_id = test_apps.get_bundle_id(self.host_app_path)

@@ -11,8 +11,7 @@ Sample usage:
   -o /tmp/out \
   -p "iPhone 5s" \
   -v 9.3 \
-  -b 9b46 \
-  -i /path/to/Release-iphoneos/iossim
+  -b 9b46
 
 Installs base_unittests.app in an iPhone 5s simulator running iOS 9.3 under
 Xcode build version 9b46, runs it, and captures all test data in /tmp/out.
@@ -151,7 +150,6 @@ class Runner:
         tr = xcodebuild_runner.SimulatorParallelTestRunner(
           self.args.app,
           self.args.host_app,
-          self.args.iossim,
           self.args.version,
           self.args.platform,
           out_dir=self.args.out_dir,
@@ -173,7 +171,6 @@ class Runner:
         tr = variations_runner.VariationsSimulatorParallelTestRunner(
           self.args.app,
           self.args.host_app,
-          self.args.iossim,
           self.args.version,
           self.args.platform,
           self.args.out_dir,
@@ -186,10 +183,9 @@ class Runner:
           use_simulator_cache=self.args.use_simulator_cache,
           skip_enumerate_tests=self.args.skip_enumerate_tests,
         )
-      elif self.args.iossim and self.args.platform and self.args.version:
+      elif self.args.platform and self.args.version:
         tr = test_runner.SimulatorTestRunner(
           self.args.app,
-          self.args.iossim,
           self.args.platform,
           self.args.version,
           self.args.out_dir,
@@ -372,8 +368,7 @@ class Runner:
     parser.add_argument(
       '-i',
       '--iossim',
-      help='Compiled iossim to run the app on.',
-      metavar='iossim',
+      help=argparse.SUPPRESS,
     )
     parser.add_argument(
       '-j',
@@ -582,16 +577,11 @@ class Runner:
       """
       if not args.xcode_build_version:
         parser.error('must specify --xcode-build-version on bot')
-      if not use_xcodebuild_runner(args) and (
-        args.iossim or args.platform or args.version
-      ):
-        # If any of --iossim, --platform, or --version
-        # are specified then they must all be specified.
-        if not (args.iossim and args.platform and args.version):
-          parser.error(
-            'must specify all or none of '
-            '-i/--iossim, -p/--platform, -v/--version'
-          )
+      if not use_xcodebuild_runner(args) and (args.platform or args.version):
+        # If either --platform or --version is specified, both must be
+        # specified.
+        if not (args.platform and args.version):
+          parser.error('must specify both -p/--platform and -v/--version')
 
       if args.xcodebuild_sim_runner and not (args.platform and args.version):
         parser.error(
@@ -653,7 +643,7 @@ class Runner:
         'Defaulting to Xcode build version %s', args.xcode_build_version
       )
 
-    if not args.xcodebuild_sim_runner and not args.iossim:
+    if args.xcodebuild_device_runner:
       # No need to pick a `--platform` or `--version` for on-device runs.
       return
     if args.version and args.platform:
@@ -680,9 +670,10 @@ class Runner:
       if not args.platform:
         args.platform = device_type['name']
         logging.info('Defaulting to simulating %s', args.platform)
-    except (subprocess.CalledProcessError, KeyError, IndexError):
+    except (subprocess.CalledProcessError, OSError, KeyError, IndexError):
       # Give up if:
-      # * `xcrun simctl` fails because `xcode-select` hasn't run yet.
+      # * `xcrun simctl` fails because `xcrun` is missing (e.g. Linux) or
+      #   `xcode-select` hasn't run yet.
       # * The JSON doesn't have the right shape.
       pass
 

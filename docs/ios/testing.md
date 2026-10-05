@@ -13,12 +13,11 @@ the wrapper scripts generated at build time:
 <output directory>/bin/run_<target_name> [options]
 ```
 
-The wrapper scripts take care of invoking `//ios/build/bots/scripts/run.py`
-with options like `--iossim` set appropriately. In general, you need to pass
-at least `--out-dir` (a directory where test results will be stored),
-`--platform` (a device available to the simulator), `--xcode-build` (obtained
-via e.g. About Xcode) and `--version` (iOS version to run). The
-`--gtest_filter` option is also supported.
+The wrapper scripts take care of invoking `//ios/build/bots/scripts/run.py`.
+In general, you need to pass at least `--out-dir` (a directory where test
+results will be stored), `--platform` (a device available to the simulator),
+`--xcode-build` (obtained via e.g. About Xcode) and `--version` (iOS version
+to run). The `--gtest_filter` option is also supported.
 
 A more complete example looks like this:
 
@@ -208,8 +207,6 @@ src/ios/build/bots/scripts/run.py
     path/to/Xcode.app
     --replay-path
     NO_PATH
-    --iossim
-    src/out/Debug-iphonesimulator/iossim
     --platform
     iPad (6th generation)
     --version

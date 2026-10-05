@@ -109,17 +109,6 @@ template("ios_test_runner_wrapper") {
       data_deps += invoker.data_deps
     }
 
-    # test runner relies on iossim for simulator builds.
-    if (target_environment == "simulator" && host_os == "mac") {
-      _rebased_root_build_dir = rebase_path("${root_build_dir}", root_build_dir)
-      data_deps += [ "//testing/iossim" ]
-
-      executable_args += [
-        "--iossim",
-        "@WrappedPath(${_rebased_root_build_dir}/iossim)",
-      ]
-    }
-
     if (use_clang_coverage) {
       executable_args += [ "--use-clang-coverage" ]
     }

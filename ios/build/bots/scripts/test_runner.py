@@ -110,11 +110,11 @@ class PlugInsNotFoundError(TestRunnerError):
 
 
 class SimulatorNotFoundError(TestRunnerError):
-  """The given simulator binary was not found."""
+  """The given simulator was not found."""
 
-  def __init__(self, iossim_path):
+  def __init__(self, message):
     super(SimulatorNotFoundError, self).__init__(
-      f'Simulator does not exist: {iossim_path}'
+      f'Simulator does not exist: {message}'
     )
 
 
@@ -853,20 +853,15 @@ class TestRunner(object):
 
 
 class SimulatorTestRunner(TestRunner):
-  """Class for running tests on iossim."""
+  """Class for running tests on iOS simulator."""
 
-  def __init__(
-    self, app_path, iossim_path, platform, version, out_dir, **kwargs
-  ):
+  def __init__(self, app_path, platform, version, out_dir, **kwargs):
     """Initializes a new instance of this class.
 
     Args:
       app_path: Path to the compiled .app or .ipa to run.
-      iossim_path: Path to the compiled iossim binary to use.
-      platform: Name of the platform to simulate. Supported values can be found
-        by running "iossim -l". e.g. "iPhone 5s", "iPad Retina".
-      version: Version of iOS the platform should be running. Supported values
-        can be found by running "iossim -l". e.g. "9.3", "8.2", "7.1".
+      platform: Name of the platform to simulate. e.g. "iPhone 15", "iPad Air".
+      version: Version of iOS the platform should be running. e.g. "17.0".
       out_dir: Directory to emit test data into.
       (Following are potential args in **kwargs)
       env_vars: List of environment variables to pass to the test itself.
@@ -889,12 +884,7 @@ class SimulatorTestRunner(TestRunner):
     """
     super(SimulatorTestRunner, self).__init__(app_path, out_dir, **kwargs)
 
-    iossim_path = os.path.abspath(iossim_path)
-    if not os.path.exists(iossim_path):
-      raise SimulatorNotFoundError(iossim_path)
-
     self.homedir = ''
-    self.iossim_path = iossim_path
     self.platform = platform
     self.start_time = None
     self.version = version

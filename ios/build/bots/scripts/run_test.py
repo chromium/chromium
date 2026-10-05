@@ -124,16 +124,14 @@ class ParseArgsUnitTest(unittest.TestCase):
 
   # Don't try to set any defaults.
   @mock.patch('xcode_util.is_local_run', return_value=False)
-  def test_parse_args_iossim_platform_version(self, _):
-    """iossim, platform and version should all be set together."""
+  def test_parse_args_platform_version(self, _):
+    """Platform and version should both be set together."""
     test_cases = [
       {
         'error': 2,
         'cmd': [
           '--platform',
           'iPhone X',
-          '--version',
-          '13.2.2',
           # Required
           '--xcode-build-version',
           '123abc',
@@ -144,24 +142,8 @@ class ParseArgsUnitTest(unittest.TestCase):
       {
         'error': 2,
         'cmd': [
-          '--iossim',
-          'path/to/iossim',
           '--version',
           '13.2.2',
-          # Required
-          '--xcode-build-version',
-          '123abc',
-          '--out-dir',
-          'some/dir',
-        ],
-      },
-      {
-        'error': 2,
-        'cmd': [
-          '--iossim',
-          'path/to/iossim',
-          '--platform',
-          'iPhone X',
           # Required
           '--xcode-build-version',
           '123abc',
@@ -178,10 +160,14 @@ class ParseArgsUnitTest(unittest.TestCase):
         with self.assertRaises(SystemExit) as ctx:
           runner.parse_args(test_case['cmd'])
       self.assertEqual(ctx.exception.code, test_case['error'])
-      self.assertRegex(stderr_buf.getvalue(), 'must specify all or none of .*')
+      self.assertRegex(
+        stderr_buf.getvalue(),
+        'must specify both -p/--platform and -v/--version',
+      )
 
   @mock.patch('xcode_util.is_local_run', return_value=True)
   @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  @mock.patch('iossim_util.get_simulator_list', return_value={'runtimes': []})
   def test_parse_args_default_xcode_build_version(self, *_mocks):
     cmd = [
       '--out-dir',
@@ -193,6 +179,7 @@ class ParseArgsUnitTest(unittest.TestCase):
 
   @mock.patch('xcode_util.is_local_run', return_value=True)
   @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  @mock.patch('iossim_util.get_simulator_list', return_value={'runtimes': []})
   def test_parse_args_default_xcode_build_version_override(self, *_mocks):
     cmd = [
       '--out-dir',
@@ -203,6 +190,20 @@ class ParseArgsUnitTest(unittest.TestCase):
     runner = run.Runner()
     runner.parse_args(cmd)
     self.assertEqual('efefef', runner.args.xcode_build_version)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  @mock.patch('iossim_util.get_simulator_list', side_effect=FileNotFoundError)
+  def test_parse_args_xcrun_missing(self, *_mocks):
+    cmd = [
+      '--out-dir',
+      'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('123abc', runner.args.xcode_build_version)
+    self.assertIsNone(runner.args.version)
+    self.assertIsNone(runner.args.platform)
 
   @mock.patch('xcode_util.is_local_run', return_value=True)
   @mock.patch(
@@ -235,6 +236,39 @@ class ParseArgsUnitTest(unittest.TestCase):
       'some/dir',
       '--xcode-build-version',
       '123abc',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('20.0', runner.args.version)
+    self.assertEqual('iPhone 20 Pro', runner.args.platform)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch(
+    'iossim_util.get_simulator_list',
+    return_value={
+      'runtimes': [
+        {
+          'version': '20.0',
+          'supportedDeviceTypes': [
+            {
+              'productFamily': 'iPhone',
+              'name': 'iPhone 20',
+            },
+            {
+              'productFamily': 'iPhone',
+              'name': 'iPhone 20 Pro',
+            },
+          ],
+        }
+      ],
+    },
+  )
+  def test_parse_args_iossim_ignored(self, *_mocks):
+    cmd = [
+      '--out-dir',
+      'some/dir',
+      '--xcode-build-version',
+      '123abc',
       '--iossim',
       'path/to/iossim',
     ]
@@ -242,6 +276,8 @@ class ParseArgsUnitTest(unittest.TestCase):
     runner.parse_args(cmd)
     self.assertEqual('20.0', runner.args.version)
     self.assertEqual('iPhone 20 Pro', runner.args.platform)
+    self.assertNotIn('--iossim', runner.test_args)
+    self.assertNotIn('path/to/iossim', runner.test_args)
 
   @mock.patch('xcode_util.is_local_run', return_value=True)
   @mock.patch(

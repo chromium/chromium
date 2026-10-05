@@ -121,22 +121,8 @@ class SimulatorTestRunnerTest(TestCase):
     with self.assertRaises(test_runner.AppNotFoundError):
       test_runner.SimulatorTestRunner(
         'fake-app',
-        'fake-iossim',
         'platform',
         'os',
-        'out-dir',
-      )
-
-  def test_iossim_not_found(self):
-    """Ensures SimulatorNotFoundError is raised."""
-    self.mock(os.path, 'exists', lambda p: not p.endswith('fake-iossim'))
-
-    with self.assertRaises(test_runner.SimulatorNotFoundError):
-      test_runner.SimulatorTestRunner(
-        'fake-app',
-        'fake-iossim',
-        'iPhone X',
-        '11.4',
         'out-dir',
       )
 
@@ -144,7 +130,6 @@ class SimulatorTestRunnerTest(TestCase):
     """Ensures instance is created."""
     tr = test_runner.SimulatorTestRunner(
       'fake-app',
-      'fake-iossim',
       'iPhone X',
       '11.4',
       'out-dir',
@@ -156,7 +141,6 @@ class SimulatorTestRunnerTest(TestCase):
     """Ensures clones is forced to 1 for Duo simulator."""
     tr = test_runner.SimulatorTestRunner(
       'fake-app',
-      'fake-iossim',
       'iPhone Duo',
       '27.1',
       'out-dir',
@@ -176,7 +160,6 @@ class SimulatorTestRunnerTest(TestCase):
 
     tr = test_runner.SimulatorTestRunner(
       'fake-app',
-      'fake-iossim',
       'iPhone X',
       '11.4',
       'out-dir',
@@ -219,7 +202,6 @@ class SimulatorTestRunnerTest(TestCase):
 
     tr = test_runner.SimulatorTestRunner(
       'fake-app',
-      'fake-iossim',
       'iPhone X',
       '11.4',
       'out-dir',
@@ -242,7 +224,7 @@ class SimulatorTestRunnerTest(TestCase):
     retry_result2 = ResultCollection(test_results=[test2_pass_result])
     mock_run.side_effect = [result1, retry_result1, retry_result2]
     tr = test_runner.SimulatorTestRunner(
-      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+      'fake-app', 'iPhone X', '11.4', 'out-dir', retries=3
     )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 3)
@@ -273,7 +255,7 @@ class SimulatorTestRunnerTest(TestCase):
       test_retry2_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+      'fake-app', 'iPhone X', '11.4', 'out-dir', retries=3
     )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 5)
@@ -305,7 +287,7 @@ class SimulatorTestRunnerTest(TestCase):
       test_retry2_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+      'fake-app', 'iPhone X', '11.4', 'out-dir', retries=3
     )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 5)
@@ -330,7 +312,7 @@ class SimulatorTestRunnerTest(TestCase):
       test1_retry3_result,
     ]
     tr = test_runner.SimulatorTestRunner(
-      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+      'fake-app', 'iPhone X', '11.4', 'out-dir', retries=3
     )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 4)
@@ -350,7 +332,7 @@ class SimulatorTestRunnerTest(TestCase):
     initial_result.spawning_test_launcher = True
     mock_run.side_effect = [initial_result]
     tr = test_runner.SimulatorTestRunner(
-      'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3
+      'fake-app', 'iPhone X', '11.4', 'out-dir', retries=3
     )
     tr.launch()
     self.assertEqual(len(mock_run.mock_calls), 1)

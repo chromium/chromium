@@ -15,7 +15,6 @@ function create_output_folder() {
   local random_string=$RANDOM
   local filename="${prefix}${random_string}"
   mkdir "$filename"
-  mkdir "${filename}/iossim"
   mkdir "${filename}/output"
   echo "$filename"
 }
@@ -102,7 +101,6 @@ if [ $choice -eq 1 ]; then
     --xcode-path $xcode_path \
     --mac-toolchain-cmd $mac_toolchain_cmd \
     --runtime-cache-prefix "${output_folder}/Runtime-ios-" \
-    --iossim "${output_folder}/iossim" \
     --platform "$platform" \
     --version $version \
     --out-dir "${output_folder}/output" \
@@ -126,7 +124,6 @@ elif [ $choice -eq 2 ]; then
     --xcode-path $xcode_path \
     --mac-toolchain-cmd $mac_toolchain_cmd \
     --runtime-cache-prefix "${output_folder}/Runtime-ios-" \
-    --iossim "${output_folder}/iossim" \
     --platform "$platform" \
     --version $version \
     --out-dir "${output_folder}/output" \
@@ -146,7 +143,6 @@ elif [ $choice -eq 3 ]; then
     --xcode-path $xcode_path \
     --mac-toolchain-cmd $mac_toolchain_cmd \
     --runtime-cache-prefix "${output_folder}/Runtime-ios-" \
-    --iossim "${output_folder}/iossim" \
     --out-dir "${output_folder}/output" \
     --xctest \
     --xcode-build-version $xcode_build_version
@@ -168,7 +164,6 @@ elif [ $choice -eq 4 ]; then
     --xcode-path $xcode_path \
     --mac-toolchain-cmd $mac_toolchain_cmd \
     --runtime-cache-prefix "${output_folder}/Runtime-ios-" \
-    --iossim "${output_folder}/iossim" \
     --out-dir "${output_folder}/output" \
     --xctest \
     --xcode-build-version $xcode_build_version \

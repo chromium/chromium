@@ -652,7 +652,6 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
       "fake-app-path",
       "fake-host-app-path",
-      "fake-iossim_path",
       "fake-version",
       "fake-platform",
       "fake-out-dir",
@@ -680,7 +679,6 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
       "fake-app-path",
       "fake-host-app-path",
-      "fake-iossim_path",
       "fake-version",
       "fake-platform",
       "fake-out-dir",
@@ -705,7 +703,6 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
       "fake-app-path",
       "fake-host-app-path",
-      "fake-iossim_path",
       "fake-version",
       "fake-platform",
       "fake-out-dir",
@@ -719,7 +716,6 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
       "fake-app-path",
       "fake-host-app-path",
-      "fake-iossim_path",
       "fake-version",
       "fake-platform",
       "fake-out-dir",
@@ -732,7 +728,6 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     tr = xcodebuild_runner.SimulatorParallelTestRunner(
       "fake-app-path",
       "fake-host-app-path",
-      "fake-iossim_path",
       "fake-version",
       "iPhone Duo",
       "fake-out-dir",
