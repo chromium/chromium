@@ -42,7 +42,7 @@ ContentAnalysisSdkManager::~ContentAnalysisSdkManager() = default;
 scoped_refptr<ContentAnalysisSdkManager::WrappedClient>
 ContentAnalysisSdkManager::GetClient(
     content_analysis::sdk::Client::Config config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = clients_.find(config);
   if (it != clients_.end())
     return it->second;
@@ -59,12 +59,12 @@ ContentAnalysisSdkManager::GetClient(
 
 void ContentAnalysisSdkManager::ResetClient(
     const content_analysis::sdk::Client::Config& config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   clients_.erase(config);
 }
 
 void ContentAnalysisSdkManager::ResetAllClients() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   clients_.clear();
 }
 

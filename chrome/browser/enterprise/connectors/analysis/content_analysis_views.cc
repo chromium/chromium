@@ -20,7 +20,7 @@ constexpr gfx::Insets kSideImageInsets(8);
 
 ContentAnalysisBaseView::ContentAnalysisBaseView(Delegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 }
 
 ContentAnalysisBaseView::Delegate* ContentAnalysisBaseView::delegate() {

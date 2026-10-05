@@ -66,7 +66,7 @@ class GetFileURLsDelegate final : public storage::RecursiveOperationDelegate {
   // RecursiveOperationDelegate:
   void Run() override { NOTREACHED(); }
   void RunRecursively() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
     StartRecursiveOperation(root_,
                             storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
                             base::BindOnce(&GetFileURLsDelegate::Completed,
@@ -259,7 +259,7 @@ FileTransferAnalysisDelegate::IsEnabledVec(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& source_urls,
     storage::FileSystemURL destination_url) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           profile);
@@ -295,8 +295,9 @@ FileTransferAnalysisDelegate::FileTransferAnalysisResult
 FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
     storage::FileSystemURL url) {
   // Should only be called for blocking scans.
-  DCHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock);
-  DCHECK_EQ(results_.size(), scanning_urls_.size());
+  CHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock,
+           base::NotFatalUntil::M161);
+  CHECK_EQ(results_.size(), scanning_urls_.size(), base::NotFatalUntil::M161);
 
   for (size_t i = 0; i < scanning_urls_.size(); ++i) {
     if (scanning_urls_[i] == url) {
@@ -315,8 +316,9 @@ FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(
 std::vector<storage::FileSystemURL>
 FileTransferAnalysisDelegate::GetWarnedFiles() const {
   // Should only be called for blocking scans.
-  DCHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock);
-  DCHECK_EQ(results_.size(), scanning_urls_.size());
+  CHECK_EQ(settings_.block_until_verdict, BlockUntilVerdict::kBlock,
+           base::NotFatalUntil::M161);
+  CHECK_EQ(results_.size(), scanning_urls_.size(), base::NotFatalUntil::M161);
 
   std::vector<storage::FileSystemURL> warned_files;
   for (size_t i = 0; i < scanning_urls_.size(); ++i) {
@@ -331,7 +333,7 @@ FileTransferAnalysisDelegate::GetWarnedFiles() const {
 void FileTransferAnalysisDelegate::UploadData(
     base::OnceClosure completion_callback) {
   callback_ = std::move(completion_callback);
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M161);
 
   // This will start aggregating the needed file urls and pass them to
   // OnGotFileSourceURLs.
@@ -355,7 +357,7 @@ FileTransferAnalysisDelegate::FileTransferAnalysisDelegate(
       access_point_{access_point},
       source_url_(std::move(source_url)),
       destination_url_{std::move(destination_url)} {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // For blocking scans, scanning is performed before the copy/move and
   // thus scanning should be performed on the source.
@@ -476,7 +478,7 @@ content::WebContents* FileTransferAnalysisDelegate::web_contents() const {
 
 void FileTransferAnalysisDelegate::OnGotFileURLs(
     std::vector<storage::FileSystemURL> scanning_urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   scanning_urls_ = std::move(scanning_urls);
   if (scanning_urls_.empty()) {
@@ -521,7 +523,7 @@ FileTransferAnalysisDelegate::~FileTransferAnalysisDelegate() {
 
 void FileTransferAnalysisDelegate::ContentAnalysisCompleted(
     std::vector<RequestHandlerResult> results) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   results_ = std::move(results);
 
   // Don't show warning here, as we use multiple FileTransferAnalysisDelegate's
@@ -533,7 +535,7 @@ void FileTransferAnalysisDelegate::ContentAnalysisCompleted(
     }
   }
 
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M161);
   std::move(callback_).Run();
 }
 

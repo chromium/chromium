@@ -55,7 +55,7 @@ KeyPersistenceDelegateFactory::CreateKeyPersistenceDelegate() {
 // static
 void KeyPersistenceDelegateFactory::SetInstanceForTesting(
     KeyPersistenceDelegateFactory* factory) {
-  DCHECK(factory);
+  CHECK(factory, base::NotFatalUntil::M161);
   GetTestInstanceStorage().emplace(factory);
 }
 

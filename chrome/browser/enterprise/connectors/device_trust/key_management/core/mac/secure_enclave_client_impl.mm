@@ -86,7 +86,7 @@ NSDictionary* CreateQueryForKey(SecureEnclaveClient::KeyType type) {
 
 SecureEnclaveClientImpl::SecureEnclaveClientImpl()
     : helper_(SecureEnclaveHelper::Create()) {
-  DCHECK(helper_);
+  CHECK(helper_, base::NotFatalUntil::M161);
 }
 
 SecureEnclaveClientImpl::~SecureEnclaveClientImpl() = default;

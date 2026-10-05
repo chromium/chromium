@@ -49,7 +49,7 @@ class MojoHelperImpl : public MojoHelper {
 
 // static
 void MojoHelper::SetInstanceForTesting(std::unique_ptr<MojoHelper> helper) {
-  DCHECK(helper);
+  CHECK(helper, base::NotFatalUntil::M161);
   *GetTestInstanceStorage() = std::move(helper);
 }
 

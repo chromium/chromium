@@ -34,7 +34,7 @@ std::unique_ptr<SecureEnclaveHelper> SecureEnclaveHelper::Create() {
 // static
 void SecureEnclaveHelper::SetInstanceForTesting(
     std::unique_ptr<SecureEnclaveHelper> helper) {
-  DCHECK(helper);
+  CHECK(helper, base::NotFatalUntil::M161);
   *GetTestInstanceStorage() = std::move(helper);
 }
 

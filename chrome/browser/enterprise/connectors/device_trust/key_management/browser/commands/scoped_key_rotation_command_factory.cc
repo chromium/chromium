@@ -25,7 +25,7 @@ ScopedKeyRotationCommandFactory::~ScopedKeyRotationCommandFactory() {
 
 void ScopedKeyRotationCommandFactory::SetMock(
     std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command) {
-  DCHECK(mock_key_rotation_command);
+  CHECK(mock_key_rotation_command, base::NotFatalUntil::M161);
 
   mock_key_rotation_command_ = std::move(mock_key_rotation_command);
   return_invalid_command = false;

@@ -82,14 +82,14 @@ LinuxKeyRotationCommand::LinuxKeyRotationCommand(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : launch_callback_(std::move(launch_callback)),
       url_loader_factory_(std::move(url_loader_factory)) {
-  DCHECK(launch_callback_);
-  DCHECK(url_loader_factory_);
+  CHECK(launch_callback_, base::NotFatalUntil::M161);
+  CHECK(url_loader_factory_, base::NotFatalUntil::M161);
 }
 
 LinuxKeyRotationCommand::~LinuxKeyRotationCommand() = default;
 
 void LinuxKeyRotationCommand::Trigger(const Params& params, Callback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M161);
 
   uint64_t pipe_name = base::RandUint64();
   base::CommandLine command_line =

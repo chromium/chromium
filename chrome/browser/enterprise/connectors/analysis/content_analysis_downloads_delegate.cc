@@ -146,7 +146,7 @@ ContentAnalysisDownloadsDelegate::OverrideCancelButtonText() const {
 
 void ContentAnalysisDownloadsDelegate::OnDownloadDestroyed(
     download::DownloadItem* download) {
-  DCHECK_EQ(download, download_item_);
+  CHECK_EQ(download, download_item_, base::NotFatalUntil::M161);
   download->RemoveObserver(this);
   download_item_ = nullptr;
 }

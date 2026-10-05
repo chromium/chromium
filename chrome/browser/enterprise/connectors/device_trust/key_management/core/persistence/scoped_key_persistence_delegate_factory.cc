@@ -25,10 +25,10 @@ namespace {
 
 std::unique_ptr<crypto::UnexportableSigningKey> GenerateHardwareSigningKey() {
   auto provider = crypto::GetUnexportableKeyProvider(/*config=*/{});
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
   auto acceptable_algorithms = {crypto::sign::ECDSA_SHA256};
   auto signing_key = provider->GenerateSigningKeySlowly(acceptable_algorithms);
-  DCHECK(signing_key);
+  CHECK(signing_key, base::NotFatalUntil::M161);
   return signing_key;
 }
 
@@ -136,7 +136,7 @@ bool ScopedInMemoryKeyPersistenceDelegateFactory::StoreKeyPair(
     std::vector<uint8_t> wrapped) {
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
     // Remove key
-    DCHECK_EQ(wrapped.size(), 0u);
+    CHECK_EQ(wrapped.size(), 0u, base::NotFatalUntil::M161);
     key_map_.erase(KeyStorageType::kPermanent);
     return true;
   }

@@ -68,7 +68,7 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
 // ensure that the DownloadManager will be created after profile creation.
 void GetDownloadManagerOnProfileCreation(Profile* profile) {
   content::DownloadManager* manager = profile->GetDownloadManager();
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M161);
 }
 
 void BindWakeLockProvider(

@@ -821,7 +821,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       if (GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         break;
       }
-      DCHECK(IsDangerous());
+      CHECK(IsDangerous(), base::NotFatalUntil::M161);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
       MaybeSendDownloadReport(/*did_proceed=*/true, download_);
 #endif
@@ -883,10 +883,10 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
       DownloadCoreService* download_core_service =
           DownloadCoreServiceFactory::GetForBrowserContext(
               content::DownloadItemUtils::GetBrowserContext(download_));
-      DCHECK(download_core_service);
+      CHECK(download_core_service, base::NotFatalUntil::M161);
       ChromeDownloadManagerDelegate* delegate =
           download_core_service->GetDownloadManagerDelegate();
-      DCHECK(delegate);
+      CHECK(delegate, base::NotFatalUntil::M161);
       LogDeepScanEvent(download_, safe_browsing::DeepScanEvent::kScanCanceled);
       delegate->CheckClientDownloadDone(
           download_->GetId(),

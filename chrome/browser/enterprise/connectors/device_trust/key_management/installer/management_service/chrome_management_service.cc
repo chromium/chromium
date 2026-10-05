@@ -106,9 +106,9 @@ ChromeManagementService::ChromeManagementService(
     : permissions_callback_(std::move(permissions_callback)),
       rotation_callback_(std::move(rotation_callback)),
       mojo_helper_(std::move(mojo_helper)) {
-  DCHECK(permissions_callback_);
-  DCHECK(rotation_callback_);
-  DCHECK(mojo_helper_);
+  CHECK(permissions_callback_, base::NotFatalUntil::M161);
+  CHECK(rotation_callback_, base::NotFatalUntil::M161);
+  CHECK(mojo_helper_, base::NotFatalUntil::M161);
 }
 
 ChromeManagementService::~ChromeManagementService() = default;

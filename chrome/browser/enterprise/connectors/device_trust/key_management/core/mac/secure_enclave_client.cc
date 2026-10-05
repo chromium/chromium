@@ -44,7 +44,7 @@ std::unique_ptr<SecureEnclaveClient> SecureEnclaveClient::Create() {
 // static
 void SecureEnclaveClient::SetInstanceForTesting(
     std::unique_ptr<SecureEnclaveClient> client) {
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M161);
   *GetTestInstanceStorage() = std::move(client);
 }
 

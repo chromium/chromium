@@ -168,7 +168,7 @@ struct InsecureDownloadData {
     extension_ = path.FinalExtension();
 #endif
     if (!extension_.empty()) {
-      DCHECK_EQ(extension_[0], '.');
+      CHECK_EQ(extension_[0], '.', base::NotFatalUntil::M161);
       extension_ = extension_.substr(1);  // Omit leading dot.
     }
 
@@ -324,7 +324,7 @@ bool ContainsExtension(const std::string& extension_list,
   for (const auto& item :
        base::SplitStringPiece(extension_list, ",", base::TRIM_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
-    DCHECK_EQ(base::ToLowerASCII(item), item);
+    CHECK_EQ(base::ToLowerASCII(item), item, base::NotFatalUntil::M161);
     if (base::EqualsCaseInsensitiveASCII(extension, item))
       return true;
   }
@@ -391,8 +391,10 @@ bool IsDownloadPermittedByContentSettings(
 
   // When there's only one rule, it's the default wildcard rule.
   if (settings.size() == 1) {
-    DCHECK(settings[0].primary_pattern == ContentSettingsPattern::Wildcard());
-    DCHECK(settings[0].secondary_pattern == ContentSettingsPattern::Wildcard());
+    CHECK(settings[0].primary_pattern == ContentSettingsPattern::Wildcard(),
+          base::NotFatalUntil::M161);
+    CHECK(settings[0].secondary_pattern == ContentSettingsPattern::Wildcard(),
+          base::NotFatalUntil::M161);
     return settings[0].GetContentSetting() == CONTENT_SETTING_ALLOW;
   }
 

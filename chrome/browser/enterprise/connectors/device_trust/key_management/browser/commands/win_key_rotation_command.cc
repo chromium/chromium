@@ -46,7 +46,7 @@ constexpr int kMaxCommandArgs = 9;
 HRESULT RunGoogleUpdateElevatedCommand(const wchar_t* command,
                                        const std::vector<std::string>& args,
                                        std::optional<DWORD>* return_code) {
-  DCHECK(return_code);
+  CHECK(return_code, base::NotFatalUntil::M161);
   if (args.size() > kMaxCommandArgs)
     return E_INVALIDARG;
 
@@ -118,15 +118,15 @@ WinKeyRotationCommand::WinKeyRotationCommand(
     scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner)
     : com_thread_runner_(com_thread_runner),
       run_elevated_command_(run_elevated_command) {
-  DCHECK(run_elevated_command_);
-  DCHECK(com_thread_runner_);
+  CHECK(run_elevated_command_, base::NotFatalUntil::M161);
+  CHECK(com_thread_runner_, base::NotFatalUntil::M161);
 }
 
 WinKeyRotationCommand::~WinKeyRotationCommand() = default;
 
 void WinKeyRotationCommand::Trigger(const KeyRotationCommand::Params& params,
                                     Callback callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
 
   com_thread_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,

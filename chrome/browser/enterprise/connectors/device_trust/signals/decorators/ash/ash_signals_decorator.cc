@@ -109,8 +109,8 @@ AshSignalsDecorator::AshSignalsDecorator(
       profile_(profile),
       attributes_(std::make_unique<policy::DeviceAttributesImpl>(
           browser_policy_connector_)) {
-  DCHECK(browser_policy_connector_);
-  DCHECK(profile_);
+  CHECK(browser_policy_connector_, base::NotFatalUntil::M161);
+  CHECK(profile_, base::NotFatalUntil::M161);
 }
 
 AshSignalsDecorator::~AshSignalsDecorator() = default;

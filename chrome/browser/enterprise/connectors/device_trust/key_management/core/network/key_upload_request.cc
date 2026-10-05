@@ -57,9 +57,9 @@ KeyUploadRequest::KeyUploadRequest(const GURL& dm_server_url,
     : dm_server_url_(dm_server_url),
       dm_token_(dm_token),
       request_body_(request_body) {
-  DCHECK(dm_server_url_.is_valid());
-  DCHECK(!dm_token_.empty());
-  DCHECK(!request_body_.empty());
+  CHECK(dm_server_url_.is_valid(), base::NotFatalUntil::M161);
+  CHECK(!dm_token_.empty(), base::NotFatalUntil::M161);
+  CHECK(!request_body_.empty(), base::NotFatalUntil::M161);
 }
 
 // static
@@ -69,7 +69,7 @@ KeyUploadRequest::BuildUploadPublicKeyRequest(
     const SigningKeyPair* old_key_pair,
     std::optional<std::string> nonce) {
   // A nonce is only needed in key rotation scenarios.
-  DCHECK_EQ(!!old_key_pair, nonce.has_value());
+  CHECK_EQ(!!old_key_pair, nonce.has_value(), base::NotFatalUntil::M161);
 
   std::vector<uint8_t> pubkey = new_key_pair.key()->GetSubjectPublicKeyInfo();
 

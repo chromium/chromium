@@ -109,10 +109,10 @@ DownloadRequestLimiter::TabDownloadState::TabDownloadState(
 
 DownloadRequestLimiter::TabDownloadState::~TabDownloadState() {
   // We should only be destroyed after the callbacks have been notified.
-  DCHECK(callbacks_.empty());
+  CHECK(callbacks_.empty(), base::NotFatalUntil::M161);
 
   // And we should have invalidated the back pointer.
-  DCHECK(!factory_.HasWeakPtrs());
+  CHECK(!factory_.HasWeakPtrs(), base::NotFatalUntil::M161);
 }
 
 void DownloadRequestLimiter::TabDownloadState::SetDownloadStatusAndNotify(
@@ -208,7 +208,7 @@ void DownloadRequestLimiter::TabDownloadState::PromptUserForDownload(
     DownloadRequestLimiter::Callback callback,
     const url::Origin& request_origin) {
   callbacks_.emplace_back(request_origin, std::move(callback));
-  DCHECK(web_contents_);
+  CHECK(web_contents_, base::NotFatalUntil::M161);
   if (is_showing_prompt())
     return;
 
@@ -492,7 +492,7 @@ DownloadRequestLimiter::DownloadRequestLimiter() = default;
 DownloadRequestLimiter::~DownloadRequestLimiter() {
   // All the tabs should have closed before us, which sends notification and
   // removes from state_map_. As such, there should be no pending callbacks.
-  DCHECK(state_map_.empty());
+  CHECK(state_map_.empty(), base::NotFatalUntil::M161);
 }
 
 DownloadRequestLimiter::DownloadStatus
@@ -520,7 +520,7 @@ GURL DownloadRequestLimiter::GetDownloadOrigin(
 DownloadRequestLimiter::TabDownloadState*
 DownloadRequestLimiter::GetDownloadState(
     content::WebContents* web_contents) const {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   auto i = state_map_.find(web_contents);
   if (i == state_map_.end()) {
     return nullptr;
@@ -548,7 +548,7 @@ void DownloadRequestLimiter::CanDownload(
     std::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     Callback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* originating_contents = web_contents_getter.Run();
   if (!originating_contents) {
@@ -582,7 +582,7 @@ void DownloadRequestLimiter::OnCanDownloadDecided(
     bool from_download_cross_origin_redirect,
     Callback orig_callback,
     bool allow) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   content::WebContents* originating_contents = web_contents_getter.Run();
   if (!originating_contents || !allow) {
     std::move(orig_callback).Run(false);
@@ -620,7 +620,7 @@ void DownloadRequestLimiter::CanDownloadImpl(
     std::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     Callback callback) {
-  DCHECK(originating_contents);
+  CHECK(originating_contents, base::NotFatalUntil::M161);
 
   // Always allow download resulted from a cross-origin redirect from a previous
   // download attempt, and there's no need to update any state.
@@ -748,7 +748,7 @@ void DownloadRequestLimiter::CanDownloadImpl(
 
 void DownloadRequestLimiter::Remove(TabDownloadState* state,
                                     content::WebContents* contents) {
-  DCHECK(state_map_.contains(contents));
+  CHECK(state_map_.contains(contents), base::NotFatalUntil::M161);
   state_map_.erase(contents);
   delete state;
 }

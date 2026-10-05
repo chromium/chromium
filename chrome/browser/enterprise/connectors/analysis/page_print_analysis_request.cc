@@ -27,7 +27,7 @@ PagePrintAnalysisRequest::PagePrintAnalysisRequest(
                           analysis_settings.cloud_or_local_settings,
                           base::BindRepeating(&GetBrowserPolicyConnector)),
       page_(std::move(page)) {
-  DCHECK(page_.IsValid());
+  CHECK(page_.IsValid(), base::NotFatalUntil::M161);
   IncrementCrashKey(ScanningCrashKey::PENDING_PRINTS);
   IncrementCrashKey(ScanningCrashKey::TOTAL_PRINTS);
 }

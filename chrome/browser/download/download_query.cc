@@ -214,7 +214,7 @@ ComparisonType Compare(
   ValueType right_value = accessor.Run(right);
   if (left_value > right_value) return GT;
   if (left_value < right_value) return LT;
-  DCHECK_EQ(left_value, right_value);
+  CHECK_EQ(left_value, right_value, base::NotFatalUntil::M161);
   return EQ;
 }
 

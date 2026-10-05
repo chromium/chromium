@@ -269,7 +269,8 @@ void SavePackageFilePicker::FileSelected(const ui::SelectedFileInfo& file,
       save_type = content::SAVE_PAGE_TYPE_AS_MHTML;
     }
 #else
-    DCHECK_LT(index, static_cast<int>(save_types_.size()));
+    CHECK_LT(index, static_cast<int>(save_types_.size()),
+             base::NotFatalUntil::M161);
     save_type = save_types_[index];
     if (select_file_dialog_ &&
         select_file_dialog_->HasMultipleFileTypeChoices()) {

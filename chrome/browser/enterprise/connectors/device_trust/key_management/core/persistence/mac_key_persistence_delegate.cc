@@ -20,7 +20,7 @@ using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
 
 MacKeyPersistenceDelegate::MacKeyPersistenceDelegate()
     : client_(SecureEnclaveClient::Create()) {
-  DCHECK(client_);
+  CHECK(client_, base::NotFatalUntil::M161);
 }
 
 MacKeyPersistenceDelegate::~MacKeyPersistenceDelegate() = default;
@@ -37,7 +37,7 @@ bool MacKeyPersistenceDelegate::StoreKeyPair(KeyTrustLevel trust_level,
   // is because key storage is handled by the SecureEnclaveSigningKey upon key
   // creation.
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
-    DCHECK_EQ(wrapped.size(), 0u);
+    CHECK_EQ(wrapped.size(), 0u, base::NotFatalUntil::M161);
 
     // A previous signing key did not exist so the newly created signing key
     // stored in the permanent key storage is deleted.

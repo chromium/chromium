@@ -30,7 +30,7 @@ bool AllowedFSInfoKey(const std::string& key) {
 // The function returns true if there are no such unknown keys and false if an
 // unknown key is found.
 bool SourceOrDestinationEntryIsValid(const base::DictValue* dict) {
-  DCHECK(dict);
+  CHECK(dict, base::NotFatalUntil::M161);
   for (auto&& [key, _] : *dict) {
     if (!AllowedFSInfoKey(key)) {
       LOG(ERROR) << "Source or destination entry is not valid, ignoring it "
@@ -116,7 +116,7 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::PathToFsType(
   file_manager::VolumeManager* const volume_manager =
       file_manager::VolumeManager::Get(context);
 
-  DCHECK(volume_manager);
+  CHECK(volume_manager, base::NotFatalUntil::M161);
   base::WeakPtr<file_manager::Volume> volume =
       volume_manager->FindVolumeFromPath(path);
 
@@ -261,7 +261,7 @@ SourceDestinationMatcherAsh::~SourceDestinationMatcherAsh() = default;
 void SourceDestinationMatcherAsh::AddFilters(
     ID* id,
     const base::ListValue* settings_list) {
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M161);
   if (!settings_list) {
     LOG(ERROR) << "No settings list found.";
     return;

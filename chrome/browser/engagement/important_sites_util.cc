@@ -426,8 +426,9 @@ void ImportantSitesUtil::MarkOriginAsImportantForTesting(Profile* profile,
   site_engagement_service->ResetBaseScoreForURL(
       origin, SiteEngagementScore::GetMediumEngagementBoundary());
   double score = site_engagement_service->GetScore(origin);
-  DCHECK(SiteEngagementService::IsEngagementAtLeast(
-      score, blink::mojom::EngagementLevel::MEDIUM));
+  CHECK(SiteEngagementService::IsEngagementAtLeast(
+            score, blink::mojom::EngagementLevel::MEDIUM),
+        base::NotFatalUntil::M161);
 }
 
 }  // namespace site_engagement

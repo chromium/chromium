@@ -254,7 +254,7 @@ std::unique_ptr<FileAnalysisRequestBase> FilesRequestHandler::CreateFileRequest(
         callback,
     base::OnceCallback<void(const BinaryUploadRequest&)>
         request_start_callback) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   base::FilePath path = paths_[index];
   return std::make_unique<safe_browsing::FileAnalysisRequest>(
       settings, path, path.BaseName(),
@@ -269,7 +269,7 @@ void FilesRequestHandler::UpdateRequestHandlerResult(
     size_t index,
     RequestHandlerResult result,
     ContentAnalysisResponse response) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   results_[index] = result;
   if (result.final_result == FinalContentAnalysisResult::WARNING) {
     file_warnings_[index] = response;
@@ -277,19 +277,19 @@ void FilesRequestHandler::UpdateRequestHandlerResult(
 }
 
 const base::FilePath& FilesRequestHandler::GetPath(size_t index) const {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   return paths_[index];
 }
 
 const FilesRequestHandlerBase::FileInfo& FilesRequestHandler::GetFileInfo(
     size_t index) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   return file_info_[index];
 }
 
 FilesRequestHandlerBase::FileInfo& FilesRequestHandler::GetMutableFileInfo(
     size_t index) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   return file_info_[index];
 }
 
@@ -298,12 +298,12 @@ size_t FilesRequestHandler::GetFileCount() const {
 }
 
 void FilesRequestHandler::SetFileScanStartTime(size_t index) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   start_times_[index] = base::TimeTicks::Now();
 }
 
 const base::TimeTicks FilesRequestHandler::GetFileScanStartTime(size_t index) {
-  DCHECK_LT(index, paths_.size());
+  CHECK_LT(index, paths_.size(), base::NotFatalUntil::M161);
   return start_times_[index];
 }
 
@@ -316,7 +316,7 @@ void FilesRequestHandler::MaybeCompleteScanRequest() {
     return;
   }
   scoped_file_access_.reset();
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M161);
   std::move(callback_).Run(std::move(results_));
 }
 

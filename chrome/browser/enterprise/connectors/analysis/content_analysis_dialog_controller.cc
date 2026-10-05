@@ -71,7 +71,7 @@ ContentAnalysisDialogController::ContentAnalysisDialogController(
       delegate_base_(std::move(delegate)),
       download_item_(download_item) {
   DVLOG(1) << __func__;
-  DCHECK(delegate_base_);
+  CHECK(delegate_base_, base::NotFatalUntil::M161);
 
   dialog_delegate_ = std::make_unique<ContentAnalysisDialogDelegate>(
       delegate_base_.get(), CreateWebContentsGetter(), is_cloud, access_point,
@@ -203,7 +203,7 @@ void ContentAnalysisDialogController::PrimaryPageChanged(content::Page& page) {
 
 void ContentAnalysisDialogController::ShowResult(
     FinalContentAnalysisResult result) {
-  DCHECK(dialog_delegate_->is_pending());
+  CHECK(dialog_delegate_->is_pending(), base::NotFatalUntil::M161);
 
   dialog_delegate_->UpdateStateFromFinalResult(result);
 
@@ -226,7 +226,7 @@ ContentAnalysisDialogController::~ContentAnalysisDialogController() {
 }
 
 bool ContentAnalysisDialogController::ShouldShowDialogNow() {
-  DCHECK(!dialog_delegate_->is_pending());
+  CHECK(!dialog_delegate_->is_pending(), base::NotFatalUntil::M161);
   // If the final result is fail closed, display ui regardless of cloud or local
   // analysis.
   if (dialog_delegate_->final_result() ==

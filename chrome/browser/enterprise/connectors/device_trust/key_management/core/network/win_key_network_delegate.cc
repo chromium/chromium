@@ -49,13 +49,13 @@ WinKeyNetworkDelegate::WinKeyNetworkDelegate(
     std::unique_ptr<WinNetworkFetcherFactory> factory)
     : win_network_fetcher_factory_(std::move(factory)),
       backoff_entry_(&kBackoffPolicy) {
-  DCHECK(win_network_fetcher_factory_);
+  CHECK(win_network_fetcher_factory_, base::NotFatalUntil::M161);
 }
 
 WinKeyNetworkDelegate::WinKeyNetworkDelegate()
     : win_network_fetcher_factory_(WinNetworkFetcherFactory::Create()),
       backoff_entry_(&kBackoffPolicy) {
-  DCHECK(win_network_fetcher_factory_);
+  CHECK(win_network_fetcher_factory_, base::NotFatalUntil::M161);
 }
 
 WinKeyNetworkDelegate::~WinKeyNetworkDelegate() = default;
@@ -66,7 +66,7 @@ void WinKeyNetworkDelegate::SendPublicKeyToDmServer(
     const std::string& body,
     UploadKeyCompletedCallback upload_key_completed_callback) {
   // Parallel requests are not supported.
-  DCHECK(!win_network_fetcher_);
+  CHECK(!win_network_fetcher_, base::NotFatalUntil::M161);
 
   base::flat_map<std::string, std::string> headers;
   headers.emplace("Authorization", "GoogleDMToken token=" + dm_token);
@@ -77,7 +77,7 @@ void WinKeyNetworkDelegate::SendPublicKeyToDmServer(
 
 void WinKeyNetworkDelegate::UploadKey(
     UploadKeyCompletedCallback upload_key_completed_callback) {
-  DCHECK(win_network_fetcher_);
+  CHECK(win_network_fetcher_, base::NotFatalUntil::M161);
   win_network_fetcher_->Fetch(base::BindOnce(
       &WinKeyNetworkDelegate::FetchCompleted, weak_factory_.GetWeakPtr(),
       std::move(upload_key_completed_callback)));

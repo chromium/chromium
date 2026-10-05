@@ -124,7 +124,7 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
   base::File file = OpenSigningKeyFile(base::File::FLAG_OPEN_TRUNCATED |
                                        base::File::FLAG_WRITE);
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
-    DCHECK_EQ(wrapped.size(), 0u);
+    CHECK_EQ(wrapped.size(), 0u, base::NotFatalUntil::M161);
     if (file.error_details() == base::File::FILE_OK) {
       return true;
     }

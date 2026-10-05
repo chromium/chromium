@@ -417,14 +417,14 @@ std::string DownloadPrefs::GetDefaultDownloadName() {
 // static
 DownloadPrefs* DownloadPrefs::FromDownloadManager(
     DownloadManager* download_manager) {
-  DCHECK(download_manager->GetBrowserContext());
+  CHECK(download_manager->GetBrowserContext(), base::NotFatalUntil::M161);
   DownloadCoreService* service =
       DownloadCoreServiceFactory::GetForBrowserContext(
           download_manager->GetBrowserContext());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   ChromeDownloadManagerDelegate* delegate =
       service->GetDownloadManagerDelegate();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
   return delegate->download_prefs();
 }
 
@@ -464,7 +464,8 @@ void DownloadPrefs::SetSaveFileType(int type) {
 bool DownloadPrefs::PromptForDownload() const {
   // If the DownloadDirectory policy is set, then |prompt_for_download_| should
   // always be false.
-  DCHECK(!download_path_.IsManaged() || !prompt_for_download_.GetValue());
+  CHECK(!download_path_.IsManaged() || !prompt_for_download_.GetValue(),
+        base::NotFatalUntil::M161);
 
 // Return the Android prompt for download only.
 #if BUILDFLAG(IS_ANDROID)
@@ -494,7 +495,8 @@ bool DownloadPrefs::IsAutoOpenEnabled(const GURL& url,
   base::FilePath::StringType extension = path.Extension();
   if (extension.empty())
     return false;
-  DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
+  CHECK(extension[0] == base::FilePath::kExtensionSeparator,
+        base::NotFatalUntil::M161);
   extension.erase(0, 1);
   if (base::FilePath::CompareEqualIgnoreCase(extension,
                                              FILE_PATH_LITERAL("pdf")) &&
@@ -510,7 +512,8 @@ bool DownloadPrefs::IsAutoOpenByPolicy(const GURL& url,
   base::FilePath::StringType extension = path.Extension();
   if (extension.empty())
     return false;
-  DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
+  CHECK(extension[0] == base::FilePath::kExtensionSeparator,
+        base::NotFatalUntil::M161);
   extension.erase(0, 1);
 
   // if |url| is a blob scheme, use the originating URL for policy evaluation.
@@ -530,7 +533,8 @@ bool DownloadPrefs::EnableAutoOpenByUserBasedOnExtension(
     return false;
   }
 
-  DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
+  CHECK(extension[0] == base::FilePath::kExtensionSeparator,
+        base::NotFatalUntil::M161);
 #else
   if (extension[0] != base::FilePath::kExtensionSeparator) {
     return false;
@@ -548,7 +552,8 @@ void DownloadPrefs::DisableAutoOpenByUserBasedOnExtension(
   base::FilePath::StringType extension = file_name.Extension();
   if (extension.empty())
     return;
-  DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
+  CHECK(extension[0] == base::FilePath::kExtensionSeparator,
+        base::NotFatalUntil::M161);
   extension.erase(0, 1);
   auto_open_by_user_.erase(extension);
   SaveAutoOpenState();

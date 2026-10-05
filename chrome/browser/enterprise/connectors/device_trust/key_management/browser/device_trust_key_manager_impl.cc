@@ -116,8 +116,8 @@ DeviceTrustKeyManagerImpl::DeviceTrustKeyManagerImpl(
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
-  DCHECK(key_rotation_launcher_);
-  DCHECK(key_loader_);
+  CHECK(key_rotation_launcher_, base::NotFatalUntil::M161);
+  CHECK(key_loader_, base::NotFatalUntil::M161);
 }
 
 DeviceTrustKeyManagerImpl::~DeviceTrustKeyManagerImpl() = default;

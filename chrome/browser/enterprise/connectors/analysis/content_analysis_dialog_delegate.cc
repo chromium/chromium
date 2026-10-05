@@ -54,8 +54,8 @@ ContentAnalysisDialogController*
 ContentAnalysisDialogDelegate::ShowForCopyJustification(
     content::WebContents* web_contents,
     std::unique_ptr<ContentAnalysisDelegateBase> delegate) {
-  DCHECK(web_contents);
-  DCHECK(delegate);
+  CHECK(web_contents, base::NotFatalUntil::M161);
+  CHECK(delegate, base::NotFatalUntil::M161);
   return new ContentAnalysisDialogController(
       std::move(delegate), /*is_cloud=*/true, web_contents,
       DeepScanAccessPoint::COPY, /*files_count=*/0,
@@ -202,7 +202,7 @@ int ContentAnalysisDialogDelegate::GetTopImageId() const {
 }
 
 ui::ColorId ContentAnalysisDialogDelegate::GetSideImageLogoColor() const {
-  DCHECK(contents_view_);
+  CHECK(contents_view_, base::NotFatalUntil::M161);
 
   switch (dialog_state_) {
     case State::PENDING:
@@ -221,8 +221,8 @@ ui::ColorId ContentAnalysisDialogDelegate::GetSideImageLogoColor() const {
 }
 
 ui::ColorId ContentAnalysisDialogDelegate::GetSideImageBackgroundColor() const {
-  DCHECK(is_result());
-  DCHECK(contents_view_);
+  CHECK(is_result(), base::NotFatalUntil::M161);
+  CHECK(contents_view_, base::NotFatalUntil::M161);
 
   switch (dialog_state_) {
     case State::PENDING:
@@ -295,7 +295,7 @@ void ContentAnalysisDialogDelegate::UpdateStateFromFinalResult(
 }
 
 void ContentAnalysisDialogDelegate::UpdateDialogAppearance() {
-  DCHECK(is_result());
+  CHECK(is_result(), base::NotFatalUntil::M161);
 
   int height_before = contents_view_->GetPreferredSize().height();
 
@@ -428,7 +428,7 @@ std::u16string ContentAnalysisDialogDelegate::GetDialogMessage() const {
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetPendingMessage() const {
-  DCHECK(is_pending());
+  CHECK(is_pending(), base::NotFatalUntil::M161);
   if (is_print_scan()) {
     return l10n_util::GetStringUTF16(
         IDS_DEEP_SCANNING_DIALOG_PRINT_PENDING_MESSAGE);
@@ -440,7 +440,7 @@ std::u16string ContentAnalysisDialogDelegate::GetPendingMessage() const {
 
 std::u16string ContentAnalysisDialogDelegate::GetForceSaveToCloudMessage()
     const {
-  DCHECK(is_force_save_to_cloud());
+  CHECK(is_force_save_to_cloud(), base::NotFatalUntil::M161);
 
   if (has_custom_message()) {
     return GetCustomMessage();
@@ -456,7 +456,7 @@ std::u16string ContentAnalysisDialogDelegate::GetForceSaveToCloudMessage()
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetFailureMessage() const {
-  DCHECK(is_failure());
+  CHECK(is_failure(), base::NotFatalUntil::M161);
 
   // If the admin has specified a custom message for this failure, it takes
   // precedence over the generic ones.
@@ -494,7 +494,7 @@ std::u16string ContentAnalysisDialogDelegate::GetFailureMessage() const {
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetWarningMessage() const {
-  DCHECK(is_warning());
+  CHECK(is_warning(), base::NotFatalUntil::M161);
 
   // If the admin has specified a custom message for this warning, it takes
   // precedence over the generic one.
@@ -512,7 +512,7 @@ std::u16string ContentAnalysisDialogDelegate::GetWarningMessage() const {
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetSuccessMessage() const {
-  DCHECK(is_success());
+  CHECK(is_success(), base::NotFatalUntil::M161);
   if (is_print_scan()) {
     return l10n_util::GetStringUTF16(
         IDS_DEEP_SCANNING_DIALOG_PRINT_SUCCESS_MESSAGE);
@@ -522,8 +522,9 @@ std::u16string ContentAnalysisDialogDelegate::GetSuccessMessage() const {
 }
 
 std::u16string ContentAnalysisDialogDelegate::GetCustomMessage() const {
-  DCHECK(is_warning() || is_failure() || is_force_save_to_cloud());
-  DCHECK(has_custom_message());
+  CHECK(is_warning() || is_failure() || is_force_save_to_cloud(),
+        base::NotFatalUntil::M161);
+  CHECK(has_custom_message(), base::NotFatalUntil::M161);
   return *(delegate_base_->GetCustomMessage());
 }
 
@@ -595,7 +596,7 @@ ContentAnalysisDialogDelegate::GetJustificationTextLengthForTesting() const {
 }
 
 void ContentAnalysisDialogDelegate::UpdateViews() {
-  DCHECK(contents_view_);
+  CHECK(contents_view_, base::NotFatalUntil::M161);
 
   // Update the style of the dialog to reflect the new state.
   if (image_) {
@@ -631,18 +632,20 @@ void ContentAnalysisDialogDelegate::UpdateViews() {
 
 void ContentAnalysisDialogDelegate::Resize(int height_to_add) {
   // Only resize if the dialog is updated to show a result.
-  DCHECK(is_result());
+  CHECK(is_result(), base::NotFatalUntil::M161);
   views::Widget* widget = GetWidget();
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M161);
 
   gfx::Rect dialog_rect = widget->GetContentsView()->GetContentsBounds();
   int new_height = dialog_rect.height();
 
   // Remove the button row's height if it's removed in the success case.
   if (is_success()) {
-    DCHECK(contents_view_->parent());
-    DCHECK_EQ(contents_view_->parent()->children().size(), 2ul);
-    DCHECK_EQ(contents_view_->parent()->children()[0], contents_view_);
+    CHECK(contents_view_->parent(), base::NotFatalUntil::M161);
+    CHECK_EQ(contents_view_->parent()->children().size(), 2ul,
+             base::NotFatalUntil::M161);
+    CHECK_EQ(contents_view_->parent()->children()[0], contents_view_,
+             base::NotFatalUntil::M161);
 
     views::View* button_row_view = contents_view_->parent()->children()[1];
     new_height -= button_row_view->GetContentsBounds().height();
@@ -657,7 +660,7 @@ void ContentAnalysisDialogDelegate::Resize(int height_to_add) {
       std::make_unique<views::BoundsAnimator>(widget->GetRootView());
   bounds_animator_->SetAnimationDuration(kResizeAnimationDuration);
 
-  DCHECK(widget->GetRootView());
+  CHECK(widget->GetRootView(), base::NotFatalUntil::M161);
   views::View* view_to_resize = widget->GetRootView()->children()[0];
 
   // Start the animation.
@@ -721,9 +724,10 @@ void ContentAnalysisDialogDelegate::UpdateDialogMessage(
 }
 
 void ContentAnalysisDialogDelegate::AddLearnMoreLinkToDialog() {
-  DCHECK(contents_view_);
-  DCHECK(contents_layout_);
-  DCHECK(is_warning() || is_failure() || is_force_save_to_cloud());
+  CHECK(contents_view_, base::NotFatalUntil::M161);
+  CHECK(contents_layout_, base::NotFatalUntil::M161);
+  CHECK(is_warning() || is_failure() || is_force_save_to_cloud(),
+        base::NotFatalUntil::M161);
 
   // There is only ever up to one link in the dialog, so return early instead of
   // adding another one.
@@ -754,9 +758,9 @@ void ContentAnalysisDialogDelegate::AddLearnMoreLinkToDialog() {
 }
 
 void ContentAnalysisDialogDelegate::AddJustificationTextLabelToDialog() {
-  DCHECK(contents_view_);
-  DCHECK(contents_layout_);
-  DCHECK(is_warning());
+  CHECK(contents_view_, base::NotFatalUntil::M161);
+  CHECK(contents_layout_, base::NotFatalUntil::M161);
+  CHECK(is_warning(), base::NotFatalUntil::M161);
 
   // There is only ever up to one justification section in the dialog, so return
   // early instead of adding another one.
@@ -782,10 +786,10 @@ void ContentAnalysisDialogDelegate::AddJustificationTextLabelToDialog() {
 }
 
 void ContentAnalysisDialogDelegate::AddJustificationTextAreaToDialog() {
-  DCHECK(contents_view_);
-  DCHECK(contents_layout_);
-  DCHECK(justification_text_label_);
-  DCHECK(is_warning());
+  CHECK(contents_view_, base::NotFatalUntil::M161);
+  CHECK(contents_layout_, base::NotFatalUntil::M161);
+  CHECK(justification_text_label_, base::NotFatalUntil::M161);
+  CHECK(is_warning(), base::NotFatalUntil::M161);
 
   // There is only ever up to one justification text box in the dialog, so
   // return early instead of adding another one.
@@ -811,9 +815,9 @@ void ContentAnalysisDialogDelegate::AddJustificationTextAreaToDialog() {
 }
 
 void ContentAnalysisDialogDelegate::AddJustificationTextLengthToDialog() {
-  DCHECK(contents_view_);
-  DCHECK(contents_layout_);
-  DCHECK(is_warning());
+  CHECK(contents_view_, base::NotFatalUntil::M161);
+  CHECK(contents_layout_, base::NotFatalUntil::M161);
+  CHECK(is_warning(), base::NotFatalUntil::M161);
 
   // There is only ever up to one justification text length indicator in the
   // dialog, so return early instead of adding another one.
@@ -845,7 +849,7 @@ void ContentAnalysisDialogDelegate::AddJustificationTextLengthToDialog() {
 
 void ContentAnalysisDialogDelegate::LearnMoreLinkClickedCallback(
     const ui::Event& event) {
-  DCHECK(has_learn_more_url());
+  CHECK(has_learn_more_url(), base::NotFatalUntil::M161);
   web_contents_getter_.Run()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           (*delegate_base_->GetCustomLearnMoreUrl()),

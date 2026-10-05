@@ -75,7 +75,7 @@ bool WinKeyPersistenceDelegate::StoreKeyPair(
   }
 
   if (trust_level == BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED) {
-    DCHECK_EQ(wrapped.size(), 0u);
+    CHECK_EQ(wrapped.size(), 0u, base::NotFatalUntil::M161);
     if (key.DeleteValue(signingkey_name.c_str()) == ERROR_SUCCESS &&
         key.DeleteValue(trustlevel_name.c_str()) == ERROR_SUCCESS) {
       return true;

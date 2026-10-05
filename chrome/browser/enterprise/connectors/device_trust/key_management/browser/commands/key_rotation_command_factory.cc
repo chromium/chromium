@@ -69,7 +69,7 @@ std::unique_ptr<KeyRotationCommand> KeyRotationCommandFactory::CreateCommand(
 // static
 void KeyRotationCommandFactory::SetFactoryInstanceForTesting(
     KeyRotationCommandFactory* factory) {
-  DCHECK(factory);
+  CHECK(factory, base::NotFatalUntil::M161);
   GetTestInstanceStorage().emplace(factory);
 }
 

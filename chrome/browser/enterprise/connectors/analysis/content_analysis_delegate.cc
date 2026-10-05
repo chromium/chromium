@@ -498,7 +498,8 @@ void ContentAnalysisDelegate::CreateForWebContents(
     //
     // Supporting "wait for verdict" while not showing a UI makes writing
     // tests for callers of this code easier.
-    DCHECK(delegate->final_result_ != FinalContentAnalysisResult::FAIL_CLOSED);
+    CHECK(delegate->final_result_ != FinalContentAnalysisResult::FAIL_CLOSED,
+          base::NotFatalUntil::M161);
     delegate->FillAllResultsWith(true);
     delegate->RunCallback();
   }
@@ -521,9 +522,9 @@ void ContentAnalysisDelegate::CreateForFilesInWebContents(
     Data data,
     ForFilesCompletionCallback callback,
     DeepScanAccessPoint access_point) {
-  DCHECK(data.text.empty());
-  DCHECK(data.image.empty());
-  DCHECK(!data.page.IsValid());
+  CHECK(data.text.empty(), base::NotFatalUntil::M161);
+  CHECK(data.image.empty(), base::NotFatalUntil::M161);
+  CHECK(!data.page.IsValid(), base::NotFatalUntil::M161);
 
   auto files_scan_data = std::make_unique<FilesScanData>(std::move(data.paths));
   auto* files_scan_data_ptr = files_scan_data.get();
@@ -595,7 +596,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
 }
 
 void ContentAnalysisDelegate::TextRequestCallback(RequestHandlerResult result) {
-  DCHECK(text_request_handler_);
+  CHECK(text_request_handler_, base::NotFatalUntil::M161);
 
   text_request_result_ = std::move(result);
 
@@ -619,7 +620,7 @@ void ContentAnalysisDelegate::TextRequestCallback(RequestHandlerResult result) {
 
 void ContentAnalysisDelegate::ImageRequestCallback(
     RequestHandlerResult result) {
-  DCHECK(image_request_handler_);
+  CHECK(image_request_handler_, base::NotFatalUntil::M161);
 
   image_request_result_ = std::move(result);
 
@@ -647,7 +648,8 @@ void ContentAnalysisDelegate::FilesRequestCallback(
   files_request_handler_->AppendFinalActionsTo(&final_actions_);
 
   // No reporting here, because the FilesRequestHandler does that.
-  DCHECK_EQ(results.size(), result_.paths_results.size());
+  CHECK_EQ(results.size(), result_.paths_results.size(),
+           base::NotFatalUntil::M161);
   for (size_t index = 0; index < results.size(); ++index) {
     FinalContentAnalysisResult result = results[index].final_result;
     result_.paths_results[index] = results[index].complies;
@@ -759,7 +761,7 @@ bool ContentAnalysisDelegate::CancelDialog() {
 }
 
 void ContentAnalysisDelegate::PageRequestCallback(RequestHandlerResult result) {
-  DCHECK(page_print_request_handler_);
+  CHECK(page_print_request_handler_, base::NotFatalUntil::M161);
 
   page_print_request_result_ = std::move(result);
 
@@ -1057,7 +1059,7 @@ void ContentAnalysisDelegate::MaybeCompleteScanRequest() {
 }
 
 void ContentAnalysisDelegate::RunCallback() {
-  DCHECK(!callback_running_);
+  CHECK(!callback_running_, base::NotFatalUntil::M161);
   if (callback_.is_null()) {
     return;
   }

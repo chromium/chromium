@@ -228,16 +228,16 @@ LocalBinaryUploadService::RequestInfo::~RequestInfo() noexcept = default;
 
 LocalBinaryUploadService::LocalBinaryUploadService(Profile* profile)
     : profile_(profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 LocalBinaryUploadService::~LocalBinaryUploadService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void LocalBinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Builds a request context to keep track of this request.  This starts
   // a timer that will fire if no response is received from the agent within
@@ -267,7 +267,7 @@ void LocalBinaryUploadService::MaybeUploadForDeepScanning(
 
 void LocalBinaryUploadService::MaybeAcknowledge(
     std::unique_ptr<BinaryUploadAck> ack) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto ack_ptr = ack.get();
   DoSendAck(
       ContentAnalysisSdkManager::Get()->GetClient(SDKConfigFromAck(ack_ptr)),
@@ -276,7 +276,7 @@ void LocalBinaryUploadService::MaybeAcknowledge(
 
 void LocalBinaryUploadService::MaybeCancelRequests(
     std::unique_ptr<BinaryUploadCancelRequests> cancel) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Cancel all pending requests.
   for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
@@ -311,7 +311,7 @@ LocalBinaryUploadService::GetSystemSignalsService() {
 void LocalBinaryUploadService::StartAgentVerification(
     const content_analysis::sdk::Client::Config& config,
     base::span<const char* const> subject_names) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__;
 
   // If the service is not available, fail open.
@@ -349,7 +349,7 @@ void LocalBinaryUploadService::OnFileSystemSignals(
     content_analysis::sdk::Client::Config config,
     base::span<const char* const> subject_names,
     const std::vector<device_signals::FileSystemItem>& items) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__;
 
   bool agent_is_verified = false;
@@ -405,20 +405,20 @@ void LocalBinaryUploadService::OnFileSystemSignals(
 
 bool LocalBinaryUploadService::IsAgentVerified(
     const content_analysis::sdk::Client::Config& config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = is_agent_verified_.find(config);
   return it != is_agent_verified_.end() && it->second;
 }
 
 bool LocalBinaryUploadService::IsAgentBeingVerified(
     const content_analysis::sdk::Client::Config& config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return is_agent_verified_.find(config) != is_agent_verified_.end();
 }
 
 void LocalBinaryUploadService::ResetClient(
     const content_analysis::sdk::Client::Config& config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__;
 
   ContentAnalysisSdkManager::Get()->ResetClient(config);
@@ -429,7 +429,7 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(
     BinaryUploadRequest::Id id,
     enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadRequest::Data data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__ << ": id=" << id;
 
   if (LocalResultIsFailure(result)) {
@@ -454,12 +454,13 @@ void LocalBinaryUploadService::DoLocalContentAnalysis(
              << " existing request_token=" << info.request->request_token();
   }
 
-  DCHECK(info.request->cloud_or_local_settings().is_local_analysis());
+  CHECK(info.request->cloud_or_local_settings().is_local_analysis(),
+        base::NotFatalUntil::M161);
 
   auto config = SDKConfigFromRequest(info.request.get());
   auto wrapped = ContentAnalysisSdkManager::Get()->GetClient(config);
-  DCHECK(wrapped && wrapped->client());
-  DCHECK(IsAgentVerified(config));
+  CHECK(wrapped && wrapped->client(), base::NotFatalUntil::M161);
+  CHECK(IsAgentVerified(config), base::NotFatalUntil::M161);
 
   content_analysis::sdk::ContentAnalysisRequest sdk_request =
       ConvertChromeRequestToSDKRequest(
@@ -501,7 +502,7 @@ void LocalBinaryUploadService::HandleResponse(
     BinaryUploadRequest::Data data,
     std::optional<content_analysis::sdk::ContentAnalysisResponse>
         sdk_response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__;
 
   if (!sdk_response.has_value()) {
@@ -572,7 +573,7 @@ void LocalBinaryUploadService::DoSendCancel(
 void LocalBinaryUploadService::HandleAckResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     int status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (status != 0) {
     ResetClient(wrapped->client()->GetConfig());
@@ -583,7 +584,7 @@ void LocalBinaryUploadService::HandleCancelResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     std::unique_ptr<BinaryUploadCancelRequests> cancel,
     int status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   OnCancelRequestSent(std::move(cancel));
 
@@ -605,7 +606,7 @@ BinaryUploadRequest::Id LocalBinaryUploadService::FindRequestByToken(
 }
 
 void LocalBinaryUploadService::ProcessNextPendingRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (pending_requests_.size() > 0) {
     auto info = std::move(pending_requests_.front());
@@ -617,9 +618,9 @@ void LocalBinaryUploadService::ProcessNextPendingRequest() {
 }
 
 bool LocalBinaryUploadService::ProcessRequest(BinaryUploadRequest::Id id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__ << ": id=" << id;
-  DCHECK_GT(active_requests_.count(id), 0u);
+  CHECK_GT(active_requests_.count(id), 0u, base::NotFatalUntil::M161);
   const auto& info = active_requests_.at(id);
   auto config = SDKConfigFromRequest(info.request.get());
 
@@ -646,7 +647,7 @@ void LocalBinaryUploadService::FinishRequest(
     BinaryUploadRequest::Id id,
     enterprise_connectors::ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 #if defined(_DEBUG)
   DumpAnalysisResponse(__func__, id, response);
 #endif
@@ -703,7 +704,7 @@ void LocalBinaryUploadService::SendCancelRequestsIfNeeded() {
 }
 
 void LocalBinaryUploadService::OnTimeout(BinaryUploadRequest::Id id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__ << ": id=" << id;
 
   if (auto it = active_requests_.find(id); it != active_requests_.end()) {
@@ -729,7 +730,7 @@ void LocalBinaryUploadService::OnTimeout(BinaryUploadRequest::Id id) {
 
 void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests(
     const content_analysis::sdk::Client::Config& config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__ << ": current-retry-count=" << retry_count_;
 
   if (ConnectionRetryInProgress()) {
@@ -781,7 +782,7 @@ void LocalBinaryUploadService::StartConnectionRetry() {
 }
 
 void LocalBinaryUploadService::OnConnectionRetry() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   DVLOG(1) << __func__;
 
   // ProcessNextPendingRequest() moves one request from the pending list to
