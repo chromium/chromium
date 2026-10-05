@@ -7,13 +7,13 @@
 chrome-signin-desktop-reviews@google.com
 
 # keep-sorted start
-alexilin@chromium.org  #{LAST_RESORT_SUGGESTION}
-amelies@google.com     #{LAST_RESORT_SUGGESTION}
-anthie@google.com      #{LAST_RESORT_SUGGESTION}
-ddac@chromium.org      #{LAST_RESORT_SUGGESTION}
-droger@chromium.org    #{LAST_RESORT_SUGGESTION}
-ernn@google.com        #{LAST_RESORT_SUGGESTION}
-msalama@chromium.org   #{LAST_RESORT_SUGGESTION}
-msarda@chromium.org    #{LAST_RESORT_SUGGESTION}
-rsult@google.com       #{LAST_RESORT_SUGGESTION}
+alexilin@chromium.org   #{LAST_RESORT_SUGGESTION}
+anthie@google.com       #{LAST_RESORT_SUGGESTION}
+ddac@chromium.org       #{LAST_RESORT_SUGGESTION}
+droger@chromium.org     #{LAST_RESORT_SUGGESTION}
+ernn@google.com         #{LAST_RESORT_SUGGESTION}
+msalama@chromium.org    #{LAST_RESORT_SUGGESTION}
+msarda@chromium.org     #{LAST_RESORT_SUGGESTION}
+pmeuleman@chromium.org  #{LAST_RESORT_SUGGESTION}
+rsult@google.com        #{LAST_RESORT_SUGGESTION}
 # keep-sorted end
