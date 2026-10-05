@@ -21,6 +21,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -3773,7 +3774,13 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
             actor::ActorTask::State::kWaitingOnUser);
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testPopupOpens) {
+// TODO(crbug.com/570150703): Consistently failing on Android Desktop.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#define MAYBE_testPopupOpens DISABLED_testPopupOpens
+#else
+#define MAYBE_testPopupOpens testPopupOpens
+#endif
+IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testPopupOpens) {
   ASSERT_OK(OpenGlicForActiveTab());
   EXPECT_EQ(GetPopupCount(), 0);
   ExecuteJsTest();
