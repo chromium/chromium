@@ -123,11 +123,18 @@ class EntityDataManagerAndroid : public EntityDataManager::Observer {
                                  std::optional<std::string> context_token,
                                  base::OnceClosure on_local_save_fallback);
 
-  // Retrieves the details (legal message and context token) required to upsert
-  // a pass from Wallet servers.
-  void GetDetailsForUpsertPass(
-      int entity_type,
-      WalletPassAccessManager::GetDetailsForUpsertPassCallback callback);
+  // Pre-fetches the details (legal message and context token) required to
+  // upsert a pass from Wallet servers and populates an internal cache.
+  void PreloadDetailsForUpsertPass(JNIEnv* env, int entity_type);
+
+  // Synchronously extracts and removes the cached details for `entity_type`
+  // from a previous `PreloadDetailsForUpsertPass` call. Returns an empty
+  // `GetDetailsForUpsertPassResponse` if the user does not need to see the
+  // legal disclosure notice, or `std::nullopt` if saving must fall back to
+  // local storage (e.g. nothing is cached or required details for an eligible
+  // user are missing).
+  std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+  ExtractPreloadedDetailsForUpsertPass(JNIEnv* env, int entity_type);
 
   // Gets information about all entities to be displayed in the management
   // service.

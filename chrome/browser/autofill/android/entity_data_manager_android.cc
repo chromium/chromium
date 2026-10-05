@@ -54,7 +54,6 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/core/url_constants.h"
-#include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -270,17 +269,46 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
                             std::move(on_local_save_fallback));
 }
 
-void EntityDataManagerAndroid::GetDetailsForUpsertPass(
-    int entity_type,
-    WalletPassAccessManager::GetDetailsForUpsertPassCallback callback) {
+void EntityDataManagerAndroid::PreloadDetailsForUpsertPass(JNIEnv* env,
+                                                           int entity_type) {
   std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
   if (!type_name || !wallet_pass_access_manager_) {
-    std::move(callback).Run(base::unexpected(
-        wallet::WalletHttpClient::WalletRequestError::kGenericError));
     return;
   }
-  wallet_pass_access_manager_->GetDetailsForUpsertPass(EntityType(*type_name),
-                                                       std::move(callback));
+  wallet_pass_access_manager_->PreloadDetailsForUpsertPass(
+      EntityType(*type_name));
+}
+
+std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+EntityDataManagerAndroid::ExtractPreloadedDetailsForUpsertPass(
+    JNIEnv* env,
+    int entity_type) {
+  std::optional<EntityTypeName> type_name = ToSafeEntityTypeName(entity_type);
+  if (!type_name || !wallet_pass_access_manager_) {
+    return std::nullopt;
+  }
+  std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+      response =
+          wallet_pass_access_manager_->ExtractPreloadedDetailsForUpsertPass(
+              EntityType(*type_name));
+  const bool should_see_legal_message_notice =
+      response.has_value() &&
+      response->user_eligibility ==
+          WalletPassAccessManager::UserEligibility::kEligible;
+  const bool fallback_to_local =
+      !response.has_value() || (should_see_legal_message_notice &&
+                                (response->legal_message_lines.empty() ||
+                                 response->context_token.empty()));
+  if (fallback_to_local) {
+    return std::nullopt;
+  }
+  if (!should_see_legal_message_notice) {
+    // Return an empty response (non-null in Java) so the caller still saves the
+    // pass to Google Wallet, but without displaying the legal disclosure notice
+    // or sending a context token.
+    return WalletPassAccessManager::GetDetailsForUpsertPassResponse();
+  }
+  return response;
 }
 
 void EntityDataManagerAndroid::AddOrUpdateEntityInstance(

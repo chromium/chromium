@@ -65,7 +65,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +143,6 @@ public class AutofillAiDelegate {
     private @Nullable PrefChangeRegistrar mPrefChangeRegistrar;
     private @Nullable EntityEditorCoordinator mEntityEditor;
     private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
-    private final Map<Integer, DetailsForUpsertPass> mDetailsForUpsertPassMap = new HashMap<>();
     private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
             new EntityEditorCoordinator.Delegate() {
                 @Override
@@ -224,7 +222,7 @@ public class AutofillAiDelegate {
                 for (@EntityTypeName int type : getEntityTypesToPrefetch(entityDataManager)) {
                     if (entityDataManager.isEligibleForWalletNotice(
                             type, RecordType.SERVER_WALLET)) {
-                        fetchDetailsForUpsertPass(entityDataManager, type);
+                        entityDataManager.preloadDetailsForUpsertPass(type);
                     }
                 }
             }
@@ -264,7 +262,6 @@ public class AutofillAiDelegate {
             mReauthenticatorBridge.destroy();
             mReauthenticatorBridge = null;
         }
-        mDetailsForUpsertPassMap.clear();
         destroyPreferenceObservers();
     }
 
@@ -750,15 +747,13 @@ public class AutofillAiDelegate {
         DetailsForUpsertPass detailsForUpsertPass = null;
         if (isEligibleForWalletNotice) {
             @EntityTypeName int entityType = entityInstance.getEntityType().getTypeName();
-            DetailsForUpsertPass prefetchedDetails = mDetailsForUpsertPassMap.remove(entityType);
-            fetchDetailsForUpsertPass(entityDataManager, entityType);
-            if (prefetchedDetails != null && !prefetchedDetails.getLegalMessageLines().isEmpty()) {
-                detailsForUpsertPass = prefetchedDetails;
-            } else {
-                // If prefetching failed, returned empty legal messages, or did not complete in
-                // time, the required legal disclosures and context token cannot be presented to the
-                // user. Rather than blocking the user from saving, fall back to storing the entity
-                // locally on device as `RecordType.LOCAL`.
+            detailsForUpsertPass =
+                    entityDataManager.extractPreloadedDetailsForUpsertPass(entityType);
+            if (detailsForUpsertPass == null) {
+                // If preloading failed, returned invalid details for an eligible user, or did not
+                // complete in time, the required legal disclosures and context token cannot be
+                // presented to the user. Rather than blocking the user from saving, fall back to
+                // storing the entity locally on device as `RecordType.LOCAL`.
                 entityInstance.setRecordType(RecordType.LOCAL);
             }
         }
@@ -770,17 +765,6 @@ public class AutofillAiDelegate {
                         entityInstance,
                         detailsForUpsertPass);
         mEntityEditor.showEditorDialog();
-    }
-
-    private void fetchDetailsForUpsertPass(
-            EntityDataManager entityDataManager, @EntityTypeName int entityType) {
-        entityDataManager.getDetailsForUpsertPass(
-                entityType,
-                response -> {
-                    if (response != null) {
-                        mDetailsForUpsertPassMap.put(entityType, response);
-                    }
-                });
     }
 
     private Context getStyledContext() {

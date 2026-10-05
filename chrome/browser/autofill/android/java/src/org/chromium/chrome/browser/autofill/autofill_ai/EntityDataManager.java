@@ -11,7 +11,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
@@ -116,17 +115,30 @@ public class EntityDataManager implements Destroyable {
     }
 
     /**
-     * Retrieves the details (legal message and context token) required to upsert a pass.
+     * Pre-fetches the details (legal message and context token) required to upsert a pass.
      *
      * @param entityType The type of the entity to upsert.
-     * @param callback Callback to receive the response, or null if the request failed or was not
-     *     possible.
      */
-    public void getDetailsForUpsertPass(
-            @EntityTypeName int entityType, Callback<@Nullable DetailsForUpsertPass> callback) {
+    public void preloadDetailsForUpsertPass(@EntityTypeName int entityType) {
         ThreadUtils.assertOnUiThread();
         EntityDataManagerJni.get()
-                .getDetailsForUpsertPass(mNativeEntityDataManagerAndroid, entityType, callback);
+                .preloadDetailsForUpsertPass(mNativeEntityDataManagerAndroid, entityType);
+    }
+
+    /**
+     * Synchronously extracts and removes the cached details (legal message and context token)
+     * required to upsert a pass from a previous {@link #preloadDetailsForUpsertPass} call.
+     *
+     * @param entityType The type of the entity to upsert.
+     * @return The preloaded details (with empty legal message and context token if the user does
+     *     not need to see the legal disclosure notice), or null if saving must fall back to local
+     *     storage (e.g. nothing is cached or required details for an eligible user are missing).
+     */
+    public @Nullable DetailsForUpsertPass extractPreloadedDetailsForUpsertPass(
+            @EntityTypeName int entityType) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .extractPreloadedDetailsForUpsertPass(mNativeEntityDataManagerAndroid, entityType);
     }
 
     /**
@@ -413,11 +425,13 @@ public class EntityDataManager implements Destroyable {
                 @Nullable @JniType("std::optional<std::string>") String contextToken,
                 @JniType("base::OnceClosure") Runnable onLocalSaveFallback);
 
-        void getDetailsForUpsertPass(
-                long nativeEntityDataManagerAndroid,
-                @EntityTypeName int entityType,
-                @JniType("autofill::WalletPassAccessManager::GetDetailsForUpsertPassCallback")
-                        Callback<@Nullable DetailsForUpsertPass> callback);
+        void preloadDetailsForUpsertPass(
+                long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
+
+        @Nullable
+        @JniType("std::optional<WalletPassAccessManager::GetDetailsForUpsertPassResponse>")
+        DetailsForUpsertPass extractPreloadedDetailsForUpsertPass(
+                long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
 
         @JniType("std::vector<EntityInstanceWithLabels>")
         List<EntityInstanceWithLabels> getEntitiesWithLabels(long nativeEntityDataManagerAndroid);

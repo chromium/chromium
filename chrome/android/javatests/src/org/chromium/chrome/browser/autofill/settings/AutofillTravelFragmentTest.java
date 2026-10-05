@@ -22,7 +22,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -337,31 +336,13 @@ public class AutofillTravelFragmentTest {
         LegalMessageLine legalMessageLine = new LegalMessageLine("Legal disclaimer with link.");
         legalMessageLine.links.add(
                 new LegalMessageLine.Link(0, 5, "https://policies.google.com/privacy"));
-        DetailsForUpsertPass response1 =
+        DetailsForUpsertPass eligibleUserResponse =
                 new DetailsForUpsertPass(List.of(legalMessageLine), "context_token_1");
-        DetailsForUpsertPass response2 =
-                new DetailsForUpsertPass(List.of(legalMessageLine), "context_token_2");
+        DetailsForUpsertPass ineligibleUserResponse =
+                new DetailsForUpsertPass(Collections.emptyList(), "");
 
-        doAnswer(
-                        invocation -> {
-                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
-                            callback.onResult(response1);
-                            return null;
-                        })
-                .doAnswer(
-                        invocation -> {
-                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
-                            callback.onResult(response2);
-                            return null;
-                        })
-                .doAnswer(
-                        invocation -> {
-                            Callback<DetailsForUpsertPass> callback = invocation.getArgument(1);
-                            callback.onResult(null);
-                            return null;
-                        })
-                .when(mEntityDataManager)
-                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        when(mEntityDataManager.extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE))
+                .thenReturn(eligibleUserResponse, ineligibleUserResponse, null);
 
         CallbackHelper editorReadyHelper = registerEditorReadyObserver();
 
@@ -369,15 +350,15 @@ public class AutofillTravelFragmentTest {
         setTravelTogglePreference(true);
 
         Preference addVehicle = waitForEnabledAddVehiclePreference();
+        verify(mEntityDataManager).preloadDetailsForUpsertPass(EntityTypeName.VEHICLE);
 
-        // First entity addition consumes `response1`, saves to Wallet, and triggers a second fetch
-        // (`response2`).
+        // First entity addition extracts `eligibleUserResponse` and saves to Wallet with the
+        // context token.
         int callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         editorReadyHelper.waitForCallback(callCount);
 
-        verify(mEntityDataManager, times(2))
-                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        verify(mEntityDataManager).extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE);
         verify(mEntityDataManager, times(2))
                 .isEligibleForWalletNotice(
                         eq(EntityTypeName.VEHICLE), eq(RecordType.SERVER_WALLET));
@@ -392,14 +373,14 @@ public class AutofillTravelFragmentTest {
                         eq("context_token_1"),
                         any());
 
-        // Second entity addition consumes `response2`, saves to Wallet, and triggers a third fetch
-        // (which returns `null`).
+        // Second entity addition extracts `ineligibleUserResponse` (empty legal message and
+        // context token) and still saves to Wallet, passing a null context token.
         callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         editorReadyHelper.waitForCallback(callCount);
 
-        verify(mEntityDataManager, times(3))
-                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        verify(mEntityDataManager, times(2))
+                .extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE);
         onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText("Done")).inRoot(isDialog()).perform(click());
         verify(mEntityDataManager)
@@ -407,17 +388,17 @@ public class AutofillTravelFragmentTest {
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
                         eq(R.string.done),
-                        eq("context_token_2"),
+                        eq(null),
                         any());
 
-        // Third entity addition verifies that `response2` was consumed and removed from the map:
-        // since the third fetch returned `null`, this addition falls back to `RecordType.LOCAL`.
+        // Third entity addition gets `null` from `extractPreloadedDetailsForUpsertPass` and falls
+        // back to `RecordType.LOCAL`.
         callCount = editorReadyHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(addVehicle::performClick);
         editorReadyHelper.waitForCallback(callCount);
 
-        verify(mEntityDataManager, times(4))
-                .getDetailsForUpsertPass(eq(EntityTypeName.VEHICLE), any());
+        verify(mEntityDataManager, times(3))
+                .extractPreloadedDetailsForUpsertPass(EntityTypeName.VEHICLE);
         onView(withText("Add Vehicle")).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withText("Done")).inRoot(isDialog()).perform(click());
         verify(mEntityDataManager)

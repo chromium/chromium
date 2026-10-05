@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
 #include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
+#include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -434,6 +435,86 @@ TEST_F(EntityDataManagerAndroidTest, IsEligibleForWalletNotice) {
   // Invalid entity type -> false.
   EXPECT_FALSE(entity_data_manager_android_->IsEligibleForWalletNotice(
       env(), -1, static_cast<int>(EntityInstance::RecordType::kServerWallet)));
+}
+
+TEST_F(EntityDataManagerAndroidTest, PreloadDetailsForUpsertPass) {
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              PreloadDetailsForUpsertPass(EntityType(EntityTypeName::kVehicle)))
+      .Times(1);
+  entity_data_manager_android_->PreloadDetailsForUpsertPass(
+      env(), static_cast<int>(EntityTypeName::kVehicle));
+
+  // Invalid entity type is a no-op.
+  EXPECT_CALL(mock_wallet_pass_access_manager(), PreloadDetailsForUpsertPass)
+      .Times(0);
+  entity_data_manager_android_->PreloadDetailsForUpsertPass(env(), -1);
+}
+
+TEST_F(EntityDataManagerAndroidTest,
+       ExtractPreloadedDetailsForUpsertPass_EligibleUserSuccess) {
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse expected_response{
+      .legal_message_lines = {TestLegalMessageLine("Legal message")},
+      .context_token = "test_context_token",
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              ExtractPreloadedDetailsForUpsertPass(
+                  EntityType(EntityTypeName::kVehicle)))
+      .WillOnce(testing::Return(expected_response));
+
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), static_cast<int>(EntityTypeName::kVehicle)),
+            expected_response);
+
+  // Invalid entity type returns std::nullopt without calling the manager.
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              ExtractPreloadedDetailsForUpsertPass)
+      .Times(0);
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), -1),
+            std::nullopt);
+}
+
+TEST_F(EntityDataManagerAndroidTest,
+       ExtractPreloadedDetailsForUpsertPass_IneligibleUserReturnsEmptyDetails) {
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse response{
+      .user_eligibility =
+          WalletPassAccessManager::UserEligibility::kIneligible};
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              ExtractPreloadedDetailsForUpsertPass(
+                  EntityType(EntityTypeName::kVehicle)))
+      .WillOnce(testing::Return(response));
+
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), static_cast<int>(EntityTypeName::kVehicle)),
+            WalletPassAccessManager::GetDetailsForUpsertPassResponse());
+}
+
+TEST_F(
+    EntityDataManagerAndroidTest,
+    ExtractPreloadedDetailsForUpsertPass_EligibleUserWithMissingDetailsReturnsNullopt) {
+  // Missing `legal_message_lines`.
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse
+      missing_legal_message{
+          .context_token = "test_context_token",
+          .user_eligibility =
+              WalletPassAccessManager::UserEligibility::kEligible};
+  // Missing `context_token`.
+  WalletPassAccessManager::GetDetailsForUpsertPassResponse missing_token{
+      .legal_message_lines = {TestLegalMessageLine("Legal message")},
+      .user_eligibility = WalletPassAccessManager::UserEligibility::kEligible};
+
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              ExtractPreloadedDetailsForUpsertPass(
+                  EntityType(EntityTypeName::kVehicle)))
+      .WillOnce(testing::Return(missing_legal_message))
+      .WillOnce(testing::Return(missing_token));
+
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), static_cast<int>(EntityTypeName::kVehicle)),
+            std::nullopt);
+  EXPECT_EQ(entity_data_manager_android_->ExtractPreloadedDetailsForUpsertPass(
+                env(), static_cast<int>(EntityTypeName::kVehicle)),
+            std::nullopt);
 }
 
 }  // namespace
