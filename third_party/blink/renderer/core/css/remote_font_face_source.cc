@@ -162,9 +162,12 @@ RemoteFontFaceSource::RemoteFontFaceSource(
 RemoteFontFaceSource::~RemoteFontFaceSource() = default;
 
 Document* RemoteFontFaceSource::GetDocument() const {
-  auto* window =
-      DynamicTo<LocalDOMWindow>(font_selector_->GetExecutionContext());
+  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
   return window ? window->document() : nullptr;
+}
+
+ExecutionContext* RemoteFontFaceSource::GetExecutionContext() const {
+  return font_selector_->GetExecutionContext();
 }
 
 bool RemoteFontFaceSource::IsLoading() const {
@@ -180,7 +183,7 @@ bool RemoteFontFaceSource::IsValid() const {
 }
 
 void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
-  ExecutionContext* execution_context = font_selector_->GetExecutionContext();
+  ExecutionContext* execution_context = GetExecutionContext();
   if (!execution_context) {
     return;
   }
@@ -217,7 +220,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   if (resource->PassedIntegrityChecks() || !check_integrity) {
     custom_font_data_ = font->GetCustomFontData();
     if (RuntimeEnabledFeatures::IncrementalFontTransferEnabled()) {
-      ift_custom_font_data_ = IftCustomFontData::MaybeCreate(*font);
+      ift_custom_font_data_ = IftCustomFontData::MaybeCreate(this, *font);
     }
   }
   url_ = resource->Url().GetString();

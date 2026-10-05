@@ -64,6 +64,8 @@ class RemoteFontFaceSource final : public CSSFontFaceSource,
   // For UMA reporting
   bool HadBlankText() override { return histograms_.HadBlankText(); }
 
+  ExecutionContext* GetExecutionContext() const;
+
   void Trace(Visitor*) const override;
 
  protected:
