@@ -301,11 +301,6 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
                            const KURL& url) override {
     did_clear_code_cache_entry_ = true;
   }
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const KURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const String& cache_storage_cache_name) override {}
 
   blink::CodeCacheHost* GetCodeCacheHost() { return host_.get(); }
   bool did_clear_code_cache_entry() const {
@@ -1458,7 +1453,8 @@ TEST_F(ResourceRequestSenderTest,
 
   auto response = CreateResponse();
   response->was_fetched_via_service_worker = true;
-  response->cache_storage_cache_name = "dummy";
+  response->service_worker_response_source =
+      network::mojom::FetchResponseSource::kCacheStorage;
 
   // Send a cached data from CodeCacheHost.
   std::vector<uint8_t> cache_data{1, 2, 3, 4, 5, 6};

@@ -724,9 +724,14 @@ void ServiceWorkerMainResourceLoader::CommitResponseBody(
     }
   }
 
-  url_loader_client_->OnReceiveResponse(response_head.Clone(),
-                                        std::move(response_body),
-                                        std::move(cached_metadata));
+  auto head = response_head.Clone();
+  if (response_head_.get() == response_head.get()) {
+    head->cache_storage_side_data_writer =
+        std::move(cache_storage_side_data_writer_);
+  }
+
+  url_loader_client_->OnReceiveResponse(
+      std::move(head), std::move(response_body), std::move(cached_metadata));
 }
 
 void ServiceWorkerMainResourceLoader::CommitEmptyResponseAndComplete() {
@@ -1347,6 +1352,8 @@ void ServiceWorkerMainResourceLoader::StartResponse(
 
   blink::ServiceWorkerLoaderHelpers::SaveResponseInfo(*response,
                                                       response_head_.get());
+  cache_storage_side_data_writer_ =
+      std::move(response->cache_storage_side_data_writer);
 
   response_head_->did_service_worker_navigation_preload =
       dispatched_preload_type() == DispatchedPreloadType::kNavigationPreload;

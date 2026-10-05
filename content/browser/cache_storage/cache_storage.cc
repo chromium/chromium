@@ -1241,6 +1241,7 @@ void CacheStorage::DeleteCacheDidWriteIndex(
   }
 
   cache_index_->FinalizeDoomedCache();
+  impl->InvalidateSideDataWriters();
 
   auto map_iter = cache_map_.find(impl->cache_name());
   CHECK(map_iter != cache_map_.end());

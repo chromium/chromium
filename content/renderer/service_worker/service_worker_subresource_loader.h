@@ -246,6 +246,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   uint64_t body_as_blob_size_;
   // The blob needs to be held while it's read to keep it alive.
   mojo::Remote<blink::mojom::Blob> side_data_as_blob_;
+  mojo::PendingRemote<network::mojom::CacheStorageSideDataWriter>
+      cache_storage_side_data_writer_;
 
   scoped_refptr<ControllerServiceWorkerConnector> controller_connector_;
 

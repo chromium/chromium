@@ -519,6 +519,8 @@ class BackgroundURLLoader::Context
     DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
     WebURLResponse response = WebURLResponse::Create(
         url_, *head, has_devtools_request_id_, request_id);
+    response.SetCacheStorageSideDataWriter(
+        std::move(head->cache_storage_side_data_writer));
     client_->DidReceiveResponse(response, std::move(body),
                                 std::move(cached_metadata));
   }

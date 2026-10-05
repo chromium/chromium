@@ -38,6 +38,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/ct_policy_status.h"
@@ -55,6 +56,7 @@ enum class FetchResponseSource;
 enum class FetchResponseType : int32_t;
 enum class IPAddressSpace : int32_t;
 enum class PrivateNetworkAccessPreflightResult;
+class CacheStorageSideDataWriter;
 class URLResponseHead;
 class LoadTimingInfo;
 class ServiceWorkerRouterInfo;
@@ -224,6 +226,8 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   // the ServiceWorker. Null if the response isn't from the CacheStorage.
   WebString CacheStorageCacheName() const;
   void SetCacheStorageCacheName(const WebString&);
+  void SetCacheStorageSideDataWriter(
+      mojo::PendingRemote<network::mojom::CacheStorageSideDataWriter>);
 
   // The headers that should be exposed according to CORS. Only guaranteed
   // to be set if the response was served by a ServiceWorker.

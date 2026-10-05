@@ -240,11 +240,6 @@ class ContentSettingsAgentImplBrowserTest
     }
     void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
                              const GURL& url) override {}
-    void DidGenerateCacheableMetadataInCacheStorage(
-        const GURL& url,
-        base::Time expected_response_time,
-        mojo_base::BigBuffer data,
-        const std::string& cache_storage_cache_name) override {}
 
    private:
     mojo::Receiver<blink::mojom::CodeCacheHost> receiver_{this};

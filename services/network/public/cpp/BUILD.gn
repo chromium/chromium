@@ -532,6 +532,11 @@ component("cross_origin_embedder_policy") {
   defines = [ "IS_NETWORK_CPP_CROSS_ORIGIN_IMPL" ]
 }
 
+source_set("cache_storage_side_data_writer_mojom_traits") {
+  sources = [ "cache_storage_side_data_writer_mojom_traits.h" ]
+  public_deps = [ "//mojo/public/cpp/bindings" ]
+}
+
 # This component is separate from cpp_base as it is a dependency of
 # //services/network/public/mojom:url_loader_base.
 component("document_isolation_policy") {

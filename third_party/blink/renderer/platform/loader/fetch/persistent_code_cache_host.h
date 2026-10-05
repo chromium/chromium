@@ -53,11 +53,6 @@ class PersistentCodeCacheHost : public CodeCacheHost,
                        FetchCachedCodeCallback callback) override;
   void ClearCodeCacheEntry(mojom::blink::CodeCacheType cache_type,
                            const ::blink::KURL& url) override;
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const ::blink::KURL& url,
-      ::base::Time expected_response_time,
-      ::mojo_base::BigBuffer data,
-      const ::blink::String& cache_storage_cache_name) override;
 
  private:
   class AsyncCodeCacheHost;

@@ -52,10 +52,14 @@ void MimeSniffingThrottle::WillProcessResponse(
   mojo::PendingRemote<network::mojom::URLLoader> source_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> source_client_receiver;
   mojo::ScopedDataPipeConsumerHandle body;
+  auto new_response_head = response_head->Clone();
+  new_response_head->cache_storage_side_data_writer =
+      std::move(response_head->cache_storage_side_data_writer);
   MimeSniffingURLLoader* mime_sniffing_loader;
   std::tie(new_remote, new_receiver, mime_sniffing_loader) =
       MimeSniffingURLLoader::CreateLoader(
-          weak_factory_.GetWeakPtr(), response_url, response_head->Clone(),
+          weak_factory_.GetWeakPtr(), response_url,
+          std::move(new_response_head),
           task_runner_ ? task_runner_
                        : base::SingleThreadTaskRunner::GetCurrentDefault());
   delegate_->InterceptResponse(std::move(new_remote), std::move(new_receiver),

@@ -687,6 +687,8 @@ class TestCacheStorageCache : public CacheStorageCache {
 
   void Init() { InitBackend(); }
 
+  using CacheStorageCache::WriteSideData;
+
   base::CheckedNumeric<uint64_t> GetRequiredSafeSpaceForRequest(
       const blink::mojom::FetchAPIRequestPtr& request) {
     return CalculateRequiredSafeSpaceForRequest(request);
@@ -894,6 +896,7 @@ class CacheStorageCacheTest : public testing::Test {
         /*mime_type=*/std::nullopt, net::HttpRequestHeaders::kGetMethod,
         /*blob=*/nullptr, blink::mojom::ServiceWorkerResponseError::kUnknown,
         response_time_, /*cache_storage_cache_name=*/std::string(),
+        /*cache_storage_side_data_writer=*/mojo::NullRemote(),
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
         /*side_data_for_cache_put=*/std::nullopt,
@@ -1060,16 +1063,22 @@ class CacheStorageCacheTest : public testing::Test {
                      base::Time expected_response_time,
                      scoped_refptr<net::IOBuffer> buffer,
                      int buf_len) {
+    int old_modified_count =
+        quota_manager_proxy_->notify_bucket_modified_count();
     base::HistogramTester histogram_tester;
-    base::RunLoop run_loop;
     cache_->WriteSideData(
-        base::BindOnce(&CacheStorageCacheTest::ErrorTypeCallback,
-                       base::Unretained(this), base::Unretained(&run_loop)),
-        url, expected_response_time, /* trace_id = */ 0, buffer, buf_len);
-    run_loop.Run();
-    if (callback_error_ == CacheStorageError::kSuccess)
+        cache_->CreateHandle(), url, expected_response_time, /*trace_id=*/0,
+        mojo_base::BigBuffer(base::as_bytes(
+            buffer->first(base::checked_cast<size_t>(buf_len)))));
+    size_t expected_ref_count = cache_->handle_ref_count_ - 1;
+    EXPECT_TRUE(base::test::RunUntil(
+        [&] { return cache_->handle_ref_count_ == expected_ref_count; }));
+    bool succeeded = quota_manager_proxy_->notify_bucket_modified_count() >
+                     old_modified_count;
+    if (succeeded) {
       CheckOpHistograms(histogram_tester, "WriteSideData");
-    return callback_error_ == CacheStorageError::kSuccess;
+    }
+    return succeeded;
   }
 
   int64_t Size() {
@@ -1261,10 +1270,10 @@ class CacheStorageCacheTest : public testing::Test {
     operations.push_back(std::move(operation));
     cache_->BatchOperation(std::move(operations), 0, batch.GetCallback(),
                            base::DoNothing());
-    base::test::TestFuture<CacheStorageError> side_data;
-    cache_->WriteSideData(side_data.GetCallback(), NoBodyUrl(), response_time_,
-                          0, base::MakeRefCounted<net::StringIOBuffer>("data"),
-                          4);
+    cache_->WriteSideData(cache_->CreateHandle(), NoBodyUrl(), response_time_,
+                          /*trace_id=*/0,
+                          mojo_base::BigBuffer(base::as_byte_span("data")));
+    EXPECT_TRUE(cache_->IsUnreferenced());
     base::test::TestFuture<int64_t> size;
     cache_->Size(size.GetCallback());
     base::test::TestFuture<int64_t> size_then_close;
@@ -1273,7 +1282,7 @@ class CacheStorageCacheTest : public testing::Test {
     EXPECT_TRUE(base::test::RunUntil([&] {
       return match.IsReady() && all.IsReady() && keys.IsReady() &&
              entries.IsReady() && put.IsReady() && batch.IsReady() &&
-             side_data.IsReady() && size.IsReady() && size_then_close.IsReady();
+             size.IsReady() && size_then_close.IsReady();
     }));
     EXPECT_FALSE(closed.IsReady());
     EXPECT_FALSE(before.IsReady());
@@ -1285,7 +1294,6 @@ class CacheStorageCacheTest : public testing::Test {
     EXPECT_TRUE(entries.IsReady());
     EXPECT_TRUE(put.IsReady());
     EXPECT_TRUE(batch.IsReady());
-    EXPECT_TRUE(side_data.IsReady());
     EXPECT_TRUE(size.IsReady());
     EXPECT_TRUE(size_then_close.IsReady());
     if (match.IsReady()) {
@@ -1305,9 +1313,6 @@ class CacheStorageCacheTest : public testing::Test {
     }
     if (batch.IsReady()) {
       EXPECT_EQ(CacheStorageError::kErrorStorage, batch.Get()->value);
-    }
-    if (side_data.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, side_data.Get());
     }
     if (size.IsReady()) {
       EXPECT_EQ(0, size.Get());
@@ -1654,6 +1659,93 @@ TEST_P(CacheStorageCacheTestP, MatchBody) {
 TEST_P(CacheStorageCacheTestP, MatchBodyHead) {
   EXPECT_TRUE(Put(body_request_, CreateBlobBodyResponse()));
   EXPECT_FALSE(Match(body_head_request_));
+}
+
+class TestCacheSizeObserver : public CacheStorageCacheObserver {
+ public:
+  explicit TestCacheSizeObserver(base::OnceClosure closure)
+      : closure_(std::move(closure)) {}
+  void CacheSizeUpdated(const CacheStorageCache* cache) override {
+    if (closure_) {
+      std::move(closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure closure_;
+};
+
+TEST_P(CacheStorageCacheTestP, MatchResponseIncludesSideDataWriterRemote) {
+  base::Time response_time(base::Time::Now());
+  blink::mojom::FetchAPIResponsePtr response = CreateBlobBodyResponse();
+  response->response_time = response_time;
+  EXPECT_TRUE(Put(body_request_, std::move(response)));
+
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_);
+  ASSERT_TRUE(callback_response_->cache_storage_side_data_writer.is_valid());
+
+  mojo::Remote<network::mojom::CacheStorageSideDataWriter> writer(
+      std::move(callback_response_->cache_storage_side_data_writer));
+  EXPECT_TRUE(writer.is_connected());
+
+  base::RunLoop size_updated_loop;
+  TestCacheSizeObserver size_observer(size_updated_loop.QuitClosure());
+  cache_->SetObserver(&size_observer);
+
+  const std::string expected_side_data = "SideDataViaMojoRemote";
+  writer->WriteSideData(
+      mojo_base::BigBuffer(base::as_byte_span(expected_side_data)));
+  writer.FlushForTesting();
+
+  // The writer should self-destruct after a single WriteSideData call,
+  // disconnecting its receiver.
+  EXPECT_FALSE(writer.is_connected());
+
+  size_updated_loop.Run();
+  cache_->SetObserver(nullptr);
+
+  EXPECT_TRUE(Match(body_request_));
+  ASSERT_TRUE(callback_response_->blob);
+  mojo::Remote<blink::mojom::Blob> blob(
+      std::move(callback_response_->blob->blob));
+  EXPECT_EQ(expected_side_data, CopySideData(blob.get()));
+}
+
+TEST_P(CacheStorageCacheTestP,
+       MatchResponseSideDataWriterDisconnectedWhenEntryDeleted) {
+  EXPECT_TRUE(Put(no_body_request_, CreateNoBodyResponse()));
+  EXPECT_TRUE(Match(no_body_request_));
+  ASSERT_TRUE(callback_response_);
+  ASSERT_TRUE(callback_response_->cache_storage_side_data_writer.is_valid());
+
+  mojo::Remote<network::mojom::CacheStorageSideDataWriter> writer(
+      std::move(callback_response_->cache_storage_side_data_writer));
+  EXPECT_TRUE(writer.is_connected());
+
+  EXPECT_TRUE(Delete(no_body_request_));
+  writer.FlushForTesting();
+
+  EXPECT_FALSE(writer.is_connected());
+}
+
+TEST_P(CacheStorageCacheTestP,
+       MatchResponseSideDataWriterDisconnectedWhenCacheClosed) {
+  EXPECT_TRUE(Put(no_body_request_, CreateNoBodyResponse()));
+  EXPECT_TRUE(Match(no_body_request_));
+  ASSERT_TRUE(callback_response_);
+  ASSERT_TRUE(callback_response_->cache_storage_side_data_writer.is_valid());
+
+  mojo::Remote<network::mojom::CacheStorageSideDataWriter> writer(
+      std::move(callback_response_->cache_storage_side_data_writer));
+  EXPECT_TRUE(writer.is_connected());
+
+  base::RunLoop loop;
+  cache_->Close(loop.QuitClosure());
+  loop.Run();
+  writer.FlushForTesting();
+
+  EXPECT_FALSE(writer.is_connected());
 }
 
 TEST_P(CacheStorageCacheTestP, MatchAll_Empty) {
@@ -2268,7 +2360,6 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaExceeded) {
   std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
-  EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
   ASSERT_TRUE(Delete(no_body_request_));
 }
 
@@ -2304,7 +2395,6 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_DifferentTimeStamp) {
   std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(WriteSideData(no_body_request_->url,
                              response_time + base::Seconds(1), buffer, kSize));
-  EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
   ASSERT_TRUE(Delete(no_body_request_));
 }
 
@@ -2314,7 +2404,6 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_NotFound) {
   std::ranges::fill(buffer->span(), 0);
   EXPECT_FALSE(WriteSideData(GURL("http://www.example.com/not_exist"),
                              base::Time::Now(), buffer, kSize));
-  EXPECT_EQ(CacheStorageError::kErrorNotFound, callback_error_);
 }
 
 TEST_P(CacheStorageCacheTestP, ReadSideDataShortRead) {
@@ -2788,9 +2877,10 @@ TEST_P(CacheStorageCacheTestP, QuotaCallbacksFailWhileCloseIsPending) {
   operations.push_back(std::move(operation));
   cache_->BatchOperation(std::move(operations), 0, batch.GetCallback(),
                          base::DoNothing());
-  base::test::TestFuture<CacheStorageError> side_data;
-  cache_->WriteSideData(side_data.GetCallback(), BodyUrl(), response_time_, 0,
-                        base::MakeRefCounted<net::StringIOBuffer>("data"), 4);
+  cache_->WriteSideData(cache_->CreateHandle(), BodyUrl(), response_time_,
+                        /*trace_id=*/0,
+                        mojo_base::BigBuffer(base::as_byte_span("data")));
+  EXPECT_FALSE(cache_->IsUnreferenced());
 
   base::test::TestFuture<void> closed;
   cache_->Close(base::BindLambdaForTesting([&] {
@@ -2798,15 +2888,12 @@ TEST_P(CacheStorageCacheTestP, QuotaCallbacksFailWhileCloseIsPending) {
     closed.SetValue();
   }));
   EXPECT_TRUE(base::test::RunUntil(
-      [&] { return batch.IsReady() && side_data.IsReady(); }));
+      [&] { return batch.IsReady() && cache_->IsUnreferenced(); }));
   EXPECT_FALSE(closed.IsReady());
   EXPECT_TRUE(batch.IsReady());
-  EXPECT_TRUE(side_data.IsReady());
+  EXPECT_TRUE(cache_->IsUnreferenced());
   if (batch.IsReady()) {
     EXPECT_EQ(CacheStorageError::kErrorStorage, batch.Get()->value);
-  }
-  if (side_data.IsReady()) {
-    EXPECT_EQ(CacheStorageError::kErrorStorage, side_data.Get());
   }
 
   std::move(unblock).Run();
@@ -3057,15 +3144,10 @@ TEST_P(CacheStorageCacheTestP, SelfRefsDuringWriteSideData) {
   delayable_backend->set_delay_open_entry(true);
 
   const std::string expected_side_data = "SideDataSample";
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::StringIOBuffer>(expected_side_data);
 
-  std::unique_ptr<base::RunLoop> loop(new base::RunLoop());
   cache_->WriteSideData(
-      base::BindOnce(&CacheStorageCacheTest::ErrorTypeCallback,
-                     base::Unretained(this), base::Unretained(loop.get())),
-      BodyUrl(), response_time, /* trace_id = */ 0, buffer,
-      expected_side_data.length());
+      cache_->CreateHandle(), BodyUrl(), response_time, /*trace_id=*/0,
+      mojo_base::BigBuffer(base::as_byte_span(expected_side_data)));
 
   // Blocks on opening the cache entry.
   base::RunLoop().RunUntilIdle();
@@ -3076,10 +3158,7 @@ TEST_P(CacheStorageCacheTestP, SelfRefsDuringWriteSideData) {
 
   // Allow the operation to continue.
   EXPECT_TRUE(delayable_backend->OpenEntryContinue());
-  loop->Run();
-
-  // The operation should succeed.
-  EXPECT_EQ(CacheStorageError::kSuccess, callback_error_);
+  EXPECT_TRUE(base::test::RunUntil([&] { return cache_->IsUnreferenced(); }));
 }
 
 TEST_P(CacheStorageCacheTestP, SelfRefsDuringBatchOperation) {

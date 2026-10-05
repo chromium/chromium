@@ -612,6 +612,18 @@ mojom("mojom_http_request_headers") {
   blink_cpp_typemaps = cpp_typemaps
 }
 
+mojom("mojom_cache_storage_side_data_writer") {
+  generate_blink = true
+  generate_java = true
+  sources = [ "cache_storage_side_data_writer.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
 # These .mojom files are put in their own target to avoid a circular dependency,
 # which comes from the fact that the typemap for url_loader.mojom
 # (ResourceRequest) depends on them.
@@ -673,6 +685,7 @@ mojom("url_loader_base") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_cache_storage_side_data_writer",
     ":mojom_connection_allowlist",
     ":mojom_content_security_policy",
     ":mojom_http_request_headers",
@@ -717,6 +730,20 @@ mojom("url_loader_base") {
 
   # Shared by cpp_typemaps and blink_cpp_typemaps.
   shared_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.CacheStorageSideDataWriterTag"
+          cpp = "::network::CacheStorageSideDataWriterTag"
+        },
+        {
+          mojom = "blink.mojom.FetchCacheStorageSideDataWriterTag"
+          cpp = "::network::CacheStorageSideDataWriterTag"
+        },
+      ]
+      traits_headers = [ "//services/network/public/cpp/cache_storage_side_data_writer_mojom_traits.h" ]
+      traits_public_deps = [ "//services/network/public/cpp:cache_storage_side_data_writer_mojom_traits" ]
+    },
     {
       types = [
         {
@@ -1934,6 +1961,7 @@ mojom("mojom") {
 
   public_deps = [
     ":cookies_mojom",
+    ":mojom_cache_storage_side_data_writer",
     ":mojom_connection_allowlist",
     ":mojom_cors_origin_pattern",
     ":mojom_host_resolver",

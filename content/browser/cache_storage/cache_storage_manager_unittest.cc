@@ -688,6 +688,7 @@ class CacheStorageManagerTest : public testing::Test {
         net::HttpRequestHeaders::kGetMethod, std::move(blob),
         blink::mojom::ServiceWorkerResponseError::kUnknown, base::Time(),
         /*cache_storage_cache_name=*/std::string(),
+        /*cache_storage_side_data_writer=*/mojo::NullRemote(),
         /*cors_exposed_header_names=*/std::vector<std::string>(),
         /*side_data_blob=*/nullptr,
         /*side_data_for_cache_put=*/std::nullopt,
@@ -1150,6 +1151,30 @@ TEST_P(CacheStorageManagerTestP, StorageMatchEntryExists) {
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
   EXPECT_TRUE(
       StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/foo")));
+}
+
+TEST_P(CacheStorageManagerTestP, StorageMatchPopulatesSideDataWriterRemote) {
+  EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+  EXPECT_TRUE(
+      StorageMatch(bucket_locator1_, u"foo", GURL("http://example.com/foo")));
+  ASSERT_TRUE(callback_cache_handle_response_);
+  EXPECT_TRUE(callback_cache_handle_response_->cache_storage_side_data_writer
+                  .is_valid());
+}
+
+TEST_P(CacheStorageManagerTestP, StorageMatchAllPopulatesSideDataWriterRemote) {
+  const std::string kBucketName = "custom-bucket";
+  ASSERT_OK_AND_ASSIGN(auto bucket_locator,
+                       GetOrCreateBucket(storage_key1_, kBucketName));
+  EXPECT_TRUE(Open(bucket_locator, u"foo"));
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+  EXPECT_TRUE(StorageMatchAll(bucket_locator, GURL("http://example.com/foo")));
+  ASSERT_TRUE(callback_cache_handle_response_);
+  EXPECT_TRUE(callback_cache_handle_response_->cache_storage_side_data_writer
+                  .is_valid());
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatchNoEntry) {

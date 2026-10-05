@@ -572,28 +572,6 @@ class CacheStorageDispatcherHost::CacheImpl
             host_->cache_receivers_.GetBadMessageCallback()));
   }
 
-  void WriteSideData(const GURL& url,
-                     base::Time expected_response_time,
-                     mojo_base::BigBuffer data,
-                     int64_t trace_id,
-                     WriteSideDataCallback callback) override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    TRACE_EVENT("CacheStorage",
-                "CacheStorageDispatchHost::CacheImpl::WriteSideData",
-                perfetto::Flow::Global(trace_id), "url", url.spec());
-
-    content::CacheStorageCache* cache = cache_handle_.value();
-    if (!cache) {
-      std::move(callback).Run(CacheStorageError::kErrorNotFound);
-      return;
-    }
-
-    auto buf = base::MakeRefCounted<net::VectorIOBuffer>(data);
-
-    cache->WriteSideData(std::move(callback), url, expected_response_time,
-                         trace_id, std::move(buf), data.size());
-  }
-
   // Owns this.
   const raw_ptr<CacheStorageDispatcherHost> host_;
 

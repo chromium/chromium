@@ -425,6 +425,10 @@ FetchResponseData* Response::CreateUnfilteredFetchResponseDataWithoutBody(
   response->SetResponseTime(fetch_api_response.response_time);
   response->SetCacheStorageCacheName(
       fetch_api_response.cache_storage_cache_name);
+  if (fetch_api_response.cache_storage_side_data_writer.is_valid()) {
+    response->SetPendingCacheStorageSideDataWriter(
+        std::move(fetch_api_response.cache_storage_side_data_writer));
+  }
   response->SetConnectionInfo(fetch_api_response.connection_info);
   response->SetAlpnNegotiatedProtocol(
       AtomicString(fetch_api_response.alpn_negotiated_protocol));

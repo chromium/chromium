@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/auth.mojom";
+import "services/network/public/mojom/cache_storage_side_data_writer.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -14,6 +15,12 @@ import "services/network/public/mojom/parsed_headers.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
 import "url/mojom/url.mojom";
+
+// Tag enum used to attach traits_headers for
+// CloneTraits<PendingRemote<network.mojom.CacheStorageSideDataWriter>>.
+enum FetchCacheStorageSideDataWriterTag {
+  kDefault,
+};
 
 // Describes a Response in terms of the concept from the Fetch spec.
 // https://fetch.spec.whatwg.org/#response-class
@@ -68,8 +75,17 @@ struct FetchAPIResponse {
   // responses, this time could be "far" in the past.
   mojo_base.mojom.Time response_time;
 
-  // Name of cache where this response was retrieved, empty otherwise.
+  // Name of cache where this response was retrieved, empty otherwise. Only used
+  // for DevTools inspection/reporting; not used for code caching (which uses
+  // `cache_storage_side_data_writer` instead).
   string? cache_storage_cache_name;
+
+  // Direct Mojo remote to the CacheStorageCache entry from where this response
+  // was retrieved, used for writing code cache side data. Null otherwise.
+  // Note: `FetchAPIResponse::Clone()` does NOT clone this remote; the cloned
+  // struct will have a null `cache_storage_side_data_writer`.
+  pending_remote<network.mojom.CacheStorageSideDataWriter>?
+      cache_storage_side_data_writer;
 
   // In case this is a CORS response fetched by a ServiceWorker, this is the
   // set of headers that should be exposed.

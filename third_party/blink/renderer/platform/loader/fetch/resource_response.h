@@ -33,11 +33,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/alternate_protocol_usage.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
+#include "services/network/public/mojom/cache_storage_side_data_writer.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -285,6 +287,16 @@ class PLATFORM_EXPORT ResourceResponse final {
   }
   void SetCacheStorageCacheName(const String& cache_storage_cache_name) {
     cache_storage_cache_name_ = cache_storage_cache_name;
+  }
+
+  const mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>&
+  CacheStorageSideDataWriter() const {
+    return cache_storage_side_data_writer_;
+  }
+  void SetCacheStorageSideDataWriter(
+      mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+          cache_storage_side_data_writer) {
+    cache_storage_side_data_writer_ = std::move(cache_storage_side_data_writer);
   }
 
   const Vector<String>& CorsExposedHeaderNames() const {
@@ -662,6 +674,12 @@ class PLATFORM_EXPORT ResourceResponse final {
   // The cache name of the CacheStorage from where the response is served via
   // the ServiceWorker. Null if the response isn't from the CacheStorage.
   String cache_storage_cache_name_;
+
+  // Direct Mojo remote to the CacheStorageCache entry from where the response
+  // is served via the ServiceWorker, used for writing code cache side data.
+  // Unbound if the response isn't from CacheStorage.
+  mojo::SharedRemote<network::mojom::blink::CacheStorageSideDataWriter>
+      cache_storage_side_data_writer_;
 
   // The headers that should be exposed according to CORS. Only guaranteed
   // to be set if the response was fetched by a ServiceWorker.

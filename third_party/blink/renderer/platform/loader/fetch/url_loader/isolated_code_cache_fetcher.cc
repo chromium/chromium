@@ -32,7 +32,9 @@ bool ShouldUseIsolatedCodeCache(
   // mechanism.
   if (response_head.was_fetched_via_service_worker) {
     // Do the same check as !ResourceResponse::IsServiceWorkerPassThrough().
-    if (!response_head.cache_storage_cache_name.empty()) {
+    if (response_head.service_worker_response_source ==
+            network::mojom::FetchResponseSource::kCacheStorage ||
+        response_head.cache_storage_side_data_writer.is_valid()) {
       // Responses was produced by cache_storage
       return false;
     }

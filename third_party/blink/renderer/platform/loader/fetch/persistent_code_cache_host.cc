@@ -115,21 +115,6 @@ class PersistentCodeCacheHost::AsyncCodeCacheHost {
                                                    std::move(callback));
   }
 
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const blink::KURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const blink::String& cache_storage_cache_name) {
-    // Inserts are processed on the remote end.
-
-    // TODO(crbug.com/455909145): An fast-follow call to FetchCachedCode for
-    // this same `url`'s data will race with the browser process's handling of
-    // this call and may consequently fail to see the insert. Consider if/how
-    // to address this.
-    remote_->DidGenerateCacheableMetadataInCacheStorage(
-        url, expected_response_time, std::move(data), cache_storage_cache_name);
-  }
-
  private:
   // Handles interactions with a `PersistentCache` for a specific type of
   // data (JavaScript or WebAssembly). Connections to a `PersistentCache` may
@@ -479,18 +464,6 @@ void PersistentCodeCacheHost::ClearCodeCacheEntry(
   // may be replaced via new inserts with updated response_times. User-driven
   // requests to clear browsing data will clear caches wholesale rather than
   // delete individual entries.
-}
-
-void PersistentCodeCacheHost::DidGenerateCacheableMetadataInCacheStorage(
-    const ::blink::KURL& url,
-    ::base::Time expected_response_time,
-    ::mojo_base::BigBuffer data,
-    const ::blink::String& cache_storage_cache_name) {
-  async_host_
-      .AsyncCall(
-          &AsyncCodeCacheHost::DidGenerateCacheableMetadataInCacheStorage)
-      .WithArgs(url, expected_response_time, std::move(data),
-                cache_storage_cache_name);
 }
 
 void PersistentCodeCacheHost::OnFetchCachedCodeReply(
