@@ -940,6 +940,7 @@ suite('ComposeboxSkills', () => {
     const chipEl = createChipElement({
       id: 'chip1',
       text: '/Search',
+      description: 'Search the web',
       emoji: '🔍',
       iconUrl: 'https://example.com/icon.png',
     });
@@ -959,11 +960,15 @@ suite('ComposeboxSkills', () => {
     assertEquals('https://example.com/icon.png', chip.dataset['chipIconUrl']);
     assertEquals('false', chip.getAttribute('contenteditable'));
     assertEquals('-1', chip.getAttribute('tabindex'));
-    assertEquals('/Search', chip.getAttribute('title'));
+    assertEquals('Search the web', chip.getAttribute('title'));
 
     const label = chip.querySelector(`.${CHIP_LABEL_CLASS}`);
     assertTrue(!!label);
     assertEquals('/Search', label.textContent);
+
+    // Falls back to `chip.text` when `description` is omitted.
+    const fallbackChipEl = createChipElement({text: '/Search'});
+    assertEquals('/Search', fallbackChipEl.getAttribute('title'));
   });
 
   test('SanitizationPipelineStripsDisallowedTagsAndAttributes', () => {

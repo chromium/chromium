@@ -68,6 +68,7 @@ export function getChipPolicyForTesting():
 export interface ComposeboxChip {
   id?: string;
   text: string;
+  description?: string;
   emoji?: string;
   iconUrl?: string;
 }
@@ -830,7 +831,7 @@ export function createChipElement(chip: ComposeboxChip): HTMLElement {
   chipEl.classList.add(CHIP_CLASS);
   chipEl.setAttribute('contenteditable', 'false');
   chipEl.setAttribute('tabindex', '-1');
-  chipEl.title = chip.text;
+  chipEl.title = chip.description || chip.text;
   if (chip.id) {
     chipEl.dataset[CHIP_DATASET_ID] = chip.id;
   }
