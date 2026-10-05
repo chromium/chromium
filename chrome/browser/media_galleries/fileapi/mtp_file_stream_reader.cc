@@ -40,7 +40,7 @@ MTPFileStreamReader::~MTPFileStreamReader() = default;
 int MTPFileStreamReader::Read(net::IOBuffer* buf,
                               int buf_len,
                               net::CompletionOnceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   MTPDeviceAsyncDelegate* delegate =
       MTPDeviceMapService::GetInstance()->GetMTPDeviceAsyncDelegate(url_);
@@ -80,7 +80,7 @@ int MTPFileStreamReader::Read(net::IOBuffer* buf,
 }
 
 int64_t MTPFileStreamReader::GetLength(GetLengthCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   MTPDeviceAsyncDelegate* delegate =
       MTPDeviceMapService::GetInstance()->GetMTPDeviceAsyncDelegate(url_);
@@ -104,8 +104,8 @@ void MTPFileStreamReader::FinishValidateMediaHeader(
     net::IOBuffer* buf, int buf_len,
     const base::File::Info& file_info,
     int header_bytes_read) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK_GE(header_bytes_read, 0);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK_GE(header_bytes_read, 0, base::NotFatalUntil::M161);
   base::File::Error error = NativeMediaFileUtil::BufferIsMediaHeader(
       header_buf, header_bytes_read);
   if (error != base::File::FILE_OK) {
@@ -129,21 +129,21 @@ void MTPFileStreamReader::FinishValidateMediaHeader(
 
 void MTPFileStreamReader::FinishRead(const base::File::Info& file_info,
                                      int bytes_read) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
     std::move(read_callback_).Run(net::ERR_UPLOAD_FILE_CHANGED);
     return;
   }
 
-  DCHECK_GE(bytes_read, 0);
+  CHECK_GE(bytes_read, 0, base::NotFatalUntil::M161);
   current_offset_ += bytes_read;
   std::move(read_callback_).Run(bytes_read);
 }
 
 void MTPFileStreamReader::FinishGetLength(
     const base::File::Info& file_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (!VerifySnapshotTime(expected_modification_time_, file_info)) {
     std::move(get_length_callback_)

@@ -41,7 +41,7 @@ RedirectionRemotingSourceBridge::RedirectionRemotingSourceBridge(
 RedirectionRemotingSourceBridge::~RedirectionRemotingSourceBridge() = default;
 
 void RedirectionRemotingSourceBridge::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   is_started_ = true;
   remoter_->Start();
 }
@@ -52,19 +52,19 @@ void RedirectionRemotingSourceBridge::StartRemotingDataStreams(
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> audio_sender,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
         video_sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   remoter_->StartDataStreams(std::move(audio_pipe), std::move(video_pipe),
                              std::move(audio_sender), std::move(video_sender));
 }
 
 void RedirectionRemotingSourceBridge::SendMessageToSink(
     const std::vector<uint8_t>& message) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   remoter_->SendMessageToSink(message);
 }
 
 void RedirectionRemotingSourceBridge::StopRemoting(RemotingStopReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Prevent the source from trying to start again before the utility process
   // has torn the session down.
@@ -84,7 +84,7 @@ void RedirectionRemotingSourceBridge::StopRemoting(RemotingStopReason reason) {
 
 void RedirectionRemotingSourceBridge::OnSinkAvailable(
     media::mojom::RemotingSinkMetadataPtr metadata) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // The session describes the codecs it can accept. RENDERING says the source
   // may hand its media pipeline to the remote renderer.
@@ -94,35 +94,35 @@ void RedirectionRemotingSourceBridge::OnSinkAvailable(
 
 void RedirectionRemotingSourceBridge::OnMessageFromSink(
     const std::vector<uint8_t>& message) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bridge_->OnMessageFromSink(client_, message);
 }
 
 void RedirectionRemotingSourceBridge::OnStopped(
     media::mojom::RemotingStopReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   StopRemoting(reason);
 }
 
 void RedirectionRemotingSourceBridge::OnSinkGone() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   StopRemoting(RemotingStopReason::SERVICE_GONE);
 }
 
 void RedirectionRemotingSourceBridge::OnStarted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   bridge_->OnStarted(client_);
 }
 
 void RedirectionRemotingSourceBridge::OnStartFailed(
     media::mojom::RemotingStartFailReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   is_started_ = false;
   bridge_->OnStartFailed(client_, reason);
 }
 
 void RedirectionRemotingSourceBridge::OnSessionDisconnected() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!disconnected_callback_) {
     return;
   }

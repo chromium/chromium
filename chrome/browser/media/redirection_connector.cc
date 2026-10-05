@@ -49,7 +49,7 @@ void RedirectionConnector::StoppingRedirection() {
 }
 
 void RedirectionConnector::RegisterBridge(RemotingBridge* bridge) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(!bridges_.contains(bridge));
 
   bridges_[bridge] = nullptr;
@@ -58,7 +58,7 @@ void RedirectionConnector::RegisterBridge(RemotingBridge* bridge) {
 
 void RedirectionConnector::DeregisterBridge(RemotingBridge* bridge,
                                             RemotingStopReason reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
 
@@ -74,7 +74,7 @@ void RedirectionConnector::StartRemoting(RemotingBridge* bridge) {
 
 void RedirectionConnector::StartWithPermissionAlreadyGranted(
     RemotingBridge* bridge) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
 
@@ -95,7 +95,7 @@ void RedirectionConnector::StartRemotingDataStreams(
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> audio_sender,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender>
         video_sender) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
 
@@ -120,7 +120,7 @@ void RedirectionConnector::StartRemotingDataStreams(
 void RedirectionConnector::StopRemoting(RemotingBridge* bridge,
                                         RemotingStopReason reason,
                                         bool is_initiated_by_source) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
 
@@ -132,7 +132,7 @@ void RedirectionConnector::StopRemoting(RemotingBridge* bridge,
 void RedirectionConnector::SendMessageToSink(
     RemotingBridge* bridge,
     const std::vector<uint8_t>& message) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
 
@@ -142,7 +142,7 @@ void RedirectionConnector::SendMessageToSink(
 }
 
 void RedirectionConnector::OnClientActivated(RemotingBridge* bridge) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(create_session_callback_);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
@@ -167,7 +167,7 @@ void RedirectionConnector::OnClientActivated(RemotingBridge* bridge) {
 }
 
 void RedirectionConnector::OnClientDeactivated(RemotingBridge* bridge) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   auto it = bridges_.find(bridge);
   CHECK(it != bridges_.end());
   CHECK(it->second);

@@ -33,8 +33,8 @@ ReadaheadFileStreamReader::~ReadaheadFileStreamReader() = default;
 int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
                                     int buf_len,
                                     net::CompletionOnceCallback callback) {
-  DCHECK(!pending_sink_buffer_.get());
-  DCHECK(pending_read_callback_.is_null());
+  CHECK(!pending_sink_buffer_.get(), base::NotFatalUntil::M161);
+  CHECK(pending_read_callback_.is_null(), base::NotFatalUntil::M161);
 
   ReadFromSourceIfNeeded();
 
@@ -44,8 +44,8 @@ int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
 
   // We are waiting for an source read to complete, so save the request.
   if (result == net::ERR_IO_PENDING) {
-    DCHECK(!pending_sink_buffer_.get());
-    DCHECK(pending_read_callback_.is_null());
+    CHECK(!pending_sink_buffer_.get(), base::NotFatalUntil::M161);
+    CHECK(pending_read_callback_.is_null(), base::NotFatalUntil::M161);
     pending_sink_buffer_ = sink;
     pending_read_callback_ = std::move(callback);
   }
@@ -63,7 +63,7 @@ int ReadaheadFileStreamReader::FinishReadFromCacheOrStoredError(
   // the stored error code.
   if (buffers_.empty()) {
     if (source_.get()) {
-      DCHECK(source_has_pending_read_);
+      CHECK(source_has_pending_read_, base::NotFatalUntil::M161);
       return net::ERR_IO_PENDING;
     } else {
       return source_error_;
@@ -73,7 +73,7 @@ int ReadaheadFileStreamReader::FinishReadFromCacheOrStoredError(
   while (sink->BytesRemaining() > 0 && !buffers_.empty()) {
     net::DrainableIOBuffer* source_buffer = buffers_.front().get();
 
-    DCHECK_GT(source_buffer->BytesRemaining(), 0);
+    CHECK_GT(source_buffer->BytesRemaining(), 0, base::NotFatalUntil::M161);
 
     const int copy_len =
         std::min(source_buffer->BytesRemaining(), sink->BytesRemaining());
@@ -113,8 +113,8 @@ void ReadaheadFileStreamReader::ReadFromSourceIfNeeded() {
 
 void ReadaheadFileStreamReader::OnFinishReadFromSource(net::IOBuffer* buf,
                                                        int result) {
-  DCHECK(result != net::ERR_IO_PENDING);
-  DCHECK(source_has_pending_read_);
+  CHECK(result != net::ERR_IO_PENDING, base::NotFatalUntil::M161);
+  CHECK(source_has_pending_read_, base::NotFatalUntil::M161);
   source_has_pending_read_ = false;
 
   // Either store the data read from |source_|, or store the error code.
@@ -131,7 +131,7 @@ void ReadaheadFileStreamReader::OnFinishReadFromSource(net::IOBuffer* buf,
   // If there's a read request waiting for the source FileStreamReader to
   // finish reading, fulfill that request now from the cache or stored error.
   if (pending_sink_buffer_.get()) {
-    DCHECK(!pending_read_callback_.is_null());
+    CHECK(!pending_read_callback_.is_null(), base::NotFatalUntil::M161);
 
     // Free the pending callback before running it, as the callback often
     // dispatches another read.

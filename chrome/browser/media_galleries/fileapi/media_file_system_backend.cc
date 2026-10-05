@@ -81,7 +81,7 @@ void AttemptAutoMountOnUIThread(
     const std::string& storage_domain,
     const std::string& mount_point,
     base::OnceCallback<void(base::File::Error result)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::WebContents* web_contents = web_contents_getter.Run();
   if (web_contents) {
     Profile* profile =
@@ -120,7 +120,7 @@ void AttemptAutoMountOnUIThread(
 
 content::WebContents* GetWebContentsFromFrameTreeNodeID(
     content::FrameTreeNodeId frame_tree_node_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
 }
 
@@ -142,7 +142,8 @@ MediaFileSystemBackend::~MediaFileSystemBackend() = default;
 // static
 void MediaFileSystemBackend::AssertCurrentlyOnMediaSequence() {
 #if DCHECK_IS_ON()
-  DCHECK(g_media_task_runner.Get()->RunsTasksInCurrentSequence());
+  CHECK(g_media_task_runner.Get()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
 #endif
 }
 
@@ -248,7 +249,7 @@ storage::CopyOrMoveFileValidatorFactory*
 MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
     storage::FileSystemType type,
     base::File::Error* error_code) {
-  DCHECK(error_code);
+  CHECK(error_code, base::NotFatalUntil::M161);
   *error_code = base::File::FILE_OK;
   switch (type) {
     case storage::kFileSystemTypeLocalMedia:
@@ -286,8 +287,9 @@ bool MediaFileSystemBackend::SupportsStreaming(
 
 bool MediaFileSystemBackend::HasInplaceCopyImplementation(
     storage::FileSystemType type) const {
-  DCHECK(type == storage::kFileSystemTypeLocalMedia ||
-         type == storage::kFileSystemTypeDeviceMedia);
+  CHECK(type == storage::kFileSystemTypeLocalMedia ||
+            type == storage::kFileSystemTypeDeviceMedia,
+        base::NotFatalUntil::M161);
   return true;
 }
 
@@ -304,7 +306,7 @@ MediaFileSystemBackend::CreateFileStreamReader(
     std::unique_ptr<storage::FileStreamReader> reader =
         device_media_async_file_util_->GetFileStreamReader(
             url, offset, expected_modification_time, context);
-    DCHECK(reader);
+    CHECK(reader, base::NotFatalUntil::M161);
     return reader;
   }
 
