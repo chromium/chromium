@@ -11,8 +11,8 @@
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/util/callback_util.h"
 #import "ios/web/web_state/web_state_impl.h"
+#import "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace {
 
@@ -122,12 +122,12 @@ void DisplayPromptForGeolocation(
     _taskRunner = taskRunner;
 
     // WebKit asserts that `decisionHandler` is called or terminates the app.
-    // Use EnsureBlockCalled(...) to call it with WKPermissionDecisionDeny
-    // if anything prevents the block from being called directly (e.g. if
-    // the TaskRunner rejects the PostTask because the application is in its
-    // shutdown phase).
-    _decisionCallback =
-        web::EnsureBlockCalled(decisionHandler, WKPermissionDecisionDeny);
+    // Use WrapCallbackWithDefaultInvokeIfNotRun(...) to create a callback
+    // that will call it with WKPermissionDecisionDeny if anything prevents
+    // the callback from being called directly (e.g. if the TaskRunner rejects
+    // the PostTask because the application is in its shutdown phase).
+    _decisionCallback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+        base::BindOnce(decisionHandler), WKPermissionDecisionDeny);
   }
   return self;
 }
