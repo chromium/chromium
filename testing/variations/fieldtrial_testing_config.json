@@ -15994,6 +15994,24 @@
             ]
         }
     ],
+    "ReadAnythingDistillerRefactor": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadAnythingDistillerRefactor"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingIPHRollout": [
         {
             "platforms": [
