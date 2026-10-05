@@ -8581,6 +8581,25 @@
             ]
         }
     ],
+    "ForceSaveToCloudDeferredReporting": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled",
+                        "EnableForceSaveToCloudDeferredReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "FullscreenSignInPromoUseDate": [
         {
             "platforms": [

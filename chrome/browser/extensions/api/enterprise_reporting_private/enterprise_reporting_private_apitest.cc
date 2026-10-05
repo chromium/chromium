@@ -1215,7 +1215,20 @@ IN_PROC_BROWSER_TEST_F(EnterpriseOnDataMaskingRulesTriggeredTest, WithRules) {
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
+class EnterpriseReportForceSaveToCloudEventHandledDisabledTest
+    : public EnterpriseReportingPrivateApiTest {
+ public:
+  EnterpriseReportForceSaveToCloudEventHandledDisabledTest() {
+    scoped_features_.InitAndDisableFeature(
+        extensions_features::
+            kApiEnterpriseReportingPrivateReportForceSaveToCloudEventHandled);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnterpriseReportForceSaveToCloudEventHandledDisabledTest,
                        ReportForceSaveToCloudFeatureDisabled) {
   static constexpr char kTestJS[] = R"(
     chrome.test.assertEq(
