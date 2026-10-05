@@ -323,12 +323,41 @@ public class TabGroupUiUtils {
         }
     }
 
+    private static boolean isGroupClosingInAnotherWindow(@Nullable Token groupId) {
+        if (groupId == null) return false;
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        @WindowId
+        int windowId =
+                windowManager.findWindowIdForTabGroup(groupId, /* includeClosingGroups= */ true);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return false;
+        }
+        TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
+        if (selector == null) {
+            return false;
+        }
+        TabModel incognitoModel = selector.getModel(/* incognito= */ true);
+        assert getLocalTabsInGroup(incognitoModel, groupId).isEmpty()
+                : "isGroupClosingInAnotherWindow is only meant for non-incognito groups.";
+
+        TabModel otherModel = selector.getModel(/* incognito= */ false);
+        return !otherModel.tabGroupExists(groupId);
+    }
+
     private static boolean isRemoteGroup(GroupWindowInfo group) {
-        return group.groupWindowState == GroupWindowState.HIDDEN
-                || group.localId == null
-                || (isRemoteGroupOperationsEnabled()
-                        && group.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING
-                        && group.syncId != null);
+        if (!isRemoteGroupOperationsEnabled() || group.syncId == null) {
+            return false;
+        }
+        if (group.groupWindowState == GroupWindowState.HIDDEN || group.localId == null) {
+            return true;
+        }
+        if (group.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
+            return true;
+        }
+        if (group.groupWindowState == GroupWindowState.IN_ANOTHER) {
+            return isGroupClosingInAnotherWindow(group.localId);
+        }
+        return false;
     }
 
     /**
@@ -353,11 +382,17 @@ public class TabGroupUiUtils {
                     && syncService != null
                     && uiActionHandler != null;
         }
-        if (destinationGroup.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
+        if (destinationGroup.groupWindowState == GroupWindowState.HIDDEN
+                || destinationGroup.groupWindowState == GroupWindowState.IN_CURRENT_CLOSING) {
             return false;
         }
         if (destinationGroup.groupWindowState == GroupWindowState.IN_ANOTHER) {
-            return isCrossWindowTabGroupOperationsEnabled() && destinationGroup.localId != null;
+            boolean isClosing =
+                    destinationGroup.syncId != null
+                            && isGroupClosingInAnotherWindow(destinationGroup.localId);
+            return isCrossWindowTabGroupOperationsEnabled()
+                    && destinationGroup.localId != null
+                    && !isClosing;
         }
         return destinationGroup.localId != null;
     }
@@ -422,60 +457,93 @@ public class TabGroupUiUtils {
                 || !isValidDestination(destinationGroup, syncService, uiActionHandler)) {
             return;
         }
-        Token destinationGroupId = destinationGroup.localId;
-        if (destinationGroupId != null && areTabsAlreadyInGroup(tabs, destinationGroupId)) {
-            return;
-        }
+        Token destinationGroupId = null;
         if (isRemoteGroup(destinationGroup)) {
-            assert destinationGroup.syncId != null;
-            assert syncService != null;
-            assert uiActionHandler != null;
-
-            if (destinationGroup.localId != null) {
-                commitClosingTabsForGroup(sourceTabModel, destinationGroup.localId);
-            }
-            String syncId = destinationGroup.syncId;
-            openTabGroup(sourceTabModel, syncService, uiActionHandler, syncId);
-            SavedTabGroup savedGroup = syncService.getGroup(syncId);
-            if (savedGroup == null || savedGroup.localId == null) {
-                return;
-            }
-            destinationGroupId = savedGroup.localId.tabGroupId;
+            destinationGroupId =
+                    maybeRestoreRemoteGroup(
+                            sourceTabModel, destinationGroup, syncService, uiActionHandler);
+        } else if (destinationGroup.groupWindowState != GroupWindowState.HIDDEN) {
+            destinationGroupId = destinationGroup.localId;
         }
         if (destinationGroupId == null || areTabsAlreadyInGroup(tabs, destinationGroupId)) {
             return;
         }
 
         if (sourceTabModel.tabGroupExists(destinationGroupId)) {
-            @TabId int destTabId = sourceTabModel.getGroupLastShownTabId(destinationGroupId);
-            TabGroupUtils.mergeTabsToDest(tabs, destTabId, sourceTabModel, tabMovedCallback);
+            mergeTabsToCurrentWindowGroup(
+                    sourceTabModel, tabs, destinationGroupId, tabMovedCallback);
             return;
         }
 
         if (isCrossWindowTabGroupOperationsEnabled()) {
-            TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
-            if (windowManager != null) {
-                int windowId = windowManager.findWindowIdForTabGroup(destinationGroupId);
-                if (windowId != TabWindowManager.INVALID_WINDOW_ID) {
-                    TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
-                    if (selector != null) {
-                        TabModel destTabModel = selector.getModel(sourceTabModel.isIncognito());
-                        @TabId
-                        int destTabId = destTabModel.getGroupLastShownTabId(destinationGroupId);
-                        maybeUngroupTabs(sourceTabModel, tabs);
-                        MultiInstanceOrchestratorFactory.getInstance()
-                                .moveTabsToWindowByIdChecked(
-                                        windowId,
-                                        tabs,
-                                        TabList.INVALID_TAB_INDEX,
-                                        destTabId,
-                                        bringToFront);
-                        if (tabMovedCallback != null) {
-                            tabMovedCallback.onTabMoved();
-                        }
-                    }
-                }
-            }
+            moveTabsToAnotherWindow(
+                    sourceTabModel, tabs, destinationGroupId, tabMovedCallback, bringToFront);
+        }
+    }
+
+    private static @Nullable Token maybeRestoreRemoteGroup(
+            TabModel sourceTabModel,
+            GroupWindowInfo destinationGroup,
+            @Nullable TabGroupSyncService syncService,
+            @Nullable TabGroupUiActionHandler uiActionHandler) {
+        if (!isRemoteGroupOperationsEnabled()) {
+            return null;
+        }
+        if (syncService == null) {
+            return null;
+        }
+        if (uiActionHandler == null) {
+            return null;
+        }
+        if (destinationGroup.syncId == null) {
+            return null;
+        }
+        if (destinationGroup.localId != null) {
+            commitClosingTabsForGroup(sourceTabModel, destinationGroup.localId);
+        }
+        String syncId = destinationGroup.syncId;
+        openTabGroup(sourceTabModel, syncService, uiActionHandler, syncId);
+        SavedTabGroup savedGroup = syncService.getGroup(syncId);
+        return (savedGroup != null && savedGroup.localId != null)
+                ? savedGroup.localId.tabGroupId
+                : null;
+    }
+
+    private static void mergeTabsToCurrentWindowGroup(
+            TabModel sourceTabModel,
+            List<Tab> tabs,
+            Token destinationGroupId,
+            @Nullable TabMovedCallback tabMovedCallback) {
+        @TabId int destTabId = sourceTabModel.getGroupLastShownTabId(destinationGroupId);
+        TabGroupUtils.mergeTabsToDest(tabs, destTabId, sourceTabModel, tabMovedCallback);
+    }
+
+    private static void moveTabsToAnotherWindow(
+            TabModel sourceTabModel,
+            List<Tab> tabs,
+            Token destinationGroupId,
+            @Nullable TabMovedCallback tabMovedCallback,
+            boolean bringToFront) {
+        TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
+        @WindowId int windowId = windowManager.findWindowIdForTabGroup(destinationGroupId);
+        if (windowId == TabWindowManager.INVALID_WINDOW_ID) {
+            return;
+        }
+        TabModelSelector selector = windowManager.getTabModelSelectorById(windowId);
+        if (selector == null) {
+            return;
+        }
+        TabModel destTabModel = selector.getModel(sourceTabModel.isIncognito());
+        @TabId int destTabId = destTabModel.getGroupLastShownTabId(destinationGroupId);
+        if (destTabId == Tab.INVALID_TAB_ID) {
+            return;
+        }
+        maybeUngroupTabs(sourceTabModel, tabs);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabsToWindowByIdChecked(
+                        windowId, tabs, TabList.INVALID_TAB_INDEX, destTabId, bringToFront);
+        if (tabMovedCallback != null) {
+            tabMovedCallback.onTabMoved();
         }
     }
 
