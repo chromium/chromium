@@ -353,6 +353,7 @@ void AtMemoryMetricsRecorder::OnPopupHidden() {
 
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {
   ++query_count_;
+  query_results_count_ = 0;
 
   query_to_suggestions_shown_timer_.emplace();
 
@@ -446,6 +447,7 @@ void AtMemoryMetricsRecorder::OnSuggestionAccepted(
 void AtMemoryMetricsRecorder::OnQueryResponseReceived(
     const MemorySearchResults& result) {
   ++query_response_count_;
+  query_results_count_ = result.entries.size();
   if (std::optional<AtMemoryQueryCompletedStatus> status =
           GetQueryCompletedStatus(result)) {
     base::UmaHistogramEnumeration("Autofill.AtMemory.QueryCompleted", *status);

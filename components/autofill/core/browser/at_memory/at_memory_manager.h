@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -96,7 +97,7 @@ class AtMemoryManager : public AutofillManager::Observer {
   bool OnSearchSubmitted(const std::u16string& filter);
 
   // Called when suggestions are hidden.
-  void OnPopupHidden();
+  void OnPopupHidden(SuggestionHidingReason reason);
 
   // AutofillManager::Observer:
   void OnAutofillManagerStateChanged(

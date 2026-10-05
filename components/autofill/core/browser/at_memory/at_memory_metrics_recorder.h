@@ -151,6 +151,8 @@ class AtMemoryMetricsRecorder {
   // Records the completion of the asynchronous PII fetching process.
   void OnFetchPiiCompleted();
 
+  size_t query_count() const { return query_count_; }
+  size_t query_results_count() const { return query_results_count_; }
 
  private:
   friend class AtMemoryMetricsRecorderTestApi;
@@ -192,8 +194,13 @@ class AtMemoryMetricsRecorder {
   // Counts the number of queries submitted during this session.
   size_t query_count_ = 0;
 
-  // Counts the number of query responses received during this session.
+  // Counts the number of query responses received during this session. Used
+  // by UMA session outcome metrics to determine if the session was dismissed
+  // before receiving results.
   size_t query_response_count_ = 0;
+
+  // Number of search results for the last query shown to the user.
+  size_t query_results_count_ = 0;
 
   // Whether any suggestion has been accepted during the lifetime of `this`.
   bool suggestion_accepted_in_session_ = false;

@@ -234,6 +234,11 @@ void MaybeTriggerFormSubmissionHatsSurveys(
   }
 }
 
+std::string FormatCountForHats(int count, int limit) {
+  return count >= limit ? base::StrCat({base::NumberToString(limit), "+"})
+                        : base::NumberToString(count);
+}
+
 RecentUserAutofillAiInteractionsForHats::
     RecentUserAutofillAiInteractionsForHats() = default;
 RecentUserAutofillAiInteractionsForHats::

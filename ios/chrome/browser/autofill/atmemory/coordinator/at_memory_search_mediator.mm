@@ -19,6 +19,7 @@
 #import "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
 #import "components/autofill/core/browser/suggestions/suggestion.h"
+#import "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
@@ -108,7 +109,8 @@ NSArray<NSString*>* GetZeroStateExampleSubtitles() {
 
     // Force reset any existing popup state from the main autofill popup,
     // so that our new updateCallback is correctly registered.
-    _atMemoryManager->OnPopupHidden();
+    _atMemoryManager->OnPopupHidden(
+        autofill::SuggestionHidingReason::kHiddenByCaller);
 
     ukm::SourceId ukmSourceId =
         webState ? ukm::GetSourceIdForWebStateDocument(webState)
@@ -155,7 +157,10 @@ NSArray<NSString*>* GetZeroStateExampleSubtitles() {
         autofill::AutofillMetrics::PopupNoticeInteractions::kDismissed);
   }
   if (_atMemoryManager) {
-    _atMemoryManager->OnPopupHidden();
+    // TODO(crbug.com/569956179): This code path is also reached for suggestion
+    // acceptance. Pass `kAcceptSuggestion` instead in this case.
+    _atMemoryManager->OnPopupHidden(
+        autofill::SuggestionHidingReason::kUserAborted);
   }
   _atMemoryManager = nullptr;
   _autofillManager = nullptr;

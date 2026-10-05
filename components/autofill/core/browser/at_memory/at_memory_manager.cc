@@ -24,6 +24,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
@@ -86,6 +87,47 @@ constexpr std::array<int, 3> kFetchingStringIds = std::to_array<int>({
     IDS_AUTOFILL_AT_MEMORY_FETCHING_REVIEWING_CONNECTED_APPS,
     IDS_AUTOFILL_AT_MEMORY_FETCHING_PUTTING_IT_TOGETHER,
 });
+
+std::string_view SuggestionHidingReasonToDismissalTypeForHats(
+    SuggestionHidingReason reason) {
+  switch (reason) {
+    case SuggestionHidingReason::kTabGone:
+    case SuggestionHidingReason::kFocusChanged:
+    case SuggestionHidingReason::kEndEditing:
+    case SuggestionHidingReason::kSearchBarFocusLost:
+    case SuggestionHidingReason::kNoFrameHasFocus:
+      return "Focus lost, tab hidden or tab closed";
+    case SuggestionHidingReason::kContentAreaMoved:
+    case SuggestionHidingReason::kElementOutsideOfContentArea:
+    case SuggestionHidingReason::kWidgetChanged:
+    case SuggestionHidingReason::kInsufficientSpace:
+      return "Window resized, page zoomed or insufficient space";
+    case SuggestionHidingReason::kRendererEvent:
+    case SuggestionHidingReason::kAttachInterstitialPage:
+    case SuggestionHidingReason::kFieldValueChanged:
+      return "Page scrolled, navigated or field/DOM changed";
+    case SuggestionHidingReason::kUserAborted:
+      return "User dismissed";
+    case SuggestionHidingReason::kOverlappingWithAnotherPrompt:
+    case SuggestionHidingReason::kOverlappingWithPasswordGenerationPopup:
+    case SuggestionHidingReason::kOverlappingWithTouchToFillSurface:
+    case SuggestionHidingReason::kOverlappingWithAutofillContextMenu:
+    case SuggestionHidingReason::kOverlappingWithPictureInPictureWindow:
+    case SuggestionHidingReason::kContextMenuOpened:
+      return "Overlapped by another UI surface or menu";
+    case SuggestionHidingReason::kAcceptSuggestion:
+      return "Suggestion accepted";
+    case SuggestionHidingReason::kNoSuggestions:
+    case SuggestionHidingReason::kStaleData:
+    case SuggestionHidingReason::kViewDestroyed:
+    case SuggestionHidingReason::kMouseLocked:
+    case SuggestionHidingReason::kExpandedSuggestionCollapsedSubPopup:
+    case SuggestionHidingReason::kFadeTimerExpired:
+    case SuggestionHidingReason::kHiddenByCaller:
+      return "Other";
+  }
+  NOTREACHED();
+}
 
 // Returns the primary type name label for `entry`. For AutofillAi
 // entities and attributes, this resolves to the Entity name.
@@ -511,11 +553,21 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
   return true;
 }
 
-void AtMemoryManager::OnPopupHidden() {
+void AtMemoryManager::OnPopupHidden(SuggestionHidingReason reason) {
   if (AtMemoryMetricsRecorder* recorder = metrics_recorder()) {
     recorder->OnPopupHidden();
 
     if (!recorder->IsFilled()) {
+      // Collect product-specific data (PSD), but limit the reported counts to
+      // avoid privacy issues for high rare values.
+      constexpr int kCountLimit = 10;
+      HatsSurveyStringData survey_data{
+          {"Type of dismissal",
+           std::string(SuggestionHidingReasonToDismissalTypeForHats(reason))},
+          {"Query count",
+           FormatCountForHats(recorder->query_count(), kCountLimit)},
+          {"Query results count",
+           FormatCountForHats(recorder->query_results_count(), kCountLimit)}};
       // AtMemory was dismissed without filling any suggestion. Delay the survey
       // to avoid triggering on accidental dismissal.
       hats_survey_dismissal_timer_.Start(
@@ -523,7 +575,7 @@ void AtMemoryManager::OnPopupHidden() {
           base::BindOnce(
               &AutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey,
               base::Unretained(client_), /*is_dismissed=*/true,
-              HatsSurveyStringData{}));
+              std::move(survey_data)));
     }
   }
   if (!base::FeatureList::IsEnabled(

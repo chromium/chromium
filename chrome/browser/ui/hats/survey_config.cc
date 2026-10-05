@@ -824,7 +824,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed,
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
-      /*product_specific_string_data_fields=*/std::vector<std::string>{});
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{
+          // Description of how the AtMemory popup was dismissed.
+          "Type of dismissal",
+          // Number of queries during AtMemory session.
+          "Query count",
+          // Number of results that were found for the last query.
+          "Query results count"});
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::

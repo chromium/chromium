@@ -720,7 +720,7 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
   if (AtMemoryManager* amm = manager_->client().GetAtMemoryManager()) {
-    amm->OnPopupHidden();
+    amm->OnPopupHidden(reason);
   }
   manager_->OnSuggestionsHidden(reason);
 }
