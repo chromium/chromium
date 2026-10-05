@@ -11,20 +11,15 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,10 +30,6 @@
 
 #if BUILDFLAG(IS_IOS)
 #include "ui/base/device_form_factor.h"
-#endif
-
-#if BUILDFLAG(IS_POSIX)
-#include <sys/utsname.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -145,8 +136,7 @@ bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
 
 }  // namespace
 
-class UserAgentUtilsTest : public testing::Test,
-                           public testing::WithParamInterface<bool> {
+class UserAgentUtilsTest : public testing::Test {
  public:
   // The minor version in the reduced UA string is always "0.0.0".
   static constexpr char kReducedMinorVersion[] = "0.0.0";
@@ -209,9 +199,6 @@ class UserAgentUtilsTest : public testing::Test,
       EXPECT_NE(GetUserAgentMinorVersion(GetUserAgent()), kReducedMinorVersion);
     }
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(UserAgentUtilsTest, CustomUserAgent) {
@@ -291,22 +278,22 @@ TEST_F(UserAgentUtilsTest, UserAgentStringReduced) {
 TEST_F(UserAgentUtilsTest, UserAgentStringFull) {
   base::test::ScopedFeatureList scoped_feature_list;
 
-  // Verify that three user agent functions return the correct user agent string
-  // when kReduceUserAgentMinorVersion turns on.
+  // Verify that GetUserAgent() returns the correct user agent string when
+  // kReduceUserAgentMinorVersion turns on.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {blink::features::kReduceUserAgentMinorVersion}, {});
   { VerifyGetUserAgentFunctions(); }
 
-  // Verify that three user agent functions return the correct user agent
-  // when kReduceUserAgentMinorVersion turns off.
+  // Verify that GetUserAgent() returns the correct user agent string when
+  // kReduceUserAgentMinorVersion turns off.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures(
       {}, {blink::features::kReduceUserAgentMinorVersion});
   { VerifyGetUserAgentFunctions(); }
 
-  // Verify that three user agent functions return the correct user agent
-  // without explicit features turned on.
+  // Verify that GetUserAgent() returns the correct user agent string without
+  // explicit features turned on.
   scoped_feature_list.Reset();
   scoped_feature_list.InitWithFeatures({}, {});
   { VerifyGetUserAgentFunctions(); }
