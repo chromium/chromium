@@ -519,16 +519,25 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
 // https://github.com/google/googletest/blob/main/docs/advanced.md#death-test-naming
 using SecondDeviceAuthBrokerDeathTest = SecondDeviceAuthBrokerTest;
 
+// TODO(crbug.com/569892767): SecondDeviceAuthBroker validates `device_id` with
+// CHECK(..., base::NotFatalUntil::M161), which is not fatal in official
+// non-DCHECK builds, so the death tests below use EXPECT_DCHECK_DEATH_WITH.
+// Switch them to EXPECT_CHECK_DEATH once M161 is reached and the CHECKs become
+// fatal.
 TEST_F(SecondDeviceAuthBrokerDeathTest,
        SecondDeviceAuthBrokerValidatesDeviceId) {
-  EXPECT_CHECK_DEATH(SecondDeviceAuthBroker(
-      /*device_id=*/std::string(), GetSharedURLLoaderFactory(),
-      std::make_unique<attestation::MockAttestationFlow>()))
+  EXPECT_DCHECK_DEATH_WITH(
+      SecondDeviceAuthBroker(
+          /*device_id=*/std::string(), GetSharedURLLoaderFactory(),
+          std::make_unique<attestation::MockAttestationFlow>()),
+      "Check failed")
       << "Using an empty device_id should CHECK";
 
-  EXPECT_CHECK_DEATH(SecondDeviceAuthBroker(
-      /*device_id=*/std::string(65, '0'), GetSharedURLLoaderFactory(),
-      std::make_unique<attestation::MockAttestationFlow>()))
+  EXPECT_DCHECK_DEATH_WITH(
+      SecondDeviceAuthBroker(
+          /*device_id=*/std::string(65, '0'), GetSharedURLLoaderFactory(),
+          std::make_unique<attestation::MockAttestationFlow>()),
+      "Check failed")
       << "Using a device_id of length greater than 64 should CHECK";
 }
 
