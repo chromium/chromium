@@ -100,12 +100,8 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
                          web_contents,
                          "document.body.classList.contains('category-other')"));
 
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('error-category').hidden"));
     EXPECT_EQ("0", content::EvalJs(web_contents,
-                                   "document.getElementById('error-category')"
-                                   ".textContent.trim()"));
+                                   "window.loadTimeDataRaw['error_category']"));
 
     const std::string expected_heading =
         l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHN_ERROR_HEADING);
@@ -123,16 +119,13 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
 
     EXPECT_EQ(false, content::EvalJs(
                          web_contents,
-                         "document.getElementById('signin-button').hidden"));
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('goback-button').hidden"));
+                         "document.getElementById('primary-button').hidden"));
     EXPECT_EQ(l10n_util::GetStringUTF8(IDS_CONTINUE),
               content::EvalJs(
                   web_contents,
-                  "document.getElementById('signin-button').textContent"));
+                  "document.getElementById('primary-button').textContent"));
 
-    // Verify clicking #signin-button invokes the C++ errorPageController
+    // Verify clicking #primary-button invokes the C++ errorPageController
     // portalSigninButtonClick().
     base::HistogramTester histograms;
 #if BUILDFLAG(IS_ANDROID)
@@ -145,7 +138,7 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
 #endif  // BUILDFLAG(IS_ANDROID)
 
     EXPECT_TRUE(content::ExecJs(
-        web_contents, "document.getElementById('signin-button').click();"));
+        web_contents, "document.getElementById('primary-button').click();"));
 
 #if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(web_contents, sign_in_future.Get());
@@ -182,12 +175,8 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
                          web_contents,
                          "document.body.classList.contains('category-other')"));
 
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('error-category').hidden"));
     EXPECT_EQ("1", content::EvalJs(web_contents,
-                                   "document.getElementById('error-category')"
-                                   ".textContent.trim()"));
+                                   "window.loadTimeDataRaw['error_category']"));
 
     const std::string expected_heading =
         l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING);
@@ -204,16 +193,13 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
                   web_contents,
                   "document.querySelector('#main-message p').textContent"));
 
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('signin-button').hidden"));
     EXPECT_EQ(false, content::EvalJs(
                          web_contents,
-                         "document.getElementById('goback-button').hidden"));
+                         "document.getElementById('primary-button').hidden"));
     EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
               content::EvalJs(
                   web_contents,
-                  "document.getElementById('goback-button').textContent"));
+                  "document.getElementById('primary-button').textContent"));
   }
 
   // Validates that the rendered error page in `web_contents` matches the
@@ -240,12 +226,8 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
                         web_contents,
                         "document.body.classList.contains('category-other')"));
 
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('error-category').hidden"));
     EXPECT_EQ("2", content::EvalJs(web_contents,
-                                   "document.getElementById('error-category')"
-                                   ".textContent.trim()"));
+                                   "window.loadTimeDataRaw['error_category']"));
 
     const std::string expected_heading =
         l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_OTHER_ERROR_HEADING);
@@ -261,16 +243,13 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
                   web_contents,
                   "document.querySelector('#main-message p').textContent"));
 
-    EXPECT_EQ(true, content::EvalJs(
-                        web_contents,
-                        "document.getElementById('signin-button').hidden"));
     EXPECT_EQ(false, content::EvalJs(
                          web_contents,
-                         "document.getElementById('goback-button').hidden"));
+                         "document.getElementById('primary-button').hidden"));
     EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ENTERPRISE_BLOCK_GO_BACK),
               content::EvalJs(
                   web_contents,
-                  "document.getElementById('goback-button').textContent"));
+                  "document.getElementById('primary-button').textContent"));
   }
 
   // Helper to verify PvD fetch failure transitions the domain to

@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="../../../security_interstitials/core/common/resources/interstitial_common.css">
   <link rel="stylesheet" href="enterprise_proxy_error_page.css">
 </head>
-<body id="body" class="enterprise-proxy-error" <if expr="is_ios">style="font-size: $i18n{fontsize}"</if>>
+<body id="body" class="enterprise-proxy-error">
   <div class="interstitial-wrapper">
     <div id="main-content">
       <div class="icon" id="icon"></div>
@@ -25,11 +25,9 @@
       </div>
     </div>
     <div class="nav-wrapper">
-      <button id="goback-button" class="primary-button" hidden>$i18n{button_text}</button>
-      <button id="signin-button" class="primary-button" hidden>$i18n{button_text}</button>
+      <button id="primary-button" class="primary-button">$i18n{button_text}</button>
     </div>
   </div>
-  <div id="error-category" hidden>$i18n{error_category}</div>
   <script src="enterprise_proxy_error_page.js"></script>
 </body>
 </html>
