@@ -1,0 +1,4 @@
+# For ToolRequest definitions and schemas (go/actor-tool-registry-design).
+per-file *_request.h=nandrosz@chromium.org
+per-file *_request.cc=nandrosz@chromium.org
+per-file *_request_unittest.cc=nandrosz@chromium.org
