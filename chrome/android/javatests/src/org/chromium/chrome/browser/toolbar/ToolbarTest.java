@@ -736,6 +736,7 @@ public class ToolbarTest {
     @MediumTest
     @EnableFeatures({UiAndroidFeatures.MAXIMUM_WINDOW_FOR_GESTURE_NAV_DETECTION})
     @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/570134281
     public void testBackPressCancelledOnTabNull() throws Exception {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(
