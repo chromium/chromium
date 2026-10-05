@@ -429,6 +429,14 @@ void MessagePumpEpoll::UnregisterInterest(
   CHECK(it != interests.end());
   interests.erase(it);
 
+  // OnEpollEvent() dispatches from a copy of `interests` and skips inactive
+  // ones. An interest that is unregistered while that copy is being iterated
+  // (e.g. because another watcher on the same fd called
+  // StopWatchingFileDescriptor() on this interest's controller from its own
+  // callback) must not be dispatched afterwards: its controller's `watcher_`
+  // has already been cleared.
+  interest->set_active(false);
+
   if (interests.empty()) {
     StopEpollEvent(entry);
     entries_.erase(entry_it);

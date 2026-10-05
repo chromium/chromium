@@ -88,6 +88,12 @@ class MessagePumpEpollTest : public testing::Test {
     pump->HandleEvent(0, /*can_read=*/true, /*can_write=*/true, controller);
   }
 
+  // Performs a single non-blocking epoll_wait() and dispatches whatever is
+  // ready, exactly as Run() would. Returns true iff any events were dispatched.
+  bool DispatchReadyEvents(MessagePumpEpoll* pump) {
+    return pump->WaitForEpollEvents(TimeDelta());
+  }
+
   static constexpr char null_byte_ = 0;
   std::unique_ptr<test::SingleThreadTaskEnvironment> task_environment_;
 
@@ -168,6 +174,65 @@ TEST_F(MessagePumpEpollTest, StopWatcher) {
                             MessagePumpEpoll::WATCH_READ_WRITE, &controller,
                             &delegate);
   SimulateIOEvent(pump.get(), &controller);
+}
+
+// A read watcher which, when notified, stops watching on a different
+// FdWatchController.
+class StopOtherWatcherOnRead : public BaseWatcher {
+ public:
+  explicit StopOtherWatcherOnRead(MessagePumpEpoll::FdWatchController* other)
+      : other_(other) {}
+  ~StopOtherWatcherOnRead() override = default;
+
+  void OnFileCanReadWithoutBlocking(int /* fd */) override {
+    ++read_count_;
+    other_->StopWatchingFileDescriptor();
+  }
+
+  int read_count() const { return read_count_; }
+
+ private:
+  raw_ptr<MessagePumpEpoll::FdWatchController> other_ = nullptr;
+  int read_count_ = 0;
+};
+
+// Regression test for crbug.com/540823650: when two controllers watch the same
+// fd and both of their interests are satisfied by a single epoll event, the
+// first callback stopping (but not destroying) the second controller must not
+// cause the pump to dispatch to the second controller's now-null watcher.
+//
+// In production this happens with net::UDPSocketPosix (which owns separate
+// read_socket_watcher_ and write_socket_watcher_ controllers on the same fd)
+// when its read completion callback triggers synchronous socket closure in the
+// caller (e.g. QuicChromiumClientSession::OnReadError() ->
+// OnConnectionClosed() -> QuicChromiumPacketReader::CloseSocket() ->
+// UDPSocketPosix::Close()), stopping write_socket_watcher_ while a write watch
+// is pending.
+TEST_F(MessagePumpEpollTest, StopOtherControllerOnSameFdDuringDispatch) {
+  auto pump = std::make_unique<MessagePumpEpoll>();
+  MessagePumpEpoll::FdWatchController read_controller(FROM_HERE);
+  MessagePumpEpoll::FdWatchController write_controller(FROM_HERE);
+  StopOtherWatcherOnRead read_watcher(&write_controller);
+  // BaseWatcher's callbacks are NOTREACHED(), so any dispatch to this watcher
+  // fails the test.
+  BaseWatcher write_watcher;
+
+  // Registration order matters: the read interest must be dispatched first.
+  ASSERT_TRUE(pump->WatchFileDescriptor(receiver(), /*persistent=*/true,
+                                        MessagePumpEpoll::WATCH_READ,
+                                        &read_controller, &read_watcher));
+  ASSERT_TRUE(pump->WatchFileDescriptor(receiver(), /*persistent=*/true,
+                                        MessagePumpEpoll::WATCH_WRITE,
+                                        &write_controller, &write_watcher));
+
+  // A fresh socketpair end is always writable; making it readable too means a
+  // single epoll event satisfies both interests.
+  Notify();
+  EXPECT_TRUE(DispatchReadyEvents(pump.get()));
+  EXPECT_EQ(read_watcher.read_count(), 1);
+
+  read_controller.StopWatchingFileDescriptor();
+  ClearNotifications();
 }
 
 void QuitMessageLoopAndStart(OnceClosure quit_closure) {
