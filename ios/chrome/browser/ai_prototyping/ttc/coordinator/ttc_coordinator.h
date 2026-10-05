@@ -11,7 +11,7 @@
 
 @protocol AIPrototypingViewControllerProtocol;
 
-// Coordinator managing the TalkToChrome feature.
+// Coordinator managing the TTC feature.
 @interface TTCCoordinator : ChromeCoordinator
 
 // The view controller managed by this coordinator.

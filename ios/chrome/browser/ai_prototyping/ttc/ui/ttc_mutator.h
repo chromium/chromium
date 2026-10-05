@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Protocol for mutating model and hardware state based on user interactions
-// in the TalkToChrome prototype UI.
+// in the TTC prototype UI.
 @protocol TTCMutator <NSObject>
 
 // Starts an end-to-end voice session.

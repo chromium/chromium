@@ -22,7 +22,7 @@ enum class TTCConversationErrorCode {
 };
 
 // Manages the conversation state and coordinates between audio input/output
-// and the transport session for TalkToChrome on iOS.
+// and the transport session for TTC on iOS.
 @interface TTCConversation : NSObject
 
 // Delegate receiving state changes, audio chunks, energy, and error events.

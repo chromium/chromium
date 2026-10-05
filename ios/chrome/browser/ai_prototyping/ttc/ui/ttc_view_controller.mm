@@ -27,14 +27,17 @@ constexpr CGFloat kCardItemSpacing = 8.0;
 constexpr CGFloat kTestAudioButtonVerticalInset = 12.0;
 constexpr CGFloat kTestAudioButtonHorizontalInset = 16.0;
 constexpr CGFloat kMinButtonHeight = 44.0;
+constexpr CGFloat kMicButtonShadowOffsetY = 4.0;
+constexpr float kMicButtonShadowOpacity = 0.2f;
+constexpr CGFloat kMicButtonShadowRadius = 8.0;
 
 // UI string constants.
-NSString* const kHeaderTitleText = @"TalkToChrome";
+NSString* const kHeaderTitleText = @"TTC";
 NSString* const kStatusLabelIdleText = @"Tap to start conversation";
-NSString* const kStatusLabelConnectingText = @"Connecting to model...";
-NSString* const kStatusLabelHandshakingText = @"Handshaking with model...";
+NSString* const kStatusLabelConnectingText = @"Connecting to server...";
+NSString* const kStatusLabelHandshakingText = @"Handshaking with server...";
 NSString* const kStatusLabelListeningText = @"Listening... Speak now";
-NSString* const kStatusLabelModelSpeakingText = @"Model speaking...";
+NSString* const kStatusLabelModelSpeakingText = @"Speaking...";
 NSString* const kStatusLabelErrorText = @"Session error occurred";
 NSString* const kEnergyMeterLabelText = @"Microphone Input Level";
 NSString* const kDiagnosticsTitleText = @"Developer Diagnostics";
@@ -113,9 +116,9 @@ NSString* const kStopTestAudioButtonText = @"Stop Test Audio";
   _micButton.layer.cornerRadius = kMicButtonSize / 2.0;
   _micButton.layer.masksToBounds = NO;
   _micButton.layer.shadowColor = [[UIColor blackColor] CGColor];
-  _micButton.layer.shadowOffset = CGSizeMake(0.0, 4.0);
-  _micButton.layer.shadowOpacity = 0.2;
-  _micButton.layer.shadowRadius = 8.0;
+  _micButton.layer.shadowOffset = CGSizeMake(0.0, kMicButtonShadowOffsetY);
+  _micButton.layer.shadowOpacity = kMicButtonShadowOpacity;
+  _micButton.layer.shadowRadius = kMicButtonShadowRadius;
 
   UIImage* micImage =
       SymbolWithPointSize(SymbolMicrophoneFill, kMicSymbolPointSize);

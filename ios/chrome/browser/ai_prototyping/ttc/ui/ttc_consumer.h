@@ -24,7 +24,7 @@ enum class TTCSessionUIState {
 };
 
 // Consumer protocol receiving state and microphone input telemetry to render
-// in the TalkToChrome prototype UI.
+// in the TTC prototype UI.
 @protocol TTCConsumer <NSObject>
 
 // Updates the current high-level voice session state.

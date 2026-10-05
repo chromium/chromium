@@ -18,7 +18,7 @@
 class ProfileIOS;
 @class TTCSessionController;
 
-// Profile-keyed service that manages the active TalkToChrome voice session
+// Profile-keyed service that manages the active TTC voice session
 // lifecycle, state transitions, and coordination for a Profile.
 class TTCKeyedService : public KeyedService {
  public:

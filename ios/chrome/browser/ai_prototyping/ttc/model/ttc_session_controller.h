@@ -13,7 +13,7 @@
 @protocol TTCSessionControllerObserver;
 
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
-// for an active TalkToChrome voice session on iOS.
+// for an active TTC voice session on iOS.
 @interface TTCSessionController : NSObject
 
 // Underlying conversation coordinator.

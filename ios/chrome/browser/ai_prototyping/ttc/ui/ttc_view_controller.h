@@ -12,7 +12,7 @@
 
 @protocol TTCMutator;
 
-// View controller displaying the "TalkToChrome" (TTC) feature.
+// View controller displaying the TTC prototype UI.
 @interface TTCViewController
     : UIViewController <AIPrototypingViewControllerProtocol, TTCConsumer>
 
