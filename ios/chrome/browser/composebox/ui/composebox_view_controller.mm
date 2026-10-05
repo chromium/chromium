@@ -439,12 +439,26 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
                                 LayoutSides::kTop | LayoutSides::kHorizontal);
 
+      CGFloat leadingMargin = kInputPlateMargin;
+      if (self.traitCollection.userInterfaceIdiom == UIUserInterfaceIdiomPad &&
+          !ShouldApplyOmniboxPopoutLayout(self)) {
+        BOOL isRTL = [self.view effectiveUserInterfaceLayoutDirection] ==
+                     UIUserInterfaceLayoutDirectionRightToLeft;
+        if (isRTL) {
+          // Close button is on the trailing end in RTL, so update trailing end.
+          closeButtonTrailingConstraint.constant =
+              -kInputPlateIpadWindowControlsOffset;
+        } else {
+          leadingMargin = kInputPlateIpadWindowControlsOffset;
+        }
+      }
+
       _constraintToCloseButton = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.leadingAnchor
                          constant:-kInputPlateTrailingPadding];
       _constraintToLeadingEdge = [_inputViewController.view.leadingAnchor
           constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                         constant:kInputPlateMargin];
+                         constant:leadingMargin];
 
       auto constraintToMargin = [_inputViewController.view.trailingAnchor
           constraintEqualToAnchor:_closeButton.trailingAnchor
@@ -501,48 +515,18 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
       AddSameConstraintsToSides(_progressiveBlurEffect, safeAreaGuide,
                                 LayoutSides::kHorizontal);
 
-      CGFloat leadingMargin = kInputPlateIpadMargin;
-      if (!ShouldApplyOmniboxPopoutLayout(self)) {
-        BOOL isRTL = [self.view effectiveUserInterfaceLayoutDirection] ==
-                     UIUserInterfaceLayoutDirectionRightToLeft;
-        if (isRTL) {
-          // Close button is on the trailing end in RTL, so update trailing end.
-          closeButtonTrailingConstraint.constant =
-              -kInputPlateIpadWindowControlsOffset;
-        } else {
-          leadingMargin = kInputPlateIpadWindowControlsOffset;
-        }
-      }
-
       [_constraintsForCurrentPosition addObjectsFromArray:@[
         [_inputViewController.view.leadingAnchor
             constraintEqualToAnchor:safeAreaGuide.leadingAnchor
-                           constant:leadingMargin],
+                           constant:kInputPlateIpadMargin],
         [_inputViewController.view.topAnchor
             constraintEqualToAnchor:safeAreaGuide.topAnchor
                            constant:kInputPlateIpadMargin],
+        [_inputViewController.view.trailingAnchor
+            constraintEqualToAnchor:safeAreaGuide.trailingAnchor
+                           constant:-kInputPlateIpadMargin],
       ]];
-      if (ShouldApplyOmniboxPopoutLayout(self)) {
-        // Constraints for when the close button is hidden.
-        [closeButtonConstraints addObjectsFromArray:@[
-          [_inputViewController.view.trailingAnchor
-              constraintEqualToAnchor:safeAreaGuide.trailingAnchor
-                             constant:-kInputPlateIpadMargin]
-        ]];
-        _closeButton.hidden = YES;
-      } else {
-        // Constraints for when the close button is shown.
-        [closeButtonConstraints addObjectsFromArray:@[
-          [_inputViewController.view.trailingAnchor
-              constraintEqualToAnchor:_closeButton.leadingAnchor
-                             constant:-kInputPlateTrailingPadding],
-          [_closeButton.centerYAnchor
-              constraintEqualToAnchor:_inputViewController.omniboxContainer
-                                          .centerYAnchor]
-        ]];
-
-        _closeButton.hidden = NO;
-      }
+      _closeButton.hidden = YES;
       [_constraintsForCurrentPosition
           addObjectsFromArray:closeButtonConstraints];
       break;

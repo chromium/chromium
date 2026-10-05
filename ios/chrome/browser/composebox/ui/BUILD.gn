@@ -109,12 +109,17 @@ source_set("unit_tests") {
   sources = [
     "composebox_favicons_accordion_view_unittest.mm",
     "composebox_ui_config_unittest.mm",
+    "composebox_view_controller_unittest.mm",
   ]
   deps = [
     ":state",
     ":ui",
     "//base/test:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/composebox/public:entrypoint",
+    "//ios/chrome/browser/composebox/public:input_plate_position",
+    "//ios/chrome/browser/composebox/public:theme",
+    "//ios/chrome/browser/composebox/shared/ui",
     "//testing/gtest",
     "//ui/base",
   ]
