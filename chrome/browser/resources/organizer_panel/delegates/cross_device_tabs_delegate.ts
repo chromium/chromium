@@ -18,6 +18,10 @@ export class CrossDeviceTabsDelegate implements
     OrganizerListSectionDelegate<CrossDeviceTab> {
   init(_sectionClient: OrganizerListSectionClient) {}
 
+  getId(): string {
+    return 'cross-device-tabs';
+  }
+
   getHeader(): string {
     return loadTimeData.getString('tabsOnOtherDevices');
   }

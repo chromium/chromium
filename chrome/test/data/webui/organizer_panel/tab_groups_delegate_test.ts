@@ -64,7 +64,8 @@ suite('TabGroupsDelegateTest', () => {
     delegate = new TabGroupsDelegate();
   });
 
-  test('returns header', () => {
+  test('returns id and header', () => {
+    assertEquals('tab-groups', delegate.getId());
     assertEquals('Tab Groups', delegate.getHeader());
   });
 

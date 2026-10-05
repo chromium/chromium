@@ -42,6 +42,10 @@ export class RecentTabsDelegate implements
             }));
   }
 
+  getId(): string {
+    return 'recently-closed';
+  }
+
   getHeader(): string {
     return loadTimeData.getString('recentlyClosed');
   }

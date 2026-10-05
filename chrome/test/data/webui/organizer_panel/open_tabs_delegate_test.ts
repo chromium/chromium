@@ -171,7 +171,8 @@ suite('OpenTabsDelegateTest', () => {
     delegate = new OpenTabsDelegate();
   });
 
-  test('returns header', () => {
+  test('returns id and header', () => {
+    assertEquals('open-tabs', delegate.getId());
     assertEquals('Open Tabs', delegate.getHeader());
   });
 

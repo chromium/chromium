@@ -92,6 +92,10 @@ export class OpenTabsDelegate implements
             }));
   }
 
+  getId(): string {
+    return 'open-tabs';
+  }
+
   getHeader(): string {
     return loadTimeData.getString('openTabs');
   }

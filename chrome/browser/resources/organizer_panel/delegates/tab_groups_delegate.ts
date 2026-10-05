@@ -40,6 +40,10 @@ export class TabGroupsDelegate implements
         }));
   }
 
+  getId(): string {
+    return 'tab-groups';
+  }
+
   getHeader(): string {
     return loadTimeData.getString('tabGroups');
   }

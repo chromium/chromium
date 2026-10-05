@@ -16,7 +16,8 @@ suite('CrossDeviceTabsDelegateTest', () => {
     delegate = new CrossDeviceTabsDelegate();
   });
 
-  test('getHeader returns localized string', () => {
+  test('returns id and localized header', () => {
+    assertEquals('cross-device-tabs', delegate.getId());
     assertEquals('Tabs on other devices', delegate.getHeader());
   });
 

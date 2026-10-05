@@ -110,7 +110,8 @@ suite('RecentTabsDelegateTest', () => {
     delegate = new RecentTabsDelegate();
   });
 
-  test('returns header', () => {
+  test('returns id and header', () => {
+    assertEquals('recently-closed', delegate.getId());
     assertEquals('Recently Closed', delegate.getHeader());
   });
 

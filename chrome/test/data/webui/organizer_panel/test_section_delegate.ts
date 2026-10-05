@@ -7,6 +7,7 @@ import type {OrganizerListSectionClient, OrganizerListSectionDelegate, Organizer
 
 export class TestSectionDelegate implements
     OrganizerListSectionDelegate<unknown> {
+  private id_: string;
   private header_: string;
   private items_: Array<OrganizerListSectionItem<unknown>>;
   getZeroState?: () => TemplateResult;
@@ -24,7 +25,8 @@ export class TestSectionDelegate implements
 
   constructor(
       header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
-      zeroState?: TemplateResult) {
+      zeroState?: TemplateResult, id: string = 'test-section') {
+    this.id_ = id;
     this.header_ = header;
     this.items_ = items;
     if (zeroState) {
@@ -33,6 +35,10 @@ export class TestSectionDelegate implements
   }
 
   init(_sectionClient: OrganizerListSectionClient) {}
+
+  getId(): string {
+    return this.id_;
+  }
 
   getHeader(): string {
     return this.header_;

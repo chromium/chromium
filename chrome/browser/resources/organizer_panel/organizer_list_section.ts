@@ -46,6 +46,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
       delegate: {type: Object},
       items: {type: Array},
       expanded_: {type: Boolean},
+      noAnimation_: {type: Boolean},
       searchQuery: {type: String},
       filteredItems_: {type: Array},
       filteredSearchQuery_: {type: String},
@@ -53,9 +54,11 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
+  private expandedChangedListenerId_: number|null = null;
   accessor delegate: OrganizerListSectionDelegate<unknown>|null = null;
   accessor items: Array<OrganizerListSectionItem<unknown>> = [];
   protected accessor expanded_: boolean = true;
+  protected accessor noAnimation_: boolean = false;
   accessor searchQuery: string = '';
   protected accessor filteredItems_:
       Array<HighlightableOrganizerListSectionItem<unknown>> = [];
@@ -92,17 +95,27 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private onVisibilityChange_: () => void = () => {
     if (document.visibilityState === 'visible') {
       this.updateItems_();
+      this.updateExpanded_();
     }
   };
 
   override connectedCallback() {
     super.connectedCallback();
     document.addEventListener('visibilitychange', this.onVisibilityChange_);
+    this.expandedChangedListenerId_ =
+        this.browserProxy_.callbackRouter.onSectionsExpandedChanged.addListener(
+            (sectionsExpanded: Record<string, boolean>) => {
+              this.onSectionsExpandedChanged_(sectionsExpanded);
+            });
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('visibilitychange', this.onVisibilityChange_);
+    assert(this.expandedChangedListenerId_ !== null);
+    this.browserProxy_.callbackRouter.removeListener(
+        this.expandedChangedListenerId_);
+    this.expandedChangedListenerId_ = null;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -111,6 +124,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (changedProperties.has('delegate')) {
       this.delegate?.init(this);
       this.updateItems_();
+      this.updateExpanded_();
     }
 
     if (changedProperties.has('items') ||
@@ -137,6 +151,30 @@ export class OrganizerListSectionElement extends CrLitElement implements
       return;
     }
     this.items = await this.delegate.getItems();
+  }
+
+  private async updateExpanded_() {
+    if (!this.delegate) {
+      this.expanded_ = true;
+      return;
+    }
+    const delegate = this.delegate;
+    const {expanded} =
+        await this.browserProxy_.handler.isSectionExpanded(delegate.getId());
+    if (this.delegate !== delegate) {
+      return;
+    }
+    // Disable the transition when the expanded state is loaded from prefs.
+    this.noAnimation_ = true;
+    this.expanded_ = expanded;
+    await this.updateComplete;
+    this.noAnimation_ = false;
+  }
+
+  private onSectionsExpandedChanged_(
+      sectionsExpanded: Record<string, boolean>) {
+    assert(this.delegate);
+    this.expanded_ = sectionsExpanded[this.delegate.getId()] ?? true;
   }
 
   private async updateFilteredItems_() {
@@ -168,9 +206,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
   }
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
-    if (!this.isSearching_()) {
-      this.expanded_ = e.detail.value;
+    if (this.isSearching_() || this.expanded_ === e.detail.value) {
+      return;
     }
+    this.expanded_ = e.detail.value;
+    assert(this.delegate);
+    this.browserProxy_.handler.setSectionExpanded(
+        this.delegate.getId(), this.expanded_);
   }
 
   protected hasZeroState_(): boolean {

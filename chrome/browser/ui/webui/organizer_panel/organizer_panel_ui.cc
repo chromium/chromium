@@ -118,9 +118,15 @@ void OrganizerPanelUI::BindInterface(
 }
 
 void OrganizerPanelUI::CreatePageHandler(
+    mojo::PendingRemote<organizer_panel::mojom::Page> page,
     mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver) {
+  if (!page.is_valid() || !receiver.is_valid()) {
+    organizer_panel_page_factory_receiver_.ReportBadMessage(
+        "Invalid page pending remote or receiver in CreatePageHandler");
+    return;
+  }
   organizer_panel_page_handler_ = std::make_unique<OrganizerPanelPageHandler>(
-      std::move(receiver), web_ui()->GetWebContents());
+      std::move(receiver), std::move(page), web_ui()->GetWebContents());
 }
 
 void OrganizerPanelUI::CreatePageHandler(

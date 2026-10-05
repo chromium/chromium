@@ -20,7 +20,8 @@ ${this.hasNoSearchResults_() ? html`
   ${this.hasZeroState_() ? html`
     ${this.getZeroState_()}
   ` : html`
-    <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}">
+    <cr-collapse id="items" role="list" ?opened="${this.isExpanded_()}"
+        ?no-animation="${this.noAnimation_}">
       ${this.getFilteredItems_().map(item => html`
         <organizer-list-section-item .item="${item}" role="listitem"
             @click="${this.onItemClick_}"

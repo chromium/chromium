@@ -1211,6 +1211,10 @@ inline constexpr char kUserAgentReduction[] = "user_agent_reduction";
 // the tab strip.
 inline constexpr char kOrganizerPanelEntrypointEnabled[] =
     "organizer_panel.entrypoint_enabled";
+// Dictionary mapping organizer panel section IDs to a boolean indicating
+// whether the section is expanded.
+inline constexpr char kOrganizerPanelSectionsExpanded[] =
+    "organizer_panel.sections_expanded";
 inline constexpr char kProjectsPanelEntrypointEnabled[] =
     "projects_panel.entrypoint_enabled";
 

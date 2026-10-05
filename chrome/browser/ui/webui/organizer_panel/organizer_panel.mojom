@@ -4,14 +4,27 @@
 
 module organizer_panel.mojom;
 
+// WebUI-side handler for general panel requests from the browser.
+interface Page {
+  // Called when the expanded state of sections changes.
+  OnSectionsExpandedChanged(map<string, bool> sections_expanded);
+};
+
 // Browser-side handler for general panel requests from WebUI page.
 interface PageHandler {
   // Closes the organizer panel.
   ClosePanel();
+
+  // Returns whether the section with the given ID is expanded.
+  IsSectionExpanded(string section_id) => (bool expanded);
+
+  // Sets whether the section with the given ID is expanded.
+  SetSectionExpanded(string section_id, bool expanded);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
-  CreatePageHandler(pending_receiver<PageHandler> handler);
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
 };

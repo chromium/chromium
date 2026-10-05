@@ -58,6 +58,7 @@ class OrganizerPanelUI
  private:
   // organizer_panel::mojom::PageHandlerFactory:
   void CreatePageHandler(
+      mojo::PendingRemote<organizer_panel::mojom::Page> page,
       mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver)
       override;
 
