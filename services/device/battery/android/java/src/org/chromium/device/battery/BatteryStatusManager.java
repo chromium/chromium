@@ -74,12 +74,15 @@ class BatteryStatusManager {
     }
 
     BatteryStatusManager(BatteryStatusCallback callback) {
-        this(
-                callback,
-                new AndroidBatteryManagerWrapper(
-                        (BatteryManager)
-                                ContextUtils.getApplicationContext()
-                                        .getSystemService(Context.BATTERY_SERVICE)));
+        this(callback, createAndroidBatteryManagerWrapper());
+    }
+
+    private static @Nullable AndroidBatteryManagerWrapper createAndroidBatteryManagerWrapper() {
+        // getSystemService() may return null, e.g. if the app's SELinux domain is not allowed to
+        // look up the battery services.
+        BatteryManager batteryManager =
+                ContextUtils.getApplicationContext().getSystemService(BatteryManager.class);
+        return batteryManager == null ? null : new AndroidBatteryManagerWrapper(batteryManager);
     }
 
     /**

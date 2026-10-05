@@ -282,10 +282,12 @@ public class PowerMonitor {
     }
 
     private static int getRemainingBatteryCapacityImpl() {
-        return ((BatteryManager)
-                        ContextUtils.getApplicationContext()
-                                .getSystemService(Context.BATTERY_SERVICE))
-                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
+        BatteryManager batteryManager =
+                ContextUtils.getApplicationContext().getSystemService(BatteryManager.class);
+        // getSystemService() may return null, e.g. if the app's SELinux domain is not allowed to
+        // look up the battery services. Report 0 in that case.
+        if (batteryManager == null) return 0;
+        return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
     }
 
     @CalledByNative
