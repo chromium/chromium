@@ -126,6 +126,7 @@ Color ForcedColor(const ComputedStyle& originating_style,
 // Returns the UA default ‘color’ for the given |pseudo|.
 std::optional<Color> DefaultForegroundColor(
     const Document& document,
+    const ComputedStyle& originating_style,
     PseudoId pseudo,
     mojom::blink::ColorScheme color_scheme,
     bool preserve_privacy,
@@ -138,6 +139,14 @@ std::optional<Color> DefaultForegroundColor(
             document.GetColorProviderForPainting(color_scheme), false);
       }
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
+        if (originating_style.VisitedDependentColor(GetCSSPropertyColor())
+                .Alpha() == 0) {
+          return document.GetFrame()->Selection().FrameIsFocusedAndActive()
+                     ? LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
+                           color_scheme)
+                     : LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
+                           color_scheme);
+        }
         return std::nullopt;
       }
       if (document.GetFrame()->Selection().FrameIsFocusedAndActive()) {
@@ -222,8 +231,9 @@ std::optional<Color> DefaultHighlightColor(
                                   search_text_is_active_match);
   }
   DCHECK(property.IDEquals(CSSPropertyID::kColor));
-  return DefaultForegroundColor(document, pseudo, color_scheme,
-                                preserve_privacy, search_text_is_active_match);
+  return DefaultForegroundColor(document, originating_style, pseudo,
+                                color_scheme, preserve_privacy,
+                                search_text_is_active_match);
 }
 
 bool UseForcedColors(const Document& document,

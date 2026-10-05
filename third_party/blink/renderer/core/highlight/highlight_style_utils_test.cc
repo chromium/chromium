@@ -68,6 +68,40 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
   EXPECT_TRUE(paint_style.shadow);
 }
 
+TEST_F(HighlightStyleUtilsTest, TransparentTextGetsSelectionForeground) {
+  SimRequest main_resource("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  main_resource.Complete(R"HTML(
+    <!doctype html>
+    <div style="color: transparent">Select me</div>
+  )HTML");
+
+  Compositor().BeginFrame();
+  auto* div =
+      To<HTMLDivElement>(GetDocument().QuerySelector(AtomicString("div")));
+  Node* text = div->firstChild();
+  const ComputedStyle& text_style = text->GetLayoutObject()->StyleRef();
+  const ComputedStyle* pseudo_style =
+      HighlightStyleUtils::HighlightPseudoStyle(text_style, kPseudoIdSelection);
+
+  PaintController controller;
+  GraphicsContext context(controller);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
+  TextPaintStyle paint_style =
+      HighlightStyleUtils::HighlightPaintingStyle(
+          GetDocument(), text_style, pseudo_style, text, kPseudoIdSelection,
+          TextPaintStyle(), paint_info, SearchTextIsActiveMatch::kNo)
+          .style;
+
+  EXPECT_TRUE(paint_style.fill_color ==
+                  LayoutTheme::GetTheme().ActiveSelectionForegroundColor(
+                      mojom::blink::ColorScheme::kLight) ||
+              paint_style.fill_color ==
+                  LayoutTheme::GetTheme().InactiveSelectionForegroundColor(
+                      mojom::blink::ColorScheme::kLight));
+}
+
 TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
   // Test that we respect the author's colors in ::selection
   SimRequest main_resource("https://example.com/test.html", "text/html");
