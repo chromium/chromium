@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -31,6 +32,35 @@ enum class WebViewAutoPlayProgress {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
 
 }  // namespace
+
+GlicGuestObserver::Metrics::Metrics() = default;
+GlicGuestObserver::Metrics::~Metrics() = default;
+
+void GlicGuestObserver::Metrics::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!features::IsGlicNoWebviewEnabled()) {
+    return;
+  }
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      navigation_handle->HasCommitted() &&
+      !navigation_handle->IsSameDocument() &&
+      !navigation_handle->IsErrorPage() && navigation_commit_time_.is_null()) {
+    navigation_commit_time_ = base::TimeTicks::Now();
+    base::UmaHistogramTimes("Glic.Contents.NavigationCommitTime",
+                            navigation_commit_time_ - creation_time_);
+  }
+}
+
+void GlicGuestObserver::Metrics::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  if (!features::IsGlicNoWebviewEnabled()) {
+    return;
+  }
+  if (!navigation_commit_time_.is_null() && !has_recorded_load_complete_) {
+    has_recorded_load_complete_ = true;
+    base::UmaHistogramTimes("Glic.Contents.LoadCompleteTime",
+                            base::TimeTicks::Now() - navigation_commit_time_);
+  }
+}
 
 void GrantAutoplayPermissions(content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame()) {
@@ -83,6 +113,15 @@ void GlicGuestObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   GrantAutoplayPermissions(navigation_handle);
   MaybeEnableMojoJsBindings(navigation_handle);
+}
+
+void GlicGuestObserver::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  metrics_.DidFinishNavigation(navigation_handle);
+}
+
+void GlicGuestObserver::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  metrics_.DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void GlicGuestObserver::MaybeEnableMojoJsBindings(

@@ -6,16 +6,46 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/glic/host/glic_web_client_manager.h"
+#include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/test/navigation_simulator.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace glic {
 namespace {
+
+class FakeWebContentsManager : public GlicWebContentsManager {
+ public:
+  FakeWebContentsManager() = default;
+  ~FakeWebContentsManager() override = default;
+
+  void AttachToHost(Host* host) override {}
+  void AttachModalDialogManagerDelegate(
+      ScopedModalDialogManagerDelegate& delegate) override {}
+  void SetVisibility(content::Visibility visibility) override {}
+  content::WebContents* active_web_contents() const override { return nullptr; }
+  content::WebContents* guest_contents() const override { return nullptr; }
+  void OnActuatingChanged(bool actuating) override {}
+  void OnTaskTabsVisibilityChanged(bool has_visible_tab) override {}
+  base::CallbackListSubscription RegisterWebContentsChangedCallback(
+      WebContentsChangedCallback callback) override {
+    return base::CallbackListSubscription();
+  }
+  GlicWebClientManager& web_client_manager() override {
+    return web_client_manager_;
+  }
+  bool ShouldReloadOnShow() const override { return false; }
+
+ private:
+  GlicWebClientManager web_client_manager_;
+};
 
 class GlicGuestObserverTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -84,6 +114,104 @@ TEST_F(GlicGuestObserverTest, DoesNotGrantAutoplayForSubframe) {
   subframe_simulator->Commit();
 
   histogram_tester.ExpectTotalCount("Glic.Host.WebView.AutoPlay", 0);
+}
+
+TEST_F(GlicGuestObserverTest, RecordsMetricsWhenNoWebviewEnabled) {
+  base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+
+  base::HistogramTester histogram_tester;
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+
+  // Subsequent navigation or reload must not record again.
+  content::NavigationSimulator::Reload(web_contents());
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+}
+
+TEST_F(GlicGuestObserverTest, DoesNotRecordMetricsWhenNoWebviewDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kGlicNoWebview);
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+
+  base::HistogramTester histogram_tester;
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 0);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 0);
+}
+
+TEST_F(GlicGuestObserverTest, DoesNotRecordMetricsForSubframeNavigation) {
+  base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+
+  base::HistogramTester histogram_tester;
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+  auto subframe_simulator =
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL("https://gemini.google.com/subframe"), subframe);
+  subframe_simulator->Commit();
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 0);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 0);
+}
+
+TEST_F(GlicGuestObserverTest, DoesNotRecordMetricsForSameDocument) {
+  base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+
+  base::HistogramTester histogram_tester;
+  // Initial cross-document navigation.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+
+  // Same-document navigation (e.g. fragment link).
+  auto same_doc = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com/app#hash"), main_rfh());
+  same_doc->CommitSameDocument();
+
+  // Counts should remain 1.
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+}
+
+TEST_F(GlicGuestObserverTest,
+       DoesNotRecordMetricsForErrorPageAndRecoversOnSuccessfulReload) {
+  base::test::ScopedFeatureList feature_list(features::kGlicNoWebview);
+  FakeWebContentsManager contents_manager;
+  GlicGuestObserver::CreateForWebContents(*web_contents(), contents_manager);
+
+  base::HistogramTester histogram_tester;
+  // Simulate navigation failing and committing an error page.
+  auto failed_nav = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://gemini.google.com/app"), web_contents());
+  failed_nav->Fail(net::ERR_CONNECTION_FAILED);
+  failed_nav->CommitErrorPage();
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 0);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 0);
+
+  // Subsequent successful navigation on reload should be recorded.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://gemini.google.com/app"));
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
 }
 
 }  // namespace

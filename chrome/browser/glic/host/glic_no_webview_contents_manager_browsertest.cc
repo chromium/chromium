@@ -1273,4 +1273,29 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
                                  ClientLoadErrorReason::kGuestProcessGone);
   }));
 }
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewContentsManagerBrowserTest,
+                       RecordsNavigationCommitAndLoadCompleteMetricsOnce) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+
+  // Trigger a second navigation on the guest WebContents.
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  content::WebContents* guest_contents = manager->guest_contents();
+  ASSERT_TRUE(guest_contents);
+  guest_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                         /*check_for_repost=*/false);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
+
+  // The metrics must not be recorded again for subsequent navigations.
+  histogram_tester.ExpectTotalCount("Glic.Contents.NavigationCommitTime", 1);
+  histogram_tester.ExpectTotalCount("Glic.Contents.LoadCompleteTime", 1);
+}
+
 }  // namespace glic

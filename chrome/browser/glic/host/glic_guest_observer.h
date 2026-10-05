@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -44,8 +45,25 @@ class GlicGuestObserver
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
+  class Metrics {
+   public:
+    Metrics();
+    ~Metrics();
+
+    void DidFinishNavigation(content::NavigationHandle* navigation_handle);
+    void DocumentOnLoadCompletedInPrimaryMainFrame();
+
+   private:
+    const base::TimeTicks creation_time_ = base::TimeTicks::Now();
+    base::TimeTicks navigation_commit_time_;
+    bool has_recorded_load_complete_ = false;
+  };
+
   explicit GlicGuestObserver(content::WebContents& web_contents,
                              GlicWebContentsManager& contents_manager);
   friend class content::WebContentsUserData<GlicGuestObserver>;
@@ -57,6 +75,7 @@ class GlicGuestObserver
 
   raw_ref<GlicWebContentsManager> contents_manager_;
   raw_ptr<Host> host_ = nullptr;
+  Metrics metrics_;
 };
 
 }  // namespace glic
