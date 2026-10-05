@@ -5,7 +5,9 @@
 #include "chrome/browser/speech/on_device_speech_recognition_impl.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -15,9 +17,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,8 +30,12 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/document_user_data.h"
@@ -39,6 +46,8 @@
 #include "content/public/test/browsing_data_remover_test_util.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognizer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -50,6 +59,42 @@ constexpr char kEnglishLanguageCode[] = "en-US";
 constexpr char kEnglishAlternateLocaleCode[] = "en-AU";
 constexpr char kFrenchLanguageCode[] = "fr-FR";
 constexpr char kInvalidLanguageCode[] = "xx-XX";
+
+class TestOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
+ public:
+  explicit TestOptimizationGuideKeyedService(content::BrowserContext* context)
+      : OptimizationGuideKeyedService(context) {}
+  ~TestOptimizationGuideKeyedService() override = default;
+
+  optimization_guide::OnDeviceModelEligibilityReason
+  GetOnDeviceModelEligibility(
+      optimization_guide::mojom::OnDeviceFeature feature) override {
+    return optimization_guide::OnDeviceModelEligibilityReason::
+        kModelToBeInstalled;
+  }
+
+  void GetOnDeviceModelEligibilityAsync(
+      optimization_guide::mojom::OnDeviceFeature feature,
+      const on_device_model::Capabilities& capabilities,
+      base::OnceCallback<
+          void(optimization_guide::OnDeviceModelEligibilityReason)> callback)
+      override {
+    std::move(callback).Run(optimization_guide::OnDeviceModelEligibilityReason::
+                                kModelToBeInstalled);
+  }
+
+  std::unique_ptr<optimization_guide::ModelBrokerClient>
+  CreateModelBrokerClient() override {
+    mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
+    model_broker_receivers_.push_back(remote.InitWithNewPipeAndPassReceiver());
+    return std::make_unique<optimization_guide::ModelBrokerClient>(
+        std::move(remote), nullptr);
+  }
+
+ private:
+  std::vector<mojo::PendingReceiver<optimization_guide::mojom::ModelBroker>>
+      model_broker_receivers_;
+};
 
 }  // namespace
 
@@ -75,6 +120,7 @@ class OnDeviceSpeechRecognitionImplBrowserTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest
   void SetUpLocalStatePrefService(PrefService* local_state) override;
+  void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
   void OnDeviceWebSpeechAvailableCallback(
@@ -91,16 +137,34 @@ class OnDeviceSpeechRecognitionImplBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::CallbackListSubscription create_services_subscription_;
   media::mojom::AvailabilityStatus availability_status_;
 };
 
 void OnDeviceSpeechRecognitionImplBrowserTest::SetUpLocalStatePrefService(
     PrefService* local_state) {
   InProcessBrowserTest::SetUpLocalStatePrefService(local_state);
-  local_state->SetBoolean(
-      optimization_guide::model_execution::prefs::localstate::
-          kOnDeviceAiUserSettingsEnabled,
-      true);
+  local_state->SetBoolean(optimization_guide::model_execution::prefs::
+                              localstate::kOnDeviceAiUserSettingsEnabled,
+                          true);
+}
+
+void OnDeviceSpeechRecognitionImplBrowserTest::
+    SetUpInProcessBrowserTestFixture() {
+  create_services_subscription_ =
+      BrowserContextDependencyManager::GetInstance()
+          ->RegisterCreateServicesCallbackForTesting(
+              base::BindRepeating([](content::BrowserContext* context) {
+                OptimizationGuideKeyedServiceFactory::GetInstance()
+                    ->SetTestingFactory(
+                        context,
+                        base::BindRepeating(
+                            [](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+                              return std::make_unique<
+                                  TestOptimizationGuideKeyedService>(context);
+                            }));
+              }));
 }
 
 void OnDeviceSpeechRecognitionImplBrowserTest::SetUpOnMainThread() {
@@ -746,14 +810,8 @@ class OnDeviceSpeechRecognitionImplQualityBrowserTest
   }
 };
 
-// TODO(crbug.com/550698030): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_AvailableAndInstall DISABLED_AvailableAndInstall
-#else
-#define MAYBE_AvailableAndInstall AvailableAndInstall
-#endif
 IN_PROC_BROWSER_TEST_P(OnDeviceSpeechRecognitionImplQualityBrowserTest,
-                       MAYBE_AvailableAndInstall) {
+                       AvailableAndInstall) {
   NavigateToUrl("foo.com");
   bool gemini_enabled = GetParam();
   media::mojom::AvailabilityStatus expected_availability =
@@ -816,7 +874,9 @@ class OnDeviceSpeechRecognitionImplSpeechRecognitionSmallExpertModelBrowserTest
   OnDeviceSpeechRecognitionImplSpeechRecognitionSmallExpertModelBrowserTest()
       : OnDeviceSpeechRecognitionImplBrowserTest(
             {media::kOnDeviceWebSpeech,
-             media::kOnDeviceWebSpeechSmallExpertModel}) {}
+             media::kOnDeviceWebSpeechSmallExpertModel},
+            {media::kPreemptiveSodaDownload,
+             media::kOnDeviceWebSpeechSmallExpertModelMultiLanguage}) {}
 };
 
 class

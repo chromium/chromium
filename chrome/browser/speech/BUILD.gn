@@ -328,6 +328,8 @@ if (!is_android) {
         sources += [ "on_device_speech_recognition_impl_browsertest.cc" ]
         deps += [
           "//chrome/browser/browsing_data:constants",
+          "//chrome/browser/optimization_guide",
+          "//components/keyed_service/content",
           "//components/live_caption:utils",
           "//components/soda",
         ]
