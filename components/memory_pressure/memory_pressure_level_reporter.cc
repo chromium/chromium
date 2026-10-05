@@ -82,7 +82,7 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
 
     base::UmaHistogramCustomTimes(histogram_name,
                                   now - current_pressure_level_begin_,
-                                  base::Seconds(1), base::Minutes(10), 50);
+                                  base::Seconds(1), base::Hours(12), 100);
   }
 
   if (new_level != current_pressure_level_) {

@@ -124,7 +124,7 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
 
   // No transition reported yet (just entered MODERATE).
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", 0);
+      "Memory.PressureWindowDuration2.ModerateToCritical", 0);
 
   // Advance clock in MODERATE.
   task_environment.FastForwardBy(base::Seconds(15));
@@ -136,7 +136,8 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
 
   // Should report ModerateToCritical (15s) from OS signal.
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", base::Seconds(15), 1);
+      "Memory.PressureWindowDuration2.ModerateToCritical", base::Seconds(15),
+      1);
 
   // 3. Now simulate disk pressure while OS is CRITICAL.
   // Disk becomes low (should vote CRITICAL, but OS is already CRITICAL).
@@ -154,9 +155,9 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   // No transition should be reported because OS level didn't change (remained
   // CRITICAL).
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.CriticalToNone", 0);
+      "Memory.PressureWindowDuration2.CriticalToNone", 0);
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.CriticalToModerate", 0);
+      "Memory.PressureWindowDuration2.CriticalToModerate", 0);
 
   // Advance clock.
   task_environment.FastForwardBy(base::Seconds(10));
@@ -167,7 +168,7 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
 
   // Should report CriticalToNone (20s from step 3-4 + 10s from step 4-5 = 30s).
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToNone", base::Seconds(30), 1);
+      "Memory.PressureWindowDuration2.CriticalToNone", base::Seconds(30), 1);
 }
 
 }  // namespace mac

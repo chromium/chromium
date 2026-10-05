@@ -33,7 +33,7 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
 #if BUILDFLAG(IS_MAC)
                       std::nullopt
 #else
-                      "Memory.PressureWindowDuration."
+                      "Memory.PressureWindowDuration2."
 #endif
       ) {
   CHECK(!g_monitor);

@@ -2769,14 +2769,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.PressureWindowDuration.{Type}" units="ms"
+<histogram name="Memory.PressureWindowDuration2.{Type}" units="ms"
     expires_after="2027-02-07">
   <owner>fdoray@chromium.org</owner>
+  <owner>andresrperez@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The time spent in each of the memory pressure state. Recorded when
-    transitioning from a memory pressure state to the other and when exiting
-    memory pressure.
+    The time spent in each memory pressure state. Recorded when transitioning
+    from one memory pressure state to another and when exiting memory pressure.
+
+    Replaces Memory.PressureWindowDuration.{Type} with an expanded maximum bound
+    of 12 hours (100 buckets) following the fix in crrev.com/c/8394321, which
+    stopped periodic 5-minute flushes from artificially resetting the episode
+    clock.
   </summary>
   <token key="Type">
     <variant name="CriticalToModerate"/>

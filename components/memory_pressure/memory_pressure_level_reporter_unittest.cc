@@ -27,27 +27,29 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDuration) {
   task_environment.AdvanceClock(base::Seconds(12));
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToNone", base::Seconds(12), 1);
+      "Memory.PressureWindowDuration2.ModerateToNone", base::Seconds(12), 1);
 
   // Moderate -> Critical.
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   task_environment.AdvanceClock(base::Seconds(20));
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", base::Seconds(20), 1);
+      "Memory.PressureWindowDuration2.ModerateToCritical", base::Seconds(20),
+      1);
 
   // Critical -> None
   task_environment.AdvanceClock(base::Seconds(25));
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToNone", base::Seconds(25), 1);
+      "Memory.PressureWindowDuration2.CriticalToNone", base::Seconds(25), 1);
 
   // Critical -> Moderate
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment.AdvanceClock(base::Seconds(27));
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_MODERATE);
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToModerate", base::Seconds(27), 1);
+      "Memory.PressureWindowDuration2.CriticalToModerate", base::Seconds(27),
+      1);
 }
 
 TEST(MemoryPressureLevelReporterTest,
@@ -69,22 +71,29 @@ TEST(MemoryPressureLevelReporterTest,
 
   // Moderate -> Critical.
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  // The full 12 minutes must be reported.
+  // The full 12 minutes must be reported in its own interior bucket (not
+  // collapsed into an overflow bucket with multi-hour durations).
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", base::Minutes(12), 1);
+      "Memory.PressureWindowDuration2.ModerateToCritical", base::Minutes(12),
+      1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Memory.PressureWindowDuration2.ModerateToCritical", base::Hours(2), 0);
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", 1);
+      "Memory.PressureWindowDuration2.ModerateToCritical", 1);
 
-  // Fast forward 8 minutes in CRITICAL (periodic timer fires at 5 min).
-  task_environment.FastForwardBy(base::Minutes(8));
+  // Fast forward 2 hours in CRITICAL (periodic timer fires every 5 min).
+  task_environment.FastForwardBy(base::Hours(2));
 
   // Critical -> None.
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_NONE);
-  // The full 8 minutes must be reported.
+  // The full 2 hours must be reported in its own interior bucket (distinct
+  // from the 12-hour overflow bucket).
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.CriticalToNone", base::Minutes(8), 1);
+      "Memory.PressureWindowDuration2.CriticalToNone", base::Hours(2), 1);
+  histogram_tester.ExpectTimeBucketCount(
+      "Memory.PressureWindowDuration2.CriticalToNone", base::Hours(12), 0);
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.CriticalToNone", 1);
+      "Memory.PressureWindowDuration2.CriticalToNone", 1);
 
   // Verify time-in-state accumulation in Memory.PressureLevel2.
   histogram_tester.ExpectBucketCount(
@@ -94,7 +103,7 @@ TEST(MemoryPressureLevelReporterTest,
   histogram_tester.ExpectBucketCount(
       "Memory.PressureLevel2",
       static_cast<int>(base::MEMORY_PRESSURE_LEVEL_CRITICAL),
-      base::Minutes(8).InSeconds());
+      base::Hours(2).InSeconds());
 }
 
 TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogram) {
@@ -281,7 +290,7 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
 
   // This transition should NOT be reported because is_disk_pressure_ is true.
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", 0);
+      "Memory.PressureWindowDuration2.ModerateToCritical", 0);
 
   // Critical (simulated) -> None.
   task_environment.AdvanceClock(base::Seconds(20));
@@ -290,7 +299,7 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
   // This transition should NOT be reported because is_disk_pressure_ was true
   // during it.
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.CriticalToNone", 0);
+      "Memory.PressureWindowDuration2.CriticalToNone", 0);
 
   // Now set disk pressure inactive.
   reporter.UpdateDiskPressureState(false, base::MEMORY_PRESSURE_LEVEL_NONE);
@@ -302,7 +311,8 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
 
   // This transition SHOULD be reported!
   histogram_tester.ExpectTimeBucketCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", base::Seconds(15), 1);
+      "Memory.PressureWindowDuration2.ModerateToCritical", base::Seconds(15),
+      1);
 }
 
 TEST(MemoryPressureLevelReporterTest, DiskSpacePressureBucket) {
@@ -375,7 +385,7 @@ TEST(MemoryPressureLevelReporterTest, Customization) {
   histogram_tester.ExpectTotalCount("Memory.PressureLevel2", 0);
   // Verify no transition was reported.
   histogram_tester.ExpectTotalCount(
-      "Memory.PressureWindowDuration.ModerateToCritical", 0);
+      "Memory.PressureWindowDuration2.ModerateToCritical", 0);
 }
 
 }  // namespace memory_pressure
