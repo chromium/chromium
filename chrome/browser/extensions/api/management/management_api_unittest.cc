@@ -748,6 +748,44 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlocklisted) {
     EXPECT_FALSE(registry()->disabled_extensions().Contains(id));
   }
 }
+// Tests that calling extensions cannot enable extensions disabled due to
+// being not allowlisted.
+TEST_F(ManagementApiUnitTest, SetEnabled_NotAllowlistedExtension) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Target").Build();
+  registrar()->AddExtension(extension.get());
+  scoped_refptr<const Extension> caller_extension =
+      ExtensionBuilder("Caller").AddAPIPermission("management").Build();
+  registrar()->AddExtension(caller_extension.get());
+
+  const ExtensionId& extension_id = extension->id();
+  registrar()->DisableExtension(
+      extension_id,
+      DisableReasonSet({disable_reason::DISABLE_NOT_ALLOWLISTED}));
+
+  base::ListValue enable_args;
+  enable_args.Append(extension_id);
+  enable_args.Append(true);
+
+  // An extension cannot re-enable an extension disabled by allowlist
+  // enforcement.
+  {
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    function->set_extension(caller_extension);
+    EXPECT_FALSE(RunFunction(function, enable_args));
+    EXPECT_EQ(ErrorUtils::FormatErrorMessage(
+                  constants::kCannotReEnableEnhancedSafeBrowsingDisallowedError,
+                  extension_id),
+              function->GetError());
+    EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
+  }
+
+  // Without a calling extension (e.g. WebUI), re-enabling succeeds.
+  {
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    EXPECT_TRUE(RunFunction(function, enable_args)) << function->GetError();
+    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
+  }
+}
 
 TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
   using ExtensionInfo = api::management::ExtensionInfo;

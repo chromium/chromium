@@ -13,16 +13,24 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/api/management/management_api.h"
+#include "extensions/browser/api/management/management_api_constants.h"
+#include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/crx_installer.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/event_router.h"
+#include "extensions/browser/event_router_factory.h"
+#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/test_blocklist.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -578,6 +586,124 @@ TEST_F(ExtensionAllowlistUnitTest,
   EXPECT_TRUE(IsEnabled(kExtensionId1));
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
+}
+// Tests that an extension disabled for not being allowlisted cannot be enabled
+// via the management API by another extension.
+TEST_F(ExtensionAllowlistUnitTest,
+       ManagementApiCannotEnableNotAllowlistedExtension) {
+  CreateExtensionService(/*enhanced_protection_enabled=*/true);
+
+  // Set up the Management API and EventRouter (required by
+  // ManagementSetEnabledFunction).
+  EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(
+          [](content::BrowserContext* ctx) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<EventRouter>(ctx, ExtensionPrefs::Get(ctx));
+          }));
+  ManagementAPI::GetFactoryInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(
+          [](content::BrowserContext* ctx) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<ManagementAPI>(ctx);
+          }));
+
+  service()->Init();
+
+  // Extension (kExtensionId1) is installed and enabled. Safe Browsing reports
+  // it is not on the allowlist, so it is disabled.
+  EXPECT_TRUE(IsEnabled(kExtensionId1));
+  PerformActionBasedOnOmahaAttributes(kExtensionId1,
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+  EXPECT_TRUE(IsDisabled(kExtensionId1));
+  EXPECT_THAT(
+      extension_prefs()->GetDisableReasons(kExtensionId1),
+      testing::UnorderedElementsAre(disable_reason::DISABLE_NOT_ALLOWLISTED));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+
+  // A calling extension holding the management permission attempts to
+  // re-enable the disabled extension.
+  scoped_refptr<const Extension> caller_extension =
+      ExtensionBuilder("CallerExt")
+          .AddAPIPermission("management")
+          .SetLocation(mojom::ManifestLocation::kInternal)
+          .Build();
+  registrar()->AddExtension(caller_extension.get());
+
+  {
+    ScopedTestDialogAutoConfirm auto_cancel(
+        ScopedTestDialogAutoConfirm::CANCEL);
+
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    function->set_extension(caller_extension);
+    base::ListValue args;
+    args.Append(kExtensionId1);
+    args.Append(true);
+    bool result =
+        api_test_utils::RunFunction(function, std::move(args), profile());
+    EXPECT_FALSE(result);
+    EXPECT_EQ(ErrorUtils::FormatErrorMessage(
+                  extension_management_api_constants::
+                      kCannotReEnableEnhancedSafeBrowsingDisallowedError,
+                  kExtensionId1),
+              function->GetError());
+  }
+
+  // Calling with a user gesture by an extension should also be rejected.
+  {
+    ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    function->set_extension(caller_extension);
+    base::ListValue args;
+    args.Append(kExtensionId1);
+    args.Append(true);
+    bool result =
+        api_test_utils::RunFunction(function, std::move(args), profile());
+    EXPECT_FALSE(result);
+    EXPECT_EQ(ErrorUtils::FormatErrorMessage(
+                  extension_management_api_constants::
+                      kCannotReEnableEnhancedSafeBrowsingDisallowedError,
+                  kExtensionId1),
+              function->GetError());
+  }
+
+  // The extension must remain disabled and not acknowledged by user.
+  EXPECT_TRUE(IsDisabled(kExtensionId1));
+  EXPECT_THAT(
+      extension_prefs()->GetDisableReasons(kExtensionId1),
+      testing::UnorderedElementsAre(disable_reason::DISABLE_NOT_ALLOWLISTED));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+
+  // Re-enabling from the extensions management page (where caller extension is
+  // null) represents user acknowledgment and should succeed.
+  {
+    auto function = base::MakeRefCounted<ManagementSetEnabledFunction>();
+    base::ListValue args;
+    args.Append(kExtensionId1);
+    args.Append(true);
+    bool result =
+        api_test_utils::RunFunction(function, std::move(args), profile());
+    EXPECT_TRUE(result) << function->GetError();
+  }
+
+  EXPECT_TRUE(IsEnabled(kExtensionId1));
+  EXPECT_TRUE(extension_prefs()->GetDisableReasons(kExtensionId1).empty());
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+
+  // Once acknowledged by user, subsequent Omahalist checks do not disable it.
+  PerformActionBasedOnOmahaAttributes(kExtensionId1,
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/true);
+  PerformActionBasedOnOmahaAttributes(kExtensionId1,
+                                      /*is_malware=*/false,
+                                      /*is_allowlisted=*/false);
+  EXPECT_TRUE(IsEnabled(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 }
 
 TEST_F(ExtensionAllowlistUnitTest, ReenabledExtensionsAreNotReenforced) {

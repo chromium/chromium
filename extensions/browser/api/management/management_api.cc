@@ -503,6 +503,15 @@ ExtensionFunction::ResponseAction ManagementSetEnabledFunction::Run() {
     return RespondNow(Error(keys::kUserCantModifyError, extension_id_));
   }
 
+  if (extension() &&
+      ExtensionPrefs::Get(browser_context())
+          ->HasDisableReason(extension_id_,
+                             disable_reason::DISABLE_NOT_ALLOWLISTED)) {
+    return RespondNow(
+        Error(keys::kCannotReEnableEnhancedSafeBrowsingDisallowedError,
+              extension_id_));
+  }
+
   // Start the various checks needed before enabling an extension.
   AddRef();  // Balanced in FinishEnable().
   CheckRequirements(*target_extension);

@@ -62,6 +62,9 @@ inline constexpr char kGenerateAppForLinkInstallError[] =
 inline constexpr char kNotAllowedInKioskError[] = "Not allowed in kiosk.";
 inline constexpr char kCannotChangePrimaryKioskAppError[] =
     "Cannot change the primary kiosk app state.";
+inline constexpr char kCannotReEnableEnhancedSafeBrowsingDisallowedError[] =
+    "Cannot re-enable extension * because it was disabled by Enhanced Safe "
+    "Browsing. The user must re-enable it manually from chrome://extensions.";
 inline constexpr char kInstallReplacementWebAppInvalidWebAppError[] =
     "Web app is not a valid installable web app.";
 inline constexpr char kInstallReplacementWebAppInvalidContextError[] =
