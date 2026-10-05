@@ -142,6 +142,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h"
 #include "third_party/blink/public/common/page/launching_process_state.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/cpu_performance.mojom.h"
@@ -911,6 +912,11 @@ void RenderThreadImpl::RegisterSchemes() {
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(chrome_scheme);
     WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
         chrome_untrusted_scheme);
+  }
+  for (const std::string& scheme :
+       blink::CommonSchemeRegistry::CodeCacheAllowedSchemes()) {
+    WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
+        WebString::FromAscii(scheme));
   }
 
   if (base::FeatureList::IsEnabled(features::kWebUIBundledCodeCache)) {

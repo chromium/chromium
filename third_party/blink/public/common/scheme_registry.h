@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SCHEME_REGISTRY_H_
 
 #include <string>
+#include <unordered_set>
 
 #include "third_party/blink/public/common/common_export.h"
 
@@ -32,6 +33,15 @@ class BLINK_COMMON_EXPORT CommonSchemeRegistry {
   static void RemoveURLSchemeAsExtensionForTest(const std::string& scheme);
   static bool IsExtensionScheme(const std::string& scheme);
   static bool IsIsolatedAppScheme(const std::string& scheme);
+
+  // Embedder-defined schemes whose scripts may use the generated code cache,
+  // in addition to http(s) and the WebUI schemes. Entries are validated
+  // against a source hash like the WebUI schemes.
+  static void RegisterURLSchemeAsSupportingCodeCache(const std::string& scheme);
+  static void RemoveURLSchemeAsSupportingCodeCacheForTest(
+      const std::string& scheme);
+  static bool IsCodeCacheAllowedScheme(const std::string& scheme);
+  static const std::unordered_set<std::string>& CodeCacheAllowedSchemes();
 };
 
 }  // namespace blink

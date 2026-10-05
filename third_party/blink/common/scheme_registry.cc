@@ -23,6 +23,11 @@ URLSchemesSet& GetMutableIsolatedAppSchemes() {
   return *iwa_schemes;
 }
 
+URLSchemesSet& GetMutableCodeCacheAllowedSchemes() {
+  static base::NoDestructor<URLSchemesSet> code_cache_schemes;
+  return *code_cache_schemes;
+}
+
 const URLSchemesSet& GetExtensionSchemes() {
   return GetMutableExtensionSchemes();
 }
@@ -62,6 +67,29 @@ bool CommonSchemeRegistry::IsIsolatedAppScheme(const std::string& scheme) {
   }
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
   return GetIsolatedAppSchemes().contains(scheme);
+}
+
+void CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(
+    const std::string& scheme) {
+  DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
+  GetMutableCodeCacheAllowedSchemes().insert(scheme);
+}
+
+void CommonSchemeRegistry::RemoveURLSchemeAsSupportingCodeCacheForTest(
+    const std::string& scheme) {
+  GetMutableCodeCacheAllowedSchemes().erase(scheme);
+}
+
+bool CommonSchemeRegistry::IsCodeCacheAllowedScheme(const std::string& scheme) {
+  if (scheme.empty()) {
+    return false;
+  }
+  DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
+  return GetMutableCodeCacheAllowedSchemes().contains(scheme);
+}
+
+const URLSchemesSet& CommonSchemeRegistry::CodeCacheAllowedSchemes() {
+  return GetMutableCodeCacheAllowedSchemes();
 }
 
 }  // namespace blink

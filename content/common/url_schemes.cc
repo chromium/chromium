@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -83,6 +84,14 @@ void RegisterContentSchemes(bool should_lock_registry) {
 
   for (auto& scheme : schemes.isolated_app_schemes) {
     blink::CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp(scheme.c_str());
+  }
+
+  for (auto& scheme : schemes.code_cache_schemes) {
+    CHECK(scheme != url::kHttpScheme && scheme != url::kHttpsScheme &&
+          scheme != kChromeUIScheme && scheme != kChromeUIUntrustedScheme)
+        << scheme;
+    CHECK(std::ranges::contains(schemes.standard_schemes, scheme)) << scheme;
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(scheme);
   }
 
   schemes.no_access_schemes.push_back(kChromeErrorScheme);

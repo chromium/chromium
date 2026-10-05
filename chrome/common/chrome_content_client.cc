@@ -213,6 +213,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
+  schemes->code_cache_schemes.push_back(extensions::kExtensionScheme);
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

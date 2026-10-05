@@ -70,11 +70,11 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
       ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
           render_process_id);
 
-  // Code caching is only allowed for http(s) and chrome/chrome-untrusted
-  // scripts. Furthermore, there is no way for http(s) pages to load chrome or
-  // chrome-untrusted scripts, so any http(s) page attempting to store data
-  // about a chrome or chrome-untrusted script would be an indication of
-  // suspicious activity.
+  // Code caching is only allowed for http(s), chrome/chrome-untrusted and
+  // embedder-registered schemes (ContentClient::Schemes::code_cache_schemes).
+  // There is no way for http(s) pages to load chrome or chrome-untrusted
+  // scripts, so any http(s) page attempting to store data about a chrome or
+  // chrome-untrusted script would be an indication of suspicious activity.
   if (resource_url.SchemeIs(content::kChromeUIScheme) ||
       resource_url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     if (!process_lock.IsLockedToSite()) {
@@ -95,9 +95,14 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
     return process_lock.MatchesScheme(content::kChromeUIScheme) ||
            process_lock.MatchesScheme(content::kChromeUIUntrustedScheme);
   }
-  if (resource_url.SchemeIsHTTPOrHTTPS() ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(
-          resource_url.GetScheme())) {
+  const bool is_embedder_scheme =
+      blink::CommonSchemeRegistry::IsCodeCacheAllowedScheme(
+          resource_url.GetScheme());
+  if (resource_url.SchemeIsHTTPOrHTTPS() || is_embedder_scheme) {
+    if (is_embedder_scheme && !process_lock.IsLockedToSite()) {
+      // As for WebUI above, this renderer isn't trusted enough to store data.
+      return false;
+    }
     if (process_lock.MatchesScheme(content::kChromeUIScheme) ||
         process_lock.MatchesScheme(content::kChromeUIUntrustedScheme)) {
       // It is possible for WebUI pages to include open-web content, but such
@@ -134,8 +139,8 @@ bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
 // key.
 // Case 4. a std::nullopt for PDF processes and origin-restricted sandboxed
 // iframes, to prevent them from accessing the cache of their hosting origins.
-// Case 5. origin_lock if the scheme of origin_lock is
-// Http/Https/chrome/chrome-untrusted.
+// Case 5. origin_lock if its scheme is http(s), chrome(-untrusted), or in
+// ContentClient::Schemes::code_cache_schemes (site/origin locks only).
 // Case 6. std::nullopt otherwise.
 std::optional<GURL> GetOriginLock(ChildProcessId render_process_id) {
   ProcessLock process_lock =
@@ -188,13 +193,18 @@ std::optional<GURL> GetOriginLock(ChildProcessId render_process_id) {
   // file:// URLs will have a "file:" process lock and would thus share a
   // cache across all file:// URLs. That would likely be ok for security, but
   // since this case is not performance sensitive we will keep things simple and
-  // limit the cache to http/https/chrome/chrome-untrusted processes.
+  // limit the cache to http/https/chrome/chrome-untrusted and
+  // embedder-registered schemes. Nothing is known about how an embedder's
+  // scheme maps to locks, so require a lock that is specific to a site. This
+  // is defense in depth: RegisterContentSchemes() CHECKs that those schemes are
+  // standard, so their locks should have a host.
   if (process_lock.MatchesScheme(url::kHttpScheme) ||
       process_lock.MatchesScheme(url::kHttpsScheme) ||
       process_lock.MatchesScheme(content::kChromeUIScheme) ||
       process_lock.MatchesScheme(content::kChromeUIUntrustedScheme) ||
-      blink::CommonSchemeRegistry::IsExtensionScheme(
-          process_lock.GetProcessLockURL().GetScheme())) {
+      (blink::CommonSchemeRegistry::IsCodeCacheAllowedScheme(
+           process_lock.GetProcessLockURL().GetScheme()) &&
+       process_lock.IsASiteOrOrigin())) {
     return process_lock.GetProcessLockURL();
   }
 
@@ -463,11 +473,11 @@ class CodeCacheWithSourceKeyedCacheHost : public CodeCacheHostImpl {
       // malicious, but we don't trust it enough to store data.
       return false;
     }
-    // Disable if `process_lock` is for WebUI or extensions.
+    // Disable if `process_lock` is for WebUI or an embedder scheme.
     return !process_lock.MatchesScheme(content::kChromeUIScheme) &&
            !process_lock.MatchesScheme(content::kChromeUIUntrustedScheme) &&
-           !blink::CommonSchemeRegistry::IsExtensionScheme(
-               std::string(process_lock.GetProcessLockURL().scheme()));
+           !blink::CommonSchemeRegistry::IsCodeCacheAllowedScheme(
+               process_lock.GetProcessLockURL().GetScheme());
   }
 };
 

@@ -42,8 +42,12 @@
 #include "net/base/features.h"
 #include "net/http/http_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -999,6 +1003,203 @@ TEST_P(CodeCacheHostImplTest, OpenWebObliviousToSourceKeyedWebUi) {
         run_loop.Quit();
       }));
 
+  run_loop.Run();
+}
+
+// A scheme registered through ContentClient::Schemes::code_cache_schemes is
+// cached under the requesting process's lock and not visible to the open web.
+TEST_P(CodeCacheHostImplTest, EmbedderCodeCacheScheme) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("trusted-app", url::SCHEME_WITH_HOST);
+  url::AddSecureScheme("trusted-app");
+  blink::CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(
+      "trusted-app");
+  absl::Cleanup unregister = [] {
+    blink::CommonSchemeRegistry::RemoveURLSchemeAsSupportingCodeCacheForTest(
+        "trusted-app");
+  };
+
+  const GURL resource_url("trusted-app://main/script.js");
+  const auto resource_data = base::byte_span_from_cstring("some data");
+
+  const ChildProcessId kAppProcessId(12);
+  const GURL app_site("trusted-app://main/");
+  SetupRendererWithLock(kAppProcessId, app_site);
+
+  const ChildProcessId kWebProcessId(13);
+  const GURL web_site("https://example.com/");
+  SetupRendererWithLock(kWebProcessId, web_site);
+
+  base::RunLoop run_loop;
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto app_host = CodeCacheHostImpl::Create(
+            kAppProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{app_site},
+                                     net::SchemefulSite{app_site}),
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(app_site)));
+        auto web_host = CodeCacheHostImpl::Create(
+            kWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_site},
+                                     net::SchemefulSite{web_site}),
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(web_site)));
+        base::test::TestFuture<base::Time, mojo_base::BigBuffer> fetch_future;
+
+        app_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(), mojo_base::BigBuffer(resource_data));
+        app_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                  resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(base::span(fetch_future.Get<1>()), resource_data);
+        fetch_future.Clear();
+
+        web_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                  resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+        EXPECT_EQ(fetch_future.Get<1>().size(), 0U);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// The reverse: what the open web stores for such a URL is not visible to the
+// process that is locked to the scheme.
+TEST_P(CodeCacheHostImplTest, EmbedderCodeCacheSchemeIgnoresOpenWebEntry) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("trusted-app", url::SCHEME_WITH_HOST);
+  url::AddSecureScheme("trusted-app");
+  blink::CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(
+      "trusted-app");
+  absl::Cleanup unregister = [] {
+    blink::CommonSchemeRegistry::RemoveURLSchemeAsSupportingCodeCacheForTest(
+        "trusted-app");
+  };
+
+  const GURL resource_url("trusted-app://main/script.js");
+  const auto resource_data = base::byte_span_from_cstring("some data");
+
+  const ChildProcessId kAppProcessId(12);
+  const GURL app_site("trusted-app://main/");
+  SetupRendererWithLock(kAppProcessId, app_site);
+
+  const ChildProcessId kWebProcessId(13);
+  const GURL web_site("https://example.com/");
+  SetupRendererWithLock(kWebProcessId, web_site);
+
+  base::RunLoop run_loop;
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto app_host = CodeCacheHostImpl::Create(
+            kAppProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{app_site},
+                                     net::SchemefulSite{app_site}),
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(app_site)));
+        auto web_host = CodeCacheHostImpl::Create(
+            kWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_site},
+                                     net::SchemefulSite{web_site}),
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(web_site)));
+        base::test::TestFuture<base::Time, mojo_base::BigBuffer> fetch_future;
+
+        web_host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(), mojo_base::BigBuffer(resource_data));
+        web_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                  resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(base::span(fetch_future.Get<1>()), resource_data);
+        fetch_future.Clear();
+
+        app_host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                                  resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+        EXPECT_EQ(fetch_future.Get<1>().size(), 0U);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_P(CodeCacheHostImplTest, EmbedderCodeCacheSchemeNeedsLockedProcess) {
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("trusted-app", url::SCHEME_WITH_HOST);
+  url::AddSecureScheme("trusted-app");
+  blink::CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(
+      "trusted-app");
+  absl::Cleanup unregister = [] {
+    blink::CommonSchemeRegistry::RemoveURLSchemeAsSupportingCodeCacheForTest(
+        "trusted-app");
+  };
+
+  const GURL resource_url("trusted-app://main/script.js");
+  const GURL app_site("trusted-app://main/");
+  // The lack of a SetupRendererWithLock call means this process is not locked.
+  const ChildProcessId kUnlockedProcessId(12);
+
+  base::RunLoop run_loop;
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto host = CodeCacheHostImpl::Create(
+            kUnlockedProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{app_site},
+                                     net::SchemefulSite{app_site}),
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(app_site)));
+        host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+        base::test::TestFuture<base::Time, mojo_base::BigBuffer> fetch_future;
+        host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                              resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+        EXPECT_EQ(fetch_future.Get<1>().size(), 0U);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_P(CodeCacheHostImplTest, EmbedderCodeCacheSchemeNeedsSiteLock) {
+  // RegisterContentSchemes() would CHECK on file:, which is not in
+  // Schemes::standard_schemes. Registering it directly skips that.
+  blink::CommonSchemeRegistry::RegisterURLSchemeAsSupportingCodeCache(
+      url::kFileScheme);
+  absl::Cleanup unregister = [] {
+    blink::CommonSchemeRegistry::RemoveURLSchemeAsSupportingCodeCacheForTest(
+        url::kFileScheme);
+  };
+
+  const GURL resource_url("file:///script.js");
+  const ChildProcessId kAppProcessId(12);
+  SetupRendererWithLock(kAppProcessId, resource_url);
+  const ProcessLock lock =
+      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+          kAppProcessId);
+  ASSERT_TRUE(lock.IsLockedToSite());
+  ASSERT_FALSE(lock.HasOpaqueOrigin());
+  ASSERT_FALSE(lock.IsASiteOrOrigin());
+
+  base::RunLoop run_loop;
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto host = CodeCacheHostImpl::Create(
+            kAppProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{resource_url},
+                                     net::SchemefulSite{resource_url}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(resource_url)));
+        host->DidGenerateCacheableMetadata(
+            blink::mojom::CodeCacheType::kJavascript, resource_url,
+            base::Time::Now(),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+        base::test::TestFuture<base::Time, mojo_base::BigBuffer> fetch_future;
+        host->FetchCachedCode(blink::mojom::CodeCacheType::kJavascript,
+                              resource_url, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get<0>(), base::Time());
+        EXPECT_EQ(fetch_future.Get<1>().size(), 0U);
+        run_loop.Quit();
+      }));
   run_loop.Run();
 }
 

@@ -477,8 +477,6 @@ void ChromeContentRendererClient::RenderThreadStarted() {
       WebString::FromAscii(webapps::kIsolatedAppScheme));
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
-  WebSecurityPolicy::RegisterURLSchemeAsCodeCacheWithHashing(
-      WebString::FromAscii(extensions::kExtensionScheme));
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
