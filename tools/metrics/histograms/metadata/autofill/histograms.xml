@@ -6768,10 +6768,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.OneTimeTokens.PhishGuard.CheckPerformed"
-    enum="Boolean" expires_after="2026-10-31">
-  <owner>luchenpeng@google.com</owner>
+    enum="Boolean" expires_after="2027-05-01">
   <owner>koerber@google.com</owner>
-  <owner>battre@chromium.org</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
   <summary>
     Whether a PhishGuard check was performed before offering to autofill
     one-time tokens. Recorded every time a one-time token field is detected.
@@ -6790,10 +6789,9 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.OneTimeTokens.PhishGuard.Verdict"
-    enum="OneTimeTokensPhishGuardVerdict" expires_after="2026-10-31">
-  <owner>luchenpeng@google.com</owner>
+    enum="OneTimeTokensPhishGuardVerdict" expires_after="2027-05-01">
   <owner>koerber@google.com</owner>
-  <owner>battre@chromium.org</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
   <summary>
     The verdict of a PhishGuard check before offering to autofill one-time
     tokens. Recorded every time a PhishGuard check is completed.
