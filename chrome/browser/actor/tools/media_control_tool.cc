@@ -4,6 +4,13 @@
 
 #include "chrome/browser/actor/tools/media_control_tool.h"
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <variant>
+
+#include "base/check.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -17,6 +24,23 @@
 namespace actor {
 
 namespace {
+
+struct MediaControlNameVisitor {
+  std::string_view operator()(const MediaControlTool::PlayMedia&) const {
+    return "PlayMedia";
+  }
+  std::string_view operator()(const MediaControlTool::PauseMedia&) const {
+    return "PauseMedia";
+  }
+  std::string_view operator()(const MediaControlTool::SeekMedia&) const {
+    return "SeekMedia";
+  }
+};
+
+std::string_view MediaControlName(
+    const MediaControlTool::MediaControl& media_control) {
+  return std::visit(MediaControlNameVisitor{}, media_control);
+}
 
 content::RenderFrameHost& GetPrimaryMainFrameOfTab(tabs::TabHandle tab_handle) {
   return *tab_handle.Get()->GetContents()->GetPrimaryMainFrame();
@@ -70,10 +94,9 @@ void MediaControlTool::Invoke(ToolCallback callback) {
           [media_session](const SeekMedia& arg) {
             // Seek to a specific time in the media.
             auto media_position = media_session->GetMediaSessionPosition();
-            auto seek_time = base::Milliseconds(arg.seek_time_milliseconds);
-            if (seek_time >= base::Seconds(0) && media_position &&
-                seek_time <= media_position->duration()) {
-              media_session->SeekTo(seek_time);
+            if (arg.seek_time >= base::Seconds(0) && media_position &&
+                arg.seek_time <= media_position->duration()) {
+              media_session->SeekTo(arg.seek_time);
             }
           }),
       media_control_);
@@ -83,11 +106,12 @@ void MediaControlTool::Invoke(ToolCallback callback) {
 }
 
 std::string MediaControlTool::DebugString() const {
-  return absl::StrFormat("MediaControlTool[%s]", JournalEvent());
+  return absl::StrFormat("MediaControlTool[%s]",
+                         MediaControlName(media_control_));
 }
 
 std::string MediaControlTool::JournalEvent() const {
-  return MediaControlName(media_control_);
+  return std::string(MediaControlName(media_control_));
 }
 
 std::unique_ptr<ObservationDelayController>

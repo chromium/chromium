@@ -86,15 +86,17 @@ chromium-metrics-reviews@google.com.
   <variant name="FindAndHighlight" summary="Find And Highlight"/>
   <variant name="History" summary="History"/>
   <variant name="LoadAndExtractContent" summary="Load And Extract Content"/>
-  <variant name="MediaControl" summary="Media Control"/>
   <variant name="MoveMouse" summary="MoveMouse"/>
   <variant name="Navigate" summary="Navigate"/>
   <variant name="OpenKnownPage" summary="Open Known Page"/>
+  <variant name="PauseMedia" summary="Pause Media"/>
   <variant name="PerformSearch" summary="Perform Search"/>
+  <variant name="PlayMedia" summary="Play Media"/>
   <variant name="RemoveBookmark" summary="Remove Bookmark"/>
   <variant name="ScriptTool" summary="ScriptTool"/>
   <variant name="Scroll" summary="Scroll"/>
   <variant name="ScrollTo" summary="Scroll To"/>
+  <variant name="SeekMedia" summary="Seek Media"/>
   <variant name="Select" summary="Select"/>
   <variant name="SwitchTab" summary="Switch Tab"/>
   <variant name="TranslatePage" summary="Translate Page"/>

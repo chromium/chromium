@@ -11,26 +11,45 @@ namespace glic::test {
 
 namespace {
 
-using MediaControl = actor::MediaControl;
 using MultiStep = GlicActorUiTest::MultiStep;
 
 class GlicActorMediaControlToolUiTest : public GlicActorUiTest {
  public:
-  MultiStep MediaControlAction(MediaControl media_control,
-                               ExpectedErrorResult expected_result = {});
+  MultiStep PlayMediaAction(ExpectedErrorResult expected_result = {});
+  MultiStep PauseMediaAction(ExpectedErrorResult expected_result = {});
+  MultiStep SeekMediaAction(base::TimeDelta seek_time,
+                            ExpectedErrorResult expected_result = {});
 };
 
-MultiStep GlicActorMediaControlToolUiTest::MediaControlAction(
-    MediaControl media_control,
+MultiStep GlicActorMediaControlToolUiTest::PlayMediaAction(
     ExpectedErrorResult expected_result) {
-  auto media_control_provider =
-      base::BindLambdaForTesting([this, media_control]() {
-        optimization_guide::proto::Actions action =
-            actor::MakeMediaControl(tab_handle_, media_control, task_id_);
-        return EncodeActionProto(action);
-      });
-  return ExecuteAction(std::move(media_control_provider),
-                       std::move(expected_result));
+  auto provider = base::BindLambdaForTesting([this]() {
+    optimization_guide::proto::Actions action =
+        actor::MakePlayMedia(tab_handle_, task_id_);
+    return EncodeActionProto(action);
+  });
+  return ExecuteAction(std::move(provider), std::move(expected_result));
+}
+
+MultiStep GlicActorMediaControlToolUiTest::PauseMediaAction(
+    ExpectedErrorResult expected_result) {
+  auto provider = base::BindLambdaForTesting([this]() {
+    optimization_guide::proto::Actions action =
+        actor::MakePauseMedia(tab_handle_, task_id_);
+    return EncodeActionProto(action);
+  });
+  return ExecuteAction(std::move(provider), std::move(expected_result));
+}
+
+MultiStep GlicActorMediaControlToolUiTest::SeekMediaAction(
+    base::TimeDelta seek_time,
+    ExpectedErrorResult expected_result) {
+  auto provider = base::BindLambdaForTesting([this, seek_time]() {
+    optimization_guide::proto::Actions action =
+        actor::MakeSeekMedia(tab_handle_, seek_time, task_id_);
+    return EncodeActionProto(action);
+  });
+  return ExecuteAction(std::move(provider), std::move(expected_result));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, NoMedia) {
@@ -40,8 +59,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, NoMedia) {
   RunTestSequence(
       InitializeWithOpenGlicWindow(),
       StartActorTaskInNewTab(url, kNewActorTabId),
-      MediaControlAction(actor::PauseMedia(),
-                         actor::mojom::ActionResultCode::kMediaControlNoMedia));
+      PauseMediaAction(actor::mojom::ActionResultCode::kMediaControlNoMedia));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, PauseAndPlayMedia) {
@@ -53,9 +71,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, PauseAndPlayMedia) {
       StartActorTaskInNewTab(url, kNewActorTabId),
       ExecuteJs(kNewActorTabId, "play"),
       WaitForJsResult(kNewActorTabId, "() => waitForEvent('play')"),
-      MediaControlAction(actor::PauseMedia()),
+      PauseMediaAction(),
       WaitForJsResult(kNewActorTabId, "() => waitForEvent('pause')"),
-      MediaControlAction(actor::PlayMedia()),
+      PlayMediaAction(),
       WaitForJsResult(kNewActorTabId, "() => waitForEvent('play')"));
 }
 
@@ -70,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorMediaControlToolUiTest, SeekMedia) {
       WaitForJsResult(kNewActorTabId, "() => waitForEvent('play')"),
       ExecuteJs(kNewActorTabId, "() => { video.pause(); }"),
       WaitForJsResult(kNewActorTabId, "() => waitForEvent('pause')"),
-      MediaControlAction(actor::SeekMedia{.seek_time_milliseconds = 1000}),
+      SeekMediaAction(base::Milliseconds(1000)),
       WaitForJsResult(kNewActorTabId, "() => waitForSeek(1.0)"));
 }
 

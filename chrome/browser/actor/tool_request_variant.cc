@@ -81,9 +81,6 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
     var_ = ToolRequestVariant(tr);
   }
 #endif
-  void Apply(const MediaControlToolRequest& tr) override {
-    var_ = ToolRequestVariant(tr);
-  }
   void Apply(const MoveMouseToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
@@ -95,7 +92,13 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
     var_ = ToolRequestVariant(tr);
   }
 #endif
+  void Apply(const PauseMediaToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
   void Apply(const PerformSearchToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const PlayMediaToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
   void Apply(const RemoveBookmarkToolRequest& tr) override {
@@ -108,6 +111,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
     var_ = ToolRequestVariant(tr);
   }
   void Apply(const ScrollToToolRequest& tr) override {
+    var_ = ToolRequestVariant(tr);
+  }
+  void Apply(const SeekMediaToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
   void Apply(const SelectToolRequest& tr) override {

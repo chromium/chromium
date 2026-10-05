@@ -40,17 +40,19 @@ using ToolRequestVariant = std::variant<
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     LoadAndExtractContentToolRequest,
 #endif
-    MediaControlToolRequest,
     MoveMouseToolRequest,
     NavigateToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     OpenKnownPageToolRequest,
 #endif
+    PauseMediaToolRequest,
     PerformSearchToolRequest,
+    PlayMediaToolRequest,
     RemoveBookmarkToolRequest,
     ScriptToolRequest,
     ScrollToolRequest,
     ScrollToToolRequest,
+    SeekMediaToolRequest,
     SelectToolRequest,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     SwitchTabToolRequest,

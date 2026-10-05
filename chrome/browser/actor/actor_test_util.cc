@@ -25,6 +25,7 @@
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
@@ -522,21 +523,38 @@ Actions MakeScriptTool(content::RenderFrameHost& rfh,
   return action;
 }
 
-Actions MakeMediaControl(tabs::TabHandle tab_handle,
-                         MediaControl media_control,
-                         std::optional<actor::TaskId> task_id) {
+Actions MakePlayMedia(tabs::TabHandle tab_handle,
+                      std::optional<actor::TaskId> task_id) {
   Actions action;
   auto* media_control_action = action.add_actions()->mutable_media_control();
   media_control_action->set_tab_id(tab_handle.raw_value());
-
-  if (std::get_if<PlayMedia>(&media_control)) {
-    media_control_action->mutable_play();
-  } else if (std::get_if<PauseMedia>(&media_control)) {
-    media_control_action->mutable_pause();
-  } else if (const auto* seek = std::get_if<SeekMedia>(&media_control)) {
-    media_control_action->mutable_seek()->set_seek_time_milliseconds(
-        seek->seek_time_milliseconds);
+  media_control_action->mutable_play();
+  if (task_id.has_value()) {
+    action.set_task_id(task_id->value());
   }
+  return action;
+}
+
+Actions MakePauseMedia(tabs::TabHandle tab_handle,
+                       std::optional<actor::TaskId> task_id) {
+  Actions action;
+  auto* media_control_action = action.add_actions()->mutable_media_control();
+  media_control_action->set_tab_id(tab_handle.raw_value());
+  media_control_action->mutable_pause();
+  if (task_id.has_value()) {
+    action.set_task_id(task_id->value());
+  }
+  return action;
+}
+
+Actions MakeSeekMedia(tabs::TabHandle tab_handle,
+                      base::TimeDelta seek_time,
+                      std::optional<actor::TaskId> task_id) {
+  Actions action;
+  auto* media_control_action = action.add_actions()->mutable_media_control();
+  media_control_action->set_tab_id(tab_handle.raw_value());
+  media_control_action->mutable_seek()->set_seek_time_milliseconds(
+      seek_time.InMilliseconds());
   if (task_id.has_value()) {
     action.set_task_id(task_id->value());
   }
@@ -762,11 +780,17 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
       name, input_arguments);
 }
 
-std::unique_ptr<ToolRequest> MakeMediaControlRequest(
-    tabs::TabInterface& tab,
-    MediaControl media_control) {
-  return std::make_unique<MediaControlToolRequest>(tab.GetHandle(),
-                                                   media_control);
+std::unique_ptr<ToolRequest> MakePlayMediaRequest(tabs::TabInterface& tab) {
+  return std::make_unique<PlayMediaToolRequest>(tab.GetHandle());
+}
+
+std::unique_ptr<ToolRequest> MakePauseMediaRequest(tabs::TabInterface& tab) {
+  return std::make_unique<PauseMediaToolRequest>(tab.GetHandle());
+}
+
+std::unique_ptr<ToolRequest> MakeSeekMediaRequest(tabs::TabInterface& tab,
+                                                  base::TimeDelta seek_time) {
+  return std::make_unique<SeekMediaToolRequest>(tab.GetHandle(), seek_time);
 }
 
 std::unique_ptr<ToolRequest> MakeTranslatePageRequest(tabs::TabInterface& tab) {

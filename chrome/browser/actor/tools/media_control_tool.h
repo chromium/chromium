@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_MEDIA_CONTROL_TOOL_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_MEDIA_CONTROL_TOOL_H_
 
-#include "chrome/browser/actor/tools/media_control_tool_request.h"
+#include <memory>
+#include <string>
+#include <variant>
+
+#include "base/time/time.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "components/tabs/public/tab_interface.h"
@@ -14,6 +18,20 @@ namespace actor {
 
 class MediaControlTool : public Tool {
  public:
+  // A media control action to start or resume media playback.
+  struct PlayMedia {};
+
+  // A media control action to pause media playback.
+  struct PauseMedia {};
+
+  // A media control action to seek to a specific time in the media.
+  struct SeekMedia {
+    base::TimeDelta seek_time;
+  };
+
+  // A variant that holds one of several possible media control actions.
+  using MediaControl = std::variant<PlayMedia, PauseMedia, SeekMedia>;
+
   MediaControlTool(TaskId task_id,
                    ToolDelegate& tool_delegate,
                    tabs::TabInterface& tab,

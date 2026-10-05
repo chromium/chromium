@@ -23,7 +23,6 @@
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
-#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -190,9 +189,15 @@ optimization_guide::proto::Actions MakeScriptTool(
     const std::string& name,
     const std::string& input_arguments,
     std::optional<actor::TaskId> task_id = std::nullopt);
-optimization_guide::proto::Actions MakeMediaControl(
+optimization_guide::proto::Actions MakePlayMedia(
     tabs::TabHandle tab_handle,
-    MediaControl media_control,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakePauseMedia(
+    tabs::TabHandle tab_handle,
+    std::optional<actor::TaskId> task_id = std::nullopt);
+optimization_guide::proto::Actions MakeSeekMedia(
+    tabs::TabHandle tab_handle,
+    base::TimeDelta seek_time,
     std::optional<actor::TaskId> task_id = std::nullopt);
 optimization_guide::proto::Actions MakeTranslatePage(
     tabs::TabHandle tab_handle,
@@ -268,9 +273,10 @@ std::unique_ptr<ToolRequest> MakeScriptToolRequest(
     content::RenderFrameHost& rfh,
     const std::string& name,
     const std::string& input_arguments);
-std::unique_ptr<ToolRequest> MakeMediaControlRequest(
-    tabs::TabInterface& tab,
-    MediaControl media_control);
+std::unique_ptr<ToolRequest> MakePlayMediaRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakePauseMediaRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakeSeekMediaRequest(tabs::TabInterface& tab,
+                                                  base::TimeDelta seek_time);
 std::unique_ptr<ToolRequest> MakeTranslatePageRequest(tabs::TabInterface& tab);
 std::unique_ptr<ToolRequest> MakeTranslatePageRequest(
     tabs::TabInterface& tab,

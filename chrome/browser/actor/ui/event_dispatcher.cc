@@ -88,7 +88,6 @@ constexpr absl::Overload PreToolEventsFn{
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<LoadAndExtractContentToolRequest>,
 #endif
-    NoUiEvents<MediaControlToolRequest>,
     [](const MoveMouseToolRequest& tr) {
       auto [pt, source] = ComputeMouseTarget(tr.GetTabHandle(), tr.GetTarget());
       return EventSequence<AsyncUiEvent>{
@@ -98,9 +97,12 @@ constexpr absl::Overload PreToolEventsFn{
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<OpenKnownPageToolRequest>,
 #endif
+    NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
+    NoUiEvents<PlayMediaToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
+    NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,
@@ -138,15 +140,17 @@ constexpr absl::Overload PostToolEventsFn{
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<LoadAndExtractContentToolRequest>,
 #endif
-    NoUiEvents<MediaControlToolRequest>,
     NoUiEvents<MoveMouseToolRequest>,
     NoUiEvents<NavigateToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<OpenKnownPageToolRequest>,
 #endif
+    NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
+    NoUiEvents<PlayMediaToolRequest>,
     NoUiEvents<RemoveBookmarkToolRequest>,
     NoUiEvents<ScrollToolRequest>,
+    NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,

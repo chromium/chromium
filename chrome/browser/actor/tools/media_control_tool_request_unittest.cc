@@ -6,20 +6,22 @@
 
 #include <optional>
 
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
 namespace {
 
 std::optional<int64_t> ParseMs(std::string_view timecode) {
-  std::optional<SeekMedia> seek = SeekMedia::FromTimecode(timecode);
-  if (!seek) {
+  std::optional<base::TimeDelta> seek_time =
+      SeekMediaToolRequest::FromTimecode(timecode);
+  if (!seek_time) {
     return std::nullopt;
   }
-  return seek->seek_time_milliseconds;
+  return seek_time->InMilliseconds();
 }
 
-TEST(SeekMediaTest, FromTimecodeValid) {
+TEST(SeekMediaToolRequestTest, FromTimecodeValid) {
   EXPECT_EQ(ParseMs("0"), 0);
   EXPECT_EQ(ParseMs("30"), 30'000);
   EXPECT_EQ(ParseMs("90"), 90'000);
@@ -30,7 +32,7 @@ TEST(SeekMediaTest, FromTimecodeValid) {
   EXPECT_EQ(ParseMs(" 1 : 02 "), 62'000);
 }
 
-TEST(SeekMediaTest, FromTimecodeInvalid) {
+TEST(SeekMediaToolRequestTest, FromTimecodeInvalid) {
   // Malformed.
   EXPECT_EQ(ParseMs(""), std::nullopt);
   EXPECT_EQ(ParseMs("abc"), std::nullopt);

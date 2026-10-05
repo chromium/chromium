@@ -42,8 +42,7 @@ IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, NoMedia) {
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 
   ActResultFuture result;
-  std::unique_ptr<ToolRequest> request =
-      MakeMediaControlRequest(*active_tab(), PauseMedia());
+  std::unique_ptr<ToolRequest> request = MakePauseMediaRequest(*active_tab());
   actor_task().Act(ToRequestList(request), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kMediaControlNoMedia);
 }
@@ -60,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, PauseAndPlayMedia) {
   // Pause the media.
   ActResultFuture pause_result;
   std::unique_ptr<ToolRequest> pause_request =
-      MakeMediaControlRequest(*active_tab(), PauseMedia());
+      MakePauseMediaRequest(*active_tab());
   actor_task().Act(ToRequestList(pause_request), pause_result.GetCallback());
   ExpectOkResult(pause_result);
   EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('pause')"));
@@ -68,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, PauseAndPlayMedia) {
   // Play the media.
   ActResultFuture play_result;
   std::unique_ptr<ToolRequest> play_request =
-      MakeMediaControlRequest(*active_tab(), PlayMedia());
+      MakePlayMediaRequest(*active_tab());
   actor_task().Act(ToRequestList(play_request), play_result.GetCallback());
   ExpectOkResult(play_result);
   EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
@@ -91,11 +90,11 @@ IN_PROC_BROWSER_TEST_F(ActorMediaControlToolBrowserTest, SeekMedia) {
   // Seek the media.
   ActResultFuture result;
   std::unique_ptr<ToolRequest> request =
-      MakeMediaControlRequest(*active_tab(), SeekMedia(1000));
+      MakeSeekMediaRequest(*active_tab(), base::Milliseconds(1000));
   std::unique_ptr<ToolRequest> request_negative_time =
-      MakeMediaControlRequest(*active_tab(), SeekMedia(-1000));
+      MakeSeekMediaRequest(*active_tab(), base::Milliseconds(-1000));
   std::unique_ptr<ToolRequest> request_unreachable_time =
-      MakeMediaControlRequest(*active_tab(), SeekMedia(10000));
+      MakeSeekMediaRequest(*active_tab(), base::Milliseconds(10000));
   actor_task().Act(
       ToRequestList(request, request_negative_time, request_unreachable_time),
       result.GetCallback());

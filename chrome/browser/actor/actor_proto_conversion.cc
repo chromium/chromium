@@ -758,23 +758,18 @@ std::unique_ptr<ToolRequest> CreateMediaControlRequest(
     return nullptr;
   }
 
-  MediaControl media_control;
   switch (action.media_control_action_case()) {
     case MediaControlAction::kPlay:
-      media_control = PlayMedia();
-      break;
+      return std::make_unique<PlayMediaToolRequest>(tab_handle);
     case MediaControlAction::kPause:
-      media_control = PauseMedia();
-      break;
+      return std::make_unique<PauseMediaToolRequest>(tab_handle);
     case MediaControlAction::kSeek:
-      media_control = SeekMedia{.seek_time_milliseconds =
-                                    action.seek().seek_time_milliseconds()};
-      break;
+      return std::make_unique<SeekMediaToolRequest>(
+          tab_handle,
+          base::Milliseconds(action.seek().seek_time_milliseconds()));
     default:
       return nullptr;
   }
-
-  return std::make_unique<MediaControlToolRequest>(tab_handle, media_control);
 }
 
 std::unique_ptr<ToolRequest> CreateTranslatePageRequest(
