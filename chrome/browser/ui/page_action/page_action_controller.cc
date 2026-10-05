@@ -623,6 +623,9 @@ void PageActionControllerImpl::RegisterCallbacks(PageActionPassKey,
   delegate->SetAnchoredMessageCollapseCallback(base::BindRepeating(
       &PageActionControllerImpl::ResumeAnchoredMessageTimeout,
       weak_factory_.GetWeakPtr(), action_id));
+  delegate->SetAnchoredMessageDowngradeCallback(
+      base::BindRepeating(&PageActionControllerImpl::DowngradeAnchoredMessage,
+                          weak_factory_.GetWeakPtr(), action_id));
 }
 
 void PageActionControllerImpl::RecordClickMetric(

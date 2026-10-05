@@ -1205,6 +1205,38 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
           AnchoredMessageBubbleView::kAnchoredMessageExpandedContentId));
 }
 
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
+                       ClickingPageActionIconDowngradesAnchoredMessageToChip) {
+  auto* action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate);
+  ASSERT_TRUE(action_item);
+  const int initial_invoke_count = action_item->GetInvokeCount();
+
+  RunTestSequence(
+      Do([this]() {
+        AdjustAvailableSpace(kFullSpaceTextLength);
+        ShowTestAnchoredMessage(u"Anchored Message Text",
+                                AnchoredMessageActionIconType::kNone,
+                                std::nullopt, nullptr);
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      CheckResult(
+          [this]() { return GetTestPageAction().ShouldShowSuggestionChip(); },
+          false),
+      PressButton(kTranslatePageActionElementId),
+      WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Do([this]() { FastForwardAnimation(GetTestPageAction()); }),
+      CheckResult(
+          [this]() { return GetTestPageAction().ShouldShowSuggestionChip(); },
+          true),
+      Check([this]() {
+        return testing::ExplainMatchResult(IsChipExpanded(),
+                                           GetTestPageAction(), nullptr);
+      }),
+      CheckResult([action_item]() { return action_item->GetInvokeCount(); },
+                  initial_invoke_count));
+}
+
 struct PageActionPixelTestParams {
   ui::NativeTheme::PreferredColorScheme color_scheme =
       ui::NativeTheme::PreferredColorScheme::kLight;

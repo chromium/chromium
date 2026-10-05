@@ -90,6 +90,10 @@ class TestDelegate : public PageActionController::Delegate {
       base::RepeatingClosure callback) override {
     collapse_callback_ = std::move(callback);
   }
+  void SetAnchoredMessageDowngradeCallback(
+      base::RepeatingClosure callback) override {
+    downgrade_callback_ = std::move(callback);
+  }
   void SetClickCallback(
       base::RepeatingCallback<void(PageActionTrigger)> callback) override {
     click_callback_ = std::move(callback);
@@ -97,6 +101,7 @@ class TestDelegate : public PageActionController::Delegate {
 
   base::RepeatingClosure expand_callback_;
   base::RepeatingClosure collapse_callback_;
+  base::RepeatingClosure downgrade_callback_;
   base::RepeatingCallback<void(PageActionTrigger)> click_callback_;
 };
 

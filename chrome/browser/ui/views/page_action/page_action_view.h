@@ -109,6 +109,8 @@ class PageActionView : public IconLabelBubbleView,
       base::RepeatingClosure callback) override;
   void SetClickCallback(
       base::RepeatingCallback<void(PageActionTrigger)> callback) override;
+  void SetAnchoredMessageDowngradeCallback(
+      base::RepeatingClosure callback) override;
 
   // PageActionModelObserver:
   void OnPageActionModelChanged(const PageActionModelInterface& model) override;
@@ -253,6 +255,8 @@ class PageActionView : public IconLabelBubbleView,
   base::RepeatingClosure anchored_message_close_callback_ = base::DoNothing();
   base::RepeatingClosure anchored_message_expand_callback_ = base::DoNothing();
   base::RepeatingClosure anchored_message_collapse_callback_ =
+      base::DoNothing();
+  base::RepeatingClosure anchored_message_downgrade_callback_ =
       base::DoNothing();
 
   base::WeakPtrFactory<PageActionView> weak_factory_{this};

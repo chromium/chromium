@@ -862,8 +862,15 @@ TEST_F(PageActionViewTriggerTest, PageActionGestureTriggerPropagation) {
   EXPECT_EQ(1, TotalTriggerCount());
 }
 
-TEST_F(PageActionViewTriggerTest, NoClickWhenAnchoredMessageVisible) {
+TEST_F(PageActionViewTriggerTest,
+       ClickWhenAnchoredMessageVisibleDowngradesWithoutTriggeringAction) {
+  base::MockCallback<base::RepeatingClosure> downgrade_callback;
+  page_action_view()->SetAnchoredMessageDowngradeCallback(
+      downgrade_callback.Get());
+
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionItemIsShowingBubble())
+      .WillRepeatedly(Return(false));
   EXPECT_CALL(*model(), ShouldShowAnchoredMessage())
       .WillRepeatedly(Return(true));
 
@@ -883,12 +890,10 @@ TEST_F(PageActionViewTriggerTest, NoClickWhenAnchoredMessageVisible) {
   page_action_view()->OnPageActionModelChanged(*model());
   ASSERT_TRUE(page_action_view()->IsAnchoredMessageVisible());
 
-  page_action_view()->NotifyClick(
-      ui::test::TestEvent(EventType::kMousePressed));
+  EXPECT_CALL(downgrade_callback, Run()).Times(1);
+  views::test::InteractionTestUtilSimulatorViews::PressButton(
+      page_action_view(), ui::test::InteractionTestUtil::InputType::kMouse);
   EXPECT_EQ(0, TotalTriggerCount());
-
-  EXPECT_FALSE(page_action_view()->IsTriggerableEvent(
-      ui::test::TestEvent(EventType::kMousePressed)));
 }
 
 TEST_F(PageActionViewTriggerTest, PageActionTriggersOnKeyboardClick) {

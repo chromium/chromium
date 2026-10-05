@@ -94,6 +94,10 @@ class WebUIPageActionControl::WebUIPageActionDelegate
       base::RepeatingClosure callback) override {
     anchored_message_collapse_callback_ = std::move(callback);
   }
+  void SetAnchoredMessageDowngradeCallback(
+      base::RepeatingClosure callback) override {
+    anchored_message_downgrade_callback_ = std::move(callback);
+  }
   void SetClickCallback(
       base::RepeatingCallback<void(page_actions::PageActionTrigger)> callback)
       override {
@@ -213,6 +217,8 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   base::RepeatingClosure anchored_message_expand_callback_ = base::DoNothing();
   base::RepeatingClosure anchored_message_collapse_callback_ =
       base::DoNothing();
+  base::RepeatingClosure anchored_message_downgrade_callback_ =
+      base::DoNothing();
   base::RepeatingCallback<void(page_actions::PageActionTrigger)>
       click_callback_ = base::DoNothing();
 
@@ -275,6 +281,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::SetController(
     anchored_message_close_callback_ = base::DoNothing();
     anchored_message_expand_callback_ = base::DoNothing();
     anchored_message_collapse_callback_ = base::DoNothing();
+    anchored_message_downgrade_callback_ = base::DoNothing();
     click_callback_ = base::DoNothing();
     ResetCachedState();
   }
@@ -489,6 +496,12 @@ void WebUIPageActionControl::WebUIPageActionDelegate::NotifyClick(
                                        trigger == PageActionTrigger::kGesture);
   if (bubble_reopen_suppressor_.ShouldSuppressBubbleShow(
           is_pointer_interaction)) {
+    return;
+  }
+
+  if (IsAnchoredMessageVisible() ||
+      observation_.GetSource()->ShouldShowAnchoredMessage()) {
+    anchored_message_downgrade_callback_.Run();
     return;
   }
 

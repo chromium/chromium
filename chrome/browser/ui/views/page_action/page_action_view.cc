@@ -161,6 +161,11 @@ void PageActionView::SetAnchoredMessageCollapseCallback(
   anchored_message_collapse_callback_ = std::move(callback);
 }
 
+void PageActionView::SetAnchoredMessageDowngradeCallback(
+    base::RepeatingClosure callback) {
+  anchored_message_downgrade_callback_ = std::move(callback);
+}
+
 void PageActionView::OnNewActiveController(PageActionController* controller) {
   chip_shown_metric_recorded_ = false;
   observation_.Reset();
@@ -182,6 +187,7 @@ void PageActionView::OnNewActiveController(PageActionController* controller) {
     SetClickCallback(base::DoNothing());
     SetAnchoredMessageExpandCallback(base::DoNothing());
     SetAnchoredMessageCollapseCallback(base::DoNothing());
+    SetAnchoredMessageDowngradeCallback(base::DoNothing());
     SetVisible(false);
   }
 }
@@ -351,6 +357,7 @@ bool PageActionView::ShouldUpdateInkDropOnClickCanceled() const {
 
 void PageActionView::NotifyClick(const ui::Event& event) {
   if (IsAnchoredMessageVisible()) {
+    anchored_message_downgrade_callback_.Run();
     return;
   }
 
@@ -506,10 +513,6 @@ bool PageActionView::IsBubbleShowing() const {
 }
 
 bool PageActionView::IsTriggerableEvent(const ui::Event& event) {
-  if (IsAnchoredMessageVisible()) {
-    return false;
-  }
-
   // Returns whether the bubble should be shown given the event. Only trigger an
   // action when action UI isn't already showing (managed at the
   // IconLabelBubbleView level), and if mouse input, when event is a left button

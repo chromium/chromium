@@ -835,6 +835,58 @@ TEST_F(WebUIPageActionControlTest, AnchoredMessageState) {
   EXPECT_FALSE(control_->IsAnchoredMessageShowing(target_action_id));
 }
 
+TEST_F(WebUIPageActionControlTest,
+       ClickWhileAnchoredMessageActiveDowngradesToChipWithoutInvokingAction) {
+  control_->UpdateController(web_contents());
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  ASSERT_TRUE(tab);
+  page_actions::PageActionController* controller =
+      page_actions::PageActionController::From(tab);
+  ASSERT_TRUE(controller);
+
+  actions::ActionItem* translate_action_item =
+      actions::ActionManager::Get().FindAction(kActionShowTranslate,
+                                               root_action_item_.get());
+  ASSERT_TRUE(translate_action_item);
+
+  int translate_invoked_count = 0;
+  translate_action_item->SetInvokeActionCallback(
+      base::BindRepeating([](int* count, actions::ActionItem*,
+                             actions::ActionInvocationContext) { ++(*count); },
+                          &translate_invoked_count));
+
+  controller->Show(kActionShowTranslate);
+  controller->ShowAnchoredMessage(kActionShowTranslate,
+                                  page_actions::AnchoredMessageConfig{});
+  EXPECT_EQ(controller->GetActiveAnchoredMessage(), kActionShowTranslate);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_FALSE(states[0]->should_show_chip);
+
+  // Clicking the page action while the anchored message is active should
+  // downgrade it to a suggestion chip without invoking the underlying action.
+  {
+    base::test::TestFuture<
+        base::expected<std::monostate, mojo_base::mojom::ErrorPtr>>
+        future;
+    control_->OnPageActionClick(
+        toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+        PageActionTrigger::kMouse, future.GetCallback());
+    EXPECT_OK(future.Get());
+  }
+
+  EXPECT_EQ(controller->GetActiveAnchoredMessage(), std::nullopt);
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(0, translate_invoked_count);
+
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_TRUE(states[0]->should_show_chip);
+}
+
 TEST_F(WebUIPageActionControlTest, TabSwitchTokenUpdatesOnTabSwitch) {
   control_->UpdateController(web_contents());
 
