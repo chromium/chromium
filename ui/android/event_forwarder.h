@@ -61,7 +61,8 @@ class UI_ANDROID_EXPORT EventForwarder {
                     int64_t time_ns,
                     int32_t android_action,
                     int32_t android_changed_button,
-                    int32_t tool_type);
+                    int32_t tool_type,
+                    bool skip_dip_scale);
 
   void OnDragEvent(JNIEnv* env,
                    int32_t action,

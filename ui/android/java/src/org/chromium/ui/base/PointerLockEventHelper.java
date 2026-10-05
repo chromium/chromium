@@ -337,7 +337,11 @@ public final class PointerLockEventHelper {
     // pointer lock is active, Android delivers raw unaccelerated relative coordinates without
     // applying system pointer speed, causing physical mouse movement to feel sluggish compared to
     // unlocked mode.
-    @VisibleForTesting public static final float MOUSE_MOVEMENT_SCALE_FACTOR = 2.4f;
+    // Additional sensitivity after compensating for display density
+    // (crbug.com/567695649). The default is 1.0; a field trial can override it.
+    // Native EventForwarder normally converts mouse coordinates from pixels to DIPs, but preserves
+    // captured relative mouse deltas in pixels when scaling is enabled.
+    @VisibleForTesting public static final float MOUSE_MOVEMENT_SCALE_FACTOR = 1.0f;
 
     private static float getScaleFactor() {
         if (!UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled()) {

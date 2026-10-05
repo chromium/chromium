@@ -472,7 +472,8 @@ public class EventForwarder {
                                     MotionEventUtils.getEventTimeNanos(event),
                                     MotionEvent.ACTION_BUTTON_RELEASE,
                                     MotionEvent.BUTTON_PRIMARY,
-                                    event.getToolType(0));
+                                    event.getToolType(0),
+                                    /* skipDipScale= */ false);
                 }
                 mLastMouseButtonState = 0;
             }
@@ -555,7 +556,8 @@ public class EventForwarder {
                         getMouseEventActionButton(event),
                         shouldConvertToMouseEvent
                                 ? MotionEvent.TOOL_TYPE_MOUSE
-                                : event.getToolType(0));
+                                : event.getToolType(0),
+                        /* skipDipScale= */ false);
         return true;
     }
 
@@ -865,6 +867,9 @@ public class EventForwarder {
                                 && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE
                         ? getMouseEventActionButton(event)
                         : 0;
+        boolean skipDipScale =
+                event.isFromSource(InputDevice.SOURCE_MOUSE_RELATIVE)
+                        && UiAndroidFeatureList.sPointerLockMouseScaling.isEnabled();
         event = mPointerLockEventHelper.transformCapturedPointerEvent(event, deviceRotation);
 
         if (!event.isFromSource(InputDevice.SOURCE_MOUSE)) {
@@ -916,7 +921,8 @@ public class EventForwarder {
                             actionButton,
                             shouldConvertToMouseEvent
                                     ? MotionEvent.TOOL_TYPE_MOUSE
-                                    : event.getToolType(0));
+                                    : event.getToolType(0),
+                            skipDipScale);
         }
 
         return true;
@@ -1063,7 +1069,8 @@ public class EventForwarder {
                 long timeNs,
                 int action,
                 int changedButton,
-                int toolType);
+                int toolType,
+                boolean skipDipScale);
 
         void onDragEvent(
                 long nativeEventForwarder,
