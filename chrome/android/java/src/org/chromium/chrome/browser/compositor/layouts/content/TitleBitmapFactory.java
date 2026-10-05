@@ -27,7 +27,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
@@ -39,12 +38,9 @@ public class TitleBitmapFactory {
     private static final String TAG = "TitleBitmapFactory";
 
     // Canvas#drawText() seems to fail when trying to draw 4100 or more characters.
-    // See https://crbug.com/40432863/ for more details.
-    private static final int MAX_NUM_TITLE_CHAR = 1000;
-
-    // We were drawing up to 1000 characters, but only displaying ~30 in the tab strip. Experiment
-    // with a smaller limit.
-    private static final int SMALLER_MAX_NUM_TITLE_CHAR = 100;
+    // See https://crbug.com/40432863/ for more details. Only ~30 characters are displayed in the
+    // tab strip.
+    private static final int MAX_NUM_TITLE_CHAR = 100;
 
     private final Canvas mCanvas;
     private final Paint mFaviconPaint;
@@ -259,14 +255,10 @@ public class TitleBitmapFactory {
             mCanvas.setBitmap(b);
             try {
                 if (drawText) {
-                    final int maxCharsToDraw =
-                            ChromeFeatureList.sSmallerTabStripTitleLimit.isEnabled()
-                                    ? SMALLER_MAX_NUM_TITLE_CHAR
-                                    : MAX_NUM_TITLE_CHAR;
                     mCanvas.drawText(
                             title,
                             /* start= */ 0,
-                            /* end= */ Math.min(maxCharsToDraw, title.length()),
+                            /* end= */ Math.min(MAX_NUM_TITLE_CHAR, title.length()),
                             /* x= */ 0,
                             /* y= */ Math.round((mViewHeight - height) / 2.0f + yOffset),
                             textPaint);

@@ -823,7 +823,6 @@ public abstract class ChromeFeatureList {
             "SidePanelTopHairlineRefactorAndroid";
     public static final String SITE_ISOLATION_ENABLE_MEMORY_THRESHOLD_ANDROID =
             "SiteIsolationEnableMemoryThresholdAndroid";
-    public static final String SMALLER_TAB_STRIP_TITLE_LIMIT = "SmallerTabStripTitleLimit";
     public static final String SMART_SUGGESTION_FOR_LARGE_DOWNLOADS =
             "SmartSuggestionForLargeDownloads";
     public static final String SPLIT_CACHE_BY_NETWORK_ISOLATION_KEY =
@@ -1397,8 +1396,6 @@ public abstract class ChromeFeatureList {
                     BaseFeatures.SHUTDOWN_PRE_NATIVE_THREAD_POOL_AFTER_STARTUP,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sSmallerTabStripTitleLimit =
-            newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, true);
     public static final CachedFlag sStartSurfaceReturnTime =
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sSyncRestoreOnStartupPref =
@@ -1666,7 +1663,6 @@ public abstract class ChromeFeatureList {
                     sSettingsSearchCollapsibleSearchBox,
                     sSettingsSingleActivity,
                     sShutdownPreNativeThreadPoolAfterStartup,
-                    sSmallerTabStripTitleLimit,
                     sStartSurfaceReturnTime,
                     sSyncRestoreOnStartupPref,
                     sTabClosureCommittedMethodRefactor,
