@@ -50,6 +50,8 @@ found in the LICENSE file.
       <include name="IDR_GLIC_OS_ICON_VARIANT_0" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_OS_ICON_VARIANT_1" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_OS_ICON_VARIANT_2" file="glic_button_old.icon" type="BINDATA" compress="brotli" />
+      <!-- Gemini Enterprise (GEiC) tab strip button icon. -->
+      <include name="IDR_GEIC_BUTTON_ICON" file="glic_button_alt_icon.png" type="BINDATA" />
     </includes>
   </release>
 </grit>

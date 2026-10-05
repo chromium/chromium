@@ -204,6 +204,14 @@ enum class RequiredExperimentalOptIn {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequiredExperimentalOptIn)
 
+// The product that powers Glic for a profile. Providers are mutually exclusive.
+enum class GlicProvider {
+  // Gemini in Chrome.
+  kGemini,
+  // Gemini Enterprise in Chrome (GEiC).
+  kGeminiEnterprise,
+};
+
 // Returns true if any Glic entry point (such as the tab strip button or the
 // OS-level shortcut) is enabled in settings.
 bool IsAnyEntryPointEnabled(Profile* profile);
@@ -262,6 +270,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Checks whether this client is likely a dogfooder, taking the ignore dogfood
   // feature into account.
   static bool IsLikelyDogfoodClient();
+
+  // Returns the provider that powers Glic for `profile` at the time of the
+  // call.
+  static GlicProvider GetProviderForProfile(Profile* profile);
 
   // Returns true if a profile is eligible for Glic. Some profiles - such as
   // incognito, guest, system profile, etc. - are never eligible. An eligible

@@ -37,6 +37,7 @@ grit("grit") {
       "//components/omnibox/browser/vector_icons/spark.icon",
       "internal/banana.png",
       "internal/border.sksl",
+      "internal/geic_button_icon_128x128.png",
       "internal/glic_accessing.icon",
       "internal/glic_button_alt_icon_128x128.png",
       "internal/glic_os_icon_variant_0.icon",

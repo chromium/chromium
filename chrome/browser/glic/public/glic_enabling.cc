@@ -32,6 +32,7 @@
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_coordinator.h"
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_types.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_enabling.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names_internal.h"
@@ -904,6 +905,16 @@ bool GlicEnabling::IsLikelyDogfoodClient() {
   variations::VariationsService* variations_service =
       g_browser_process->variations_service();
   return variations_service && variations_service->IsLikelyDogfoodClient();
+}
+
+// static
+GlicProvider GlicEnabling::GetProviderForProfile(Profile* profile) {
+  // TODO(crbug.com/564902685): Replace IsProfileEligible() with GEiC-specific
+  // eligibility constraints.
+  if (IsProfileEligible(profile) && geic::IsGeicEnabled(profile)) {
+    return GlicProvider::kGeminiEnterprise;
+  }
+  return GlicProvider::kGemini;
 }
 
 // static

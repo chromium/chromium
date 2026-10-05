@@ -113,7 +113,7 @@ void ServeGlicFiles(net::test_server::EmbeddedTestServer* server,
   if (!server) {
     return;
   }
-  if (server->Started()) {
+  if (server->StartedAcceptingConnection()) {
     LOG(WARNING) << server_name
                  << " was already started; unable to serve Glic test files.";
     return;
@@ -319,35 +319,28 @@ void GlicTestEnvironment::OnProfileInitializationComplete(Profile* profile) {
 bool GlicTestEnvironment::StartTestServerIfNeeded(
     net::test_server::EmbeddedTestServer* server,
     net::test_server::EmbeddedTestServerHandle& handle) {
-  if (server->Started()) {
+  if (server->StartedAcceptingConnection()) {
     return true;
   }
 
-  handle = server->StartAndReturnHandle();
+  handle = server->Started()
+               ? server->StartAcceptingConnectionsAndReturnHandle()
+               : server->StartAndReturnHandle();
   return static_cast<bool>(handle);
 }
 
-bool GlicTestEnvironment::SetupEmbeddedTestServers(
-    net::test_server::EmbeddedTestServer* http_server,
+bool GlicTestEnvironment::InitializeEmbeddedTestServers(
     net::test_server::EmbeddedTestServer* https_server) {
-  CHECK(guest_url_.is_empty()) << "SetupEmbeddedTestServers called twice";
+  CHECK(guest_url_.is_empty()) << "InitializeEmbeddedTestServers called twice";
   CHECK(https_server);
 
-  if (http_server) {
-    ServeGlicFiles(http_server, "HTTP test server");
-    if (!StartTestServerIfNeeded(http_server, test_server_handle_)) {
-      return false;
-    }
-  }
-  ServeGlicFiles(https_server, "HTTPS test server");
-
-  if (!StartTestServerIfNeeded(https_server, https_test_server_handle_)) {
+  // Initialize the listen socket so the port is known and `GetURL()` can be
+  // queried in `SetUpCommandLine()`, without starting the IO thread before the
+  // sandbox is initialized.
+  if (!https_server->Started() && !https_server->InitializeAndListen()) {
     return false;
   }
 
-  // Need to set this here rather than in SetUpCommandLine because we need to
-  // use the embedded test server to get the right URL and it's not started
-  // at that time.
   std::ostringstream path;
   path << glic_page_path_;
 
@@ -369,16 +362,40 @@ bool GlicTestEnvironment::SetupEmbeddedTestServers(
   return true;
 }
 
+bool GlicTestEnvironment::SetupEmbeddedTestServers(
+    net::test_server::EmbeddedTestServer* http_server,
+    net::test_server::EmbeddedTestServer* https_server) {
+  CHECK(https_server);
+
+  if (guest_url_.is_empty() && !InitializeEmbeddedTestServers(https_server)) {
+    return false;
+  }
+
+  if (http_server) {
+    ServeGlicFiles(http_server, "HTTP test server");
+    if (!StartTestServerIfNeeded(http_server, test_server_handle_)) {
+      return false;
+    }
+  }
+  ServeGlicFiles(https_server, "HTTPS test server");
+
+  if (!StartTestServerIfNeeded(https_server, https_test_server_handle_)) {
+    return false;
+  }
+
+  return true;
+}
+
 void GlicTestEnvironment::SetGlicPagePath(const std::string& path) {
   CHECK(guest_url_.is_empty())
-      << "SetGlicPagePath must be called before SetupEmbeddedTestServers";
+      << "SetGlicPagePath must be called before InitializeEmbeddedTestServers";
   glic_page_path_ = path;
 }
 
 void GlicTestEnvironment::AddMockGlicQueryParam(const std::string_view& key,
                                                 const std::string_view& value) {
-  CHECK(guest_url_.is_empty())
-      << "AddMockGlicQueryParam must be called before SetupEmbeddedTestServers";
+  CHECK(guest_url_.is_empty()) << "AddMockGlicQueryParam must be called before "
+                                  "InitializeEmbeddedTestServers";
   mock_glic_query_params_.emplace(key, value);
 }
 

@@ -17,16 +17,17 @@ class BrowserContext;
 // This library is NOT a general purpose enablement check and must not be
 // consulted directly by feature code. It only answers "how is GEiC
 // configured?", not "should this profile run in GEiC mode?". The latter is
-// owned by GLiC's enablement utilities (see GlicEnabling), which layer GLiC
-// eligibility, profile state and enterprise policy on top of these helpers and
-// cache the result at profile construction time. In particular, GEiC is
-// unavailable whenever GLiC itself is disabled or ineligible, and that is not
-// reflected here.
+// owned by GLiC's enablement utilities (see
+// GlicEnabling::GetProviderForProfile), which layer profile eligibility on
+// top of these helpers. These helpers resolve and latch the result on the first
+// call for a profile. In particular, GEiC is unavailable whenever GLiC
+// itself is disabled or ineligible for the profile, and that is not reflected
+// here.
 //
-// Including this header is restricted to an allowlist in
-// chrome/browser/glic/host/DEPS so that callers go through GLiC's enablement
-// utilities instead. Reach out to the GEiC owners before adding a new entry to
-// that allowlist.
+// Including this header is restricted to allowlists in
+// chrome/browser/glic/DEPS and chrome/browser/glic/host/DEPS so that callers go
+// through GLiC's enablement utilities instead. Reach out to the GEiC owners
+// before adding a new entry to those allowlists.
 namespace geic {
 
 // Optional command line switch for manual developer overrides of the guest URL.

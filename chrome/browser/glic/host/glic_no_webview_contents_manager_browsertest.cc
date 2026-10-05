@@ -153,13 +153,15 @@ class GlicNoWebviewContentsManagerBrowserTest : public GlicBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicNoWebview},
         /*disabled_features=*/{});
+    // Must be configured before `GlicBrowserTest::SetUpCommandLine()` binds the
+    // HTTPS test server.
+    embedded_https_test_server().SetCertHostnames(
+        {"login.corp.google.com", "127.0.0.1"});
     embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&SorryPageRequestHandler));
   }
 
   void SetUpOnMainThread() override {
-    embedded_https_test_server().SetCertHostnames(
-        {"login.corp.google.com", "127.0.0.1"});
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         [](const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {

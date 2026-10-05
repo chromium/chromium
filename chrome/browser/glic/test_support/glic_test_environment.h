@@ -105,10 +105,15 @@ class GlicTestEnvironment : public ProfileObserver {
   static GlicTestEnvironmentService* GetService(Profile* profile,
                                                 bool create = true);
 
+  // Binds the HTTPS test server socket (without starting its IO thread) and
+  // configures `--glic-guest-url` so `GetGuestURL()` is available during
+  // `SetUpCommandLine()`.
+  [[nodiscard]] bool InitializeEmbeddedTestServers(
+      net::test_server::EmbeddedTestServer* https_server);
+
   // Sets up the embedded test servers for Glic testing.
-  // This serves files from the correct directories and configures the
-  // command line switches for the guest URL and FRE URL.
-  // This must be called in SetUpOnMainThread().
+  // This serves files from the correct directories and starts the servers
+  // accepting connections. This must be called in SetUpOnMainThread().
   [[nodiscard]] bool SetupEmbeddedTestServers(
       net::test_server::EmbeddedTestServer* http_server,
       net::test_server::EmbeddedTestServer* https_server);

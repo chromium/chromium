@@ -3237,6 +3237,83 @@ TEST_F(GlicEnablingProfileEligibilityTest, IsAnyEntryPointEnabled) {
   EXPECT_TRUE(IsAnyEntryPointEnabled(profile()));
 }
 
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetProviderForProfile_GeminiWhenGeicDisabled) {
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(profile()),
+            GlicProvider::kGemini);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetProviderForProfile_GeminiEnterpriseWithPolicyUrl) {
+  base::test::ScopedFeatureList geic_feature_list;
+  geic_feature_list.InitAndEnableFeature(features::kGeic);
+
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://business.gemini.google/home/cid/abc123");
+  profile()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                 std::move(policy_dict));
+
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(profile()),
+            GlicProvider::kGeminiEnterprise);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetProviderForProfile_GeminiWhenGeicFeatureDisabledWithPolicyUrl) {
+  base::test::ScopedFeatureList geic_feature_list;
+  geic_feature_list.InitAndDisableFeature(features::kGeic);
+
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://business.gemini.google/panel");
+  profile()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                 std::move(policy_dict));
+
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(profile()),
+            GlicProvider::kGemini);
+  EXPECT_TRUE(GlicEnabling::IsProfileEligible(profile()));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetProviderForProfile_GeminiForNullAndOffTheRecordProfiles) {
+  base::test::ScopedFeatureList geic_feature_list;
+  geic_feature_list.InitAndEnableFeature(features::kGeic);
+
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(nullptr),
+            GlicProvider::kGemini);
+
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://business.gemini.google/panel");
+  profile()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                 policy_dict.Clone());
+
+  Profile* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  otr_profile->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                   std::move(policy_dict));
+
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(otr_profile),
+            GlicProvider::kGemini);
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(profile()),
+            GlicProvider::kGeminiEnterprise);
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       GetProviderForProfile_GeminiWhenProfileIneligibleForGlic) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(/*enabled_features=*/{features::kGeic},
+                                /*disabled_features=*/{features::kGlic});
+
+  base::DictValue policy_dict;
+  policy_dict.Set("url", "https://business.gemini.google/panel");
+  profile()->GetPrefs()->SetDict(prefs::kGlicGeminiEnterpriseSettings,
+                                 std::move(policy_dict));
+
+  EXPECT_FALSE(GlicEnabling::IsProfileEligible(profile()));
+  EXPECT_EQ(GlicEnabling::GetProviderForProfile(profile()),
+            GlicProvider::kGemini);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST(GlicAndroidFormFactorTest, PhoneAndDesktopAllowedWithoutTabletFlag) {
   base::test::ScopedFeatureList feature_list;

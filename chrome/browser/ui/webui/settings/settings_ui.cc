@@ -563,11 +563,15 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kGlicSelectionPrompt));
 
   // AI
+  const bool show_geic_section =
+      glic::GlicEnabling::GetProviderForProfile(profile) ==
+      glic::GlicProvider::kGeminiEnterprise;
   bool show_glic_section = false;
   bool glic_disallowed_by_admin = false;
 
   auto glic_enablement = glic::GlicEnabling::EnablementForProfile(profile);
-  show_glic_section = glic_enablement.ShouldShowSettingsPage();
+  show_glic_section =
+      glic_enablement.ShouldShowSettingsPage() && !show_geic_section;
   glic_disallowed_by_admin = glic_enablement.DisallowedByAdmin();
 
   if (glic_enablement.IsProfileEligible()) {
@@ -584,7 +588,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                                 base::Unretained(this)));
   }
 
-  const bool show_geic_section = base::FeatureList::IsEnabled(features::kGeic);
   html_source->AddBoolean("showGlicSettings", show_glic_section);
   html_source->AddBoolean("showGeicSettings", show_geic_section);
   html_source->AddBoolean("glicDisallowedByAdmin", glic_disallowed_by_admin);
@@ -910,7 +913,9 @@ void SettingsUI::UpdateShowGlicState() {
   // page.
   Profile* profile = Profile::FromWebUI(web_ui());
   auto enablement = glic::GlicEnabling::EnablementForProfile(profile);
-  const bool show_glic = enablement.ShouldShowSettingsPage();
+  const bool show_glic = enablement.ShouldShowSettingsPage() &&
+                         glic::GlicEnabling::GetProviderForProfile(profile) !=
+                             glic::GlicProvider::kGeminiEnterprise;
 
   base::DictValue update;
   update.Set("showGlicSettings", show_glic);
