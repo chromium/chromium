@@ -76,6 +76,8 @@ function run_test(origin) {
         '*');
     await Promise.race([tool_started_promise, timeout_promise(t, 'tool never ran')]);
 
+    const toolCancelPromise = waitForToolCancel('parent_tool');
+
     // The iframe navigates away before the tool has finished executing. Instead
     // of navigating the iframe with its `src` attribute, we request it initiate
     // its own navigation, just so if the `signal` above aborts, we're sure that
@@ -83,8 +85,56 @@ function run_test(origin) {
     // doing regarding navigations and tool executions.
     iframe.contentWindow.postMessage({action: 'navigate'}, '*');
 
-    await Promise.race([signal_aborted_promise, timeout_promise(t, 'signal never aborted')]);
-  }, `executeTool() aborts target signal when the invoker document (${origin_for_description}) navigates away`);
+    await Promise.race([
+      Promise.all([signal_aborted_promise, toolCancelPromise]),
+      timeout_promise(t, 'signal or toolcancel never fired')
+    ]);
+  }, `executeTool() aborts target signal and fires toolcancel when the invoker document (${origin_for_description}) navigates away`);
+
+  promise_test(async t => {
+    const iframe = document.createElement('iframe');
+    iframe.src = origin + '/webmcp/imperative/resources/iframe-caller.html';
+    iframe.allow = `tools ${origin}`;
+
+    const { promise: loadPromise, resolve: resolveLoad } = Promise.withResolvers();
+    iframe.onload = resolveLoad;
+    document.body.appendChild(iframe);
+    t.add_cleanup(() => iframe.remove());
+    await loadPromise;
+
+    const { promise: toolStartedPromise, resolve: resolveToolStarted } = Promise.withResolvers();
+    const { promise: signalAbortedPromise, resolve: resolveSignalAborted } = Promise.withResolvers();
+    const toolCancelPromise = waitForToolCancel('parent_tool_detach');
+
+    const controller = new AbortController();
+    t.add_cleanup(() => controller.abort());
+    await document.modelContext.registerTool({
+      name: 'parent_tool_detach',
+      description: 'Parent tool for caller detachment',
+      execute: async (input, opts) => {
+        opts.signal.onabort = resolveSignalAborted;
+        resolveToolStarted();
+        await new Promise(() => {});
+      }
+    }, { exposedTo: [origin], signal: controller.signal });
+
+    iframe.contentWindow.postMessage(
+        {
+          action: 'invoke',
+          name: 'parent_tool_detach',
+          options: {fromOrigins: [self.origin]}
+        },
+        '*');
+    await Promise.race([toolStartedPromise, timeout_promise(t, 'tool never ran')]);
+
+    // Detach the caller iframe from the DOM while the parent tool is executing.
+    iframe.remove();
+
+    await Promise.race([
+      Promise.all([signalAbortedPromise, toolCancelPromise]),
+      timeout_promise(t, 'signal or toolcancel never fired after caller detachment')
+    ]);
+  }, `executeTool() aborts target signal and fires toolcancel when the invoker frame (${origin_for_description}) is detached from the DOM`);
 }
 </script>
 </body>

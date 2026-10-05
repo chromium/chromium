@@ -6,6 +6,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
+<script src="resources/helpers.js"></script>
 </head>
 <body>
 <script>
@@ -110,6 +111,62 @@ promise_test(async t => {
 
   assert_equals(response.error_name, 'NotAllowedError', 'Should reject with NotAllowedError');
 }, 'executeTool() throws NotAllowedError in iframe when permissions policy is disabled');
+
+promise_test(async t => {
+  const iframe = document.createElement('iframe');
+  const originB = host_info.HTTPS_REMOTE_ORIGIN;
+
+  iframe.src = originB + '/webmcp/imperative/resources/iframe-register-tool.html';
+  iframe.allow = `tools ${originB}`;
+
+  const { promise: loadPromise, resolve: resolveLoad } = Promise.withResolvers();
+  iframe.onload = resolveLoad;
+  document.body.appendChild(iframe);
+  t.add_cleanup(() => iframe.remove());
+  await loadPromise;
+
+  const { promise: toolChangePromise, resolve: resolveToolChange } = Promise.withResolvers();
+  document.modelContext.addEventListener('toolchange', resolveToolChange, {once: true});
+
+  iframe.contentWindow.postMessage({
+    action: 'register',
+    tool: { name: 'revocable_tool', description: 'Origin B revocable tool' },
+    options: { exposedTo: [self.origin] }
+  }, '*');
+  await toolChangePromise;
+
+  const tools = await document.modelContext.getTools({fromOrigins: [originB]});
+  const tool = tools.find(t => t.name === 'revocable_tool');
+  assert_true(!!tool, 'Tool should initially be visible to parent');
+
+  // Revoke exposure to the parent origin by unregistering and re-registering
+  // without `exposedTo: [self.origin]`.
+  const { promise: unregisterChange, resolve: resolveUnregisterChange } = Promise.withResolvers();
+  document.modelContext.addEventListener('toolchange', resolveUnregisterChange, {once: true});
+  iframe.contentWindow.postMessage({
+    action: 'unregister',
+    name: 'revocable_tool'
+  }, '*');
+  await unregisterChange;
+
+  iframe.contentWindow.postMessage({
+    action: 'register',
+    tool: { name: 'revocable_tool', description: 'Origin B private tool' },
+    options: { exposedTo: [] }
+  }, '*');
+
+  // Wait for the iframe to finish re-registering by querying its own tools.
+  iframe.contentWindow.postMessage('getTools', '*');
+  const response = await waitForIframeMessage('getToolsResponse');
+  assert_equals(response.tools.length, 1);
+  assert_equals(response.tools[0].name, 'revocable_tool');
+
+  // Executing the previously retrieved RegisteredTool reference must now reject
+  // because the target frame no longer exposes the tool to the caller's origin.
+  await promise_rejects_dom(
+      t, 'UnknownError', document.modelContext.executeTool(tool),
+      'executeTool() should reject when target frame revokes origin exposure');
+}, 'executeTool() rejects when target frame revokes exposedTo permission after getTools()');
 </script>
 </body>
 </html>

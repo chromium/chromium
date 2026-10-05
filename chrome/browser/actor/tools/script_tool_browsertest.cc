@@ -1015,4 +1015,111 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
       std::move(action), mojom::ActionResultCode::kScriptToolInvocationFailed);
 }
 
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       CancelOngoingActions_ImperativeTool) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_cancel.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Running `hanging_tool` sends a DOM automation message once execution has
+  // started, which the test listens for to trigger cancellation mid-execution.
+  content::DOMMessageQueue message_queue(web_contents());
+  auto action = MakeScriptToolRequest(*main_frame(), "hanging_tool", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"hanging_tool_started\"", message);
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "window.signalAborted"));
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "window.toolCancelFired"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       CancelOngoingActions_DeclarativeTool) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/declarative_script_tool_pause.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    window.toolCancelFired = false;
+    document.modelContext.addEventListener('toolcancel', e => {
+      if (e.toolName === 'declarative_tool') {
+        window.toolCancelFired = true;
+      }
+    });
+  )"));
+
+  const std::string declarative_input =
+      R"JSON({"echo":"declarative_input"})JSON";
+  auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
+                                      declarative_input);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+    }));
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kPausedByActor;
+    }));
+  }
+
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                "document.querySelector('form').matches(':tool-form-active')"));
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+  EXPECT_EQ(false,
+            content::EvalJs(
+                web_contents(),
+                "document.querySelector('form').matches(':tool-form-active')"));
+  EXPECT_EQ(
+      false,
+      content::EvalJs(
+          web_contents(),
+          "document.querySelector('button').matches(':tool-submit-active')"));
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "window.toolCancelFired"));
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
+                       CancelOngoingActions_ReentrantExecuteTool) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/actor/script_tool_cancel_reentrant.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Running `reentrant_outer` invokes `reentrant_inner`, which sends a DOM
+  // automation message once nested execution has started so the test can
+  // trigger cancellation mid-execution.
+  content::DOMMessageQueue message_queue(web_contents());
+  auto action = MakeScriptToolRequest(*main_frame(), "reentrant_outer", "{}");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  EXPECT_EQ("\"reentrant_inner_started\"", message);
+
+  actor_task().CancelOngoingActions(mojom::ActionResultCode::kActionsCancelled);
+
+  ExpectErrorResult(result, mojom::ActionResultCode::kActionsCancelled);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(
+               web_contents(),
+               "window.outerSignalAborted && window.innerSignalAborted && "
+               "window.cancelledTools.includes('reentrant_outer') && "
+               "window.cancelledTools.includes('reentrant_inner')")
+        .ExtractBool();
+  }));
+}
+
 }  // namespace actor

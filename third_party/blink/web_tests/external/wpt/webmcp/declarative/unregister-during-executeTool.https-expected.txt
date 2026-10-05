@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Pre-submission DOM removal of declarative tool cancels pending executeTool() and fires toolcancel
+  assert_true: toolcancel should fire when declarative tool is removed while pending expected true got false
+[FAIL] Pre-submission attribute removal of declarative tool cancels pending executeTool() and fires toolcancel
+  assert_true: toolcancel should fire when declarative tool attribute is removed while pending expected true got false
+Harness: the test ran to completion.
+

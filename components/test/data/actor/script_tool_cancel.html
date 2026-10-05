@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Script tool cancellation test</title>
+</head>
+<body>
+  <script>
+    window.signalAborted = false;
+    window.toolCancelFired = false;
+    document.modelContext.addEventListener('toolcancel', e => {
+      if (e.toolName === 'hanging_tool') {
+        window.toolCancelFired = true;
+      }
+    });
+    document.modelContext.registerTool({
+      name: 'hanging_tool',
+      description: 'Hangs until cancelled by actor',
+      execute: (input, options) => {
+        options.signal.addEventListener('abort', () => {
+          window.signalAborted = true;
+        });
+        window.domAutomationController.send('hanging_tool_started');
+        return new Promise(() => {});
+      }
+    });
+  </script>
+</body>
+</html>

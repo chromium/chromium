@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Reentrant script tool cancellation test</title>
+</head>
+<body>
+  <script>
+    window.outerSignalAborted = false;
+    window.innerSignalAborted = false;
+    window.cancelledTools = [];
+    document.modelContext.addEventListener('toolcancel', e => {
+      window.cancelledTools.push(e.toolName);
+    });
+    document.modelContext.registerTool({
+      name: 'reentrant_inner',
+      description: 'Inner tool called by reentrant_outer',
+      execute: (input, options) => {
+        options.signal.addEventListener('abort', () => {
+          window.innerSignalAborted = true;
+        });
+        window.domAutomationController.send('reentrant_inner_started');
+        return new Promise(() => {});
+      }
+    });
+    document.modelContext.registerTool({
+      name: 'reentrant_outer',
+      description: 'Outer tool invoked by actor that calls reentrant_inner',
+      execute: async (input, options) => {
+        options.signal.addEventListener('abort', () => {
+          window.outerSignalAborted = true;
+        });
+        const tools = await document.modelContext.getTools();
+        const innerTool = tools.find(t => t.name === 'reentrant_inner');
+        return await document.modelContext.executeTool(
+            innerTool, {}, { signal: options.signal });
+      }
+    });
+  </script>
+</body>
+</html>

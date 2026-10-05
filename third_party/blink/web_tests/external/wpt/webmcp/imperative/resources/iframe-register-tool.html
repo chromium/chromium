@@ -30,6 +30,9 @@
         const tool = e.data.tool;
         if (e.data.delayResolutionAndReportAbort) {
           tool.execute = (input, opts) => new Promise((resolve, reject) => {
+            document.modelContext.addEventListener('toolcancel', ev => {
+              parent.postMessage({ action: 'toolcancel_fired', toolName: ev.toolName }, '*');
+            }, { once: true });
             parent.postMessage({ action: 'tool_started' }, '*');
             if (!opts || !opts.signal) {
               parent.postMessage({ action: 'signal_aborted_result', error: 'no signal provided' }, '*');
@@ -48,6 +51,9 @@
           });
         } else if (e.data.hangsForeverAndReportsAbort) {
           tool.execute = (input, opts) => new Promise((resolve, reject) => {
+            document.modelContext.addEventListener('toolcancel', ev => {
+              parent.postMessage({ action: 'toolcancel_fired', toolName: ev.toolName }, '*');
+            }, { once: true });
             parent.postMessage({ action: 'tool_started' }, '*');
             if (!opts || !opts.signal) {
               parent.postMessage({ action: 'signal_aborted_result', error: 'no signal provided' }, '*');
