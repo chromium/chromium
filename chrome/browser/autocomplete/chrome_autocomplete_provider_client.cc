@@ -583,7 +583,7 @@ void ChromeAutocompleteProviderClient::Classify(
     AutocompleteMatch* match,
     GURL* alternate_nav_url) {
   AutocompleteClassifier* classifier = GetAutocompleteClassifier();
-  DCHECK(classifier);
+  CHECK(classifier, base::NotFatalUntil::M161);
   classifier->Classify(text, in_keyword_mode, allow_exact_keyword_match,
                        page_classification, match, alternate_nav_url);
 }
@@ -912,7 +912,8 @@ void ChromeAutocompleteProviderClient::PromptPageTranslation() {
     ChromeTranslateClient* translate_client =
         ChromeTranslateClient::FromWebContents(contents);
     if (translate_client) {
-      DCHECK_NE(nullptr, translate_client->GetTranslateManager());
+      CHECK_NE(nullptr, translate_client->GetTranslateManager(),
+               base::NotFatalUntil::M161);
       translate_client->GetTranslateManager()->ShowTranslateUI(
           /*auto_translate=*/true, /*triggered_from_menu=*/true);
     }

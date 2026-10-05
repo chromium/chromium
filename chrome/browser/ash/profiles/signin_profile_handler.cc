@@ -74,7 +74,7 @@ SigninProfileHandler* g_instance = nullptr;
 }  // namespace
 
 SigninProfileHandler::SigninProfileHandler() {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M161);
   g_instance = this;
 }
 
@@ -82,7 +82,7 @@ SigninProfileHandler::~SigninProfileHandler() {
   if (browsing_data_remover_)
     browsing_data_remover_->RemoveObserver(this);
 
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M161);
   g_instance = nullptr;
 }
 
@@ -127,7 +127,7 @@ void SigninProfileHandler::ClearSigninProfile(base::OnceClosure callback) {
   on_clear_profile_stage_finished_ = base::BarrierClosure(
       3, base::BindOnce(&SigninProfileHandler::OnSigninProfileCleared,
                         weak_factory_.GetWeakPtr()));
-  DCHECK(!browsing_data_remover_);
+  CHECK(!browsing_data_remover_, base::NotFatalUntil::M161);
   browsing_data_remover_ = signin_profile->GetBrowsingDataRemover();
   browsing_data_remover_->AddObserver(this);
   browsing_data_remover_->RemoveAndReply(
@@ -178,7 +178,7 @@ void SigninProfileHandler::OnSessionRestoreStateChanged(
 
 void SigninProfileHandler::OnBrowsingDataRemoverDone(
     uint64_t failed_data_types) {
-  DCHECK(browsing_data_remover_);
+  CHECK(browsing_data_remover_, base::NotFatalUntil::M161);
   browsing_data_remover_->RemoveObserver(this);
   browsing_data_remover_ = nullptr;
 

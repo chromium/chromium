@@ -256,7 +256,7 @@ void BitmapFetcherService::RemoveFetcher(const BitmapFetcher* fetcher) {
 void BitmapFetcherService::OnFetchComplete(const GURL& url,
                                            const SkBitmap* bitmap) {
   const BitmapFetcher* fetcher = FindFetcherForUrl(url);
-  DCHECK(fetcher);
+  CHECK(fetcher, base::NotFatalUntil::M161);
 
   // Notify all attached requests of completion.
   auto iter = requests_.begin();

@@ -128,7 +128,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
-  DCHECK(user_data);
+  CHECK(user_data, base::NotFatalUntil::M161);
   if (user_data->GetLastCommittedEntryIndex() !=
       web_contents->GetController().GetLastCommittedEntryIndex()) {
     user_data->UpdateLastCommittedStrippedURL(

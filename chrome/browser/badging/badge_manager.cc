@@ -81,7 +81,7 @@ void BadgeManager::SetDelegate(std::unique_ptr<BadgeManagerDelegate> delegate) {
 void BadgeManager::BindFrameReceiverIfAllowed(
     content::RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // The Badging API is not allowed for the fenced frames.
   if (frame->IsNestedWithinFencedFrame()) {
@@ -110,7 +110,7 @@ void BadgeManager::BindServiceWorkerReceiverIfAllowed(
     content::RenderProcessHost* service_worker_process_host,
     const content::ServiceWorkerVersionBaseInfo& info,
     mojo::PendingReceiver<blink::mojom::BadgeService> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // The Badging API is not allowed for the fenced frames.
   if (info.ancestor_frame_type ==
@@ -264,7 +264,7 @@ void BadgeManager::ClearBadge() {
 
 std::vector<std::tuple<webapps::AppId, GURL>>
 BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   content::RenderFrameHost* frame = content::RenderFrameHost::FromID(frame_id_);
   if (!frame || frame->GetStorageKey().IsThirdPartyContext()) {
     return {};
@@ -289,7 +289,7 @@ BadgeManager::FrameBindingContext::GetAppIdsAndUrlsForBadging() const {
 
 std::vector<std::tuple<webapps::AppId, GURL>>
 BadgeManager::ServiceWorkerBindingContext::GetAppIdsAndUrlsForBadging() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (storage_key_.IsThirdPartyContext()) {
     return {};

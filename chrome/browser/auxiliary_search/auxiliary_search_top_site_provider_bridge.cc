@@ -114,7 +114,7 @@ void AuxiliarySearchTopSiteProviderBridge::OnIconMadeAvailable(
 
 static int64_t JNI_AuxiliarySearchTopSiteProviderBridge_Init(JNIEnv* env,
                                                              Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   return reinterpret_cast<intptr_t>(new AuxiliarySearchTopSiteProviderBridge(
       ChromeMostVisitedSitesFactory::NewForProfile(profile)));

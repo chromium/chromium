@@ -37,6 +37,6 @@ BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() = default;
 std::unique_ptr<KeyedService>
 BitmapFetcherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M161);
   return std::make_unique<BitmapFetcherService>(context);
 }

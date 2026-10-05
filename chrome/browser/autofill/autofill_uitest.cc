@@ -53,7 +53,7 @@ std::ostream& operator<<(std::ostream& os, ObservedUiEvents event) {
 void TryToCloseAllPrompts(content::WebContents* web_contents) {
   gfx::NativeView top_level_view =
       platform_util::GetViewForWindow(web_contents->GetTopLevelNativeWindow());
-  DCHECK(top_level_view);
+  CHECK(top_level_view, base::NotFatalUntil::M161);
 
   // On Aura-based systems, prompts are siblings to the top level native window,
   // and hence we need to go one level up to start searching from the root

@@ -159,7 +159,7 @@ BackgroundApplicationListModel::~BackgroundApplicationListModel() = default;
 
 BackgroundApplicationListModel::BackgroundApplicationListModel(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   extensions::ExtensionSystem::Get(profile_)->ready().Post(
       FROM_HERE,
       base::BindOnce(&BackgroundApplicationListModel::OnExtensionSystemReady,
@@ -172,7 +172,7 @@ void BackgroundApplicationListModel::AddObserver(Observer* observer) {
 
 void BackgroundApplicationListModel::AssociateApplicationData(
     const Extension* extension) {
-  DCHECK(IsBackgroundApp(*extension, profile_));
+  CHECK(IsBackgroundApp(*extension, profile_), base::NotFatalUntil::M161);
   Application* application = FindApplication(extension);
   if (!application) {
     // App position is used as a dynamic command and so must be less than any
@@ -197,7 +197,8 @@ void BackgroundApplicationListModel::DissociateApplicationData(
 
 const Extension* BackgroundApplicationListModel::GetExtension(
     int position) const {
-  DCHECK(position >= 0 && static_cast<size_t>(position) < extensions_.size());
+  CHECK(position >= 0 && static_cast<size_t>(position) < extensions_.size(),
+        base::NotFatalUntil::M161);
   return extensions_[position].get();
 }
 
@@ -358,8 +359,10 @@ void BackgroundApplicationListModel::OnExtensionSystemReady() {
 }
 
 void BackgroundApplicationListModel::OnShutdown(ExtensionRegistry* registry) {
-  DCHECK_EQ(ExtensionRegistry::Get(profile_), registry);
-  DCHECK(extension_registry_observation_.IsObservingSource(registry));
+  CHECK_EQ(ExtensionRegistry::Get(profile_), registry,
+           base::NotFatalUntil::M161);
+  CHECK(extension_registry_observation_.IsObservingSource(registry),
+        base::NotFatalUntil::M161);
   extension_registry_observation_.Reset();
   process_manager_observation_.Reset();
   permissions_manager_observation_.Reset();
@@ -410,7 +413,7 @@ void BackgroundApplicationListModel::RemoveObserver(Observer* observer) {
 void BackgroundApplicationListModel::Update() {
   extensions::ExtensionSystem* extension_system =
       extensions::ExtensionSystem::Get(profile_);
-  DCHECK(extension_system->is_ready());
+  CHECK(extension_system->is_ready(), base::NotFatalUntil::M161);
 
   // Discover current background applications, compare with previous list, which
   // is consistently sorted, and notify observers if they differ.

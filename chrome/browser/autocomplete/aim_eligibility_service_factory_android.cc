@@ -14,7 +14,7 @@
 static bool JNI_AimEligibilityServiceFactory_IsAimStarterPackEnabled(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return OmniboxFieldTrial::IsAimStarterPackEnabled(
       AimEligibilityServiceFactory::GetForProfile(profile));
 }

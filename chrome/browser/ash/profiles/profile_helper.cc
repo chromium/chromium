@@ -227,9 +227,10 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
     return user_manager::UserManager::Get()->GetPrimaryUser();
   }
 
-  DCHECK(!content::BrowserThread::IsThreadInitialized(
-             content::BrowserThread::UI) ||
-         content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::IsThreadInitialized(
+            content::BrowserThread::UI) ||
+            content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
 
@@ -272,7 +273,7 @@ user_manager::User* ProfileHelperImpl::GetUserByProfile(
 void ProfileHelperImpl::SetUserToProfileMappingForTesting(
     const user_manager::User* user,
     Profile* profile) {
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M161);
   user_to_profile_for_testing_[user] = profile;
 }
 

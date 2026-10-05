@@ -14,7 +14,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 ShortcutsExtensionsManager::ShortcutsExtensionsManager(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   registry_observation_.Observe(extensions::ExtensionRegistry::Get(profile_));
 }
 

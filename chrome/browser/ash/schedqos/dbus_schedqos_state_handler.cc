@@ -232,7 +232,7 @@ void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   }
   is_dbus_down_ = false;
 
-  DCHECK(!is_connected_);
+  CHECK(!is_connected_, base::NotFatalUntil::M161);
   if (is_connected_) {
     LOG(ERROR)
         << "DBusSchedQOSStateHandler::OnServiceConnected while it is connected";

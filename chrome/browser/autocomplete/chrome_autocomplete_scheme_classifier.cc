@@ -30,7 +30,7 @@ static int64_t
 JNI_ChromeAutocompleteSchemeClassifier_CreateAutocompleteClassifier(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   return reinterpret_cast<intptr_t>(
       new ChromeAutocompleteSchemeClassifier(profile));

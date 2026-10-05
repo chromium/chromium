@@ -82,7 +82,7 @@ GURL PeriodicBackgroundSyncPermissionContext::GetDefaultSearchEngineUrl()
     const {
   auto* template_url_service = TemplateURLServiceFactory::GetForProfile(
       Profile::FromBrowserContext(browser_context()));
-  DCHECK(template_url_service);
+  CHECK(template_url_service, base::NotFatalUntil::M161);
 
   const TemplateURL* default_search_engine =
       template_url_service->GetDefaultSearchProvider();
@@ -96,7 +96,7 @@ PeriodicBackgroundSyncPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
 // TODO(crbug.com/397357113): PermissionStatus `change` event not triggered
 // when TWA or PWA is installed or uninstalled on Android.
@@ -119,13 +119,14 @@ PeriodicBackgroundSyncPermissionContext::GetContentSettingStatusInternal(
   // Expected values are CONTENT_SETTING_BLOCK or CONTENT_SETTING_ALLOW.
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
-  DCHECK(host_content_settings_map);
+  CHECK(host_content_settings_map, base::NotFatalUntil::M161);
 
   auto content_setting = host_content_settings_map->GetContentSetting(
       requesting_origin, embedding_origin,
       ContentSettingsType::BACKGROUND_SYNC);
-  DCHECK(content_setting == CONTENT_SETTING_BLOCK ||
-         content_setting == CONTENT_SETTING_ALLOW);
+  CHECK(content_setting == CONTENT_SETTING_BLOCK ||
+            content_setting == CONTENT_SETTING_ALLOW,
+        base::NotFatalUntil::M161);
   return content_setting;
 }
 
@@ -143,8 +144,8 @@ void PeriodicBackgroundSyncPermissionContext::NotifyPermissionSet(
     bool persist,
     const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
-  DCHECK(!persist);
-  DCHECK(decision.is_final);
+  CHECK(!persist, base::NotFatalUntil::M161);
+  CHECK(decision.is_final, base::NotFatalUntil::M161);
 
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), persist, permission_result, decision);

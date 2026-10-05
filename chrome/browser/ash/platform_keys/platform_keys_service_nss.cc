@@ -1739,7 +1739,7 @@ void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
 // Used by GetAllKeys().
 void GetAllKeysWithDb(std::unique_ptr<GetAllKeysState> state,
                       net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -1752,7 +1752,7 @@ void GetAllKeysWithDb(std::unique_ptr<GetAllKeysState> state,
 // ImportCertificate().
 void ImportCertificateWithDB(std::unique_ptr<ImportCertificateState> state,
                              net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   if (!state->certificate_) {
     state->OnError(FROM_HERE, Status::kNetErrorCertificateInvalid);
@@ -1795,7 +1795,7 @@ void ImportCertificateWithDB(std::unique_ptr<ImportCertificateState> state,
 void DidRemoveCertificate(std::unique_ptr<RemoveCertificateState> state,
                           bool certificate_found,
                           bool success) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // CertificateNotFound error has precedence over an internal error.
   if (!certificate_found) {
     state->OnError(FROM_HERE, Status::kErrorCertificateNotFound);
@@ -1813,7 +1813,7 @@ void DidRemoveCertificate(std::unique_ptr<RemoveCertificateState> state,
 // RemoveCertificate().
 void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
                              net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   PRBool certificate_found;
   net::ScopedCERTCertificate nss_cert =
@@ -1834,7 +1834,7 @@ void RemoveCertificateWithDB(std::unique_ptr<RemoveCertificateState> state,
 // Does the actual key pair removal on a worker thread. Used by
 // RemoveKeyWithDb().
 void RemoveKeyOnWorkerThread(std::unique_ptr<RemoveKeyState> state) {
-  DCHECK(state->slot_.get());
+  CHECK(state->slot_.get(), base::NotFatalUntil::M161);
 
   crypto::ScopedSECKEYPrivateKey private_key =
       GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
@@ -1874,7 +1874,7 @@ void RemoveKeyOnWorkerThread(std::unique_ptr<RemoveKeyState> state) {
 // RemoveKey().
 void RemoveKeyWithDb(std::unique_ptr<RemoveKeyState> state,
                      net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -1913,7 +1913,7 @@ void RemoveSymKeyOnWorkerThread(std::unique_ptr<RemoveSymKeyState> state) {
 // RemoveSymKey().
 void RemoveSymKeyWithDb(std::unique_ptr<RemoveSymKeyState> state,
                         net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -1925,7 +1925,7 @@ void RemoveSymKeyWithDb(std::unique_ptr<RemoveSymKeyState> state,
 // Does the actual work to determine which tokens are available.
 void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
                      net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   std::vector<TokenId> token_ids;
 
   // The user token will be unavailable in case of no logged in user in this
@@ -1938,7 +1938,7 @@ void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
     token_ids.push_back(TokenId::kSystem);
   }
 
-  DCHECK(!token_ids.empty());
+  CHECK(!token_ids.empty(), base::NotFatalUntil::M161);
 
   state->OnSuccess(FROM_HERE, std::move(token_ids));
 }
@@ -1946,7 +1946,7 @@ void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
 // Does the actual work to determine which key is on which token.
 void GetKeyLocationsWithDB(std::unique_ptr<GetKeyLocationsState> state,
                            net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   std::vector<TokenId> token_ids;
 
@@ -2024,7 +2024,7 @@ CK_ATTRIBUTE_TYPE TranslateKeyAttributeType(KeyAttributeType type,
 // SetAttributeForKeyWithDb().
 void SetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<SetAttributeForKeyState> state) {
-  DCHECK(state->slot_.get());
+  CHECK(state->slot_.get(), base::NotFatalUntil::M161);
 
   crypto::ScopedSECKEYPrivateKey private_key =
       GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
@@ -2052,7 +2052,7 @@ void SetAttributeForKeyWithDbOnWorkerThread(
 // Called by SetAttributeForKey().
 void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
                               net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task could interact with the TPM, hence MayBlock().
@@ -2068,7 +2068,7 @@ void SetAttributeForKeyWithDb(std::unique_ptr<SetAttributeForKeyState> state,
 // GetAttributeForKeyWithDb().
 void GetAttributeForKeyWithDbOnWorkerThread(
     std::unique_ptr<GetAttributeForKeyState> state) {
-  DCHECK(state->slot_.get());
+  CHECK(state->slot_.get(), base::NotFatalUntil::M161);
 
   crypto::ScopedSECKEYPrivateKey private_key =
       GetPrivateKey(state->public_key_spki_der_, state->slot_.get());
@@ -2081,7 +2081,7 @@ void GetAttributeForKeyWithDbOnWorkerThread(
   crypto::ScopedSECItem attribute_value(SECITEM_AllocItem(/*arena=*/nullptr,
                                                           /*item=*/nullptr,
                                                           /*len=*/0));
-  DCHECK(attribute_value.get());
+  CHECK(attribute_value.get(), base::NotFatalUntil::M161);
 
   if (PK11_ReadRawAttribute(
           /*objType=*/PK11_TypePrivKey, private_key.get(),
@@ -2115,7 +2115,7 @@ void GetAttributeForKeyWithDbOnWorkerThread(
 // Called by GetAttributeForKey().
 void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
                               net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task could interact with the TPM, hence MayBlock().
@@ -2129,8 +2129,8 @@ void GetAttributeForKeyWithDb(std::unique_ptr<GetAttributeForKeyState> state,
 
 void IsKeyOnTokenWithDb(std::unique_ptr<IsKeyOnTokenState> state,
                         net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(state->slot_.get());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(state->slot_.get(), base::NotFatalUntil::M161);
 
   bool key_on_slot =
       GetPrivateKey(state->public_key_spki_der_, state->slot_.get()) != nullptr;
@@ -2144,7 +2144,7 @@ void PlatformKeysServiceImpl::GenerateSymKey(TokenId token_id,
                                              int key_size,
                                              SymKeyType key_type,
                                              GenerateKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GenerateSymKeyState>(
       weak_factory_.GetWeakPtr(), std::move(key_id), key_size, key_type,
       std::move(callback));
@@ -2165,7 +2165,7 @@ void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
                                              unsigned int modulus_length_bits,
                                              bool sw_backed,
                                              GenerateKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GenerateRSAKeyState>(
       weak_factory_.GetWeakPtr(), modulus_length_bits, sw_backed, token_id,
       std::move(callback));
@@ -2189,7 +2189,7 @@ void PlatformKeysServiceImpl::GenerateRSAKey(TokenId token_id,
 void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
                                             const std::string named_curve,
                                             GenerateKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GenerateECKeyState>(
       weak_factory_.GetWeakPtr(), std::move(named_curve), token_id,
       std::move(callback));
@@ -2213,7 +2213,7 @@ void PlatformKeysServiceImpl::EncryptDecryptAES(
     std::vector<uint8_t>& init_vector,
     EncryptDecryptCallback callback,
     OperationType operation_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<EncryptDecryptState>(
       weak_factory_.GetWeakPtr(), std::move(input_data), std::move(key_id),
       std::move(algorithm), std::move(init_vector), operation_type,
@@ -2265,7 +2265,7 @@ void PlatformKeysServiceImpl::DeriveSymKey(
     std::vector<uint8_t> context,
     chromeos::platform_keys::SymKeyType derived_key_type,
     DeriveKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   std::unique_ptr<DeriveSymKeyState> state;
   state = std::make_unique<DeriveSymKeyState>(
       weak_factory_.GetWeakPtr(), std::move(base_key_id),
@@ -2296,7 +2296,7 @@ void PlatformKeysServiceImpl::SignRsaPkcs1(
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
     SignCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<SignState>(
       weak_factory_.GetWeakPtr(), std::move(data),
       std::move(public_key_spki_der), hash_algorithm,
@@ -2322,7 +2322,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
     SignCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<SignState>(
       weak_factory_.GetWeakPtr(), std::move(data),
       std::move(public_key_spki_der), HashAlgorithm::HASH_ALGORITHM_NONE,
@@ -2349,7 +2349,7 @@ void PlatformKeysServiceImpl::SignEcdsa(
     std::vector<uint8_t> public_key_spki_der,
     HashAlgorithm hash_algorithm,
     SignCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<SignState>(
       weak_factory_.GetWeakPtr(), std::move(data),
       std::move(public_key_spki_der), hash_algorithm,
@@ -2374,7 +2374,7 @@ void PlatformKeysServiceImpl::SignWithSymKey(std::optional<TokenId> token_id,
                                              std::vector<uint8_t> data,
                                              std::vector<uint8_t> key_id,
                                              SignCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<SignSymState>(
       weak_factory_.GetWeakPtr(), std::move(data), std::move(key_id),
       std::move(callback));
@@ -2397,7 +2397,7 @@ void PlatformKeysServiceImpl::SignWithSymKey(std::optional<TokenId> token_id,
 void PlatformKeysServiceImpl::SelectClientCertificates(
     std::vector<std::string> certificate_authorities,
     SelectCertificatesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto cert_request_info = base::MakeRefCounted<net::SSLCertRequestInfo>();
 
@@ -2426,7 +2426,7 @@ void PlatformKeysServiceImpl::SelectClientCertificates(
 void PlatformKeysServiceImpl::GetCertificates(
     TokenId token_id,
     GetCertificatesCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GetCertificatesState>(
       weak_factory_.GetWeakPtr(), std::move(callback));
   if (delegate_->IsShutDown()) {
@@ -2443,7 +2443,7 @@ void PlatformKeysServiceImpl::GetCertificates(
 
 void PlatformKeysServiceImpl::GetAllKeys(TokenId token_id,
                                          GetAllKeysCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto state = std::make_unique<GetAllKeysState>(weak_factory_.GetWeakPtr(),
                                                  std::move(callback));
@@ -2463,7 +2463,7 @@ void PlatformKeysServiceImpl::ImportCertificate(
     TokenId token_id,
     const scoped_refptr<net::X509Certificate>& certificate,
     ImportCertificateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<ImportCertificateState>(
       weak_factory_.GetWeakPtr(), certificate, std::move(callback));
   if (delegate_->IsShutDown()) {
@@ -2486,7 +2486,7 @@ void PlatformKeysServiceImpl::RemoveCertificate(
     TokenId token_id,
     const scoped_refptr<net::X509Certificate>& certificate,
     RemoveCertificateCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<RemoveCertificateState>(
       weak_factory_.GetWeakPtr(), certificate, std::move(callback));
   if (delegate_->IsShutDown()) {
@@ -2508,7 +2508,7 @@ void PlatformKeysServiceImpl::RemoveKey(
     TokenId token_id,
     std::vector<uint8_t> public_key_spki_der,
     RemoveKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto state = std::make_unique<RemoveKeyState>(weak_factory_.GetWeakPtr(),
                                                 std::move(public_key_spki_der),
@@ -2531,7 +2531,7 @@ void PlatformKeysServiceImpl::RemoveKey(
 void PlatformKeysServiceImpl::RemoveSymKey(TokenId token_id,
                                            std::vector<uint8_t> key_id,
                                            RemoveKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto state = std::make_unique<RemoveSymKeyState>(
       weak_factory_.GetWeakPtr(), std::move(key_id), std::move(callback));
@@ -2552,7 +2552,7 @@ void PlatformKeysServiceImpl::RemoveSymKey(TokenId token_id,
 }
 
 void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GetTokensState>(weak_factory_.GetWeakPtr(),
                                                 std::move(callback));
   if (delegate_->IsShutDown()) {
@@ -2570,7 +2570,7 @@ void PlatformKeysServiceImpl::GetTokens(GetTokensCallback callback) {
 void PlatformKeysServiceImpl::GetKeyLocations(
     std::vector<uint8_t> public_key_spki_der,
     GetKeyLocationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto state = std::make_unique<GetKeyLocationsState>(
       weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),
       std::move(callback));
@@ -2594,7 +2594,7 @@ void PlatformKeysServiceImpl::SetAttributeForKey(
     KeyAttributeType attribute_type,
     std::vector<uint8_t> attribute_value,
     SetAttributeForKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   CK_ATTRIBUTE_TYPE ck_attribute_type = TranslateKeyAttributeType(
       attribute_type,
@@ -2624,7 +2624,7 @@ void PlatformKeysServiceImpl::GetAttributeForKey(
     std::vector<uint8_t> public_key_spki_der,
     KeyAttributeType attribute_type,
     GetAttributeForKeyCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   CK_ATTRIBUTE_TYPE ck_attribute_type = TranslateKeyAttributeType(
       attribute_type,
@@ -2653,7 +2653,7 @@ void PlatformKeysServiceImpl::IsKeyOnToken(
     TokenId token_id,
     std::vector<uint8_t> public_key_spki_der,
     IsKeyOnTokenCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto state = std::make_unique<IsKeyOnTokenState>(
       weak_factory_.GetWeakPtr(), std::move(public_key_spki_der),

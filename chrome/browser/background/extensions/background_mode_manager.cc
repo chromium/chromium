@@ -127,14 +127,14 @@ void BackgroundModeManager::BackgroundModeData::UpdateProfileKeepAlive() {
 
 void BackgroundModeManager::BackgroundModeData::OnProfileWillBeDestroyed(
     Profile* profile) {
-  DCHECK_EQ(profile_, profile);
+  CHECK_EQ(profile_, profile, base::NotFatalUntil::M161);
   profile_observation_.Reset();
   force_installed_tracker_observation_.Reset();
-  DCHECK(!profile_keep_alive_);
+  CHECK(!profile_keep_alive_, base::NotFatalUntil::M161);
   profile_ = nullptr;
   // Remove this Profile* from |background_mode_data|.
   bool did_unregister = manager_->UnregisterProfile(profile);
-  DCHECK(did_unregister);
+  CHECK(did_unregister, base::NotFatalUntil::M161);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -147,7 +147,8 @@ void BackgroundModeManager::BackgroundModeData::ExecuteCommand(
       // Do nothing. This is just a label.
       break;
     default:
-      DCHECK(!command_id_handler_vector_->at(command_id).is_null());
+      CHECK(!command_id_handler_vector_->at(command_id).is_null(),
+            base::NotFatalUntil::M161);
       command_id_handler_vector_->at(command_id).Run();
       break;
   }
@@ -183,7 +184,7 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
       const std::string& name = application->name();
       int command_id = command_id_handler_vector_->size();
       // Check that the command ID is within the dynamic range.
-      DCHECK_LT(command_id, IDC_MinimumLabelValue);
+      CHECK_LT(command_id, IDC_MinimumLabelValue, base::NotFatalUntil::M161);
       command_id_handler_vector_->push_back(base::BindRepeating(
           &BackgroundModeManager::LaunchBackgroundApplication, profile_,
           base::RetainedRef(application)));
@@ -222,7 +223,7 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
   if (containing_menu) {
     int menu_command_id = command_id_handler_vector_->size();
     // Check that the command ID is within the dynamic range.
-    DCHECK_LT(menu_command_id, IDC_MinimumLabelValue);
+    CHECK_LT(menu_command_id, IDC_MinimumLabelValue, base::NotFatalUntil::M161);
     command_id_handler_vector_->push_back(base::DoNothing());
     containing_menu->AddSubMenu(menu_command_id, name_, menu);
   }
@@ -353,7 +354,7 @@ void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void BackgroundModeManager::RegisterProfile(Profile* profile) {
   // We don't want to register multiple times for one profile.
-  DCHECK(!background_mode_data_.contains(profile));
+  CHECK(!background_mode_data_.contains(profile), base::NotFatalUntil::M161);
   auto bmd = std::make_unique<BackgroundModeData>(this, profile,
                                                   &command_id_handler_vector_);
   BackgroundModeData* bmd_ptr = bmd.get();
@@ -518,7 +519,7 @@ void BackgroundModeManager::OnApplicationListChanged(const Profile* profile) {
 void BackgroundModeManager::OnProfileAdded(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       profile_storage_->GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M161);
   std::u16string profile_name = entry->GetName();
   // At this point, the profile should be registered with the background mode
   // manager, but when it's actually added to the ProfileAttributesStorage is
@@ -548,7 +549,7 @@ void BackgroundModeManager::OnProfileNameChanged(
     const std::u16string& old_profile_name) {
   ProfileAttributesEntry* entry =
       profile_storage_->GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M161);
   std::u16string new_profile_name = entry->GetName();
   BackgroundModeInfoMap::const_iterator it =
       GetBackgroundModeIterator(old_profile_name);
@@ -576,7 +577,7 @@ BackgroundModeManager::GetBackgroundModeDataForLastProfile() const {
   ProfileAttributesEntry* entry =
       profile_storage_->GetProfileAttributesWithPath(
           profile_background_data->first->GetPath());
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M161);
   if (entry->IsSigninRequired()) {
     return nullptr;
   }
@@ -612,21 +613,23 @@ void BackgroundModeManager::ExecuteCommand(int command_id, int event_flags) {
     case IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND: {
       // Background mode must already be enabled (as otherwise this menu would
       // not be visible).
-      DCHECK(IsBackgroundModePrefEnabled());
-      DCHECK(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
+      CHECK(IsBackgroundModePrefEnabled(), base::NotFatalUntil::M161);
+      CHECK(KeepAliveRegistry::GetInstance()->IsKeepingAlive(),
+            base::NotFatalUntil::M161);
 
       // Set the background mode pref to "disabled" - the resulting notification
       // will result in a call to DisableBackgroundMode().
       PrefService* service = g_browser_process->local_state();
-      DCHECK(service);
+      CHECK(service, base::NotFatalUntil::M161);
       service->SetBoolean(prefs::kBackgroundModeEnabled, false);
       break;
     }
     case IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND_SETTING: {
       // Background mode must already be enabled (as otherwise this menu would
       // not be visible).
-      DCHECK(IsBackgroundModePrefEnabled());
-      DCHECK(KeepAliveRegistry::GetInstance()->IsKeepingAlive());
+      CHECK(IsBackgroundModePrefEnabled(), base::NotFatalUntil::M161);
+      CHECK(KeepAliveRegistry::GetInstance()->IsKeepingAlive(),
+            base::NotFatalUntil::M161);
 
       chrome::ShowSettingsSubPage(bmd->GetBrowserWindow(),
                                   chrome::kChromeUISystemInfoHost);
@@ -678,7 +681,7 @@ void BackgroundModeManager::ReleaseForceInstalledExtensionsKeepAlive() {
 }
 
 void BackgroundModeManager::StartBackgroundMode() {
-  DCHECK(ShouldBeInBackgroundMode());
+  CHECK(ShouldBeInBackgroundMode(), base::NotFatalUntil::M161);
   // Don't bother putting ourselves in background mode if we're already there
   // or if background mode is disabled.
   if (in_background_mode_) {
@@ -703,7 +706,7 @@ void BackgroundModeManager::EndBackgroundMode() {
 }
 
 void BackgroundModeManager::EnableBackgroundMode() {
-  DCHECK(IsBackgroundModePrefEnabled());
+  CHECK(IsBackgroundModePrefEnabled(), base::NotFatalUntil::M161);
   // If background mode should be enabled, but isn't, turn it on.
   if (!in_background_mode_ && ShouldBeInBackgroundMode()) {
     StartBackgroundMode();
@@ -715,7 +718,7 @@ void BackgroundModeManager::EnableBackgroundMode() {
 }
 
 void BackgroundModeManager::DisableBackgroundMode() {
-  DCHECK(!IsBackgroundModePrefEnabled());
+  CHECK(!IsBackgroundModePrefEnabled(), base::NotFatalUntil::M161);
   // If background mode is currently enabled, turn it off.
   if (in_background_mode_) {
     EndBackgroundMode();
@@ -758,7 +761,7 @@ void BackgroundModeManager::OnBrowserCreated(BrowserWindowInterface*) {
 void BackgroundModeManager::OnClientsChanged(
     const Profile* profile,
     const std::vector<std::u16string>& new_client_names) {
-  DCHECK(IsBackgroundModePrefEnabled());
+  CHECK(IsBackgroundModePrefEnabled(), base::NotFatalUntil::M161);
 
   // Update the ProfileAttributesStorage with the fact whether background
   // clients are running for this profile.
@@ -865,7 +868,7 @@ gfx::ImageSkia GetStatusTrayIcon() {
   // from the Windows API, but that does a *terrible* job scaling images.
   // Therefore, we fetch the images and do our own high-quality scaling.
   std::unique_ptr<gfx::ImageFamily> family = GetAppIconImageFamily();
-  DCHECK(family);
+  CHECK(family, base::NotFatalUntil::M161);
   if (!family) {
     return gfx::ImageSkia();
   }
@@ -924,7 +927,7 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
   // We should only get here if we have a profile loaded, or if we're running
   // in test mode.
   if (background_mode_data_.empty()) {
-    DCHECK(keep_alive_for_test_);
+    CHECK(keep_alive_for_test_, base::NotFatalUntil::M161);
     return;
   }
 
@@ -964,13 +967,15 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
     // We should only be displaying the status tray icon if there is at least
     // one profile using background mode. If |keep_alive_for_test_| is set,
     // there may not be any profiles and that is okay.
-    DCHECK(profiles_using_background_mode > 0 || keep_alive_for_test_);
+    CHECK(profiles_using_background_mode > 0 || keep_alive_for_test_,
+          base::NotFatalUntil::M161);
   } else {
     // We should only have one profile in the ProfileAttributesStorage if we are
     // not using multi-profiles. If |keep_alive_for_test_| is set, then we may
     // not have any profiles in the ProfileAttributesStorage.
-    DCHECK(profile_storage_->GetNumberOfProfiles() == size_t(1) ||
-           keep_alive_for_test_);
+    CHECK(profile_storage_->GetNumberOfProfiles() == size_t(1) ||
+              keep_alive_for_test_,
+          base::NotFatalUntil::M161);
     background_mode_data_.begin()->second->BuildProfileMenu(menu.get(),
                                                             nullptr);
   }
@@ -990,7 +995,7 @@ void BackgroundModeManager::UpdateStatusTrayIconContextMenu() {
   }
 
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   bool enabled =
       service->IsUserModifiablePreference(prefs::kBackgroundModeEnabled);
   menu->SetCommandIdEnabled(IDC_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND,
@@ -1038,6 +1043,6 @@ BackgroundModeManager::GetBackgroundModeIterator(
 
 bool BackgroundModeManager::IsBackgroundModePrefEnabled() const {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   return service->GetBoolean(prefs::kBackgroundModeEnabled);
 }

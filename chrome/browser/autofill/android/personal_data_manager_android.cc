@@ -171,7 +171,7 @@ void PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
     card->set_record_type(CreditCard::RecordType::kLocalCard);
   } else {
     // Native copies of virtual credit card objects should not be created.
-    DCHECK(!Java_CreditCard_getIsVirtual(env, jcard));
+    CHECK(!Java_CreditCard_getIsVirtual(env, jcard), base::NotFatalUntil::M161);
     card->set_record_type(CreditCard::RecordType::kMaskedServerCard);
     card->SetNetworkForMaskedCard(
         data_util::GetIssuerNetworkForBasicCardIssuerNetwork(

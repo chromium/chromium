@@ -32,9 +32,9 @@ BackgroundSyncDelegateImpl::BackgroundSyncDelegateImpl(Profile* profile)
 
       site_engagement_service_(
           site_engagement::SiteEngagementService::Get(profile)) {
-  DCHECK(profile_);
-  DCHECK(ukm_background_service_);
-  DCHECK(site_engagement_service_);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(ukm_background_service_, base::NotFatalUntil::M161);
+  CHECK(site_engagement_service_, base::NotFatalUntil::M161);
   off_the_record_ = profile_->IsOffTheRecord();
 }
 
@@ -92,7 +92,7 @@ bool BackgroundSyncDelegateImpl::IsProfileOffTheRecord() {
 
 void BackgroundSyncDelegateImpl::NoteSuspendedPeriodicSyncOrigins(
     std::set<url::Origin> suspended_origins) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   for (auto& origin : suspended_origins)
     suspended_periodic_sync_origins_.insert(std::move(origin));
@@ -155,7 +155,7 @@ void BackgroundSyncDelegateImpl::OnEngagementEvent(
     double old_score,
     site_engagement::EngagementType engagement_type,
     const std::optional<webapps::AppId>& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (score == 0.0)
     return;

@@ -28,7 +28,7 @@ std::unique_ptr<Storage> ValidationRulesStorageFactory::CreateStorage() {
 ValidationRulesStorageFactory::ValidationRulesStorageFactory() {
   base::FilePath user_data_dir;
   bool success = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
 
   json_pref_store_ = new JsonPrefStore(
       user_data_dir.Append(FILE_PATH_LITERAL("Address Validation Rules")));

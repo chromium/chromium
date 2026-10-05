@@ -25,12 +25,12 @@ BackgroundFetchPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (render_frame_host && !render_frame_host->GetParent()) {
     DownloadRequestLimiter* limiter =
         g_browser_process->download_request_limiter();
-    DCHECK(limiter);
+    CHECK(limiter, base::NotFatalUntil::M161);
     auto status = limiter->GetDownloadStatus(
         content::WebContents::FromRenderFrameHost(render_frame_host));
 
@@ -52,7 +52,7 @@ BackgroundFetchPermissionContext::GetContentSettingStatusInternal(
   // content settings.
   auto* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());
-  DCHECK(host_content_settings_map);
+  CHECK(host_content_settings_map, base::NotFatalUntil::M161);
 
   // The set of valid settings for automatic downloads is defined as
   // {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK}.
@@ -86,8 +86,8 @@ void BackgroundFetchPermissionContext::NotifyPermissionSet(
     bool persist,
     const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
-  DCHECK(!persist);
-  DCHECK(decision.is_final);
+  CHECK(!persist, base::NotFatalUntil::M161);
+  CHECK(decision.is_final, base::NotFatalUntil::M161);
 
   permissions::ContentSettingPermissionContextBase::NotifyPermissionSet(
       request_data, std::move(callback), persist, permission_result, decision);

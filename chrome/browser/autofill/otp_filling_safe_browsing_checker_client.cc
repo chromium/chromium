@@ -62,7 +62,7 @@ OtpFillingSafeBrowsingCheckerClient::~OtpFillingSafeBrowsingCheckerClient() {
 
 void OtpFillingSafeBrowsingCheckerClient::CheckUrlSafety(
     std::vector<GURL> urls_to_check) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(database_manager_);
   CHECK(!timer_.IsRunning() && callback_)
       << "OtpFillingSafeBrowsingCheckerClient is strictly single-use per "
@@ -79,7 +79,7 @@ void OtpFillingSafeBrowsingCheckerClient::CheckUrlSafety(
 }
 
 void OtpFillingSafeBrowsingCheckerClient::CheckNextUrl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (current_url_index_ >= urls_to_check_.size()) {
     // Note: This callback is always executed asynchronously relative to
     // `CheckUrlSafety`, as `CheckNextUrl` is always called asynchronously.
@@ -121,7 +121,7 @@ void OtpFillingSafeBrowsingCheckerClient::CheckNextUrl() {
 void OtpFillingSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
     const GURL& url,
     safe_browsing::SBThreatType threat_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   timer_.Stop();
 
   if (threat_types_.contains(threat_type)) {
@@ -147,7 +147,7 @@ OtpFillingSafeBrowsingCheckerClient::GetV5GetHashProtocolManager() {
 }
 
 void OtpFillingSafeBrowsingCheckerClient::OnCheckBlocklistTimeout() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(database_manager_);
 
   database_manager_->CancelCheck(this);

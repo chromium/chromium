@@ -178,7 +178,8 @@ std::string GetStringFromDataElements(
     const std::vector<network::DataElement>* data_elements) {
   std::string result;
   for (const network::DataElement& element : *data_elements) {
-    DCHECK_EQ(element.type(), network::DataElement::Tag::kBytes);
+    CHECK_EQ(element.type(), network::DataElement::Tag::kBytes,
+             base::NotFatalUntil::M161);
     // Provide the length of the bytes explicitly, not to rely on the null
     // termination.
     const auto piece = element.As<network::DataElementBytes>().AsStringPiece();

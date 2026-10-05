@@ -38,7 +38,7 @@ void BatteryMetrics::OverrideBatteryMonitorBinderForTesting(
 
 void BatteryMetrics::QueryNextStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(battery_monitor_.is_bound());
+  CHECK(battery_monitor_.is_bound(), base::NotFatalUntil::M161);
 
   battery_monitor_->QueryNextStatus(
       base::BindOnce(&BatteryMetrics::DidChange, weak_factory_.GetWeakPtr()));
@@ -46,7 +46,7 @@ void BatteryMetrics::QueryNextStatus() {
 
 void BatteryMetrics::StartRecording() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!battery_monitor_.is_bound());
+  CHECK(!battery_monitor_.is_bound(), base::NotFatalUntil::M161);
 
   auto receiver = battery_monitor_.BindNewPipeAndPassReceiver();
   const auto& binder = GetBinderOverride();

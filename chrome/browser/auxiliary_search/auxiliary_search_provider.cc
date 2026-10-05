@@ -83,7 +83,7 @@ class AuxiliarySearchProviderFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override {
     Profile* profile = Profile::FromBrowserContext(context);
-    DCHECK(!profile->IsOffTheRecord());
+    CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
 
     if (base::FeatureList::IsEnabled(
             chrome::android::kAndroidAppIntegrationMultiDataSource)) {
@@ -98,8 +98,9 @@ void CallJavaCallbackWithTabList(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& j_callback_obj,
     std::vector<base::WeakPtr<TabAndroid>> non_sensitive_tabs) {
-  DCHECK_LE(non_sensitive_tabs.size(),
-            chrome::android::kAuxiliarySearchMaxTabsCountParam.Get());
+  CHECK_LE(non_sensitive_tabs.size(),
+           chrome::android::kAuxiliarySearchMaxTabsCountParam.Get(),
+           base::NotFatalUntil::M161);
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tabs_list;
   std::ranges::transform(non_sensitive_tabs, std::back_inserter(j_tabs_list),
                          [](const auto& tab) { return tab->GetJavaObject(); });
@@ -230,7 +231,7 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
 // static
 static int64_t JNI_AuxiliarySearchBridge_GetForProfile(JNIEnv* env,
                                                        Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   return reinterpret_cast<intptr_t>(
       AuxiliarySearchProviderFactory::GetForProfile(profile));

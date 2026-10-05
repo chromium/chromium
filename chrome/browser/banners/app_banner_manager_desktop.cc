@@ -206,7 +206,7 @@ web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() const {
   auto* provider =
       web_app::WebAppProvider::GetForWebApps(Profile::FromBrowserContext(
           app_banner_manager_->web_contents()->GetBrowserContext()));
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M161);
   return provider->registrar_unsafe();
 }
 
@@ -275,7 +275,7 @@ void AppBannerManagerDesktop::CreateWebApp(
     WebappInstallSource install_source,
     web_app::WebAppInstalledCallback install_callback) {
   content::WebContents* contents = app_banner_manager_->web_contents();
-  DCHECK(contents);
+  CHECK(contents, base::NotFatalUntil::M161);
 
   web_app::CreateWebAppFromManifest(contents, install_source,
                                     std::move(install_callback));
