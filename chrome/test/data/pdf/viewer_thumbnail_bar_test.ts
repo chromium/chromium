@@ -375,6 +375,55 @@ const tests = [
       restore();
     }
   },
+  async function testCollapsedThumbnailBarRequests() {
+    const {thumbnailBar, requestedPages, restore} =
+        await createScrollingThumbnailBar();
+
+    try {
+      const firstThumbnail = thumbnailBar.getThumbnailForPage(1);
+      chrome.test.assertTrue(!!firstThumbnail);
+      let whenProcessed =
+          eventToPromise('thumbnails-processed-for-testing', thumbnailBar);
+      await whenThumbnailPainted(firstThumbnail);
+      await whenProcessed;
+      chrome.test.assertTrue(firstThumbnail.isPainted());
+
+      requestedPages.length = 0;
+      thumbnailBar.sidenavCollapsed = true;
+      await microtasksFinished();
+
+      // Collapsing should not clear already-painted thumbnails so they remain
+      // visible during the sidenav slide-out animation.
+      chrome.test.assertTrue(firstThumbnail.isPainted());
+
+      // Changing the active page while collapsed should not paint or request
+      // thumbnails.
+      thumbnailBar.activePage = 30;
+      await microtasksFinished();
+      const activeThumbnail = thumbnailBar.getThumbnailForPage(30);
+      chrome.test.assertTrue(!!activeThumbnail);
+      chrome.test.assertFalse(activeThumbnail.isPainted());
+      chrome.test.assertEq(0, requestedPages.length);
+
+      // Uncollapsing the thumbnail bar should clear the now off-screen first
+      // thumbnail and request the active page's thumbnail without requesting
+      // page 1.
+      whenProcessed =
+          eventToPromise('thumbnails-processed-for-testing', thumbnailBar);
+      thumbnailBar.sidenavCollapsed = false;
+      await whenThumbnailPainted(activeThumbnail);
+      await whenThumbnailCleared(firstThumbnail);
+      await whenProcessed;
+
+      chrome.test.assertFalse(firstThumbnail.isPainted());
+      chrome.test.assertFalse(requestedPages.includes(0));
+      chrome.test.assertTrue(requestedPages.includes(29));
+
+      chrome.test.succeed();
+    } finally {
+      restore();
+    }
+  },
 ];
 
 chrome.test.runTests(tests);

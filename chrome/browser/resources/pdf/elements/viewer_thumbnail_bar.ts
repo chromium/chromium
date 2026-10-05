@@ -53,6 +53,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
       activePage: {type: Number},
       clockwiseRotations: {type: Number},
       docLength: {type: Number},
+      sidenavCollapsed: {type: Boolean},
       isPluginActive_: {type: Boolean},
     };
   }
@@ -60,6 +61,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
   accessor activePage: number = 0;
   accessor clockwiseRotations: number = 0;
   accessor docLength: number = 0;
+  accessor sidenavCollapsed: boolean = false;
   protected accessor isPluginActive_: boolean = false;
   private intersectionObserver_: IntersectionObserver|null = null;
   // A map of zero-based page indices to their corresponding thumbnail
@@ -118,7 +120,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
             }
             thumbnail.setPainted();
 
-            if (!this.isPluginActive_) {
+            if (!this.isPluginActive_ || this.sidenavCollapsed) {
               return;
             }
 
@@ -137,9 +139,22 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     FocusOutlineManager.forDocument(document);
   }
 
+  private clearPendingThumbnails_() {
+    for (const thumbnail of this.pendingThumbnails_.values()) {
+      thumbnail.clearImage();
+    }
+    this.pendingThumbnails_.clear();
+  }
+
+  private observeThumbnails_() {
+    assert(this.intersectionObserver_);
+    this.shadowRoot.querySelectorAll('viewer-thumbnail')
+        .forEach(thumbnail => this.intersectionObserver_!.observe(thumbnail));
+  }
+
   private processPendingThumbnails_() {
-    if (!this.isPluginActive_) {
-      this.pendingThumbnails_.clear();
+    if (!this.isPluginActive_ || this.sidenavCollapsed) {
+      this.clearPendingThumbnails_();
       return;
     }
 
@@ -175,11 +190,15 @@ export class ViewerThumbnailBarElement extends CrLitElement {
       }
     }
 
-    if (changedProperties.has('docLength')) {
+    if (changedProperties.has('sidenavCollapsed') && this.sidenavCollapsed) {
       assert(this.intersectionObserver_);
-      // If doc length changes, we render new thumbnails.
-      this.shadowRoot.querySelectorAll('viewer-thumbnail')
-          .forEach(thumbnail => this.intersectionObserver_!.observe(thumbnail));
+      this.intersectionObserver_.disconnect();
+      this.clearPendingThumbnails_();
+    } else if (
+        !this.sidenavCollapsed &&
+        (changedProperties.has('docLength') ||
+         changedProperties.has('sidenavCollapsed'))) {
+      this.observeThumbnails_();
     }
   }
 

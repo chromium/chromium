@@ -26,7 +26,8 @@ export function getHtml(this: ViewerPdfSidenavElement) {
   <viewer-thumbnail-bar id="thumbnailBar" tabindex="0"
       ?hidden="${this.hideThumbnailView_()}" .activePage="${this.activePage}"
       .clockwiseRotations="${this.clockwiseRotations}"
-      .docLength="${this.docLength}">
+      .docLength="${this.docLength}"
+      .sidenavCollapsed="${this.sidenavCollapsed}">
   </viewer-thumbnail-bar>
   <viewer-document-outline id="outline" ?hidden="${this.hideOutlineView_()}"
       .bookmarks="${this.bookmarks}">

@@ -65,6 +65,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       bookmarks: {type: Array},
       clockwiseRotations: {type: Number},
       docLength: {type: Number},
+      sidenavCollapsed: {type: Boolean},
       strings: {type: Object},
       selectedTab_: {type: Number},
       tabs_: {type: Array},
@@ -76,6 +77,7 @@ export class ViewerPdfSidenavElement extends CrLitElement {
   accessor bookmarks: Bookmark[] = [];
   accessor clockwiseRotations: number = 0;
   accessor docLength: number = 0;
+  accessor sidenavCollapsed: boolean = false;
   accessor strings: {[key: string]: string}|undefined;
   private accessor selectedTab_: number = 0;
   protected accessor tabs_: Tab[] = [];

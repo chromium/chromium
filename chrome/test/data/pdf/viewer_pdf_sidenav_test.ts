@@ -413,6 +413,24 @@ const tests = [
     chrome.test.assertFalse(sidenav.$.icons.hidden);
     chrome.test.succeed();
   },
+
+  async function testThumbnailBarCollapsedState() {
+    const sidenav = createSidenav();
+    const thumbnailBar = sidenav.$.thumbnailBar;
+    chrome.test.assertFalse(thumbnailBar.sidenavCollapsed);
+    chrome.test.assertFalse(thumbnailBar.hidden);
+
+    sidenav.sidenavCollapsed = true;
+    await microtasksFinished();
+    chrome.test.assertTrue(thumbnailBar.sidenavCollapsed);
+    chrome.test.assertFalse(thumbnailBar.hidden);
+
+    sidenav.sidenavCollapsed = false;
+    await microtasksFinished();
+    chrome.test.assertFalse(thumbnailBar.sidenavCollapsed);
+    chrome.test.assertFalse(thumbnailBar.hidden);
+    chrome.test.succeed();
+  },
 ];
 
 chrome.test.runTests(tests);
