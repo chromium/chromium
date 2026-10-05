@@ -162,11 +162,6 @@
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/2
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/3
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/4
--OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
--OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
--OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/2
--OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/3
--OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/4
 -WebRtcAudioBrowserTest.CanMakeVideoCallAndThenRenegotiateToAudio
 -WebRtcAudioBrowserTest.EnsureLocalVideoMuteDoesntMuteAudio
 -WebRtcAudioBrowserTest.EnsureRemoteVideoMuteDoesntMuteAudio
@@ -177,7 +172,6 @@
 -WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyRemoteMutingWorks
 -WebRtcAudioBrowserTest.EstablishAudioVideoCallAndVerifyUnmutingWorks
 -WebRtcAudioDebugRecordingsBrowserTest.CallWithAudioDebugRecordings
--WebRtcMediaRecorderTest.TwoChannelAudioRecording
 
 # TODO(crbug.com/40285557): reports the wrong width/height.
 -RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS

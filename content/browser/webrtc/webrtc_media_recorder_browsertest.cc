@@ -45,10 +45,8 @@ static const EncodingParameters kProprietaryEncodingParameters[] = {
 
 namespace content {
 
-// This class tests the recording of a media stream.
-class WebRtcMediaRecorderTest
-    : public WebRtcContentBrowserTestBase,
-      public testing::WithParamInterface<struct EncodingParameters> {
+// Base fixture for MediaRecorder tests.
+class WebRtcMediaRecorderTestBase : public WebRtcContentBrowserTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebRtcContentBrowserTestBase::SetUpCommandLine(command_line);
@@ -57,7 +55,7 @@ class WebRtcMediaRecorderTest
 
     command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
-    if (GetParam().disable_accelerator) {
+    if (ShouldDisableAccelerator()) {
       command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);
     }
 
@@ -70,15 +68,38 @@ class WebRtcMediaRecorderTest
         {});
   }
 
+ protected:
+  // Returns whether accelerated video encoding should be disabled.
+  virtual bool ShouldDisableAccelerator() const = 0;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Start) {
+// Tests that run with each `EncodingParameters` entry.
+class WebRtcMediaRecorderTest
+    : public WebRtcMediaRecorderTestBase,
+      public testing::WithParamInterface<struct EncodingParameters> {
+ protected:
+  bool ShouldDisableAccelerator() const override {
+    return GetParam().disable_accelerator;
+  }
+};
+
+// Tests that use the default MIME type, so they only run once per
+// `disable_accelerator` value.
+class WebRtcMediaRecorderDefaultMimeTypeTest
+    : public WebRtcMediaRecorderTestBase,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool ShouldDisableAccelerator() const override { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest, Start) {
   MakeTypicalCall("testStartAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartAndStop) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
@@ -94,11 +115,12 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, StartWithTimeSlice) {
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Resume) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest, Resume) {
   MakeTypicalCall("testResumeAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, NoResumeWhenRecorderInactive) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
+                       NoResumeWhenRecorderInactive) {
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
@@ -108,25 +130,27 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, ResumeAndDataAvailable) {
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Pause) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest, Pause) {
   MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, PauseStop) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest, PauseStop) {
   MakeTypicalCall("testPauseStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        PausePreventsDataavailableFromBeingFired) {
   MakeTypicalCall("testPausePreventsDataavailableFromBeingFired();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, IllegalPauseThrowsDOMError) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
+                       IllegalPauseThrowsDOMError) {
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, TwoChannelAudioRecording) {
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
+                       TwoChannelAudioRecording) {
   MakeTypicalCall("testTwoChannelAudio();", kMediaRecorderHtmlFile);
 }
 
@@ -142,19 +166,19 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_RecordWithTransparency) {
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        IllegalStartWhileRecordingThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInRecordingStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        IllegalStartWhilePausedThrowsDOMError) {
   MakeTypicalCall("testIllegalStartInPausedStateThrowsDOMError();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        IllegalRequestDataThrowsDOMError) {
   MakeTypicalCall("testIllegalRequestDataThrowsDOMError();",
                   kMediaRecorderHtmlFile);
@@ -199,13 +223,13 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   AddingTrackToMediaStreamFiresErrorEvent
 #endif
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        MAYBE_AddingTrackToMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testAddingTrackToMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
+IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderDefaultMimeTypeTest,
                        RemovingTrackFromMediaStreamFiresErrorEvent) {
   MakeTypicalCall("testRemovingTrackFromMediaStreamFiresErrorEvent();",
                   kMediaRecorderHtmlFile);
@@ -222,5 +246,13 @@ INSTANTIATE_TEST_SUITE_P(ProprietaryCodec,
                          testing::ValuesIn(kProprietaryEncodingParameters));
 
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebRtcMediaRecorderDefaultMimeTypeTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "AcceleratorDisabled"
+                                             : "AcceleratorAllowed";
+                         });
 
 }  // namespace content
