@@ -613,10 +613,12 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
     // When using multiple windows, ensure that the out of focus window keeps a
     // minimum top anchor preventing the keyboard accessory from being reduced
     // in height. This is only relevant on tablets.
-    [self.topAnchor
-        constraintLessThanOrEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor
-                                 constant:-[self accessoryHeight]]
-        .active = YES;
+    if (_isTabletFormFactor) {
+      [self.topAnchor constraintLessThanOrEqualToAnchor:self.safeAreaLayoutGuide
+                                                            .bottomAnchor
+                                               constant:-[self accessoryHeight]]
+          .active = YES;
+    }
 
     [self updateSplitViewConstraints];
     [self setHorizontalConstraints];
