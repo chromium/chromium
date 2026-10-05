@@ -17,6 +17,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "crypto/ecdsa_utils.h"
 #include "crypto/keypair.h"
@@ -143,6 +144,19 @@ std::optional<crypto::sign::SignatureKind> FromJoseAlgorithm(
     return crypto::sign::RSA_PKCS1_SHA256;
   }
   return std::nullopt;
+}
+
+std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
+    base::span<const structured_headers::ParameterizedItem> items) {
+  std::vector<crypto::sign::SignatureKind> supported_algos;
+  for (const structured_headers::ParameterizedItem& item : items) {
+    if (std::optional<crypto::sign::SignatureKind> algo =
+            base::OptionalFromPtr(item.item.GetIfToken())
+                .and_then(FromJoseAlgorithm)) {
+      supported_algos.push_back(*algo);
+    }
+  }
+  return supported_algos;
 }
 
 base::DictValue CreateBindingStatement(

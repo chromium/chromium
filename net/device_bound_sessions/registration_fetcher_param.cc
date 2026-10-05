@@ -27,20 +27,6 @@ constexpr char kProviderUrlParamKey[] = "provider_url";
 constexpr char kProviderSessionIdParamKey[] = "provider_session_id";
 constexpr char kAikRequiredParamKey[] = "aik_required";
 
-std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
-    const std::vector<net::structured_headers::ParameterizedItem>& member) {
-  std::vector<crypto::sign::SignatureKind> supported_algos;
-  for (const auto& algo_token : member) {
-    if (const std::string* token = algo_token.item.GetIfToken()) {
-      if (std::optional<crypto::sign::SignatureKind> algo =
-              net::device_bound_sessions::FromJoseAlgorithm(*token)) {
-        supported_algos.push_back(*algo);
-      }
-    }
-  }
-  return supported_algos;
-}
-
 GURL ResolveRegistrationEndpoint(const GURL& request_url,
                                  const std::string& path) {
   std::string unescaped_path = base::UnescapeURLComponent(

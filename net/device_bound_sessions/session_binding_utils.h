@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -17,6 +18,7 @@
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_usage.h"
+#include "net/http/structured_headers.h"
 
 class GURL;
 
@@ -45,6 +47,12 @@ NET_EXPORT std::optional<std::string_view> ToJoseAlgorithm(
 // SignatureKind. Returns nullopt for unknown or unsupported algorithms.
 NET_EXPORT std::optional<crypto::sign::SignatureKind> FromJoseAlgorithm(
     std::string_view algorithm);
+
+// Converts the JOSE algorithm tokens in `items` (e.g. the inner list of a
+// Secure-Session-Registration header member) to SignatureKinds, preserving
+// their order. Non-token items and unknown algorithms are ignored.
+NET_EXPORT std::vector<crypto::sign::SignatureKind> ParseSupportedAlgorithms(
+    base::span<const structured_headers::ParameterizedItem> items);
 
 // Formats a binding statement into a dictionary as defined in
 // https://github.com/WICG/dbsc-sso#identity-providers-session-initialization.

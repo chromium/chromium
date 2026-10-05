@@ -1342,6 +1342,8 @@ component("net") {
       "device_bound_sessions/cookie_craving.h",
       "device_bound_sessions/dbsc_request.cc",
       "device_bound_sessions/dbsc_request.h",
+      "device_bound_sessions/generate_key_param.cc",
+      "device_bound_sessions/generate_key_param.h",
       "device_bound_sessions/host_patterns.cc",
       "device_bound_sessions/host_patterns.h",
       "device_bound_sessions/refresh_result.h",
@@ -3756,6 +3758,7 @@ target(_test_target_type, "net_unittests") {
   if (enable_device_bound_sessions) {
     sources += [
       "device_bound_sessions/cookie_craving_unittest.cc",
+      "device_bound_sessions/generate_key_param_unittest.cc",
       "device_bound_sessions/host_patterns_unittest.cc",
       "device_bound_sessions/jwk_utils_unittest.cc",
       "device_bound_sessions/mock_session_service.cc",
