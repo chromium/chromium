@@ -78,6 +78,16 @@ public class TextDetectionImpl implements TextDetection {
     }
 
     @Override
+    public void ensureReady(EnsureReady_Response callback) {
+        // The legacy Play Services Vision API only provides a synchronous
+        // isOperational() check without callbacks for download progress or
+        // failure.
+        // TODO(crbug.com/556760835): Migrate to com.google.mlkit.vision.text to
+        // support async readiness checks and resolve once download completes.
+        callback.call(mTextRecognizer.isOperational());
+    }
+
+    @Override
     public void close() {
         mTextRecognizer.release();
     }

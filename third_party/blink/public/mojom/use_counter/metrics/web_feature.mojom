@@ -5347,6 +5347,7 @@ enum WebFeature {
   kEditContextUpdateSelectionRangeExceedsTextRange = 6030,
   kEditContextUpdateCharacterBoundsExceedsTextRange = 6031,
   kCSPModuleMapMismatch = 6032,
+  kTextDetectorCreate = 6033,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

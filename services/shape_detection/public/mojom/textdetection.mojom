@@ -16,6 +16,10 @@ struct TextDetectionResult {
 };
 
 interface TextDetection {
+  // Initializes the text detection backend if needed and returns whether it is
+  // ready to process detection requests.
+  EnsureReady() => (bool is_ready);
+
   Detect(skia.mojom.BitmapN32 bitmap_data)
     => (array<TextDetectionResult> results);
 };

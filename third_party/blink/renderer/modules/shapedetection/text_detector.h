@@ -25,6 +25,7 @@ class MODULES_EXPORT TextDetector final : public ScriptWrappable {
 
  public:
   static TextDetector* Create(ExecutionContext*);
+  static ScriptPromise<TextDetector> create(ScriptState*, ExceptionState&);
 
   explicit TextDetector(ExecutionContext*);
   ~TextDetector() override = default;
@@ -36,6 +37,7 @@ class MODULES_EXPORT TextDetector final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void OnEnsureReady(bool is_ready);
   void OnDetectText(
       ScriptPromiseResolver<IDLSequence<DetectedText>>*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
@@ -43,6 +45,7 @@ class MODULES_EXPORT TextDetector final : public ScriptWrappable {
 
   HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
+  Member<ScriptPromiseResolver<TextDetector>> create_request_;
   HeapHashSet<Member<ScriptPromiseResolverBase>> text_service_requests_;
 };
 

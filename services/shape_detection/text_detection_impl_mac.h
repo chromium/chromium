@@ -22,6 +22,7 @@ class TextDetectionImplMac : public mojom::TextDetection {
 
   void Detect(const SkBitmap& bitmap,
               mojom::TextDetection::DetectCallback callback) override;
+  void EnsureReady(mojom::TextDetection::EnsureReadyCallback callback) override;
 
  private:
   CIDetector* __strong detector_;

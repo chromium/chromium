@@ -59,4 +59,13 @@ void TextDetectionImplMac::Detect(const SkBitmap& bitmap,
   std::move(callback).Run(std::move(results));
 }
 
+void TextDetectionImplMac::EnsureReady(
+    mojom::TextDetection::EnsureReadyCallback callback) {
+  // Currently only checks whether the native framework OCR engine is available.
+  // TODO(crbug.com/568093888): Deprecate the native platform implementation
+  // once the in-browser OCR engine backend is enabled for the Text Detection
+  // API.
+  std::move(callback).Run(detector_ != nil);
+}
+
 }  // namespace shape_detection

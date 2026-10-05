@@ -2374,6 +2374,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter writable
 [Worker]     method constructor
 [Worker] interface TextDetector
+[Worker]     static method create
 [Worker]     attribute @@toStringTag
 [Worker]     method constructor
 [Worker]     method detect

@@ -10,5 +10,10 @@
     RuntimeEnabled=TextDetector
 ] interface TextDetector {
     [CallWith=ExecutionContext] constructor();
+    // Asynchronously creates and ensures that the text detection backend is
+    // initialized and ready before resolving.
+    // TODO(crbug.com/40276465): Support TextDetectorCreateOptions (signal,
+    // languages).
+    [CallWith=ScriptState, MeasureAs=TextDetectorCreate, RaisesException] static Promise<TextDetector> create();
     [CallWith=ScriptState, MeasureAs=TextDetectorDetect, RaisesException] Promise<sequence<DetectedText>> detect(ImageBitmapSource image);
 };

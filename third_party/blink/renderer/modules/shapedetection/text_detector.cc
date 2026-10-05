@@ -24,6 +24,28 @@ TextDetector* TextDetector::Create(ExecutionContext* context) {
   return MakeGarbageCollected<TextDetector>(context);
 }
 
+ScriptPromise<TextDetector> TextDetector::create(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The execution context is invalid.");
+    return ScriptPromise<TextDetector>();
+  }
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  auto* detector = Create(context);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<TextDetector>>(
+      script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
+
+  detector->create_request_ = resolver;
+  detector->text_service_->EnsureReady(
+      BindOnce(&TextDetector::OnEnsureReady, WrapPersistent(detector)));
+
+  return promise;
+}
+
 TextDetector::TextDetector(ExecutionContext* context) : text_service_(context) {
   // See https://bit.ly/2S0zRAS for task types.
   auto task_runner = context->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -65,6 +87,23 @@ ScriptPromise<IDLSequence<DetectedText>> TextDetector::detect(
   return promise;
 }
 
+void TextDetector::OnEnsureReady(bool is_ready) {
+  CHECK(create_request_);
+  auto* resolver = create_request_.Release();
+  if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                     resolver->GetScriptState())) {
+    return;
+  }
+  ScriptState::Scope scope(resolver->GetScriptState());
+  if (!is_ready) {
+    text_service_.reset();
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     "Failed to initialize TextDetector.");
+    return;
+  }
+  resolver->Resolve(this);
+}
+
 void TextDetector::OnDetectText(
     ScriptPromiseResolver<IDLSequence<DetectedText>>* resolver,
     Vector<shape_detection::mojom::blink::TextDetectionResultPtr>
@@ -94,6 +133,13 @@ void TextDetector::OnDetectText(
 }
 
 void TextDetector::OnTextServiceConnectionError() {
+  if (auto* resolver = create_request_.Release()) {
+    if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      resolver->GetScriptState())) {
+      resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                       "Text Detection not implemented.");
+    }
+  }
   for (const auto& request : text_service_requests_) {
     // Check if callback's resolver is still valid.
     if (!IsInParallelAlgorithmRunnable(request->GetExecutionContext(),
@@ -115,6 +161,7 @@ void TextDetector::OnTextServiceConnectionError() {
 void TextDetector::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(text_service_);
+  visitor->Trace(create_request_);
   visitor->Trace(text_service_requests_);
 }
 

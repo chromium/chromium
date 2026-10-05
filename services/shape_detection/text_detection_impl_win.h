@@ -36,6 +36,7 @@ class TextDetectionImplWin : public mojom::TextDetection {
   // mojom::TextDetection implementation.
   void Detect(const SkBitmap& bitmap,
               mojom::TextDetection::DetectCallback callback) override;
+  void EnsureReady(mojom::TextDetection::EnsureReadyCallback callback) override;
 
   void SetReceiver(mojo::SelfOwnedReceiverRef<mojom::TextDetection> receiver) {
     receiver_ = std::move(receiver);

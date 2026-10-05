@@ -2139,6 +2139,7 @@ interface TextDecoderStream
     getter writable
     method constructor
 interface TextDetector
+    static method create
     attribute @@toStringTag
     method constructor
     method detect

@@ -134,6 +134,14 @@ void TextDetectionImplWin::Detect(const SkBitmap& bitmap,
   receiver_->PauseIncomingMethodCallProcessing();
 }
 
+void TextDetectionImplWin::EnsureReady(EnsureReadyCallback callback) {
+  // Currently only checks whether the native framework OCR engine is available.
+  // TODO(crbug.com/568093888): Deprecate the native platform implementation
+  // once the in-browser OCR engine backend is enabled for the Text Detection
+  // API.
+  std::move(callback).Run(ocr_engine_ != nullptr);
+}
+
 HRESULT TextDetectionImplWin::BeginDetect(const SkBitmap& bitmap) {
   ComPtr<ISoftwareBitmap> win_bitmap =
       CreateWinBitmapFromSkBitmap(bitmap, bitmap_factory_.Get());
