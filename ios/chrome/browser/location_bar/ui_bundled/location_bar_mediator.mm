@@ -49,13 +49,6 @@
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-
-// The point size of the entry point's symbol.
-const CGFloat kIconPointSize = 16.0;
-
-}  // namespace
-
 @interface LocationBarMediator () <PlaceholderServiceObserving,
                                    SearchEngineObserving,
                                    WebStateListObserving>
@@ -272,7 +265,8 @@ const CGFloat kIconPointSize = 16.0;
   __weak __typeof(self) weakSelf = self;
   if (self.placeholderService) {
     self.placeholderService->FetchDefaultSearchEngineIcon(
-        kIconPointSize, base::BindRepeating(^(UIImage* image) {
+        PlaceholderService::IconSize::k16pt,
+        base::BindRepeating(^(UIImage* image) {
           [weakSelf.consumer setPlaceholderDefaultSearchEngineIcon:image];
         }));
   }

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/shared/ui/image/g_with_point_size.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -37,9 +38,6 @@ const CGFloat kLogoSize = 32.0;
 
 // The padding between the close button and the header actions.
 const CGFloat kHeaderInnerPadding = 10;
-
-// The logo point size.
-const CGFloat kSymbolsPointSize = 24.0;
 
 // Shadow opacity for the glass effect container.
 const CGFloat kGlassShadowOpacity = 0.07;
@@ -485,11 +483,9 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
 - (UIImage*)iconImage {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolGoogleIcon, kSymbolsPointSize));
+  return GWithPointSize(SuperGSize::k24pt);
 #else
-  return MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolGearshape2, kSymbolsPointSize));
+  return MakeSymbolMulticolor(SymbolWithPointSize(SymbolGearshape2, 24));
 #endif
 }
 

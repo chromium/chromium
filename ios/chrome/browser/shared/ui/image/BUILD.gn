@@ -4,10 +4,12 @@
 
 source_set("image") {
   sources = [
-    "image_names.h",
+    "g_with_point_size.h",
+    "g_with_point_size.mm",
     "image_names.mm",
   ]
   deps = [
+    "//base",
     "//build:branding_buildflags",
     "//ios/chrome/browser/shared/ui:branded_assets",
     "//ios/chrome/browser/shared/ui:buildflags",

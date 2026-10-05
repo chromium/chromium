@@ -48,6 +48,13 @@ class PlaceholderServiceObserver : public base::CheckedObserver {
 class PlaceholderService : public KeyedService,
                            public TemplateURLServiceObserver {
  public:
+  // Supported icon sizes for the default search engine icon.
+  enum class IconSize {
+    k16pt,
+    k18pt,
+    k24pt,
+  };
+
   explicit PlaceholderService(FaviconLoader* favicon_loader,
                               TemplateURLService* template_url_service);
 
@@ -67,18 +74,18 @@ class PlaceholderService : public KeyedService,
 
   using PlaceholderImageCallback = base::RepeatingCallback<void(UIImage*)>;
   // Requests the icon for the current default search engine at the given
-  // `icon_point_size`. If the icon is available synchronously, the callback
+  // `icon_size`. If the icon is available synchronously, the callback
   // will be called immediately with the cached icon. Otherwise, the callback
   // will be called with a placeholder icon first, and then updated with the
   // real icon once it's available. The callback will not be updated if the
   // default search engine changes during the fetch.
-  void FetchDefaultSearchEngineIcon(CGFloat icon_point_size,
+  void FetchDefaultSearchEngineIcon(IconSize icon_size,
                                     PlaceholderImageCallback callback);
 
   // Returns the icon for the current default search engine at the given
-  // `icon_point_size`. If the icon is unavailable, it will be fetched and
+  // `icon_size`. If the icon is unavailable, it will be fetched and
   // `OnPlaceholderImageChanged` will be called once it becomes available.
-  UIImage* GetDefaultSearchEngineIcon(CGFloat icon_point_size);
+  UIImage* GetDefaultSearchEngineIcon(IconSize icon_size);
 
   NSString* GetCurrentPlaceholderText();
   NSString* GetCurrentSearchOnlyPlaceholderText();
@@ -88,9 +95,9 @@ class PlaceholderService : public KeyedService,
 
  private:
   // Retrieves a bundled icon (e.g., Google icon) for the given `template_url`
-  // and `icon_point_size`, if available. Returns nil otherwise.
+  // and `icon_size`, if available. Returns nil otherwise.
   UIImage* GetBundledIconForTemplateURL(const TemplateURL* template_url,
-                                        CGFloat icon_point_size);
+                                        IconSize icon_size);
 
   // Called when an icon has been successfully fetched or retrieved for a
   // `template_url_id` at a specific `icon_point_size`. Caches the icon and

@@ -16,6 +16,7 @@
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
+#import "ios/chrome/browser/shared/ui/image/g_with_point_size.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -40,6 +41,32 @@ bool IsPlaceholderImage(UIImage* image, CGFloat image_point_size) {
       SymbolWithPointSize(SymbolSearch, image_point_size);
   return UIImagesAreEqual(placeholder_image, image);
 }
+
+// Maps `CGFloat` constants from `favicon_constants.mm` to its
+// `PlaceholderService::IconSize`.
+CGFloat FaviconConstantForIconSize(PlaceholderService::IconSize icon_size) {
+  switch (icon_size) {
+    case PlaceholderService::IconSize::k16pt:
+      return kMinFaviconSizePt;
+    case PlaceholderService::IconSize::k18pt:
+    case PlaceholderService::IconSize::k24pt:
+      return kDesiredSmallFaviconSizePt;
+  }
+}
+
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+// Maps `PlaceholderService::IconSize` to `SuperGSize`.
+SuperGSize MapIconSizeToSuperGSize(PlaceholderService::IconSize icon_size) {
+  switch (icon_size) {
+    case PlaceholderService::IconSize::k16pt:
+      return SuperGSize::k16pt;
+    case PlaceholderService::IconSize::k18pt:
+      return SuperGSize::k18pt;
+    case PlaceholderService::IconSize::k24pt:
+      return SuperGSize::k24pt;
+  }
+}
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
 // Test fixture for PlaceholderService.
 class PlaceholderServiceTest : public PlatformTest {
@@ -87,7 +114,9 @@ class PlaceholderServiceTest : public PlatformTest {
 // Test that a bundled icon is returned for Google.
 TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  const CGFloat icon_size = kDesiredSmallFaviconSizePt;
+  const PlaceholderService::IconSize icon_size =
+      PlaceholderService::IconSize::k24pt;
+
   TemplateURLData google_data;
   google_data.SetShortName(u"Google");
   google_data.SetKeyword(u"google.com");
@@ -107,7 +136,7 @@ TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
   placeholder_service_.FetchDefaultSearchEngineIcon(
       icon_size, base::BindRepeating(^(UIImage* icon) {
         callback_count++;
-        if (!IsPlaceholderImage(icon, icon_size)) {
+        if (!IsPlaceholderImage(icon, FaviconConstantForIconSize(icon_size))) {
           received_icon_final = icon;
           run_loop->Quit();
         }
@@ -117,7 +146,7 @@ TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
 
   ASSERT_NE(received_icon_final, nil);
   UIImage* expected_bundled_icon =
-      MakeSymbolMulticolor(SymbolWithPointSize(SymbolGoogleIcon, icon_size));
+      GWithPointSize(MapIconSizeToSuperGSize(icon_size));
   EXPECT_TRUE(UIImagesAreEqual(received_icon_final, expected_bundled_icon));
   // Callback is invoked once with bundled icon.
   EXPECT_EQ(callback_count, 1);
@@ -126,15 +155,18 @@ TEST_F(PlaceholderServiceTest, TestFetchingBundledIcon) {
 
 // Test fetching an icon using FaviconLoader for a non-prepopulated DSE.
 TEST_F(PlaceholderServiceTest, TestFetchingIconFromFaviconLoader) {
-  const CGFloat icon_size = kDesiredMediumFaviconSizePt;
-  UIImage* fetched_image = CreateTestSymbolImage(icon_size);
+  const PlaceholderService::IconSize icon_size =
+      PlaceholderService::IconSize::k24pt;
+  const CGFloat icon_size_pt = FaviconConstantForIconSize(icon_size);
+
+  UIImage* fetched_image = CreateTestSymbolImage(icon_size_pt);
   FaviconAttributes* fetched_attributes =
       [FaviconAttributes attributesWithImage:fetched_image];
 
   FaviconLoader::FaviconAttributesCompletionBlock favicon_callback_block;
   EXPECT_CALL(*mock_favicon_loader_,
-              FaviconForIconUrl(GURL("http://test.com/favicon.ico"), icon_size,
-                                icon_size, _))
+              FaviconForIconUrl(GURL("http://test.com/favicon.ico"),
+                                icon_size_pt, icon_size_pt, _))
       .WillOnce(SaveArg<3>(&favicon_callback_block));
 
   __block UIImage* received_icon_final = nil;
@@ -145,7 +177,7 @@ TEST_F(PlaceholderServiceTest, TestFetchingIconFromFaviconLoader) {
       icon_size, base::BindRepeating(^(UIImage* icon) {
         callback_count++;
         if (callback_count == 1) {
-          EXPECT_TRUE(IsPlaceholderImage(icon, icon_size));
+          EXPECT_TRUE(IsPlaceholderImage(icon, icon_size_pt));
         } else if (callback_count == 2) {
           received_icon_final = icon;
           run_loop->Quit();
@@ -166,18 +198,20 @@ TEST_F(PlaceholderServiceTest, TestFetchingIconFromFaviconLoader) {
 // Test that callback is not called if DSE changes during fetch,
 // but future calls for the new DSE work.
 TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
-  const CGFloat icon_size = kDesiredSmallFaviconSizePt;
+  const PlaceholderService::IconSize icon_size =
+      PlaceholderService::IconSize::k24pt;
+  const CGFloat icon_size_pt = FaviconConstantForIconSize(icon_size);
 
   // DSE1 is `default_search_provider_` with favicon
   // "http://test.com/favicon.ico"
-  UIImage* dse1_fetched_image = CreateTestSymbolImage(icon_size);
+  UIImage* dse1_fetched_image = CreateTestSymbolImage(icon_size_pt);
   FaviconAttributes* dse1_fetched_attributes =
       [FaviconAttributes attributesWithImage:dse1_fetched_image];
 
   FaviconLoader::FaviconAttributesCompletionBlock dse1_favicon_callback_block;
   EXPECT_CALL(*mock_favicon_loader_,
-              FaviconForIconUrl(GURL("http://test.com/favicon.ico"), icon_size,
-                                icon_size, _))
+              FaviconForIconUrl(GURL("http://test.com/favicon.ico"),
+                                icon_size_pt, icon_size_pt, _))
       .WillOnce(SaveArg<3>(&dse1_favicon_callback_block));
 
   __block UIImage* received_icon_dse1_final = nil;
@@ -187,7 +221,7 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
   placeholder_service_.FetchDefaultSearchEngineIcon(
       icon_size, base::BindRepeating(^(UIImage* icon) {
         callback_dse1_count++;
-        if (!IsPlaceholderImage(icon, icon_size)) {
+        if (!IsPlaceholderImage(icon, icon_size_pt)) {
           received_icon_dse1_final = icon;
         }
       }));
@@ -206,7 +240,7 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
       template_url_service().Add(std::make_unique<TemplateURL>(data_dse2));
 
   UIImage* dse2_fetched_image =
-      CreateTestSymbolImage(icon_size);  // Can be same image for simplicity
+      CreateTestSymbolImage(icon_size_pt);  // Can be same image for simplicity
   FaviconAttributes* dse2_fetched_attributes =
       [FaviconAttributes attributesWithImage:dse2_fetched_image];
 
@@ -219,8 +253,8 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
   // 5. Future call to fetch for new DSE (DSE2)
   FaviconLoader::FaviconAttributesCompletionBlock dse2_favicon_callback_block;
   EXPECT_CALL(*mock_favicon_loader_,
-              FaviconForIconUrl(GURL("http://test2.com/favicon.ico"), icon_size,
-                                icon_size, _))
+              FaviconForIconUrl(GURL("http://test2.com/favicon.ico"),
+                                icon_size_pt, icon_size_pt, _))
       .WillOnce(SaveArg<3>(&dse2_favicon_callback_block));
 
   __block UIImage* received_icon_dse2_final = nil;
@@ -231,7 +265,7 @@ TEST_F(PlaceholderServiceTest, TestDSESwitchesDuringFetch) {
       icon_size, base::BindRepeating(^(UIImage* icon) {
         callback_dse2_count++;
         if (callback_dse2_count == 1) {
-          EXPECT_TRUE(IsPlaceholderImage(icon, icon_size));
+          EXPECT_TRUE(IsPlaceholderImage(icon, icon_size_pt));
         } else if (callback_dse2_count == 2) {
           received_icon_dse2_final = icon;
           run_loop->Quit();
@@ -269,8 +303,9 @@ class ReentrantTestObserver : public PlaceholderServiceObserver {
     if (call_count_ == 1) {
       // Reentrantly request the icon.
       service_->FetchDefaultSearchEngineIcon(
-          kDesiredMediumFaviconSizePt, base::BindRepeating(^(UIImage* icon){
-                                       }));
+          PlaceholderService::IconSize::k24pt,
+          base::BindRepeating(^(UIImage* icon){
+          }));
     }
   }
 
@@ -283,15 +318,17 @@ class ReentrantTestObserver : public PlaceholderServiceObserver {
 
 // Test that reentrant notification during observer iteration works safely.
 TEST_F(PlaceholderServiceTest, ReentrantObserverNotification) {
-  const CGFloat icon_size = kDesiredMediumFaviconSizePt;
-  UIImage* fetched_image = CreateTestSymbolImage(icon_size);
+  const PlaceholderService::IconSize icon_size =
+      PlaceholderService::IconSize::k24pt;
+  const CGFloat icon_size_pt = FaviconConstantForIconSize(icon_size);
+  UIImage* fetched_image = CreateTestSymbolImage(icon_size_pt);
   FaviconAttributes* fetched_attributes =
       [FaviconAttributes attributesWithImage:fetched_image];
 
   // Set expectation for FaviconForIconUrl to synchronously invoke the callback.
   EXPECT_CALL(*mock_favicon_loader_,
-              FaviconForIconUrl(GURL("http://test.com/favicon.ico"), icon_size,
-                                icon_size, _))
+              FaviconForIconUrl(GURL("http://test.com/favicon.ico"),
+                                icon_size_pt, icon_size_pt, _))
       .WillOnce([&](GURL, CGFloat, CGFloat,
                     FaviconLoader::FaviconAttributesCompletionBlock block) {
         block(fetched_attributes, /*cached=*/true);

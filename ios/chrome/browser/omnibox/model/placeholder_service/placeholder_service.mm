@@ -14,6 +14,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/image/g_with_point_size.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,6 +24,32 @@
 namespace {
 // Cooldown period before re-fetching a failed icon.
 const base::TimeDelta kFetchCooldown = base::Seconds(2);
+
+// Maps `PlaceholderService::IconSize` to its `CGFloat` point size.
+CGFloat PointSizeForIconSize(PlaceholderService::IconSize icon_size) {
+  switch (icon_size) {
+    case PlaceholderService::IconSize::k16pt:
+      return 16.0;
+    case PlaceholderService::IconSize::k18pt:
+      return 18.0;
+    case PlaceholderService::IconSize::k24pt:
+      return 24.0;
+  }
+}
+
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+// Maps `PlaceholderService::IconSize` to `SuperGSize`.
+SuperGSize MapIconSizeToSuperGSize(PlaceholderService::IconSize icon_size) {
+  switch (icon_size) {
+    case PlaceholderService::IconSize::k16pt:
+      return SuperGSize::k16pt;
+    case PlaceholderService::IconSize::k18pt:
+      return SuperGSize::k18pt;
+    case PlaceholderService::IconSize::k24pt:
+      return SuperGSize::k24pt;
+  }
+}
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 }  // namespace
 
 PlaceholderService::PlaceholderService(FaviconLoader* favicon_loader,
@@ -44,8 +71,10 @@ PlaceholderService::~PlaceholderService() {
 }
 
 void PlaceholderService::FetchDefaultSearchEngineIcon(
-    CGFloat icon_point_size,
+    IconSize icon_size,
     PlaceholderImageCallback callback) {
+  const CGFloat icon_point_size = PointSizeForIconSize(icon_size);
+
   // Return the cached image if there is one.
   UIImage* cached_icon = [icon_cache_ objectForKey:@(icon_point_size)];
   if (cached_icon) {
@@ -70,7 +99,7 @@ void PlaceholderService::FetchDefaultSearchEngineIcon(
 
   // Return the bundled icon if there is one. Also cache it.
   UIImage* bundled_icon =
-      GetBundledIconForTemplateURL(default_provider, icon_point_size);
+      GetBundledIconForTemplateURL(default_provider, icon_size);
   if (bundled_icon) {
     [icon_cache_ setObject:bundled_icon forKey:@(icon_point_size)];
     if (callback) {
@@ -89,8 +118,8 @@ void PlaceholderService::FetchDefaultSearchEngineIcon(
   PerformIconFetch(default_provider, icon_point_size);
 }
 
-UIImage* PlaceholderService::GetDefaultSearchEngineIcon(
-    CGFloat icon_point_size) {
+UIImage* PlaceholderService::GetDefaultSearchEngineIcon(IconSize icon_size) {
+  const CGFloat icon_point_size = PointSizeForIconSize(icon_size);
   // Return the cached image if there is one.
   UIImage* cached_icon = [icon_cache_ objectForKey:@(icon_point_size)];
   if (cached_icon) {
@@ -107,10 +136,9 @@ UIImage* PlaceholderService::GetDefaultSearchEngineIcon(
     return placeholder_icon;
   }
   // Fetch the icon after return.
-  base::ScopedClosureRunner run_after_return =
-      base::ScopedClosureRunner(base::BindOnce(
-          &PlaceholderService::FetchDefaultSearchEngineIcon,
-          base::Unretained(this), icon_point_size, base::DoNothing()));
+  base::ScopedClosureRunner run_after_return = base::ScopedClosureRunner(
+      base::BindOnce(&PlaceholderService::FetchDefaultSearchEngineIcon,
+                     base::Unretained(this), icon_size, base::DoNothing()));
   return placeholder_icon;
 }
 
@@ -179,7 +207,7 @@ void PlaceholderService::OnTemplateURLServiceChanged() {
 
 UIImage* PlaceholderService::GetBundledIconForTemplateURL(
     const TemplateURL* template_url,
-    CGFloat icon_point_size) {
+    IconSize icon_size) {
   CHECK(template_url);
   CHECK(template_url_service_);
 
@@ -187,8 +215,7 @@ UIImage* PlaceholderService::GetBundledIconForTemplateURL(
   if (template_url->GetEngineType(template_url_service_->search_terms_data()) ==
       SEARCH_ENGINE_GOOGLE) {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-    return MakeSymbolMulticolor(
-        SymbolWithPointSize(SymbolGoogleIcon, icon_point_size));
+    return GWithPointSize(MapIconSizeToSuperGSize(icon_size));
 #endif
   }
   return nil;

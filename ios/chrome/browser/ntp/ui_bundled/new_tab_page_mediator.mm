@@ -131,9 +131,6 @@ enum class IOSNTPNewBadgeShownResult {
   kMaxValue = kShown,
 };
 
-// The point size of the entry point's symbol.
-const CGFloat kIconPointSize = 18.0;
-
 // The holdback period to wait after FRE completion before showing new badges
 // on the homepage.
 constexpr base::TimeDelta kFREBadgeHoldbackPeriod = base::Hours(1);
@@ -590,8 +587,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
     // The DSE icon might have already been fetched. In this case, no updated
     // will be delivered. Therefore we should query the cache, as the icon store
     // might have already been updated.
-    UIImage* fetchedIcon =
-        self.placeholderService->GetDefaultSearchEngineIcon(kIconPointSize);
+    UIImage* fetchedIcon = self.placeholderService->GetDefaultSearchEngineIcon(
+        PlaceholderService::IconSize::k18pt);
     if (fetchedIcon) {
       [self.headerConsumer setDefaultSearchEngineImage:fetchedIcon];
     }
@@ -755,7 +752,8 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   __weak __typeof(self) weakSelf = self;
   if (self.placeholderService) {
     self.placeholderService->FetchDefaultSearchEngineIcon(
-        kIconPointSize, base::BindRepeating(^(UIImage* image) {
+        PlaceholderService::IconSize::k18pt,
+        base::BindRepeating(^(UIImage* image) {
           [weakSelf.headerConsumer setDefaultSearchEngineImage:image];
         }));
   }

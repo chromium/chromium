@@ -510,7 +510,7 @@ using base::UserMetricsAction;
     (void (^)(UIImage* image))completion {
   if (self.placeholderService) {
     self.placeholderService->FetchDefaultSearchEngineIcon(
-        self.faviconSize, base::BindRepeating(completion));
+        [self defaultSearchEngineIconSize], base::BindRepeating(completion));
   }
 }
 
@@ -626,6 +626,16 @@ using base::UserMetricsAction;
     return kDesiredSmallFaviconSizePt;
   } else {
     return kMinFaviconSizePt;
+  }
+}
+
+// Returns the size of the default search engine icon.
+- (PlaceholderService::IconSize)defaultSearchEngineIconSize {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
+      _presentationContext == OmniboxPresentationContext::kComposebox) {
+    return PlaceholderService::IconSize::k24pt;
+  } else {
+    return PlaceholderService::IconSize::k16pt;
   }
 }
 

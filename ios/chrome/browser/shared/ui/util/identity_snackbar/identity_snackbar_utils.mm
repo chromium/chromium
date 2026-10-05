@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
+#import "ios/chrome/browser/shared/ui/image/g_with_point_size.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -43,8 +44,7 @@ constexpr CGFloat kSymbolsPointSize = 24;
 // Returns the branded version of the Google Services symbol.
 UIImage* GetBrandedGoogleServicesSymbol() {
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
-  return MakeSymbolMulticolor(
-      SymbolWithPointSize(SymbolGoogleIcon, kSymbolsPointSize));
+  return GWithPointSize(SuperGSize::k24pt);
 #else
   return MakeSymbolMulticolor(
       SymbolWithPointSize(SymbolGearshape2, kSymbolsPointSize));
