@@ -31,6 +31,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/work_in_progress.mojom.h"
 #include "services/on_device_model/public/cpp/features.h"
@@ -469,6 +470,9 @@ TEST_F(AIManagerTest, CanCreateLocalStateEnterprisePolicyDisabled) {
 
 TEST_F(AIManagerTest, CanCreateLocalStateUserSettingsDisabled) {
   SetOnDeviceAiUserSetting(false);
+  auto* tester = content::RenderFrameHostTester::For(main_rfh());
+  const size_t baseline_count = tester->GetConsoleMessages().size();
+
   base::MockCallback<
       base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
       callback;
@@ -482,6 +486,67 @@ TEST_F(AIManagerTest, CanCreateLocalStateUserSettingsDisabled) {
   ai_manager_->CanCreateRewriter(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateProofreader(/*options=*/{}, callback.Get());
   ai_manager_->CanCreateSemanticEmbedder(callback.Get());
+
+  const auto& messages = tester->GetConsoleMessages();
+  ASSERT_EQ(messages.size(), baseline_count + 1);
+  EXPECT_EQ(messages.back(),
+            "On-device AI is disabled in Chrome settings. To use Built-In AI "
+            "APIs, enable \"On-device AI\" in chrome://settings/ai.");
+
+  SetOnDeviceAiUserSetting(true);
+}
+
+TEST_F(AIManagerTest,
+       DoesNotLogSettingsDisabledWarningForOtherUnavailabilityReasons) {
+  auto* tester = content::RenderFrameHostTester::For(main_rfh());
+  const size_t baseline_count = tester->GetConsoleMessages().size();
+
+  // 1. When the user setting is enabled, no warning is logged.
+  SetOnDeviceAiUserSetting(true);
+  {
+    auto options = blink::mojom::AISummarizerCreateOptions::New();
+    options->output_language = blink::mojom::AILanguageCode::New("en");
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateSummarizer(std::move(options), future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+    EXPECT_EQ(tester->GetConsoleMessages().size(), baseline_count);
+  }
+
+  // 2. When blocked by enterprise policy or feature flag (even if the user
+  // setting is also false), the user-setting warning is not logged.
+  SetOnDeviceAiUserSetting(false);
+  SetBuiltInAIAPIsEnterprisePolicy(false);
+  {
+    base::MockCallback<
+        base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+        callback;
+    EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableEnterprisePolicyDisabled))
+        .Times(2);
+    ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+    ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+    EXPECT_EQ(tester->GetConsoleMessages().size(), baseline_count);
+  }
+  SetBuiltInAIAPIsEnterprisePolicy(true);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {}, {blink::features::kAIPromptAPI,
+             blink::features::kAIPromptAPIMultimodalInput,
+             blink::features::kAISummarizationAPI});
+    base::MockCallback<
+        base::OnceCallback<void(blink::mojom::ModelAvailabilityCheckResult)>>
+        callback;
+    EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                  kUnavailableFeatureNotEnabled))
+        .Times(2);
+    ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
+    ai_manager_->CanCreateSummarizer(/*options=*/{}, callback.Get());
+    EXPECT_EQ(tester->GetConsoleMessages().size(), baseline_count);
+  }
+
   SetOnDeviceAiUserSetting(true);
 }
 

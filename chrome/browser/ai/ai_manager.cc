@@ -118,6 +118,9 @@ const char kExperimentalLanguageWarning[] =
 const char kSpeedPreferenceMarkdownWarning[] =
     "The 'speed' performance preference utilizes a model with limited support "
     "for 'markdown' format.";
+const char kOnDeviceAiSettingsDisabledWarning[] =
+    "On-device AI is disabled in Chrome settings. To use Built-In AI APIs, "
+    "enable \"On-device AI\" in chrome://settings/ai.";
 
 const char kModelVersionParam[] = "model_version";
 
@@ -1799,10 +1802,11 @@ AIManager::GetPrefBlockedResult() {
         kUnavailableEnterprisePolicyDisabled;
   }
 
-  // chrome://settings/system "On-device AI" user toggle.
+  // chrome://settings/ai "On-device AI" user toggle.
   if (!local_state->GetBoolean(
           optimization_guide::model_execution::prefs::localstate::
               kOnDeviceAiUserSettingsEnabled)) {
+    MaybeLogOnDeviceAiSettingsDisabledWarning();
     return blink::mojom::ModelAvailabilityCheckResult::
         kUnavailableFeatureNotEnabled;
   }
@@ -1989,4 +1993,14 @@ void AIManager::MaybeLogSpeedPreferenceMarkdownWarning() {
   did_log_speed_preference_markdown_warning_ = true;
   rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
                            kSpeedPreferenceMarkdownWarning);
+}
+
+void AIManager::MaybeLogOnDeviceAiSettingsDisabledWarning() {
+  auto* rfh = rfh_.AsRenderFrameHostIfValid();
+  if (!rfh || did_log_on_device_ai_settings_disabled_warning_) {
+    return;
+  }
+  did_log_on_device_ai_settings_disabled_warning_ = true;
+  rfh->AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kWarning,
+                           kOnDeviceAiSettingsDisabledWarning);
 }
