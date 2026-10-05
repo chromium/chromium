@@ -1299,7 +1299,6 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   _voiceSearchIsEnabled = voiceSearchIsEnabled;
   self.voiceSearchButton.enabled = voiceSearchIsEnabled;
   self.voiceSearchButton.isAccessibilityElement = voiceSearchIsEnabled;
-  [self layoutIfNeeded];
 }
 
 - (void)setDefaultSearchEngineName:(NSString*)defaultSearchEngineName {
@@ -2102,11 +2101,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState,
                                                  self.traitCollection);
 
-  [self updateFakeboxDisplay];
-
-  [self setNeedsLayout];
   [UIView performWithoutAnimation:^{
-    [self layoutIfNeeded];
+    [self updateFakeboxDisplay];
     [self.commandHandler updateForHeaderSizeChange];
   }];
 }
@@ -2232,7 +2228,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(self.searchEngineLogoState,
                                                self.traitCollection);
-  [self layoutIfNeeded];
+  if (self.window) {
+    [self layoutIfNeeded];
+  } else {
+    [self setNeedsLayout];
+  }
 }
 
 - (void)addConstraintsForLogoView:(UIView*)logoView

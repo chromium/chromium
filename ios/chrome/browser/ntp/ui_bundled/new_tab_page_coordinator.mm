@@ -868,8 +868,8 @@ using ntp_tiles::AimButtonRefactorArm;
         _searchEngineLogoMediator.view;
     _searchEngineLogoMediator.consumer = self.NTPRedesignViewController;
   } else {
-    headerView.searchEngineLogoView = _searchEngineLogoMediator.view;
     _searchEngineLogoMediator.consumer = headerView;
+    headerView.searchEngineLogoView = _searchEngineLogoMediator.view;
   }
 
   if (!IsComposeboxPlusButtonBottomSheet() &&
