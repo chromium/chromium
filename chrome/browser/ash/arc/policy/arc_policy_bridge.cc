@@ -747,7 +747,9 @@ void ArcPolicyBridge::OnCommandReceived(
 
   if (!instance) {
     VLOG(1) << "ARC not ready yet, will retry remote command once it is ready.";
-    CHECK(on_arc_instance_ready_callback_.is_null(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/569687178): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(on_arc_instance_ready_callback_.is_null());
 
     // base::Unretained is safe here since this class owns the callback's
     // lifetime.
