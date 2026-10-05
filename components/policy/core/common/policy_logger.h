@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_LOGGER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_LOGGER_H_
 
+#include <atomic>
 #include <deque>
 #include <sstream>
 #include <string>
@@ -242,6 +243,8 @@ class POLICY_EXPORT PolicyLogger {
   // Compressed logs are stored in this buffer.
   std::string compressed_buffer_
       GUARDED_BY_CONTEXT(compression_sequence_checker_);
+  std::atomic<size_t> compressed_buffer_size_{0};
+  std::atomic<size_t> compressed_log_count_{0};
 };
 
 }  // namespace policy

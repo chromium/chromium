@@ -423,6 +423,9 @@ void PolicyLogger::CompressAndAppendLogs(std::vector<Log> logs) {
                                  &new_compressed_buffer)) {
     return;
   }
+  compressed_buffer_size_.store(new_compressed_buffer.size(),
+                                std::memory_order_relaxed);
+  compressed_log_count_.store(all_logs.size(), std::memory_order_relaxed);
   compressed_buffer_ = std::move(new_compressed_buffer);
 }
 
@@ -484,6 +487,12 @@ void PolicyLogger::RecordPerformanceMetrics() {
                              memory_usage);
   base::UmaHistogramCounts10000("Enterprise.PolicyLogger.LogCount.Uncompressed",
                                 log_count);
+  base::UmaHistogramCounts1M(
+      "Enterprise.PolicyLogger.MemoryUsage.Compressed",
+      compressed_buffer_size_.load(std::memory_order_relaxed));
+  base::UmaHistogramCounts10000(
+      "Enterprise.PolicyLogger.LogCount.Compressed",
+      compressed_log_count_.load(std::memory_order_relaxed));
 }
 
 void PolicyLogger::ResetLoggerForTesting() {
@@ -493,6 +502,8 @@ void PolicyLogger::ResetLoggerForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(compression_sequence_checker_);
   logs_.clear();
   compressed_buffer_.clear();
+  compressed_buffer_size_.store(0, std::memory_order_relaxed);
+  compressed_log_count_.store(0, std::memory_order_relaxed);
   compression_task_runner_.reset();
   DETACH_FROM_SEQUENCE(compression_sequence_checker_);
 }

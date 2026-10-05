@@ -67,10 +67,10 @@ constexpr auto kTestPolicyDetails = std::to_array<PolicyDetails>({
     {false, false, false, kProfile, kSourceRestrictionNone, kTestPolicy1Id, 0},
     {false, false, false, kProfile, kSourceRestrictionNone, kTestPolicy2Id, 0},
     {false, false, false, kProfile, kSourceRestrictionNone, kTestPolicy3Id, 0},
-    {false, false, false, kProfile, kSourceRestrictionNone, kEnrollmentTokenPolicyId,
-     0},
-    {false, false, false, kProfile, kSourceRestrictionNone, kEnrollmentOptionPolicyId,
-     0},
+    {false, false, false, kProfile, kSourceRestrictionNone,
+     kEnrollmentTokenPolicyId, 0},
+    {false, false, false, kProfile, kSourceRestrictionNone,
+     kEnrollmentOptionPolicyId, 0},
 });
 
 }  // namespace
@@ -289,6 +289,10 @@ TEST_F(PolicyStatisticsCollectorTest, PolicyLoggerMetrics) {
       "Enterprise.PolicyLogger.MemoryUsage.Uncompressed", expected_memory, 1);
   histogram_tester_.ExpectUniqueSample(
       "Enterprise.PolicyLogger.LogCount.Uncompressed", 2, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.PolicyLogger.MemoryUsage.Compressed", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.PolicyLogger.LogCount.Compressed", 0, 1);
 }
 
 }  // namespace policy
