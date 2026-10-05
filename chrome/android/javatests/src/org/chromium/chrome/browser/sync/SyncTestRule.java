@@ -183,7 +183,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
-    private final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
     private final BlankCTATabInitialStateRule mBlankCTATabRule =
             new BlankCTATabInitialStateRule(this, false);
 
@@ -330,6 +330,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                     getPrefService().clearPref(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT);
                     getPrefService().clearPref(SyncPrefNames.SYNC_KEEP_EVERYTHING_SYNCED);
                     getPrefService().clearPref(SyncPrefNames.SYNC_TRANSPORT_DATA_PER_ACCOUNT);
+                    getPrefService().clearPref(SyncPrefNames.SYNC_MANAGED);
                 });
     }
 
