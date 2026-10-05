@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ui/browser_window",
   "+chrome/browser/ui/interaction",
   "+chrome/browser/ui/webui/ash/mako",
-  "+chrome/common",
 ]
 
 specific_include_rules = {

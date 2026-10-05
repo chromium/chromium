@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/extensions/window_controller_list.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",
-  "+chrome/common/extensions",
 
   # Dependencies outside of //chrome:
   "+components/app_icon_loader/app_icon_loader.h",
