@@ -34,7 +34,7 @@ OAuth2TokenFetcher::OAuth2TokenFetcher(
     : delegate_(delegate),
       auth_fetcher_(this, gaia::GaiaSource::kChrome, url_loader_factory),
       retry_count_(0) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M161);
 }
 
 OAuth2TokenFetcher::~OAuth2TokenFetcher() = default;
@@ -42,7 +42,7 @@ OAuth2TokenFetcher::~OAuth2TokenFetcher() = default;
 void OAuth2TokenFetcher::StartExchangeFromAuthCode(
     const std::string& auth_code,
     const std::string& signin_scoped_device_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auth_code_ = auth_code;
   signin_scoped_device_id_ = signin_scoped_device_id;
   auth_fetcher_.StartAuthCodeForOAuth2TokenExchangeWithDeviceId(
@@ -51,7 +51,7 @@ void OAuth2TokenFetcher::StartExchangeFromAuthCode(
 
 void OAuth2TokenFetcher::OnClientOAuthSuccess(
     const GaiaAuthConsumer::ClientOAuthResult& oauth_tokens) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   VLOG(1) << "Got OAuth2 tokens!";
   retry_count_ = 0;
   delegate_->OnOAuth2TokensAvailable(oauth_tokens);
@@ -59,8 +59,8 @@ void OAuth2TokenFetcher::OnClientOAuthSuccess(
 
 void OAuth2TokenFetcher::OnClientOAuthFailure(
     const GoogleServiceAuthError& error) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!auth_code_.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(!auth_code_.empty(), base::NotFatalUntil::M161);
   RetryOnError(
       error,
       base::BindOnce(&OAuth2TokenFetcher::StartExchangeFromAuthCode,
@@ -72,7 +72,7 @@ void OAuth2TokenFetcher::OnClientOAuthFailure(
 void OAuth2TokenFetcher::RetryOnError(const GoogleServiceAuthError& error,
                                       base::OnceClosure task,
                                       base::OnceClosure error_handler) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (error.IsTransientError() && retry_count_ < kMaxRequestAttemptCount) {
     retry_count_++;
     content::GetUIThreadTaskRunner({})->PostDelayedTask(

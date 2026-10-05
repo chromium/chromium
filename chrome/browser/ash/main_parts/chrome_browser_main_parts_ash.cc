@@ -339,7 +339,7 @@ void ChromeOSVersionCallback(const std::optional<std::string>& version) {
 }
 
 void ApplySigninProfileModifications(Profile* profile) {
-  DCHECK(ProfileHelper::IsSigninProfile(profile));
+  CHECK(ProfileHelper::IsSigninProfile(profile), base::NotFatalUntil::M161);
   auto* prefs = profile->GetPrefs();
 
   prefs->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
@@ -348,14 +348,14 @@ void ApplySigninProfileModifications(Profile* profile) {
 #if !defined(USE_REAL_DBUS_CLIENTS)
 FakeSessionManagerClient* FakeSessionManagerClient() {
   auto* fake_session_manager_client = FakeSessionManagerClient::Get();
-  DCHECK(fake_session_manager_client);
+  CHECK(fake_session_manager_client, base::NotFatalUntil::M161);
   return fake_session_manager_client;
 }
 
 chromeos::FakePowerManagerClient* FakePowerManagerClient() {
   chromeos::FakePowerManagerClient* fake_power_manager_client =
       chromeos::FakePowerManagerClient::Get();
-  DCHECK(fake_power_manager_client);
+  CHECK(fake_power_manager_client, base::NotFatalUntil::M161);
   return fake_power_manager_client;
 }
 

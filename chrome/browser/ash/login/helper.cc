@@ -211,7 +211,8 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSigninURLLoaderFactory() {
 void SaveSyncPasswordDataToProfile(
     const UserContext& user_context,
     password_manager::PasswordReuseManager* reuse_manager) {
-  DCHECK(user_context.GetSyncPasswordData().has_value());
+  CHECK(user_context.GetSyncPasswordData().has_value(),
+        base::NotFatalUntil::M161);
   if (reuse_manager) {
     reuse_manager->SaveSyncPasswordHash(
         user_context.GetSyncPasswordData().value(),

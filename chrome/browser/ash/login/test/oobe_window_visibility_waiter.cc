@@ -21,7 +21,7 @@ void OobeWindowVisibilityWaiter::Wait() {
   if (!window && !target_visibility_)
     return;
 
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M161);
   if (target_visibility_ == window->IsVisible())
     return;
 
@@ -40,7 +40,7 @@ void OobeWindowVisibilityWaiter::OnWindowVisibilityChanged(aura::Window* window,
 }
 
 void OobeWindowVisibilityWaiter::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(!target_visibility_);
+  CHECK(!target_visibility_, base::NotFatalUntil::M161);
   window_observation_.Reset();
   std::move(wait_stop_closure_).Run();
 }

@@ -105,7 +105,7 @@ UserSessionInitializer::RlzInitParams CollectRlzParams() {
 void GetCertDBOnIOThread(
     NssCertDatabaseGetter database_getter,
     base::OnceCallback<void(net::NSSCertDatabase*)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
   net::NSSCertDatabase* cert_db =
@@ -135,13 +135,13 @@ UserSessionInitializer::UserSessionInitializer(
     session_manager::SessionManager* session_manager)
     : local_state_(CHECK_DEREF(local_state)) {
   CHECK(session_manager);
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M161);
   g_instance = this;
   session_manager_observation_.Observe(session_manager);
 }
 
 UserSessionInitializer::~UserSessionInitializer() {
-  DCHECK(g_instance);
+  CHECK(g_instance, base::NotFatalUntil::M161);
   session_manager_observation_.Reset();
   g_instance = nullptr;
 }
@@ -288,7 +288,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 
 void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // Ensure that the `HoldingSpaceKeyedService` for `profile` is created.
   HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile);
@@ -311,7 +311,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   screen_ai::dlc_installer::ManageInstallation(&local_state_.get());
 
   if (is_primary_user) {
-    DCHECK_EQ(primary_profile_, profile);
+    CHECK_EQ(primary_profile_, profile, base::NotFatalUntil::M161);
 
     // Ensure that one `BirchKeyedService` is created for the primary profile.
     BirchKeyedServiceFactory::GetInstance()->GetService(profile);

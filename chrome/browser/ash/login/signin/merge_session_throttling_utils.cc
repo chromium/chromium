@@ -74,7 +74,7 @@ bool AreAllSessionMergedAlready() {
 }
 
 void BlockProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // Add a new profile to the list of those that we are currently blocking
   // blocking page loading for.
   if (ProfileSet::Get()->find(profile) == ProfileSet::Get()->end()) {
@@ -91,7 +91,7 @@ void BlockProfile(Profile* profile) {
 }
 
 void UnblockProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // Have we blocked loading of pages for this this profile
   // before?
   DVLOG(1) << "Unblocking profile " << profile;
@@ -106,7 +106,7 @@ void UnblockProfile(Profile* profile) {
 }
 
 bool ShouldDelayRequestForProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return false;

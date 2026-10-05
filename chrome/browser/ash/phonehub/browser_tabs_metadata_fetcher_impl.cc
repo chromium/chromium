@@ -116,7 +116,7 @@ void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
     size_t index_in_results,
     base::OnceClosure done_closure,
     const favicon_base::FaviconImageResult& favicon_image_result) {
-  DCHECK(index_in_results < results_.size());
+  CHECK(index_in_results < results_.size(), base::NotFatalUntil::M161);
 
   results_[index_in_results].favicon = std::move(favicon_image_result.image);
   std::move(done_closure).Run();

@@ -31,7 +31,7 @@ namespace {
 
 user_manager::UserManager::EphemeralModeConfig CreateEphemeralModeConfig(
     ash::CrosSettings* cros_settings) {
-  DCHECK(cros_settings);
+  CHECK(cros_settings, base::NotFatalUntil::M161);
 
   bool ephemeral_users_enabled = false;
   // Only `UserManagerImpl` is allowed to directly use this setting. All
@@ -83,7 +83,7 @@ PolicyUserManagerController::PolicyUserManagerController(
     CHECK_IS_TEST();
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // UserManager outlives PolicyUserManagerController, and subscriptions are
   // destroyed on destroying PolicyUserManagerController. So, base::Unretained

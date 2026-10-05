@@ -45,16 +45,16 @@ void MergeSessionNavigationThrottle::CreateAndAdd(
 MergeSessionNavigationThrottle::MergeSessionNavigationThrottle(
     content::NavigationThrottleRegistry& registry)
     : NavigationThrottle(registry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 MergeSessionNavigationThrottle::~MergeSessionNavigationThrottle() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 MergeSessionNavigationThrottle::WillStartRequest() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!merge_session_throttling_utils::ShouldDelayUrl(
           navigation_handle()->GetURL()) ||
       !merge_session_throttling_utils::ShouldDelayRequestForWebContents(
@@ -102,7 +102,8 @@ void MergeSessionNavigationThrottle::Proceed() {
   proceed_timer_.Stop();
   auto* manager = GetOAuth2LoginManager(navigation_handle()->GetWebContents());
   if (manager) {
-    DCHECK(login_manager_observation_.IsObservingSource(manager));
+    CHECK(login_manager_observation_.IsObservingSource(manager),
+          base::NotFatalUntil::M161);
     login_manager_observation_.Reset();
   }
   Resume();

@@ -48,7 +48,7 @@ SessionLengthLimiter::SessionLengthLimiter(
               clock,
               browser_restarted)) {
   CHECK(local_state);
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
 
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
@@ -83,7 +83,7 @@ base::AutoReset<raw_ref<base::Clock>> SessionLengthLimiter::SetClockForTesting(
 }
 
 void SessionLengthLimiter::UpdateLimit() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M161);
 
   // Stop any currently running timer.
   if (timer_)

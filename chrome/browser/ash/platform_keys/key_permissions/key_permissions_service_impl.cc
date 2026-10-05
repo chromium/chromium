@@ -42,8 +42,9 @@ KeyPermissionsServiceImpl::KeyPermissionsServiceImpl(
       profile_is_managed_(profile_is_managed),
       platform_keys_service_(platform_keys_service),
       profile_key_permissions_manager_(profile_key_permissions_manager) {
-  DCHECK(platform_keys_service_);
-  DCHECK(profile_key_permissions_manager || !is_regular_user_profile);
+  CHECK(platform_keys_service_, base::NotFatalUntil::M161);
+  CHECK(profile_key_permissions_manager || !is_regular_user_profile,
+        base::NotFatalUntil::M161);
 }
 
 KeyPermissionsServiceImpl::~KeyPermissionsServiceImpl() = default;
@@ -155,7 +156,7 @@ void KeyPermissionsServiceImpl::IsCorporateKeyWithLocations(
   }
 
   if (key_on_user_token_only) {
-    DCHECK(is_regular_user_profile_);
+    CHECK(is_regular_user_profile_, base::NotFatalUntil::M161);
     profile_key_permissions_manager_->IsKeyAllowedForUsage(
         base::BindOnce(
             &KeyPermissionsServiceImpl::IsCorporateKeyWithKpmResponse,
@@ -208,7 +209,7 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
 
   // A single key location is expected because this is intended for usage after
   // key generation / import, when exactly one location is relevant.
-  DCHECK_EQ(key_locations.size(), 1U);
+  CHECK_EQ(key_locations.size(), 1U, base::NotFatalUntil::M161);
 
   switch (key_locations[0]) {
     case TokenId::kSystem:
@@ -217,7 +218,7 @@ void KeyPermissionsServiceImpl::SetCorporateKeyWithLocations(
                              std::move(public_key_spki_der));
       return;
     case TokenId::kUser: {
-      DCHECK(is_regular_user_profile_);
+      CHECK(is_regular_user_profile_, base::NotFatalUntil::M161);
 
       profile_key_permissions_manager_->AllowKeyForUsage(
           std::move(callback), KeyUsage::kCorporate,

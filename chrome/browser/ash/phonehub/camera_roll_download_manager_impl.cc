@@ -45,7 +45,7 @@ scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner() {
 
 bool HasEnoughDiskSpace(const base::FilePath& root_path,
                         const proto::CameraRollItemMetadata& item_metadata) {
-  DCHECK(item_metadata.file_size_bytes() >= 0);
+  CHECK(item_metadata.file_size_bytes() >= 0, base::NotFatalUntil::M161);
   return base::SysInfo::AmountOfFreeDiskSpace(root_path) >=
          item_metadata.file_size_bytes();
 }

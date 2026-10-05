@@ -409,7 +409,7 @@ void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
     case NetworkState::PortalState::kPortal:
       [[fallthrough]];
     case NetworkState::PortalState::kPortalSuspected:
-      DCHECK(network);
+      CHECK(network, base::NotFatalUntil::M161);
       error_state = NetworkError::ERROR_STATE_PORTAL;
       network_name = network->name();
       break;

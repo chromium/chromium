@@ -146,10 +146,10 @@ EnrollmentScreen::Result EnrollmentUIMixin::WaitForScreenExit() {
   if (screen_result_.has_value())
     return screen_result_.value();
 
-  DCHECK(!screen_exit_waiter_.has_value());
+  CHECK(!screen_exit_waiter_.has_value(), base::NotFatalUntil::M161);
   screen_exit_waiter_.emplace();
   screen_exit_waiter_->Run();
-  DCHECK(screen_result_.has_value());
+  CHECK(screen_result_.has_value(), base::NotFatalUntil::M161);
   EnrollmentScreen::Result result = screen_result_.value();
   screen_result_.reset();
   screen_exit_waiter_.reset();

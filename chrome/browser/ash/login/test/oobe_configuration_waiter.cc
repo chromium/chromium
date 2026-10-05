@@ -15,7 +15,7 @@ OOBEConfigurationWaiter::~OOBEConfigurationWaiter() {
 }
 
 void OOBEConfigurationWaiter::OnOobeConfigurationChanged() {
-  DCHECK(OobeConfiguration::Get()->CheckCompleted());
+  CHECK(OobeConfiguration::Get()->CheckCompleted(), base::NotFatalUntil::M161);
   OobeConfiguration::Get()->RemoveObserver(this);
   std::move(callback_).Run();
 }
@@ -23,7 +23,7 @@ void OOBEConfigurationWaiter::OnOobeConfigurationChanged() {
 // Wait until configuration is loaded.
 bool OOBEConfigurationWaiter::IsConfigurationLoaded(
     base::OnceClosure callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M161);
   if (OobeConfiguration::Get()->CheckCompleted()) {
     return true;
   }

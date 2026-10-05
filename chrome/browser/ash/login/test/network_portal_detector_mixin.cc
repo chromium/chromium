@@ -57,7 +57,7 @@ void NetworkPortalDetectorMixin::SimulateNoNetwork() {
 
 void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
     NetworkStatus status) {
-  DCHECK(!default_network_guid_.empty());
+  CHECK(!default_network_guid_.empty(), base::NotFatalUntil::M161);
   std::string default_network_type =
       default_network_guid_.compare(0, 4, "wifi") == 0 ? shill::kTypeWifi
                                                        : shill::kTypeEthernet;

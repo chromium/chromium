@@ -25,7 +25,7 @@ const char kPersistentDataKeyPrefix[] = "persistent_data_";
 LoginScreenExtensionsStorageCleaner::LoginScreenExtensionsStorageCleaner() {
   auto* browser_context =
       BrowserContextHelper::Get()->GetSigninBrowserContext();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M161);
   prefs_ = Profile::FromBrowserContext(browser_context)->GetPrefs();
   pref_change_registrar_.Init(prefs_);
   pref_change_registrar_.Add(

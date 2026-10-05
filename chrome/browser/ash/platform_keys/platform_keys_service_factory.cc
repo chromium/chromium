@@ -44,7 +44,7 @@ void GetCertDatabaseOnIoThread(
     scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
     PlatformKeysServiceImplDelegate::OnGotNSSCertDatabase callback,
     NssCertDatabaseGetter database_getter) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
 
   auto [on_sync_got, on_async_got] = base::SplitOnceCallback(
       base::BindPostTask(std::move(origin_task_runner), std::move(callback)));
@@ -64,7 +64,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   ~DelegateForUser() override = default;
 
   void GetNSSCertDatabase(OnGotNSSCertDatabase callback) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,

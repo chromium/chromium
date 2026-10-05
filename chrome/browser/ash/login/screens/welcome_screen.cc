@@ -493,20 +493,20 @@ void WelcomeScreen::OnUserAction(const base::ListValue& args) {
     } else if (action_id == kUserActionDisableHighContrast) {
       AccessibilityManager::Get()->EnableHighContrast(false);
     } else if (action_id == kUserActionEnableScreenMagnifier) {
-      DCHECK(MagnificationManager::Get());
+      CHECK(MagnificationManager::Get(), base::NotFatalUntil::M161);
       MagnificationManager::Get()->SetMagnifierEnabled(true);
     } else if (action_id == kUserActionDisableScreenMagnifier) {
-      DCHECK(MagnificationManager::Get());
+      CHECK(MagnificationManager::Get(), base::NotFatalUntil::M161);
       MagnificationManager::Get()->SetMagnifierEnabled(false);
     } else if (action_id == kUserActionEnableSelectToSpeak) {
       AccessibilityManager::Get()->SetSelectToSpeakEnabled(true);
     } else if (action_id == kUserActionDisableSelectToSpeak) {
       AccessibilityManager::Get()->SetSelectToSpeakEnabled(false);
     } else if (action_id == kUserActionEnableDockedMagnifier) {
-      DCHECK(MagnificationManager::Get());
+      CHECK(MagnificationManager::Get(), base::NotFatalUntil::M161);
       MagnificationManager::Get()->SetDockedMagnifierEnabled(true);
     } else if (action_id == kUserActionDisableDockedMagnifier) {
-      DCHECK(MagnificationManager::Get());
+      CHECK(MagnificationManager::Get(), base::NotFatalUntil::M161);
       MagnificationManager::Get()->SetDockedMagnifierEnabled(false);
     } else if (action_id == kUserActionEnableVirtualKeyboard) {
       AccessibilityManager::Get()->EnableVirtualKeyboard(true);
@@ -656,7 +656,7 @@ void WelcomeScreen::OnLanguageListResolved(
     base::ListValue new_language_list,
     const std::string& new_language_list_locale,
     const std::string& new_selected_language) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (new_language_list_locale !=
       application_locale_storage_->GetTag().tag_string()) {
@@ -715,8 +715,8 @@ void WelcomeScreen::OnAccessibilityStatusChanged(
 }
 
 void WelcomeScreen::UpdateA11yState() {
-  DCHECK(MagnificationManager::Get());
-  DCHECK(AccessibilityManager::Get());
+  CHECK(MagnificationManager::Get(), base::NotFatalUntil::M161);
+  CHECK(AccessibilityManager::Get(), base::NotFatalUntil::M161);
   const WelcomeView::A11yState a11y_state{
       .high_contrast = AccessibilityManager::Get()->IsHighContrastEnabled(),
       .large_cursor = AccessibilityManager::Get()->IsLargeCursorEnabled(),

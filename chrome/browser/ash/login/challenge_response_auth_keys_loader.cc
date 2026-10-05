@@ -49,14 +49,15 @@ constexpr base::TimeDelta kDefaultMaximumExtensionLoadWaitingTime =
 Profile* GetSigninProfile() {
   Profile* profile = Profile::FromBrowserContext(
       BrowserContextHelper::Get()->GetSigninBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return profile;
 }
 
 base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
   const PrefService* const prefs = GetSigninProfile()->GetPrefs();
-  DCHECK_EQ(prefs->GetAllPrefStoresInitializationStatus(),
-            PrefService::INITIALIZATION_STATUS_SUCCESS);
+  CHECK_EQ(prefs->GetAllPrefStoresInitializationStatus(),
+           PrefService::INITIALIZATION_STATUS_SUCCESS,
+           base::NotFatalUntil::M161);
 
   const PrefService::Preference* const pref =
       prefs->FindPreference(extensions::pref_names::kInstallForceList);
@@ -216,7 +217,8 @@ class ExtensionLoadObserver final
   }
 
   void OnShutdown(extensions::ExtensionRegistry* registry) override {
-    DCHECK(extension_registry_observation_.IsObservingSource(registry));
+    CHECK(extension_registry_observation_.IsObservingSource(registry),
+          base::NotFatalUntil::M161);
     extension_registry_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
@@ -230,7 +232,8 @@ class ExtensionLoadObserver final
   }
 
   void OnProcessManagerShutdown(extensions::ProcessManager* manager) override {
-    DCHECK(process_manager_observation_.IsObservingSource(manager));
+    CHECK(process_manager_observation_.IsObservingSource(manager),
+          base::NotFatalUntil::M161);
     process_manager_observation_.Reset();
     TriggerExtensionsReadyCallback();
   }
@@ -238,7 +241,8 @@ class ExtensionLoadObserver final
   // extensions::ExtensionHostObserver
 
   void OnExtensionHostDestroyed(extensions::ExtensionHost* host) override {
-    DCHECK(extension_host_observations_.IsObservingSource(host));
+    CHECK(extension_host_observations_.IsObservingSource(host),
+          base::NotFatalUntil::M161);
     extension_host_observations_.RemoveObservation(host);
     StopWaitingOnExtension(host->extension_id());
   }
@@ -422,7 +426,8 @@ void ChallengeResponseAuthKeysLoader::LoadAvailableKeys(
 void ChallengeResponseAuthKeysLoader::OnProfileWillBeDestroyed(
     Profile* profile) {
   profile_is_destroyed_ = true;
-  DCHECK(profile_subscription_.IsObservingSource(profile));
+  CHECK(profile_subscription_.IsObservingSource(profile),
+        base::NotFatalUntil::M161);
   profile_subscription_.Reset();
 }
 

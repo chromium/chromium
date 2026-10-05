@@ -101,7 +101,7 @@ void OnCookiesToTransferRetrieved(base::RepeatingClosure completion_callback,
                                   Profile* to_profile,
                                   bool first_login,
                                   const net::CookieList& cookies) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   net::CookieList non_gaia_cookies;
   ash::floating_sso::FloatingSsoService* floating_sso_service =
@@ -141,7 +141,7 @@ void OnTargetCookieJarContentsRetrieved(
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login,
     const net::CookieList& target_cookies) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   bool transfer_auth_cookies;
 
   bool first_login = target_cookies.empty();
@@ -209,7 +209,7 @@ void ProfileAuthData::Transfer(
     bool transfer_auth_cookies_on_first_login,
     bool transfer_saml_auth_cookies_on_subsequent_login,
     base::OnceClosure completion_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // The BarrierClosure will call `completion_callback` after the 2 async
   // transfers have finished.

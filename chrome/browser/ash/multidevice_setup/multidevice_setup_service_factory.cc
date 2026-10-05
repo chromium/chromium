@@ -37,7 +37,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
       : profile_(Profile::FromBrowserContext(context)) {
     const user_manager::User* user =
         ProfileHelper::Get()->GetUserByProfile(profile_);
-    DCHECK(user);
+    CHECK(user, base::NotFatalUntil::M161);
 
     bool is_secondary_user =
         user->GetAccountId() !=

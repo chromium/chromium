@@ -133,7 +133,7 @@ LoginManagerMixin::LoginManagerMixin(InProcessBrowserTestMixinHost* host,
       initial_users_(initial_users),
       fake_gaia_mixin_(gaia_mixin),
       cryptohome_mixin_(cryptohome_mixin) {
-  DCHECK(!g_instance_created);
+  CHECK(!g_instance_created, base::NotFatalUntil::M161);
   g_instance_created = true;
 
   if (cryptohome_mixin_ != nullptr) {

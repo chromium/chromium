@@ -59,8 +59,8 @@ UserPrivateTokenArcKpmDelegate::UserPrivateTokenArcKpmDelegate(Profile* profile)
     : profile_(profile),
       is_primary_profile_(ProfileHelper::IsPrimaryProfile(profile)),
       policy_service_(profile->GetProfilePolicyConnector()->policy_service()) {
-  DCHECK(profile_);
-  DCHECK(policy_service_);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(policy_service_, base::NotFatalUntil::M161);
 
   if (is_primary_profile_) {
     SystemTokenArcKpmDelegate::Get()->SetPrimaryUserArcKpmDelegate(this);
@@ -113,7 +113,7 @@ void UserPrivateTokenArcKpmDelegate::Shutdown() {
     arc_session_manager->RemoveObserver(this);
   }
 
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_app_list_prefs) {
     arc_app_list_prefs->RemoveObserver(this);
@@ -137,7 +137,7 @@ void UserPrivateTokenArcKpmDelegate::CheckArcKeyAvailibility() {
 
   for (const auto& package_name : corporate_key_usage_allowed_app_ids) {
     auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
-    DCHECK(arc_app_list_prefs);
+    CHECK(arc_app_list_prefs, base::NotFatalUntil::M161);
 
     if (arc_app_list_prefs->ArcAppListPrefs::IsPackageInstalled(package_name)) {
       SetArcUsageAllowance(true);
@@ -189,10 +189,10 @@ void SystemTokenArcKpmDelegate::SetSystemTokenArcKpmDelegateForTesting(
 }
 
 SystemTokenArcKpmDelegate::SystemTokenArcKpmDelegate() {
-  DCHECK(!g_system_token_arc_usage_manager_delegate);
+  CHECK(!g_system_token_arc_usage_manager_delegate, base::NotFatalUntil::M161);
   g_system_token_arc_usage_manager_delegate = this;
 
-  DCHECK(!primary_user_arc_usage_manager_);
+  CHECK(!primary_user_arc_usage_manager_, base::NotFatalUntil::M161);
 
   // Notification for the initial state of the usage allowance. The state may
   // change after SetPrimaryUserArcKpmDelegate is called.
@@ -200,7 +200,7 @@ SystemTokenArcKpmDelegate::SystemTokenArcKpmDelegate() {
 }
 
 SystemTokenArcKpmDelegate::~SystemTokenArcKpmDelegate() {
-  DCHECK(g_system_token_arc_usage_manager_delegate);
+  CHECK(g_system_token_arc_usage_manager_delegate, base::NotFatalUntil::M161);
   g_system_token_arc_usage_manager_delegate = nullptr;
 
   ClearPrimaryUserArcKpmDelegate();
@@ -236,8 +236,9 @@ void SystemTokenArcKpmDelegate::ClearPrimaryUserArcKpmDelegate() {
     return;
   }
 
-  DCHECK(primary_user_arc_usage_manager_delegate_observation_.IsObservingSource(
-      primary_user_arc_usage_manager_.get()));
+  CHECK(primary_user_arc_usage_manager_delegate_observation_.IsObservingSource(
+            primary_user_arc_usage_manager_.get()),
+        base::NotFatalUntil::M161);
   primary_user_arc_usage_manager_delegate_observation_.Reset();
   primary_user_arc_usage_manager_ = nullptr;
   OnArcUsageAllowanceForCorporateKeysChanged(false);

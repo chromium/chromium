@@ -779,7 +779,8 @@ void UserSelectionScreen::OnSessionStateChanged() {
   if (!pending_focused_account_id_.has_value()) {
     return;
   }
-  DCHECK(session_manager::SessionManager::Get()->IsUserSessionBlocked());
+  CHECK(session_manager::SessionManager::Get()->IsUserSessionBlocked(),
+        base::NotFatalUntil::M161);
 
   AccountId focused_pod(pending_focused_account_id_.value());
   pending_focused_account_id_.reset();
@@ -959,7 +960,7 @@ SmartLockService* UserSelectionScreen::GetSmartLockServiceForUser(
   // some valid scenarios where |profile| exists but the active screen is not
   // the lock screen.
   if (GetScreenType() == LOCK_SCREEN) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
   }
 
   if (!profile) {

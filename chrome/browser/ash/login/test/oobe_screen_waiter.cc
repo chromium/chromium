@@ -20,12 +20,12 @@ OobeScreenWaiter::OobeScreenWaiter(OobeScreenId target_screen)
 OobeScreenWaiter::~OobeScreenWaiter() = default;
 
 void OobeScreenWaiter::Wait() {
-  DCHECK_EQ(State::IDLE, state_);
+  CHECK_EQ(State::IDLE, state_, base::NotFatalUntil::M161);
 
   if (CheckIfDone())
     return;
 
-  DCHECK(!run_loop_);
+  CHECK(!run_loop_, base::NotFatalUntil::M161);
 
   state_ = State::WAITING_FOR_SCREEN;
 
@@ -38,7 +38,7 @@ void OobeScreenWaiter::Wait() {
   if (check_native_window_visible_) {
     aura::Window* native_window =
         LoginDisplayHost::default_host()->GetNativeWindow();
-    DCHECK(native_window);
+    CHECK(native_window, base::NotFatalUntil::M161);
     native_window_observation_.Observe(native_window);
   }
 
@@ -61,7 +61,7 @@ void OobeScreenWaiter::Wait() {
 
 void OobeScreenWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
                                               OobeScreenId new_screen) {
-  DCHECK_NE(state_, State::IDLE);
+  CHECK_NE(state_, State::IDLE, base::NotFatalUntil::M161);
 
   if (state_ != State::WAITING_FOR_SCREEN) {
     if (assert_last_screen_ && new_screen != target_screen_) {
@@ -89,7 +89,7 @@ void OobeScreenWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
 
 void OobeScreenWaiter::OnWindowVisibilityChanged(aura::Window* window,
                                                  bool visible) {
-  DCHECK(check_native_window_visible_);
+  CHECK(check_native_window_visible_, base::NotFatalUntil::M161);
 
   if (IsNativeWindowVisible() && IsTargetScreenReached())
     EndWait();

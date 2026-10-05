@@ -59,7 +59,7 @@ std::unique_ptr<ScopedUserPolicyUpdate> UserPolicyMixin::RequestPolicyUpdate() {
 }
 
 void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
-  DCHECK(!user_key_bits.empty());
+  CHECK(!user_key_bits.empty(), base::NotFatalUntil::M161);
 
   // Make sure chrome paths are overridden before proceeding - this is usually
   // done in chrome main, which has not happened yet.
@@ -82,7 +82,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
 
   CHECK(base::CreateDirectory(user_key_file.DirName()));
   bool success = base::WriteFile(user_key_file, user_key_bits);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
 }
 
 void UserPolicyMixin::SetUpPolicy() {

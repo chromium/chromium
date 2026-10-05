@@ -263,7 +263,7 @@ UserImageManagerImpl::Job::~Job() = default;
 void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
                                           const int image_index,
                                           const GURL& image_url) {
-  DCHECK(!run_);
+  CHECK(!run_, base::NotFatalUntil::M161);
   run_ = true;
 
   image_index_ = image_index;

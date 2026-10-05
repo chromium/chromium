@@ -28,7 +28,8 @@ void DialogWindowWaiter::Wait() {
 }
 
 void DialogWindowWaiter::OnWindowInitialized(aura::Window* window) {
-  DCHECK(!window_observations_.IsObservingSource(window));
+  CHECK(!window_observations_.IsObservingSource(window),
+        base::NotFatalUntil::M161);
   window_observations_.AddObservation(window);
 }
 

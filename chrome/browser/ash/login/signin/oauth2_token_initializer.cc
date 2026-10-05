@@ -18,7 +18,7 @@ void OAuth2TokenInitializer::Start(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     const UserContext& user_context,
     FetchOAuth2TokensCallback callback) {
-  DCHECK(!user_context.GetAuthCode().empty());
+  CHECK(!user_context.GetAuthCode().empty(), base::NotFatalUntil::M161);
   callback_ = std::move(callback);
   user_context_ = user_context;
   oauth2_token_fetcher_ = std::make_unique<OAuth2TokenFetcher>(

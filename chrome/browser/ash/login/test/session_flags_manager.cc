@@ -46,7 +46,7 @@ SessionFlagsManager::~SessionFlagsManager() {
 }
 
 void SessionFlagsManager::SetUpSessionRestore() {
-  DCHECK_EQ(mode_, Mode::LOGIN_SCREEN);
+  CHECK_EQ(mode_, Mode::LOGIN_SCREEN, base::NotFatalUntil::M161);
   mode_ = Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE;
 
   base::FilePath user_data_path;
@@ -69,7 +69,8 @@ void SessionFlagsManager::SetDefaultLoginSwitches(
 void SessionFlagsManager::AppendSwitchesToCommandLine(
     base::CommandLine* command_line) {
   if (restart_job_.has_value()) {
-    DCHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE);
+    CHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE,
+             base::NotFatalUntil::M161);
     for (const auto& item : *restart_job_) {
       // Do not override flags added to test command line by default.
       if (command_line->HasSwitch(item.first)) {
@@ -85,7 +86,8 @@ void SessionFlagsManager::AppendSwitchesToCommandLine(
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
     command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
   } else if (!user_id_.empty()) {
-    DCHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE);
+    CHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE,
+             base::NotFatalUntil::M161);
     command_line->AppendSwitchASCII(switches::kLoginUser, user_id_);
     command_line->AppendSwitchASCII(switches::kLoginProfile, user_hash_);
   }
@@ -112,7 +114,8 @@ void SessionFlagsManager::Finalize() {
 }
 
 void SessionFlagsManager::LoadStateFromBackingFile() {
-  DCHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE);
+  CHECK_EQ(mode_, Mode::LOGIN_SCREEN_WITH_SESSION_RESTORE,
+           base::NotFatalUntil::M161);
 
   JSONFileValueDeserializer deserializer(backing_file_);
 
@@ -183,7 +186,8 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   } else {
     // Only the primary user's switches/flags are preserved. This is the same
     // behavior of session_manager daemon.
-    DCHECK(session_manager->primary_user_id().has_value());
+    CHECK(session_manager->primary_user_id().has_value(),
+          base::NotFatalUntil::M161);
     const auto it = sessions.find(*session_manager->primary_user_id());
     user_id = it->first;
     user_profile = it->second;
@@ -194,7 +198,7 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   // Restart job command line should already contain login user and profile
   // switches, no reason to store it separately.
   if (!has_restart_job && !user_id.empty()) {
-    DCHECK(!user_profile.empty());
+    CHECK(!user_profile.empty(), base::NotFatalUntil::M161);
     cached_state.Set(kUserIdKey, user_id);
     cached_state.Set(kUserHashKey, user_profile);
   }
@@ -214,11 +218,14 @@ void SessionFlagsManager::StoreStateToBackingFile() {
   if (has_restart_job) {
     const std::vector<std::string>& argv =
         FakeSessionManagerClient::Get()->restart_job_argv().value();
-    DCHECK(std::ranges::contains(
-        argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
-                                 user_manager::kGuestUserName)));
-    DCHECK(std::ranges::contains(
-        argv, base::StringPrintf("--%s=%s", switches::kLoginProfile, "user")));
+    CHECK(std::ranges::contains(
+              argv, base::StringPrintf("--%s=%s", switches::kLoginUser,
+                                       user_manager::kGuestUserName)),
+          base::NotFatalUntil::M161);
+    CHECK(std::ranges::contains(
+              argv,
+              base::StringPrintf("--%s=%s", switches::kLoginProfile, "user")),
+          base::NotFatalUntil::M161);
 
     cached_state.Set(kRestartJobKey, GetSwitchesValueFromArgv(argv));
   }

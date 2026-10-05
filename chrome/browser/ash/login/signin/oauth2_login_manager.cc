@@ -85,7 +85,7 @@ void OAuth2LoginManager::RemoveObserver(
 
 void OAuth2LoginManager::RestoreSession(
     const std::string& oauth2_access_token) {
-  DCHECK(user_profile_);
+  CHECK(user_profile_, base::NotFatalUntil::M161);
   oauthlogin_access_token_ = oauth2_access_token;
   session_restore_start_ = base::Time::Now();
   ContinueSessionRestore();
@@ -167,7 +167,7 @@ void OAuth2LoginManager::OnRefreshTokenUpdatedForAccount(
   }
 
   // Token is loaded. Undo the flagging before token loading.
-  DCHECK(!account_info.gaia.empty());
+  CHECK(!account_info.gaia.empty(), base::NotFatalUntil::M161);
   user_manager::UserManager::Get()->SaveUserOAuthStatus(
       AccountIdFromAccountInfo(account_info),
       user_manager::User::OAUTH2_TOKEN_STATUS_VALID);

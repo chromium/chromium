@@ -95,7 +95,7 @@ KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
         Mode mode,
         KeyPermissionsManagerImpl* key_permissions_manager)
     : mode_(mode), key_permissions_manager_(key_permissions_manager) {
-  DCHECK(key_permissions_manager_);
+  CHECK(key_permissions_manager_, base::NotFatalUntil::M161);
 }
 
 KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
@@ -118,7 +118,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::Update(
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
     std::vector<std::vector<uint8_t>> public_key_spki_der_list,
     Status keys_retrieval_status) {
-  DCHECK(public_key_spki_der_queue_.empty());
+  CHECK(public_key_spki_der_queue_.empty(), base::NotFatalUntil::M161);
 
   if (!public_key_spki_der_list.empty() &&
       mode_ == Mode::kMigratePermissionsFromPrefs) {
@@ -182,7 +182,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     return;
   }
 
-  DCHECK(corporate_usage_allowed.has_value());
+  CHECK(corporate_usage_allowed.has_value(), base::NotFatalUntil::M161);
 
   bool arc_usage_allowed =
       corporate_usage_allowed.value() &&
@@ -239,7 +239,7 @@ KeyPermissionsManagerImpl::GetUserPrivateTokenKeyPermissionsManager(
           ->GetForBrowserContext(profile);
 
   if (!user_private_token_kpm_service) {
-    DCHECK(!ProfileHelper::IsUserProfile(profile));
+    CHECK(!ProfileHelper::IsUserProfile(profile), base::NotFatalUntil::M161);
     return nullptr;
   }
 
@@ -256,7 +256,7 @@ void KeyPermissionsManagerImpl::SetSystemTokenKeyPermissionsManagerForTesting(
 std::unique_ptr<KeyPermissionsManager>
 KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager(
     PrefService* local_state) {
-  DCHECK(!g_system_token_key_permissions_manager);
+  CHECK(!g_system_token_key_permissions_manager, base::NotFatalUntil::M161);
 
   auto system_token_key_permissions_manager =
       std::make_unique<KeyPermissionsManagerImpl>(
@@ -290,9 +290,9 @@ KeyPermissionsManagerImpl::KeyPermissionsManagerImpl(
       arc_usage_manager_delegate_(std::move(arc_usage_manager_delegate)),
       platform_keys_service_(platform_keys_service),
       pref_service_(pref_service) {
-  DCHECK(arc_usage_manager_delegate_);
-  DCHECK(platform_keys_service_);
-  DCHECK(pref_service_);
+  CHECK(arc_usage_manager_delegate_, base::NotFatalUntil::M161);
+  CHECK(platform_keys_service_, base::NotFatalUntil::M161);
+  CHECK(pref_service_, base::NotFatalUntil::M161);
 
   arc_usage_manager_delegate_observation_.Observe(
       arc_usage_manager_delegate_.get());
@@ -456,7 +456,7 @@ void KeyPermissionsManagerImpl::UpdateArcKeyPermissionsInChaps() {
 }
 
 void KeyPermissionsManagerImpl::StartOneTimeMigration() {
-  DCHECK(!IsOneTimeMigrationDone());
+  CHECK(!IsOneTimeMigrationDone(), base::NotFatalUntil::M161);
 
   if (!g_one_time_migration_enabled_for_testing) {
     return;
@@ -467,7 +467,7 @@ void KeyPermissionsManagerImpl::StartOneTimeMigration() {
   base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
                                 MigrationStatus::kStarted);
 
-  DCHECK(!key_permissions_in_chaps_updater_);
+  CHECK(!key_permissions_in_chaps_updater_, base::NotFatalUntil::M161);
   key_permissions_in_chaps_updater_ =
       std::make_unique<KeyPermissionsInChapsUpdater>(
           KeyPermissionsInChapsUpdater::Mode::kMigratePermissionsFromPrefs,

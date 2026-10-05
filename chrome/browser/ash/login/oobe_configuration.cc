@@ -20,12 +20,12 @@ OobeConfiguration* OobeConfiguration::instance = nullptr;
 bool OobeConfiguration::skip_check_for_testing_ = false;
 
 OobeConfiguration::OobeConfiguration() : check_completed_(false) {
-  DCHECK(!OobeConfiguration::Get());
+  CHECK(!OobeConfiguration::Get(), base::NotFatalUntil::M161);
   OobeConfiguration::instance = this;
 }
 
 OobeConfiguration::~OobeConfiguration() {
-  DCHECK_EQ(instance, this);
+  CHECK_EQ(instance, this, base::NotFatalUntil::M161);
   OobeConfiguration::instance = nullptr;
 }
 

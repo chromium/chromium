@@ -28,8 +28,8 @@ PlatformKeysServiceImplDelegate::~PlatformKeysServiceImplDelegate() {
 
 void PlatformKeysServiceImplDelegate::SetOnShutdownCallback(
     base::OnceClosure on_shutdown_callback) {
-  DCHECK(!shut_down_);
-  DCHECK(!on_shutdown_callback_);
+  CHECK(!shut_down_, base::NotFatalUntil::M161);
+  CHECK(!on_shutdown_callback_, base::NotFatalUntil::M161);
   on_shutdown_callback_ = std::move(on_shutdown_callback);
 }
 
@@ -65,13 +65,13 @@ PlatformKeysServiceImpl::~PlatformKeysServiceImpl() {
 
 void PlatformKeysServiceImpl::AddObserver(
     PlatformKeysServiceObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observers_.AddObserver(observer);
 }
 
 void PlatformKeysServiceImpl::RemoveObserver(
     PlatformKeysServiceObserver* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   observers_.RemoveObserver(observer);
 }
 

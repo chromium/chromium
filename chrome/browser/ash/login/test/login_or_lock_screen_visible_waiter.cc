@@ -34,7 +34,7 @@ void LoginOrLockScreenVisibleWaiter::WaitImpl(
       FROM_HERE, TestTimeouts::test_launcher_timeout());
 
   auto* session_manager = session_manager::SessionManager::Get();
-  DCHECK(session_manager);
+  CHECK(session_manager, base::NotFatalUntil::M161);
 
   // The screen is already visible, no need to wait, unless we specifically want
   // to.

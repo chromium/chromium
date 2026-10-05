@@ -202,7 +202,7 @@ SigninErrorNotifier::SigninErrorNotifier(
           TokenHandleStoreFactory::Get()->GetTokenHandleStore()),
       token_handle_fetcher_(
           CreateTokenHandleFetcher(profile_, token_handle_store_)) {
-  DCHECK(account_manager_);
+  CHECK(account_manager_, base::NotFatalUntil::M161);
   // Create unique user-scoped notification IDs for this profile.
   const user_manager::User& user = CHECK_DEREF(
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile));

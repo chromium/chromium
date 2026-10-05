@@ -35,7 +35,7 @@ AuthErrorObserver::AuthErrorObserver(PrefService* local_state,
       identity_manager_(identity_manager),
       error_controller_(error_controller),
       sync_service_(sync_service) {
-  DCHECK(ShouldObserve(profile));
+  CHECK(ShouldObserve(profile), base::NotFatalUntil::M161);
 }
 
 AuthErrorObserver::~AuthErrorObserver() = default;
@@ -81,7 +81,7 @@ void AuthErrorObserver::HandleAuthError(
     const GoogleServiceAuthError& auth_error) {
   const user_manager::User* const user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user->HasGaiaAccount());
+  CHECK(user->HasGaiaAccount(), base::NotFatalUntil::M161);
 
   if (auth_error.IsPersistentError() && !auth_error.IsScopePersistentError()) {
     // Invalidate OAuth2 refresh token to force Gaia sign-in flow. This is
@@ -91,7 +91,7 @@ void AuthErrorObserver::HandleAuthError(
     LOG(WARNING) << "Invalidate OAuth token because of an auth error: "
                  << auth_error.ToString();
     const AccountId& account_id = user->GetAccountId();
-    DCHECK(account_id.is_valid());
+    CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
     if (SigninErrorNotifier::ShouldIgnoreSyncErrorsForTesting())
       return;
 

@@ -114,7 +114,7 @@ void UserImageSyncObserver::OnUserProfileLoaded(const AccountId& account_id) {
   }
 
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   session_observation_.Reset();
   OnProfileGained(profile);
 }

@@ -128,7 +128,7 @@ void DidGetCertDbOnUiThread(std::optional<TokenId> token_id,
                             GetCertDBCallback callback,
                             NSSOperationState* state,
                             net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!cert_db) {
     LOG(ERROR) << "Couldn't get NSSCertDatabase.";
     state->OnError(FROM_HERE, Status::kErrorInternal);
@@ -166,7 +166,7 @@ void GetCertDatabase(std::optional<TokenId> token_id,
                      GetCertDBCallback callback,
                      PlatformKeysServiceImplDelegate* delegate,
                      NSSOperationState* state) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   delegate->GetNSSCertDatabase(base::BindOnce(&DidGetCertDbOnUiThread, token_id,
                                               std::move(callback), state));
@@ -1070,7 +1070,7 @@ void GenerateSymKeyOnWorkerThread(std::unique_ptr<GenerateSymKeyState> state) {
 // by GenerateSymKey().
 void GenerateSymKeyWithDB(std::unique_ptr<GenerateSymKeyState> state,
                           net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1161,7 +1161,7 @@ void GenerateECKeyOnWorkerThread(std::unique_ptr<GenerateECKeyState> state) {
 // GenerateRSAKey().
 void GenerateRSAKeyWithDB(std::unique_ptr<GenerateRSAKeyState> state,
                           net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1175,7 +1175,7 @@ void GenerateRSAKeyWithDB(std::unique_ptr<GenerateRSAKeyState> state,
 // GenerateECKey().
 void GenerateECKeyWithDB(std::unique_ptr<GenerateECKeyState> state,
                          net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1253,7 +1253,7 @@ void EncryptDecryptAESOnWorkerThread(
 // Used by EncryptDecryptAES().
 void EncryptDecryptAESWithDB(std::unique_ptr<EncryptDecryptState> state,
                              net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1333,7 +1333,7 @@ void DeriveSymKeyOnWorkerThread(std::unique_ptr<DeriveSymKeyState> state) {
 // Used by DeriveSymKey().
 void DeriveSymKeyWithDB(std::unique_ptr<DeriveSymKeyState> state,
                         net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1463,7 +1463,8 @@ void SignECOnWorkerThread(std::unique_ptr<SignState> state) {
     return;
   }
 
-  DCHECK(state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_NONE);
+  CHECK(state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_NONE,
+        base::NotFatalUntil::M161);
 
   // Only SHA-256 algorithm is supported for ECDSA.
   if (state->hash_algorithm_ != HashAlgorithm::HASH_ALGORITHM_SHA256) {
@@ -1521,7 +1522,7 @@ void SignOnWorkerThread(std::unique_ptr<SignState> state) {
 // Continues signing with the obtained NSSCertDatabase. Used by Sign().
 void SignWithDB(std::unique_ptr<SignState> state,
                 net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1570,7 +1571,7 @@ void SignSymOnWorkerThread(std::unique_ptr<SignSymState> state) {
 // SignWithSymKey().
 void SignSymWithDB(std::unique_ptr<SignSymState> state,
                    net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Only the slot and not the NSSCertDatabase is required. Ignore |cert_db|.
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1584,7 +1585,7 @@ void SignSymWithDB(std::unique_ptr<SignSymState> state,
 // `net::CertificateList` and calls back. Used by `SelectCertificates()`.
 void DidSelectCertificates(std::unique_ptr<SelectCertificatesState> state,
                            net::ClientCertIdentityList identities) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   // Convert the ClientCertIdentityList to a CertificateList since returning
   // ClientCertIdentities would require changing the platformKeys extension
   // api. This assumes that the necessary keys can be found later with
@@ -1640,7 +1641,7 @@ void FilterCertificatesOnWorkerThread(
 // GetCertificatesWithDB().
 void DidGetCertificates(std::unique_ptr<GetCertificatesState> state,
                         net::ScopedCERTCertificateList all_certs) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   state->certs_ = std::move(all_certs);
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -1654,7 +1655,7 @@ void DidGetCertificates(std::unique_ptr<GetCertificatesState> state,
 // GetCertificates().
 void GetCertificatesWithDB(std::unique_ptr<GetCertificatesState> state,
                            net::NSSCertDatabase* cert_db) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Get the pointer to slot before transferring ownership of |state| to the
   // callback's bound arguments.
   PK11SlotInfo* slot = state->slot_.get();
@@ -1692,7 +1693,7 @@ bool ShouldIncludePublicKey(SECKEYPublicKey* public_key) {
 // Does the actual retrieval of the SubjectPublicKeyInfo string on a worker
 // thread. Used by GetAllKeysWithDb().
 void GetAllKeysOnWorkerThread(std::unique_ptr<GetAllKeysState> state) {
-  DCHECK(state->slot_.get());
+  CHECK(state->slot_.get(), base::NotFatalUntil::M161);
 
   std::vector<std::vector<uint8_t>> public_key_spki_der_list;
 

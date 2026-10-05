@@ -18,7 +18,7 @@ namespace platform_keys {
 
 UserPrivateTokenKeyPermissionsManagerService::
     UserPrivateTokenKeyPermissionsManagerService(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   auto arc_usage_manager_delegate =
       std::make_unique<UserPrivateTokenArcKpmDelegate>(profile);
