@@ -944,16 +944,18 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     base::ElapsedTimer draw_occlusion_timer;
     occlusion_culler_->RemoveOverdrawQuads(&frame);
     DebugDrawFrameVisible(frame);
+    base::TimeTicks draw_occlusion_end_time;
     UMA_HISTOGRAM_COUNTS_1000(
         "Compositing.Display.Draw.Occlusion.Calculation.Time",
-        draw_occlusion_timer.Elapsed().InMicroseconds());
+        draw_occlusion_timer.Elapsed(&draw_occlusion_end_time)
+            .InMicroseconds());
 
     DBG_LOG("renderer.ptr", "renderer = %p%s", this,
             renderer_.get() == software_renderer_ ? " (software)" : "");
 
     if (overdraw_tracker_) {
       overdraw_tracker_->EstimateAndRecordOverdraw(&frame,
-                                                   base::TimeTicks::Now());
+                                                   draw_occlusion_end_time);
     }
 
     OverdrawTracker::EstimateAndRecordOverdrawAsUMAMetric(&frame);
