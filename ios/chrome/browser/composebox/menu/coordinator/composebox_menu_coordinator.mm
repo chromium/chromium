@@ -190,7 +190,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 }
 
 - (void)presentBottomSheetMenu {
-  CHECK(IsComposeboxPlusButtonBottomSheet());
+  CHECK(_entrypoint == ComposeboxEntrypoint::kCobrowse ||
+        IsComposeboxPlusButtonBottomSheet());
   [self setUpBottomSheetMenuViewController];
   [self createPickerPresenter];
   [self recordAttachmentsMenuOpen];

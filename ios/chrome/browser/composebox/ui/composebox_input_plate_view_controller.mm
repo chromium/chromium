@@ -1305,7 +1305,8 @@ UIImage* SendButtonImage(BOOL highlighted,
     [plusButton.widthAnchor constraintEqualToConstant:plusButtonWidth],
   ]];
 
-  if (IsComposeboxPlusButtonBottomSheet()) {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse ||
+      IsComposeboxPlusButtonBottomSheet()) {
     [plusButton addTarget:self
                    action:@selector(plusButtonTapped)
          forControlEvents:UIControlEventTouchUpInside];
@@ -1571,7 +1572,8 @@ UIImage* SendButtonImage(BOOL highlighted,
 
 /// Configures the menu items for the plus (+) button.
 - (void)updatePlusButtonItems {
-  if (!_plusButton || IsComposeboxPlusButtonBottomSheet()) {
+  if (!_plusButton || _entrypoint == ComposeboxEntrypoint::kCobrowse ||
+      IsComposeboxPlusButtonBottomSheet()) {
     return;
   }
 

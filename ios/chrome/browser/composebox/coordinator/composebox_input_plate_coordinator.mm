@@ -357,7 +357,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
 }
 
 - (void)hideComposeboxMenu {
-  if (IsComposeboxPlusButtonBottomSheet()) {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse ||
+      IsComposeboxPlusButtonBottomSheet()) {
     [_menuCoorinator stop];
     _menuCoorinator = nil;
   } else {
@@ -486,7 +487,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
             (ComposeboxInputPlateViewController*)composeboxViewController
                                 withUIInputState:(ComposeboxUIInputState*)state
                                           button:(UIButton*)button {
-  if (IsComposeboxPlusButtonBottomSheet()) {
+  if (_entrypoint == ComposeboxEntrypoint::kCobrowse ||
+      IsComposeboxPlusButtonBottomSheet()) {
     _menuCoorinator = [[ComposeboxMenuCoordinator alloc]
         initWithBaseViewController:_viewController
                            browser:self.browser
