@@ -29,7 +29,9 @@
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
@@ -2615,6 +2617,21 @@ TEST_F(AtMemoryQueryServiceTest,
   EXPECT_TRUE(future.Wait());
 
   log_router.UnregisterReceiver(&receiver);
+}
+
+TEST_F(AtMemoryQueryServiceTest, ResetsShortcutPromoPrefOnStartup) {
+  base::test::ScopedFeatureList feature_list(
+      features::debug::kAtMemoryResetShortcutPromoPrefOnStartup);
+  pref_service().registry()->RegisterIntegerPref(
+      prefs::kAutofillAtMemoryShortcutPromoImpressionCount, 0);
+  pref_service().SetInteger(
+      prefs::kAutofillAtMemoryShortcutPromoImpressionCount, 2);
+
+  std::unique_ptr<AtMemoryQueryService> service = CreateQueryService();
+
+  EXPECT_EQ(pref_service().GetInteger(
+                prefs::kAutofillAtMemoryShortcutPromoImpressionCount),
+            0);
 }
 
 }  // namespace

@@ -15,6 +15,11 @@ namespace autofill::features::debug {
 // client does not support device reauth.
 BASE_FEATURE(kAtMemoryNoDeviceReauthCheck, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, `AtMemoryQueryService` resets the shortcut settings promo
+// preference on startup.
+BASE_FEATURE(kAtMemoryResetShortcutPromoPrefOnStartup,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Bypasses the eligibility checks (PersonalContext, Gemini subscription tier
 // and other) for local testing and teamfooding.
 BASE_FEATURE(kAtMemorySkipEnablementChecks, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -36,14 +36,17 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/personal_context/core/personal_context_debug_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/at_memory.pb.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -693,7 +696,14 @@ AtMemoryQueryService::AtMemoryQueryService(
       locale_(locale),
       eligibility_metrics_tracker_(personal_context_eligibility_service,
                                    subscription_eligibility_service,
-                                   pref_service) {}
+                                   pref_service) {
+  if (pref_service &&
+      base::FeatureList::IsEnabled(
+          features::debug::kAtMemoryResetShortcutPromoPrefOnStartup)) {
+    pref_service->ClearPref(
+        prefs::kAutofillAtMemoryShortcutPromoImpressionCount);
+  }
+}
 
 AtMemoryQueryService::~AtMemoryQueryService() = default;
 
