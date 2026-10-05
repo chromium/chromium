@@ -887,16 +887,17 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
                        GetDetailsForUpsertPass_ReturnsDetailsWhenEnabled) {
   autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
   response.context_token = "test_token_123";
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kEligible;
   autofill::LegalMessageLine::Links links;
   links.emplace_back(0, 10, "https://example.com/tos");
   response.legal_message_lines.push_back(
       autofill::TestLegalMessageLine("Terms link text", links));
 
   EXPECT_CALL(wallet_manager(),
-              GetDetailsForUpsertPass(
-                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
-                  testing::_))
-      .WillOnce(RunOnceCallback<1>(std::move(response)));
+              ExtractPreloadedDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle))))
+      .WillOnce(Return(std::move(response)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
@@ -926,11 +927,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiPublicPassTest,
                        GetDetailsForUpsertPass_ReturnsNoArgumentsOnFailure) {
   EXPECT_CALL(wallet_manager(),
-              GetDetailsForUpsertPass(
-                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
-                  testing::_))
-      .WillOnce(RunOnceCallback<1>(base::unexpected(
-          wallet::WalletHttpClient::WalletRequestError::kGenericError)));
+              ExtractPreloadedDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle))))
+      .WillOnce(Return(std::nullopt));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
@@ -951,10 +950,9 @@ IN_PROC_BROWSER_TEST_F(
       autofill::WalletPassAccessManager::UserEligibility::kEligible;
 
   EXPECT_CALL(wallet_manager(),
-              GetDetailsForUpsertPass(
-                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
-                  testing::_))
-      .WillOnce(RunOnceCallback<1>(std::move(response)));
+              ExtractPreloadedDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle))))
+      .WillOnce(Return(std::move(response)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();
@@ -976,10 +974,9 @@ IN_PROC_BROWSER_TEST_F(
       autofill::WalletPassAccessManager::UserEligibility::kIneligible;
 
   EXPECT_CALL(wallet_manager(),
-              GetDetailsForUpsertPass(
-                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle)),
-                  testing::_))
-      .WillOnce(RunOnceCallback<1>(std::move(response)));
+              ExtractPreloadedDetailsForUpsertPass(
+                  Eq(autofill::EntityType(autofill::EntityTypeName::kVehicle))))
+      .WillOnce(Return(std::move(response)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetDetailsForUpsertPassFunction>();

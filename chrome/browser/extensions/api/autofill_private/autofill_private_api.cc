@@ -1408,19 +1408,11 @@ AutofillPrivateGetDetailsForUpsertPassFunction::Run() {
 
   // TODO(crbug.com/557059912): Pass the entity type from the caller instead of
   // hardcoding vehicle.
-  pass_manager->GetDetailsForUpsertPass(
-      autofill::EntityType(autofill::EntityTypeName::kVehicle),
-      base::BindOnce(&AutofillPrivateGetDetailsForUpsertPassFunction::
-                         OnGetDetailsForUpsertPassResponse,
-                     base::RetainedRef(this)));
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
+  std::optional<
+      autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse>
+      response = pass_manager->ExtractPreloadedDetailsForUpsertPass(
+          autofill::EntityType(autofill::EntityTypeName::kVehicle));
 
-void AutofillPrivateGetDetailsForUpsertPassFunction::
-    OnGetDetailsForUpsertPassResponse(
-        base::expected<
-            autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse,
-            wallet::WalletHttpClient::WalletRequestError> response) {
   const bool should_see_legal_message_notice =
       response.has_value() &&
       response->user_eligibility ==
@@ -1430,31 +1422,32 @@ void AutofillPrivateGetDetailsForUpsertPassFunction::
                                 (response->legal_message_lines.empty() ||
                                  response->context_token.empty()));
   if (fallback_to_local) {
-    Respond(NoArguments());
-    return;
+    return RespondNow(NoArguments());
   }
 
   api::autofill_private::UpsertPassDetails details;
-  details.context_token = std::move(response->context_token);
-  details.legal_message_lines.reserve(response->legal_message_lines.size());
-  for (const auto& line : response->legal_message_lines) {
-    api::autofill_private::LegalMessageLine idl_line;
-    idl_line.text = base::UTF16ToUTF8(line.text());
-    for (const auto& link : line.links()) {
-      if (!link.range.IsValid() || link.range.is_reversed() ||
-          link.range.is_empty() || link.range.end() > line.text().length() ||
-          !link.url.is_valid() || !link.url.SchemeIsHTTPOrHTTPS()) {
-        continue;
+  if (should_see_legal_message_notice) {
+    details.context_token = std::move(response->context_token);
+    details.legal_message_lines.reserve(response->legal_message_lines.size());
+    for (const auto& line : response->legal_message_lines) {
+      api::autofill_private::LegalMessageLine idl_line;
+      idl_line.text = base::UTF16ToUTF8(line.text());
+      for (const auto& link : line.links()) {
+        if (!link.range.IsValid() || link.range.is_reversed() ||
+            link.range.is_empty() || link.range.end() > line.text().length() ||
+            !link.url.is_valid() || !link.url.SchemeIsHTTPOrHTTPS()) {
+          continue;
+        }
+        api::autofill_private::LegalMessageLink idl_link;
+        idl_link.start = static_cast<int>(link.range.start());
+        idl_link.end = static_cast<int>(link.range.end());
+        idl_link.url = link.url.spec();
+        idl_line.links.push_back(std::move(idl_link));
       }
-      api::autofill_private::LegalMessageLink idl_link;
-      idl_link.start = static_cast<int>(link.range.start());
-      idl_link.end = static_cast<int>(link.range.end());
-      idl_link.url = link.url.spec();
-      idl_line.links.push_back(std::move(idl_link));
+      details.legal_message_lines.push_back(std::move(idl_line));
     }
-    details.legal_message_lines.push_back(std::move(idl_line));
   }
-  Respond(ArgumentList(
+  return RespondNow(ArgumentList(
       api::autofill_private::GetDetailsForUpsertPass::Results::Create(
           details)));
 }
