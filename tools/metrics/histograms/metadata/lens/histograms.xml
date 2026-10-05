@@ -1033,7 +1033,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.Performance.AverageFPS" units="fps"
-    expires_after="2026-03-01">
+    expires_after="2027-10-05">
   <owner>mercerd@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -1136,7 +1136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.SidePanel.SelectedMoreInfoMenuOption"
-    enum="LensOverlaySidePanelMenuOption" expires_after="2025-07-29">
+    enum="LensOverlaySidePanelMenuOption" expires_after="2027-10-05">
   <owner>nguyenbryan@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -1178,7 +1178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Lens.Overlay.TimeToCloseOpenedSidePanel" units="ms"
-    expires_after="2026-03-01">
+    expires_after="2027-10-05">
   <owner>dianaou@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
