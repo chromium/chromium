@@ -3913,9 +3913,9 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
     if (parentNode()) {
       UpdateFocusgroup(params.new_value);
     }
-  } else if (RuntimeEnabledFeatures::OverscrollAreasEnabled(
-                 GetExecutionContext()) &&
-             name == html_names::kOverscrollcontainerAttr) {
+  } else if (name == html_names::kOverscrollcontainerAttr &&
+             RuntimeEnabledFeatures::OverscrollAreasEnabled(
+                 GetExecutionContext())) {
     if (params.new_value.IsNull() || params.old_value.IsNull()) {
       // TODO(crbug.com/467968812): We can optimize this in some cases since a
       // container that disappears necessarily adds its elements to the
@@ -3929,9 +3929,9 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
     }
-  } else if (RuntimeEnabledFeatures::OverscrollAreasEnabled(
-                 GetExecutionContext()) &&
-             name == html_names::kOverscrollareaAttr) {
+  } else if (name == html_names::kOverscrollareaAttr &&
+             RuntimeEnabledFeatures::OverscrollAreasEnabled(
+                 GetExecutionContext())) {
     // See OverscrollAreaTracker::UpdateOverscrollArea().
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(name));
@@ -9224,18 +9224,22 @@ void Element::OverscrollTargetStateChanged() {
 }
 
 bool Element::MatchesOverscrollOpen() const {
-  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
+  Element* container = GetOverscrollContainer();
+  if (!container) {
     return false;
   }
-  Element* container = GetOverscrollContainer();
-  return container && container->GetOverscrollAreaTracker()->IsOpen(*this);
+  // Registering an overscroll area requires the feature to be enabled.
+  DCHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
+  return container->GetOverscrollAreaTracker()->IsOpen(*this);
 }
 
 bool Element::MatchesOverscrollClosed() const {
-  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
+  if (!IsValidOverscrollArea()) {
     return false;
   }
-  return IsValidOverscrollArea() && !MatchesOverscrollOpen();
+  // Registering an overscroll area requires the feature to be enabled.
+  DCHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()));
+  return !MatchesOverscrollOpen();
 }
 
 void Element::FocusWithinStateChanged() {
@@ -10819,9 +10823,9 @@ void Element::UpdateBackdropPseudoElement(
 
 bool Element::ShouldUpdateOverscrollBackdropPseudoElement(
     const StyleRecalcChange change) {
-  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
-    return false;
-  }
+  // This runs for many elements during style recalc, so there is no feature
+  // check here: the pseudo element can only exist, or be generated, for
+  // registered overscroll areas, which requires the feature to be enabled.
   PseudoElement* element =
       GetPseudoElement(PseudoId::kPseudoIdOverscrollBackdrop,
                        /* pseudo_argument */ g_null_atom);
@@ -11667,9 +11671,13 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
       return IsInTopLayer();
     }
     if (pseudo_id == kPseudoIdOverscrollBackdrop) {
-      return RuntimeEnabledFeatures::OverscrollAreasEnabled(
-                 GetExecutionContext()) &&
-             IsValidOverscrollArea();
+      if (!IsValidOverscrollArea()) {
+        return false;
+      }
+      // Registering an overscroll area requires the feature to be enabled.
+      DCHECK(RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          GetExecutionContext()));
+      return true;
     }
     return style->CanGeneratePseudoElement(pseudo_id);
   }
@@ -11965,8 +11973,8 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
 
     // Top layer elements can't be overscroll areas. An element leaving the top
     // layer isn't a valid area yet, but may become one.
-    if (RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext()) &&
-        FastHasAttribute(html_names::kOverscrollareaAttr)) {
+    if (FastHasAttribute(html_names::kOverscrollareaAttr) &&
+        RuntimeEnabledFeatures::OverscrollAreasEnabled(GetExecutionContext())) {
       SetNeedsStyleRecalc(
           kLocalStyleChange,
           StyleChangeReasonForTracing::Create(style_change_reason::kTopLayer));

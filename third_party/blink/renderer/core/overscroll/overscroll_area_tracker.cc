@@ -158,9 +158,9 @@ const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
 
 // static
 bool OverscrollAreaTracker::ShouldBeOverscrollArea(Element& element) {
-  if (!RuntimeEnabledFeatures::OverscrollAreasEnabled(
-          element.GetExecutionContext()) ||
-      !element.FastHasAttribute(html_names::kOverscrollareaAttr)) {
+  if (!element.FastHasAttribute(html_names::kOverscrollareaAttr) ||
+      !RuntimeEnabledFeatures::OverscrollAreasEnabled(
+          element.GetExecutionContext())) {
     return false;
   }
   const ComputedStyle* parent_style = element.ParentComputedStyle();

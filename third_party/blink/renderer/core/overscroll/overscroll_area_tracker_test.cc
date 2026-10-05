@@ -1408,6 +1408,32 @@ TEST_F(OverscrollAreaTrackerPageTest, StyleRecalcContextContainerChild) {
       StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
 }
 
+// The UA style sheet is parsed once per process, so a container can have a
+// non-none overscroll container type even though the feature is disabled for
+// its document. Such a container must not cause any area registration.
+TEST_F(OverscrollAreaTrackerPageTest,
+       StyleRecalcContextContainerChildFeatureDisabled) {
+  ScopedOverscrollAreasForTest disabled(false);
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="area"></button>
+  )HTML");
+  Element* container = GetElementById("container");
+  Element* area = GetElementById("area");
+
+  // The UA sheet was parsed with the feature enabled by the fixture.
+  ASSERT_NE(container->GetComputedStyle()->EffectiveOverscrollContainerType(),
+            EOverscrollContainerType::kNone);
+
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
+  EXPECT_FALSE(area->IsValidOverscrollArea());
+  EXPECT_FALSE(container->GetOverscrollAreaTracker());
+  EXPECT_FALSE(area->GetPseudoElement(kPseudoIdOverscrollBackdrop));
+}
+
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerSubtreeTracking) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <div id="outside">
