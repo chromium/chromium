@@ -743,10 +743,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                         .appendSwitch(AwSwitches.WEBVIEW_REDUCE_UA_ANDROID_VERSION_DEVICE_MODEL);
             }
 
+            long startNativeWebViewZygoteCheck = SystemClock.uptimeMillis();
             AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
             boolean isNativeWebViewZygoteEnabled =
                     delegate != null && delegate.isNativeWebViewZygoteEnabled(webViewDelegate);
             AwBrowserProcess.setNativeWebViewZygoteEnabled(isNativeWebViewZygoteEnabled);
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.NativeWebViewZygoteCheckTime",
+                    SystemClock.uptimeMillis() - startNativeWebViewZygoteCheck);
 
             // This is the end of the provider initialization. All initialization logic must be
             // before this point! Only startup metric recording should occur after this.

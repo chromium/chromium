@@ -9476,6 +9476,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.NativeWebViewZygoteCheckTime"
+    units="ms" expires_after="2027-01-05">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time taken in WebViewChromiumFactoryProvider.initialize() to
+    check whether the native WebView zygote is enabled (via
+    AconfigFlaggedApiDelegate) and to pass the result to native code. Recorded
+    once per process during WebView provider initialization.
+
+    This time is included in
+    `Android.WebView.Startup.CreationTime.Stage1.FactoryInit`.
+
+    Only measured in Android WebView.
+  </summary>
+</histogram>
+
 <histogram
     name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
     units="ms" expires_after="2026-07-28">
