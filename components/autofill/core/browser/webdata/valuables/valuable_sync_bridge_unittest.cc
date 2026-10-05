@@ -286,6 +286,97 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ImportConstraints) {
   }
 }
 
+// Tests that specifics w/o a management URL are counted but considered valid.
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_MissingManagementUrl) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kAutofillAiImportConstraintsForSync,
+       features::kAutofillAiWalletServerProvidedDeepLink});
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
+                                        /*base_specifics=*/{});
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::
+          kMissingOrEmpty,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::
+          kMissingOrEmpty,
+      1);
+}
+
+// Tests a successful check of specifics with a management URL.
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ValidManagementUrl) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kAutofillAiImportConstraintsForSync,
+       features::kAutofillAiWalletServerProvidedDeepLink});
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
+                                        /*base_specifics=*/{});
+  specifics.set_pass_view_url("https://wallet.google.com/wallet/passes/123");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kValid, 1);
+}
+
+// Tests that specifics with an invalid management URL are counted and flagged
+// as illegal.
+TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_InvalidManagementUrl) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kAutofillAiImportConstraintsForSync,
+       features::kAutofillAiWalletServerProvidedDeepLink});
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
+                                        /*base_specifics=*/{});
+  specifics.set_pass_view_url("https://illegal.site.com/");
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
+}
+
+// Tests that specifics with an invalid management URL are counted but not
+// flagged as illegal if the feature flag for Wallet deeplinks is not enabled.
+TEST_F(ValuableSyncBridgeTest,
+       IsEntityDataValid_InvalidManagementUrl_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list(
+      {features::kAutofillAiImportConstraintsForSync});
+  sync_pb::AutofillValuableSpecifics specifics =
+      CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
+                                        /*base_specifics=*/{});
+  specifics.set_pass_view_url("https://illegal.site.com/");
+
+  base::HistogramTester histogram_tester;
+  // The illegal URL is tolerated if the deeplink feature is not enabled.
+  EXPECT_TRUE(
+      bridge().IsEntityDataValid(*CreateEntityDataFromSpecifics(specifics)));
+  // The illegal URL is still counted, though.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Ai.ValuableSync.ManagementUrlStatus.Vehicle",
+      ValuableSyncBridge::AutofillAiWalletManagementUrlSyncStatus::kInvalid, 1);
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_NonEmptyId) {
   // Valid case.

@@ -311,7 +311,8 @@ class EntityInstance final {
   struct WalletRecordTypePayload {
     // Canonical management URL for this entity on wallet.google.com.
     // Empty if not provided by the server or before sync propagation.
-    // TODO(crbug.com/560061580): This field is not yet populated.
+    // This field is only populated if the flag
+    // kAutofillAiWalletServerProvidedDeepLink is set.
     GURL management_url = internal::IsRequired();
 
     friend bool operator==(const WalletRecordTypePayload&,

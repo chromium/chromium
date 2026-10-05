@@ -667,6 +667,16 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h:AutofillAiUnmaskResult) -->
 
+<!-- LINT.IfChange(AutofillAiWalletManagementUrlSyncStatus) -->
+
+<enum name="AutofillAiWalletManagementUrlSyncStatus">
+  <int value="0" label="Valid URL"/>
+  <int value="1" label="Missing or empty URL"/>
+  <int value="2" label="Invalid URL"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/webdata/valuables/valuable_sync_bridge.h:AutofillAiWalletManagementUrlSyncStatus) -->
+
 <!-- LINT.IfChange(AutofillAiWalletNoticeFunnelEvents) -->
 
 <enum name="AutofillAiWalletNoticeFunnelEvents">

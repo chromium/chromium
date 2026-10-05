@@ -2342,6 +2342,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="RecordType" variants="Autofill.Ai.EntityRecordType"/>
 </histogram>
 
+<histogram name="Autofill.Ai.ValuableSync.ManagementUrlStatus{EntityType}"
+    enum="AutofillAiWalletManagementUrlSyncStatus" expires_after="2027-02-28">
+  <owner>schickin@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the validation status of the management URL (`pass_view_url`) on an
+    Autofill AI Wallet entity when it is received via sync.
+
+    {EntityType}
+  </summary>
+  <token key="EntityType" variants="Autofill.Ai.EntityType">
+    <variant name="" summary="Emitted for all entity types (aggregate)."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Ai.WalletContextualSurfacingEnabled" enum="Boolean"
     expires_after="2027-02-14">
   <owner>jihadghanna@google.com</owner>

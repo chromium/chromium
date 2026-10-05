@@ -404,6 +404,12 @@ BASE_FEATURE(kAutofillAiWalletPrivatePassesCapability,
 BASE_FEATURE(kAutofillAiWalletPrivatePassesDeepLink,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, Wallet management URLs (`pass_view_url`) received via sync are
+// stored on `EntityInstance::WalletRecordTypePayload` and used for deep
+// linking to Google Wallet.
+BASE_FEATURE(kAutofillAiWalletServerProvidedDeepLink,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, orders and shipments from Google Wallet become available in
 // Autofill for filling as read-only AutofillAi entities.
 // TODO(crbug.com/542022094): Clean up when launched.

@@ -37,6 +37,7 @@
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
@@ -786,6 +787,16 @@ sync_pb::AutofillValuableSpecifics CreateSpecificsFromEntityInstance(
   if (!context_token.empty()) {
     specifics.set_context_token(std::string(context_token));
   }
+
+  if (const auto* wallet_payload =
+          std::get_if<EntityInstance::WalletRecordTypePayload>(
+              &entity.record_type_data());
+      base::FeatureList::IsEnabled(
+          features::kAutofillAiWalletServerProvidedDeepLink) &&
+      wallet_payload && !wallet_payload->management_url.is_empty()) {
+    specifics.set_pass_view_url(wallet_payload->management_url.spec());
+  }
+
   return specifics;
 }
 
@@ -800,14 +811,17 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
     if (attributes.empty()) {
       return std::nullopt;
     }
+    GURL management_url = base::FeatureList::IsEnabled(
+                              features::kAutofillAiWalletServerProvidedDeepLink)
+                              ? GURL(specifics.pass_view_url())
+                              : GURL();
     return EntityInstance(
         EntityType(entity_type_name), std::move(attributes),
         EntityInstance::EntityId(specifics.id()),
         /*nickname=*/"", /*date_modified=*/{}, /*use_count=*/{},
         /*use_date=*/{},
-        // TODO(crbug.com/560061580): Add logic to import the management URL
-        // from the synced specifics.
-        EntityInstance::WalletRecordTypePayload{.management_url = GURL()},
+        EntityInstance::WalletRecordTypePayload{.management_url =
+                                                    std::move(management_url)},
         EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
         std::move(frecency_overwrite));
   };
