@@ -54,9 +54,7 @@ public class HistoryAdapterAccessibilityTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         mAdapter.setScrollToLoadDisabledForTest(true);

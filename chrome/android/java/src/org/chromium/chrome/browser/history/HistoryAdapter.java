@@ -27,14 +27,10 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.finds.FindsFeatures;
-import org.chromium.chrome.browser.finds.FindsUtils;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.history.HistoryProvider.ClientInfo;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
@@ -59,8 +55,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private final ArrayList<HistoryItemView> mItemViews;
     private final DefaultFaviconHelper mFaviconHelper;
     private @Nullable final SigninPromoCoordinator mHistorySyncPromoCoordinator;
-    private @Nullable final SnackbarManager mSnackbarManager;
-    private @Nullable final Profile mProfile;
 
     private @Nullable RecyclerView mRecyclerView;
     private HistoryProvider mHistoryProvider;
@@ -74,7 +68,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private @Nullable HeaderItem mHistoryOpenInChromeHeaderItem;
     private @Nullable HeaderItem mHistorySyncPromoHeaderItem;
     private @Nullable HeaderItem mFilterChipsHeaderItem;
-    private @Nullable HeaderItem mFindsPromoHeaderItem;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -90,7 +83,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mPrivacyDisclaimersVisible;
     private boolean mClearBrowsingDataButtonVisible;
     private boolean mHistorySyncPromoVisible;
-    private boolean mFindsPromoVisible;
     private String mQueryText = EMPTY_QUERY;
     // Hostname currently chosen for host filtering (either via the Page Info UI or the host
     // filter chip). If null, ignored when querying history.
@@ -125,22 +117,16 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
      * @param provider The provider for history data.
      * @param historySyncPromoCoordinator The coordinator for the history sync promo, or null.
      * @param shouldClusterByDomain Whether history items should be clustered by domain.
-     * @param snackbarManager The manager for snackbars, or null.
-     * @param profile The current user profile, or null if off the record.
      */
     public HistoryAdapter(
             HistoryContentManager manager,
             HistoryProvider provider,
             @Nullable SigninPromoCoordinator historySyncPromoCoordinator,
-            boolean shouldClusterByDomain,
-            @Nullable SnackbarManager snackbarManager,
-            @Nullable Profile profile) {
+            boolean shouldClusterByDomain) {
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
         mManager = manager;
-        mSnackbarManager = snackbarManager;
-        mProfile = profile;
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
         mShowSourceApp = mManager.showAppFilter(); // defaults to BrApp full history
@@ -538,24 +524,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             mHistorySyncPromoHeaderItem = new PersistentHeaderItem(2, historySyncPromoView);
         }
 
-        // Initialize the Finds Opt-In Promo Card with the same position as the History Sync Promo
-        // as they are enforced to be mutually exclusive when showing.
-        View findsPromoContainer = getFindsPromoContainer();
-        mFindsPromoHeaderItem = new StandardHeaderItem(2, findsPromoContainer);
-
         updateClearBrowsingDataButtonVisibility();
         setPrivacyDisclaimer();
         updatePrivacyDisclaimerBottomSpace();
         updateHistorySyncPromoVisibility();
-
-        // Only attempt to show the Finds promo if the Profile is not offTheRecord (set to be null
-        // as a dependency) and if the SnackbarManager is not null as in certain flows such as
-        // PageInfo and in the sidebar history page it can be null.
-        if (mSnackbarManager != null
-                && mProfile != null
-                && FindsFeatures.sEnableHistoryPageOptIn.getValue()) {
-            checkFindsPromoShowCriteriaAsync(mProfile);
-        }
     }
 
     private ViewGroup getClearBrowsingDataButtonContainer(@Nullable ViewGroup parent) {
@@ -616,37 +588,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     void updateClientFilter(@Nullable FilterItem clientInfo) {
         setClientIds(clientInfo == null ? Collections.emptyList() : clientInfo.getIds());
         search(mQueryText);
-    }
-
-    private View getFindsPromoContainer() {
-        Context context = mManager.getContext();
-        View view =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.finds_promo_view_history_page, null, false);
-        Button positiveButton = view.findViewById(R.id.finds_promo_positive_button);
-        Button negativeButton = view.findViewById(R.id.finds_promo_negative_button);
-        View closeButton = view.findViewById(R.id.finds_promo_close_button);
-        positiveButton.setOnClickListener(
-                _ ->
-                        FindsUtils.acceptOptIn(
-                                context,
-                                assumeNonNull(mProfile),
-                                assumeNonNull(mSnackbarManager),
-                                this::dismissFindsOptInPromo));
-        negativeButton.setOnClickListener(_ -> dismissFindsOptInPromo());
-        closeButton.setOnClickListener(_ -> dismissFindsOptInPromo());
-        return view;
-    }
-
-    private void dismissFindsOptInPromo() {
-        if (!mFindsPromoVisible) return;
-
-        mFindsPromoVisible = false;
-        setHeaders();
-
-        if (mProfile != null) {
-            FindsUtils.setOptInPromoInteracted(mProfile);
-        }
     }
 
     @EnsuresNonNull("mPrivacyDisclaimerTextView")
@@ -729,9 +670,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             }
             if (mHistorySyncPromoVisible) {
                 args.add(mHistorySyncPromoHeaderItem);
-            }
-            if (mFindsPromoVisible) {
-                args.add(mFindsPromoHeaderItem);
             }
         }
         setHeaders(args.toArray(new HeaderItem[args.size()]));
@@ -851,35 +789,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             // When removing the history sync promo, other headers should be removed when there's
             // no history record.
             removeHeaderIfEmpty();
-        }
-    }
-
-    /**
-     * Checks whether the finds promo is eligible to show, through an async call for notification
-     * channels, and if eligible, refreshes the set of headers. Setting the headers will update the
-     * visibility tracker separately.
-     *
-     * @param profile The current user profile.
-     */
-    private void checkFindsPromoShowCriteriaAsync(Profile profile) {
-        FindsUtils.checkShowCriteriaOptInPromo(
-                profile,
-                (show) -> {
-                    if (show || FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
-                        // Only update the Finds Promo visibility here since there is no need to
-                        // rerun this logic if there are any dynamic changes to other promos.
-                        updateFindsPromoVisibility();
-                        setHeaders();
-                    }
-                });
-    }
-
-    private void updateFindsPromoVisibility() {
-        // Ensure that the Finds Promo is mutually exclusive with the History Sync Promo.
-        mFindsPromoVisible = !mHistorySyncPromoVisible;
-
-        if (mFindsPromoVisible && mProfile != null) {
-            FindsUtils.setOptInPromoSeen(mProfile);
         }
     }
 

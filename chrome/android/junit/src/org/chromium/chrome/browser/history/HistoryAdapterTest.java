@@ -68,9 +68,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
     }
@@ -128,9 +126,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
 
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
@@ -169,9 +165,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
 
@@ -450,9 +444,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ true,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ true);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -500,9 +492,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ true,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ true);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -531,9 +521,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ true,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ true);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -578,9 +566,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ true,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ true);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -619,9 +605,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mHistoryProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ true,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ true);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -684,9 +668,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mockProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
 
         Assert.assertFalse(mAdapter.canLoadMoreItems());
 
@@ -858,9 +840,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mockProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.onAttachedToRecyclerView(mRecyclerView);
 
@@ -918,9 +898,7 @@ public class HistoryAdapterTest {
                         mContentManager,
                         mockProvider,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
 
         mAdapter.setAppId("com.example.app");
         mAdapter.setHostName("example.com");

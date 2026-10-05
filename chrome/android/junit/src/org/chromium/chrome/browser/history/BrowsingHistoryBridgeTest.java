@@ -73,9 +73,7 @@ public class BrowsingHistoryBridgeTest {
                         contentManager,
                         mBrowsingHistoryBridge,
                         mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false,
-                        /* snackbarManager= */ null,
-                        /* profile= */ null);
+                        /* shouldClusterByDomain= */ false);
         mBrowsingHistoryBridge.setObserver(adapter);
 
         List<HistoryItem> items = new ArrayList<>();

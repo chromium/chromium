@@ -25,8 +25,6 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 
-import java.util.concurrent.TimeUnit;
-
 /** Static utilities for Finds Notifications. */
 @NullMarked
 public class FindsUtils {
@@ -75,54 +73,6 @@ public class FindsUtils {
                                 callback.onResult(false);
                             }
                         });
-    }
-
-    /**
-     * Checks if the opt-in promo should be shown.
-     *
-     * @param profile The current user profile.
-     * @param callback Callback to return true if the promo should be shown, false otherwise.
-     */
-    public static void checkShowCriteriaOptInPromo(Profile profile, Callback<Boolean> callback) {
-        areFindsNotificationsEnabled(
-                (notificationsEnabled) -> {
-                    if (notificationsEnabled
-                            || !FindsServiceJni.get().isHistorySyncAndMsbbEnabled(profile)
-                            || !checkOptInPromoCriteria(profile)) {
-                        callback.onResult(false);
-                        return;
-                    }
-
-                    callback.onResult(true);
-                });
-    }
-
-    private static boolean checkOptInPromoCriteria(Profile profile) {
-        PrefService prefs = UserPrefs.get(profile);
-
-        // Ensure that the promo has not been interacted with, otherwise do not show.
-        boolean interacted = prefs.getBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED);
-        if (interacted) {
-            return false;
-        }
-
-        if (FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
-            return true;
-        }
-
-        // Check that the promo hasn't been shown too many times.
-        int showCount = prefs.getInteger(FINDS_OPT_IN_PROMO_SHOWN_COUNT);
-        int maxShowCount = FindsFeatures.sMaxOptInPromoInteractionCount.getValue();
-        if (showCount >= maxShowCount) {
-            return false;
-        }
-
-        // Check that the promo is not under cooldown, otherwise do not show.
-        long lastShown = prefs.getLong(FINDS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP);
-        long daysSinceLastShown =
-                TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis() - lastShown);
-        int cooldownDays = FindsFeatures.sOptInPromoCooldownDays.getValue();
-        return daysSinceLastShown >= cooldownDays;
     }
 
     /**

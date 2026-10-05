@@ -428,9 +428,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         this,
                         sProviderForTests != null ? sProviderForTests : historyProvider,
                         mHistorySyncPromoCoordinator,
-                        shouldClusterByDomain,
-                        snackbarManager,
-                        mProfile.isOffTheRecord() ? null : mProfile);
+                        shouldClusterByDomain);
 
         mAppFilter =
                 new HistoryFilterChip(

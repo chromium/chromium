@@ -3833,7 +3833,6 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "enable_history_page_opt_in": "true",
                         "enable_omnibox_recent_search_suggestion_opt_in": "true",
                         "enable_srp_return_count_opt_in": "true",
                         "enable_theme_url_visit_count_opt_in": "true",
