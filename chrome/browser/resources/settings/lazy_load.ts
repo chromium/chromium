@@ -30,7 +30,6 @@ import './privacy_page/cookies_page.js';
 import './privacy_page/privacy_guide/privacy_guide_dialog.js';
 import './privacy_page/privacy_guide/privacy_guide_page.js';
 import './privacy_page/security/security_keys_subpage.js';
-import './privacy_page/security/security_page_v2.js';
 import './privacy_page/security/security_page.js';
 import './safety_hub/safety_hub_entry_point.js';
 import './safety_hub/safety_hub_page.js';
@@ -271,7 +270,6 @@ export {FINGERPRINT_CHECK_DARK_URL, FINGERPRINT_CHECK_LIGHT_URL, FINGERPRINT_SCA
 export {SafeBrowsingSetting} from './privacy_page/security/safe_browsing_types.js';
 export {SecureDnsResolverType, SettingsSecureDnsElement} from './privacy_page/security/secure_dns.js';
 export {SecureDnsInputElement} from './privacy_page/security/secure_dns_input.js';
-export {SecureDnsV2ResolverType, SettingsSecureDnsV2Element} from './privacy_page/security/secure_dns_v2.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security/security_keys_browser_proxy.js';
 export type {Credential, CredentialManagementResponse, Enrollment, EnrollmentResponse, SecurityKeysBioEnrollProxy, SecurityKeysCredentialBrowserProxy, SecurityKeysPinBrowserProxy, SecurityKeysResetBrowserProxy, SensorInfo, SetPinResponse, StartCredentialManagementResponse} from './privacy_page/security/security_keys_browser_proxy.js';
@@ -280,8 +278,6 @@ export {ResetDialogPage, SettingsSecurityKeysResetDialogElement} from './privacy
 export {SetPinDialogPage, SettingsSecurityKeysSetPinDialogElement} from './privacy_page/security/security_keys_set_pin_dialog.js';
 export {SecurityKeysSubpageElement} from './privacy_page/security/security_keys_subpage.js';
 export {HttpsFirstModeSetting, SettingsSecurityPageElement} from './privacy_page/security/security_page.js';
-export {SecurityPageFeatureRowElement} from './privacy_page/security/security_page_feature_row.js';
-export {SecuritySettingsBundleSetting, SettingsSecurityPageV2Element} from './privacy_page/security/security_page_v2.js';
 export {SettingsResetPageElement} from './reset_page/reset_page.js';
 export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dialog.js';
 export {SettingsSafetyHubExtensionsModuleElement} from './safety_hub/extensions_module.js';

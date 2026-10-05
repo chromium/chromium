@@ -451,10 +451,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ProtectedContentPage) {
   RunTest("settings/protected_content_page_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityPageFeatureRow) {
-  RunTest("settings/security/security_page_feature_row_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicPage) {
   RunTest("settings/glic_page_test.js", "runMochaSuite('GlicPage Default')");
 }
@@ -1181,16 +1177,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
           "runMochaSuite('SettingsSecureDns')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2Input) {
-  RunTest("settings/security/secure_dns_v2_test.js",
-          "runMochaSuite('SettingsSecureDnsV2Input')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2) {
-  RunTest("settings/security/secure_dns_v2_test.js",
-          "runMochaSuite('SettingsSecureDnsV2')");
-}
-
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security/security_keys_bio_enrollment_test.js",
           "mocha.run()");
@@ -1636,7 +1622,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
             blink::features::kWebPrinting,
 #endif
-            safe_browsing::kBundledSecuritySettings,
         },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -1800,49 +1785,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingMetrics) {
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, SafeBrowsingRadio) {
   RunTest("settings/security/security_page_test.js",
           "runMochaSuite('SafeBrowsingRadio')");
-}
-
-using SettingsSecurityPageV2Test = SettingsBrowserTest;
-
-// TODO(crbug.com/568529249): This test is failing flakily on Linux debug
-// builders because of timed out.
-#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
-#define MAYBE_Main DISABLED_Main
-#else
-#define MAYBE_Main Main
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, MAYBE_Main) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('Main')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
-                       SecurityKeysSubpageDisabled) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('SecurityKeysSubpageDisabled')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
-                       SecurityPageHappinessTrackingSurveys) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('SecurityPageV2HappinessTrackingSurveys')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
-                       SecurityPageHappinessTrackingSurveys_SecureDnsLegacy) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('SecurityPageV2HappinessTrackingSurveys_"
-          "SecureDnsLegacy')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, ManagedEnvironment) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('ManagedEnvironment')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, SecureDnsBundling) {
-  RunTest("settings/security/security_page_v2_test.js",
-          "runMochaSuite('SecureDnsBundling')");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
