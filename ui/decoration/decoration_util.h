@@ -7,6 +7,8 @@
 
 #include <cstddef>
 
+#include "base/component_export.h"
+#include "base/export_template.h"
 #include "build/build_config.h"
 #include "ui/decoration/decoration_details.h"
 #include "ui/gfx/geometry/insets.h"
@@ -22,7 +24,7 @@ class Canvas;
 namespace ui::decoration {
 
 // Generator for shadow decoration rendering and insets.
-struct ShadowGenerator {
+struct COMPONENT_EXPORT(UI_DECORATION) ShadowGenerator {
   static gfx::Insets GetMargins(const gfx::ShadowValues& shadows);
 
   // Returns the insets for the ninebox aperture given the shadows and corner
@@ -39,6 +41,11 @@ struct ShadowGenerator {
 };
 
 using ShadowDetails = DecorationDetails<gfx::ShadowValues, ShadowGenerator>;
+
+// Instantiated in the ui/decoration component so that every module shares a
+// single shadow details cache in component builds.
+extern template class EXPORT_TEMPLATE_DECLARE(COMPONENT_EXPORT(UI_DECORATION))
+    internal::DecorationCache<gfx::ShadowValues, ShadowGenerator>;
 
 // Returns the insets required to accommodate the corner radii.
 //
@@ -59,6 +66,7 @@ using ShadowDetails = DecorationDetails<gfx::ShadowValues, ShadowGenerator>;
 //                                                      ◄──►
 //                                          Right Inset =  max(r_UR, r_LR)
 //
+COMPONENT_EXPORT(UI_DECORATION)
 gfx::Insets GetInsetsForRoundedCorners(
     const gfx::RoundedCornersF& rounded_corners);
 

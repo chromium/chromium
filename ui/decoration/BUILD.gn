@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("decoration") {
+component("decoration") {
   sources = [
     "decoration.cc",
     "decoration.h",
@@ -14,6 +14,8 @@ source_set("decoration") {
     "shadow.cc",
     "shadow.h",
   ]
+
+  defines = [ "IS_UI_DECORATION_IMPL" ]
 
   deps = [
     "//base",

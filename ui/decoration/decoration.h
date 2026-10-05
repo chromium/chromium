@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -29,8 +30,9 @@ namespace ui {
 // Decoration is the only implementation of the nine-patch layer plumbing; what
 // the decoration actually looks like is entirely delegated to the
 // decoration::DecorationSource.
-class Decoration final : public ui::ImplicitAnimationObserver,
-                         public ui::LayerOwner {
+class COMPONENT_EXPORT(UI_DECORATION) Decoration final
+    : public ui::ImplicitAnimationObserver,
+      public ui::LayerOwner {
  public:
   // Creates an initialized decoration drawn by `source`.
   //

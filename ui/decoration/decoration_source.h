@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/base/interaction/safe_castable.h"
@@ -26,7 +27,8 @@ namespace ui::decoration {
 // Decoration handles all of that. This split allows decorations to be composed
 // out of several sources and keeps the layer plumbing implemented and tested
 // exactly once.
-class DecorationSource : public ui::SafeCastable {
+class COMPONENT_EXPORT(UI_DECORATION) DecorationSource
+    : public ui::SafeCastable {
  public:
   // Everything Decoration needs in order to configure the underlying
   // cc::NinePatchLayer.

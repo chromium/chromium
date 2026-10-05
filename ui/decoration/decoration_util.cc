@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/export_template.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkRRect.h"
@@ -108,5 +109,8 @@ gfx::Insets GetInsetsForRoundedCorners(
       base::ClampRound(std::max(rounded_corners.upper_right(),
                                 rounded_corners.lower_right())));
 }
+
+template class EXPORT_TEMPLATE_DEFINE(COMPONENT_EXPORT(UI_DECORATION))
+    internal::DecorationCache<gfx::ShadowValues, ShadowGenerator>;
 
 }  // namespace ui::decoration

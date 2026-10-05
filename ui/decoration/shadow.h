@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -21,7 +22,9 @@
 namespace ui {
 
 // Simple class that draws a drop shadow around content at given bounds.
-class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
+class COMPONENT_EXPORT(UI_DECORATION) Shadow
+    : public ui::ImplicitAnimationObserver,
+      public ui::LayerOwner {
  public:
   // The shadow style for different UI components.
   enum class Style {
