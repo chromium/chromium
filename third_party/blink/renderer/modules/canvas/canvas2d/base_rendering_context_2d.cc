@@ -28,7 +28,9 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/record_paint_canvas.h"
+#include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -110,6 +112,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -229,7 +232,7 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
 void BaseRenderingContext2D::CreateBitmapProvider() {
   bitmap_provider_ = Canvas2DBitmapProvider::CreateWithClear(
       Host()->Size(), color_params_.GetSharedImageFormat(),
-      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(), Host());
+      color_params_.GetAlphaType(), color_params_.GetGfxColorSpace());
   if (bitmap_provider_) {
     sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
     sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
@@ -269,6 +272,27 @@ BaseRenderingContext2D::GetOrCreateSWCanvasImageProvider() {
       context_provider_wrapper_);
 
   return canvas_image_provider_.get();
+}
+
+void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
+    SkCanvas* canvas,
+    uint32_t id) {
+  CHECK(canvas_image_provider_);
+  canvas_image_provider_->SetAnimatedImageFrameIndexes(
+      GetAnimatedImageFrameIndexMap(id));
+}
+
+void BaseRenderingContext2D::RasterRecordToBitmapProvider(
+    cc::PaintRecord last_recording) {
+  cc::SkiaPaintCanvas skia_canvas(bitmap_provider_->surface()->getCanvas(),
+                                  GetOrCreateSWCanvasImageProvider());
+  cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
+      blink::BindRepeating(
+          &BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId,
+          WrapWeakPersistent(this));
+  skia_canvas.drawPicture(std::move(last_recording), custom_callback);
+  canvas_image_provider_->ReleaseLockedImages();
+  canvas_image_provider_->UnbindTextureBackedImages();
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -982,8 +1006,7 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
     shared_image_provider_->ReleaseImageProviderImages();
   } else if (bitmap_provider_) {
     ScopedRasterTimer timer(nullptr, nullptr);
-    bitmap_provider_->RasterRecord(recording,
-                                   GetOrCreateSWCanvasImageProvider());
+    RasterRecordToBitmapProvider(recording);
   }
   if (Host()) {
     Host()->DidFlush();

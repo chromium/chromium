@@ -42,6 +42,7 @@
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
+class SkCanvas;
 class SkPixmap;
 
 namespace base {
@@ -392,6 +393,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
+  void RasterRecordToBitmapProvider(cc::PaintRecord last_recording);
+  void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
