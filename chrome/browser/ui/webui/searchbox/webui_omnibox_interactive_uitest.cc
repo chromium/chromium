@@ -875,13 +875,16 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
           ? TriggerAimVoiceSearch(kAimPopupWebView, kVoiceSearch, query)
           : InputAimPopupText(query),
       // Submit query by pressing enter key or by clicking the submit button.
-      // Skip this step if voice search auto-submits.
+      // Skip this step if voice search auto-submits. Submitting closes the
+      // popup, which can happen before the key press step returns, so the
+      // popup is allowed to hide during the step.
       If([&]() { return !param.is_voice; },
-         Then(
-             param.submit_via_keyboard
-                 ? InAnyContext(SendKeyPress(kAimPopupWebView, ui::VKEY_RETURN))
-                 : Steps(WaitForAimPopupTallLayoutSettled(),
-                         ClickAimSubmit(kAimPopupWebView)))),
+         Then(param.submit_via_keyboard
+                  ? InAnyContext(
+                        SendKeyPress(kAimPopupWebView, ui::VKEY_RETURN)
+                            .SetMustRemainVisible(false))
+                  : Steps(WaitForAimPopupTallLayoutSettled(),
+                          ClickAimSubmit(kAimPopupWebView)))),
       // Ensure tab navigates to a Google search results page.
       WaitForGoogleSearch(kNewTab, {{"q", query}}));
 }
