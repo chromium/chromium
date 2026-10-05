@@ -627,6 +627,7 @@ external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
 virtual/direct-sockets/external/wpt/direct-sockets/disabled-by-permissions-policy.https.sub.html
 virtual/direct-sockets/external/wpt/direct-sockets/tcp_socket.https.html
 virtual/direct-sockets/external/wpt/direct-sockets/udp_socket.https.html
+virtual/direct-sockets/external/wpt/direct-sockets/udp_socket_multicast.https.html
 virtual/isolated-context/wpt_internal/*
 virtual/isolated-context-stable/wpt_internal/*
 external/wpt/subapps/*

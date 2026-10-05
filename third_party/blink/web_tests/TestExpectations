@@ -346,6 +346,9 @@ crbug.com/457930206 [ Mac ] wpt_internal/html/canvas/drawElementImage/privacy/su
 # Mac bot-specific flakiness drawing videos to canvas.
 crbug.com/400841 media/video-canvas-draw.html [ Failure ]
 
+# Multicast loopback does not deliver on the Mac bots, like the disabled browsertests.
+crbug.com/443716695 [ Mac ] virtual/direct-sockets/external/wpt/direct-sockets/udp_socket_multicast.https.html [ Timeout ]
+
 # Tests crashing due to Dawn->Vulkan->Swiftshader limitations. Dawn's R10X6BG10X6Biplanar420Unorm format is not supported.
 crbug.com/395910472 [ Mac ] wpt_internal/html/canvas/smpte-st-2094-50/drawImage-from-video.html [ Crash Failure ]
 
