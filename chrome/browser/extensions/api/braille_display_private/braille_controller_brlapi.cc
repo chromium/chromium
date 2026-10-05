@@ -73,7 +73,7 @@ BrailleControllerImpl::BrailleControllerImpl() {
 BrailleControllerImpl::~BrailleControllerImpl() = default;
 
 void BrailleControllerImpl::TryLoadLibBrlApi() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (skip_libbrlapi_so_load_ || libbrlapi_loader_.loaded()) {
     return;
   }
@@ -88,7 +88,7 @@ void BrailleControllerImpl::TryLoadLibBrlApi() {
 }
 
 std::unique_ptr<DisplayState> BrailleControllerImpl::GetDisplayState() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   StartConnecting();
   std::unique_ptr<DisplayState> display_state(new DisplayState);
   if (connection_.get() && connection_->Connected()) {
@@ -113,7 +113,7 @@ std::unique_ptr<DisplayState> BrailleControllerImpl::GetDisplayState() {
 void BrailleControllerImpl::WriteDots(const std::vector<uint8_t>& cells,
                                       unsigned int cells_cols,
                                       unsigned int cells_rows) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (connection_ && connection_->Connected()) {
     // Row count and column count of current display.
     unsigned int columns = 0;
@@ -138,7 +138,7 @@ void BrailleControllerImpl::WriteDots(const std::vector<uint8_t>& cells,
 }
 
 void BrailleControllerImpl::AddObserver(BrailleObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (!content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&BrailleControllerImpl::StartConnecting,
                                     base::Unretained(this)))) {
@@ -148,7 +148,7 @@ void BrailleControllerImpl::AddObserver(BrailleObserver* observer) {
 }
 
 void BrailleControllerImpl::RemoveObserver(BrailleObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   observers_.RemoveObserver(observer);
 }
 
@@ -167,7 +167,7 @@ void BrailleControllerImpl::PokeSocketDirForTesting() {
 }
 
 void BrailleControllerImpl::StartConnecting() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (started_connecting_) {
     return;
   }
@@ -225,7 +225,7 @@ void BrailleControllerImpl::OnSocketDirChangedOnTaskThread(
 }
 
 void BrailleControllerImpl::OnSocketDirChangedOnIOThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   VLOG(1) << "BrlAPI directory changed";
   // Every directory change resets the max retry time to the appropriate delay
   // into the future.
@@ -235,15 +235,17 @@ void BrailleControllerImpl::OnSocketDirChangedOnIOThread() {
 }
 
 void BrailleControllerImpl::TryToConnect() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(skip_libbrlapi_so_load_ || libbrlapi_loader_.loaded());
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
+  CHECK(skip_libbrlapi_so_load_ || libbrlapi_loader_.loaded(),
+        base::NotFatalUntil::M161);
   connect_scheduled_ = false;
   if (!connection_.get()) {
-    DCHECK(!create_brlapi_connection_function_.is_null());
+    CHECK(!create_brlapi_connection_function_.is_null(),
+          base::NotFatalUntil::M161);
     connection_ = std::move(create_brlapi_connection_function_).Run();
   }
 
-  DCHECK(connection_);
+  CHECK(connection_, base::NotFatalUntil::M161);
   if (!connection_->Connected()) {
     VLOG(1) << "Trying to connect to brlapi";
     BrlapiConnection::ConnectResult result =
@@ -265,12 +267,12 @@ void BrailleControllerImpl::TryToConnect() {
 }
 
 void BrailleControllerImpl::ResetRetryConnectHorizon() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   retry_connect_horizon_ = base::Time::Now() + kConnectRetryTimeout;
 }
 
 void BrailleControllerImpl::ScheduleTryToConnect() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   // Don't reschedule if there's already a connect scheduled or
   // the next attempt would fall outside of the retry limit.
   if (connect_scheduled_) {
@@ -290,7 +292,7 @@ void BrailleControllerImpl::ScheduleTryToConnect() {
 }
 
 void BrailleControllerImpl::Disconnect() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   if (!connection_ || !connection_->Connected()) {
     return;
   }
@@ -300,12 +302,13 @@ void BrailleControllerImpl::Disconnect() {
 
 std::unique_ptr<BrlapiConnection>
 BrailleControllerImpl::CreateBrlapiConnection() {
-  DCHECK(skip_libbrlapi_so_load_ || libbrlapi_loader_.loaded());
+  CHECK(skip_libbrlapi_so_load_ || libbrlapi_loader_.loaded(),
+        base::NotFatalUntil::M161);
   return BrlapiConnection::Create(&libbrlapi_loader_);
 }
 
 void BrailleControllerImpl::DispatchKeys() {
-  DCHECK(connection_.get());
+  CHECK(connection_.get(), base::NotFatalUntil::M161);
   brlapi_keyCode_t code;
   while (true) {
     int result = connection_->ReadKey(&code);

@@ -458,7 +458,7 @@ void LogApiActivity(content::BrowserContext* browser_context,
                     const std::string& activity_name,
                     const base::ListValue& args,
                     Action::ActionType type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (IsExtensionAllowlisted(extension_id))
     return;
 
@@ -499,7 +499,7 @@ void LogWebRequestActivity(content::BrowserContext* browser_context,
                            bool is_incognito,
                            const std::string& api_call,
                            base::DictValue details) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   if (IsExtensionAllowlisted(extension_id))
     return;
 
@@ -525,21 +525,24 @@ void SetActivityHandlers() {
   // in the monitor methods.
   activity_monitor::Monitor current_function_monitor =
       activity_monitor::GetApiFunctionMonitor();
-  DCHECK(!current_function_monitor ||
-         current_function_monitor == &LogApiFunction);
+  CHECK(
+      !current_function_monitor || current_function_monitor == &LogApiFunction,
+      base::NotFatalUntil::M161);
   if (!current_function_monitor)
     activity_monitor::SetApiFunctionMonitor(&LogApiFunction);
 
   activity_monitor::Monitor current_event_monitor =
       activity_monitor::GetApiEventMonitor();
-  DCHECK(!current_event_monitor || current_event_monitor == &LogApiEvent);
+  CHECK(!current_event_monitor || current_event_monitor == &LogApiEvent,
+        base::NotFatalUntil::M161);
   if (!current_event_monitor)
     activity_monitor::SetApiEventMonitor(&LogApiEvent);
 
   activity_monitor::WebRequestMonitor current_web_request_monitor =
       activity_monitor::GetWebRequestMonitor();
-  DCHECK(!current_web_request_monitor ||
-         current_web_request_monitor == &LogWebRequestActivity);
+  CHECK(!current_web_request_monitor ||
+            current_web_request_monitor == &LogWebRequestActivity,
+        base::NotFatalUntil::M161);
   if (!current_web_request_monitor)
     activity_monitor::SetWebRequestMonitor(&LogWebRequestActivity);
 }
@@ -749,8 +752,9 @@ void ActivityLog::RegisterProfilePrefs(
 // LOG ACTIONS. ----------------------------------------------------------------
 
 void ActivityLog::LogAction(scoped_refptr<Action> action) {
-  DCHECK(ShouldLog(action->extension_id(), action->action_type(),
-                   action->api_name()));
+  CHECK(ShouldLog(action->extension_id(), action->action_type(),
+                  action->api_name()),
+        base::NotFatalUntil::M161);
 
   // Perform some preprocessing of the Action data: convert tab IDs to URLs and
   // mask out incognito URLs if appropriate.

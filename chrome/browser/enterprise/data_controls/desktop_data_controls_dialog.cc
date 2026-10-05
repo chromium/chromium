@@ -240,9 +240,9 @@ DesktopDataControlsDialog::TestObserver::~TestObserver() {
 void DesktopDataControlsDialog::SetObserverForTesting(TestObserver* observer) {
   // These checks add safety that tests are only setting one observer at a time.
   if (observer_for_testing_) {
-    DCHECK_EQ(observer, nullptr);
+    CHECK_EQ(observer, nullptr, base::NotFatalUntil::M161);
   } else {
-    DCHECK_NE(observer, nullptr);
+    CHECK_NE(observer, nullptr, base::NotFatalUntil::M161);
   }
 
   observer_for_testing_ = observer;

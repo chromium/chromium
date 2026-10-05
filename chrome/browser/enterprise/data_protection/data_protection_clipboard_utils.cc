@@ -211,8 +211,8 @@ void PasteIfAllowedByContentAnalysis(
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(web_contents);
-  DCHECK(destination.web_contents());
+  CHECK(web_contents, base::NotFatalUntil::M161);
+  CHECK(destination.web_contents(), base::NotFatalUntil::M161);
 
   // Always allow if the source of the last clipboard commit was this host.
   destination.web_contents()->GetPrimaryMainFrame()->IsClipboardOwner(
@@ -332,7 +332,7 @@ void CopyIfAllowedByContentAnalysis(
     const ui::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   Profile* profile = Profile::FromBrowserContext(source.browser_context());
   if (!profile) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
@@ -650,7 +650,7 @@ void PasteIfAllowedByDataControls(
     const ui::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-  DCHECK(destination.web_contents());
+  CHECK(destination.web_contents(), base::NotFatalUntil::M161);
 
   auto verdict = GetPasteVerdict(source, destination, metadata);
   auto* factory = GetDialogFactory();
@@ -995,7 +995,7 @@ void PasteIfAllowedByPolicy(
   if (ui::DataTransferPolicyController::HasInstance()) {
     std::variant<size_t, std::vector<base::FilePath>> pasted_content;
     if (clipboard_paste_data.file_paths.empty()) {
-      DCHECK(metadata.size.has_value());
+      CHECK(metadata.size.has_value(), base::NotFatalUntil::M161);
       pasted_content = *metadata.size;
     } else {
       pasted_content = clipboard_paste_data.file_paths;
@@ -1080,8 +1080,9 @@ void IsClipboardCopyAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents() || source.is_service_worker());
-  DCHECK(source.browser_context());
+  CHECK(source.web_contents() || source.is_service_worker(),
+        base::NotFatalUntil::M161);
+  CHECK(source.browser_context(), base::NotFatalUntil::M161);
 
 #if !BUILDFLAG(IS_ANDROID)
   // IsUrlAllowedToCopy checks a deprecated CopyPreventionSettings that isn't
@@ -1145,8 +1146,9 @@ void IsClipboardShareAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents() || source.is_service_worker());
-  DCHECK(source.browser_context());
+  CHECK(source.web_contents() || source.is_service_worker(),
+        base::NotFatalUntil::M161);
+  CHECK(source.browser_context(), base::NotFatalUntil::M161);
 
   IsCopyRestrictedByDialog(
       source, metadata, data, std::move(callback),
@@ -1164,8 +1166,9 @@ void IsClipboardGenericCopyActionAllowedByPolicy(
     return;
   }
 
-  DCHECK(source.web_contents() || source.is_service_worker());
-  DCHECK(source.browser_context());
+  CHECK(source.web_contents() || source.is_service_worker(),
+        base::NotFatalUntil::M161);
+  CHECK(source.browser_context(), base::NotFatalUntil::M161);
 
   IsCopyRestrictedByDialog(
       source, metadata, data, std::move(callback),
@@ -1671,7 +1674,7 @@ GURL GetUrlFromRenderFrameHost(content::RenderFrameHost* rfh) {
 std::optional<GURL> MaybeOverrideSourceURLForClipboardAccess(
     content::RenderFrameHost* render_frame_host,
     const GURL& original_url) {
-  DCHECK(render_frame_host);
+  CHECK(render_frame_host, base::NotFatalUntil::M161);
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (printing::PrintPreviewDialogController::IsPrintPreviewURL(original_url)) {
     return GetUrlFromRenderFrameHost(

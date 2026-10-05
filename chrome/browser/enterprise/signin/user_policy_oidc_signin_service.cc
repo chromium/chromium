@@ -388,7 +388,7 @@ bool UserPolicyOidcSigninService::CanApplyPolicies(
 }
 
 void UserPolicyOidcSigninService::InitializeOnProfileReady(Profile* profile) {
-  DCHECK_EQ(profile, profile_);
+  CHECK_EQ(profile, profile_, base::NotFatalUntil::M161);
   VLOG_POLICY(2, OIDC_ENROLLMENT)
       << "Initializing OIDC Signin Service for profile " << GetProfileId();
   // If using a TestingProfile with no IdentityManager or

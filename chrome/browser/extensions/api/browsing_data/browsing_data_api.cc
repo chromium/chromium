@@ -227,8 +227,8 @@ void BrowsingDataRemoverFunction::OnBrowsingDataRemoverDone(
 }
 
 void BrowsingDataRemoverFunction::OnTaskFinished() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_GT(pending_tasks_, 0);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_GT(pending_tasks_, 0, base::NotFatalUntil::M161);
   if (--pending_tasks_ > 0) {
     return;
   }
@@ -249,7 +249,7 @@ void BrowsingDataRemoverFunction::LogUnsupportedDataTypeWarning(
 ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   // If we don't have a profile, something's pretty wrong.
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   // Grab the initial |options| parameter, and parse out the arguments.
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
@@ -346,7 +346,7 @@ void BrowsingDataRemoverFunction::StartRemoving() {
   // remover is responsible for deleting itself once data removal is complete.
   observation_.Observe(remover);
 
-  DCHECK_EQ(pending_tasks_, 0);
+  CHECK_EQ(pending_tasks_, 0, base::NotFatalUntil::M161);
   pending_tasks_ = 1;
   if (removal_mask_ & content::BrowsingDataRemover::DATA_TYPE_COOKIES &&
       !origins_.empty()) {

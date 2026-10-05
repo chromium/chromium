@@ -248,7 +248,7 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotationForPolicy(
 }  // namespace
 
 bool IsBrowserManaged(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged();
 }
 
@@ -511,7 +511,7 @@ static bool JNI_ManagedBrowserUtils_IsProfileReportingEnabled(
 static bool JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -527,7 +527,7 @@ static bool JNI_ManagedBrowserUtils_IsOnSecurityEventEnterpriseConnectorEnabled(
 static bool JNI_ManagedBrowserUtils_IsEnterpriseRealTimeUrlCheckModeEnabled(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
@@ -545,7 +545,7 @@ static bool
 JNI_ManagedBrowserUtils_IsOnFileDownloadedEnterpriseConnectorEnabled(
     JNIEnv* env,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(

@@ -209,8 +209,8 @@ ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     }
   }
 
-  DCHECK(cf_preferences_observer_);
-  DCHECK(local_state_);
+  CHECK(cf_preferences_observer_, base::NotFatalUntil::M161);
+  CHECK(local_state_, base::NotFatalUntil::M161);
   auto callback =
       base::BindRepeating(&ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs,
                           weak_ptr_factory_.GetWeakPtr());
@@ -220,13 +220,13 @@ ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
 }
 
 ExtensibleEnterpriseSSOPrefsHandler::~ExtensibleEnterpriseSSOPrefsHandler() {
-  DCHECK(cf_preferences_observer_);
+  CHECK(cf_preferences_observer_, base::NotFatalUntil::M161);
   cf_preferences_observer_->Unsubscribe();
 }
 
 void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
+  CHECK(local_state_, base::NotFatalUntil::M161);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},

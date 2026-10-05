@@ -79,7 +79,7 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
 
 void PlatformAuthNavigationThrottle::FetchHeadersCallback(
     net::HttpRequestHeaders auth_headers) {
-  DCHECK(attached_headers_.empty());
+  CHECK(attached_headers_.empty(), base::NotFatalUntil::M161);
   attached_headers_.reserve(auth_headers.GetHeaderVector().size());
   net::HttpRequestHeaders::Iterator it(auth_headers);
   while (it.GetNext()) {

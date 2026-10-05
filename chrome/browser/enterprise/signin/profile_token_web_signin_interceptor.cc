@@ -34,8 +34,8 @@ ProfileTokenWebSigninInterceptor::ProfileTokenWebSigninInterceptor(
     Profile* profile,
     std::unique_ptr<WebSigninInterceptor::Delegate> delegate)
     : profile_(profile), delegate_(std::move(delegate)) {
-  DCHECK(profile_);
-  DCHECK(delegate_);
+  CHECK(profile_, base::NotFatalUntil::M161);
+  CHECK(delegate_, base::NotFatalUntil::M161);
 }
 
 ProfileTokenWebSigninInterceptor::~ProfileTokenWebSigninInterceptor() = default;
@@ -61,7 +61,7 @@ void ProfileTokenWebSigninInterceptor::MaybeInterceptSigninProfile(
   VLOG(1) << "Starting interception for id: " + intercepted_id_ +
                  " with enrollment token : " + enrollment_token_;
 
-  DCHECK(!switch_to_entry_);
+  CHECK(!switch_to_entry_, base::NotFatalUntil::M161);
   base::FilePath profile_path = profile_->GetPath();
   for (const auto* entry : g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
@@ -135,7 +135,7 @@ void ProfileTokenWebSigninInterceptor::OnProfileCreationChoice(
     return;
   }
 
-  DCHECK(!profile_creator_);
+  CHECK(!profile_creator_, base::NotFatalUntil::M161);
   if (switch_to_entry_) {
     // Unretained is fine because the profile creator is owned by this.
     profile_creator_ = std::make_unique<ManagedProfileCreator>(
@@ -159,7 +159,7 @@ void ProfileTokenWebSigninInterceptor::OnProfileCreationChoice(
 
 void ProfileTokenWebSigninInterceptor::OnNewSignedInProfileCreated(
     base::WeakPtr<Profile> new_profile) {
-  DCHECK(profile_creator_);
+  CHECK(profile_creator_, base::NotFatalUntil::M161);
 
   if (!new_profile) {
     DVLOG(1) << "Failed to create new profile";
@@ -169,7 +169,7 @@ void ProfileTokenWebSigninInterceptor::OnNewSignedInProfileCreated(
 
   // Generate a color theme for new profiles
   if (!switch_to_entry_) {
-    DCHECK_NE(SkColor(), profile_color_);
+    CHECK_NE(SkColor(), profile_color_, base::NotFatalUntil::M161);
     ThemeServiceFactory::GetForProfile(new_profile.get())
         ->SetUserColorAndBrowserColorVariant(
             profile_color_, ui::mojom::BrowserColorVariant::kTonalSpot);
@@ -190,7 +190,7 @@ void ProfileTokenWebSigninInterceptor::OnNewSignedInProfileCreated(
 
 void ProfileTokenWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     content::WebContents* intercepted_contents) {
-  DCHECK(intercepted_contents);
+  CHECK(intercepted_contents, base::NotFatalUntil::M161);
 
   GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();
   if (intercepted_contents) {

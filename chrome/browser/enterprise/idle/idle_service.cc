@@ -112,7 +112,7 @@ IdleService::IdleService(Profile* profile)
           std::make_unique<ActionRunner>(profile_,
                                          ActionFactory::GetInstance())) {
   browser_observer_ = std::make_unique<BrowserObserver>(profile);
-  DCHECK_EQ(profile_->GetOriginalProfile(), profile_);
+  CHECK_EQ(profile_->GetOriginalProfile(), profile_, base::NotFatalUntil::M161);
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kIdleTimeout,

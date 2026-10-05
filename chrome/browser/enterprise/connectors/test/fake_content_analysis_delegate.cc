@@ -255,7 +255,7 @@ void FakeContentAnalysisDelegate::Response(
       break;
     case AnalysisConnector::FILE_ATTACHED:
     case AnalysisConnector::FILE_DOWNLOADED:
-      DCHECK(file_request_callback.has_value());
+      CHECK(file_request_callback.has_value(), base::NotFatalUntil::M161);
       std::move(file_request_callback.value()).Run(path, result_, response);
       break;
     case AnalysisConnector::PRINT:
@@ -274,10 +274,10 @@ void FakeContentAnalysisDelegate::FakeUploadFileForDeepScanning(
     const base::FilePath& path,
     std::unique_ptr<BinaryUploadRequest> request,
     FakeFilesRequestHandler::FakeFileRequestCallback callback) {
-  DCHECK(!path.empty());
+  CHECK(!path.empty(), base::NotFatalUntil::M161);
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
-    DCHECK_EQ(dm_token_, request->device_token());
+    CHECK_EQ(dm_token_, request->device_token(), base::NotFatalUntil::M161);
   }
 
   // Increment total analysis request count.
@@ -296,7 +296,7 @@ void FakeContentAnalysisDelegate::FakeUploadPageForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
-    DCHECK_EQ(dm_token_, request->device_token());
+    CHECK_EQ(dm_token_, request->device_token(), base::NotFatalUntil::M161);
   }
 
   // Increment total analysis request count.
@@ -316,7 +316,7 @@ void FakeContentAnalysisDelegate::FakeUploadClipboardDataForDeepScanning(
     std::unique_ptr<BinaryUploadRequest> request) {
   if (GetDataForTesting()
           .settings.cloud_or_local_settings.is_cloud_analysis()) {
-    DCHECK_EQ(dm_token_, request->device_token());
+    CHECK_EQ(dm_token_, request->device_token(), base::NotFatalUntil::M161);
   }
 
   // For text/image requests, GetRequestData() is synchronous.

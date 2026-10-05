@@ -554,7 +554,7 @@ std::unique_ptr<KeyedService>
 BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   return std::make_unique<DocumentScanAPIHandler>(context);
 }

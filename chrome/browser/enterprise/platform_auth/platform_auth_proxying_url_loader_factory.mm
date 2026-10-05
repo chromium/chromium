@@ -59,7 +59,7 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     const url::Origin& request_initiator)
     : configured_hosts_(std::move(configured_hosts)),
       request_initiator_(request_initiator) {
-  DCHECK(!target_factory_.is_bound());
+  CHECK(!target_factory_.is_bound(), base::NotFatalUntil::M161);
   // base::Unretained here is safe because the callbacks are owned by this, so
   // when this destroys itself, the callbacks will also get destroyed.
   target_factory_.Bind(std::move(target_factory));

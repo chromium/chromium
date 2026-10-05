@@ -445,7 +445,8 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
     const std::string& page_url,
     const std::string& arg_url,
     const int days_ago) {
-  DCHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   // Ensure data is flushed to the database first so that we query over all
   // data.
   activity_database()->AdviseFlush(ActivityDatabase::kFlushImmediately);

@@ -290,7 +290,7 @@ CertificateProviderInternalReportCertificatesFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   if (!params->certificates) {
     // In the public API, the certificates parameter is mandatory. We only run
@@ -348,7 +348,7 @@ CertificateProviderStopPinRequestFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   if (params->details.error_type == api_cp::PinRequestErrorType::kNone) {
     bool dialog_closed =
         service->pin_dialog_manager()->CloseDialog(extension_id());
@@ -405,7 +405,7 @@ bool CertificateProviderRequestPinFunction::ShouldSkipQuotaLimiting() const {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   return !service->pin_dialog_manager()->LastPinDialogClosed(extension_id());
 }
@@ -455,7 +455,7 @@ ExtensionFunction::ResponseAction CertificateProviderRequestPinFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   int attempts_left = -1;
   if (params->details.attempts_left) {
@@ -502,7 +502,7 @@ void CertificateProviderRequestPinFunction::OnInputReceived(
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   if (!value.empty()) {
     // TODO(crbug.com/40671053): Remove logging after stabilizing the feature.
     LOG(WARNING) << "PIN request succeeded";
@@ -555,7 +555,7 @@ CertificateProviderSetCertificatesFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   service->SetCertificatesProvidedByExtension(extension_id(),
                                               accepted_certificates);
 
@@ -582,7 +582,7 @@ CertificateProviderInternalReportSignatureFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   std::vector<uint8_t> signature;
   // If an error occurred, |signature| will not be set.
@@ -622,7 +622,7 @@ CertificateProviderReportSignatureFunction::Run() {
   chromeos::CertificateProviderService* const service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context());
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
 
   std::vector<uint8_t> signature;
   // If an error occurred, |signature| will not be set.

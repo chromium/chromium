@@ -694,7 +694,7 @@ ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
 // DevToolsAgentHostClient implementation.
 void ExtensionDevToolsClientHost::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
-  DCHECK(agent_host == agent_host_.get());
+  CHECK(agent_host == agent_host_.get(), base::NotFatalUntil::M161);
   RespondDetachedToPendingRequests();
   SendDetachedEvent();
   delete this;
@@ -776,7 +776,7 @@ void ExtensionDevToolsClientHost::OnAppTerminating() {
 void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
-  DCHECK(agent_host == agent_host_.get());
+  CHECK(agent_host == agent_host_.get(), base::NotFatalUntil::M161);
   if (!EventRouter::Get(profile_)) {
     return;
   }

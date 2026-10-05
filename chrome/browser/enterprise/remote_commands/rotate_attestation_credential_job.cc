@@ -58,7 +58,7 @@ bool IsSuccess(KeyRotationResult result) {
 RotateAttestationCredentialJob::RotateAttestationCredentialJob(
     DeviceTrustKeyManager* key_manager)
     : key_manager_(key_manager) {
-  DCHECK(key_manager_);
+  CHECK(key_manager_, base::NotFatalUntil::M161);
 }
 
 RotateAttestationCredentialJob::~RotateAttestationCredentialJob() = default;
@@ -94,7 +94,7 @@ void RotateAttestationCredentialJob::RunImpl(
     return;
   }
 
-  DCHECK(nonce_.has_value());
+  CHECK(nonce_.has_value(), base::NotFatalUntil::M161);
 
   key_manager_->RotateKey(
       nonce_.value(),

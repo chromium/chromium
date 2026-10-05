@@ -109,7 +109,7 @@ bool PlatformAuthProviderManager::IsEnabledFor(const GURL& url) const {
 void PlatformAuthProviderManager::GetData(const GURL& url,
                                           GetDataCallback callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M161);
 
   // Note: given the async nature of changes to the set of origins, it's
   // possible that a request could come in after the manager had been disabled
@@ -117,7 +117,7 @@ void PlatformAuthProviderManager::GetData(const GURL& url,
   if (!IsEnabledFor(url)) {
     std::move(callback).Run(net::HttpRequestHeaders());
   } else {
-    DCHECK(provider_);
+    CHECK(provider_, base::NotFatalUntil::M161);
     provider_->GetData(url, std::move(callback));
   }
 }

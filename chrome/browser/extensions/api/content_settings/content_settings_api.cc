@@ -184,7 +184,7 @@ ContentSettingsContentSettingGetFunction::Run() {
   base::DictValue result;
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
-  DCHECK(!setting_string.empty());
+  CHECK(!setting_string.empty(), base::NotFatalUntil::M161);
   result.Set(ContentSettingsStore::kContentSettingKey, setting_string);
 
   return RespondNow(WithArguments(std::move(result)));

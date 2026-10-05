@@ -133,7 +133,7 @@ const char* IncognitoNavigationThrottle::GetNameForLogging() {
 }
 
 void IncognitoNavigationThrottle::ReadMandatoryExtensionsStatus() {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   blocking_extensions_.clear();
   missing_extensions_.clear();
   extensions::ExtensionRegistry* registry =

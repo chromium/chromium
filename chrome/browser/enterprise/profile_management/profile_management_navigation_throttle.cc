@@ -203,7 +203,7 @@ void ProfileManagementNavigationThrottle::OnResponseBodyReady(
 void ProfileManagementNavigationThrottle::OnManagementDataReceived(
     const base::flat_map<std::string, std::string>& attributes) {
   const std::string navigation_host = navigation_handle()->GetURL().GetHost();
-  DCHECK(GetAttributeMap().contains(navigation_host));
+  CHECK(GetAttributeMap().contains(navigation_host), base::NotFatalUntil::M161);
   const auto profile_attributes = GetAttributeMap().at(navigation_host);
 
   if (base::FeatureList::IsEnabled(features::kEnableProfileTokenManagement) &&

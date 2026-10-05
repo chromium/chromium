@@ -357,7 +357,7 @@ void RequestContentScript::InitScript(const mojom::HostID& host_id,
 }
 
 void RequestContentScript::AddScript() {
-  DCHECK(script_loader_);
+  CHECK(script_loader_, base::NotFatalUntil::M161);
   UserScriptList scripts;
   scripts.push_back(UserScript::CopyMetadataFrom(script_));
   script_loader_->AddScripts(std::move(scripts),
@@ -421,7 +421,7 @@ void RequestContentScript::OnScriptsLoaded(
 
 void RequestContentScript::OnUserScriptLoaderDestroyed(
     UserScriptLoader* loader) {
-  DCHECK_EQ(script_loader_, loader);
+  CHECK_EQ(script_loader_, loader, base::NotFatalUntil::M161);
   scoped_observation_.Reset();
   script_loader_ = nullptr;
 }

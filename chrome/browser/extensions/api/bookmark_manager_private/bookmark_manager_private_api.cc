@@ -913,9 +913,9 @@ BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
   std::erase_if(url_and_ids, [&urls](const UrlAndId& url_and_id) {
     return !std::ranges::contains(urls, url_and_id.url);
   });
-  DCHECK_EQ(urls.size(), url_and_ids.size());
+  CHECK_EQ(urls.size(), url_and_ids.size(), base::NotFatalUntil::M161);
 
-  DCHECK(!calling_profile->IsOffTheRecord());
+  CHECK(!calling_profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   Profile* window_profile =
       incognito_result == windows_util::IncognitoResult::kIncognito
           ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
@@ -1035,7 +1035,7 @@ void BookmarkManagerPrivateIOFunction::ShowSelectFileDialog(
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Balanced in one of the callbacks of SelectFileDialog:
   // either FileSelectionCanceled, or FileSelected

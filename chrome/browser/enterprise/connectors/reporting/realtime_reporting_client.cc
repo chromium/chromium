@@ -298,7 +298,7 @@ std::string RealtimeReportingClient::GetBrowserClientId() {
     LOG(ERROR) << "Could not determine who the user is.";
     profile = Profile::FromBrowserContext(context_);
   }
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   if (chromeos::IsManagedGuestSession()) {
     client_id = reporting::GetMGSUserClientId().value_or("");

@@ -150,7 +150,7 @@ BrailleDisplayPrivateGetDisplayStateFunction::Run() {
           base::BindOnce(
               &BrailleDisplayPrivateGetDisplayStateFunction::ReplyWithState,
               this));
-  DCHECK(did_post_task);
+  CHECK(did_post_task, base::NotFatalUntil::M161);
   return RespondLater();
 }
 
@@ -176,7 +176,7 @@ BrailleDisplayPrivateWriteDotsFunction::Run() {
                      this),
       base::BindOnce(&BrailleDisplayPrivateWriteDotsFunction::Respond, this,
                      NoArguments()));
-  DCHECK(did_post_task);
+  CHECK(did_post_task, base::NotFatalUntil::M161);
   return RespondLater();
 }
 

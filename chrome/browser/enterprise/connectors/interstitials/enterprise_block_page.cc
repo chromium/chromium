@@ -85,7 +85,7 @@ void EnterpriseBlockPage::CommandReceived(const std::string& command) {
 
   int cmd = 0;
   bool retval = base::StringToInt(command, &cmd);
-  DCHECK(retval);
+  CHECK(retval, base::NotFatalUntil::M161);
 
   switch (cmd) {
     case security_interstitials::CMD_DONT_PROCEED:

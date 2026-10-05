@@ -59,7 +59,7 @@ ChromeContentRulesRegistry::EvaluationScope::EvaluationScope(
     EvaluationDisposition disposition)
     : registry_(registry),
       previous_disposition_(registry_->evaluation_disposition_) {
-  DCHECK_NE(EVALUATE_REQUESTS, disposition);
+  CHECK_NE(EVALUATE_REQUESTS, disposition, base::NotFatalUntil::M161);
   registry_->evaluation_disposition_ = disposition;
 }
 
@@ -263,7 +263,8 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
 
   for (auto* api_rule : api_rules) {
     ExtensionIdRuleIdPair rule_id(extension_id, *api_rule->id);
-    DCHECK(content_rules_.find(rule_id) == content_rules_.end());
+    CHECK(content_rules_.find(rule_id) == content_rules_.end(),
+          base::NotFatalUntil::M161);
 
     std::unique_ptr<const ContentRule> rule(
         CreateRule(extension, predicate_factories, *api_rule, &error));
@@ -280,7 +281,7 @@ std::string ChromeContentRulesRegistry::AddRulesImpl(
 
       return error;
     }
-    DCHECK(rule);
+    CHECK(rule, base::NotFatalUntil::M161);
 
     // Group predicates by evaluator and rule, so we can later notify the
     // evaluators that they have new predicates to manage.

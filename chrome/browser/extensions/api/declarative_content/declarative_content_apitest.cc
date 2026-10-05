@@ -1147,7 +1147,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
       rules_registry_service->GetRulesRegistry(
           rules_registry_ids::kDefaultRulesRegistryID,
           "declarativeContent.onPageChanged");
-  DCHECK(rules_registry);
+  CHECK(rules_registry, base::NotFatalUntil::M161);
 
   std::vector<const api::events::Rule*> rules;
   rules_registry->GetAllRules(extension->id(), &rules);

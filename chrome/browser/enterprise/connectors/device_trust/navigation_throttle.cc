@@ -50,7 +50,7 @@ constexpr char kSpecificErrorCodePropertyName[] = "code";
 
 const std::string CreateErrorJsonString(
     const DeviceTrustResponse& dt_response) {
-  DCHECK(dt_response.error);
+  CHECK(dt_response.error, base::NotFatalUntil::M161);
   base::DictValue error_response;
   error_response.Set(kErrorPropertyName,
                      DeviceTrustErrorToString(dt_response.error.value()));

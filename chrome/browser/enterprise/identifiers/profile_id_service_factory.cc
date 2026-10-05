@@ -45,7 +45,7 @@ std::unique_ptr<KeyedService>
 ProfileIdServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   return std::make_unique<ProfileIdService>(
       std::make_unique<ProfileIdDelegateImpl>(profile), profile->GetPrefs());
 }

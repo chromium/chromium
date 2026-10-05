@@ -126,8 +126,8 @@ void DeveloperPrivateEventRouter::RemoveExtensionId(
 void DeveloperPrivateEventRouter::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  DCHECK(
-      profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
+  CHECK(profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)),
+        base::NotFatalUntil::M161);
   BroadcastItemStateChanged(developer::EventType::kLoaded, extension->id());
 }
 
@@ -135,8 +135,8 @@ void DeveloperPrivateEventRouter::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  DCHECK(
-      profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
+  CHECK(profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)),
+        base::NotFatalUntil::M161);
   BroadcastItemStateChanged(developer::EventType::kUnloaded, extension->id());
 }
 
@@ -144,8 +144,8 @@ void DeveloperPrivateEventRouter::OnExtensionInstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     bool is_update) {
-  DCHECK(
-      profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
+  CHECK(profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)),
+        base::NotFatalUntil::M161);
   BroadcastItemStateChanged(developer::EventType::kInstalled, extension->id());
 }
 
@@ -153,8 +153,8 @@ void DeveloperPrivateEventRouter::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  DCHECK(
-      profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)));
+  CHECK(profile_->IsSameOrParent(Profile::FromBrowserContext(browser_context)),
+        base::NotFatalUntil::M161);
   if (ui_util::ShouldDisplayInExtensionSettings(*extension)) {
     BroadcastItemStateChanged(developer::EventType::kUninstalled,
                               extension->id());
@@ -345,7 +345,7 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
     const ExtensionId& extension_id,
     std::unique_ptr<ExtensionInfoGenerator> info_generator,
     ExtensionInfoGenerator::ExtensionInfoList infos) {
-  DCHECK_LE(infos.size(), 1u);
+  CHECK_LE(infos.size(), 1u, base::NotFatalUntil::M161);
 
   developer::EventData event_data;
   event_data.event_type = event_type;

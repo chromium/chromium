@@ -107,7 +107,7 @@ Profile* BookmarksFunction::GetProfile() {
 }
 
 void BookmarksFunction::OnResponded() {
-  DCHECK(response_type());
+  CHECK(response_type(), base::NotFatalUntil::M161);
   if (*response_type() == ResponseType::kSucceeded) {
     BookmarksApiWatcher::GetForBrowserContext(browser_context())
         ->NotifyApiInvoked(this);

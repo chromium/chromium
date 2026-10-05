@@ -69,7 +69,7 @@ DeclarativeContentPageUrlPredicate::DeclarativeContentPageUrlPredicate(
         url_matcher_condition_set)
     : evaluator_(evaluator),
       url_matcher_condition_set_(url_matcher_condition_set) {
-  DCHECK(url_matcher_condition_set);
+  CHECK(url_matcher_condition_set, base::NotFatalUntil::M161);
 }
 
 //
@@ -143,7 +143,7 @@ void DeclarativeContentPageUrlConditionTracker::TrackPredicates(
   url_matcher::URLMatcherConditionSet::Vector new_condition_sets;
   for (const auto& group_predicates_pair : predicates) {
     for (const ContentPredicate* predicate : group_predicates_pair.second) {
-      DCHECK_EQ(this, predicate->GetEvaluator());
+      CHECK_EQ(this, predicate->GetEvaluator(), base::NotFatalUntil::M161);
       const DeclarativeContentPageUrlPredicate* typed_predicate =
           static_cast<const DeclarativeContentPageUrlPredicate*>(predicate);
       new_condition_sets.push_back(
@@ -193,7 +193,8 @@ void DeclarativeContentPageUrlConditionTracker::TrackForWebContents(
 void DeclarativeContentPageUrlConditionTracker::OnWebContentsNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_[contents]->UpdateMatchesForCurrentUrl(true);
 }
 
@@ -204,7 +205,7 @@ void DeclarativeContentPageUrlConditionTracker::OnWatchedPageChanged(
 bool DeclarativeContentPageUrlConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {
-  DCHECK_EQ(this, predicate->GetEvaluator());
+  CHECK_EQ(this, predicate->GetEvaluator(), base::NotFatalUntil::M161);
   const DeclarativeContentPageUrlPredicate* typed_predicate =
       static_cast<const DeclarativeContentPageUrlPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
@@ -221,7 +222,8 @@ bool DeclarativeContentPageUrlConditionTracker::IsEmpty() const {
 
 void DeclarativeContentPageUrlConditionTracker::DeletePerWebContentsTracker(
     content::WebContents* contents) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_.erase(contents);
 }
 

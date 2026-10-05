@@ -25,7 +25,7 @@ namespace em = enterprise_management;
 namespace enterprise_reporting {
 void ReportGeneratorDesktop::SetAndroidAppInfos(ReportRequest* basic_request) {
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(basic_request);
+  CHECK(basic_request, base::NotFatalUntil::M161);
   basic_request->GetDeviceReportRequest().clear_android_app_infos();
 
   // Android application is only supported for primary profile.

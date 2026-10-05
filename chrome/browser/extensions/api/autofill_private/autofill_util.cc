@@ -277,7 +277,7 @@ AddressEntryList GenerateAddressList(const autofill::AddressDataManager& adm) {
   std::vector<std::u16string> labels =
       autofill::AutofillProfile::CreateDifferentiatingLabels(
           profiles, ExtensionsBrowserClient::Get()->GetApplicationLocale());
-  DCHECK_EQ(labels.size(), profiles.size());
+  CHECK_EQ(labels.size(), profiles.size(), base::NotFatalUntil::M161);
 
   AddressEntryList list;
   list.reserve(profiles.size());

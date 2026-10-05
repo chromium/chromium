@@ -74,7 +74,7 @@ DeclarativeContentCssPredicate::DeclarativeContentCssPredicate(
     const std::vector<std::string>& css_selectors)
     : evaluator_(evaluator),
       css_selectors_(css_selectors) {
-  DCHECK(!css_selectors.empty());
+  CHECK(!css_selectors.empty(), base::NotFatalUntil::M161);
 }
 
 //
@@ -151,7 +151,7 @@ void DeclarativeContentCssConditionTracker::TrackPredicates(
   bool watched_selectors_updated = false;
   for (const auto& group_predicates_pair : predicates) {
     for (const ContentPredicate* predicate : group_predicates_pair.second) {
-      DCHECK_EQ(this, predicate->GetEvaluator());
+      CHECK_EQ(this, predicate->GetEvaluator(), base::NotFatalUntil::M161);
       const DeclarativeContentCssPredicate* typed_predicate =
           static_cast<const DeclarativeContentCssPredicate*>(predicate);
       tracked_predicates_[group_predicates_pair.first].push_back(
@@ -211,7 +211,8 @@ void DeclarativeContentCssConditionTracker::TrackForWebContents(
 void DeclarativeContentCssConditionTracker::OnWebContentsNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_[contents]->OnWebContentsNavigation(
       navigation_handle);
 }
@@ -219,7 +220,8 @@ void DeclarativeContentCssConditionTracker::OnWebContentsNavigation(
 void DeclarativeContentCssConditionTracker::OnWatchedPageChanged(
     content::WebContents* contents,
     const std::vector<std::string>& css_selectors) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
 
   std::vector<std::string> valid_selectors;
   for (const std::string& selector : css_selectors) {
@@ -237,7 +239,7 @@ void DeclarativeContentCssConditionTracker::OnWatchedPageChanged(
 bool DeclarativeContentCssConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {
-  DCHECK_EQ(this, predicate->GetEvaluator());
+  CHECK_EQ(this, predicate->GetEvaluator(), base::NotFatalUntil::M161);
   const DeclarativeContentCssPredicate* typed_predicate =
       static_cast<const DeclarativeContentCssPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
@@ -299,7 +301,8 @@ InstructRenderProcessIfManagingBrowserContext(
 
 void DeclarativeContentCssConditionTracker::DeletePerWebContentsTracker(
     content::WebContents* contents) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_.erase(contents);
 }
 

@@ -200,7 +200,8 @@ void DeclarativeContentIsBookmarkedConditionTracker::TrackForWebContents(
 void DeclarativeContentIsBookmarkedConditionTracker::OnWebContentsNavigation(
     content::WebContents* contents,
     content::NavigationHandle* navigation_handle) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_[contents]->UpdateState(true);
 }
 
@@ -211,7 +212,7 @@ void DeclarativeContentIsBookmarkedConditionTracker::OnWatchedPageChanged(
 bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {
-  DCHECK_EQ(this, predicate->GetEvaluator());
+  CHECK_EQ(this, predicate->GetEvaluator(), base::NotFatalUntil::M161);
   const DeclarativeContentIsBookmarkedPredicate* typed_predicate =
       static_cast<const DeclarativeContentIsBookmarkedPredicate*>(predicate);
   auto loc = per_web_contents_tracker_.find(tab);
@@ -274,7 +275,8 @@ void DeclarativeContentIsBookmarkedConditionTracker::
 void
 DeclarativeContentIsBookmarkedConditionTracker::DeletePerWebContentsTracker(
     content::WebContents* contents) {
-  DCHECK(per_web_contents_tracker_.contains(contents));
+  CHECK(per_web_contents_tracker_.contains(contents),
+        base::NotFatalUntil::M161);
   per_web_contents_tracker_.erase(contents);
 }
 

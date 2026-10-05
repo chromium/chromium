@@ -171,8 +171,8 @@ ComPtr<IProofOfPossessionCookieInfoManager> MakeCookieInfoManager(
 
   // There is no need for SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY here
   // since this task is posted at USER_VISIBLE priority.
-  DCHECK_NE(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kBackground);
+  CHECK_NE(base::PlatformThread::GetCurrentThreadType(),
+           base::ThreadType::kBackground, base::NotFatalUntil::M161);
   base::win::AssertComInitialized();
 
   ComPtr<IProofOfPossessionCookieInfoManager> manager;
@@ -231,7 +231,7 @@ void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
 // user to authenticate to the IdP/STS at `url`.
 net::HttpRequestHeaders GetAuthData(const GURL& url) {
   base::win::AssertComInitialized();
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M161);
 
   net::HttpRequestHeaders auth_headers;
   DWORD cookie_info_count = 0;
@@ -245,7 +245,7 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
         manager->GetCookieInfoForUri(base::ASCIIToWide(url.spec()).c_str(),
                                      &cookie_info_count, &cookie_info);
     if (SUCCEEDED(hresult)) {
-      DCHECK(!cookie_info_count || cookie_info);
+      CHECK(!cookie_info_count || cookie_info, base::NotFatalUntil::M161);
       ParseCookieInfo(cookie_info, cookie_info_count, auth_headers);
       if (cookie_info)
         FreeProofOfPossessionCookieInfoArray(cookie_info, cookie_info_count);
@@ -280,8 +280,8 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
 CloudApProviderWin::SupportLevel GetAadJoinSupportLevel() {
   // There is no need for `SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY` here
   // since this task is posted at `USER_VISIBLE` priority.
-  DCHECK_NE(base::PlatformThread::GetCurrentThreadType(),
-            base::ThreadType::kBackground);
+  CHECK_NE(base::PlatformThread::GetCurrentThreadType(),
+           base::ThreadType::kBackground, base::NotFatalUntil::M161);
 
   // If Azure AD join info retrieval fails, this feature is not supported.
   PDSREG_JOIN_INFO join_info = nullptr;

@@ -51,7 +51,7 @@ ContextSignalsDecorator::ContextSignalsDecorator(
     std::unique_ptr<enterprise_signals::ContextInfoFetcher>
         context_info_fetcher)
     : context_info_fetcher_(std::move(context_info_fetcher)) {
-  DCHECK(context_info_fetcher_);
+  CHECK(context_info_fetcher_, base::NotFatalUntil::M161);
 }
 
 ContextSignalsDecorator::~ContextSignalsDecorator() = default;

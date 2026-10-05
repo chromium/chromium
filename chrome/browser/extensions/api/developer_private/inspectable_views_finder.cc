@@ -83,7 +83,8 @@ api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
     case mojom::ViewType::kInvalid:
       NOTREACHED();
   }
-  DCHECK(developer_private_type != api::developer_private::ViewType::kNone);
+  CHECK(developer_private_type != api::developer_private::ViewType::kNone,
+        base::NotFatalUntil::M161);
   return developer_private_type;
 }
 

@@ -33,7 +33,7 @@ namespace device_signals {
 namespace {
 
 bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M161);
   return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);
 }
 

@@ -181,7 +181,7 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     base::TimeDelta browser_process_uptime,
     base::Time report_time,
     std::optional<JavaScriptErrorReport> error_report) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!error_report) {
     // User didn't consent. This isn't an error so don't log an error.
     return;
@@ -347,7 +347,7 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
     JavaScriptErrorReport error_report,
     base::OnceClosure completion_callback,
     content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // In theory, we should wait until the after the consent check to update the
   // sent map. However, that would mean we do a bunch of extra work on each

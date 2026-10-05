@@ -91,7 +91,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     const std::u16string& target_name) {
-  DCHECK(!picker_controller_);
+  CHECK(!picker_controller_, base::NotFatalUntil::M161);
 
   if (!render_frame_host->IsActive()) {
     return RespondNow(Error(kTargetNotActiveError));

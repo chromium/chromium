@@ -26,18 +26,19 @@ constexpr char kWildCardMatching[] = "*";
 
 ChromeDlpRulesManager::ChromeDlpRulesManager(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
 }
 
 ChromeDlpRulesManager::~ChromeDlpRulesManager() = default;
 
 Level ChromeDlpRulesManager::IsRestricted(const GURL& source,
                                           Restriction restriction) const {
-  DCHECK(src_url_matcher_);
-  DCHECK(restriction == Restriction::kPrinting ||
-         restriction == Restriction::kPrivacyScreen ||
-         restriction == Restriction::kScreenshot ||
-         restriction == Restriction::kScreenShare);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(restriction == Restriction::kPrinting ||
+            restriction == Restriction::kPrivacyScreen ||
+            restriction == Restriction::kScreenshot ||
+            restriction == Restriction::kScreenShare,
+        base::NotFatalUntil::M161);
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
@@ -52,7 +53,7 @@ Level ChromeDlpRulesManager::IsRestrictedByAnyRule(
     Restriction restriction,
     std::string* out_source_pattern,
     RuleMetadata* out_rule_metadata) const {
-  DCHECK(src_url_matcher_);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
       source, src_url_matcher_.get(), src_url_rules_mapping_);
@@ -83,10 +84,11 @@ Level ChromeDlpRulesManager::IsRestrictedDestination(
     std::string* out_source_pattern,
     std::string* out_destination_pattern,
     RuleMetadata* out_rule_metadata) const {
-  DCHECK(src_url_matcher_);
-  DCHECK(dst_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard ||
-         restriction == Restriction::kFiles);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(dst_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(restriction == Restriction::kClipboard ||
+            restriction == Restriction::kFiles,
+        base::NotFatalUntil::M161);
 
   // Allow copy/paste within the same document.
   if (url::IsSameOriginWith(source, destination)) {
@@ -144,10 +146,11 @@ DlpRulesManagerBase::AggregatedDestinations
 ChromeDlpRulesManager::GetAggregatedDestinations(
     const GURL& source,
     Restriction restriction) const {
-  DCHECK(src_url_matcher_);
-  DCHECK(dst_url_matcher_);
-  DCHECK(restriction == Restriction::kClipboard ||
-         restriction == Restriction::kFiles);
+  CHECK(src_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(dst_url_matcher_, base::NotFatalUntil::M161);
+  CHECK(restriction == Restriction::kClipboard ||
+            restriction == Restriction::kFiles,
+        base::NotFatalUntil::M161);
 
   auto restriction_it = restrictions_map_.find(restriction);
   if (restriction_it == restrictions_map_.end()) {
@@ -246,7 +249,7 @@ RulesConditionsMap ChromeDlpRulesManager::MatchUrlAndGetRulesMapping(
     const GURL& url,
     const url_matcher::URLMatcher* url_matcher,
     const std::map<UrlConditionId, RuleId>& rules_map) {
-  DCHECK(url_matcher);
+  CHECK(url_matcher, base::NotFatalUntil::M161);
   const std::set<UrlConditionId> url_conditions_ids =
       url_matcher->MatchURL(url);
 

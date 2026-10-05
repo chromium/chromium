@@ -97,7 +97,7 @@ void RecordResultMetrics(AuthenticationResult result,
 }
 
 void RecordFailureMetrics(Status status, base::TimeTicks start_time) {
-  DCHECK_LE(status, Status::kMaxFailureReason);
+  CHECK_LE(status, Status::kMaxFailureReason, base::NotFatalUntil::M161);
   base::UmaHistogramEnumeration(EntraProviderAndroid::kFailureReasonHistogram,
                                 status);
   RecordResultMetrics(AuthenticationResult::kFailure, std::move(start_time));

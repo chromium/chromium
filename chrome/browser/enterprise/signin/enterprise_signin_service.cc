@@ -88,9 +88,10 @@ void EnterpriseSigninService::OnStateChanged(syncer::SyncService* sync) {
 
 void EnterpriseSigninService::OnBrowserActivated(
     BrowserWindowInterface* browser) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M161);
   VLOG(2) << "Browser just became active.";
-  DCHECK(last_transport_state_ == TransportState::PAUSED);
+  CHECK(last_transport_state_ == TransportState::PAUSED,
+        base::NotFatalUntil::M161);
   OpenOrActivateGaiaReauthTab();
 }
 

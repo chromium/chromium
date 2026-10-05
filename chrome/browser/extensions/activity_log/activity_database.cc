@@ -72,7 +72,8 @@ void ActivityDatabase::Init(const base::FilePath& db_name) {
   if (did_init_)
     return;
   did_init_ = true;
-  DCHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetActivityLogTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M161);
   db_.set_error_callback(base::BindRepeating(
       &ActivityDatabase::DatabaseErrorCallback, base::Unretained(this)));
 

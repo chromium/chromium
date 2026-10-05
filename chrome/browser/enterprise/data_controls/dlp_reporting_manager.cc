@@ -98,7 +98,7 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
   }
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M161);
   switch (user->GetType()) {
     case user_manager::UserType::kRegular:
       return DlpPolicyEvent_UserType_REGULAR;

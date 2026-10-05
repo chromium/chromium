@@ -67,7 +67,7 @@ base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
 ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   callback_list_.Notify();
   const size_t erased = GetDelegates().erase(extension_id_);
-  DCHECK(erased);
+  CHECK(erased, base::NotFatalUntil::M161);
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

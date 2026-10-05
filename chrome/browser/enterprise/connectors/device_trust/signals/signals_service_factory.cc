@@ -42,12 +42,12 @@
 namespace enterprise_connectors {
 
 std::unique_ptr<SignalsService> CreateSignalsService(Profile* profile) {
-  DCHECK(g_browser_process);
-  DCHECK(profile);
+  CHECK(g_browser_process, base::NotFatalUntil::M161);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   auto* management_service =
       policy::ManagementServiceFactory::GetForProfile(profile);
-  DCHECK(management_service);
+  CHECK(management_service, base::NotFatalUntil::M161);
 
   if (!management_service->IsManaged()) {
     return nullptr;

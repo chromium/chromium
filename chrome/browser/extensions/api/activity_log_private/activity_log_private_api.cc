@@ -58,7 +58,7 @@ ActivityLogAPI::ActivityLogAPI(content::BrowserContext* context)
     return;
   }
   activity_log_ = extensions::ActivityLog::GetInstance(browser_context_);
-  DCHECK(activity_log_);
+  CHECK(activity_log_, base::NotFatalUntil::M161);
   EventRouter::Get(browser_context_)->RegisterObserver(
       this, activity_log_private::OnExtensionActivity::kEventName);
   activity_log_->AddObserver(this);
@@ -146,7 +146,7 @@ ActivityLogPrivateGetExtensionActivitiesFunction::Run() {
 
   // Call the ActivityLog.
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
-  DCHECK(activity_log);
+  CHECK(activity_log, base::NotFatalUntil::M161);
   activity_log->GetFilteredActions(
       extension_id, action_type, api_call, page_url, arg_url, days_ago,
       base::BindOnce(
@@ -188,7 +188,7 @@ ActivityLogPrivateDeleteActivitiesFunction::Run() {
   }
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
-  DCHECK(activity_log);
+  CHECK(activity_log, base::NotFatalUntil::M161);
   activity_log->RemoveActions(action_ids);
   return RespondNow(NoArguments());
 }
@@ -202,7 +202,7 @@ ActivityLogPrivateDeleteActivitiesByExtensionFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
-  DCHECK(activity_log);
+  CHECK(activity_log, base::NotFatalUntil::M161);
   activity_log->RemoveExtensionData(params->extension_id);
   return RespondNow(NoArguments());
 }
@@ -210,7 +210,7 @@ ActivityLogPrivateDeleteActivitiesByExtensionFunction::Run() {
 ExtensionFunction::ResponseAction
 ActivityLogPrivateDeleteDatabaseFunction::Run() {
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
-  DCHECK(activity_log);
+  CHECK(activity_log, base::NotFatalUntil::M161);
   activity_log->DeleteDatabase();
   return RespondNow(NoArguments());
 }
@@ -229,7 +229,7 @@ ExtensionFunction::ResponseAction ActivityLogPrivateDeleteUrlsFunction::Run() {
   }
 
   ActivityLog* activity_log = ActivityLog::GetInstance(browser_context());
-  DCHECK(activity_log);
+  CHECK(activity_log, base::NotFatalUntil::M161);
   activity_log->RemoveURLs(gurls);
   return RespondNow(NoArguments());
 }

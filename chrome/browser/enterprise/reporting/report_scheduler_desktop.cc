@@ -143,7 +143,7 @@ network::mojom::CookieManager* ReportSchedulerDesktop::GetCookieManager() {
 }
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {
-  DCHECK(ShouldReportUpdates());
+  CHECK(ShouldReportUpdates(), base::NotFatalUntil::M161);
   // A new version has been detected on the machine and a restart is now needed
   // for it to take effect. Send a basic report (without profile info)
   // immediately.

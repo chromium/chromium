@@ -73,7 +73,7 @@ void DataProtectionOverlayView::SetWatermarkText(const std::string& text,
                                                  SkColor fill_color,
                                                  SkColor outline_color,
                                                  int font_size) {
-  DCHECK(base::IsStringUTF8(text));
+  CHECK(base::IsStringUTF8(text), base::NotFatalUntil::M161);
   CHECK_GE(font_size, 1);
 
   MaybeUpdateWatermarkBlock(text, fill_color, outline_color, font_size);

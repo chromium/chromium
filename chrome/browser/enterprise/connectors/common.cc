@@ -124,7 +124,7 @@ SavePackageScanningData::~SavePackageScanningData() = default;
 
 void RunSavePackageScanningCallback(download::DownloadItem* item,
                                     bool allowed) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M161);
 
   auto* data = static_cast<SavePackageScanningData*>(
       item->GetUserData(SavePackageScanningData::kKey));
@@ -217,7 +217,8 @@ BinaryUploadService* GetBinaryUploadServiceForConnector(
     return LocalBinaryUploadServiceFactory::GetForProfile(profile);
   }
 #else
-  DCHECK(settings.cloud_or_local_settings.is_cloud_analysis());
+  CHECK(settings.cloud_or_local_settings.is_cloud_analysis(),
+        base::NotFatalUntil::M161);
   return CloudBinaryUploadServiceFactory::GetForProfile(profile);
 #endif
 }

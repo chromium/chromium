@@ -86,7 +86,7 @@ ExtensionRequestReportGenerator::Generate(
 
 std::vector<std::unique_ptr<ExtensionsWorkflowEvent>>
 ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   std::vector<std::unique_ptr<ExtensionsWorkflowEvent>> reports;
 

@@ -107,7 +107,7 @@ DeveloperPrivateAPI::DeveloperPrivateAPI(content::BrowserContext* context)
 DeveloperPrivateAPI::UnpackedRetryId DeveloperPrivateAPI::AddUnpackedPath(
     content::WebContents* web_contents,
     const base::FilePath& path) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   last_unpacked_directory_ = path;
   WebContentsData* data = GetOrCreateWebContentsData(web_contents);
   IdToPathMap& paths = data->allowed_unpacked_paths;

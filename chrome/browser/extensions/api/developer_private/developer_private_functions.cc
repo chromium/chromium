@@ -224,7 +224,7 @@ void PerformVerificationCheck(content::BrowserContext* context) {
 }
 
 std::string GetETldPlusOne(const GURL& site) {
-  DCHECK(site.is_valid());
+  CHECK(site.is_valid(), base::NotFatalUntil::M161);
   std::string etld_plus_one =
       net::registry_controlled_domains::GetDomainAndRegistry(
           site, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -349,7 +349,7 @@ base::expected<void, std::string> SetDroppedPath(
     file_info = &drop_data->filenames.front();
   }
 
-  DCHECK(file_info);
+  CHECK(file_info, base::NotFatalUntil::M161);
   // Note(devlin): we don't do further validation that the file is a directory
   // here. This is validated in the JS, but if that fails, then trying to load
   // the file as an unpacked extension will also fail (reasonably gracefully).
@@ -526,7 +526,7 @@ DeveloperPrivateGetExtensionInfoFunction::Run() {
 
 void DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated(
     ExtensionInfoGenerator::ExtensionInfoList list) {
-  DCHECK_LE(1u, list.size());
+  CHECK_LE(1u, list.size(), base::NotFatalUntil::M161);
   Respond(list.empty() ? NoSuchExtensionError()
                        : WithArguments(list[0].ToValue()));
 }
@@ -946,7 +946,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadUnpackedFunction::Run() {
 }
 
 void DeveloperPrivateLoadUnpackedFunction::ShowSelectFileDialog() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Start or cancel the file load without showing the select file dialog for
   // tests that require it.
@@ -1044,7 +1044,7 @@ void DeveloperPrivateLoadUnpackedFunction::OnGotManifestError(
     const std::u16string& error,
     size_t line_number,
     const std::string& manifest) {
-  DCHECK(!retry_guid_.empty());
+  CHECK(!retry_guid_.empty(), base::NotFatalUntil::M161);
   Finish(WithArguments(
       CreateLoadError(file_path, error, line_number, manifest, retry_guid_)
           .ToValue()));
@@ -2377,7 +2377,7 @@ DeveloperPrivateShowSiteSettingsFunction::Run() {
 ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
   // In theory `extension()` can be null when an ExtensionFunction is invoked
   // from WebUI, but this should never be the case for this particular API.
-  DCHECK(extension());
+  CHECK(extension(), base::NotFatalUntil::M161);
 
   // TODO(grv) : add unittests.
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);

@@ -28,7 +28,8 @@ void TokenManagedProfileCreationDelegate::SetManagedAttributesForProfile(
 
 void TokenManagedProfileCreationDelegate::CheckManagedProfileStatus(
     Profile* new_profile) {
-  DCHECK(!new_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
+  CHECK(!new_profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed),
+        base::NotFatalUntil::M161);
 }
 
 void TokenManagedProfileCreationDelegate::OnManagedProfileInitialized(

@@ -22,7 +22,7 @@ LegacyTechService::LegacyTechService(Profile* profile,
                                      LegacyTechReportTrigger trigger)
     : url_matcher_(profile->GetPrefs(), kCloudLegacyTechReportAllowlist),
       trigger_(trigger) {
-  DCHECK(trigger_);
+  CHECK(trigger_, base::NotFatalUntil::M161);
 }
 
 LegacyTechService::~LegacyTechService() = default;

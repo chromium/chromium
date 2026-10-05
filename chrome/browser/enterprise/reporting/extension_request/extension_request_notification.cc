@@ -102,7 +102,8 @@ std::string ExtensionRequestNotification::CreateNotificationId(
 std::vector<std::string> ExtensionRequestNotification::ParseExtensionIds(
     const std::string& notification_id) {
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(base::StartsWith(notification_id, kAndroidNotificationIdPrefix));
+  CHECK(base::StartsWith(notification_id, kAndroidNotificationIdPrefix),
+        base::NotFatalUntil::M161);
   if (!base::StartsWith(notification_id, kAndroidNotificationIdPrefix)) {
     return {};
   }

@@ -49,7 +49,7 @@ void DataControlsDialogFactory::ShowDialogIfNeeded(
     content::WebContents* web_contents,
     DataControlsDialog::Type type,
     base::OnceCallback<void(bool bypassed)> callback) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
 
   // Don't show a new dialog if there is already an existing dialog of the same
   // type showing in `web_contents` already. If `callback` is non-null, we add

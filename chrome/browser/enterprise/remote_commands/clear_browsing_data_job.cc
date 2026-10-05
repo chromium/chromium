@@ -138,7 +138,7 @@ void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {
 void ClearBrowsingDataJob::OnBrowsingDataRemoverDone(
     uint64_t failed_data_types) {
   Profile* profile = job_profile_picker_.GetProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
   remover->RemoveObserver(this);

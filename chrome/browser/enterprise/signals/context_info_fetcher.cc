@@ -62,7 +62,7 @@ SettingValue GetChromeosFirewall() {
 #endif
 
 bool GetBuiltInDnsClientEnabled(PrefService* local_state) {
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M161);
   return local_state->GetBoolean(prefs::kBuiltInDnsClientEnabled);
 }
 
@@ -77,7 +77,7 @@ ContextInfoFetcher::ContextInfoFetcher(
     enterprise_connectors::ConnectorsService* connectors_service)
     : browser_context_(browser_context),
       connectors_service_(connectors_service) {
-  DCHECK(connectors_service_);
+  CHECK(connectors_service_, base::NotFatalUntil::M161);
 }
 
 ContextInfoFetcher::~ContextInfoFetcher() = default;

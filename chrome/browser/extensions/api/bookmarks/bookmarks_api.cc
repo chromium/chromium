@@ -124,12 +124,14 @@ void BookmarkEventRouter::BookmarkNodeMoved(const BookmarkNode* old_parent,
   // moved from/to it. Validate this assumption here, as otherwise this method
   // would need to recalculate child indices. This is a debug-only check since
   // it is not constant-time.
-  DCHECK(std::ranges::all_of(old_parent->children(), [](const auto& child) {
-    return child->IsVisible();
-  }));
-  DCHECK(std::ranges::all_of(new_parent->children(), [](const auto& child) {
-    return child->IsVisible();
-  }));
+  CHECK(
+      std::ranges::all_of(old_parent->children(),
+                          [](const auto& child) { return child->IsVisible(); }),
+      base::NotFatalUntil::M161);
+  CHECK(
+      std::ranges::all_of(new_parent->children(),
+                          [](const auto& child) { return child->IsVisible(); }),
+      base::NotFatalUntil::M161);
 
   const BookmarkNode* node = new_parent->children()[new_index].get();
   api::bookmarks::OnMoved::MoveInfo move_info;
@@ -469,7 +471,7 @@ ExtensionFunction::ResponseAction BookmarksSearchFunction::RunOnReady() {
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
         std::numeric_limits<int>::max());
   } else {
-    DCHECK(params->query.as_object);
+    CHECK(params->query.as_object, base::NotFatalUntil::M161);
     const api::bookmarks::Search::Params::Query::Object& object =
         *params->query.as_object;
     bookmarks::QueryFields query;
@@ -602,9 +604,10 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
   // Only the root node currently has non-visible children. Validate this
   // assumption here, as otherwise this method would need to recalculate child
   // indices. This is a debug-only check since it is not constant-time.
-  DCHECK(std::ranges::all_of(parent->children(), [](const auto& child) {
-    return child->IsVisible();
-  }));
+  CHECK(
+      std::ranges::all_of(parent->children(),
+                          [](const auto& child) { return child->IsVisible(); }),
+      base::NotFatalUntil::M161);
 
   size_t index;
   if (!details.index) {  // Optional (defaults to end).
@@ -652,7 +655,7 @@ const BookmarkNode* BookmarksCreateFunction::CreateBookmarkNode(
     model->SetDateFolderModified(parent, base::Time::Now());
   }
 
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M161);
 
   return node;
 }
@@ -711,9 +714,10 @@ ExtensionFunction::ResponseAction BookmarksMoveFunction::RunOnReady() {
   // Only the root node currently has non-visible children. Validate this
   // assumption here, as otherwise this method would need to recalculate child
   // indices. This is a debug-only check since it is not constant-time.
-  DCHECK(std::ranges::all_of(parent->children(), [](const auto& child) {
-    return child->IsVisible();
-  }));
+  CHECK(
+      std::ranges::all_of(parent->children(),
+                          [](const auto& child) { return child->IsVisible(); }),
+      base::NotFatalUntil::M161);
 
   size_t index;
   if (params->destination.index) {  // Optional (defaults to end).

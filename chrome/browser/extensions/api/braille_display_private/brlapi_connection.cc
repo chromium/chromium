@@ -63,13 +63,13 @@ class BrlapiConnectionImpl : public BrlapiConnection {
 
 std::unique_ptr<BrlapiConnection> BrlapiConnection::Create(
     LibBrlapiLoader* loader) {
-  DCHECK(loader->loaded());
+  CHECK(loader->loaded(), base::NotFatalUntil::M161);
   return std::unique_ptr<BrlapiConnection>(new BrlapiConnectionImpl(loader));
 }
 
 BrlapiConnection::ConnectResult BrlapiConnectionImpl::Connect(
     OnDataReadyCallback on_data_ready) {
-  DCHECK(!handle_);
+  CHECK(!handle_, base::NotFatalUntil::M161);
   handle_.reset(reinterpret_cast<brlapi_handle_t*>(
       malloc(libbrlapi_loader_->brlapi_getHandleSize())));
   int fd = libbrlapi_loader_->brlapi__openConnection(handle_.get(), nullptr,
