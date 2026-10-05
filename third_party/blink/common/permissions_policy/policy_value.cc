@@ -4,15 +4,13 @@
 
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 
+#include <limits>
+
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 
 namespace blink {
-
-PolicyValue::PolicyValue() : type_(mojom::PolicyValueType::kNull) {}
-
-PolicyValue::PolicyValue(const PolicyValue&) = default;
-
-PolicyValue& PolicyValue::operator=(const PolicyValue&) = default;
 
 // static
 PolicyValue PolicyValue::CreateBool(bool value) {
@@ -21,128 +19,94 @@ PolicyValue PolicyValue::CreateBool(bool value) {
 
 // static
 PolicyValue PolicyValue::CreateDecDouble(double value) {
-  return PolicyValue(value, mojom::PolicyValueType::kDecDouble);
+  return PolicyValue(value);
 }
 
 // static
 PolicyValue PolicyValue::CreateEnum(int32_t value) {
-  return PolicyValue(value, mojom::PolicyValueType::kEnum);
+  return PolicyValue(value);
 }
 
-PolicyValue::PolicyValue(bool bool_value)
-    : type_(mojom::PolicyValueType::kBool), bool_value_(bool_value) {}
+PolicyValue::PolicyValue(bool bool_value) : value_(bool_value) {}
 
-PolicyValue::PolicyValue(double double_value, mojom::PolicyValueType type)
-    : type_(type), double_value_(double_value) {
-  DCHECK_EQ(type, mojom::PolicyValueType::kDecDouble);
-}
+PolicyValue::PolicyValue(double double_value) : value_(double_value) {}
 
-PolicyValue::PolicyValue(int32_t int_value, mojom::PolicyValueType type)
-    : type_(type), int_value_(int_value) {
-  DCHECK_EQ(type, mojom::PolicyValueType::kEnum);
-}
+PolicyValue::PolicyValue(int32_t int_value) : value_(int_value) {}
 
 PolicyValue PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType type) {
-  PolicyValue value;
-  value.SetType(type);
-  value.SetToMax();
-  return value;
+  switch (type) {
+    case mojom::PolicyValueType::kBool:
+      return CreateBool(true);
+    case mojom::PolicyValueType::kDecDouble:
+      return CreateDecDouble(std::numeric_limits<double>::infinity());
+    default:
+      NOTREACHED();
+  }
 }
 
 PolicyValue PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType type) {
-  PolicyValue value;
-  value.SetType(type);
-  value.SetToMin();
-  return value;
+  switch (type) {
+    case mojom::PolicyValueType::kBool:
+      return CreateBool(false);
+    case mojom::PolicyValueType::kDecDouble:
+      return CreateDecDouble(0.0);
+    default:
+      NOTREACHED();
+  }
+}
+
+mojom::PolicyValueType PolicyValue::Type() const {
+  return Visit(absl::Overload{
+      [](std::monostate) { return mojom::PolicyValueType::kNull; },
+      [](bool) { return mojom::PolicyValueType::kBool; },
+      [](double) { return mojom::PolicyValueType::kDecDouble; },
+      [](int32_t) { return mojom::PolicyValueType::kEnum; },
+  });
 }
 
 bool PolicyValue::BoolValue() const {
-  DCHECK_EQ(type_, mojom::PolicyValueType::kBool);
-  return bool_value_;
+  return std::get<bool>(value_);
 }
 
 double PolicyValue::DoubleValue() const {
-  DCHECK_EQ(type_, mojom::PolicyValueType::kDecDouble);
-  return double_value_;
+  return std::get<double>(value_);
 }
 
-int32_t PolicyValue::IntValue() const {
-  DCHECK_EQ(type_, mojom::PolicyValueType::kEnum);
-  return int_value_;
+int32_t PolicyValue::EnumValue() const {
+  return std::get<int32_t>(value_);
 }
 
-void PolicyValue::SetBoolValue(bool bool_value) {
-  DCHECK_EQ(mojom::PolicyValueType::kBool, type_);
-  bool_value_ = bool_value;
-}
-
-void PolicyValue::SetDoubleValue(double double_value) {
-  DCHECK_EQ(mojom::PolicyValueType::kDecDouble, type_);
-  double_value_ = double_value;
-}
-
-void PolicyValue::SetIntValue(int32_t int_value) {
-  DCHECK_EQ(mojom::PolicyValueType::kEnum, type_);
-  int_value_ = int_value;
-}
-
-bool operator==(const PolicyValue& lhs, const PolicyValue& rhs) {
-  if (lhs.Type() != rhs.Type())
-    return false;
-  switch (lhs.Type()) {
-    case mojom::PolicyValueType::kBool:
-      return lhs.BoolValue() == rhs.BoolValue();
-    case mojom::PolicyValueType::kDecDouble:
-      return lhs.DoubleValue() == rhs.DoubleValue();
-    case mojom::PolicyValueType::kEnum:
-      return lhs.IntValue() == rhs.IntValue();
-    case mojom::PolicyValueType::kNull:
-      return true;
+std::optional<bool> PolicyValue::GetIfBool() const {
+  if (const auto* v = std::get_if<bool>(&value_)) {
+    return *v;
   }
-  NOTREACHED();
+  return std::nullopt;
 }
+
+std::optional<double> PolicyValue::GetIfDouble() const {
+  if (const auto* v = std::get_if<double>(&value_)) {
+    return *v;
+  }
+  return std::nullopt;
+}
+
+std::optional<int32_t> PolicyValue::GetIfEnum() const {
+  if (const auto* v = std::get_if<int32_t>(&value_)) {
+    return *v;
+  }
+  return std::nullopt;
+}
+
+bool operator==(const PolicyValue&, const PolicyValue&) = default;
 
 bool PolicyValue::IsCompatibleWith(const PolicyValue& required) const {
-  DCHECK_EQ(type_, required.Type());
-  switch (type_) {
-    case mojom::PolicyValueType::kBool:
-      return !bool_value_ || required.bool_value_;
-    case mojom::PolicyValueType::kDecDouble:
-      return double_value_ <= required.double_value_;
-    case mojom::PolicyValueType::kEnum:
-      return int_value_ == required.int_value_;
-    case mojom::PolicyValueType::kNull:
-      NOTREACHED();
-  }
-  return false;
-}
-
-void PolicyValue::SetToMax() {
-  switch (type_) {
-    case mojom::PolicyValueType::kBool:
-      bool_value_ = true;
-      break;
-    case mojom::PolicyValueType::kDecDouble:
-      double_value_ = std::numeric_limits<double>::infinity();
-      break;
-    default:
-      NOTREACHED();
-  }
-  return;
-}
-
-void PolicyValue::SetToMin() {
-  switch (type_) {
-    case mojom::PolicyValueType::kBool:
-      bool_value_ = false;
-      break;
-    case mojom::PolicyValueType::kDecDouble:
-      double_value_ = 0.0;
-      break;
-    default:
-      NOTREACHED();
-  }
-  return;
+  return std::visit(absl::Overload{
+                        [](bool b, bool req_b) { return !b || req_b; },
+                        [](double d, double req_d) { return d <= req_d; },
+                        [](int32_t i, int32_t req_i) { return i == req_i; },
+                        [](const auto&, const auto&) { return false; },
+                    },
+                    value_, required.value_);
 }
 
 }  // namespace blink

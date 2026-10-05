@@ -11,16 +11,13 @@ bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::Read(
     blink::PolicyValue* out) {
   switch (in.tag()) {
     case blink::mojom::PolicyValueDataView::Tag::kBoolValue:
-      out->SetType(blink::mojom::PolicyValueType::kBool);
-      out->SetBoolValue(in.bool_value());
+      *out = blink::PolicyValue::CreateBool(in.bool_value());
       return true;
     case blink::mojom::PolicyValueDataView::Tag::kDecDoubleValue:
-      out->SetType(blink::mojom::PolicyValueType::kDecDouble);
-      out->SetDoubleValue(in.dec_double_value());
+      *out = blink::PolicyValue::CreateDecDouble(in.dec_double_value());
       return true;
     case blink::mojom::PolicyValueDataView::Tag::kEnumValue:
-      out->SetType(blink::mojom::PolicyValueType::kEnum);
-      out->SetIntValue(in.enum_value());
+      *out = blink::PolicyValue::CreateEnum(in.enum_value());
       return true;
   }
   return false;
@@ -33,7 +30,7 @@ bool UnionTraits<blink::mojom::PolicyValueDataView, blink::PolicyValue>::IsNull(
 
 void UnionTraits<blink::mojom::PolicyValueDataView,
                  blink::PolicyValue>::SetToNull(blink::PolicyValue* out) {
-  out->SetType(blink::mojom::PolicyValueType::kNull);
+  *out = blink::PolicyValue();
 }
 
 }  // namespace mojo

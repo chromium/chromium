@@ -76,30 +76,30 @@ bool ParamTraits<blink::PolicyValue>::Read(const base::Pickle* m,
     return false;
   blink::mojom::PolicyValueType type =
       static_cast<blink::mojom::PolicyValueType>(int_type);
-  r->SetType(type);
   switch (type) {
     case blink::mojom::PolicyValueType::kBool: {
       bool b;
       if (!ReadParam(m, iter, &b))
         return false;
-      r->SetBoolValue(b);
+      *r = blink::PolicyValue::CreateBool(b);
       break;
     }
     case blink::mojom::PolicyValueType::kDecDouble: {
       double d;
       if (!ReadParam(m, iter, &d))
         return false;
-      r->SetDoubleValue(d);
+      *r = blink::PolicyValue::CreateDecDouble(d);
       break;
     }
     case blink::mojom::PolicyValueType::kEnum: {
       int32_t i;
       if (!ReadParam(m, iter, &i))
         return false;
-      r->SetIntValue(i);
+      *r = blink::PolicyValue::CreateEnum(i);
       break;
     }
     case blink::mojom::PolicyValueType::kNull:
+      *r = blink::PolicyValue();
       break;
   }
   return true;

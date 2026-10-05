@@ -11,6 +11,13 @@ namespace blink {
 
 class PolicyValueTest : public testing::Test {};
 
+TEST_F(PolicyValueTest, TestNullValues) {
+  PolicyValue null_value;
+  EXPECT_EQ(null_value.Type(), mojom::PolicyValueType::kNull);
+  EXPECT_TRUE(null_value == PolicyValue());
+  EXPECT_FALSE(null_value == PolicyValue::CreateBool(false));
+}
+
 TEST_F(PolicyValueTest, TestCanCreateBoolValues) {
   PolicyValue false_value = PolicyValue::CreateBool(false);
   PolicyValue true_value = PolicyValue::CreateBool(true);
@@ -18,25 +25,14 @@ TEST_F(PolicyValueTest, TestCanCreateBoolValues) {
       PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType::kBool));
   PolicyValue max_value(
       PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType::kBool));
+  EXPECT_EQ(false_value.Type(), mojom::PolicyValueType::kBool);
+  EXPECT_EQ(true_value.Type(), mojom::PolicyValueType::kBool);
   EXPECT_EQ(false_value.BoolValue(), false);
   EXPECT_EQ(true_value.BoolValue(), true);
   EXPECT_EQ(min_value.BoolValue(), false);
   EXPECT_EQ(max_value.BoolValue(), true);
 }
 
-TEST_F(PolicyValueTest, TestCanModifyBoolValues) {
-  PolicyValue initially_false_value = PolicyValue::CreateBool(false);
-  PolicyValue initially_true_value = PolicyValue::CreateBool(true);
-  initially_false_value.SetBoolValue(true);
-  initially_true_value.SetBoolValue(false);
-  EXPECT_EQ(initially_false_value.BoolValue(), true);
-  EXPECT_EQ(initially_true_value.BoolValue(), false);
-
-  initially_true_value.SetToMax();
-  EXPECT_EQ(initially_true_value.BoolValue(), true);
-  initially_true_value.SetToMin();
-  EXPECT_EQ(initially_true_value.BoolValue(), false);
-}
 
 TEST_F(PolicyValueTest, TestCanCompareBoolValues) {
   PolicyValue false_value = PolicyValue::CreateBool(false);
@@ -66,22 +62,14 @@ TEST_F(PolicyValueTest, TestCanCreateDoubleValues) {
       PolicyValue::CreateMinPolicyValue(mojom::PolicyValueType::kDecDouble));
   PolicyValue max_value(
       PolicyValue::CreateMaxPolicyValue(mojom::PolicyValueType::kDecDouble));
+  EXPECT_EQ(zero_value.Type(), mojom::PolicyValueType::kDecDouble);
+  EXPECT_EQ(one_value.Type(), mojom::PolicyValueType::kDecDouble);
   EXPECT_EQ(zero_value.DoubleValue(), 0.0);
   EXPECT_EQ(one_value.DoubleValue(), 1.0);
   EXPECT_EQ(min_value.DoubleValue(), 0.0);
   EXPECT_EQ(max_value.DoubleValue(), std::numeric_limits<double>::infinity());
 }
 
-TEST_F(PolicyValueTest, TestCanModifyDoubleValues) {
-  PolicyValue initially_zero_value = PolicyValue::CreateDecDouble(0.0);
-  initially_zero_value.SetDoubleValue(1.0);
-  EXPECT_EQ(initially_zero_value.DoubleValue(), 1.0);
-  initially_zero_value.SetToMax();
-  EXPECT_EQ(initially_zero_value.DoubleValue(),
-            std::numeric_limits<double>::infinity());
-  initially_zero_value.SetToMin();
-  EXPECT_EQ(initially_zero_value.DoubleValue(), 0.0);
-}
 
 TEST_F(PolicyValueTest, TestCanCompareDoubleValues) {
   PolicyValue low_value = PolicyValue::CreateDecDouble(1.0);
@@ -107,14 +95,10 @@ TEST_F(PolicyValueTest, TestCanCompareDoubleValues) {
 TEST_F(PolicyValueTest, TestCanCreateEnumValues) {
   PolicyValue enum_value_a = PolicyValue::CreateEnum(1);
   PolicyValue enum_value_b = PolicyValue::CreateEnum(2);
-  EXPECT_EQ(enum_value_a.IntValue(), 1);
-  EXPECT_EQ(enum_value_b.IntValue(), 2);
-}
-
-TEST_F(PolicyValueTest, TestCanModifyEnumValues) {
-  PolicyValue enum_value_a = PolicyValue::CreateEnum(1);
-  enum_value_a.SetIntValue(2);
-  EXPECT_EQ(enum_value_a.IntValue(), 2);
+  EXPECT_EQ(enum_value_a.Type(), mojom::PolicyValueType::kEnum);
+  EXPECT_EQ(enum_value_b.Type(), mojom::PolicyValueType::kEnum);
+  EXPECT_EQ(enum_value_a.EnumValue(), 1);
+  EXPECT_EQ(enum_value_b.EnumValue(), 2);
 }
 
 TEST_F(PolicyValueTest, TestCanCompareEnumValues) {
@@ -136,6 +120,43 @@ TEST_F(PolicyValueTest, TestCanCompareEnumValues) {
   EXPECT_TRUE(enum_value_b == enum_value_b);
   EXPECT_FALSE(enum_value_b != enum_value_b);
   EXPECT_TRUE(enum_value_b.IsCompatibleWith(enum_value_b));
+}
+
+TEST_F(PolicyValueTest, TestIncompatibleTypesAreNotCompatible) {
+  PolicyValue bool_val = PolicyValue::CreateBool(true);
+  PolicyValue double_val = PolicyValue::CreateDecDouble(1.0);
+  PolicyValue enum_val = PolicyValue::CreateEnum(1);
+  PolicyValue null_val;
+
+  EXPECT_FALSE(bool_val.IsCompatibleWith(double_val));
+  EXPECT_FALSE(double_val.IsCompatibleWith(enum_val));
+  EXPECT_FALSE(enum_val.IsCompatibleWith(bool_val));
+  EXPECT_FALSE(null_val.IsCompatibleWith(null_val));
+  EXPECT_FALSE(null_val.IsCompatibleWith(bool_val));
+  EXPECT_FALSE(bool_val.IsCompatibleWith(null_val));
+}
+
+TEST_F(PolicyValueTest, TestGetIf) {
+  PolicyValue bool_val = PolicyValue::CreateBool(true);
+  PolicyValue double_val = PolicyValue::CreateDecDouble(1.5);
+  PolicyValue enum_val = PolicyValue::CreateEnum(42);
+  PolicyValue null_val;
+
+  EXPECT_EQ(bool_val.GetIfBool(), true);
+  EXPECT_EQ(bool_val.GetIfDouble(), std::nullopt);
+  EXPECT_EQ(bool_val.GetIfEnum(), std::nullopt);
+
+  EXPECT_EQ(double_val.GetIfBool(), std::nullopt);
+  EXPECT_EQ(double_val.GetIfDouble(), 1.5);
+  EXPECT_EQ(double_val.GetIfEnum(), std::nullopt);
+
+  EXPECT_EQ(enum_val.GetIfBool(), std::nullopt);
+  EXPECT_EQ(enum_val.GetIfDouble(), std::nullopt);
+  EXPECT_EQ(enum_val.GetIfEnum(), 42);
+
+  EXPECT_EQ(null_val.GetIfBool(), std::nullopt);
+  EXPECT_EQ(null_val.GetIfDouble(), std::nullopt);
+  EXPECT_EQ(null_val.GetIfEnum(), std::nullopt);
 }
 
 }  // namespace blink

@@ -78,13 +78,12 @@ JSProfilingMode ProfilerGroup::GetProfilingMode(
   // Check the new js-profiling-mode enum policy first.
   PolicyValue mode_value = execution_context->GetDocumentPolicyValue(
       mojom::blink::DocumentPolicyFeature::kJSProfilingMode);
-  if (mode_value.Type() == mojom::blink::PolicyValueType::kEnum) {
-    int32_t v = mode_value.IntValue();
-    if (v >= 1 && v <= static_cast<int32_t>(JSProfilingMode::kMax)) {
+  if (std::optional<int32_t> v = mode_value.GetIfEnum()) {
+    if (*v >= 1 && *v <= static_cast<int32_t>(JSProfilingMode::kMax)) {
       // "eager" or "lazy" explicitly set in the header — honour it.
-      return static_cast<JSProfilingMode>(v);
+      return static_cast<JSProfilingMode>(*v);
     }
-    // v == 0: default "not set", meaning the header was absent. Fall through
+    // *v == 0: default "not set", meaning the header was absent. Fall through
     // to the legacy kJSProfiling boolean policy.
   }
   // Fall back to the legacy js-profiling boolean policy.
