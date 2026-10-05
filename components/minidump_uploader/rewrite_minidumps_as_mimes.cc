@@ -270,8 +270,6 @@ void WriteAnrAsMime(crashpad::FileReader* anr_reader,
   builder.SetFormData("installer_package_name",
                       base::android::apk_info::installer_package_name());
   builder.SetFormData("abi_name", base::android::android_info::abi_name());
-  builder.SetFormData("resources_version",
-                      base::android::apk_info::package_version_name());
   builder.SetFormData("gms_core_version",
                       base::android::device_info::gms_version_code());
 
