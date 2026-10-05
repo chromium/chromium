@@ -1448,8 +1448,10 @@ void ArcSessionManager::RequestArcDataRemoval() {
   }
 
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M160);
-  CHECK(profile_, base::NotFatalUntil::M160);
-  CHECK(data_remover_, base::NotFatalUntil::M160);
+  // TODO(crbug.com/569688161): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(profile_);
+  DCHECK(data_remover_);
   VLOG(1) << "Scheduling ARC data removal.";
 
   // TODO(hidehiko): DCHECK the previous state. This is called for four cases;
