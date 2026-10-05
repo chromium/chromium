@@ -1,0 +1,33 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  const request = new Request("", {
+    retryOptions: {
+      maxAttempts: 1,
+      maxAge: 1000,
+      initialDelay: null,
+      backoffFactor: null,
+    }
+  });
+  const options = request.getRetryOptions();
+  assert_equals(options.initialDelay, 0);
+  assert_equals(options.backoffFactor, 0);
+}, "new Request() with initialDelay: null and backoffFactor: null converts null to 0 per WebIDL");
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new Request(null, {
+      method: "http://localhost/",
+      retryOptions: {
+        initialDelay: null,
+        maxAge: 9007199254740991,
+        maxAttempts: 1073741824,
+        retryAfterUnload: false,
+        retryOnlyIfServerUnreached: false,
+      }
+    });
+  });
+}, "new Request() with initialDelay: null and invalid method throws TypeError without crashing");
+</script>

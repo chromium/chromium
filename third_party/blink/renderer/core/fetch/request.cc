@@ -676,7 +676,7 @@ Request* Request::CreateRequestWithRequestOrString(
     options.max_attempts = retry_options->maxAttempts();
     if (retry_options->hasInitialDelay()) {
       options.initial_delay =
-          base::Milliseconds(retry_options->initialDelay().value());
+          base::Milliseconds(retry_options->initialDelay());
     }
     if (retry_options->hasBackoffFactor()) {
       options.backoff_factor = retry_options->backoffFactor();
