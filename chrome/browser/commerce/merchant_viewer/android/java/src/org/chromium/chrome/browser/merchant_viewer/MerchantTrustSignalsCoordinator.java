@@ -409,6 +409,6 @@ public class MerchantTrustSignalsCoordinator
     @VisibleForTesting
     @Nullable Drawable getStoreIconDrawable() {
         return ResourcesCompat.getDrawable(
-                mContext.getResources(), R.drawable.ic_storefront_blue, mContext.getTheme());
+                mContext.getResources(), R.drawable.ic_storefront_accent1, mContext.getTheme());
     }
 }

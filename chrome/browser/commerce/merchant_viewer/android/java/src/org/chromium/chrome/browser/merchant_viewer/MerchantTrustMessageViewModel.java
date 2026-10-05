@@ -20,6 +20,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.RatingStarSpan.RatingStarType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -87,7 +88,11 @@ class MerchantTrustMessageViewModel {
                 .with(
                         MessageBannerProperties.ICON,
                         ResourcesCompat.getDrawable(resources, getIconRes(), context.getTheme()))
-                .with(MessageBannerProperties.ICON_TINT_COLOR, MessageBannerProperties.TINT_NONE)
+                .with(
+                        MessageBannerProperties.ICON_TINT_COLOR,
+                        MerchantViewerConfig.doesTrustSignalsMessageUseGoogleIcon()
+                                ? MessageBannerProperties.TINT_NONE
+                                : SemanticColorUtils.getDefaultIconColorAccent1(context))
                 .with(MessageBannerProperties.TITLE, resources.getString(getTitleStringRes()))
                 .with(
                         MessageBannerProperties.DESCRIPTION,
@@ -205,7 +210,7 @@ class MerchantTrustMessageViewModel {
     private static @DrawableRes int getIconRes() {
         return MerchantViewerConfig.doesTrustSignalsMessageUseGoogleIcon()
                 ? R.drawable.ic_logo_googleg_24dp
-                : R.drawable.ic_storefront_blue;
+                : R.drawable.ic_storefront_accent1;
     }
 
     private static @StringRes int getTitleStringRes() {

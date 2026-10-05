@@ -266,7 +266,7 @@ public class StatusViewRenderTest {
                     Drawable storeIconDrawable =
                             ResourcesCompat.getDrawable(
                                     sActivity.getResources(),
-                                    R.drawable.ic_storefront_blue,
+                                    R.drawable.ic_storefront_accent1,
                                     sActivity.getTheme());
                     StatusIconResource statusIcon =
                             new PermissionIconResource(storeIconDrawable, false);

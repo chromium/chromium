@@ -16,8 +16,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
-import android.content.res.Resources;
+import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
 import org.junit.After;
@@ -33,6 +32,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinat
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.commerce.core.ShoppingService.MerchantInfo;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -80,9 +81,6 @@ import java.util.concurrent.TimeUnit;
 public class MerchantTrustSignalsCoordinatorTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Context mMockContext;
-
-    @Mock private Resources mMockResources;
 
     @Mock private MerchantTrustMessageScheduler mMockMerchantMessageScheduler;
     @Mock private Tab mMockTab;
@@ -131,15 +129,15 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     private final MerchantInfo mDummyMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, null, false, 0f, false, false);
+    private Activity mActivity;
     private MerchantTrustSignalsCoordinator mCoordinator;
     private String mSerializedTimestamps;
     private MerchantTrustMessageContext mMessageContext;
 
     @Before
     public void setUp() {
-        doReturn(mMockResources).when(mMockContext).getResources();
-        doReturn("").when(mMockContext).getString(anyInt());
-        doReturn("").when(mMockResources).getQuantityString(anyInt(), anyInt(), any());
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         doReturn(FAKE_HOST).when(mMockGurl).getHost();
         doReturn(FAKE_HOST).when(mMockGurl).getSpec();
         doReturn(mMockMerchantTrustStorage)
@@ -177,7 +175,7 @@ public class MerchantTrustSignalsCoordinatorTest {
         mCoordinator =
                 spy(
                         new MerchantTrustSignalsCoordinator(
-                                mMockContext,
+                                mActivity,
                                 mMockWindowAndroid,
                                 mMockMerchantMessageScheduler,
                                 mMockTabProvider,

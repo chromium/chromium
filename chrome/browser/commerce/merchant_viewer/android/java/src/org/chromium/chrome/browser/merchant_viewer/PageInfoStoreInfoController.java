@@ -79,7 +79,7 @@ public class PageInfoStoreInfoController implements PageInfoSubpageController {
             rowParams.title = mContext.getString(R.string.page_info_store_info_title);
             rowParams.subtitle = getRowSubtitle(merchantInfo);
             // The icons in PageInfo are tinted automatically.
-            rowParams.iconResId = R.drawable.ic_storefront_blue;
+            rowParams.iconResId = R.drawable.ic_storefront_accent1;
             // If user enters page info via the store icon in omnibox, highlight the "Store info"
             // row.
             if (mPageInfoOpenedFromStoreIcon) {
