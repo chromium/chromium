@@ -35,7 +35,7 @@ const HINT_STRINGS = {
   [HINT.IDLE]: '',
   [HINT.CTRL_LOAD]: 'Fetch UI hierarchy and screenshot from device.',
   [HINT.CTRL_ZOOM]: 'Change display scale of the screenshot.',
-  [HINT.LAYOUT_SPLITTER]: 'Drag: Resize',
+  [HINT.LAYOUT_SPLITTER]: 'Drag: Resize | Double-Click: Auto-Resize',
 };
 
 /******** HintController ********/

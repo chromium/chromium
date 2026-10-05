@@ -111,12 +111,11 @@ class LayoutController {
   _autoResize() {
     if (!this.model.isLoaded) return;
 
-    const {wDims, layoutMode} = this.visOpts;
+    const layoutMode = this.visOpts.layoutMode;
     const parentSizePx = this._getParentSizeAlongMode(layoutMode);
     if (parentSizePx <= 0) return;
 
-    const isVert = (layoutMode.orientation === ORIENTATION.VERT);
-    const imgDims = wDims.clone().mulBy(this.visOpts.scale);
+    const imgDims = this.visOpts.getAutoResizeDims();
     const rect = this.el.divScreenshot.getBoundingClientRect();
     const thickness = getScrollbarThickness();
 
@@ -134,11 +133,11 @@ class LayoutController {
 
     // 3. Calculate total overhead based on layout axis.
     let overhead = 0;
-    if (isVert) {
+    if (layoutMode.orientation === ORIENTATION.HORIZ) {
+      if (vScrollNeeded) overhead += thickness;
+    } else {  // layoutMode.orientation === ORIENTATION.VERT
       overhead += this.el.divScreenshotInfo.offsetHeight;
       if (hScrollNeeded) overhead += thickness;
-    } else {
-      if (vScrollNeeded) overhead += thickness;
     }
 
     const targetSizePx = imgDims.sizeAlong(layoutMode.dir) + overhead;

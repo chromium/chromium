@@ -17,6 +17,10 @@ const SS_INFO_SHOW = {
  * screen size.
  */
 class ScreenshotInfoVis {
+  /**
+   * @param {!Element} divScreenshotInfo Container element for the info bar.
+   * @param {!VisOptions} visOpts Global visualization options.
+   */
   constructor(divScreenshotInfo, visOpts) {
     this.el = {
       root: divScreenshotInfo,
@@ -66,6 +70,11 @@ class ScreenshotInfoVis {
  * Renders the device's image into an HTML canvas.
  */
 class ScreenshotVis {
+  /**
+   * @param {!Element} divScreenshot Viewport element for the screenshot.
+   * @param {!Element} divScreenshotInfo Info bar element.
+   * @param {!VisOptions} visOpts Global visualization options.
+   */
   constructor(divScreenshot, divScreenshotInfo, visOpts) {
     this.el = {
       root: divScreenshot,
@@ -85,20 +94,48 @@ class ScreenshotVis {
     this.screenshotInfoVis.clear();
   }
 
-  _refreshScreenshotDimensions() {
+  _applyRescale() {
     const rect = this.el.root.getBoundingClientRect();
     const vpDims = new Dims2D(rect.width, rect.height);
 
+    // Standard fit and clear forced scroll bars.
     this.visOpts.updateGeometry(vpDims);
-    const [sw, sh] = this.visOpts.sDims;
+    delete this.el.root.dataset.forceScroll;
+
+    if (this.visOpts.isZoomFit()) {
+      // For Zoom Fit (WLOG under horizontal layout), the scale is the maximal
+      // value that avoids horizontal scrollbar. However, if vertical scrollbar
+      // shows then it would consume horizontal space, which then causes the
+      // horizontal scrollbar to show! The code here detects this "induced
+      // scrollbar" case, shrinks `vpDims` and retries. But for the boundary
+      // case, the shrinkage can render scrollbars unneeded again. This leads to
+      // awkward gaps! This is addressed by forcing the vertical scrollbar to
+      // appear. Under vertical layout, things are similar.
+      const {sDims, layoutMode} = this.visOpts;
+      if (layoutMode.orientation === ORIENTATION.HORIZ) {
+        if (sDims.h > vpDims.h) {
+          vpDims.w = Math.max(0, vpDims.w - getScrollbarThickness());
+          this.visOpts.updateGeometry(vpDims);
+          this.el.root.dataset.forceScroll = 'y';
+        }
+      } else {  // layoutMode.orientation === ORIENTATION.VERT
+        if (sDims.w > vpDims.w) {
+          vpDims.h = Math.max(0, vpDims.h - getScrollbarThickness());
+          this.visOpts.updateGeometry(vpDims);
+          this.el.root.dataset.forceScroll = 'x';
+        }
+      }
+    }
+
     const st = this.el.inner.style;
+    const [sw, sh] = this.visOpts.sDims;
     st.setProperty('--screenshot-width', `${Math.round(sw)}px`);
     st.setProperty('--screenshot-height', `${Math.round(sh)}px`);
   }
 
   updateScaleAndRefresh(needToRescale) {
     if (needToRescale) {
-      this._refreshScreenshotDimensions();
+      this._applyRescale();
     }
     this.screenshotInfoVis.update();
   }
@@ -122,11 +159,21 @@ class ScreenshotVis {
 
 /******** ScreenshotController ********/
 class ScreenshotController {
-  constructor(model, divScreenshot, divScreenshotInfo) {
+  /**
+   * @param {!MainModel} model The main data model.
+   * @param {!Element} divScreenshot Viewport element for the screenshot.
+   * @param {!Element} divScreenshotInfo Info bar element.
+   * @param {!Object} callbacks
+   * @param {function()} callbacks.onResize Invoked when the viewport is
+   *     resized.
+   */
+  constructor(model, divScreenshot, divScreenshotInfo, {onResize}) {
     this.model = model;
     this.vis =
         new ScreenshotVis(divScreenshot, divScreenshotInfo, this.model.visOpts);
     this.el = this.vis.el;
+    this.visOpts = this.model.visOpts;
+    this.onResize = onResize;
 
     this._bindAll();
   }
@@ -146,8 +193,9 @@ class ScreenshotController {
   _bindViewportResize() {
     const observer = new ResizeObserver(() => {
       if (this.model.isLoaded) {
-        this.vis.updateScaleAndRefresh(false);
+        this.vis.updateScaleAndRefresh(this.visOpts.isZoomFit());
       }
+      this.onResize();
     });
     observer.observe(this.el.root);
   }

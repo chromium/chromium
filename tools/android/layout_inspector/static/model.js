@@ -7,6 +7,7 @@
 /******** Constants ********/
 
 const ZOOM_LEVELS = [
+  {title: 'Fit', scale: null},
   {title: '10%', scale: 1 / 10},
   {title: '25%', scale: 1 / 4},
   {title: '33.3%', scale: 1 / 3},
@@ -19,7 +20,7 @@ const ZOOM_LEVELS = [
   {title: '300%', scale: 3},
   {title: '400%', scale: 4},
 ];
-const ZOOM_LEVEL_DEFAULT_INDEX = 6;  // For 100%.
+const ZOOM_FIT_INDEX = 0;
 
 /******** LayoutMode ********/
 /**
@@ -87,7 +88,7 @@ class VisOptions {
     //   Screenshot, and is proportional to `scale` (from Zoom feature).
 
     /** @type {number} Index into `ZOOM_LEVELS`. */
-    this.zoomIndex = ZOOM_LEVEL_DEFAULT_INDEX;
+    this.zoomIndex = ZOOM_FIT_INDEX;
     /** @type {number} Current ratio from World to Scaled. */
     this.scale = 1.0;
     /** @type {!Dims2D} World device dimensions. */
@@ -108,9 +109,18 @@ class VisOptions {
     this.zoomIndex = index;
   }
 
+  isZoomFit() {
+    return this.zoomIndex === ZOOM_FIT_INDEX;
+  }
+
+  getAutoResizeDims() {
+    const targetScale = this.isZoomFit() ? 1.0 : this.scale;
+    return this.wDims.clone().mulBy(targetScale);
+  }
+
   /**
    * Recalculates the visual scale based on viewport constraints.
-   * @param {!Dims2D} vpDims The current available browser viewport.
+   * @param {!Dims2D} vpDims The browser viewport dimensions to show Screenshot.
    */
   updateGeometry(vpDims) {
     if (this.wDims.w <= 0 || this.wDims.h <= 0) {
@@ -119,8 +129,27 @@ class VisOptions {
       return;
     }
 
-    this.scale = ZOOM_LEVELS[this.zoomIndex].scale;
-    this.sDims.assign(this.wDims.w * this.scale, this.wDims.h * this.scale);
+    if (this.isZoomFit()) {
+      if (this.layoutMode.orientation === ORIENTATION.HORIZ) {
+        // Constrained by width. Due to browser rounding, `vpDims.w` may drift
+        // away from integer, e.g., 799.984375. For better fidelity, we use
+        // `round()` (not `floor()`) and restore this to, e.g., 800px. Note that
+        // Screenshot result may be fractionally larger than the viewport!
+        // Fortunately, this won't create a 1px-shift scrollbar to appear, since
+        // apparently the decision to show scrollbar also uses pre-round sizes.
+        const sw = Math.round(vpDims.w);
+        this.scale = sw / this.wDims.w;
+        this.sDims.assign(sw, this.wDims.h * this.scale);
+      } else {
+        // Constrained by height. Similar consideration as the above.
+        const sh = Math.round(vpDims.h);
+        this.scale = sh / this.wDims.h;
+        this.sDims.assign(this.wDims.w * this.scale, sh);
+      }
+    } else {
+      this.scale = ZOOM_LEVELS[this.zoomIndex].scale;
+      this.sDims.assign(this.wDims.w * this.scale, this.wDims.h * this.scale);
+    }
   }
 
   pxToDp(px) {
@@ -139,7 +168,6 @@ class ViewNode {
     this.parent = parent;
     this.depth = depth;
     this.isLastChild = isLastChild;
-    this.expanded = true;
     this.children = [];
 
     this.className = xmlNode.getAttribute('class');

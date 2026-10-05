@@ -84,7 +84,7 @@ label:has(#sel-zoom) {
 }
 
 #sel-zoom {
-  width: 90px;
+  width: 110px;
 }
 
 #div-main {
@@ -137,6 +137,14 @@ label:has(#sel-zoom) {
   #div-main[data-layout="top"] &,
   #div-main[data-layout="bottom"] & {
     align-items: safe center;
+  }
+
+  &[data-force-scroll="x"] {
+    overflow-x: scroll;
+  }
+
+  &[data-force-scroll="y"] {
+    overflow-y: scroll;
   }
 
   .screenshot-inner {

@@ -47,7 +47,19 @@ class MainVis {
       option.value = index;
       this.el.selZoom.appendChild(option);
     });
-    this.el.selZoom.value = ZOOM_LEVEL_DEFAULT_INDEX;
+    this.el.selZoom.value = ZOOM_FIT_INDEX;
+  }
+
+  updateZoomFitLabel() {
+    const fitOption = this.el.selZoom.options[ZOOM_FIT_INDEX];
+    if (!fitOption) return;
+
+    let text = 'Fit';
+    if (this.model.isLoaded && this.model.visOpts.isZoomFit()) {
+      const sZoom = capFixed(this.model.visOpts.scale * 100, 2);
+      text += ` (${sZoom}%)`;
+    }
+    fitOption.text = text;
   }
 }
 
@@ -70,7 +82,9 @@ class MainController {
         this.el.divScreenshotInfo, this.hintCtrl);
 
     this.screenshotCtrl = new ScreenshotController(
-        this.model, this.el.divScreenshot, this.el.divScreenshotInfo);
+        this.model, this.el.divScreenshot, this.el.divScreenshotInfo, {
+          onResize: () => this.vis.updateZoomFitLabel(),
+        });
 
     this.treeCtrl = new TreeController(this.model, this.el.divViewTree);
   }
@@ -95,6 +109,9 @@ class MainController {
       // Initializing screenshot also updates zoom.
       this.screenshotCtrl.initScreenshot();
 
+      // Zoom Fit label update requires Screenshot to be loaded first.
+      this.vis.updateZoomFitLabel();
+
       const {wDims} = this.model.visOpts;
       this.layoutCtrl.setLayoutMode(LayoutMode.fromVector(-wDims.h, -wDims.w));
 
@@ -114,6 +131,7 @@ class MainController {
     this.el.selZoom.addEventListener('change', (e) => {
       this.model.visOpts.setZoomIndex(parseInt(e.target.value, 10));
       this.screenshotCtrl.updateZoom();
+      this.vis.updateZoomFitLabel();
     });
 
     // Delegated hover hints for controls.
