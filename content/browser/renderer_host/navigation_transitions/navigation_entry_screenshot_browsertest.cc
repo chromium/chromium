@@ -17,6 +17,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
+#include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/browser_context_impl.h"
@@ -1421,8 +1422,14 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
   manager->set_tick_clock_for_testing(nullptr);
 }
 
+// TODO(crbug.com/569136417): Consistently failing on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_MultipleInvisibleTabs DISABLED_MultipleInvisibleTabs
+#else
+#define MAYBE_MultipleInvisibleTabs MultipleInvisibleTabs
+#endif
 IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTestWithEviction,
-                       MultipleInvisibleTabs) {
+                       MAYBE_MultipleInvisibleTabs) {
   // Max of three screenshots per Profile (BrowserContext).
   const size_t page_size = GetUncompressedScreenshotSizeInBytes();
   const size_t memory_budget = 3 * page_size;
