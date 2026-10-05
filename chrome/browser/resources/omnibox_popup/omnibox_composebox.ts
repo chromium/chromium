@@ -15,7 +15,7 @@ import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_components/composebox/composebox_lens_search.js';
 
-import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, hasOnlyAutoAddedTabs, mapMojoSourceToOrigin, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, getLoadTimeBoolean, hasOnlyAutoAddedTabAttachments, hasOnlyAutoAddedTabs, mapUploadErrorToProcessFilesError, ProcessFilesError} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -428,7 +428,7 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
       title: tabAttachment.title,
       url: tabAttachment.url,
       delayUpload: false,
-      origin: mapMojoSourceToOrigin(tabAttachment.source),
+      origin: tabAttachment.source,
     } as TabUpload);
   }
 

@@ -133,7 +133,7 @@ export class ComposeboxFile {
   supportsUnimodal: boolean;
   thumbnailUrl?: string|null;
   iconUrl?: Url|null;
-  origin?: TabUploadOrigin;
+  origin?: TabAttachmentSource;
   delayUpload?: boolean;
   // True if this is a placeholder ("ghost") entry created from an upload
   // status update for a token the frontend does not know about yet. Its
@@ -223,46 +223,9 @@ export interface DriveUpload {
   iconUrl: Url|null;
 }
 
-export enum TabUploadOrigin {
-  CONTEXT_MENU = 0,
-  CURRENT_TAB_CHIP = 1,
-  ACTION_CHIP = 2,
-  AUTO_ACTIVE = 3,
-  OTHER = 4,
-  AUTO_ADDED = 5,
-}
-
-// TODO (crbug.com/542691701): Consolidate the two enums if possible
-// to avoid duplication.
-const ORIGIN_TO_MOJO: Record<TabUploadOrigin, TabAttachmentSource> = {
-  [TabUploadOrigin.CONTEXT_MENU]: TabAttachmentSource.kContextMenu,
-  [TabUploadOrigin.CURRENT_TAB_CHIP]: TabAttachmentSource.kCurrentTabChip,
-  [TabUploadOrigin.ACTION_CHIP]: TabAttachmentSource.kActionChip,
-  [TabUploadOrigin.AUTO_ACTIVE]: TabAttachmentSource.kAutoActive,
-  [TabUploadOrigin.AUTO_ADDED]: TabAttachmentSource.kAutoAdded,
-  [TabUploadOrigin.OTHER]: TabAttachmentSource.kOther,
-};
-
-export function mapOriginToMojoSource(origin?: TabUploadOrigin): TabAttachmentSource {
-  return origin === undefined ? TabAttachmentSource.kOther : ORIGIN_TO_MOJO[origin];
-}
-
-const MOJO_TO_ORIGIN: Record<TabAttachmentSource, TabUploadOrigin> = {
-  [TabAttachmentSource.kContextMenu]: TabUploadOrigin.CONTEXT_MENU,
-  [TabAttachmentSource.kCurrentTabChip]: TabUploadOrigin.CURRENT_TAB_CHIP,
-  [TabAttachmentSource.kActionChip]: TabUploadOrigin.ACTION_CHIP,
-  [TabAttachmentSource.kAutoActive]: TabUploadOrigin.AUTO_ACTIVE,
-  [TabAttachmentSource.kAutoAdded]: TabUploadOrigin.AUTO_ADDED,
-  [TabAttachmentSource.kOther]: TabUploadOrigin.OTHER,
-};
-
-export function mapMojoSourceToOrigin(source: TabAttachmentSource): TabUploadOrigin {
-  return MOJO_TO_ORIGIN[source];
-}
-
-export function isAutoAddedOrigin(origin?: TabUploadOrigin): boolean {
-  return origin === TabUploadOrigin.AUTO_ADDED ||
-      origin === TabUploadOrigin.CURRENT_TAB_CHIP;
+export function isAutoAddedOrigin(origin?: TabAttachmentSource): boolean {
+  return origin === TabAttachmentSource.kAutoAdded ||
+      origin === TabAttachmentSource.kCurrentTabChip;
 }
 
 export function hasOnlyAutoAddedTabs(
@@ -389,8 +352,7 @@ export function hasOnlyAutoAddedTabAttachments(
     if (!attachment.tabAttachment) {
       return false;
     }
-    const origin = mapMojoSourceToOrigin(attachment.tabAttachment.source);
-    if (!isAutoAddedOrigin(origin)) {
+    if (!isAutoAddedOrigin(attachment.tabAttachment.source)) {
       return false;
     }
   }
@@ -402,7 +364,7 @@ export interface TabUpload {
   url: Url;
   title: string;
   delayUpload: boolean;
-  origin: TabUploadOrigin;
+  origin: TabAttachmentSource;
 }
 
 export interface BrowserFileUpload {

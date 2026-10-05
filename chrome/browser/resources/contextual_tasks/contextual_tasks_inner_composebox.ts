@@ -14,7 +14,7 @@ import '//resources/cr_components/composebox/file_carousel.js';
 import '//resources/cr_components/search/animated_glow.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {ComposeboxFile, GlifAnimationState, recordBoolean, recordUserAction, TabUploadOrigin} from '//resources/cr_components/composebox/common.js';
+import {ComposeboxFile, GlifAnimationState, recordBoolean, recordUserAction} from '//resources/cr_components/composebox/common.js';
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
@@ -32,6 +32,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {debounceEnd} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
@@ -431,7 +432,7 @@ export class
             title: tab.title,
             url: tab.url,
             delayUpload: !askGAndPageAction,
-            origin: TabUploadOrigin.AUTO_ACTIVE,
+            origin: TabAttachmentSource.kAutoActive,
           } as TabUpload,
           /*replaceAutoActiveTabToken=*/ true);
 

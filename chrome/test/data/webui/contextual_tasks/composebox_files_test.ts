@@ -6,14 +6,14 @@ import 'chrome://contextual-tasks/app.js';
 
 import type {ContextualTasksAppElement} from 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
-import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {LensOverlayDismissalSource, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from 'chrome://resources/cr_components/composebox/file_carousel.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -919,7 +919,7 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
         title,
         url,
         delayUpload: false,
-        origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+        origin: TabAttachmentSource.kCurrentTabChip,
       });
     });
     await settle();
@@ -1546,7 +1546,7 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
             title: 'Manual tab',
             url: 'https://manual.example.com',
             delayUpload: false,
-            origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+            origin: TabAttachmentSource.kCurrentTabChip,
           });
           await mockSearchboxPageHandler.whenCalled(ADD_TAB_CONTEXT_FN);
 

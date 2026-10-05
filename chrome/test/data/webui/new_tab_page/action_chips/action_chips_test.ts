@@ -10,10 +10,10 @@ import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter as PageCallbackR
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import type {TabUpload} from 'chrome://resources/cr_components/composebox/common.js';
-import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import {ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -212,7 +212,7 @@ suite('NewTabPageActionChipsTest', () => {
       url: fakeTab.url,
       title: fakeTab.title,
       delayUpload: true,
-      origin: TabUploadOrigin.ACTION_CHIP,
+      origin: TabAttachmentSource.kActionChip,
     };
 
     assertEquals('Suggestion for recent tab', event.detail.suggestion);

@@ -7,7 +7,7 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxComposeboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {ComposeboxProxyImpl} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {ComposeboxFile, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -766,7 +766,7 @@ suite('OmniboxComposeboxTest', () => {
       title: 'Tab 101',
       url: 'https://tab101.com',
       delayUpload: false,
-      origin: TabUploadOrigin.OTHER,
+      origin: TabAttachmentSource.kOther,
     };
 
     await omniboxComposebox.addTabContextHandleCallback(tabUpload);
@@ -796,7 +796,7 @@ suite('OmniboxComposeboxTest', () => {
           title: 'Tab 102',
           url: 'https://tab102.com',
           delayUpload: false,
-          origin: TabUploadOrigin.OTHER,
+          origin: TabAttachmentSource.kOther,
         });
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -823,7 +823,7 @@ suite('OmniboxComposeboxTest', () => {
           title: 'Tab 103',
           url: 'https://tab103.com',
           delayUpload: false,
-          origin: TabUploadOrigin.OTHER,
+          origin: TabAttachmentSource.kOther,
         });
         await omniboxComposebox.updateComplete;
         await microtasksFinished();
@@ -843,7 +843,7 @@ suite('OmniboxComposeboxTest', () => {
       title: 'Tab 101',
       url: 'https://tab101.com',
       delayUpload: false,
-      origin: TabUploadOrigin.OTHER,
+      origin: TabAttachmentSource.kOther,
     };
     // Mock i18n for the error key.
     omniboxComposebox.i18n = (key: string) => {

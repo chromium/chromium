@@ -10,9 +10,10 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {htmlEscape} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {recordContextAdditionMethod, TabUploadOrigin} from './common.js';
+import {recordContextAdditionMethod} from './common.js';
 import {getCss} from './current_tab_chip.css.js';
 import {getHtml} from './current_tab_chip.html.js';
 
@@ -70,7 +71,7 @@ export class CurrentTabChipElement extends CurrentTabChipBase {
       title: this.currentTab.title,
       url: this.currentTab.url,
       delayUpload: false,
-      origin: TabUploadOrigin.CURRENT_TAB_CHIP,
+      origin: TabAttachmentSource.kCurrentTabChip,
     });
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CURRENT_TAB_CHIP, this.composeboxSource_);

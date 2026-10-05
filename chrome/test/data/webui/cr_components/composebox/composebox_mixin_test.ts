@@ -5,7 +5,7 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import './test_composebox_mixin.js';
 
-import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, isValidTabId, TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, ComposeboxInputModel, ContextType, ContextualSearchInputStateDeletionType, isValidTabId} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxFuseboxActionRequest} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxEmbedderMixinInterface} from 'chrome://resources/cr_components/composebox/composebox_mixin.js';
@@ -17,7 +17,7 @@ import {createAutocompleteResultForTesting} from 'chrome://resources/cr_componen
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import type {FuseboxAction} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
-import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveDisclaimerStatus, DriveUploadError, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {AutocompleteMatch, AutocompleteResult, PageRemote as SearchboxPageRemote, SelectedFileInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ContextUploadStatus, InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -1690,7 +1690,7 @@ suite('ComposeboxMixinTest', () => {
         title: 'Title',
         url: 'http://test.com',
         delayUpload: false,
-        origin: TabUploadOrigin.OTHER,
+        origin: TabAttachmentSource.kOther,
       },
     }));
     assertEquals(1, metrics.count(metricName, ContextType.TAB));
@@ -1850,7 +1850,7 @@ suite('ComposeboxMixinTest', () => {
             title: 'Test',
             url: 'about:blank',  // Mojo converts obj to str.
             delayUpload: false,
-            origin: TabUploadOrigin.CONTEXT_MENU,
+            origin: TabAttachmentSource.kContextMenu,
           },
         }));
         assertTrue(keepMenuOpenCalled);

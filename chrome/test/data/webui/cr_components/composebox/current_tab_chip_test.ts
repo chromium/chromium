@@ -5,8 +5,8 @@
 import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/current_tab_chip.js';
 
+import {TabAttachmentSource} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {TabUploadOrigin} from 'chrome://resources/cr_components/composebox/common.js';
 import type {CurrentTabChipElement} from 'chrome://resources/cr_components/composebox/current_tab_chip.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -19,7 +19,7 @@ type AddTabContextEvent = CustomEvent<{
   title: string,
   url: string,
   delayUpload: boolean,
-  origin: TabUploadOrigin,
+  origin: TabAttachmentSource,
 }>;
 
 suite('CurrentTabChipTest', function() {
@@ -85,7 +85,7 @@ suite('CurrentTabChipTest', function() {
     assertEquals(MOCK_TAB_INFO.title, event.detail.title);
     assertEquals(MOCK_TAB_INFO.url, event.detail.url);
     assertFalse(event.detail.delayUpload);
-    assertEquals(TabUploadOrigin.CURRENT_TAB_CHIP, event.detail.origin);
+    assertEquals(TabAttachmentSource.kCurrentTabChip, event.detail.origin);
     assertEquals(
         1, metrics.count('ContextualSearch.CurrentTabChipClick.NewTabPage', 0));
     // Assert context added method was current tab chip.
