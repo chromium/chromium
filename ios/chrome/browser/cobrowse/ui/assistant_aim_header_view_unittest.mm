@@ -111,3 +111,63 @@ TEST_F(AssistantAIMHeaderViewTest, AllButtonsAreLabeledAndIdentified) {
     EXPECT_GT(button.accessibilityIdentifier.length, 0u);
   }
 }
+
+// Test that the visible header action buttons in the pill fill the 40pt capsule
+// height and receive touches 1pt inside the top and bottom edges of the pill.
+TEST_F(AssistantAIMHeaderViewTest, ActionButtonsFillPillHeight) {
+  constexpr CGFloat kHeaderWidth = 400.0;
+  constexpr CGFloat kHeaderHeight = 40.0;
+  constexpr CGFloat kEdgeInset = 1.0;
+
+  header_view_.frame = CGRectMake(0, 0, kHeaderWidth, kHeaderHeight);
+
+  struct ModeTestCase {
+    AssistantAIMState mode;
+    const char* mode_name;
+    NSArray<NSString*>* visible_identifiers;
+  };
+  const ModeTestCase test_cases[] = {
+      {AssistantAIMState::kThread, "Thread",
+       @[
+         kAssistantAIMNewThreadButtonAccessibilityIdentifier,
+         kAssistantAIMHistoryButtonAccessibilityIdentifier,
+       ]},
+      {AssistantAIMState::kHistory, "History",
+       @[
+         kAssistantAIMNewThreadButtonAccessibilityIdentifier,
+         kAssistantAIMContextMenuButtonAccessibilityIdentifier,
+       ]},
+  };
+
+  for (const ModeTestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.mode_name);
+    [header_view_ setMode:test_case.mode];
+    [header_view_ setNeedsLayout];
+    [header_view_ layoutIfNeeded];
+
+    for (NSString* identifier in test_case.visible_identifiers) {
+      SCOPED_TRACE(base::SysNSStringToUTF8(identifier));
+      UIButton* button = base::apple::ObjCCast<UIButton>(
+          FindViewWithAccessibilityIdentifier(header_view_, identifier));
+      ASSERT_TRUE(button);
+      ASSERT_FALSE(button.hidden);
+      ASSERT_TRUE(button.superview);
+
+      EXPECT_EQ(kHeaderHeight, CGRectGetHeight(button.frame));
+
+      CGRect pill_frame = [button.superview convertRect:button.superview.bounds
+                                                 toView:header_view_];
+      CGRect button_frame = [button convertRect:button.bounds
+                                         toView:header_view_];
+      CGFloat center_x = CGRectGetMidX(button_frame);
+
+      CGPoint top_point =
+          CGPointMake(center_x, CGRectGetMinY(pill_frame) + kEdgeInset);
+      CGPoint bottom_point =
+          CGPointMake(center_x, CGRectGetMaxY(pill_frame) - kEdgeInset);
+
+      EXPECT_NSEQ(button, [header_view_ hitTest:top_point withEvent:nil]);
+      EXPECT_NSEQ(button, [header_view_ hitTest:bottom_point withEvent:nil]);
+    }
+  }
+}

@@ -28,7 +28,10 @@ const UIEdgeInsets kHorizontalPadding = {.left = 22.0, .right = 16.0};
 const CGFloat kTitleLeadingPadding = 18.0;
 const CGFloat kTitleLeadingTrailingPadding = 10.0;
 const CGFloat kButtonSize = 40.0;
-const CGFloat kStackViewMargin = 5.0;
+// The margin between the ends of the header actions pill and its buttons.
+// There is no vertical margin: the buttons fill the pill's height, so that
+// their touch targets are as tall as the pill.
+const CGFloat kStackViewHorizontalMargin = 5.0;
 // The size of the logo view.
 const CGFloat kLogoSize = 32.0;
 
@@ -434,8 +437,8 @@ void ApplyHeaderElementShadow(UIView* targetView) {
 
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisHorizontal;
-  stackView.layoutMargins = UIEdgeInsetsMake(
-      kStackViewMargin, kStackViewMargin, kStackViewMargin, kStackViewMargin);
+  stackView.layoutMargins = UIEdgeInsetsMake(0, kStackViewHorizontalMargin, 0,
+                                             kStackViewHorizontalMargin);
   stackView.layoutMarginsRelativeArrangement = YES;
   stackView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
