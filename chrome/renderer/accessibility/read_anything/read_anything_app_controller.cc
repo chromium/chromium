@@ -979,21 +979,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     }
   }
 
-  if (model_.is_empty()) {
-    // For Google Docs and PDFs, the initial AXTree may be empty while the
-    // document is loading. Therefore, to avoid displaying an empty side panel,
-    // wait for the page to finish loading.
-    if (!pdf_draw_debouncer_->IsRunning() &&
-        (!IsGoogleDocs() || model_.page_finished_loading())) {
-      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
-                               kDistillationEmpty);
-      DrawEmptyState();
-    }
-  } else if (!IsPdf() || !pdf_draw_debouncer_->IsRunning()) {
-    SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
-                             kDistillationWithContent);
-  }
-
   // AXNode's language code is BCP 47. Only the base language is needed to
   // record the metric.
   std::string language = model_.GetActiveTree()->root()->GetLanguage();
@@ -1003,11 +988,38 @@ void ReadAnythingAppController::OnAXTreeDistilled(
         base::HashMetricName(language::ExtractBaseLanguage(language)));
   }
 
-  if (model_.is_readability_next_distillation_method()) {
+  if (IsPdf()) {
+    // PDF pages can still be queued when a distillation finishes. Process them
+    // before kDistillationWithContent pauses update processing in immersive
+    // mode, so the remaining pages and their selection aren't dropped.
+    ProcessPendingUpdatesIfAllowed();
+  }
+
+  // Don't override the in-progress state if processing pending updates started
+  // a new distillation; its OnAXTreeDistilled() will set the final state.
+  if (!model_.screen2x_distiller_running()) {
+    if (model_.is_empty()) {
+      // For Google Docs and PDFs, the initial AXTree may be empty while the
+      // document is loading. Therefore, to avoid displaying an empty side
+      // panel, wait for the page to finish loading.
+      if (!pdf_draw_debouncer_->IsRunning() &&
+          (!IsGoogleDocs() || model_.page_finished_loading())) {
+        SetDistillationState(
+            read_anything::mojom::ReadAnythingDistillationState::
+                kDistillationEmpty);
+        DrawEmptyState();
+      }
+    } else if (!IsPdf() || !pdf_draw_debouncer_->IsRunning()) {
+      SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
+                               kDistillationWithContent);
+    }
+  }
+
+  if (model_.is_readability_next_distillation_method() || IsPdf()) {
     return;
   }
   // Once drawing is complete, process pending updates on the active tree if
-  // there are no other factors blocking the processing of updates
+  // there are no other factors blocking the processing of updates.
   ProcessPendingUpdatesIfAllowed();
 }
 
@@ -1026,6 +1038,9 @@ void ReadAnythingAppController::OnPdfDebounceFinished() {
     DrawEmptyState();
   } else {
     Draw(/*recompute_display_nodes=*/false);
+    if (model_.unprocessed_selections_from_reading_mode() == 0) {
+      DrawSelection();
+    }
   }
 
   SetDistillationState(
@@ -2554,6 +2569,12 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 }
 
 void ReadAnythingAppController::OnCollapseSelection() {
+  // With no selection, the browser drops the empty PDF selection set below, so
+  // the incremented count would never be consumed.
+  if (IsPdf() && !model_.has_selection()) {
+    return;
+  }
+
   model_.increment_selections_from_reading_mode();
   if (IsPdf()) {
     // CollapseSelection does nothing in pdfs, so just set an empty selection
