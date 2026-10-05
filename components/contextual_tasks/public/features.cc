@@ -199,8 +199,44 @@ BASE_FEATURE(kContextualTasksWebUiVoiceSearchDesktopAndroid,
 
 BASE_FEATURE(kCopyTextJourneys, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kCopyTextJourneysTtl(
+    &kCopyTextJourneys,
+    "copy_text_journeys_ttl",
+    base::Minutes(30));
+
+const base::FeatureParam<size_t> kCopyTextJourneysMaxRingBufferSize(
+    &kCopyTextJourneys,
+    "copy_text_journeys_max_ring_buffer_size",
+    10);
+
+const base::FeatureParam<size_t> kCopyTextJourneysMinQueryMatchLength(
+    &kCopyTextJourneys,
+    "copy_text_journeys_min_query_match_length",
+    5);
+
 bool IsCopyTextJourneysEnabled() {
   return base::FeatureList::IsEnabled(kCopyTextJourneys);
+}
+
+base::TimeDelta GetCopyTextJourneysTtl() {
+  if (!IsCopyTextJourneysEnabled()) {
+    return base::TimeDelta();
+  }
+  return kCopyTextJourneysTtl.Get();
+}
+
+size_t GetCopyTextJourneysMaxRingBufferSize() {
+  if (!IsCopyTextJourneysEnabled()) {
+    return 0;
+  }
+  return kCopyTextJourneysMaxRingBufferSize.Get();
+}
+
+size_t GetCopyTextJourneysMinQueryMatchLength() {
+  if (!IsCopyTextJourneysEnabled()) {
+    return 0;
+  }
+  return kCopyTextJourneysMinQueryMatchLength.Get();
 }
 
 BASE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout,

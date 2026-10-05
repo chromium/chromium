@@ -166,7 +166,15 @@ bool IsAllowSignedOutUserInDesktopAndroidEnabled();
 
 BASE_DECLARE_FEATURE(kCopyTextJourneys);
 
+extern const base::FeatureParam<base::TimeDelta> kCopyTextJourneysTtl;
+extern const base::FeatureParam<size_t> kCopyTextJourneysMaxRingBufferSize;
+extern const base::FeatureParam<size_t> kCopyTextJourneysMinQueryMatchLength;
+
 bool IsCopyTextJourneysEnabled();
+
+base::TimeDelta GetCopyTextJourneysTtl();
+size_t GetCopyTextJourneysMaxRingBufferSize();
+size_t GetCopyTextJourneysMinQueryMatchLength();
 
 BASE_DECLARE_FEATURE(kContextualTasksEnableSpatialModelToolbarLayout);
 
