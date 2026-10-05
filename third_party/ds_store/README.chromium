@@ -2,7 +2,7 @@ Name: ds_store
 Short Name: ds_store
 URL: https://github.com/dmgbuild/ds_store
 Version: N/A
-Revision: 6f971c764a511f609615c6c4f5ae2a9403ff32cb
+Revision: 3a85d45dbb9dc08a6d74770010e5053e0561e538
 Update Mechanism: Autoroll
 License: MIT
 License File: src/LICENSE
