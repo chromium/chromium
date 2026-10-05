@@ -191,7 +191,6 @@ public class GroupWindowCheckerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testGetState_HeadlessWindow() {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);
@@ -259,7 +258,6 @@ public class GroupWindowCheckerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.CROSS_WINDOW_TAB_GROUP_OPERATIONS)
     public void testGetState_Token_hidden() {
         TabWindowManager tabWindowManager = mock(TabWindowManager.class);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(tabWindowManager);

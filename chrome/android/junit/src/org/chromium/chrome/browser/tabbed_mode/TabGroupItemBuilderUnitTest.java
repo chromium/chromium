@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabbed_mode.AppMenuUnitTestUtils.findItemById;
@@ -122,6 +123,14 @@ public class TabGroupItemBuilderUnitTest {
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
+
+        when(mTabModel.tabGroupExists(any()))
+                .thenAnswer(
+                        inv -> {
+                            TabModel model = (TabModel) inv.getMock();
+                            Set<Token> ids = model.getAllTabGroupIds();
+                            return ids.contains(inv.getArgument(0));
+                        });
 
         mTabGroupItemBuilder =
                 new TabGroupItemBuilder(
@@ -415,7 +424,7 @@ public class TabGroupItemBuilderUnitTest {
 
         when(mTab.getTabGroupId()).thenReturn(token1);
         when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(token1, token2));
-        when(mTabModel.tabGroupExists(token2)).thenReturn(true);
+        doReturn(true).when(mTabModel).tabGroupExists(token2);
         when(mTabModel.getTabGroupTitle(token2)).thenReturn("Group 2");
         when(mTabModel.getTabGroupColorWithFallback(token2)).thenReturn(TabGroupColorId.BLUE);
 

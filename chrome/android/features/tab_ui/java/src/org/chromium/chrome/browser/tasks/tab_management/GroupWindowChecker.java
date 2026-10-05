@@ -196,10 +196,8 @@ public class GroupWindowChecker {
      */
     public @GroupWindowState int getState(Token groupId) {
         if (!containsGroup(groupId)) {
-            if (TabGroupUiUtils.isCrossWindowTabGroupOperationsEnabled()) {
-                if (isWindowForGroupNotActive(groupId) || isGroupClosingInAnotherWindow(groupId)) {
-                    return GroupWindowState.HIDDEN;
-                }
+            if (isWindowForGroupNotActive(groupId) || isGroupClosingInAnotherWindow(groupId)) {
+                return GroupWindowState.HIDDEN;
             }
             return GroupWindowState.IN_ANOTHER;
         }
