@@ -13,8 +13,13 @@ Any time [`JsonViewBuilder`](file:///C:/src/chromium/src/ui/views/examples/json_
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://chromium.org/schemas/views-json-builder.json",
   "title": "ViewsJsonBuilderSchema",
-  "description": "Schema for declarative Views hierarchy JSON used by ViewsCanvas and JsonViewBuilder.",
-  "$ref": "#/$defs/ViewNode",
+  "description": "Schema for declarative Views hierarchy, Dialogs, Bubbles, and DialogModels used by ViewsCanvas and JsonViewBuilder.",
+  "oneOf": [
+    { "$ref": "#/$defs/ViewNode" },
+    { "$ref": "#/$defs/DialogModelNode" },
+    { "$ref": "#/$defs/DialogNode" },
+    { "$ref": "#/$defs/BubbleNode" }
+  ],
   "$defs": {
     "ViewNode": {
       "type": "object",
@@ -130,6 +135,194 @@ Any time [`JsonViewBuilder`](file:///C:/src/chromium/src/ui/views/examples/json_
         }
       }
     },
+    "DialogModelNode": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["DialogModel"] },
+        "title": { "type": "string", "description": "Dialog or bubble title." },
+        "subtitle": { "type": "string", "description": "Dialog or bubble subtitle." },
+        "accessible_title": { "type": "string", "description": "Screen reader title." },
+        "modal_type": {
+          "type": "string",
+          "enum": ["kNone", "kWindow", "kChild", "kSystem"],
+          "default": "kChild",
+          "description": "Modality style for the dialog or bubble host."
+        },
+        "arrow": {
+          "type": "string",
+          "description": "Arrow orientation when anchored as a bubble (e.g. 'TOP_LEFT', 'BOTTOM_CENTER', 'NONE', 'FLOAT')."
+        },
+        "is_alert_dialog": { "type": "boolean", "default": false },
+        "close_on_deactivate": { "type": "boolean", "default": true },
+        "override_show_close_button": { "type": "boolean" },
+        "icon": { "type": "string", "description": "Vector icon or solid color icon specification." },
+        "banner": { "type": "string", "description": "Banner image specification." },
+        "main_image": { "type": "string", "description": "Main image specification." },
+        "buttons": {
+          "description": "Dialog action buttons.",
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "ok": { "$ref": "#/$defs/DialogModelButton" },
+                "cancel": { "$ref": "#/$defs/DialogModelButton" },
+                "extra": { "$ref": "#/$defs/DialogModelButton" }
+              }
+            },
+            {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          ]
+        },
+        "override_default_button": {
+          "type": "string",
+          "enum": ["kOk", "kCancel", "kNone"]
+        },
+        "fields": {
+          "type": "array",
+          "description": "Ordered fields within the DialogModel body.",
+          "items": { "$ref": "#/$defs/DialogModelField" }
+        },
+        "use_desktop_widget_override": {
+          "type": "boolean",
+          "default": true,
+          "description": "Forces the dialog to create a top-level desktop window above the invoking window."
+        },
+        "footnote": { "type": "string", "description": "Footnote label text." }
+      },
+      "required": ["type"]
+    },
+    "DialogModelButton": {
+      "type": "object",
+      "properties": {
+        "label": { "type": "string" },
+        "style": { "type": "string", "enum": ["kProminent", "kTonal", "kText", "kDefault"] },
+        "enabled": { "type": "boolean", "default": true }
+      }
+    },
+    "DialogModelField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "paragraph",
+            "checkbox",
+            "combobox",
+            "textfield",
+            "password_field",
+            "separator",
+            "title_item",
+            "menu_item",
+            "custom_view"
+          ]
+        },
+        "id": { "type": ["integer", "string"] },
+        "label": { "type": "string" },
+        "text": { "type": "string" },
+        "header": { "type": "string" },
+        "accessible_name": { "type": "string", "description": "Screen reader name for textfield or control." },
+        "accessible_text": { "type": "string", "description": "Screen reader name for password field." },
+        "incorrect_password_text": { "type": "string", "description": "Error text displayed when password validation fails." },
+        "checked": { "type": "boolean" },
+        "placeholder": { "type": "string", "description": "Fallback alias for accessible_name in textfield." },
+        "icon": { "type": "string", "description": "Vector icon or solid color specification for menu items." },
+        "is_enabled": { "type": "boolean", "description": "Whether the menu item is enabled.", "default": true },
+        "options": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "selected_index": { "type": "integer" },
+        "field_type": { "type": "string", "enum": ["kControl", "kText", "kMenuItem"], "default": "kControl" },
+        "view": { "$ref": "#/$defs/ViewNode" }
+      },
+      "required": ["type"]
+    },
+    "DialogNode": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["Dialog"] },
+        "title": { "type": "string" },
+        "accessible_title": { "type": "string" },
+        "modal_type": {
+          "type": "string",
+          "enum": ["kNone", "kWindow", "kChild", "kSystem"],
+          "default": "kWindow"
+        },
+        "close_on_deactivate": { "type": "boolean", "default": false },
+        "show_close_button": { "type": "boolean", "default": true },
+        "use_desktop_widget_override": {
+          "type": "boolean",
+          "default": true,
+          "description": "Forces the dialog to create a top-level desktop window above the invoking window."
+        },
+        "buttons": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "string" },
+            { "type": "integer" }
+          ]
+        },
+        "ok_button_label": { "type": "string" },
+        "cancel_button_label": { "type": "string" },
+        "extra_button_label": { "type": "string" },
+        "default_button": { "type": "string", "enum": ["kOk", "kCancel", "kNone"] },
+        "contents": { "$ref": "#/$defs/ViewNode" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/ViewNode" } },
+        "footnote": { "type": "string" }
+      },
+      "required": ["type"]
+    },
+    "BubbleNode": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["Bubble"] },
+        "title": { "type": "string" },
+        "modal_type": {
+          "type": "string",
+          "enum": ["kNone", "kWindow", "kChild", "kSystem"],
+          "default": "kNone"
+        },
+        "arrow": {
+          "type": "string",
+          "enum": [
+            "TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT",
+            "LEFT_TOP", "RIGHT_TOP", "LEFT_BOTTOM", "RIGHT_BOTTOM",
+            "TOP_CENTER", "BOTTOM_CENTER", "LEFT_CENTER", "RIGHT_CENTER",
+            "NONE", "FLOAT"
+          ],
+          "default": "TOP_LEFT"
+        },
+        "close_on_deactivate": { "type": "boolean", "default": true },
+        "show_close_button": { "type": "boolean", "default": true },
+        "use_desktop_widget_override": {
+          "type": "boolean",
+          "default": true,
+          "description": "Forces the bubble to create a top-level desktop window above the invoking window."
+        },
+        "shadow": {
+          "type": "string",
+          "enum": ["DIALOG_SHADOW", "STANDARD_SHADOW", "NO_SHADOW"],
+          "default": "DIALOG_SHADOW"
+        },
+        "buttons": {
+          "oneOf": [
+            { "type": "array", "items": { "type": "string" } },
+            { "type": "string" },
+            { "type": "integer" }
+          ]
+        },
+        "ok_button_label": { "type": "string" },
+        "cancel_button_label": { "type": "string" },
+        "extra_button_label": { "type": "string" },
+        "default_button": { "type": "string", "enum": ["kOk", "kCancel", "kNone"] },
+        "contents": { "$ref": "#/$defs/ViewNode" },
+        "children": { "type": "array", "items": { "$ref": "#/$defs/ViewNode" } },
+        "footnote": { "type": "string" }
+      },
+      "required": ["type"]
+    },
     "TableLayoutColumn": {
       "type": "object",
       "properties": {
@@ -197,8 +390,18 @@ Any time [`JsonViewBuilder`](file:///C:/src/chromium/src/ui/views/examples/json_
 
 ## 2. Supported Components & Properties
 
-### Common Universal Properties
-All views inherit these properties via reflection or dynamic property handlers:
+### Dialog & Bubble Paradigms
+
+| Component (`type`) | Descriptions & Top-Level Properties |
+| :--- | :--- |
+| **`DialogModel`** | Abstract model mapping to Chromium's `ui::DialogModel`.<br>• `title`, `subtitle`, `accessible_title` (`string`)<br>• `modal_type` (`string`): `"kWindow"`, `"kChild"`, `"kNone"`, `"kSystem"`<br>• `close_on_deactivate` (`boolean`): Dismiss on focus loss<br>• `override_show_close_button` (`boolean`)<br>• `icon`, `banner`, `main_image` (`string`): Vector icons or colors<br>• `buttons` (`object` / `array`): Action buttons (`ok`, `cancel`, `extra`) with styles<br>• `fields` (`array`): Ordered list of field objects (`paragraph`, `checkbox`, `combobox`, `textfield`, `password_field`, `separator`, `title_item`, `menu_item`, `custom_view`)<br>• `footnote` (`string`) |
+| **`Dialog`** | Explicit views-based window dialog delegate.<br>• `title`, `accessible_title` (`string`)<br>• `modal_type` (`string`): `"kWindow"` (default), `"kNone"`<br>• `buttons` (`array` / `string`): `["kOk", "kCancel"]`, `["kOk"]`, etc.<br>• `ok_button_label`, `cancel_button_label`, `extra_button_label` (`string`)<br>• `contents` / `children`: Declarative Views subtree |
+| **`Bubble`** | Explicit views-based anchored popup bubble.<br>• `title` (`string`)<br>• `arrow` (`string`): `"TOP_LEFT"`, `"TOP_RIGHT"`, `"BOTTOM_CENTER"`, etc.<br>• `close_on_deactivate` (`boolean`): Default `true`<br>• `shadow` (`string`): `"DIALOG_SHADOW"`, `"STANDARD_SHADOW"`, `"NO_SHADOW"`<br>• `modal_type` (`string`): `"kNone"` (default), `"kChild"`<br>• `contents` / `children`: Declarative Views subtree |
+
+---
+
+### Universal View Properties
+All views inherit these properties:
 - **`ID`** (`integer` | `string`): Assigns an integer ID to the view.
 - **`Enabled`** (`boolean` | `string`): Enables or disables user interaction.
 - **`Visible`** (`boolean` | `string`): Toggles view visibility.
@@ -250,74 +453,97 @@ All views inherit these properties via reflection or dynamic property handlers:
 
 ---
 
-## 4. Example Layout
+## 4. Examples
 
+### Example A: Declarative `DialogModel`
 ```json
 {
-  "type": "BoxLayoutView",
-  "properties": {
-    "Orientation": "kVertical",
-    "BetweenChildSpacing": 10,
-    "InsideBorderInsets": "10,10,10,10"
-  },
-  "children": [
-    {
-      "type": "Label",
-      "properties": {
-        "Text": "Sample Views Header",
-        "TextStyle": "STYLE_HEADLINE_4_BOLD"
-      }
+  "type": "DialogModel",
+  "title": "Clear Browsing Data",
+  "subtitle": "Basic and advanced history clearing",
+  "modal_type": "kChild",
+  "close_on_deactivate": true,
+  "buttons": {
+    "ok": {
+      "label": "Clear Data",
+      "style": "kProminent"
     },
-    {
-      "type": "StyledLabel",
-      "properties": {
-        "Text": "Click here to learn more about Chromium Views.",
-        "ranges": [
-          {
-            "start": 0,
-            "length": 10,
-            "style": "STYLE_LINK",
-            "tooltip": "Documentation link"
-          }
-        ]
-      }
-    },
-    {
-      "type": "TabbedPane",
-      "children": [
-        {
-          "title": "General",
-          "type": "BoxLayoutView",
-          "properties": {
-            "Orientation": "kHorizontal",
-            "BetweenChildSpacing": 8
-          },
-          "children": [
-            {
-              "type": "MdTextButton",
-              "properties": {
-                "Text": "Submit",
-                "Style": "kProminent"
-              }
-            }
-          ]
-        },
-        {
-          "title": "Details",
-          "type": "TableView",
-          "properties": {
-            "columns": [
-              { "id": 0, "title": "Item", "percent": 0.6 },
-              { "id": 1, "title": "Status", "percent": 0.4 }
-            ],
-            "rows": [
-              ["Task 1", "Complete"],
-              ["Task 2", "In Progress"]
-            ]
-          }
-        }
-      ]
+    "cancel": {
+      "label": "Cancel"
     }
-  ]
+  },
+  "fields": [
+    {
+      "type": "paragraph",
+      "header": "Time Range",
+      "text": "Choose how far back you want to clear browsing data."
+    },
+    {
+      "type": "combobox",
+      "id": 1,
+      "label": "Time range",
+      "options": ["Last hour", "Last 24 hours", "Last 7 days", "All time"],
+      "selected_index": 1
+    },
+    {
+      "type": "checkbox",
+      "id": 2,
+      "label": "Browsing history (42 items)",
+      "checked": true
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "type": "textfield",
+      "id": 3,
+      "label": "Confirm Keyword",
+      "placeholder": "Type 'DELETE' to confirm"
+    }
+  ],
+  "footnote": "Your Google Account sync data will not be removed."
+}
+```
+
+### Example B: Explicit `Bubble` with Custom Views Subtree
+```json
+{
+  "type": "Bubble",
+  "title": "Quick Profile Settings",
+  "arrow": "TOP_LEFT",
+  "close_on_deactivate": true,
+  "buttons": ["kOk", "kCancel"],
+  "ok_button_label": "Save",
+  "contents": {
+    "type": "BoxLayoutView",
+    "properties": {
+      "Orientation": "kVertical",
+      "BetweenChildSpacing": 10,
+      "InsideBorderInsets": "12,12,12,12"
+    },
+    "children": [
+      {
+        "type": "Label",
+        "properties": {
+          "Text": "Profile Display Name",
+          "TextStyle": "STYLE_BODY_1_BOLD"
+        }
+      },
+      {
+        "type": "Textfield",
+        "properties": {
+          "Text": "Alex Developer",
+          "PlaceholderText": "Enter profile name"
+        }
+      },
+      {
+        "type": "Checkbox",
+        "properties": {
+          "Text": "Show avatar in toolbar",
+          "Checked": true
+        }
+      }
+    ]
+  }
 }
 ```

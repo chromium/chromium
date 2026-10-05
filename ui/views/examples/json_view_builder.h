@@ -1,4 +1,4 @@
-// Copyright 2026 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ namespace base {
 class DictValue;
 }
 
+namespace ui {
+class DialogModel;
+}
+
 namespace views {
 class View;
 }
@@ -21,27 +25,35 @@ class View;
 namespace views::examples {
 
 // JsonViewBuilder provides declarative runtime instantiation and property
-// application for Views UI components from JSON specifications without
-// requiring recompilation.
+// application for Views UI components and DialogModels from JSON specifications
+// without requiring recompilation.
 //
 // The complete JSON Schema specification describing all supported component
 // types, layout managers, properties, and dynamic token resolvers is documented
-// in:
-//   ui/views/examples/json_view_builder_schema.md
-//
-// Whenever new components, properties, or converters are added or modified in
-// JsonViewBuilder, the json_view_builder_schema.md file MUST also be updated to
-// maintain congruency.
+// in json_view_builder_schema.md.
 class VIEWS_EXAMPLES_EXPORT JsonViewBuilder {
  public:
-  // Tree Construction.
+  // Instantiates a new views::View subclass instance corresponding to the
+  // "type" property in `dict`. Returns nullptr on failure and populates
+  // `error_msg` if provided.
   static std::unique_ptr<views::View> BuildView(const base::DictValue& dict,
                                                 std::string* error_msg);
 
-  // Property Application.
+  // Recursively applies property values from `dict` onto `view` and its
+  // children using Views metadata reflection and property-specific handlers.
+  // Returns false if validation or type conversion fails.
   static bool ApplyPropertiesRecursive(views::View* view,
                                        const base::DictValue& dict,
                                        std::string* error_msg);
+
+  // DialogModel Support.
+  // Returns true if `dict` represents a DialogModel specification.
+  static bool IsDialogModelSpec(const base::DictValue& dict);
+
+  // Builds a ui::DialogModel from a JSON specification ("type": "DialogModel").
+  static std::unique_ptr<ui::DialogModel> BuildDialogModel(
+      const base::DictValue& dict,
+      std::string* error_msg);
 };
 
 }  // namespace views::examples
