@@ -102,6 +102,7 @@ class UnusedSitePermissionsManagerTest
 
   void SetupRevokedUnusedPermissionSite(
       std::string url,
+      ContentSettingsType type = geolocation_type,
       base::TimeDelta lifetime =
           safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
@@ -116,7 +117,7 @@ class UnusedSitePermissionsManagerTest
         permissions::kRevokedKey,
         base::ListValue().Append(
             UnusedSitePermissionsManager::ConvertContentSettingsTypeToKey(
-                geolocation_type)));
+                type)));
 
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), revoked_unused_site_type,
@@ -440,4 +441,73 @@ TEST_F(UnusedSitePermissionsManagerNameMigrationTest,
                 .setting_value.GetDict()
                 .Find(permissions::kRevokedKey)
                 ->GetList());
+}
+
+TEST_F(UnusedSitePermissionsManagerTest, GetRevokedPermissions) {
+  EXPECT_TRUE(manager()->GetRevokedPermissions().empty());
+
+  SetupRevokedUnusedPermissionSite(url1, geolocation_type);
+  SetupRevokedUnusedPermissionSite(url2, mediastream_type);
+
+  std::vector<PermissionsData> revoked_permissions =
+      manager()->GetRevokedPermissions();
+  ASSERT_EQ(2U, revoked_permissions.size());
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(GURL(url1)),
+            revoked_permissions[0].primary_pattern);
+  EXPECT_EQ(PermissionsRevocationType::kUnusedPermissions,
+            revoked_permissions[0].revocation_type);
+  EXPECT_EQ(1U, revoked_permissions[0].permissions.size());
+  EXPECT_TRUE(revoked_permissions[0].permissions.contains(geolocation_type));
+  EXPECT_EQ(
+      clock()->Now() +
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold(),
+      revoked_permissions[0].constraints.expiration());
+
+  EXPECT_EQ(ContentSettingsPattern::FromURLNoWildcard(GURL(url2)),
+            revoked_permissions[1].primary_pattern);
+  EXPECT_EQ(PermissionsRevocationType::kUnusedPermissions,
+            revoked_permissions[1].revocation_type);
+  EXPECT_EQ(1U, revoked_permissions[1].permissions.size());
+  EXPECT_TRUE(revoked_permissions[1].permissions.contains(mediastream_type));
+  EXPECT_EQ(
+      clock()->Now() +
+          safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold(),
+      revoked_permissions[1].constraints.expiration());
+}
+
+TEST_F(UnusedSitePermissionsManagerTest, ClearRevokedPermissionsList) {
+  SetupRevokedUnusedPermissionSite(url1);
+  SetupRevokedUnusedPermissionSite(url2);
+  ASSERT_EQ(2U, manager()->GetRevokedPermissions().size());
+
+  manager()->ClearRevokedPermissionsList();
+  EXPECT_TRUE(manager()->GetRevokedPermissions().empty());
+  EXPECT_TRUE(GetRevokedUnusedPermissions(hcsm()).empty());
+}
+
+TEST_F(UnusedSitePermissionsManagerTest, RestoreDeletedRevokedPermission) {
+  PermissionsData data;
+  data.primary_pattern = ContentSettingsPattern::FromURLNoWildcard(GURL(url1));
+  data.permissions[geolocation_type] = base::Value(CONTENT_SETTING_ALLOW);
+  // Add notifications to simulate composite revocation data; manager should
+  // filter it out since notifications are handled by other managers.
+  data.permissions[ContentSettingsType::NOTIFICATIONS] = base::Value();
+  data.constraints =
+      content_settings::ContentSettingConstraints(clock()->Now());
+  data.constraints.set_lifetime(base::Days(30));
+  data.revocation_type =
+      PermissionsRevocationType::kUnusedPermissionsAndDisruptiveNotifications;
+
+  EXPECT_TRUE(manager()->GetRevokedPermissions().empty());
+
+  manager()->RestoreDeletedRevokedPermission(data);
+
+  std::vector<PermissionsData> restored = manager()->GetRevokedPermissions();
+  ASSERT_EQ(1U, restored.size());
+  EXPECT_EQ(data.primary_pattern, restored[0].primary_pattern);
+  EXPECT_TRUE(restored[0].permissions.contains(geolocation_type));
+  EXPECT_FALSE(
+      restored[0].permissions.contains(ContentSettingsType::NOTIFICATIONS));
+  EXPECT_EQ(data.constraints.expiration(),
+            restored[0].constraints.expiration());
 }

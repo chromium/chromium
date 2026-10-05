@@ -97,19 +97,17 @@ class UnusedSitePermissionsManager {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
-  // Stores revoked permissions data on HCSM.
-  void StorePermissionInUnusedSitePermissionSetting(
-      base::flat_map<ContentSettingsType, base::Value> permissions,
-      const std::optional<content_settings::ContentSettingConstraints>
-          constraint,
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern);
+  // Returns the list of all permissions that have been revoked due to being
+  // unused.
+  std::vector<PermissionsData> GetRevokedPermissions();
 
-  // Helper function to convert the stored_value in website settings to a map
-  // from revoked permission type to revoked permission value, which can be
-  // stored in PermissionData.
-  base::flat_map<ContentSettingsType, base::Value> ExtractRevokedPermissions(
-      base::Value stored_value);
+  // Clears the list of revoked unused site permissions so they will no longer
+  // be shown to the user. Does not change permissions themselves.
+  void ClearRevokedPermissionsList();
+
+  // Restores a revoked permission entry in HCSM after user undoes
+  // acknowledgment of the revocation.
+  void RestoreDeletedRevokedPermission(const PermissionsData& permissions_data);
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);
@@ -145,6 +143,20 @@ class UnusedSitePermissionsManager {
   // [1] components/content_settings/core/browser/content_settings_utils.cc
   void MaybePerformLastVisitedBackfill(
       RevokedPermissionsResult* interim_result);
+
+  // Stores revoked permissions data on HCSM.
+  void StorePermissionInUnusedSitePermissionSetting(
+      base::flat_map<ContentSettingsType, base::Value> permissions,
+      const std::optional<content_settings::ContentSettingConstraints>
+          constraint,
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
+  // Helper function to convert the stored_value in website settings to a map
+  // from revoked permission type to revoked permission value, which can be
+  // stored in PermissionData.
+  base::flat_map<ContentSettingsType, base::Value> ExtractRevokedPermissions(
+      base::Value stored_value);
 
   // Pointer to an object that allows us to manage site permissions.
   HostContentSettingsMap* hcsm() {
