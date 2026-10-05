@@ -4008,9 +4008,40 @@ const FeatureEntry::FeatureVariation kCCTResetTimeoutVariations[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidBottomBarDisableOnNtpParam[] = {
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtpParam[] = {
     {"disable_on_ntp", "false"},
     {"show_glic_setting_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtp48dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "48"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtp56dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "56"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtp60dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "60"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtpAndGtsParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_bottom_bar_on_gts", "true"},
+    {"show_glic_setting_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtpAndGts48dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_bottom_bar_on_gts", "true"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "48"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtpAndGts56dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_bottom_bar_on_gts", "true"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "56"}};
+const FeatureEntry::FeatureParam kAndroidBottomBar1AWithNtpAndGts60dpParam[] = {
+    {"disable_on_ntp", "false"},
+    {"show_bottom_bar_on_gts", "true"},
+    {"show_glic_setting_toggle", "true"},
+    {"bottom_bar_height_dp", "60"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
     {{"keep_app_menu_in_toolbar", "true"},
      {"show_glic_setting_toggle", "true"}};
@@ -4029,74 +4060,18 @@ const FeatureEntry::FeatureParam
         {"keep_home_button_in_toolbar", "true"},
         {"disable_on_ntp", "false"},
         {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpAndGlicFilledParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpAndGlicFilled48dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "48"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpAndGlicFilled56dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "56"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpAndGlicFilled60dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "60"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpGtsAndGlicFilledParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_bottom_bar_on_gts", "true"},
-        {"show_glic_setting_toggle", "true"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpGtsAndGlicFilled48dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_bottom_bar_on_gts", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "48"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpGtsAndGlicFilled56dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_bottom_bar_on_gts", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "56"}};
-const FeatureEntry::FeatureParam
-    kAndroidBottomBar1AWithNtpGtsAndGlicFilled60dpParam[] = {
-        {"disable_on_ntp", "false"},
-        {"always_use_filled_glic_icon", "true"},
-        {"show_bottom_bar_on_gts", "true"},
-        {"show_glic_setting_toggle", "true"},
-        {"bottom_bar_height_dp", "60"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
-    {"- 1A with NTP", kAndroidBottomBarDisableOnNtpParam, nullptr},
-    {"- 1A with NTP and GLIC filled",
-     kAndroidBottomBar1AWithNtpAndGlicFilledParam, nullptr},
-    {"- 1A with NTP and GLIC filled (48dp)",
-     kAndroidBottomBar1AWithNtpAndGlicFilled48dpParam, nullptr},
-    {"- 1A with NTP and GLIC filled (56dp)",
-     kAndroidBottomBar1AWithNtpAndGlicFilled56dpParam, nullptr},
-    {"- 1A with NTP and GLIC filled (60dp)",
-     kAndroidBottomBar1AWithNtpAndGlicFilled60dpParam, nullptr},
-    {"- 1A with NTP, GTS and GLIC filled",
-     kAndroidBottomBar1AWithNtpGtsAndGlicFilledParam, nullptr},
-    {"- 1A with NTP, GTS and GLIC filled (48dp)",
-     kAndroidBottomBar1AWithNtpGtsAndGlicFilled48dpParam, nullptr},
-    {"- 1A with NTP, GTS and GLIC filled (56dp)",
-     kAndroidBottomBar1AWithNtpGtsAndGlicFilled56dpParam, nullptr},
-    {"- 1A with NTP, GTS and GLIC filled (60dp)",
-     kAndroidBottomBar1AWithNtpGtsAndGlicFilled60dpParam, nullptr},
+    {"- 1A with NTP", kAndroidBottomBar1AWithNtpParam, nullptr},
+    {"- 1A with NTP (48dp)", kAndroidBottomBar1AWithNtp48dpParam, nullptr},
+    {"- 1A with NTP (56dp)", kAndroidBottomBar1AWithNtp56dpParam, nullptr},
+    {"- 1A with NTP (60dp)", kAndroidBottomBar1AWithNtp60dpParam, nullptr},
+    {"- 1A with NTP and GTS", kAndroidBottomBar1AWithNtpAndGtsParam, nullptr},
+    {"- 1A with NTP and GTS (48dp)", kAndroidBottomBar1AWithNtpAndGts48dpParam,
+     nullptr},
+    {"- 1A with NTP and GTS (56dp)", kAndroidBottomBar1AWithNtpAndGts56dpParam,
+     nullptr},
+    {"- 1A with NTP and GTS (60dp)", kAndroidBottomBar1AWithNtpAndGts60dpParam,
+     nullptr},
     {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
     {"- 1B with NTP", kAndroidBottomBarKeepAppMenuInToolbarWithNtpParam,
      nullptr},

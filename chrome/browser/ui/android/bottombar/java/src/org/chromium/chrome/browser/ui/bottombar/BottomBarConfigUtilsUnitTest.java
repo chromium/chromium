@@ -192,8 +192,8 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":always_use_filled_glic_icon/true")
-    public void testAlwaysUseFilledIcon_TrueParam() {
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testAlwaysUseFilledIcon_DefaultTrue() {
         assertTrue(BottomBarConfigUtils.alwaysUseFilledIcon());
     }
 
