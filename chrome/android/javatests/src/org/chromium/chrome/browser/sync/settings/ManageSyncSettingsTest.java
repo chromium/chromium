@@ -1667,30 +1667,37 @@ public class ManageSyncSettingsTest {
         ManageSyncSettings fragment = startManageSyncPreferences();
 
         Intents.init();
-        intending(IntentMatchers.anyIntent())
-                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+        try {
+            intending(IntentMatchers.anyIntent())
+                    .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
-        // Scroll to the preference row containing the summary link
-        onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.scrollTo(
-                                hasDescendant(
-                                        withText(R.string.account_settings_switch_to_incognito))));
+            // Scroll to the preference row containing the summary link
+            onView(withId(R.id.recycler_view))
+                    .perform(
+                            RecyclerViewActions.scrollTo(
+                                    hasDescendant(
+                                            withText(
+                                                    R.string
+                                                            .account_settings_switch_to_incognito))));
 
-        // Click the "Learn more" clickable span in the summary
-        onView(
-                        allOf(
-                                hasSibling(withText(R.string.account_settings_switch_to_incognito)),
-                                withId(android.R.id.summary)))
-                .perform(ViewUtils.clickOnClickableSpan(0));
+            // Click the "Learn more" clickable span in the summary
+            onView(
+                            allOf(
+                                    hasSibling(
+                                            withText(
+                                                    R.string.account_settings_switch_to_incognito)),
+                                    withId(android.R.id.summary)))
+                    .perform(ViewUtils.clickOnClickableSpan(0));
 
-        // Verify that it opens a normal tab with the help link
-        intended(
-                allOf(
-                        IntentMatchers.hasData(ManageSyncSettings.INCOGNITO_HELP_URL),
-                        IntentMatchers.hasExtra(
-                                IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)));
-        Intents.release();
+            // Verify that it opens a normal tab with the help link
+            intended(
+                    allOf(
+                            IntentMatchers.hasData(ManageSyncSettings.INCOGNITO_HELP_URL),
+                            IntentMatchers.hasExtra(
+                                    IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)));
+        } finally {
+            Intents.release();
+        }
     }
 
     @Test
@@ -1756,19 +1763,24 @@ public class ManageSyncSettingsTest {
         startManageSyncPreferences();
 
         Intents.init();
-        intending(IntentMatchers.anyIntent())
-                .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+        try {
+            intending(IntentMatchers.anyIntent())
+                    .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
-        // Click the preference row
-        onView(withId(R.id.recycler_view))
-                .perform(
-                        RecyclerViewActions.scrollTo(
-                                hasDescendant(
-                                        withText(R.string.account_settings_switch_to_incognito))));
-        onView(withText(R.string.account_settings_switch_to_incognito)).perform(click());
+            // Click the preference row
+            onView(withId(R.id.recycler_view))
+                    .perform(
+                            RecyclerViewActions.scrollTo(
+                                    hasDescendant(
+                                            withText(
+                                                    R.string
+                                                            .account_settings_switch_to_incognito))));
+            onView(withText(R.string.account_settings_switch_to_incognito)).perform(click());
 
-        intended(expectedIntentMatcher);
-        Intents.release();
+            intended(expectedIntentMatcher);
+        } finally {
+            Intents.release();
+        }
     }
 
     /** Returns whether the extensions sync item should be shown. */
