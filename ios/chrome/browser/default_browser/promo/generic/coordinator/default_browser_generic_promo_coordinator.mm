@@ -87,13 +87,14 @@ NSString* kDefaultBrowserPromoDefaultAppsDestinationVideo =
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-    RecordDefaultBrowserPromoLastAction(
-        IOSDefaultBrowserPromoAction::kActionButton);
-    base::UmaHistogramEnumeration(
-        "IOS.DefaultBrowserVideoPromo.Fullscreen",
-        IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
-    RecordAction(UserMetricsAction(
-        "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kFullscreenGeneric);
+  base::UmaHistogramEnumeration(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen",
+      IOSDefaultBrowserVideoPromoAction::kPrimaryActionTapped);
+  RecordAction(UserMetricsAction(
+      "IOS.DefaultBrowserVideoPromo.Fullscreen.OpenSettingsTapped"));
 
   if (IsDefaultBrowserPictureInPictureEnabled()) {
     [_handler hidePromo];

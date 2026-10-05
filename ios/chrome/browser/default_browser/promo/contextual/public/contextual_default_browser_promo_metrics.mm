@@ -46,7 +46,8 @@ void RecordContextualDefaultBrowserPromoAction(
   switch (action) {
     case ContextualDefaultBrowserPromoAction::kPrimaryActionTapped:
       RecordDefaultBrowserPromoLastAction(
-          IOSDefaultBrowserPromoAction::kActionButton);
+          IOSDefaultBrowserPromoAction::kActionButton,
+          IOSDefaultBrowserPromoSurface::kContextual);
       switch (promo_type) {
         case ContextualDefaultBrowserPromoType::kGemini:
           base::RecordAction(base::UserMetricsAction(

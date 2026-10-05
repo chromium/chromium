@@ -39,6 +39,24 @@ enum class IOSDefaultBrowserPromoAction {
   kMaxValue = kDismiss,
 };
 
+// Enum representing the default browser promo surface where the user tapped
+// the primary action button ("Open Settings") prior to a default browser
+// conversion. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+// LINT.IfChange(IOSDefaultBrowserPromoSurface)
+enum class IOSDefaultBrowserPromoSurface {
+  kNone = 0,
+  kFirstRun = 1,
+  kFullscreenGeneric = 2,
+  kTailored = 3,
+  kNonModal = 4,
+  kSetUpList = 5,
+  kContextual = 6,
+  kSettings = 7,
+  kMaxValue = kSettings,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDefaultBrowserPromoSurface)
+
 // Enum for the default browser promo UMA histograms. These values are persisted
 // to logs. Entries should not be renumbered and numeric values should never be
 // reused.
@@ -227,8 +245,12 @@ const std::string GetFeatureEventNameForPromoReason(
 // Migration to FET.
 
 // Records the last action the user took when a Default Browser Promo was
-// presented.
-void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action);
+// presented, and if `action` is `kActionButton`, records the promo `surface`
+// where the primary action button was tapped.
+void RecordDefaultBrowserPromoLastAction(
+    IOSDefaultBrowserPromoAction action,
+    IOSDefaultBrowserPromoSurface surface =
+        IOSDefaultBrowserPromoSurface::kNone);
 
 // Log to UserDefaults non-modal promo migration done.
 void LogNonModalPromoMigrationDone();
@@ -242,6 +264,11 @@ NSDate* LastTimeUserInteractedWithNonModalPromo();
 // Returns the last action, if any, that the user took when a Default Browser
 // Promo was presented.
 std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction();
+
+// Returns the last Default Browser Promo surface where the user tapped
+// `kActionButton` ("Open Settings"), or `IOSDefaultBrowserPromoSurface::kNone`
+// if `kActionButton` has not been tapped on any promo.
+IOSDefaultBrowserPromoSurface DefaultBrowserPromoLastActionSurface();
 
 // Opens the appropriate iOS settings to set Chromium as default browser. If
 // the relevant feature flags are enabled or if

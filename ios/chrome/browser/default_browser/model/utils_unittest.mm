@@ -326,11 +326,14 @@ TEST_F(DefaultBrowserUtilsTest,
 // Test LogOpenHTTPURLFromExternalURL conversion metric logging.
 TEST_F(DefaultBrowserUtilsTest,
        TestLogOpenHTTPURLFromExternalURLConversionMetrics) {
-  // When user opens a link for the first time ever, all conversion
-  // histograms should record true.
+  // When user opens a link for the first time ever without having clicked the
+  // promo action button, all conversion histograms should record true and
+  // PromoSurface should not be recorded.
   {
     base::HistogramTester histogram_tester;
     LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectTotalCount(
+        "IOS.DefaultBrowser.Conversion.PromoSurface", 0);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
                                        1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,
@@ -343,10 +346,13 @@ TEST_F(DefaultBrowserUtilsTest,
                                        1);
   }
 
-  // Opening again immediately should record false for all histograms.
+  // Opening again immediately should record false for all day-window histograms
+  // and should not record PromoSurface.
   {
     base::HistogramTester histogram_tester;
     LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectTotalCount(
+        "IOS.DefaultBrowser.Conversion.PromoSurface", 0);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", false,
                                        1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", false,
@@ -359,12 +365,21 @@ TEST_F(DefaultBrowserUtilsTest,
                                        false, 1);
   }
 
-  // Simulate opening a link after 30 days.
+  // Simulate clicking the promo action button ("Open Settings") on the First
+  // Run promo, then dismissing a subsequent promo, and opening a link after 30
+  // days. The conversion should still be attributed to kFirstRun.
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kFirstRun);
+  RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction::kDismiss);
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
                              (base::Time::Now() - base::Days(30)).ToNSDate());
   {
     base::HistogramTester histogram_tester;
     LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectUniqueSample(
+        "IOS.DefaultBrowser.Conversion.PromoSurface",
+        IOSDefaultBrowserPromoSurface::kFirstRun, 1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
                                        1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,
@@ -377,12 +392,31 @@ TEST_F(DefaultBrowserUtilsTest,
                                        false, 1);
   }
 
-  // Simulate opening a link after 100 days.
+  // Simulate a subsequent conversion after 30 days without clicking any new
+  // promo action button. Because the previous surface was reset after logging,
+  // PromoSurface should not be recorded.
+  SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
+                             (base::Time::Now() - base::Days(30)).ToNSDate());
+  {
+    base::HistogramTester histogram_tester;
+    LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectTotalCount(
+        "IOS.DefaultBrowser.Conversion.PromoSurface", 0);
+  }
+
+  // Simulate clicking the promo action button on a Tailored promo and opening a
+  // link after 100 days.
+  RecordDefaultBrowserPromoLastAction(
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kTailored);
   SetObjectIntoStorageForKey(kLastHTTPURLOpenTime,
                              (base::Time::Now() - base::Days(100)).ToNSDate());
   {
     base::HistogramTester histogram_tester;
     LogOpenHTTPURLFromExternalURL();
+    histogram_tester.ExpectUniqueSample(
+        "IOS.DefaultBrowser.Conversion.PromoSurface",
+        IOSDefaultBrowserPromoSurface::kTailored, 1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion7", true,
                                        1);
     histogram_tester.ExpectBucketCount("IOS.DefaultBrowser.Conversion14", true,

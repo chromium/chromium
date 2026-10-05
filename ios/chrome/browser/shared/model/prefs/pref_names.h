@@ -241,6 +241,11 @@ inline constexpr char kIosDefaultBrowserBlueDotPromoFirstDisplay[] =
 inline constexpr char kIosDefaultBrowserPromoLastAction[] =
     "ios.default_browser_promo.last_action";
 
+// The last Default Browser promo surface where the user tapped the primary
+// action button ("Open Settings").
+inline constexpr char kIosDefaultBrowserPromoLastActionSurface[] =
+    "ios.default_browser_promo.last_action_surface";
+
 // The time when the DiscoverFeed was last refreshed while the feed was visible
 // to the user.
 inline constexpr char kIosDiscoverFeedLastRefreshTime[] =

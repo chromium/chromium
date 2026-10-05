@@ -135,7 +135,8 @@ enum class DefaultBrowserSettingsPageUsage {
   }
 
   RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kActionButton);
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kSettings);
   base::RecordAction(base::UserMetricsAction("Settings.DefaultBrowser"));
   base::UmaHistogramEnumeration("Settings.DefaultBrowserFromSource",
                                 self.source);

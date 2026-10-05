@@ -181,6 +181,17 @@ void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
 }
 
 void LogOpenHTTPURLFromExternalURL() {
+  if (!IsChromeLikelyDefaultBrowser()) {
+    IOSDefaultBrowserPromoSurface last_surface =
+        DefaultBrowserPromoLastActionSurface();
+    if (last_surface != IOSDefaultBrowserPromoSurface::kNone) {
+      base::UmaHistogramEnumeration(
+          "IOS.DefaultBrowser.Conversion.PromoSurface", last_surface);
+      GetApplicationContext()->GetLocalState()->ClearPref(
+          prefs::kIosDefaultBrowserPromoLastActionSurface);
+    }
+  }
+
   base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion7",
                             !IsChromeLikelyDefaultBrowserXDays(7));
   base::UmaHistogramBoolean("IOS.DefaultBrowser.Conversion14",
@@ -508,20 +519,46 @@ bool IsNonModalPromoMigrationDone() {
   return number.boolValue;
 }
 
-void RecordDefaultBrowserPromoLastAction(IOSDefaultBrowserPromoAction action) {
-  GetApplicationContext()->GetLocalState()->SetInteger(
-      prefs::kIosDefaultBrowserPromoLastAction, static_cast<int>(action));
+void RecordDefaultBrowserPromoLastAction(
+    IOSDefaultBrowserPromoAction action,
+    IOSDefaultBrowserPromoSurface surface) {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+  local_state->SetInteger(prefs::kIosDefaultBrowserPromoLastAction,
+                          static_cast<int>(action));
+  if (action == IOSDefaultBrowserPromoAction::kActionButton &&
+      local_state->FindPreference(
+          prefs::kIosDefaultBrowserPromoLastActionSurface)) {
+    local_state->SetInteger(prefs::kIosDefaultBrowserPromoLastActionSurface,
+                            static_cast<int>(surface));
+  }
 }
 
 std::optional<IOSDefaultBrowserPromoAction> DefaultBrowserPromoLastAction() {
+  if (!GetApplicationContext() || !GetApplicationContext()->GetLocalState()) {
+    return std::nullopt;
+  }
   const PrefService::Preference* last_action =
       GetApplicationContext()->GetLocalState()->FindPreference(
           prefs::kIosDefaultBrowserPromoLastAction);
-  if (last_action->IsDefaultValue()) {
+  if (!last_action || last_action->IsDefaultValue()) {
     return std::nullopt;
   }
   int last_action_int = last_action->GetValue()->GetInt();
   return static_cast<IOSDefaultBrowserPromoAction>(last_action_int);
+}
+
+IOSDefaultBrowserPromoSurface DefaultBrowserPromoLastActionSurface() {
+  if (!GetApplicationContext() || !GetApplicationContext()->GetLocalState()) {
+    return IOSDefaultBrowserPromoSurface::kNone;
+  }
+  const PrefService::Preference* last_surface =
+      GetApplicationContext()->GetLocalState()->FindPreference(
+          prefs::kIosDefaultBrowserPromoLastActionSurface);
+  if (!last_surface || last_surface->IsDefaultValue()) {
+    return IOSDefaultBrowserPromoSurface::kNone;
+  }
+  return static_cast<IOSDefaultBrowserPromoSurface>(
+      last_surface->GetValue()->GetInt());
 }
 
 NSDate* LastTimeUserInteractedWithNonModalPromo() {

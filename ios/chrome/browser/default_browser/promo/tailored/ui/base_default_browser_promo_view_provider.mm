@@ -75,7 +75,8 @@ constexpr CGFloat kHelpSymbolSize = 20;
 // The "Primary Action" was touched.
 - (void)standardPromoPrimaryAction {
   RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kActionButton);
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kTailored);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserPromo.TailoredFullscreen.Accepted"));
   LogDefaultBrowserPromoHistogramForAction(

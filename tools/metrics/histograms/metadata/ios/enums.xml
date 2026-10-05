@@ -524,6 +524,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserPromoOverflowMenuAction) -->
 
+<!-- LINT.IfChange(IOSDefaultBrowserPromoSurface) -->
+
+<enum name="IOSDefaultBrowserPromoSurface">
+  <summary>
+    The default browser promo surface where the user last tapped the primary
+    action button (&quot;Open Settings&quot;) prior to a default browser
+    conversion.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="First Run"/>
+  <int value="2" label="Fullscreen Generic"/>
+  <int value="3" label="Tailored"/>
+  <int value="4" label="Non-Modal"/>
+  <int value="5" label="Set Up List"/>
+  <int value="6" label="Contextual"/>
+  <int value="7" label="Settings"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/default_browser/model/utils.h:IOSDefaultBrowserPromoSurface) -->
+
 <enum name="IOSDefaultBrowserPromoType">
   <int value="0" label="General"/>
   <int value="1" label="Made for iOS"/>

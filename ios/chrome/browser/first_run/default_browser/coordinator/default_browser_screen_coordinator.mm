@@ -106,7 +106,8 @@
 
 - (void)didTapPrimaryActionButton {
   RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kActionButton);
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kFirstRun);
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithSettings);

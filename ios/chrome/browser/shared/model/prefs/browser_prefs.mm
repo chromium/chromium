@@ -368,6 +368,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              base::Time());
 
   registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastAction, -1);
+  registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastActionSurface,
+                                0);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(

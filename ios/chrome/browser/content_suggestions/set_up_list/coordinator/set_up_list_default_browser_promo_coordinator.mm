@@ -82,7 +82,8 @@ using base::UserMetricsAction;
 
 - (void)didTapPrimaryActionButton {
   RecordDefaultBrowserPromoLastAction(
-      IOSDefaultBrowserPromoAction::kActionButton);
+      IOSDefaultBrowserPromoAction::kActionButton,
+      IOSDefaultBrowserPromoSurface::kSetUpList);
   RecordAction(UserMetricsAction("IOS.DefaultBrowserPromo.SetUpList.Accepted"));
   [self logDefaultBrowserFullscreenPromoHistogramForAction:
             IOSDefaultBrowserPromoAction::kActionButton];
