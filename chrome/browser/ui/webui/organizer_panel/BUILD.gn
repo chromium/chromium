@@ -42,6 +42,7 @@ source_set("organizer_panel") {
     "//chrome/browser/resources/organizer_panel:resources",
     "//chrome/browser/resources/tab_group_shared:resources",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui:browser_command_controller",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:features",

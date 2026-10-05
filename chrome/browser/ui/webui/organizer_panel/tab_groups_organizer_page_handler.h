@@ -67,6 +67,7 @@ class TabGroupsOrganizerPageHandler
   void ShowContextMenu(const std::string& group_id,
                        const gfx::Rect& anchor_rect,
                        ShowContextMenuCallback callback) override;
+  void CreateNewTabGroup() override;
 
   bool IsContextMenuRunningForTesting() const;
 

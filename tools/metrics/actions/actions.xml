@@ -39705,6 +39705,15 @@ should be able to be added at any place in this file.
 </action>
 
 <action
+    name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromOrganizerPanel">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User pressed &quot;Create tab group&quot; from the Organizer Panel.
+  </description>
+</action>
+
+<action
     name="TabGroups_SavedTabGroups_CreateNewGroupTriggeredFromTabGroupsAppMenu">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>

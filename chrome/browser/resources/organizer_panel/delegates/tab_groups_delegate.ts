@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '/tab_group_shared/tab_group_dot.js';
+import '../organizer_list_section_item.js';
 
 import {CrUrlListItemSize} from '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 
@@ -45,6 +48,25 @@ export class TabGroupsDelegate implements
     const {tabGroups} = await this.browserProxy_.handler.getTabGroups();
     this.tabGroups_ = tabGroups;
     return this.tabGroups_.map(group => this.tabGroupToSectionItem_(group));
+  }
+
+  getZeroState(): TemplateResult {
+    const item: OrganizerListSectionItem<unknown> = {
+      title: [loadTimeData.getString('createTabGroup')],
+      prefixIcon: {
+        element: html`<cr-icon icon="cr:add"></cr-icon>`,
+      },
+      size: CrUrlListItemSize.COMPACT,
+    };
+    return html`
+      <organizer-list-section-item .item="${item}"
+          @click="${() => this.onCreateTabGroupClick_()}">
+      </organizer-list-section-item>
+    `;
+  }
+
+  private onCreateTabGroupClick_() {
+    this.browserProxy_.handler.createNewTabGroup();
   }
 
   onItemClick(item: OrganizerListSectionItem<TabGroup>) {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {OrganizerListSectionItem} from './organizer_list_section_item.js';
 
 // Interface implemented by the section element to receive update events.
@@ -32,4 +34,8 @@ export interface OrganizerListSectionDelegate<T> {
   onItemContextMenuClicked?
       (item: OrganizerListSectionItem<T>, x: number, y: number): Promise<void>|
       void;
+
+  // Optional: Called to get the component rendered when no items are rendered
+  // in this section.
+  getZeroState?(): TemplateResult;
 }

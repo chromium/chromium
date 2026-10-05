@@ -9,7 +9,7 @@ import './organizer_list_section_item.js';
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {assert} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues, TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
@@ -171,6 +171,15 @@ export class OrganizerListSectionElement extends CrLitElement implements
     if (!this.isSearching_()) {
       this.expanded_ = e.detail.value;
     }
+  }
+
+  protected hasZeroState_(): boolean {
+    return !this.isSearching_() && this.getFilteredItems_().length === 0 &&
+        !!this.getZeroState_();
+  }
+
+  protected getZeroState_(): TemplateResult|undefined {
+    return this.delegate?.getZeroState?.();
   }
 
   protected onItemClick_(e: Event) {

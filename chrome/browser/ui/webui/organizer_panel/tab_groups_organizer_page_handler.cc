@@ -12,11 +12,15 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_menu_utils.h"
@@ -262,6 +266,20 @@ void TabGroupsOrganizerPageHandler::ShowContextMenu(
   context_menu_runner_->RunMenuAt(widget, nullptr, screen_rect,
                                   views::MenuAnchorPosition::kTopLeft,
                                   ui::mojom::MenuSourceType::kNone);
+}
+
+void TabGroupsOrganizerPageHandler::CreateNewTabGroup() {
+  BrowserWindowInterface* browser =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_"
+                              "CreateNewGroupTriggeredFromOrganizerPanel"));
+  chrome::BrowserCommandController::From(browser)->ExecuteCommand(
+      IDC_CREATE_NEW_TAB_GROUP);
 }
 
 bool TabGroupsOrganizerPageHandler::IsContextMenuRunningForTesting() const {

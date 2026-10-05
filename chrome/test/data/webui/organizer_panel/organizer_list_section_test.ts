@@ -7,6 +7,7 @@ import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {organizerPanelBrowserProxyFactory, OrganizerPanelPageHandlerRemote, SearchApiProxyImpl} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionElement, OrganizerListSectionItem, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -357,4 +358,66 @@ suite('OrganizerListSectionTest', () => {
     assertDeepEquals([[]], clearedItems[0]!.$.description.highlightRanges);
     assertDeepEquals([[]], clearedItems[1]!.$.description.highlightRanges);
   });
+
+  test('renders zero state from delegate when there are no items', async () => {
+    const zeroState = html`<div id="zeroState">Create tab group</div>`;
+    listSection.delegate = new TestSectionDelegate('Tab Groups', [], zeroState);
+    await microtasksFinished();
+
+    const zeroStateElement = listSection.shadowRoot.querySelector('#zeroState');
+    assertTrue(!!zeroStateElement);
+    assertEquals('Create tab group', zeroStateElement.textContent.trim());
+    assertEquals(null, listSection.shadowRoot.querySelector('#items'));
+    assertEquals(null, listSection.shadowRoot.querySelector('#noResults'));
+  });
+
+  test(
+      'does not render zero state when items exist or when searching',
+      async () => {
+        const zeroState = html`<div id="zeroState">Create tab group</div>`;
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab Group 1']},
+        ];
+        listSection.delegate =
+            new TestSectionDelegate('Tab Groups', items, zeroState);
+        await microtasksFinished();
+
+        assertEquals(null, listSection.shadowRoot.querySelector('#zeroState'));
+        assertEquals(
+            1,
+            listSection.shadowRoot
+                .querySelectorAll('organizer-list-section-item')
+                .length);
+
+        // Searching with no matches should show #noResults, not zero state.
+        listSection.searchQuery = 'nomatch';
+        await microtasksFinished();
+
+        assertEquals(null, listSection.shadowRoot.querySelector('#zeroState'));
+        const noResults = listSection.shadowRoot.querySelector('#noResults');
+        assertTrue(!!noResults);
+        assertEquals('No results', noResults.textContent.trim());
+      });
+
+  test(
+      'renders zero state when items are cleared on a delegate with zero state',
+      async () => {
+        const zeroState = html`<div id="zeroState">Create tab group</div>`;
+        const items: Array<OrganizerListSectionItem<unknown>> = [
+          {title: ['Tab Group 1']},
+        ];
+        listSection.delegate =
+            new TestSectionDelegate('Tab Groups', items, zeroState);
+        await microtasksFinished();
+
+        assertEquals(null, listSection.shadowRoot.querySelector('#zeroState'));
+
+        listSection.onItemsChanged([]);
+        await microtasksFinished();
+
+        const zeroStateElement =
+            listSection.shadowRoot.querySelector('#zeroState');
+        assertTrue(!!zeroStateElement);
+        assertEquals('Create tab group', zeroStateElement.textContent.trim());
+      });
 });

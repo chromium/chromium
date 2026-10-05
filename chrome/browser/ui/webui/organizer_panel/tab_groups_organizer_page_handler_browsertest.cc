@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -802,6 +803,32 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   handler_remote.FlushForTesting();
 
   EXPECT_EQ(0, browser2->GetTabStripModel()->active_index());
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       CreateNewTabGroup) {
+  base::UserActionTester user_action_tester;
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  const int initial_tab_count = browser()->GetTabStripModel()->count();
+  const size_t initial_group_count =
+      browser()->GetTabStripModel()->group_model()->ListTabGroups().size();
+
+  handler_remote->CreateNewTabGroup();
+  handler_remote.FlushForTesting();
+
+  EXPECT_EQ(initial_tab_count + 1, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(
+      initial_group_count + 1,
+      browser()->GetTabStripModel()->group_model()->ListTabGroups().size());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "TabGroups_SavedTabGroups_"
+                   "CreateNewGroupTriggeredFromOrganizerPanel"));
 }
 
 }  // namespace

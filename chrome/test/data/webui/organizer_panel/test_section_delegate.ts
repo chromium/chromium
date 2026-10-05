@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import type {OrganizerListSectionClient, OrganizerListSectionDelegate, OrganizerListSectionItem} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 export class TestSectionDelegate implements
     OrganizerListSectionDelegate<unknown> {
   private header_: string;
   private items_: Array<OrganizerListSectionItem<unknown>>;
+  getZeroState?: () => TemplateResult;
 
   private lastClickedItem_?: OrganizerListSectionItem<unknown>;
   private clickCount_: number = 0;
@@ -21,9 +23,13 @@ export class TestSectionDelegate implements
   private contextMenuClickCount_: number = 0;
 
   constructor(
-      header: string, items: Array<OrganizerListSectionItem<unknown>> = []) {
+      header: string, items: Array<OrganizerListSectionItem<unknown>> = [],
+      zeroState?: TemplateResult) {
     this.header_ = header;
     this.items_ = items;
+    if (zeroState) {
+      this.getZeroState = () => zeroState;
+    }
   }
 
   init(_sectionClient: OrganizerListSectionClient) {}

@@ -23,6 +23,7 @@ suite('OrganizerPanelAppTest', () => {
       cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
+      createTabGroup: 'Create tab group',
       crossDeviceTabsEnabled: false,
       isIncognitoMode: false,
       noResults: 'No results',

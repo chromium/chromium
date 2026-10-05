@@ -39,6 +39,9 @@ interface TabGroupsOrganizerPageHandler {
   // Shows the context menu for the specified tab group anchored at
   // `anchor_rect`. The callback is invoked when the menu is closed.
   ShowContextMenu(string group_id, gfx.mojom.Rect anchor_rect) => ();
+
+  // Creates a new tab group.
+  CreateNewTabGroup();
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

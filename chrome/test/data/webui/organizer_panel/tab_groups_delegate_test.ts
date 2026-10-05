@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {Color, TabGroupDotSize, tabGroupsBrowserProxyFactory, TabGroupsDelegate, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import type {OrganizerListSectionClient, OrganizerListSectionItem, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {OrganizerListSectionClient, OrganizerListSectionItem, OrganizerListSectionItemElement, TabGroup, TabGroupsOrganizerPageRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -48,6 +49,7 @@ suite('TabGroupsDelegateTest', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
+      createTabGroup: 'Create tab group',
       tabGroupMoreOptions: 'More options',
       tabGroups: 'Tab Groups',
     });
@@ -202,5 +204,32 @@ suite('TabGroupsDelegateTest', () => {
     const args = await mockHandler.whenCalled('showContextMenu');
     assertDeepEquals(sampleGroups[0]!.id, args[0]);
     assertDeepEquals({x: 15, y: 25, width: 0, height: 0}, args[1]);
+  });
+
+  test('returns zero state and triggers createNewTabGroup on click', () => {
+    const zeroState = delegate.getZeroState();
+    assertTrue(!!zeroState);
+
+    const container = document.createElement('div');
+    document.body.appendChild(container);
+    render(zeroState, container);
+
+    const item = container.querySelector<OrganizerListSectionItemElement>(
+        'organizer-list-section-item');
+    assertTrue(!!item);
+    assertDeepEquals(['Create tab group'], item.item.title);
+
+    const icon = item.item.prefixIcon?.element;
+    assertTrue(!!icon);
+
+    const iconContainer = document.createElement('div');
+    document.body.appendChild(iconContainer);
+    render(icon, iconContainer);
+    const crIcon = iconContainer.querySelector<CrIconElement>('cr-icon');
+    assertTrue(!!crIcon);
+    assertEquals('cr:add', crIcon.icon);
+
+    item.click();
+    assertEquals(1, mockHandler.getCallCount('createNewTabGroup'));
   });
 });
