@@ -12,6 +12,7 @@ source_set("readaloud") {
     "decoded_audio_segment.h",
     "decoder/opus_decoder_helper.h",
     "decoder/read_aloud_decoder_sequencer.h",
+    "overview_response_parser.h",
     "prefetch/prefetch_manager.h",
     "prefetch/prefetch_mode_scheduler.h",
     "read_aloud_playback_controller.h",
@@ -27,6 +28,7 @@ source_set("readaloud") {
     "decoded_audio_segment.cc",
     "decoder/opus_decoder_helper.cc",
     "decoder/read_aloud_decoder_sequencer.cc",
+    "overview_response_parser.cc",
     "prefetch/prefetch_manager.cc",
     "prefetch/prefetch_mode_scheduler.cc",
     "read_aloud_playback_controller.cc",
@@ -67,6 +69,7 @@ source_set("unit_tests") {
     "decoder/opus_decoder_helper_unittest.cc",
     "decoder/read_aloud_decoder_sequencer_unittest.cc",
     "mock_read_aloud_playback_controller_unittest.cc",
+    "overview_response_parser_unittest.cc",
     "prefetch/prefetch_manager_unittest.cc",
     "prefetch/prefetch_mode_scheduler_unittest.cc",
     "read_aloud_playback_controller_unittest.cc",
@@ -108,7 +111,10 @@ source_set("mock_playback_controller") {
     "mock_read_aloud_playback_controller.h",
   ]
 
-  deps = [ "//media:media_buildflags" ]
+  deps = [
+    ":readaloud",
+    "//media:media_buildflags",
+  ]
 
   public_deps = [
     "//base",

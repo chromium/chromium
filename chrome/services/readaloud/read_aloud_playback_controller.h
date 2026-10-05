@@ -112,6 +112,8 @@ class ReadAloudPlaybackController
   // Maximum duration a Play request will remain deferred before timing out.
   static constexpr base::TimeDelta kClassicPlayOnReadyTimeout =
       base::Seconds(10);
+  // TODO(b/565040027): Consolidate to kClassicPlayOnReadyTimeout once the
+  // browser handles deferred play during overview generation.
   static constexpr base::TimeDelta kOverviewPlayOnReadyTimeout =
       kOverviewGenerationTimeout;
 
@@ -127,9 +129,9 @@ class ReadAloudPlaybackController
   // pipeline, clears play_on_ready_, and returns true.
   bool PlayIfReady();
 
-  // If a Play request is pending (play_on_ready_) and all prerequisites are satisfied
-  // (IsReadyToPlay()), fulfills the pending Play intent and starts playback.
-  // Returns true if playback was started.
+  // If a Play request is pending (play_on_ready_) and all prerequisites are
+  // satisfied (IsReadyToPlay()), fulfills the pending Play intent and starts
+  // playback. Returns true if playback was started.
   bool MaybePlayOnReady();
 
   // Single funnel for every playback state transition. Caches `state` and

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
+#include "chrome/services/readaloud/overview_response_parser.h"
 
 namespace readaloud {
 
@@ -23,15 +24,14 @@ MockReadAloudPlaybackController::MockReadAloudPlaybackController(
       .WillByDefault(::testing::Invoke(
           this, &MockReadAloudPlaybackController::DefaultSetTextContent));
   ON_CALL(*this, SetOverviewContent)
-      .WillByDefault(
-          [](mojo_base::BigBuffer, SetOverviewContentCallback callback) {
-            std::move(callback).Run(/*success=*/false,
-                                    /*title=*/std::string());
-          });
-  ON_CALL(*this, Play).WillByDefault(::testing::Invoke(
-      this, &MockReadAloudPlaybackController::DefaultPlay));
-  ON_CALL(*this, Pause).WillByDefault(::testing::Invoke(
-      this, &MockReadAloudPlaybackController::DefaultPause));
+      .WillByDefault(::testing::Invoke(
+          this, &MockReadAloudPlaybackController::DefaultSetOverviewContent));
+  ON_CALL(*this, Play)
+      .WillByDefault(::testing::Invoke(
+          this, &MockReadAloudPlaybackController::DefaultPlay));
+  ON_CALL(*this, Pause)
+      .WillByDefault(::testing::Invoke(
+          this, &MockReadAloudPlaybackController::DefaultPause));
   ON_CALL(*this, SeekToWord)
       .WillByDefault(::testing::Invoke(
           this, &MockReadAloudPlaybackController::DefaultSeekToWord));
@@ -101,6 +101,19 @@ void MockReadAloudPlaybackController::DefaultSetTextContent(
   if (client_.is_connected()) {
     client_->OnPlaybackDurationChanged(CalculateTotalDuration());
   }
+}
+
+void MockReadAloudPlaybackController::DefaultSetOverviewContent(
+    mojo_base::BigBuffer response_bytes,
+    SetOverviewContentCallback callback) {
+  ParsedOverviewResult result =
+      ParseAndValidateOverviewResponse(std::move(response_bytes));
+  if (result.status != OverviewParseStatus::kOk) {
+    std::move(callback).Run(/*success=*/false, /*title=*/std::string());
+    return;
+  }
+  DefaultSetTextContent(std::move(result.segments));
+  std::move(callback).Run(/*success=*/true, std::move(result.title));
 }
 
 void MockReadAloudPlaybackController::DefaultPlay() {

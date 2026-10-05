@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
 #include "chrome/services/readaloud/audio_segment_queue.h"
+#include "chrome/services/readaloud/overview_response_parser.h"
 #include "chrome/services/readaloud/synthesis_response_parser.h"
 #include "media/audio/audio_device_thread.h"
 #include "media/audio/audio_output_device_thread_callback.h"
@@ -237,9 +238,15 @@ void ReadAloudPlaybackController::SetOverviewContent(
     mojo_base::BigBuffer response_bytes,
     SetOverviewContentCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(b/559821661): Implement overview response parsing and playback
-  // initialization.
-  std::move(callback).Run(/*success=*/false, /*title=*/std::string());
+  ParsedOverviewResult result =
+      ParseAndValidateOverviewResponse(std::move(response_bytes));
+  if (result.status != OverviewParseStatus::kOk) {
+    std::move(callback).Run(/*success=*/false, /*title=*/std::string());
+    return;
+  }
+  SetTextContent(std::move(result.segments));
+  // Send the title back to the browser process for UI display.
+  std::move(callback).Run(/*success=*/true, std::move(result.title));
 }
 
 void ReadAloudPlaybackController::Play() {

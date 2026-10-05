@@ -24,6 +24,7 @@
 #include "base/test/test_future.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/services/readaloud/audio_renderer/read_aloud_audio_renderer.h"
+#include "components/optimization_guide/proto/features/read_aloud_generate_text.pb.h"
 #include "components/optimization_guide/proto/features/read_aloud_synthesize.pb.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -1670,6 +1671,43 @@ TEST_F(ReadAloudPlaybackControllerTest, IgnoresStaleSynthesisResponse) {
   controller_remote_->Play();
   FlushAll();
   EXPECT_EQ(mock_client_->synthesis_request_count(), 2u);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest,
+       SetOverviewContentSuccessSetsTextAndReturnsMetadata) {
+  CreateSession();
+  // Send a serialized, valid GenerateText response
+  // to the controller over Mojo.
+  optimization_guide::proto::ReadAloudGenerateTextResponse response;
+  response.set_title("Test Overview Title");
+  response.add_dialogue_turns()->set_utterance("Overview dialogue text.");
+  std::string serialized = response.SerializeAsString();
+  mojo_base::BigBuffer buffer(base::as_byte_span(serialized));
+  base::test::TestFuture<bool, const std::string&> future;
+  controller_remote_->SetOverviewContent(std::move(buffer),
+                                         future.GetCallback());
+  // Verify success and title was set
+  auto [success, title] = future.Take();
+  EXPECT_TRUE(success);
+  EXPECT_EQ(title, "Test Overview Title");
+  // Loading new content resets internal queues and
+  // defaults the engine to Paused.
+  FlushAll();
+  EXPECT_EQ(mock_client_->last_state(),
+            read_aloud::mojom::PlaybackState::kPaused);
+}
+
+TEST_F(ReadAloudPlaybackControllerTest, SetOverviewContentFailureReportsError) {
+  CreateSession();
+  base::test::TestFuture<bool, const std::string&> future;
+  // Passing an empty buffer causes ParseAndValidateOverviewResponse to reject
+  // the payload as kMalformed.
+  controller_remote_->SetOverviewContent(mojo_base::BigBuffer(),  // empty
+                                         future.GetCallback());
+  auto [success, title] = future.Take();
+  EXPECT_FALSE(success);
+  EXPECT_TRUE(title.empty());
+  EXPECT_TRUE(controller_remote_.is_connected());
 }
 
 }  // namespace readaloud
