@@ -78,6 +78,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
 
   CHECK(input_bus);
+  CHECK_EQ(input_bus->NumberOfChannels(), fifo_bus_->NumberOfChannels());
   CHECK_EQ(input_bus->length(), render_quantum_frames_);
   SECURITY_CHECK(input_bus->length() <= fifo_length_);
   SECURITY_CHECK(index_write_ < fifo_length_);
@@ -166,6 +167,7 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
 #endif
 
   CHECK(output_bus);
+  CHECK_EQ(output_bus->NumberOfChannels(), fifo_bus_->NumberOfChannels());
   SECURITY_CHECK(frames_requested <= output_bus->length());
   SECURITY_CHECK(frames_requested <= fifo_length_);
   SECURITY_CHECK(index_read_ < fifo_length_);
@@ -244,6 +246,7 @@ PushPullFIFO::PullResult PushPullFIFO::PullAndUpdateEarmarkedFrames(
   SECURITY_CHECK(frames_requested <= output_bus->length());
 
   base::AutoLock locker(lock_);
+  CHECK_EQ(output_bus->NumberOfChannels(), fifo_bus_->NumberOfChannels());
   TRACE_EVENT2(
       "webaudio", "PushPullFIFO::PullAndUpdateEarmarkedFrames (under lock)",
       "pull_count_", pull_count_, "earmarked_frames_", earmarked_frames_);

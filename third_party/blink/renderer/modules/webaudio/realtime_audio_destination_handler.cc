@@ -133,8 +133,6 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
     return;
   }
 
-  uint32_t old_channel_count = ChannelCount();
-
   // After the context is closed, changing channel count will be ignored.
   AudioContext* context = static_cast<AudioContext*>(Context());
   CHECK(context);
@@ -142,8 +140,12 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
     return;
   }
 
-  // Try to create the new platform destination first before stopping the old
-  // one.
+  if (channel_count == ChannelCount()) {
+    return;
+  }
+
+  // Try to create the new platform destination first before stopping the
+  // old one.
   scoped_refptr<AudioDestination> new_platform_destination =
       AudioDestination::Create(*this, sink_descriptor_, channel_count,
                                latency_hint_, sample_rate_,
@@ -155,14 +157,20 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
     return;
   }
 
+  // Stop the old platform destination before mutating the channel count on
+  // the audio handler to avoid racing with the audio thread rendering.
+  const bool was_playing = platform_destination_->IsPlaying();
+  StopPlatformDestination();
+
   AudioHandler::SetChannelCount(channel_count, exception_state);
-  if (ChannelCount() == old_channel_count || exception_state.HadException()) {
+  if (exception_state.HadException()) {
+    if (was_playing) {
+      StartPlatformDestination();
+    }
     return;
   }
 
-  // Stop, re-create and start the destination to apply the new channel count.
-  const bool was_playing = platform_destination_->IsPlaying();
-  StopPlatformDestination();
+  new_platform_destination->TransferElapsedFramesFrom(platform_destination_);
   platform_destination_ = std::move(new_platform_destination);
   if (was_playing) {
     StartPlatformDestination();
