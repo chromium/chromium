@@ -210,9 +210,6 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void Activate() = 0;
   virtual void Deactivate() = 0;
   virtual bool IsActive() const = 0;
-  // Returns whether a request to focus a View in this (inactive) widget should
-  // activate the widget. If false, the View is focused without activating.
-  virtual bool ShouldActivateOnFocusRequest() const;
   virtual void PaintAsActiveChanged();
   virtual void SetZOrderLevel(ui::ZOrderLevel order) = 0;
   virtual ui::ZOrderLevel GetZOrderLevel() const = 0;

@@ -1996,21 +1996,17 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       active_contents_view->web_contents() != new_contents &&
       !tab_change_in_split_view;
 
+#if BUILDFLAG(IS_MAC)
+  // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
+  // it on Mac. The check is also unnecessary for Mac, since restoring focus
+  // won't activate the widget on that platform.
   bool will_restore_focus = !browser_->GetTabStripModel()->closing_all() &&
                             GetWidget()->IsVisible() &&
                             !tab_change_in_split_view;
-#if BUILDFLAG(IS_MAC)
-  // Restoring focus activates the widget, so only restore focus if the widget
-  // is already active. When focusing a View doesn't activate the widget, the
-  // check is unnecessary.
-  // TODO(crbug.com/40486728): Remove once kMacActivateWidgetOnFocusRequest is
-  // removed.
-  if (base::FeatureList::IsEnabled(
-          views::features::kMacActivateWidgetOnFocusRequest)) {
-    will_restore_focus &= GetWidget()->IsActive();
-  }
 #else
-  will_restore_focus &= GetWidget()->IsActive();
+  bool will_restore_focus =
+      !browser_->GetTabStripModel()->closing_all() && GetWidget()->IsActive() &&
+      GetWidget()->IsVisible() && !tab_change_in_split_view;
 #endif
   // Update various elements that are interested in knowing the current
   // WebContents.

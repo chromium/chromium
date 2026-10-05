@@ -189,7 +189,6 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
-  bool ShouldActivateOnFocusRequest() const override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetActivationIndependence(bool independence) override;

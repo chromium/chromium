@@ -26,7 +26,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_tracker.h"
-#include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -338,20 +337,20 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // Change this to DCHECK once it's resolved.
   CHECK(!view || ContainsView(view));
 
+#if !BUILDFLAG(IS_MAC)
+  // TODO(warx): There are some AccessiblePaneViewTest failed on macosx.
+  // crbug.com/650859. Remove !BUILDFLAG(IS_MAC) once that is fixed.
+  //
   // If the widget isn't active store the focused view and then attempt to
   // activate the widget. If activation succeeds |view| will be focused.
   // If activation fails |view| will be focused the next time the widget is
-  // made active. Platforms may opt out of activating for a given request, in
-  // which case |view| is focused immediately without activating the widget.
+  // made active.
   if (view && !widget_->IsActive()) {
-    const internal::NativeWidgetPrivate* native_widget =
-        widget_->native_widget_private();
-    if (!native_widget || native_widget->ShouldActivateOnFocusRequest()) {
-      SetStoredFocusView(view);
-      widget_->Activate();
-      return;
-    }
+    SetStoredFocusView(view);
+    widget_->Activate();
+    return;
   }
+#endif
 
   // Update the reason for the focus change (since this is checked by
   // some listeners), then notify all listeners.

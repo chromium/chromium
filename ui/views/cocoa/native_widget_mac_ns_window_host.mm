@@ -1356,16 +1356,6 @@ void NativeWidgetMacNSWindowHost::OnIsFirstResponderChanged(
   }
 
   if (is_first_responder) {
-    // If the window isn't key, this first responder change wasn't initiated by
-    // the user (clicks make the window key first), e.g. it came from
-    // FocusManager::ClearNativeFocus() during a tab switch. Restoring focus now
-    // would activate the window (see FocusManager::SetFocusedViewWithReason()),
-    // so defer it until the window becomes key, which restores focus anyway.
-    if (!IsWindowKey() &&
-        base::FeatureList::IsEnabled(
-            views::features::kMacActivateWidgetOnFocusRequest)) {
-      return;
-    }
     focus_manager->RestoreFocusedView();
   } else {
     // Do not call ClearNativeFocus because that will re-make the

@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -50,7 +49,6 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/touchui/touch_selection_controller_impl.h"
-#include "ui/views/views_features.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -712,83 +710,6 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
   EXPECT_FALSE(widget1->IsActive());
   EXPECT_EQ(nullptr, widget1->GetFocusManager()->GetFocusedView());
 }
-
-#if BUILDFLAG(IS_MAC)
-// Tests that requesting focus on a View in an inactive widget activates the
-// widget, like on Aura (see
-// NativeWidgetAuraTest.NonActiveWindowRequestImeFocus).
-TEST_F(WidgetTestInteractive, RequestFocusActivatesInactiveWidget) {
-  base::test::ScopedFeatureList feature_list(
-      features::kMacActivateWidgetOnFocusRequest);
-
-  std::unique_ptr<Widget> widget1 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  View* view1 =
-      widget1->GetContentsView()->AddChildView(std::make_unique<View>());
-  view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  std::unique_ptr<Widget> widget2 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-
-  ShowSync(widget1.get());
-  ShowSync(widget2.get());
-  ASSERT_FALSE(widget1->IsActive());
-  ASSERT_TRUE(widget2->IsActive());
-
-  view1->RequestFocus();
-  views::test::WaitForWidgetActive(widget1.get(), true);
-  EXPECT_FALSE(widget2->IsActive());
-  EXPECT_EQ(view1, widget1->GetFocusManager()->GetFocusedView());
-}
-
-// Tests the legacy Mac behavior when the kill switch is disabled: the View is
-// focused without activating the widget.
-TEST_F(WidgetTestInteractive, RequestFocusDoesNotActivateWithKillSwitch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kMacActivateWidgetOnFocusRequest);
-
-  std::unique_ptr<Widget> widget1 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  View* view1 =
-      widget1->GetContentsView()->AddChildView(std::make_unique<View>());
-  view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  std::unique_ptr<Widget> widget2 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-
-  ShowSync(widget1.get());
-  ShowSync(widget2.get());
-  ASSERT_FALSE(widget1->IsActive());
-  ASSERT_TRUE(widget2->IsActive());
-
-  view1->RequestFocus();
-  EXPECT_EQ(view1, widget1->GetFocusManager()->GetFocusedView());
-  EXPECT_FALSE(widget1->IsActive());
-  EXPECT_TRUE(widget2->IsActive());
-}
-
-// Tests that requesting focus in a hidden widget does not show it.
-TEST_F(WidgetTestInteractive, RequestFocusDoesNotShowHiddenWidget) {
-  base::test::ScopedFeatureList feature_list(
-      features::kMacActivateWidgetOnFocusRequest);
-
-  std::unique_ptr<Widget> widget1 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  View* view1 =
-      widget1->GetContentsView()->AddChildView(std::make_unique<View>());
-  view1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-
-  std::unique_ptr<Widget> widget2 = base::WrapUnique(
-      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
-  ShowSync(widget2.get());
-
-  view1->RequestFocus();
-  EXPECT_FALSE(widget1->IsVisible());
-  EXPECT_FALSE(widget1->IsActive());
-  EXPECT_TRUE(widget2->IsActive());
-}
-#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(WidgetTestInteractive, ZOrderCheckBetweenTopWindows) {
   std::unique_ptr<Widget> w1 = base::WrapUnique(

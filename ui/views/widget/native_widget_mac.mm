@@ -822,24 +822,6 @@ bool NativeWidgetMac::IsActive() const {
   return ns_window_host_ ? ns_window_host_->IsWindowKey() : false;
 }
 
-bool NativeWidgetMac::ShouldActivateOnFocusRequest() const {
-  if (!base::FeatureList::IsEnabled(
-          features::kMacActivateWidgetOnFocusRequest)) {
-    return false;
-  }
-  // Only activate when doing so is synchronous and has no side effects beyond
-  // making the window key:
-  // - Out-of-process windows (e.g. app shims) become key asynchronously.
-  // - Activating a hidden window would show it.
-  // - Activating while the app is inactive would steal focus from the app the
-  //   user is currently using.
-  // Otherwise, the view is focused without activating the window, which is the
-  // legacy Mac behavior.
-  NSWindow* window =
-      ns_window_host_ ? ns_window_host_->GetInProcessNSWindow() : nil;
-  return window && window.visible && window.canBecomeKeyWindow && NSApp.active;
-}
-
 void NativeWidgetMac::SetZOrderLevel(ui::ZOrderLevel order) {
   if (!GetNSWindowMojo()) {
     return;
