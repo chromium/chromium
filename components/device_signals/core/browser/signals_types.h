@@ -24,7 +24,7 @@ namespace device_signals {
 // Possible values for the trigger which generated the device signals.
 enum class Trigger {
   kUnspecified = 0,
-  kBrowserNavigation = 1,  // Ash only
+  kBrowserNavigation = 1,
   kLoginScreen = 2,        // Ash only
   kSignalsReport = 3,
 };
