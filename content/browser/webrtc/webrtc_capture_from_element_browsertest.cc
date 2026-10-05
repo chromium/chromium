@@ -77,6 +77,12 @@ class WebRtcCaptureFromElementBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
     // Allow window.internals for simulating context loss.
     command_line->AppendSwitch(switches::kExposeInternalsForTesting);
+    // These tests cover `captureStream()`, not hardware encoding. Force
+    // software encoding to avoid flakes from emulator encoders. See
+    // crbug.com/40262143.
+    // Note: this should only have an effect on Android. Elsewhere, the test
+    //       media is below the minimum resolution for hardware encoding.
+    command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);
   }
 };
 

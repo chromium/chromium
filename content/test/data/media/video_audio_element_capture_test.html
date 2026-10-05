@@ -42,7 +42,7 @@ function testCaptureFromMediaElement(filename,
       assertTrue(recorder, 'Error creating recorder out of the MediaStream');
 
       recorder.onerror = function(e) {
-        reject(new Error("error recording [" + filename + "] " + e));
+        reject(new Error("error recording [" + filename + "] " + e.error));
       };
 
       recorder.ondataavailable = function(event) {
