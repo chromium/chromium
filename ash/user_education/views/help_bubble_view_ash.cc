@@ -280,10 +280,10 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
     HelpBubbleId id,
     const internal::HelpBubbleAnchorParams& anchor,
     user_education::HelpBubbleParams params)
-    : BubbleDialogDelegateView(anchor.view,
-                               TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW),
+    : BubbleDialogDelegateView(anchor.view, TranslateArrow(params.arrow)),
       id_(id) {
+  set_shadow_config({.shadow_type = views::BubbleBorder::STANDARD_SHADOW,
+                     .elevation = kBubbleShadowElevation});
   SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
@@ -727,14 +727,6 @@ void HelpBubbleViewAsh::MaybeStartAutoCloseTimer() {
 void HelpBubbleViewAsh::OnTimeout() {
   std::move(timeout_callback_).Run();
   GetWidget()->Close();
-}
-
-std::unique_ptr<views::FrameView> HelpBubbleViewAsh::CreateFrameView(
-    views::Widget* widget) {
-  auto frame = BubbleDialogDelegateView::CreateFrameView(widget);
-  auto* frame_ptr = static_cast<views::BubbleFrameView*>(frame.get());
-  frame_ptr->bubble_border()->set_md_shadow_elevation(kBubbleShadowElevation);
-  return frame;
 }
 
 void HelpBubbleViewAsh::OnAnchorBoundsChanged() {
