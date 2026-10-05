@@ -121,6 +121,10 @@ Steps used to create the current version (or roll a newer one):
 
 Notes (hints) for the next roll(er):
 
+* Run `third_party/protobuf/roll_protobuf.py check` before starting a roll (to
+  verify no prior commit modified `src/` or `python/` without updating
+  `patches/`) and again after completing the roll (to verify `patches/*.patch`
+  reproduces the updated tree).
 * Update README.chromium as you go so you don't forget (after step 2. above, so
   you don't nuke those changes).
 * Any argument changes to `protoc_wrapper` in `third_party/protobuf/BUILD.gn`

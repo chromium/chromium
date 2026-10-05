@@ -6,6 +6,8 @@
 """Hermetic unit tests for //third_party/protobuf/roll_protobuf.py."""
 
 from collections.abc import Mapping
+import io
+import json
 import os
 import re
 import subprocess
@@ -78,6 +80,26 @@ def _InitializeGitRepositoryWithFiles(
     _RunGitCommand(
         repository_directory, ['commit', '--quiet', '-m', 'Initial commit'])
     return _RunGitCommand(repository_directory, ['rev-parse', 'HEAD'])
+
+
+def _CreateUpstreamAndChromiumRepositories(
+        temporary_directory: str,
+        upstream_files: Mapping[str, str],
+        chromium_files: Mapping[str, str]) -> tuple[str, str, str]:
+    """Creates paired upstream and Chromium git repositories for testing.
+
+    Unless chromium_files explicitly overrides 'README.chromium', populates
+    'README.chromium' with the upstream repository's HEAD commit SHA.
+    """
+    upstream_directory = os.path.join(temporary_directory, 'upstream')
+    chromium_directory = os.path.join(temporary_directory, 'chromium')
+    commit_hash = _InitializeGitRepositoryWithFiles(
+        upstream_directory, upstream_files)
+    merged_chromium_files = {'README.chromium': f'Revision: {commit_hash}\n'}
+    merged_chromium_files.update(chromium_files)
+    _InitializeGitRepositoryWithFiles(
+        chromium_directory, merged_chromium_files)
+    return upstream_directory, chromium_directory, commit_hash
 
 
 class RollProtobufTest(unittest.TestCase):
@@ -867,6 +889,979 @@ class RollProtobufTest(unittest.TestCase):
             msg=(
                 'Expected ApplyPatchFile to return git apply diagnostic '
                 'output when the patch context does not match the target.'),
+        )
+
+    def testCheckTreePassesWhenUpstreamPlusPatchesMatchesChromiumTree(self):
+        patch_content = (
+            'diff --git a/src/google/protobuf/message.h '
+            'b/src/google/protobuf/message.h\n'
+            '--- a/src/google/protobuf/message.h\n'
+            '+++ b/src/google/protobuf/message.h\n'
+            '@@ -1 +1 @@\n'
+            '-int Value() { return 1; }\n'
+            '+int Value() { return 2; }\n'
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                        'src/google/protobuf/port.cc': (
+                            'int Port() { return 0; }\n'),
+                    },
+                    chromium_files={
+                        'patches/0001-update-value.patch': patch_content,
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 2; }\n'),
+                        'src/google/protobuf/port.cc': (
+                            'int Port() { return 0; }\n'),
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            roll_protobuf.TreeVerificationResult(
+                upstream_revision=commit_hash,
+                applied_patches=('0001-update-value.patch',),
+            ),
+            verification_result,
+            msg=(
+                'Expected CheckTreeMatchesPatchedUpstream to return a clean '
+                'result when upstream + patches reproduces the Chromium tree.'),
+        )
+
+    def testCheckTreeDetectsSourceModificationWhenPatchFileIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            # Simulate https://crrev.com/c/8422202: message.h was updated in the
+            # Chromium tree, but the corresponding .patch file is missing.
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'const EnumValueDescriptor* GetEnum() const;\n'),
+                    },
+                    chromium_files={
+                        'src/google/protobuf/message.h': (
+                            'ABSL_DEPRECATED("Use field") '
+                            'const EnumValueDescriptor* GetEnum() const;\n'),
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/google/protobuf/message.h',),
+            verification_result.modified_files,
+            msg=(
+                'Expected a source modification in '
+                'src/google/protobuf/message.h without a matching patch in '
+                'patches/ to be flagged.'),
+        )
+
+    def testCheckTreeDetectsUnpatchedDirectEditAlongsideAppliedPatch(self):
+        patch_content = (
+            'diff --git a/src/google/protobuf/message.h '
+            'b/src/google/protobuf/message.h\n'
+            '--- a/src/google/protobuf/message.h\n'
+            '+++ b/src/google/protobuf/message.h\n'
+            '@@ -1 +1 @@\n'
+            '-int Value() { return 1; }\n'
+            '+int Value() { return 2; }\n'
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                        'src/google/protobuf/port.cc': (
+                            'int Port() { return 0; }\n'),
+                    },
+                    chromium_files={
+                        'patches/0001-update-value.patch': patch_content,
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 2; }\n'),
+                        'src/google/protobuf/port.cc': (
+                            'int Port() { return 99; }\n'),
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/google/protobuf/port.cc',),
+            verification_result.modified_files,
+            msg=(
+                'Expected an unpatched edit in src/google/protobuf/port.cc to '
+                'be flagged while patched message.h is accepted.'),
+        )
+
+    def testCheckTreeDetectsUnexpectedExtraChromiumFile(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/google/protobuf/stray_local_file.cc': '// stray\n',
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/google/protobuf/stray_local_file.cc',),
+            verification_result.chromium_only_files,
+            msg=(
+                'Expected a non-exception file present only in Chromium to be '
+                'reported in chromium_only_files.'),
+        )
+
+    def testCheckTreeDetectsMissingUpstreamFileNotInExceptionList(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/google/protobuf/extension_set.h': '// ext\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/google/protobuf/extension_set.h',),
+            verification_result.upstream_only_files,
+            msg=(
+                'Expected an upstream file missing from //third_party/protobuf '
+                'and not in the exception list to be reported in '
+                'upstream_only_files.'),
+        )
+
+    def testCheckTreeReportsFailingPatchWhenPatchDoesNotApplyToUpstream(self):
+        conflicting_patch = (
+            'diff --git a/src/google/protobuf/message.h '
+            'b/src/google/protobuf/message.h\n'
+            '--- a/src/google/protobuf/message.h\n'
+            '+++ b/src/google/protobuf/message.h\n'
+            '@@ -1 +1 @@\n'
+            '-int NonExistentUpstreamFunction();\n'
+            '+int ReplacementFunction();\n'
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                    chromium_files={
+                        'patches/0015-broken-context.patch': conflicting_patch,
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            '0015-broken-context.patch',
+            verification_result.failing_patch,
+            msg=(
+                'Expected CheckTreeMatchesPatchedUpstream to record the exact '
+                'filename of the patch that failed to apply.'),
+        )
+
+    def testCheckTreeIgnoresChromiumOwnedAndBootstrapGeneratedFiles(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/google/protobuf/descriptor.pb.h': (
+                            '// upstream unpatched descriptor.pb.h\n'),
+                        'src/google/protobuf/descriptor.pb.cc': (
+                            '// upstream unpatched descriptor.pb.cc\n'),
+                        'src/google/protobuf/compiler/plugin.pb.h': (
+                            '// upstream unpatched plugin.pb.h\n'),
+                        'src/google/protobuf/compiler/plugin.pb.cc': (
+                            '// upstream unpatched plugin.pb.cc\n'),
+                    },
+                    chromium_files={
+                        'BUILD.gn': '# Chromium GN build\n',
+                        'DEPS': 'deps = {}\n',
+                        'DIR_METADATA': 'monorail {}\n',
+                        'OWNERS': 'file://OWNERS\n',
+                        'PRESUBMIT.py': 'PRESUBMIT_VERSION = "2.0.0"\n',
+                        'PRESUBMIT_test.py': '# test\n',
+                        'check_file_lists.py': '# check_file_lists\n',
+                        'check_file_lists_test.py': '# test\n',
+                        'gen_extra_chromium_files.py': '# gen\n',
+                        'proto_library.gni': '# gni\n',
+                        'proto_sources.gni': '# gni\n',
+                        'proto_wkt.gni': '# gni\n',
+                        'roll_protobuf.py': '# roll\n',
+                        'roll_protobuf_test.py': '# test\n',
+                        'patches/0044-trim-protoc-main.md': '# note\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/google/protobuf/descriptor.pb.h': (
+                            '// Chromium regenerated descriptor.pb.h\n'),
+                        'src/google/protobuf/descriptor.pb.cc': (
+                            '// Chromium regenerated descriptor.pb.cc\n'),
+                        'src/google/protobuf/compiler/plugin.pb.h': (
+                            '// Chromium regenerated plugin.pb.h\n'),
+                        'src/google/protobuf/compiler/plugin.pb.cc': (
+                            '// Chromium regenerated plugin.pb.cc\n'),
+                        'python/google/protobuf/descriptor_pb2.py': (
+                            '# generated descriptor_pb2\n'),
+                        'python/google/protobuf/compiler/plugin_pb2.py': (
+                            '# generated plugin_pb2\n'),
+                        'python/google/protobuf/internal/'
+                        'python_edition_defaults.py': (
+                            '# generated edition defaults\n'),
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertTrue(
+            verification_result.IsClean(),
+            msg=(
+                'Expected Chromium-owned files and bootstrap files regenerated '
+                'by gen_extra_chromium_files.py to be ignored during check.'),
+        )
+
+    def testCheckTreeIgnoresCompatibilityAndWellKnownTypeGeneratedFiles(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'compatibility/smoke/large_artifact.bin': 'payload\n',
+                        'src/google/protobuf/any.pb.h': '// any.pb.h\n',
+                        'src/google/protobuf/any.pb.cc': '// any.pb.cc\n',
+                        'src/google/protobuf/timestamp.pb.h': '// ts.pb.h\n',
+                        'src/google/protobuf/timestamp.pb.cc': '// ts.pb.cc\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertTrue(
+            verification_result.IsClean(),
+            msg=(
+                'Expected compatibility/ and pre-generated Well-Known Type '
+                '.pb.{h,cc} files deleted during rolls to be ignored.'),
+        )
+
+    def testCheckTreeIgnoresUpstreamFilesMatchedByGitignore(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        '.gitignore': '*.sln\n*.targets\n*.xcodeproj/\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'csharp/src/Google.Protobuf.sln': 'Visual Studio\n',
+                        'csharp/Google.Protobuf.Tools.targets': '<Project/>\n',
+                        'objectivec/ProtocolBuffers_OSX.xcodeproj/'
+                        'project.pbxproj': '// !$*UTF8*$!\n',
+                    },
+                    chromium_files={
+                        '.gitignore': '*.sln\n*.targets\n*.xcodeproj/\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertTrue(
+            verification_result.IsClean(),
+            msg=(
+                'Expected upstream files excluded by .gitignore during '
+                'git add to be filtered out via git check-ignore.'),
+        )
+
+    def testCheckTreeRaisesErrorWhenProtobufDirectoryIsOutsideGitWorkTree(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory = os.path.join(temporary_directory, 'upstream')
+            commit_hash = _InitializeGitRepositoryWithFiles(
+                upstream_directory,
+                {'src/google/protobuf/arena.h': '// arena\n'},
+            )
+            non_git_directory = os.path.join(temporary_directory, 'plain_dir')
+            _WriteFilesToDirectory(
+                non_git_directory,
+                {
+                    'README.chromium': f'Revision: {commit_hash}\n',
+                    'src/google/protobuf/arena.h': '// arena\n',
+                },
+            )
+
+            with mock.patch.dict(
+                    os.environ,
+                    {'GIT_CEILING_DIRECTORIES': temporary_directory}):
+                with self.assertRaises(
+                        roll_protobuf.RollProtobufError,
+                        msg=(
+                            'Expected CheckTreeMatchesPatchedUpstream to '
+                            'raise RollProtobufError when protobuf_directory '
+                            'is not inside a git work tree.')):
+                    roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                        protobuf_directory=non_git_directory,
+                        upstream_repository_path=upstream_directory,
+                    )
+
+    def testFormatTreeVerificationReportRendersChromiumAndUpstreamOnlyFiles(
+            self):
+        verification_result = roll_protobuf.TreeVerificationResult(
+            upstream_revision='abc1234',
+            applied_patches=('0001-first.patch',),
+            chromium_only_files=('src/google/protobuf/stray.cc',),
+            upstream_only_files=('src/google/protobuf/missing.cc',),
+        )
+
+        report_text = roll_protobuf.FormatTreeVerificationReport(
+            verification_result)
+
+        self.assertEqual(
+            (
+                '//third_party/protobuf does not match upstream abc1234 plus '
+                'patches/*.patch:\n\n'
+                'Chromium-only files not in known exceptions (1):\n'
+                '  + src/google/protobuf/stray.cc\n\n'
+                'Upstream files missing from //third_party/protobuf (1):\n'
+                '  - src/google/protobuf/missing.cc'
+            ),
+            report_text,
+            msg=(
+                'Expected FormatTreeVerificationReport to list both '
+                'chromium_only_files (+) and upstream_only_files (-).'),
+        )
+
+    def testMainCheckExitsZeroWhenTreeIsClean(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            with mock.patch('sys.stdout', io.StringIO()):
+                exit_code = roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                ])
+
+        self.assertEqual(
+            roll_protobuf.EXIT_CODE_SUCCESS,
+            exit_code,
+            msg='Expected main(["check", ...]) to exit 0 when tree is clean.',
+        )
+
+    def testMainCheckPrintsSummaryWhenTreeIsClean(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                ])
+
+        self.assertEqual(
+            (
+                f'Verified //third_party/protobuf matches upstream '
+                f'{commit_hash} plus 0 patch(es).'
+            ),
+            captured_stdout.getvalue().strip(),
+            msg=(
+                'Expected main(["check", ...]) to print a single '
+                'verification summary line when the tree matches.'),
+        )
+
+    def testMainCheckExitsOneWhenPatchIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                    chromium_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 2; }\n'),
+                    },
+                ))
+            with mock.patch('sys.stdout', io.StringIO()):
+                exit_code = roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                ])
+
+        self.assertEqual(
+            roll_protobuf.EXIT_CODE_ERROR,
+            exit_code,
+            msg=(
+                'Expected main(["check", ...]) to exit 1 when a tracked file '
+                'differs without a corresponding patch.'),
+        )
+
+    def testMainCheckListsModifiedFileWhenPatchIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                    chromium_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 2; }\n'),
+                    },
+                ))
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                ])
+
+        self.assertEqual(
+            (
+                f'//third_party/protobuf does not match upstream '
+                f'{commit_hash} plus patches/*.patch:\n\n'
+                'Modified files not explained by patches/ (1):\n'
+                '  M src/google/protobuf/message.h'
+            ),
+            captured_stdout.getvalue().strip(),
+            msg=(
+                'Expected main(["check", ...]) to list '
+                'M src/google/protobuf/message.h when its patch is missing.'),
+        )
+
+    def testMainCheckNamesFailingPatchWhenPatchApplicationFails(self):
+        conflicting_patch = (
+            'diff --git a/src/google/protobuf/message.h '
+            'b/src/google/protobuf/message.h\n'
+            '--- a/src/google/protobuf/message.h\n'
+            '+++ b/src/google/protobuf/message.h\n'
+            '@@ -1 +1 @@\n'
+            '-int NonExistentUpstreamFunction();\n'
+            '+int ReplacementFunction();\n'
+        )
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                    chromium_files={
+                        'patches/0099-broken.patch': conflicting_patch,
+                        'src/google/protobuf/message.h': (
+                            'int Value() { return 1; }\n'),
+                    },
+                ))
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                ])
+            first_report_line = captured_stdout.getvalue().splitlines()[0]
+
+        self.assertEqual(
+            (
+                f'Patch failed to apply to upstream {commit_hash}: '
+                '0099-broken.patch'
+            ),
+            first_report_line,
+            msg=(
+                'Expected main(["check", ...]) to name 0099-broken.patch '
+                'on the first report line when patch application fails.'),
+        )
+
+    def testMainCheckOutputsMachineReadableJsonWhenFlagIsSet(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena suffix\n',
+                    },
+                ))
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                    '--json',
+                ])
+            parsed_json = json.loads(captured_stdout.getvalue())
+
+        self.assertEqual(
+            {
+                'is_clean': False,
+                'upstream_revision': commit_hash,
+                'applied_patches': [],
+                'failing_patch': None,
+                'failing_patch_error': None,
+                'modified_files': ['src/google/protobuf/arena.h'],
+                'chromium_only_files': [],
+                'upstream_only_files': [],
+            },
+            parsed_json,
+            msg=(
+                'Expected --json to emit the complete TreeVerificationResult '
+                'dictionary when differences are present.'),
+        )
+
+    def testMainCheckIncludesJsonErrorMessageWhenRevisionIsMissingFromUpstream(
+            self):
+        missing_revision = '0' * 40
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'README.chromium': f'Revision: {missing_revision}\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-repo',
+                    upstream_directory,
+                    '--json',
+                ])
+            parsed_json = json.loads(captured_stdout.getvalue())
+
+        self.assertEqual(
+            {
+                'is_clean': False,
+                'error': (
+                    f'Revision {missing_revision} not found in '
+                    f'upstream repository {upstream_directory}.'
+                ),
+            },
+            parsed_json,
+            msg=(
+                'Expected main(["check", "--json"]) to include the exact '
+                'error message when Revision is absent from upstream.'),
+        )
+
+    def testMainCheckOutputsJsonErrorWhenReadmeCannotBeRead(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            expected_readme_path = os.path.join(
+                os.path.abspath(temporary_directory), 'README.chromium')
+            captured_stdout = io.StringIO()
+            with mock.patch('sys.stdout', captured_stdout):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    temporary_directory,
+                    '--upstream-repo',
+                    temporary_directory,
+                    '--json',
+                ])
+            parsed_json = json.loads(captured_stdout.getvalue())
+
+        self.assertEqual(
+            {
+                'is_clean': False,
+                'error': (
+                    f'Missing README.chromium at {expected_readme_path}.'),
+            },
+            parsed_json,
+            msg=(
+                'Expected main(["check", "--json"]) to catch missing '
+                'README.chromium and emit a JSON error payload.'),
+        )
+
+    def testMainCheckExitsOneWhenReadmeIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with mock.patch('sys.stderr', io.StringIO()):
+                exit_code = roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    temporary_directory,
+                    '--upstream-repo',
+                    temporary_directory,
+                ])
+
+        self.assertEqual(
+            roll_protobuf.EXIT_CODE_ERROR,
+            exit_code,
+            msg=(
+                'Expected main(["check"]) to exit 1 when README.chromium '
+                'is missing.'),
+        )
+
+    def testMainCheckPrintsHumanErrorToStderrWhenReadmeIsMissing(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            expected_readme_path = os.path.join(
+                os.path.abspath(temporary_directory), 'README.chromium')
+            captured_stderr = io.StringIO()
+            with mock.patch('sys.stderr', captured_stderr):
+                roll_protobuf.main([
+                    'check',
+                    '--protobuf-dir',
+                    temporary_directory,
+                    '--upstream-repo',
+                    temporary_directory,
+                ])
+
+        self.assertEqual(
+            f'Error: Missing README.chromium at {expected_readme_path}.',
+            captured_stderr.getvalue().strip(),
+            msg=(
+                'Expected main(["check"]) without --json to print Error: to '
+                'stderr when README.chromium is missing.'),
+        )
+
+    def testMainCheckClonesCacheUnderBuildDirectoryWhenDashCFlagIsSet(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            build_directory = os.path.join(temporary_directory, 'out_release')
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            expected_cache_directory = os.path.join(
+                build_directory, '.protobuf_roll', 'upstream-protobuf')
+            with mock.patch('sys.stdout', io.StringIO()):
+                roll_protobuf.main([
+                    'check',
+                    '-C',
+                    build_directory,
+                    '--protobuf-dir',
+                    chromium_directory,
+                    '--upstream-url',
+                    upstream_directory,
+                ])
+            has_bare_head_file = os.path.isfile(
+                os.path.join(expected_cache_directory, 'HEAD'))
+
+        self.assertTrue(
+            has_bare_head_file,
+            msg=(
+                'Expected main(["check", "-C", ...]) to clone a bare git '
+                'cache containing HEAD into '
+                '<build_dir>/.protobuf_roll/upstream-protobuf.'),
+        )
+
+    def testCheckTreeFlagsUntrackedNonIgnoredFileInChromiumWorkingTree(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            _WriteFilesToDirectory(
+                chromium_directory,
+                {
+                    'src/google/protobuf/untracked_scratch.h': '// scratch\n',
+                },
+            )
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/google/protobuf/untracked_scratch.h',),
+            verification_result.chromium_only_files,
+            msg=(
+                'Expected CheckTreeMatchesPatchedUpstream to flag untracked '
+                'non-ignored files in the Chromium working tree as '
+                'chromium_only_files.'),
+        )
+
+    def testCheckTreeDoesNotMaskMissingUpstreamFileMatchedByUserExcludesFile(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/google/protobuf/user_ignored.h': '// missing\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            user_excludes_file = os.path.join(
+                temporary_directory, 'global_gitignore')
+            with open(user_excludes_file, 'w', encoding='utf-8') as handle:
+                handle.write('*user_ignored*\n')
+
+            with mock.patch.dict(
+                    os.environ,
+                    {
+                        'GIT_CONFIG_COUNT': '1',
+                        'GIT_CONFIG_KEY_0': 'core.excludesFile',
+                        'GIT_CONFIG_VALUE_0': user_excludes_file,
+                    }):
+                verification_result = (
+                    roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                        protobuf_directory=chromium_directory,
+                        upstream_repository_path=upstream_directory,
+                    ))
+
+        self.assertEqual(
+            ('src/google/protobuf/user_ignored.h',),
+            verification_result.upstream_only_files,
+            msg=(
+                'Expected CheckTreeMatchesPatchedUpstream to ignore a user '
+                'core.excludesFile so missing upstream files are still '
+                'detected.'),
+        )
+
+    def testCheckTreeDoesNotSkipUntrackedChromiumFileMatchedByUserExcludesFile(
+            self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            _WriteFilesToDirectory(
+                chromium_directory,
+                {
+                    'src/google/protobuf/user_excluded.h': '// untracked\n',
+                },
+            )
+            user_excludes_file = os.path.join(
+                temporary_directory, 'global_gitignore')
+            with open(user_excludes_file, 'w', encoding='utf-8') as handle:
+                handle.write('*user_excluded*\n')
+
+            with mock.patch.dict(
+                    os.environ,
+                    {
+                        'GIT_CONFIG_COUNT': '1',
+                        'GIT_CONFIG_KEY_0': 'core.excludesFile',
+                        'GIT_CONFIG_VALUE_0': user_excludes_file,
+                    }):
+                verification_result = (
+                    roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                        protobuf_directory=chromium_directory,
+                        upstream_repository_path=upstream_directory,
+                    ))
+
+        self.assertEqual(
+            ('src/google/protobuf/user_excluded.h',),
+            verification_result.chromium_only_files,
+            msg=(
+                'Expected _ListChromiumProtobufFiles to neutralize '
+                'core.excludesFile so untracked local files matched by '
+                'a user global gitignore are still flagged.'),
+        )
+
+    def testCheckTreeDetectsDeletedTrackedFileMatchingGitignore(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, _ = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        '.gitignore': '*.la\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/solaris/libstdc++.la': '# libtool archive\n',
+                    },
+                    chromium_files={
+                        '.gitignore': '*.la\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                        'src/solaris/libstdc++.la': '# libtool archive\n',
+                    },
+                ))
+            os.remove(
+                os.path.join(chromium_directory, 'src', 'solaris',
+                             'libstdc++.la'))
+
+            verification_result = roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                protobuf_directory=chromium_directory,
+                upstream_repository_path=upstream_directory,
+            )
+
+        self.assertEqual(
+            ('src/solaris/libstdc++.la',),
+            verification_result.upstream_only_files,
+            msg=(
+                'Expected CheckTreeMatchesPatchedUpstream to report a '
+                'deleted tracked upstream file even when its filename '
+                'matches a pattern in .gitignore.'),
+        )
+
+    def testCheckTreeRaisesErrorWhenProtobufDirectoryIsGitIgnored(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            upstream_directory, chromium_directory, commit_hash = (
+                _CreateUpstreamAndChromiumRepositories(
+                    temporary_directory,
+                    upstream_files={
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                    chromium_files={
+                        '.gitignore': 'ignored_subdir/\n',
+                        'src/google/protobuf/arena.h': '// arena\n',
+                    },
+                ))
+            ignored_protobuf_directory = os.path.join(
+                chromium_directory, 'ignored_subdir')
+            _WriteFilesToDirectory(
+                ignored_protobuf_directory,
+                {
+                    'README.chromium': f'Revision: {commit_hash}\n',
+                    'src/google/protobuf/arena.h': '// arena\n',
+                },
+            )
+
+            with self.assertRaisesRegex(
+                    roll_protobuf.RollProtobufError,
+                    r'git ls-files returned no README\.chromium',
+                    msg=(
+                        'Expected CheckTreeMatchesPatchedUpstream to raise '
+                        'RollProtobufError when protobuf_directory is '
+                        'git-ignored instead of silently passing.')):
+                roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                    protobuf_directory=ignored_protobuf_directory,
+                    upstream_repository_path=upstream_directory,
+                )
+
+    @_SkipOnWindows('os.symlink requires elevated privileges on Windows.')
+    def testListRegularFilesInDirectorySkipsGitPycachePycAndSymlinks(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            _WriteFilesToDirectory(
+                temporary_directory,
+                {
+                    '.git/HEAD': 'ref: refs/heads/main\n',
+                    '__pycache__/cached.cpython-311.pyc': 'bytecode\n',
+                    'src/stale.pyc': 'bytecode\n',
+                    'src/google/protobuf/arena.h': '// arena\n',
+                },
+            )
+            os.symlink(
+                os.path.join(
+                    temporary_directory, 'src', 'google', 'protobuf',
+                    'arena.h'),
+                os.path.join(temporary_directory, 'src', 'symlink_arena.h'),
+            )
+
+            listed_files = roll_protobuf._ListRegularFilesInDirectory(
+                temporary_directory)
+
+        self.assertEqual(
+            {'src/google/protobuf/arena.h'},
+            listed_files,
+            msg=(
+                'Expected _ListRegularFilesInDirectory to exclude .git/, '
+                '__pycache__/, .pyc files, and symlinks.'),
         )
 
     def testListTopLevelPatchPathsReturnsPatchesInReplayOrder(self):
