@@ -44,6 +44,7 @@ component("base") {
       "event_utils_winrt.h",
     ]
     public_deps += [ "//third_party/abseil-cpp:absl" ]
+    deps += [ "//ui/gfx" ]
     libs = [ "setupapi.lib" ]
   }
 }

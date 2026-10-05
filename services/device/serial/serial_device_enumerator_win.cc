@@ -455,8 +455,11 @@ class SerialDeviceEnumeratorWin::UiThreadHelper
     // GUID_DEVINTERFACE_SERENUM_BUS_ENUMERATOR for enumeration because it
     // doesn't seem to make a difference and ports which aren't enumerable by
     // device interface don't generate WM_DEVICECHANGE events.
-    device_observation_.Observe(
-        DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_COMPORT));
+    DeviceMonitorWin* device_monitor =
+        DeviceMonitorWin::GetForDeviceInterface(GUID_DEVINTERFACE_COMPORT);
+    if (device_monitor) {
+      device_observation_.Observe(device_monitor);
+    }
   }
 
   // Disallow copy and assignment.

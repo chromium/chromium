@@ -118,6 +118,16 @@ LRESULT SystemMessageWindowWin::OnDeviceChange(UINT event_type, LPARAM data) {
         return TRUE;
       for (const auto& map_entry : GetDeviceCategoryToType()) {
         if (map_entry.device_category == device_interface->dbcc_classguid) {
+          // When Core Audio is supported, AudioDeviceListenerWin reports audio
+          // device changes and DeviceNotifications does not register for
+          // KSCATEGORY_AUDIO. Audio interface events can still arrive through
+          // other registrations on the shared gfx::SingletonHwnd (e.g.
+          // device::DeviceMonitorWin::GetForAllInterfaces()), so ignore them
+          // to avoid redundant DEVTYPE_AUDIO notifications.
+          if (CoreAudioUtil::IsSupported() &&
+              map_entry.device_category == KSCATEGORY_AUDIO) {
+            return TRUE;
+          }
           device_type = map_entry.device_type;
           break;
         }
