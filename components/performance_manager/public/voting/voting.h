@@ -34,10 +34,11 @@
 // None of these objects are thread-safe, and they should all be used from a
 // single sequence. In practice this will be the PM sequence.
 
-#include <concepts>
 #include <cstring>
 #include <optional>
+#include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -50,12 +51,29 @@
 
 namespace performance_manager::voting {
 
-// Concept for types that can be converted to a `Context` pointer via a static
-// `Context::From(const T*)` method.
-template <typename T, typename Context>
-concept ConvertibleToContext = requires(const T* obj) {
-  { Context::From(obj) } -> std::convertible_to<const Context*>;
-};
+namespace internal {
+
+template <typename T>
+inline constexpr bool kIsVariant = false;
+template <typename... Ts>
+inline constexpr bool kIsVariant<std::variant<Ts...>> = true;
+
+// Returns true if `context` is a null pointer, or a variant currently holding
+// a null pointer (including a default-constructed variant whose first
+// alternative is a pointer). Other context types are never considered null.
+template <typename T>
+bool IsNullContext(const T& context) {
+  if constexpr (std::is_pointer_v<T>) {
+    return context == nullptr;
+  } else if constexpr (kIsVariant<T>) {
+    return std::visit([](const auto& alt) { return IsNullContext(alt); },
+                      context);
+  } else {
+    return false;
+  }
+}
+
+}  // namespace internal
 
 // Contains a single vote. Specifically allows copying, etc, so as to be STL
 // container friendly.
@@ -101,7 +119,7 @@ class VoteObserver {
   // Invoked when the vote for |context| is set, changed, or removed (if
   // std::nullopt). |voter_id| identifies the voting channel.
   virtual void OnVoteSet(VoterId<VoteImpl> voter_id,
-                         const ContextType* context,
+                         ContextType context,
                          const std::optional<VoteImpl>& vote) = 0;
 };
 
@@ -126,33 +144,18 @@ class VotingChannel {
 
   // Sets or updates a vote through this voting channel. Can only be called if
   // this VotingChannel is valid. Passing std::nullopt removes an existing vote.
-  void SetVote(const ContextType* context, const VoteImpl& vote);
-  void SetVote(const ContextType* context, const std::optional<VoteImpl>& vote);
-
-  // Overloads that allow voting directly on underlying objects (e.g. FrameNode,
-  // WorkerNode) that can be converted to `ContextType` via
-  // `ContextType::From(obj)`.
-  template <ConvertibleToContext<ContextType> T>
-  void SetVote(const T* obj, const VoteImpl& vote) {
-    SetVote(ContextType::From(obj), vote);
-  }
-
-  template <ConvertibleToContext<ContextType> T>
-  void SetVote(const T* obj, const std::optional<VoteImpl>& vote) {
-    SetVote(ContextType::From(obj), vote);
-  }
+  void SetVote(ContextType context, const VoteImpl& vote);
+  void SetVote(ContextType context, const std::optional<VoteImpl>& vote);
 
   // Legacy aliases for SetVote, kept for backwards compatibility with existing
   // voters.
-  void SubmitVote(const ContextType* context, const VoteImpl& vote) {
+  void SubmitVote(ContextType context, const VoteImpl& vote) {
     SetVote(context, vote);
   }
-  void ChangeVote(const ContextType* context, const VoteImpl& new_vote) {
+  void ChangeVote(ContextType context, const VoteImpl& new_vote) {
     SetVote(context, new_vote);
   }
-  void InvalidateVote(const ContextType* context) {
-    SetVote(context, std::nullopt);
-  }
+  void InvalidateVote(ContextType context) { SetVote(context, std::nullopt); }
 
   // Returns true if this VotingChannel is valid.
   bool IsValid() const;
@@ -176,7 +179,7 @@ class VotingChannel {
   VoterId<VoteImpl> voter_id_;
 
 #if DCHECK_IS_ON()
-  base::flat_map<const ContextType*, VoteImpl> votes_;
+  base::flat_map<ContextType, VoteImpl> votes_;
 #endif  // DCHECK_IS_ON()
 };
 
@@ -288,15 +291,16 @@ VotingChannel<VoteImpl>::~VotingChannel() {
 }
 
 template <class VoteImpl>
-void VotingChannel<VoteImpl>::SetVote(const ContextType* context,
+void VotingChannel<VoteImpl>::SetVote(ContextType context,
                                       const VoteImpl& vote) {
   SetVote(context, std::make_optional(vote));
 }
 
 template <class VoteImpl>
-void VotingChannel<VoteImpl>::SetVote(const ContextType* context,
+void VotingChannel<VoteImpl>::SetVote(ContextType context,
                                       const std::optional<VoteImpl>& vote) {
   DCHECK(IsValid());
+  CHECK(!internal::IsNullContext(context));
 
 #if DCHECK_IS_ON()
   if (vote.has_value()) {
@@ -345,8 +349,7 @@ void VotingChannel<VoteImpl>::Take(VotingChannel<VoteImpl>&& rhs) {
 
 #if DCHECK_IS_ON()
   // Track outstanding votes across moves.
-  votes_ =
-      std::exchange(rhs.votes_, base::flat_map<const ContextType*, VoteImpl>());
+  votes_ = std::exchange(rhs.votes_, base::flat_map<ContextType, VoteImpl>());
 #endif  // DCHECK_IS_ON()
 }
 

@@ -15,7 +15,6 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/voting.h"
 #include "components/url_matcher/url_matcher.h"
@@ -92,8 +91,7 @@ TEST_F(ForceForegroundVoterForUrlsTest, MatchingUrl) {
                                /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(frame.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // URL no longer matches.
@@ -120,8 +118,7 @@ TEST_F(ForceForegroundVoterForUrlsTest, InitialUrlMatch) {
   // the vote.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(frame.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 
@@ -139,8 +136,7 @@ TEST_F(ForceForegroundVoterForUrlsTest, WorkerMatchingUrl) {
   worker->OnFinalResponseURLDetermined(GURL("https://example.com/worker.js"));
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(worker.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), worker.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 
@@ -171,14 +167,12 @@ TEST_F(ForceForegroundVoterForUrlsTest, MultipleProfiles) {
 
   // frame1 matches its profile patterns.
   EXPECT_TRUE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(frame1.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame1.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // frame2 matches its profile patterns.
   EXPECT_TRUE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(frame2.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame2.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 
   // Swap URLs: frame1 should no longer match (it's in profile1, but URL matches
@@ -189,8 +183,7 @@ TEST_F(ForceForegroundVoterForUrlsTest, MultipleProfiles) {
                                 /*is_served_from_back_forward_cache=*/false);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_FALSE(observer_.HasVote(
-      voter_id(), execution_context::ExecutionContext::From(frame1.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame1.get(), base::Process::Priority::kUserBlocking,
       ForceForegroundVoterForUrls::kForceForegroundReason));
 }
 

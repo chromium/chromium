@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -17,15 +16,6 @@
 namespace performance_manager::execution_context_priority {
 
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
-
-}  // namespace
 
 class FrameCapturingMediaStreamVoterTest : public GraphTestHarness {
  public:
@@ -72,8 +62,7 @@ TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   EXPECT_FALSE(frame_node->IsCapturingMediaStream());
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(frame_node.get()),
-      base::Process::Priority::kMinValue,
+      voter_id(), frame_node.get(), base::Process::Priority::kMinValue,
       FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Now set the frame as capturing a media stream. This should increase the
@@ -81,8 +70,7 @@ TEST_F(FrameCapturingMediaStreamVoterTest, CapturingMediaStreamChanged) {
   mock_graph.frame->SetIsCapturingMediaStream(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
   EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(frame_node.get()),
-      base::Process::Priority::kUserBlocking,
+      voter_id(), frame_node.get(), base::Process::Priority::kUserBlocking,
       FrameCapturingMediaStreamVoter::kFrameCapturingMediaStreamReason));
 
   // Deleting the frame should invalidate the vote.

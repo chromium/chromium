@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_PRIORITY_EXECUTION_CONTEXT_PRIORITY_H_
 
+#include <variant>
+
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "components/performance_manager/public/voting/voting.h"
 
 // Specialization of a voting system used to get votes related to the
-// ProcessPriority of ExecutionContexts.
+// ProcessPriority of graph nodes.
 
 namespace content {
 class WebContents;
@@ -18,13 +20,14 @@ class WebContents;
 
 namespace performance_manager {
 
-namespace execution_context {
-class ExecutionContext;
-}
+class FrameNode;
+class WorkerNode;
 
 namespace execution_context_priority {
 
-using execution_context::ExecutionContext;
+// The graph nodes that a priority vote can target. Any node type not listed
+// here (e.g. SystemNode) is intentionally not votable.
+using VoteContext = std::variant<const FrameNode*, const WorkerNode*>;
 
 // Helper function equivalent to strcmp, but that is safe to use with nullptr.
 int ReasonCompare(const char* reason1, const char* reason2);
@@ -58,7 +61,7 @@ class PriorityAndReason {
   const char* reason_ = nullptr;
 };
 
-using Vote = voting::Vote<ExecutionContext,
+using Vote = voting::Vote<VoteContext,
                           base::Process::Priority,
                           base::Process::Priority::kMinValue>;
 using VoterId = voting::VoterId<Vote>;

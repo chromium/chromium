@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/execution_context_priority/extension_service_worker_priority_voter.h"
 
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"

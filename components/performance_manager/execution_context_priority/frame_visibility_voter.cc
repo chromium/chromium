@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"

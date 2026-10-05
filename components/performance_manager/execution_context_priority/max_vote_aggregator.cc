@@ -31,11 +31,11 @@ void MaxVoteAggregator::ResetUpstreamVotingChannel() {
 }
 
 void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
-                                  const ExecutionContext* execution_context,
+                                  VoteContext vote_context,
                                   const std::optional<Vote>& vote) {
   if (!vote.has_value()) {
     // Vote removal.
-    auto it = vote_data_map_.find(execution_context);
+    auto it = vote_data_map_.find(vote_context);
     if (it == vote_data_map_.end() || !it->second.HasVote(voter_id)) {
       return;
     }
@@ -47,7 +47,7 @@ void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
     const std::optional<Vote> new_top_vote = vote_data.GetTopVote();
 
     if (old_top_vote != new_top_vote) {
-      channel_.SetVote(execution_context, new_top_vote);
+      channel_.SetVote(vote_context, new_top_vote);
     }
     if (!new_top_vote.has_value()) {
       vote_data_map_.erase(it);
@@ -56,7 +56,7 @@ void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
   }
 
   // Vote addition or modification.
-  auto [it, _] = vote_data_map_.try_emplace(execution_context);
+  auto [it, _] = vote_data_map_.try_emplace(vote_context);
   VoteData& vote_data = it->second;
 
   const std::optional<Vote> old_top_vote = vote_data.GetTopVote();
@@ -66,7 +66,7 @@ void MaxVoteAggregator::OnVoteSet(VoterId voter_id,
   const std::optional<Vote> new_top_vote = vote_data.GetTopVote();
 
   if (old_top_vote != new_top_vote) {
-    channel_.SetVote(execution_context, new_top_vote);
+    channel_.SetVote(vote_context, new_top_vote);
   }
 }
 

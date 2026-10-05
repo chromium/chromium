@@ -9,7 +9,6 @@
 
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -22,11 +21,6 @@ using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 using ScopedWithheldFromView = PageLiveStateDecorator::ScopedWithheldFromView;
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
 
 std::unique_ptr<ScopedWithheldFromView> MarkWithheldFromView(
     const PageNode* page_node) {
@@ -93,22 +87,18 @@ TEST_F(WithheldFromViewVoterTest, VotesForAllFramesWhileWithheld) {
 
   auto token = MarkWithheldFromView(page_node);
   EXPECT_EQ(observer_.GetVoteCount(), 2u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node),
-                        base::Process::Priority::kUserBlocking,
-                        WithheldFromViewVoter::kWithheldFromViewReason));
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                        base::Process::Priority::kUserBlocking,
-                        WithheldFromViewVoter::kWithheldFromViewReason));
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), main_frame_node, base::Process::Priority::kUserBlocking,
+      WithheldFromViewVoter::kWithheldFromViewReason));
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), child_frame_node, base::Process::Priority::kUserBlocking,
+      WithheldFromViewVoter::kWithheldFromViewReason));
 
   // Releasing the token withdraws every vote.
   token.reset();
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), main_frame_node));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), child_frame_node));
 }
 
 // The boost is independent of visibility: a withheld page that becomes visible
@@ -122,8 +112,7 @@ TEST_F(WithheldFromViewVoterTest, VoteSurvivesVisibilityChange) {
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
 
   mock_graph.page->SetIsVisible(true);
-  EXPECT_TRUE(observer_.HasVote(voter_id(),
-                                GetExecutionContext(mock_graph.frame.get())));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), mock_graph.frame.get()));
 
   token.reset();
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
@@ -142,15 +131,14 @@ TEST_F(WithheldFromViewVoterTest, VotesForFrameAddedWhileWithheld) {
       mock_graph.process.get(), page_node, mock_graph.frame.get());
   EXPECT_EQ(observer_.GetVoteCount(), 2u);
   EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node.get()),
+      observer_.HasVote(voter_id(), child_frame_node.get(),
                         base::Process::Priority::kUserBlocking,
                         WithheldFromViewVoter::kWithheldFromViewReason));
 
   // Removing it withdraws its vote and leaves the main frame's intact.
   child_frame_node.reset();
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(observer_.HasVote(voter_id(),
-                                GetExecutionContext(mock_graph.frame.get())));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), mock_graph.frame.get()));
 }
 
 // A token that outlives its page must not resurrect or crash.
@@ -179,12 +167,10 @@ TEST_F(WithheldFromViewVoterIgnoreMainFrameTest, DoesNotVoteForMainFrame) {
 
   // Only the child frame is voted for.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                        base::Process::Priority::kUserBlocking,
-                        WithheldFromViewVoter::kWithheldFromViewReason));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), main_frame_node));
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), child_frame_node, base::Process::Priority::kUserBlocking,
+      WithheldFromViewVoter::kWithheldFromViewReason));
 
   token.reset();
   EXPECT_EQ(observer_.GetVoteCount(), 0u);

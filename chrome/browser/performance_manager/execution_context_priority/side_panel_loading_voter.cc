@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
 
 #include "chrome/common/webui_url_constants.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
 

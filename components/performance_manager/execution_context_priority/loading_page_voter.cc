@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager::execution_context_priority {

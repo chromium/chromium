@@ -16,9 +16,9 @@ namespace performance_manager {
 namespace execution_context_priority {
 
 // Aggregator that allows votes from an arbitrary number of voters, and forwards
-// the maximum vote for each frame. The upstream voting channel must be set
-// before any votes are submitted to this aggregator. New voting channels may
-// continue to be issued at any time during its lifetime, however.
+// the maximum vote for each vote context. The upstream voting channel must be
+// set before any votes are submitted to this aggregator. New voting channels
+// may continue to be issued at any time during its lifetime, however.
 class MaxVoteAggregator : public VoteObserver {
  public:
   MaxVoteAggregator();
@@ -37,7 +37,7 @@ class MaxVoteAggregator : public VoteObserver {
  protected:
   // VoteObserver implementation:
   void OnVoteSet(VoterId voter_id,
-                 const ExecutionContext* execution_context,
+                 VoteContext vote_context,
                  const std::optional<Vote>& vote) override;
 
  private:
@@ -75,9 +75,9 @@ class MaxVoteAggregator : public VoteObserver {
     uint32_t vote_id_ = 0;
   };
 
-  // The collection of votes for a single execution context. This is move-only
+  // The collection of votes for a single vote context. This is move-only
   // because all of its members are move-only. Internally it houses the
-  // collection of all votes associated with an execution context as max-heap,
+  // collection of all votes associated with a vote context as max-heap,
   // and a map of HeapHandles to access existing votes.
   class VoteData {
    public:
@@ -110,7 +110,7 @@ class MaxVoteAggregator : public VoteObserver {
     std::map<VoterId, raw_ptr<base::HeapHandle, CtnExperimental>> heap_handles_;
   };
 
-  using VoteDataMap = std::map<const ExecutionContext*, VoteData>;
+  using VoteDataMap = std::map<VoteContext, VoteData>;
 
   // Our channel for upstreaming our votes.
   VotingChannel channel_;

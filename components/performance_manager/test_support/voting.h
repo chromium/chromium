@@ -25,33 +25,32 @@ class DummyVoteObserver : public VoteObserver<VoteImpl> {
   VotingChannel<VoteImpl> BuildVotingChannel();
 
   size_t GetVoteCount() const;
-  size_t GetVoteCountForContext(
-      const typename VoteImpl::ContextType* context) const;
+  size_t GetVoteCountForContext(typename VoteImpl::ContextType context) const;
   size_t GetVoteCountForVoterId(voting::VoterId<VoteImpl> voter_id) const;
 
   bool HasVote(voting::VoterId<VoteImpl> voter_id,
-               const typename VoteImpl::ContextType* context) const;
+               typename VoteImpl::ContextType context) const;
 
   bool HasVote(voting::VoterId<VoteImpl> voter_id,
-               const typename VoteImpl::ContextType* context,
+               typename VoteImpl::ContextType context,
                const VoteImpl& vote) const;
 
   bool HasVote(voting::VoterId<VoteImpl> voter_id,
-               const typename VoteImpl::ContextType* context,
+               typename VoteImpl::ContextType context,
                typename VoteImpl::VoteType vote_value,
                const char* reason = nullptr) const;
 
  protected:
   // VoteObserver:
   void OnVoteSet(voting::VoterId<VoteImpl> voter_id,
-                 const ContextType* context,
+                 ContextType context,
                  const std::optional<VoteImpl>& vote) override;
 
  private:
   VotingChannelFactory<VoteImpl> voting_channel_factory_{this};
 
   base::flat_map<voting::VoterId<VoteImpl>,
-                 base::flat_map<const ContextType*, VoteImpl>>
+                 base::flat_map<ContextType, VoteImpl>>
       votes_by_voter_id_;
 };
 
@@ -87,7 +86,7 @@ size_t DummyVoteObserver<VoteImpl>::GetVoteCountForVoterId(
 
 template <class VoteImpl>
 size_t DummyVoteObserver<VoteImpl>::GetVoteCountForContext(
-    const typename VoteImpl::ContextType* context) const {
+    typename VoteImpl::ContextType context) const {
   size_t vote_count = 0;
   for (const auto& votes : votes_by_voter_id_) {
     vote_count += votes.second.count(context);
@@ -98,7 +97,7 @@ size_t DummyVoteObserver<VoteImpl>::GetVoteCountForContext(
 template <class VoteImpl>
 bool DummyVoteObserver<VoteImpl>::HasVote(
     voting::VoterId<VoteImpl> voter_id,
-    const typename VoteImpl::ContextType* context) const {
+    typename VoteImpl::ContextType context) const {
   auto votes_it = votes_by_voter_id_.find(voter_id);
   if (votes_it == votes_by_voter_id_.end())
     return false;
@@ -111,7 +110,7 @@ bool DummyVoteObserver<VoteImpl>::HasVote(
 template <class VoteImpl>
 bool DummyVoteObserver<VoteImpl>::HasVote(
     voting::VoterId<VoteImpl> voter_id,
-    const typename VoteImpl::ContextType* context,
+    typename VoteImpl::ContextType context,
     const VoteImpl& vote) const {
   auto votes_it = votes_by_voter_id_.find(voter_id);
   if (votes_it == votes_by_voter_id_.end())
@@ -129,7 +128,7 @@ bool DummyVoteObserver<VoteImpl>::HasVote(
 template <class VoteImpl>
 bool DummyVoteObserver<VoteImpl>::HasVote(
     voting::VoterId<VoteImpl> voter_id,
-    const typename VoteImpl::ContextType* context,
+    typename VoteImpl::ContextType context,
     typename VoteImpl::VoteType vote_value,
     const char* reason) const {
   return HasVote(voter_id, context, VoteImpl(vote_value, reason));
@@ -138,7 +137,7 @@ bool DummyVoteObserver<VoteImpl>::HasVote(
 template <class VoteImpl>
 void DummyVoteObserver<VoteImpl>::OnVoteSet(
     VoterId<VoteImpl> voter_id,
-    const ContextType* context,
+    ContextType context,
     const std::optional<VoteImpl>& vote) {
   if (vote.has_value()) {
     votes_by_voter_id_[voter_id][context] = *vote;

@@ -5,7 +5,6 @@
 #include "components/performance_manager/execution_context_priority/inherit_parent_priority_voter.h"
 
 #include "base/memory/raw_ptr.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -16,11 +15,6 @@ namespace performance_manager::execution_context_priority {
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
 
 class InheritParentPriorityVoterTest : public GraphTestHarness {
  public:
@@ -69,8 +63,7 @@ TEST_F(InheritParentPriorityVoterTest, ChildFrame) {
 
   // No vote exist initially.
   EXPECT_EQ(observer().GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer().HasVote(voter_id(), child_frame_node));
 
   // Set the parent frame to the USER_VISIBLE priority. The child frame will
   // inherit it through a vote of the same priority.
@@ -78,10 +71,9 @@ TEST_F(InheritParentPriorityVoterTest, ChildFrame) {
       {base::Process::Priority::kUserVisible, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::Process::Priority::kUserVisible,
-                         InheritParentPriorityVoter::kPriorityInheritedReason));
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), child_frame_node, base::Process::Priority::kUserVisible,
+      InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the parent frame to the USER_BLOCKING priority. The child frame will
   // not inherit a higher priority.
@@ -89,10 +81,9 @@ TEST_F(InheritParentPriorityVoterTest, ChildFrame) {
       {base::Process::Priority::kUserBlocking, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::Process::Priority::kUserVisible,
-                         InheritParentPriorityVoter::kPriorityInheritedReason));
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), child_frame_node, base::Process::Priority::kUserVisible,
+      InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the parent frame to its default value. The existing vote will be
   // invalidated.
@@ -100,8 +91,7 @@ TEST_F(InheritParentPriorityVoterTest, ChildFrame) {
       {base::Process::Priority::kBestEffort, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer().HasVote(voter_id(), child_frame_node));
 }
 
 TEST_F(InheritParentPriorityVoterTest, AdFrame) {
@@ -116,8 +106,7 @@ TEST_F(InheritParentPriorityVoterTest, AdFrame) {
   // No votes exist initially.
   EXPECT_FALSE(child_frame_node->IsAdFrame());
   EXPECT_EQ(observer().GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer().HasVote(voter_id(), child_frame_node));
 
   // Set the parent frame to the USER_VISIBLE priority. The child frame will
   // inherit it because it is *not* an ad frame initially.
@@ -125,17 +114,15 @@ TEST_F(InheritParentPriorityVoterTest, AdFrame) {
       {base::Process::Priority::kUserVisible, kDummyReason});
 
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node),
-                         base::Process::Priority::kUserVisible,
-                         InheritParentPriorityVoter::kPriorityInheritedReason));
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), child_frame_node, base::Process::Priority::kUserVisible,
+      InheritParentPriorityVoter::kPriorityInheritedReason));
 
   // Set the ad frame bit. This will remove the vote on the child.
   child_frame_node->SetIsAdFrame(true);
 
   EXPECT_EQ(observer().GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer().HasVote(voter_id(), child_frame_node));
 }
 
 }  // namespace performance_manager::execution_context_priority

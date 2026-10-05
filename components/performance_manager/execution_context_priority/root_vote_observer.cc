@@ -4,9 +4,11 @@
 
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 
+#include <variant>
+
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace performance_manager {
 
@@ -14,25 +16,31 @@ namespace execution_context_priority {
 
 namespace {
 
-// Sets the priority of an execution context.
-void SetPriorityAndReason(
-    const execution_context::ExecutionContext* execution_context,
-    const PriorityAndReason& priority_and_reason) {
+// Sets the priority of a node.
+template <typename NodeImplType>
+void SetPriorityAndReasonOnNode(NodeImplType* node_impl,
+                                const PriorityAndReason& priority_and_reason) {
   // No property changes while the node is leaving graph.
-  if (execution_context->GetNodeState() == NodeState::kLeavingGraph) {
+  if (node_impl->GetNodeState() == NodeState::kLeavingGraph) {
     return;
   }
+  node_impl->SetPriorityAndReason(priority_and_reason);
+}
 
-  switch (execution_context->GetType()) {
-    case execution_context::ExecutionContextType::kFrameNode:
-      FrameNodeImpl::FromNode(execution_context->GetFrameNode())
-          ->SetPriorityAndReason(priority_and_reason);
-      break;
-    case execution_context::ExecutionContextType::kWorkerNode:
-      WorkerNodeImpl::FromNode(execution_context->GetWorkerNode())
-          ->SetPriorityAndReason(priority_and_reason);
-      break;
-  }
+void SetPriorityAndReason(VoteContext vote_context,
+                          const PriorityAndReason& priority_and_reason) {
+  std::visit(
+      absl::Overload{
+          [&](const FrameNode* frame_node) {
+            SetPriorityAndReasonOnNode(FrameNodeImpl::FromNode(frame_node),
+                                       priority_and_reason);
+          },
+          [&](const WorkerNode* worker_node) {
+            SetPriorityAndReasonOnNode(WorkerNodeImpl::FromNode(worker_node),
+                                       priority_and_reason);
+          },
+      },
+      vote_context);
 }
 
 }  // namespace
@@ -49,17 +57,16 @@ VotingChannel RootVoteObserver::GetVotingChannel() {
 }
 
 void RootVoteObserver::OnVoteSet(VoterId voter_id,
-                                 const ExecutionContext* execution_context,
+                                 VoteContext vote_context,
                                  const std::optional<Vote>& vote) {
   DCHECK_EQ(voter_id_, voter_id);
   if (vote.has_value()) {
-    SetPriorityAndReason(execution_context,
+    SetPriorityAndReason(vote_context,
                          PriorityAndReason(vote->value(), vote->reason()));
   } else {
     SetPriorityAndReason(
-        execution_context,
-        PriorityAndReason(base::Process::Priority::kMinValue,
-                          FrameNodeImpl::kDefaultPriorityReason));
+        vote_context, PriorityAndReason(base::Process::Priority::kMinValue,
+                                        FrameNodeImpl::kDefaultPriorityReason));
   }
 }
 

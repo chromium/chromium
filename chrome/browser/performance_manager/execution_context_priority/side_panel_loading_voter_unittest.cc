@@ -6,22 +6,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/decorators/frame_visibility_decorator.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "components/performance_manager/test_support/voting.h"
 
 namespace performance_manager::execution_context_priority {
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
-
-}  // namespace
 
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
@@ -74,16 +64,14 @@ TEST_F(SidePanelLoadingVoterTest, IncreasePriority) {
       /*same_document=*/false, base::TimeTicks::Now(),
       /*navigation_id=*/1u, GURL("asd"), "text/html", std::nullopt);
 
-  EXPECT_TRUE(
-      observer().HasVote(voter_id(), GetExecutionContext(frame.get()),
-                         base::Process::Priority::kUserBlocking,
-                         SidePanelLoadingVoter::kSidePanelLoadingReason));
+  EXPECT_TRUE(observer().HasVote(
+      voter_id(), frame.get(), base::Process::Priority::kUserBlocking,
+      SidePanelLoadingVoter::kSidePanelLoadingReason));
 
   // Making the page visible should invalidate the vote.
   page->SetIsVisible(true);
 
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(frame.get())));
+  EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
 }
 
 TEST_F(SidePanelLoadingVoterTest, NotMarked) {
@@ -98,14 +86,12 @@ TEST_F(SidePanelLoadingVoterTest, NotMarked) {
 
   // Because the MarkAsSidePanel() was not called. the main frame's priority was
   // not increased.
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(frame.get())));
+  EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
 
   // Making the page visible.
   page->SetIsVisible(true);
 
-  EXPECT_FALSE(
-      observer().HasVote(voter_id(), GetExecutionContext(frame.get())));
+  EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
 }
 
 }  // namespace performance_manager::execution_context_priority

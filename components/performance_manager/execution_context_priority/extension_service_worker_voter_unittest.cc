@@ -5,7 +5,6 @@
 #include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -19,11 +18,6 @@ namespace performance_manager::execution_context_priority {
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const WorkerNode* worker_node) {
-  return execution_context::ExecutionContext::From(worker_node);
-}
 
 class ExtensionServiceWorkerVoterTest : public GraphTestHarness {
  public:
@@ -80,7 +74,7 @@ TEST_F(ExtensionServiceWorkerVoterTest, AddExtensionServiceWorker) {
       process_node, frame_node, origin);
 
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(worker_node),
+  EXPECT_TRUE(observer_.HasVote(voter_id(), worker_node,
                                 base::Process::Priority::kUserBlocking,
                                 ExtensionServiceWorkerVoter::kPriorityReason));
 
@@ -103,7 +97,7 @@ TEST_F(ExtensionServiceWorkerVoterTest, AddNonExtensionServiceWorker) {
       process_node, frame_node, origin);
 
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(worker_node),
+  EXPECT_TRUE(observer_.HasVote(voter_id(), worker_node,
                                 base::Process::Priority::kMinValue,
                                 ExtensionServiceWorkerVoter::kPriorityReason));
 

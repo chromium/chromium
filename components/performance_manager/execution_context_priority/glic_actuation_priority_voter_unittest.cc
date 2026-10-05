@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -23,11 +22,6 @@ namespace performance_manager::execution_context_priority {
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
 
 class GlicActuationPriorityVoterTest : public GraphTestHarness {
  public:
@@ -72,10 +66,8 @@ TEST_F(GlicActuationPriorityVoterTest, VoteWhenActuatingWithChildFrame) {
 
   // No votes initially.
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), main_frame_node));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), child_frame_node));
 
   // Set to Glic actuating on visible tab, expect a USER_BLOCKING vote ONLY on
   // the main frame.
@@ -83,29 +75,25 @@ TEST_F(GlicActuationPriorityVoterTest, VoteWhenActuatingWithChildFrame) {
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node),
-                        base::Process::Priority::kUserBlocking,
-                        GlicActuationPriorityVoter::kGlicActuationReason));
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(child_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), main_frame_node, base::Process::Priority::kUserBlocking,
+      GlicActuationPriorityVoter::kGlicActuationReason));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), child_frame_node));
 
   // Change to actuating on background tab, expect a USER_VISIBLE vote.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnBackgroundTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node),
-                        base::Process::Priority::kUserVisible,
-                        GlicActuationPriorityVoter::kGlicActuationReason));
+  EXPECT_TRUE(observer_.HasVote(
+      voter_id(), main_frame_node, base::Process::Priority::kUserVisible,
+      GlicActuationPriorityVoter::kGlicActuationReason));
 
   // Set back to none, expect the vote to be invalidated.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->SetGlicActuationStateForTesting(GlicActuationState::kNone);
   EXPECT_EQ(observer_.GetVoteCount(), 0u);
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), main_frame_node));
 }
 
 // Tests that a child frame added to an actuating page does NOT get a vote.
@@ -120,15 +108,13 @@ TEST_F(GlicActuationPriorityVoterTest,
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
 
   // Add a child frame, expect NO additional vote.
   auto child_frame_node = graph()->CreateFrameNodeAutoId(
       mock_graph.process.get(), page_node, main_frame_node);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_FALSE(observer_.HasVote(voter_id(),
-                                 GetExecutionContext(child_frame_node.get())));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), child_frame_node.get()));
 
   // Set back to not actuating, expect all votes to be invalidated.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
@@ -161,10 +147,8 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
 
   // Only the primary main frame should have a vote.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
-  EXPECT_FALSE(observer_.HasVote(voter_id(),
-                                 GetExecutionContext(fenced_frame_node.get())));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), fenced_frame_node.get()));
 
   // Simulate navigation of the fenced frame root itself.
   auto new_fenced_frame_node = TestNodeWrapper<FrameNodeImpl>::Create(
@@ -182,10 +166,8 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
 
   // Vote should remain unaffected on the primary main frame.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
-  EXPECT_FALSE(observer_.HasVote(
-      voter_id(), GetExecutionContext(new_fenced_frame_node.get())));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), new_fenced_frame_node.get()));
 
   // Simulate navigation of the outermost main frame.
   // Create a new main frame that will replace main_frame_node.
@@ -204,10 +186,8 @@ TEST_F(GlicActuationPriorityVoterTest, FencedFrameNavigationNoCrash) {
 
   // The vote should have moved to the new main frame.
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(observer_.HasVote(
-      voter_id(), GetExecutionContext(new_main_frame_node.get())));
-  EXPECT_FALSE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), new_main_frame_node.get()));
+  EXPECT_FALSE(observer_.HasVote(voter_id(), main_frame_node));
 
   // Clean up.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
@@ -226,8 +206,7 @@ TEST_F(GlicActuationPriorityVoterTest, FrameRemovedAfterActuationReset) {
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
 
   // Actuation times out or finishes -> state resets to kNone.
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
@@ -251,8 +230,7 @@ TEST_F(GlicActuationPriorityVoterTest, FrameRemovedWhileActuating) {
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
 
   // Frame is removed while still actuating.
   glic_voter_.OnBeforeFrameNodeRemoved(main_frame_node);
@@ -277,8 +255,7 @@ TEST_F(GlicActuationPriorityVoterTest,
       ->SetGlicActuationStateForTesting(
           GlicActuationState::kActuatingOnVisibleTab);
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
-  EXPECT_TRUE(
-      observer_.HasVote(voter_id(), GetExecutionContext(main_frame_node)));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), main_frame_node));
 
   // Frame becomes inactive (e.g. entering BFCache or navigating away).
   main_frame_node->SetIsActive(false);

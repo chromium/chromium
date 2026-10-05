@@ -5,7 +5,6 @@
 #include "components/performance_manager/execution_context_priority/root_vote_observer.h"
 
 #include "components/performance_manager/graph/frame_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -32,9 +31,6 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
   auto& frame = mock_graph.frame;
 
-  auto* execution_context =
-      execution_context::ExecutionContext::From(frame.get());
-
   MockFrameNodeObserver obs;
   graph()->AddFrameNodeObserver(&obs);
 
@@ -47,13 +43,13 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
   EXPECT_EQ(frame->GetPriorityAndReason(), kDefaultPriorityAndReason);
 
   // Do not expect a notification when an identical vote is submitted.
-  voter.SubmitVote(execution_context, Vote(kDefaultPriorityAndReason.priority(),
-                                           kDefaultPriorityAndReason.reason()));
+  voter.SubmitVote(frame.get(), Vote(kDefaultPriorityAndReason.priority(),
+                                     kDefaultPriorityAndReason.reason()));
   testing::Mock::VerifyAndClear(&obs);
 
   // Update the vote with a new priority and expect that to propagate.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame.get(), _));
-  voter.ChangeVote(execution_context,
+  voter.ChangeVote(frame.get(),
                    Vote(base::Process::Priority::kMaxValue, kReason));
 
   testing::Mock::VerifyAndClear(&obs);
@@ -63,7 +59,7 @@ TEST_F(RootVoteObserverTest, VotesForwardedToGraph) {
 
   // Cancel the existing vote and expect it to go back to the default.
   EXPECT_CALL(obs, OnPriorityAndReasonChanged(frame.get(), _));
-  voter.InvalidateVote(execution_context);
+  voter.InvalidateVote(frame.get());
   testing::Mock::VerifyAndClear(&obs);
   EXPECT_EQ(frame->GetPriorityAndReason(), kDefaultPriorityAndReason);
 

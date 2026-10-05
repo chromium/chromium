@@ -1,13 +1,17 @@
 The **PriorityVotingSystem** is responsible for assigning the
-priority of all the frames and workers in the graph.
+priority of the votable nodes in the graph.
 
-This is done through a system of voting where each voter can increase the
-priority of an execution context independently, and the vote with the highest
-priority determines which priority the given frame or worker will be assigned.
+This is done through a system of voting where each voter can independently
+increase the priority of a graph node, and the vote with the highest
+priority determines which priority that graph node will be assigned.
+
+A **VoteContext** identifies the graph node that a vote targets. It is a
+`std::variant` that explicitly lists the votable node types (currently
+`FrameNode` and `WorkerNode`). Voting on any other node type fails to compile.
 
 The **RootVoteObserver** is a simple layer on top of the voting system that
-receives the final vote for an execution context and does the actual assignment
+receives the final vote for a vote context and does the actual assignment
 to the graph node.
 
-Each voter tracks a single property of an execution context and casts their vote
+Each voter tracks a single property of a vote context and casts their vote
 via their voting channel to the **MaxVoteAggregator**.

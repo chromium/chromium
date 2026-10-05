@@ -22,7 +22,7 @@ namespace execution_context_priority {
 class RootVoteObserver;
 
 // Base interface for creating a voter class that can submit a vote to influence
-// the priority of an execution context.
+// the priority of a graph node.
 //
 // Use `PriorityVotingSystem::AddPriorityVoter()` to register your voter.
 class PriorityVoter {
@@ -39,7 +39,7 @@ class PriorityVoter {
 };
 
 // This class owns the voters that are responsible for deciding the priority of
-// execution contexts.
+// graph nodes.
 class PriorityVotingSystem
     : public GraphOwnedAndRegistered<PriorityVotingSystem> {
  public:
@@ -59,8 +59,7 @@ class PriorityVotingSystem
  private:
   void AddPriorityVoter(std::unique_ptr<PriorityVoter> priority_voter);
 
-  // Takes in the aggregated votes and applies them to the execution contexts in
-  // the graph.
+  // Takes in the aggregated votes and applies them to the nodes in the graph.
   std::unique_ptr<RootVoteObserver> root_vote_observer_;
 
   // Aggregates all the votes from the voters.

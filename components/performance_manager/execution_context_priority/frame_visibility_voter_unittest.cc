@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -17,15 +16,6 @@ namespace performance_manager {
 namespace execution_context_priority {
 
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
-
-}  // namespace
 
 class FrameVisibilityVoterTest : public GraphTestHarness {
  public:
@@ -68,24 +58,21 @@ TEST_F(FrameVisibilityVoterTest, ChangeFrameVisibility) {
   auto& frame_node = mock_graph.frame;
   EXPECT_EQ(frame_node->GetVisibility(), FrameNode::Visibility::kUnknown);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kUserBlocking,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Make the frame not visible. This should lower the priority.
   frame_node->SetVisibility(FrameNode::Visibility::kNotVisible);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Make the frame visible. This should increase the priority.
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kUserBlocking,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
@@ -109,8 +96,7 @@ TEST_F(FrameVisibilityVoterTest, UnimportantFrames) {
   frame_node->SetVisibility(FrameNode::Visibility::kVisible);
   frame_node->SetIsImportant(false);
 
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kUserVisible,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
@@ -127,10 +113,10 @@ TEST_F(FrameVisibilityVoterTest, SpeculativeFrameReplacingVisibleFrame) {
       mock_graph.frame->GetFrameTreeNodeId());
 
   EXPECT_EQ(observer().GetVoteCount(), 2u);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 }
 
 // Tests that a speculative frame replacing an active frame with unknown
@@ -146,10 +132,10 @@ TEST_F(FrameVisibilityVoterTest,
       mock_graph.frame->GetFrameTreeNodeId());
 
   EXPECT_EQ(observer().GetVoteCount(), 2u);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 }
 
 // Tests that a speculative frame replacing a non-visible active frame receives
@@ -164,8 +150,7 @@ TEST_F(FrameVisibilityVoterTest, SpeculativeFrameReplacingNonVisibleFrame) {
       mock_graph.frame->GetFrameTreeNodeId());
 
   EXPECT_EQ(observer().GetVoteCount(), 2u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(speculative_frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), speculative_frame.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
@@ -181,25 +166,24 @@ TEST_F(FrameVisibilityVoterTest, ActiveFrameVisibilityChanges) {
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage,
       mock_graph.frame->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 
   // Hide the active frame. The speculative frame's priority should drop.
   mock_graph.frame->SetVisibility(FrameNode::Visibility::kNotVisible);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(speculative_frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), speculative_frame.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Show the active frame again. The speculative frame's priority should
   // increase.
   mock_graph.frame->SetVisibility(FrameNode::Visibility::kVisible);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 }
 
 // Tests that changes to an active frame's importance update any speculative
@@ -216,24 +200,24 @@ TEST_F(FrameVisibilityVoterTest, ActiveFrameImportanceChanges) {
       mock_graph.frame.get(), kBrowsingInstanceForPage,
       mock_graph.child_frame->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 
   // Mark the active child frame as unimportant.
   mock_graph.child_frame->SetIsImportant(false);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserVisible,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserVisible,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 
   // Mark it as important again.
   mock_graph.child_frame->SetIsImportant(true);
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 }
 
 // Tests that frame swap correctly updates votes when a speculative frame
@@ -247,25 +231,23 @@ TEST_F(FrameVisibilityVoterTest, SpeculativeFrameSwap) {
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage,
       mock_graph.frame->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 
   // Simulate seamless navigation commit: speculative becomes active and
   // visible.
   speculative_frame->SetIsActive(true);
   speculative_frame->SetVisibility(FrameNode::Visibility::kVisible);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(speculative_frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), speculative_frame.get(),
                                  base::Process::Priority::kUserBlocking,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 
   // Old frame becomes inactive and not visible.
   mock_graph.frame->SetIsActive(false);
   mock_graph.frame->SetVisibility(FrameNode::Visibility::kNotVisible);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(mock_graph.frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), mock_graph.frame.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
@@ -280,8 +262,7 @@ TEST_F(FrameVisibilityVoterTest, PrerenderedOrDetachedFrame) {
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage,
       /*frame_tree_node_id=*/NextTestFrameTreeNodeId());
 
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(prerender_frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), prerender_frame.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
@@ -297,15 +278,14 @@ TEST_F(FrameVisibilityVoterTest, ActiveFrameRemovedEarly) {
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage,
       mock_graph.frame->GetFrameTreeNodeId());
 
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 
   // Remove the active frame. The speculative frame's priority should drop.
   mock_graph.frame.reset();
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(speculative_frame.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), speculative_frame.get(),
                                  base::Process::Priority::kBestEffort,
                                  FrameVisibilityVoter::kFrameVisibilityReason));
 }
@@ -323,31 +303,28 @@ TEST_F(FrameVisibilityVoterIgnoreMainFrameTest, IgnoreMainFrameVisibility) {
     EXPECT_EQ(mock_graph.frame->GetVisibility(),
               FrameNode::Visibility::kUnknown);
     // Main frame should have no vote.
-    EXPECT_FALSE(observer().HasVote(
-        voter_id(), GetExecutionContext(mock_graph.frame.get())));
+    EXPECT_FALSE(observer().HasVote(voter_id(), mock_graph.frame.get()));
 
     EXPECT_EQ(mock_graph.child_frame->GetVisibility(),
               FrameNode::Visibility::kUnknown);
     // Child frame should have a vote!
-    EXPECT_TRUE(observer().HasVote(
-        voter_id(), GetExecutionContext(mock_graph.child_frame.get()),
-        base::Process::Priority::kUserBlocking,
-        FrameVisibilityVoter::kFrameVisibilityReason));
+    EXPECT_TRUE(
+        observer().HasVote(voter_id(), mock_graph.child_frame.get(),
+                           base::Process::Priority::kUserBlocking,
+                           FrameVisibilityVoter::kFrameVisibilityReason));
 
     // Changing visibility of main frame should not cast any vote.
     mock_graph.frame->SetVisibility(FrameNode::Visibility::kVisible);
-    EXPECT_FALSE(observer().HasVote(
-        voter_id(), GetExecutionContext(mock_graph.frame.get())));
+    EXPECT_FALSE(observer().HasVote(voter_id(), mock_graph.frame.get()));
     mock_graph.frame->SetVisibility(FrameNode::Visibility::kNotVisible);
-    EXPECT_FALSE(observer().HasVote(
-        voter_id(), GetExecutionContext(mock_graph.frame.get())));
+    EXPECT_FALSE(observer().HasVote(voter_id(), mock_graph.frame.get()));
 
     // Changing visibility of child frame should update its vote.
     mock_graph.child_frame->SetVisibility(FrameNode::Visibility::kNotVisible);
-    EXPECT_TRUE(observer().HasVote(
-        voter_id(), GetExecutionContext(mock_graph.child_frame.get()),
-        base::Process::Priority::kBestEffort,
-        FrameVisibilityVoter::kFrameVisibilityReason));
+    EXPECT_TRUE(
+        observer().HasVote(voter_id(), mock_graph.child_frame.get(),
+                           base::Process::Priority::kBestEffort,
+                           FrameVisibilityVoter::kFrameVisibilityReason));
   }
 }
 
@@ -362,18 +339,17 @@ TEST_F(FrameVisibilityVoterIgnoreMainFrameTest, SpeculativeFrames) {
       mock_graph.process.get(), mock_graph.page.get(),
       /*parent_frame_node=*/nullptr, kBrowsingInstanceForPage,
       mock_graph.frame->GetFrameTreeNodeId());
-  EXPECT_FALSE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_main_frame.get())));
+  EXPECT_FALSE(observer().HasVote(voter_id(), speculative_main_frame.get()));
 
   // Speculative child frame should receive a USER_BLOCKING vote.
   auto speculative_child_frame = CreateSpeculativeFrameNodeAutoId(
       mock_graph.other_process.get(), mock_graph.page.get(),
       mock_graph.frame.get(), kBrowsingInstanceForPage,
       mock_graph.child_frame->GetFrameTreeNodeId());
-  EXPECT_TRUE(observer().HasVote(
-      voter_id(), GetExecutionContext(speculative_child_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      FrameVisibilityVoter::kSpeculativeFrameReason));
+  EXPECT_TRUE(
+      observer().HasVote(voter_id(), speculative_child_frame.get(),
+                         base::Process::Priority::kUserBlocking,
+                         FrameVisibilityVoter::kSpeculativeFrameReason));
 }
 
 }  // namespace execution_context_priority

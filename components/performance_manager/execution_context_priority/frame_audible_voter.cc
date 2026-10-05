@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 
 namespace performance_manager {

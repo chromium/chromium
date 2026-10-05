@@ -11,7 +11,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/voting.h"
@@ -34,11 +33,6 @@ namespace {
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 constexpr char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const WorkerNode* worker_node) {
-  return execution_context::ExecutionContext::From(worker_node);
-}
 
 class ExtensionServiceWorkerPriorityVoterTest : public GraphTestHarness {
  public:
@@ -106,15 +100,13 @@ class ExtensionServiceWorkerPriorityVoterTest : public GraphTestHarness {
 
   bool HasBoostVote(const WorkerNode* worker_node) const {
     return observer_.HasVote(
-        voter_.voter_id(), GetExecutionContext(worker_node),
-        base::Process::Priority::kUserBlocking,
+        voter_.voter_id(), worker_node, base::Process::Priority::kUserBlocking,
         ExtensionServiceWorkerPriorityVoter::kPriorityReason);
   }
 
   bool HasNeutralVote(const WorkerNode* worker_node) const {
     return observer_.HasVote(
-        voter_.voter_id(), GetExecutionContext(worker_node),
-        base::Process::Priority::kMinValue,
+        voter_.voter_id(), worker_node, base::Process::Priority::kMinValue,
         ExtensionServiceWorkerPriorityVoter::kPriorityReason);
   }
 

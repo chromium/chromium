@@ -16,7 +16,7 @@ using ::testing::AssertionFailure;
 using ::testing::AssertionResult;
 using ::testing::AssertionSuccess;
 
-using TestVote = voting::Vote<void, int, 0>;
+using TestVote = voting::Vote<const void*, int, 0>;
 using TestVotingChannel = voting::VotingChannel<TestVote>;
 using TestVotingChannelFactory = voting::VotingChannelFactory<TestVote>;
 

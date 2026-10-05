@@ -5,7 +5,6 @@
 #include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
 
 #include "base/memory/raw_ptr.h"
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -15,15 +14,6 @@ namespace performance_manager {
 namespace execution_context_priority {
 
 using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
-
-namespace {
-
-const execution_context::ExecutionContext* GetExecutionContext(
-    const FrameNode* frame_node) {
-  return execution_context::ExecutionContext::From(frame_node);
-}
-
-}  // namespace
 
 class FrameAudibleVoterTest : public GraphTestHarness {
  public:
@@ -65,16 +55,14 @@ TEST_F(FrameAudibleVoterTest, AudibleChanged) {
   auto& frame_node = mock_graph.frame;
   EXPECT_FALSE(frame_node->IsAudible());
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kMinValue,
                                  FrameAudibleVoter::kFrameAudibleReason));
 
   // Make the frame audible. This should increase the priority.
   mock_graph.frame->SetIsAudible(true);
   EXPECT_EQ(observer().GetVoteCount(), 1u);
-  EXPECT_TRUE(observer().HasVote(voter_id(),
-                                 GetExecutionContext(frame_node.get()),
+  EXPECT_TRUE(observer().HasVote(voter_id(), frame_node.get(),
                                  base::Process::Priority::kUserBlocking,
                                  FrameAudibleVoter::kFrameAudibleReason));
 

@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
 
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
 #include "url/origin.h"

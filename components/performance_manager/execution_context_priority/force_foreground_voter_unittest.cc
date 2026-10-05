@@ -4,7 +4,6 @@
 
 #include "components/performance_manager/execution_context_priority/force_foreground_voter.h"
 
-#include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
@@ -53,21 +52,15 @@ TEST_F(ForceForegroundVoterTest, VoteFramesAndWorkers) {
 
   // Expect a USER_BLOCKING vote on each frame.
   EXPECT_EQ(observer_.GetVoteCount(), 5u);
-  EXPECT_TRUE(observer_.HasVote(
-      voter_id(),
-      execution_context::ExecutionContext::From(mock_graph.frame.get()),
-      base::Process::Priority::kUserBlocking,
-      ForceForegroundVoter::kForceForegroundReason));
-  EXPECT_TRUE(observer_.HasVote(
-      voter_id(),
-      execution_context::ExecutionContext::From(mock_graph.child_frame.get()),
-      base::Process::Priority::kUserBlocking,
-      ForceForegroundVoter::kForceForegroundReason));
-  EXPECT_TRUE(observer_.HasVote(
-      voter_id(),
-      execution_context::ExecutionContext::From(mock_graph.worker.get()),
-      base::Process::Priority::kUserBlocking,
-      ForceForegroundVoter::kForceForegroundReason));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), mock_graph.frame.get(),
+                                base::Process::Priority::kUserBlocking,
+                                ForceForegroundVoter::kForceForegroundReason));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), mock_graph.child_frame.get(),
+                                base::Process::Priority::kUserBlocking,
+                                ForceForegroundVoter::kForceForegroundReason));
+  EXPECT_TRUE(observer_.HasVote(voter_id(), mock_graph.worker.get(),
+                                base::Process::Priority::kUserBlocking,
+                                ForceForegroundVoter::kForceForegroundReason));
 }
 
 }  // namespace performance_manager::execution_context_priority
