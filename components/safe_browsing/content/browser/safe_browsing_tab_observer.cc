@@ -9,16 +9,21 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 namespace safe_browsing {
 
+DEFINE_USER_DATA(SafeBrowsingTabObserver);
+
 SafeBrowsingTabObserver::SafeBrowsingTabObserver(
+    tabs::TabInterface& tab,
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate)
-    : content::WebContentsUserData<SafeBrowsingTabObserver>(*web_contents),
-      delegate_(std::move(delegate)) {
-  auto* browser_context = web_contents->GetBrowserContext();
+    : web_contents_(web_contents),
+      delegate_(std::move(delegate)),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  auto* browser_context = web_contents_->GetBrowserContext();
   PrefService* prefs = delegate_->GetPrefs(browser_context);
   if (prefs) {
     pref_change_registrar_.Init(prefs);
@@ -33,18 +38,32 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     if (IsSafeBrowsingEnabled(*prefs) &&
         delegate_->DoesSafeBrowsingServiceExist() && csd_service) {
       safebrowsing_detection_host_ =
-          delegate_->CreateClientSideDetectionHost(web_contents);
+          delegate_->CreateClientSideDetectionHost(web_contents_);
     }
   }
 }
 
 SafeBrowsingTabObserver::~SafeBrowsingTabObserver() = default;
 
+// static
+SafeBrowsingTabObserver* SafeBrowsingTabObserver::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+SafeBrowsingTabObserver* SafeBrowsingTabObserver::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Internal helpers
 
 void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
-  auto* browser_context = GetWebContents().GetBrowserContext();
+  auto* browser_context = web_contents_->GetBrowserContext();
   PrefService* prefs = delegate_->GetPrefs(browser_context);
   bool safe_browsing = IsSafeBrowsingEnabled(*prefs);
   ClientSideDetectionService* csd_service =
@@ -52,13 +71,11 @@ void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
   if (safe_browsing && csd_service) {
     if (!safebrowsing_detection_host_.get()) {
       safebrowsing_detection_host_ =
-          delegate_->CreateClientSideDetectionHost(&GetWebContents());
+          delegate_->CreateClientSideDetectionHost(web_contents_);
     }
   } else {
     safebrowsing_detection_host_.reset();
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingTabObserver);
 
 }  // namespace safe_browsing

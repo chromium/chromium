@@ -142,10 +142,8 @@
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/chrome_password_reuse_detection_manager_client.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/trigger_creator.h"
-#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #endif
 
 using content::WebContents;
@@ -332,19 +330,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
         web_contents, g_browser_process->safe_browsing_service()->ui_manager(),
         safe_browsing::AsyncCheckTracker::
             IsPlatformEligibleForSyncCheckerCheckAllowlist());
-  }
-  // SafeBrowsingTabObserver creates a ClientSideDetectionHost, which observes
-  // events from PermissionRequestManager and AsyncCheckTracker in its
-  // constructor. Therefore, PermissionRequestManager and AsyncCheckTracker need
-  // to be created before SafeBrowsingTabObserver is created.
-  // ClientSideDetectionHost uses ScopedAutofillManagersObservation which
-  // expects ContentAutofillClient (gated by enable_browser_autofill) to be
-  // created.
-  if (enable_browser_autofill) {
-    safe_browsing::SafeBrowsingTabObserver::CreateForWebContents(
-        web_contents,
-        std::make_unique<
-            safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
   }
   safe_browsing::TriggerCreator::MaybeCreateTriggersForWebContents(
       profile, web_contents);

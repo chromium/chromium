@@ -788,6 +788,11 @@ if (!is_android) {
     if (enable_offline_pages) {
       deps += [ "//chrome/browser/offline_pages" ]
     }
+
+    if (safe_browsing_mode != 0) {
+      deps +=
+          [ "//components/safe_browsing/content/browser:client_side_detection" ]
+    }
   }
 
   # This is a separate component to avoid possible circular deps.

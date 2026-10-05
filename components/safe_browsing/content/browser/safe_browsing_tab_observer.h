@@ -7,12 +7,18 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
+class BrowserContext;
 class WebContents;
-}
+}  // namespace content
+
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
 
 namespace safe_browsing {
 
@@ -20,9 +26,10 @@ class ClientSideDetectionHost;
 class ClientSideDetectionService;
 
 // Per-tab class to handle safe-browsing functionality.
-class SafeBrowsingTabObserver
-    : public content::WebContentsUserData<SafeBrowsingTabObserver> {
+class SafeBrowsingTabObserver {
  public:
+  DECLARE_USER_DATA(SafeBrowsingTabObserver);
+
   // Interface via which the embedder supplies contextual information to
   // SafeBrowsingTabObserver.
   class Delegate {
@@ -51,25 +58,30 @@ class SafeBrowsingTabObserver
     CreateClientSideDetectionHost(content::WebContents* web_contents) = 0;
   };
 
+  SafeBrowsingTabObserver(tabs::TabInterface& tab,
+                          content::WebContents* web_contents,
+                          std::unique_ptr<Delegate> delegate);
   SafeBrowsingTabObserver(const SafeBrowsingTabObserver&) = delete;
   SafeBrowsingTabObserver& operator=(const SafeBrowsingTabObserver&) = delete;
 
-  ~SafeBrowsingTabObserver() override;
+  ~SafeBrowsingTabObserver();
+
+  static SafeBrowsingTabObserver* From(tabs::TabInterface* tab);
+  static SafeBrowsingTabObserver* FromWebContents(
+      content::WebContents* web_contents);
 
   ClientSideDetectionHost* client_side_detection_host() {
     return safebrowsing_detection_host_.get();
   }
 
  private:
-  SafeBrowsingTabObserver(content::WebContents* web_contents,
-                          std::unique_ptr<Delegate> delegate);
-  friend class content::WebContentsUserData<SafeBrowsingTabObserver>;
-
   // Internal helpers ----------------------------------------------------------
 
   // Create or destroy SafebrowsingDetectionHost as needed if the user's
   // safe browsing preference has changed.
   void UpdateSafebrowsingDetectionHost();
+
+  raw_ptr<content::WebContents> web_contents_;
 
   // Handles IPCs.
   std::unique_ptr<ClientSideDetectionHost> safebrowsing_detection_host_;
@@ -78,7 +90,7 @@ class SafeBrowsingTabObserver
 
   PrefChangeRegistrar pref_change_registrar_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  ui::ScopedUnownedUserData<SafeBrowsingTabObserver> scoped_unowned_user_data_;
 };
 
 }  // namespace safe_browsing

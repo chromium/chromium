@@ -135,8 +135,10 @@
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_tab_observer_delegate.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_service_factory.h"
 #include "chrome/browser/safe_browsing/tailored_security/tailored_security_url_observer.h"
+#include "components/safe_browsing/content/browser/safe_browsing_tab_observer.h"
 #include "components/safe_browsing/core/common/features.h"
 #endif
 
@@ -352,6 +354,14 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
           web_contents);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  if (autofill::ContentAutofillClient::FromWebContents(web_contents)) {
+    safe_browsing_tab_observer_ =
+        GetUserDataFactory()
+            .CreateInstance<safe_browsing::SafeBrowsingTabObserver>(
+                *tab, *tab, web_contents,
+                std::make_unique<
+                    safe_browsing::ChromeSafeBrowsingTabObserverDelegate>());
+  }
   if (base::FeatureList::IsEnabled(
           safe_browsing::kTailoredSecurityIntegration)) {
     tailored_security_url_observer_ =
