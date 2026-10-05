@@ -478,6 +478,9 @@ enum class ItemIdentifier {
   PerformCrossfadeTransition(cell.contentView, ^{
     [weakSelf updateSnapshotForItemIdentifier:ItemIdentifier::kFetchingItem];
   });
+  if (indexPath) {
+    [self postAccessibilityAnnouncement:_fetchingSubtitle];
+  }
 }
 
 - (void)setRecentFills:(NSArray<AtMemorySearchItem*>*)recentFills {
@@ -512,20 +515,27 @@ enum class ItemIdentifier {
   return _dataSource && _dataSource.snapshot.sectionIdentifiers.count == 0;
 }
 
-// Posts a VoiceOver announcement with the number of available search results.
-- (void)announceSearchResultsForAccessibility {
-  if (!UIAccessibilityIsVoiceOverRunning() || !self.view.window) {
+// Posts a queued VoiceOver announcement with `message`.
+- (void)postAccessibilityAnnouncement:(NSString*)message {
+  if (!UIAccessibilityIsVoiceOverRunning() || !self.view.window ||
+      message.length == 0) {
     return;
   }
 
   NSAttributedString* announcement = [[NSAttributedString alloc]
-      initWithString:
-          l10n_util::GetPluralNSStringF(
-              IDS_IOS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
-              static_cast<int>(_searchResults.count))
+      initWithString:message
           attributes:@{UIAccessibilitySpeechAttributeQueueAnnouncement : @YES}];
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                   announcement);
+}
+
+// Posts a VoiceOver announcement with the number of available search results.
+- (void)announceSearchResultsForAccessibility {
+  [self
+      postAccessibilityAnnouncement:
+          l10n_util::GetPluralNSStringF(
+              IDS_IOS_AUTOFILL_AT_MEMORY_SEARCH_RESULTS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+              static_cast<int>(_searchResults.count))];
 }
 
 // Initiates the Gemini entry flow for an unsupported query and dismisses the
@@ -638,6 +648,7 @@ enum class ItemIdentifier {
 
   [self appendNoticeSectionToSnapshot:snapshot];
   [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+  [self postAccessibilityAnnouncement:_fetchingSubtitle];
   [self updateTableViewBackgroundStyle];
 }
 
