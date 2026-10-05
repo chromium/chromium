@@ -380,7 +380,7 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
 BASE_FEATURE(kCellularUseSecondEuicc, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Enterprise Policy controls for Clipboard History.
-BASE_FEATURE(kClipboardHistoryPolicy, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClipboardHistoryPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
