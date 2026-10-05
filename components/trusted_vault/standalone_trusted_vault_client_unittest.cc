@@ -192,7 +192,7 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
                                 const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint) {
-    base::test::TestFuture<void> future;
+    base::test::TestFuture<bool> future;
     client->AddTrustedRecoveryMethod(gaia_id, public_key, method_type_hint,
                                      future.GetCallback());
     ASSERT_TRUE(future.Wait());

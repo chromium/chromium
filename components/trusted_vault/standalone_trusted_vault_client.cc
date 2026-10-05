@@ -67,7 +67,7 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
     const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
-    base::OnceClosure cb) {
+    base::OnceCallback<void(bool)> cb) {
   frontend_->AddTrustedRecoveryMethod(gaia_id, security_domain_, public_key,
                                       method_type_hint, std::move(cb));
 }

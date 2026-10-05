@@ -50,7 +50,7 @@ TrustedVaultClientAndroid::OngoingGetIsRecoverabilityDegraded::
     ~OngoingGetIsRecoverabilityDegraded() = default;
 
 TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
-    OngoingAddTrustedRecoveryMethod(base::OnceClosure callback)
+    OngoingAddTrustedRecoveryMethod(base::OnceCallback<void(bool)> callback)
     : callback(std::move(callback)) {}
 
 TrustedVaultClientAndroid::OngoingAddTrustedRecoveryMethod::
@@ -124,13 +124,14 @@ void TrustedVaultClientAndroid::GetIsRecoverabilityDegradedCompleted(
 
 void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
     JNIEnv* env,
-    int32_t request_id) {
+    int32_t request_id,
+    bool succeeded) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
 
   std::move(std::get<OngoingAddTrustedRecoveryMethod>(ongoing_request).callback)
-      .Run();
+      .Run(!!succeeded);
 }
 
 void TrustedVaultClientAndroid::NotifyKeysChanged(
@@ -225,7 +226,7 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
     const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
-    base::OnceClosure cb) {
+    base::OnceCallback<void(bool)> cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(cb);
 
@@ -241,7 +242,7 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
   }
 
   if (account_info == CoreAccountInfo()) {
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 

@@ -130,7 +130,8 @@ class EncryptionKeyApi
     trusted_vault_service_
         ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync)
         ->AddTrustedRecoveryMethod(GaiaId(gaia_id), public_key,
-                                   method_type_hint, std::move(callback));
+                                   method_type_hint,
+                                   base::IgnoreArgs<bool>(std::move(callback)));
   }
 
  private:

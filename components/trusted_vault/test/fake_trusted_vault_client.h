@@ -103,6 +103,11 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   // is degraded if no recovery method present in the `server_`.
   void SetIsRecoveryMethodRequired(bool is_recovery_method_required);
 
+  // Sets the success value for the callback of AddTrustedRecoveryMethod().
+  void SetAddTrustedRecoveryMethodSuccess(bool success) {
+    add_trusted_recovery_method_success_ = success;
+  }
+
   // TrustedVaultClient implementation.
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -121,10 +126,11 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   void GetIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       base::OnceCallback<void(bool)> callback) override;
-  void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
-                                const std::vector<uint8_t>& public_key,
-                                int method_type_hint,
-                                base::OnceClosure callback) override;
+  void AddTrustedRecoveryMethod(
+      const GaiaId& gaia_id,
+      const std::vector<uint8_t>& public_key,
+      int method_type_hint,
+      base::OnceCallback<void(bool)> callback) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
  private:
@@ -150,6 +156,7 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int server_request_count_ = 0;
   std::vector<base::OnceClosure> pending_responses_;
   bool is_recovery_method_required_ = false;
+  bool add_trusted_recovery_method_success_ = true;
 
   base::WeakPtrFactory<FakeTrustedVaultClient> weak_ptr_factory_{this};
 };

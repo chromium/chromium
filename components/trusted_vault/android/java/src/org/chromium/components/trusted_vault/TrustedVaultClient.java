@@ -464,7 +464,7 @@ public class TrustedVaultClient {
                     }
                     TrustedVaultClientJni.get()
                             .addTrustedRecoveryMethodCompleted(
-                                    nativeTrustedVaultClientAndroid, requestId);
+                                    nativeTrustedVaultClientAndroid, requestId, success);
                 };
 
         get(securityDomainId)
@@ -489,7 +489,8 @@ public class TrustedVaultClient {
         void getIsRecoverabilityDegradedCompleted(
                 long nativeTrustedVaultClientAndroid, int requestId, boolean isDegraded);
 
-        void addTrustedRecoveryMethodCompleted(long nativeTrustedVaultClientAndroid, int requestId);
+        void addTrustedRecoveryMethodCompleted(
+                long nativeTrustedVaultClientAndroid, int requestId, boolean succeeded);
 
         void notifyKeysChanged(
                 long nativeTrustedVaultClientAndroid,

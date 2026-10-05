@@ -58,7 +58,7 @@ class StandaloneTrustedVaultClient : public TrustedVaultClient {
   void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
-                                base::OnceClosure cb) override;
+                                base::OnceCallback<void(bool)> cb) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
   // Notifications routed from StandaloneTrustedVaultFrontend on the UI thread.

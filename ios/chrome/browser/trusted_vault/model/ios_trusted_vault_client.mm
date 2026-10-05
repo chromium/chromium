@@ -75,7 +75,7 @@ void IOSTrustedVaultClient::AddTrustedRecoveryMethod(
     const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(bool)> callback) {
   // Not used on iOS.
   NOTREACHED();
 }

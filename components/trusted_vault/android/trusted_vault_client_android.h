@@ -64,7 +64,9 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Called from Java to notify the completion of a
   // AddTrustedRecoveryMethod() operation previously initiated from C++ and
   // identified by |request_id|.
-  void AddTrustedRecoveryMethodCompleted(JNIEnv* env, int32_t request_id);
+  void AddTrustedRecoveryMethodCompleted(JNIEnv* env,
+                                         int32_t request_id,
+                                         bool succeeded);
 
   // Called from Java to notify that the keys in the vault may have changed.
   void NotifyKeysChanged(JNIEnv* env, std::optional<int32_t> trigger);
@@ -93,7 +95,7 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
-                                base::OnceClosure cb) override;
+                                base::OnceCallback<void(bool)> cb) override;
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override;
 
  private:
@@ -135,11 +137,12 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Struct representing an in-flight AddTrustedRecoveryMethod() invoked from
   // C++.
   struct OngoingAddTrustedRecoveryMethod {
-    explicit OngoingAddTrustedRecoveryMethod(base::OnceClosure callback);
+    explicit OngoingAddTrustedRecoveryMethod(
+        base::OnceCallback<void(bool)> callback);
     OngoingAddTrustedRecoveryMethod(OngoingAddTrustedRecoveryMethod&&);
     ~OngoingAddTrustedRecoveryMethod();
 
-    base::OnceClosure callback;
+    base::OnceCallback<void(bool)> callback;
   };
 
   using RequestId = int32_t;

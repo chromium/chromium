@@ -7,6 +7,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -14,6 +15,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -1977,10 +1979,10 @@ IN_PROC_BROWSER_TEST_P(
 
   // Mimic a recovery method being added before or during sign-in, which should
   // be deferred until sign-in completes.
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   GetSyncTrustedVaultClient()->AddTrustedRecoveryMethod(
       kDefaultGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
-      run_loop.QuitClosure());
+      future.GetCallback());
 
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
 
@@ -1988,7 +1990,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(SetupSync());
 
   // Wait until AddTrustedRecoveryMethod() completes.
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
 
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)
@@ -2033,10 +2035,10 @@ IN_PROC_BROWSER_TEST_P(
 
   // Mimic a recovery method being added during a persistent auth error, which
   // should be deferred until the auth error is resolved.
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   GetSyncTrustedVaultClient()->AddTrustedRecoveryMethod(
       kDefaultGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
-      run_loop.QuitClosure());
+      future.GetCallback());
 
   // Mimic the auth error state being resolved.
   ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
@@ -2048,7 +2050,7 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_FALSE(GetSyncService(0)->GetAuthError().IsPersistentError());
 
   // Wait until AddTrustedRecoveryMethod() completes.
-  run_loop.Run();
+  EXPECT_TRUE(future.Get());
 
   EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
                                                              /*degraded=*/false)
@@ -2209,11 +2211,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriWithWebApiTest,
                   .Wait());
 
   // Mimic a recovery method being added.
-  base::RunLoop run_loop;
+  base::test::TestFuture<bool> future;
   GetSyncTrustedVaultClient()->AddTrustedRecoveryMethod(
       kDefaultGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
-      run_loop.QuitClosure());
-  run_loop.Run();
+      future.GetCallback());
+  EXPECT_TRUE(future.Get());
 
   // Verify that recovery method was added. Server rejects the request if client
   // didn't send all keys.

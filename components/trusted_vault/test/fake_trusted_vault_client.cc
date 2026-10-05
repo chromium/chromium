@@ -232,10 +232,11 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
     const GaiaId& gaia_id,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
-    base::OnceClosure callback) {
-  server_.AddRecoveryMethod(gaia_id, public_key, method_type_hint);
-  std::move(callback).Run();
-
+    base::OnceCallback<void(bool)> callback) {
+  if (add_trusted_recovery_method_success_) {
+    server_.AddRecoveryMethod(gaia_id, public_key, method_type_hint);
+  }
+  std::move(callback).Run(add_trusted_recovery_method_success_);
   for (auto& observer : observer_list_) {
     // May be a false positive, but observers should handle this well.
     observer.OnTrustedVaultRecoverabilityChanged();

@@ -36,6 +36,7 @@
 #include "components/trusted_vault/test/legacy_fake_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
@@ -1578,7 +1579,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
         return std::make_unique<TrustedVaultConnection::Request>();
       });
 
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
   backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, security_domain_id(),
                                       kPublicKey, kMethodTypeHint,
                                       completion_callback.Get());
@@ -1587,7 +1588,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
   ASSERT_FALSE(registration_callback.is_null());
 
   // Mimic successful completion of the request.
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback, Run(true));
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
@@ -1608,8 +1609,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
 
-  base::MockCallback<base::OnceClosure> completion_callback;
-  EXPECT_CALL(completion_callback, Run());
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
+  EXPECT_CALL(completion_callback, Run(false));
   backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, security_domain_id(),
                                       kInvalidPublicKey, kMethodTypeHint,
                                       completion_callback.Get());
@@ -1629,7 +1630,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
 
   // No request should be issued while there is no primary account.
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, security_domain_id(),
                                       kPublicKey, kMethodTypeHint,
@@ -1670,7 +1671,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(registration_callback.is_null());
 
   // Mimic successful completion of the request.
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback, Run(true));
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
@@ -1694,7 +1695,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
                         kPersistentAuthError);
 
   // No request should be issued while there is a persistent auth error.
-  base::MockCallback<base::OnceClosure> completion_callback;
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
   backend()->AddTrustedRecoveryMethod(kAccountInfo.gaia, security_domain_id(),
                                       kPublicKey, kMethodTypeHint,
@@ -1737,7 +1738,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   ASSERT_FALSE(registration_callback.is_null());
 
   // Mimic successful completion of the request.
-  EXPECT_CALL(completion_callback, Run());
+  EXPECT_CALL(completion_callback, Run(true));
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 }
@@ -1763,10 +1764,10 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Add a pending recovery method for `kAccountInfo1`, then another for
   // `kAccountInfo2` while there is no primary account.
-  base::MockCallback<base::OnceClosure> completion_callback1;
-  base::MockCallback<base::OnceClosure> completion_callback2;
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback1;
+  base::MockCallback<base::OnceCallback<void(bool)>> completion_callback2;
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor).Times(0);
-  EXPECT_CALL(completion_callback1, Run()).Times(0);
+  EXPECT_CALL(completion_callback1, Run(_)).Times(0);
   backend()->AddTrustedRecoveryMethod(kAccountInfo1.gaia, security_domain_id(),
                                       kPublicKey1, kMethodTypeHint,
                                       completion_callback1.Get());
@@ -1805,7 +1806,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_FALSE(backend()->HasPendingTrustedRecoveryMethodForTesting());
   ASSERT_FALSE(registration_callback.is_null());
 
-  EXPECT_CALL(completion_callback2, Run());
+  EXPECT_CALL(completion_callback2, Run(true));
   std::move(registration_callback)
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 

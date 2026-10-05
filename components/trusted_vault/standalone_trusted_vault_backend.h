@@ -148,7 +148,7 @@ class StandaloneTrustedVaultBackend
                                 SecurityDomainId security_domain,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
-                                base::OnceClosure cb);
+                                base::OnceCallback<void(bool)> cb);
 
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
@@ -214,7 +214,9 @@ class StandaloneTrustedVaultBackend
                        int last_vault_key_version);
 
   void OnTrustedRecoveryMethodAdded(SecurityDomainId security_domain,
-                                    base::OnceClosure cb);
+                                    base::OnceCallback<void(bool)> cb,
+                                    TrustedVaultRegistrationStatus status,
+                                    int unused_epoch);
 
   // Invokes |callback| with currently available keys for |gaia_id|.
   void FulfillFetchKeys(
@@ -287,7 +289,7 @@ class StandaloneTrustedVaultBackend
     SecurityDomainId security_domain;
     std::vector<uint8_t> public_key;
     int method_type_hint;
-    base::OnceClosure completion_callback;
+    base::OnceCallback<void(bool)> completion_callback;
   };
   std::vector<PendingTrustedRecoveryMethod> pending_trusted_recovery_methods_;
 

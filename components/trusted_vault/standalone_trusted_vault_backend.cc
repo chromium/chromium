@@ -482,10 +482,10 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
     SecurityDomainId security_domain,
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
-    base::OnceClosure cb) {
+    base::OnceCallback<void(bool)> cb) {
   CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
   if (public_key.empty()) {
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 
@@ -516,7 +516,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
   CHECK(pending_trusted_recovery_methods_.empty());
 
   if (primary_account_->gaia != gaia_id) {
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 
@@ -527,7 +527,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
   if (vault_keys.empty()) {
     // Can't add recovery method while there are no local keys.
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 
@@ -535,7 +535,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
       SecureBoxPublicKey::CreateByImport(public_key);
   if (!imported_public_key) {
     // Invalid public key.
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 
@@ -543,7 +543,7 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
 
   if (!connection_) {
     // Feature disabled.
-    std::move(cb).Run();
+    std::move(cb).Run(false);
     return;
   }
 
@@ -553,9 +553,9 @@ void StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod(
           GetTrustedVaultKeysWithVersions(vault_keys, last_key_version),
           *imported_public_key,
           UnspecifiedAuthenticationFactorType(method_type_hint),
-          base::IgnoreArgs<TrustedVaultRegistrationStatus, int>(base::BindOnce(
+          base::BindOnce(
               &StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded,
-              weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb))));
+              weak_ptr_factory_.GetWeakPtr(), security_domain, std::move(cb)));
 }
 
 void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
@@ -787,11 +787,32 @@ void StandaloneTrustedVaultBackend::OnKeysRecovered(
 
 void StandaloneTrustedVaultBackend::OnTrustedRecoveryMethodAdded(
     SecurityDomainId security_domain,
-    base::OnceClosure cb) {
+    base::OnceCallback<void(bool)> cb,
+    TrustedVaultRegistrationStatus status,
+    int unused_epoch) {
   CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
   ongoing_add_recovery_method_requests_.erase(security_domain);
 
-  std::move(cb).Run();
+  switch (status) {
+    case TrustedVaultRegistrationStatus::kRegistrationNotAttempted:
+    case TrustedVaultRegistrationStatus::kRegistrationCancelled:
+      // Those states are never reported by
+      // TrustedVaultConnection::RegisterAuthenticationFactor.
+      NOTREACHED();
+    case TrustedVaultRegistrationStatus::kSuccess:
+    case TrustedVaultRegistrationStatus::kAlreadyRegistered:
+      std::move(cb).Run(true);
+      break;
+    case TrustedVaultRegistrationStatus::kLocalDataObsolete:
+    case TrustedVaultRegistrationStatus::kTransientAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::kNetworkError:
+    case TrustedVaultRegistrationStatus::kOtherError:
+      std::move(cb).Run(false);
+      break;
+  }
 
   auto it = degraded_recoverability_handlers_.find(security_domain);
   if (it != degraded_recoverability_handlers_.end()) {

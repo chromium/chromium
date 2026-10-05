@@ -84,7 +84,7 @@ class StandaloneTrustedVaultFrontend
                                 SecurityDomainId security_domain,
                                 const std::vector<uint8_t>& public_key,
                                 int method_type_hint,
-                                base::OnceClosure cb);
+                                base::OnceCallback<void(bool)> cb);
   void ClearLocalDataForAccount(const CoreAccountInfo& account_info);
 
   // Testing methods.
