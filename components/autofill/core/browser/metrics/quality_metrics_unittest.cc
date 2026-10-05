@@ -1104,7 +1104,7 @@ TEST_F(QualityMetricsTest, SplitZip_PrefixPredictionIsTruePositive) {
                                 1)));
 }
 
-// Tests that the metric Autofill.SubmittedCountryCode logs submitted country
+// Tests that the metric Autofill.SubmittedCountryCode2 logs submitted country
 // codes as intended.
 TEST_F(QualityMetricsTest, SubmittedCountryCode_True) {
   base::HistogramTester histogram_tester;
@@ -1125,15 +1125,16 @@ TEST_F(QualityMetricsTest, SubmittedCountryCode_True) {
   ASSERT_TRUE(form_structure);
   form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->field(1)->AddFieldModifier(FieldModifier::kUser);
+  form_structure->field(2)->AddFieldModifier(FieldModifier::kUser);
 
   SubmitForm(form);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode2"),
               BucketsAre(Bucket(true, 3), Bucket(false, 0)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCountryCode.Autofilled", true, 1);
+      "Autofill.SubmittedCountryCode2.Autofilled", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCountryCode.ManuallyFilled", true, 1);
+      "Autofill.SubmittedCountryCode2.ManuallyFilled", true, 2);
 }
 
 // Tests that the metrics Autofill.SubmittedCountryCode are logged correctly on
@@ -1157,15 +1158,16 @@ TEST_F(QualityMetricsTest, SubmittedCountryCode_False) {
   ASSERT_TRUE(form_structure);
   form_structure->field(0)->AddFieldModifier(FieldModifier::kAutofill);
   form_structure->field(1)->AddFieldModifier(FieldModifier::kUser);
+  form_structure->field(2)->AddFieldModifier(FieldModifier::kUser);
 
   SubmitForm(form);
 
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode"),
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.SubmittedCountryCode2"),
               BucketsAre(Bucket(true, 0), Bucket(false, 3)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCountryCode.Autofilled", false, 1);
+      "Autofill.SubmittedCountryCode2.Autofilled", false, 1);
   histogram_tester.ExpectUniqueSample(
-      "Autofill.SubmittedCountryCode.ManuallyFilled", false, 1);
+      "Autofill.SubmittedCountryCode2.ManuallyFilled", false, 2);
 }
 
 // Tests that the metrics Autofill.SubmittedCountryCode is not logged on
@@ -1174,23 +1176,27 @@ TEST_F(QualityMetricsTest, SubmittedCountryCode_NotCounted) {
   base::HistogramTester histogram_tester;
   const FormData form = GetAndAddSeenForm({
       .fields =
-          {
-              // Empty two-character string.
-              {.role = ADDRESS_HOME_COUNTRY, .value = u"  "},
-              // Select elements are not logged.
-              {.role = ADDRESS_HOME_COUNTRY,
-               .value = u"US",
-               .form_control_type = FormControlType::kSelectOne},
-          },
+          {// Empty two-character string.
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"  "},
+           // Select elements are not logged.
+           {.role = ADDRESS_HOME_COUNTRY,
+            .value = u"US",
+            .form_control_type = FormControlType::kSelectOne},
+           // Non-focusable fields are not logged.
+           {.role = ADDRESS_HOME_COUNTRY,
+            .is_focusable = false,
+            .value = u"AT"},
+           // Valid field, but no user or Autofill interaction.
+           {.role = ADDRESS_HOME_COUNTRY, .value = u"BD"}},
   });
 
   SubmitForm(form);
 
-  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode", 0);
-  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode.Autofilled",
+  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode2", 0);
+  histogram_tester.ExpectTotalCount("Autofill.SubmittedCountryCode2.Autofilled",
                                     0);
   histogram_tester.ExpectTotalCount(
-      "Autofill.SubmittedCountryCode.ManuallyFilled", 0);
+      "Autofill.SubmittedCountryCode2.ManuallyFilled", 0);
 }
 
 }  // namespace autofill::autofill_metrics

@@ -158,10 +158,18 @@ GetAlternativeNameFieldValueCharacterSet(
 void LogSubmittedCountryCodeMetric(const FormStructure& form) {
   for (const std::unique_ptr<AutofillField>& field : form) {
     if (field->IsSelectElement() ||
-        field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY) {
+        field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY ||
+        !field->is_focusable() || field->all_modifiers().empty()) {
+      // Fields must satisfy all of the following in order to be logged:
+      // * Must not be a select elements because these have a separate filling
+      //   process which is not affected by the experiment.
+      // * Must be an address country field.
+      // * Must be focusable and touched by a user (either edited or autofilled)
+      //   to avoid logging metrics for hidden fields that are synchronized by
+      //   JavaScript.
       continue;
     }
-    std::u16string_view value =
+    const std::u16string_view value =
         base::TrimWhitespace(field->value(), base::TRIM_ALL);
     if (value.empty()) {
       continue;
@@ -170,22 +178,21 @@ void LogSubmittedCountryCodeMetric(const FormStructure& form) {
     const bool is_valid_country_code =
         data_util::IsValidCountryCode(base::ToUpperASCII(value));
 
-    base::UmaHistogramBoolean("Autofill.SubmittedCountryCode",
+    base::UmaHistogramBoolean("Autofill.SubmittedCountryCode2",
                               is_valid_country_code);
-    if (!field->last_modifier()) {
-      continue;
-    }
-    switch (*field->last_modifier()) {
-      case FieldModifier::kAutofill:
-        base::UmaHistogramBoolean("Autofill.SubmittedCountryCode.Autofilled",
-                                  is_valid_country_code);
-        break;
-      case FieldModifier::kUser:
-        base::UmaHistogramBoolean(
-            "Autofill.SubmittedCountryCode.ManuallyFilled",
-            is_valid_country_code);
-        break;
-    }
+    const std::string_view filling_method = [&] {
+      switch (*field->last_modifier()) {
+        case FieldModifier::kAutofill:
+          return "Autofilled";
+        case FieldModifier::kUser:
+          return "ManuallyFilled";
+      }
+      NOTREACHED();
+    }();
+
+    base::UmaHistogramBoolean(
+        base::StrCat({"Autofill.SubmittedCountryCode2.", filling_method}),
+        is_valid_country_code);
   }
 }
 
