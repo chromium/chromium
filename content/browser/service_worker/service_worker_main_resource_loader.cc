@@ -337,7 +337,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
     base::ElapsedTimer router_evaluation_timer;
     response_head_->load_timing.service_worker_router_evaluation_start =
-        base::TimeTicks::Now();
+        router_evaluation_timer.start_time();
     auto eval_result = active_worker->router_evaluator()->Evaluate(
         resource_request_, running_status);
     router_info->router_evaluation_time = router_evaluation_timer.Elapsed();

@@ -404,9 +404,10 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
 
     base::ElapsedTimer router_evaluation_timer;
     response_head_->load_timing.service_worker_router_evaluation_start =
-        base::TimeTicks::Now();
+        router_evaluation_timer.start_time();
     const auto eval_result = EvaluateRouterConditions();
-    router_info->router_evaluation_time = router_evaluation_timer.Elapsed();
+    base::TimeTicks now;
+    router_info->router_evaluation_time = router_evaluation_timer.Elapsed(&now);
     if (eval_result) {  // matched the rule.
       const auto& sources = eval_result->sources;
       auto source_type = sources[0].type;
@@ -420,8 +421,8 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
           // Network fallback is requested.
           {
             auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
-            timing->dispatch_event_time = base::TimeTicks::Now();
-            timing->respond_with_settled_time = base::TimeTicks::Now();
+            timing->dispatch_event_time = now;
+            timing->respond_with_settled_time = now;
             OnFallback(std::nullopt, std::move(timing), /*errors=*/nullptr);
           }
           return;
