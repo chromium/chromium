@@ -333,6 +333,9 @@ BASE_FEATURE(kNtpThreadsRail, base::FEATURE_DISABLED_BY_DEFAULT);
 // If enabled, will enable Instant API for Android devices.
 BASE_FEATURE(kNtpEnableInstantApiAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, shortcuts will have a reorder entrypoint.
+BASE_FEATURE(kNtpShortcutsReorder, base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =
