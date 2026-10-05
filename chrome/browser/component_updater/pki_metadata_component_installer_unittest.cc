@@ -19,7 +19,6 @@
 #include "base/version.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer_policy.h"
-#include "chrome/browser/net/key_pinning.pb.h"
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "components/component_updater/component_installer.h"
@@ -29,7 +28,6 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/cert/cert_verify_proc.h"
-#include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 #include "services/network/network_service.h"
@@ -39,6 +37,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "chrome/browser/net/key_pinning.pb.h"
+#include "net/http/transport_security_state.h"
+#endif
 
 namespace component_updater {
 
@@ -75,23 +78,7 @@ constexpr base::TimeDelta kGoogleLogDisqualificationDate = base::Days(2);
 const char kPopularSCT1[] = "EBESExQVFhcYGRobHB0eHwEjRWeJq83v";
 const char kPopularSCT2[] = "oKGio6SlpqeoqaqrrK2urwEjRWeJq83v";
 
-// Constants for test pinset.
-const char kPinsetName[] = "example";
-const char kPinsetHostName[] = "example.test";
-const bool kPinsetIncludeSubdomains = true;
-
-// SHA256 SPKI hashes.
-constexpr uint8_t kSpkiHash1[] = {
-    0xec, 0x72, 0x29, 0x69, 0xcb, 0x64, 0x20, 0x0a, 0xb6, 0x63, 0x8f,
-    0x68, 0xac, 0x53, 0x8e, 0x40, 0xab, 0xab, 0x5b, 0x19, 0xa6, 0x48,
-    0x56, 0x61, 0x04, 0x2a, 0x10, 0x61, 0xc4, 0x61, 0x27, 0x76};
-constexpr uint8_t kSpkiHash2[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
 constexpr uint64_t kMaxSupportedCTCompatibilityVersion = 4;
-constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
 }  // namespace
 
@@ -188,6 +175,51 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
         base::Base64Decode(kPopularSCT1, ct_config_.add_popular_scts()));
     ASSERT_TRUE(
         base::Base64Decode(kPopularSCT2, ct_config_.add_popular_scts()));
+  }
+
+  void WriteCTConfigToFile() {
+    ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
+    base::FilePath ct_file_path = component_install_dir_.GetPath().Append(
+        FILE_PATH_LITERAL("ct_config.pb"));
+    std::string ct_data;
+    ASSERT_TRUE(ct_config_.SerializeToString(&ct_data));
+    ASSERT_TRUE(base::WriteFile(ct_file_path, ct_data));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  content::BrowserTaskEnvironment task_environment_;
+  component_updater::MockComponentUpdateService mock_component_update_;
+  base::ScopedTempDir component_install_dir_;
+
+  chrome_browser_certificate_transparency::CTConfig ct_config_;
+  std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_ =
+      std::make_unique<
+          component_updater::PKIMetadataComponentInstallerPolicy>();
+};
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+class PKIMetadataComponentInstallerKeyPinningTest
+    : public PKIMetadataComponentInstallerTest {
+ public:
+  // Constants for test pinset.
+  static constexpr char kPinsetName[] = "example";
+  static constexpr char kPinsetHostName[] = "example.test";
+  static constexpr bool kPinsetIncludeSubdomains = true;
+  static constexpr uint64_t kMaxSupportedKPCompatibilityVersion = 1;
+
+  // SHA256 SPKI hashes.
+  static constexpr uint8_t kSpkiHash1[] = {
+      0xec, 0x72, 0x29, 0x69, 0xcb, 0x64, 0x20, 0x0a, 0xb6, 0x63, 0x8f,
+      0x68, 0xac, 0x53, 0x8e, 0x40, 0xab, 0xab, 0x5b, 0x19, 0xa6, 0x48,
+      0x56, 0x61, 0x04, 0x2a, 0x10, 0x61, 0xc4, 0x61, 0x27, 0x76};
+  static constexpr uint8_t kSpkiHash2[] = {
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
+  void SetUp() override {
+    PKIMetadataComponentInstallerTest::SetUp();
 
     // Configure the key pinning pins list.
     {
@@ -209,15 +241,6 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
     }
   }
 
-  void WriteCTConfigToFile() {
-    ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
-    base::FilePath ct_file_path = component_install_dir_.GetPath().Append(
-        FILE_PATH_LITERAL("ct_config.pb"));
-    std::string ct_data;
-    ASSERT_TRUE(ct_config_.SerializeToString(&ct_data));
-    ASSERT_TRUE(base::WriteFile(ct_file_path, ct_data));
-  }
-
   void WriteKPConfigToFile() {
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
     base::FilePath kp_file_path = component_install_dir_.GetPath().Append(
@@ -228,17 +251,9 @@ class PKIMetadataComponentInstallerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  content::BrowserTaskEnvironment task_environment_;
-  component_updater::MockComponentUpdateService mock_component_update_;
-  base::ScopedTempDir component_install_dir_;
-
-  chrome_browser_certificate_transparency::CTConfig ct_config_;
   chrome_browser_key_pinning::PinList pinlist_;
-  std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_ =
-      std::make_unique<
-          component_updater::PKIMetadataComponentInstallerPolicy>();
 };
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 TEST_F(PKIMetadataComponentInstallerTest, TestProtoBytesConversion) {
   std::vector<net::SHA256HashValue> test_hashes = {
@@ -269,12 +284,6 @@ TEST_F(PKIMetadataComponentInstallerTest, TestProtoBytesConversion) {
 TEST_F(PKIMetadataComponentInstallerTest, VerifyInstallation) {
   WriteCTConfigToFile();
   base::FilePath path = component_install_dir_.GetPath();
-  EXPECT_TRUE(policy_->VerifyInstallation(base::DictValue(), path));
-  ASSERT_TRUE(component_install_dir_.Delete());
-  EXPECT_FALSE(policy_->VerifyInstallation(base::DictValue(), path));
-
-  WriteKPConfigToFile();
-  path = component_install_dir_.GetPath();
   EXPECT_TRUE(policy_->VerifyInstallation(base::DictValue(), path));
   ASSERT_TRUE(component_install_dir_.Delete());
   EXPECT_FALSE(policy_->VerifyInstallation(base::DictValue(), path));
@@ -314,9 +323,18 @@ TEST_F(PKIMetadataComponentInstallerTest, CTEnforcementKillSwitch) {
   EXPECT_FALSE(network_service->is_ct_enforcement_enabled_for_testing());
 }
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+TEST_F(PKIMetadataComponentInstallerKeyPinningTest, VerifyInstallation) {
+  WriteKPConfigToFile();
+  base::FilePath path = component_install_dir_.GetPath();
+  EXPECT_TRUE(policy_->VerifyInstallation(base::DictValue(), path));
+  ASSERT_TRUE(component_install_dir_.Delete());
+  EXPECT_FALSE(policy_->VerifyInstallation(base::DictValue(), path));
+}
+
 // Tests that installing the component updates the key pinning configuration in
 // the network service.
-TEST_F(PKIMetadataComponentInstallerTest,
+TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentUpdatesPinningConfig) {
   // Initialize the network service.
   content::GetNetworkService();
@@ -350,7 +368,8 @@ TEST_F(PKIMetadataComponentInstallerTest,
 
 // Tests that installing the PKI Metadata component bails out if the KP proto is
 // invalid.
-TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidKPProto) {
+TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
+       InstallComponentInvalidKPProto) {
   // Initialize the network service.
   content::GetNetworkService();
   task_environment_.RunUntilIdle();
@@ -381,7 +400,7 @@ TEST_F(PKIMetadataComponentInstallerTest, InstallComponentInvalidKPProto) {
 
 // Tests that installing the PKI Metadata component does not update the pinning
 // list if its compatibility version exceeds the value supported.
-TEST_F(PKIMetadataComponentInstallerTest,
+TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentIncompatibleKPVersion) {
   // Initialize the network service.
   content::GetNetworkService();
@@ -409,10 +428,9 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(host_pins.size(), 0u);
 }
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 // Tests that installing the PKI Metadata component does not update the pinning
 // list if the built in list is newer.
-TEST_F(PKIMetadataComponentInstallerTest,
+TEST_F(PKIMetadataComponentInstallerKeyPinningTest,
        InstallComponentKPListOlderThanBuiltIn) {
   // Initialize the network service.
   content::GetNetworkService();
@@ -439,7 +457,7 @@ TEST_F(PKIMetadataComponentInstallerTest,
   EXPECT_EQ(network_service->pinsets().size(), 0u);
   EXPECT_EQ(network_service->host_pins().size(), 0u);
 }
-#endif
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 // Tests that installing the PKI Metadata component updates the CT configuration

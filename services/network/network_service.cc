@@ -79,6 +79,7 @@
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_util.h"
+#include "net/net_buildflags.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/ssl/ssl_key_logger_impl.h"
@@ -96,7 +97,6 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
-#include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/public/mojom/system_dns_resolution.mojom-forward.h"
 #include "services/network/restricted_cookie_manager.h"
@@ -120,8 +120,14 @@
 #endif
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
+#include "net/http/transport_security_state.h"
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 #endif
+
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "net/http/transport_security_state.h"
+#include "services/network/public/mojom/key_pinning.mojom.h"
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(ENABLE_VRP_FLAGS)
 #include "components/vrp_flags/vrp_flags.h"       // nogncheck
@@ -1004,6 +1010,7 @@ void NetworkService::SetCtEnforcementEnabled(
 
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
                                        base::Time update_time) {
   pins_list_updated_ = true;
@@ -1026,6 +1033,7 @@ void NetworkService::UpdateKeyPinsList(mojom::PinListPtr pin_list,
     }
   }
 }
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(IS_ANDROID)
 void NetworkService::DumpWithoutCrashing(base::Time dump_request_time) {

@@ -106,9 +106,11 @@ class PKIMetadataComponentInstallerService final {
   // |ct_config_bytes| should be a serialized CTLogList proto message.
   void UpdateNetworkServiceCTListOnUI(const std::string& ct_config_bytes);
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   // Updates the network service pins list with the component delivered data.
   // |kp_config_bytes| should be a serialized KPConfig proto message.
   void UpdateNetworkServiceKPListOnUI(const std::string& kp_config_bytes);
+#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
   static std::optional<mojo_base::ProtoWrapper> ParseChromeRootStore(

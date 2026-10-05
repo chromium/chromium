@@ -38,7 +38,6 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer_policy.h"
 #include "chrome/browser/component_updater/pki_metadata_fastpush_component_installer_policy.h"
-#include "chrome/browser/net/key_pinning.pb.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "content/public/browser/network_service_instance.h"
@@ -50,7 +49,6 @@
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
-#include "services/network/public/mojom/key_pinning.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -71,7 +69,9 @@
 #endif
 
 #if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+#include "chrome/browser/net/key_pinning.pb.h"
 #include "net/http/transport_security_state.h"
+#include "services/network/public/mojom/key_pinning.mojom.h"
 #endif
 
 namespace {
@@ -83,13 +83,6 @@ namespace {
 // enforcement to eventually stop. This should also only be increased if Chrome
 // is compatible with the version it is being incremented to.
 const uint64_t kMaxSupportedCTCompatibilityVersion = 4;
-
-// This is the last version of key pins lists that this version of Chrome will
-// accept. If a list is delivered with a compatibility version higher than this,
-// it will be ignored. This should never be decreased since that will cause key
-// pinning enforcement to eventually stop. This should also only be increased if
-// Chrome is compatible with the version it is being incremented to.
-const uint64_t kMaxSupportedKPCompatibilityVersion = 1;
 
 // This is the last version of signer sets that this version of Chrome will
 // accept. If a list is delivered with a compatibility version higher than this,
@@ -112,8 +105,17 @@ constexpr base::TimeDelta kMaxMtcMetadataAge = base::Days(47);
 const base::FilePath::CharType kCTConfigProtoFileName[] =
     FILE_PATH_LITERAL("ct_config.pb");
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
+// This is the last version of key pins lists that this version of Chrome will
+// accept. If a list is delivered with a compatibility version higher than this,
+// it will be ignored. This should never be decreased since that will cause key
+// pinning enforcement to eventually stop. This should also only be increased if
+// Chrome is compatible with the version it is being incremented to.
+const uint64_t kMaxSupportedKPCompatibilityVersion = 1;
+
 const base::FilePath::CharType kKPConfigProtoFileName[] =
     FILE_PATH_LITERAL("kp_pinslist.pb");
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 const base::FilePath::CharType kCRSProtoFileName[] =
@@ -625,6 +627,7 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
                            UpdateNetworkServiceCTListOnUI,
                        weak_factory_.GetWeakPtr()));
   }
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadBinaryProtoFromDisk,
@@ -632,6 +635,7 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
       base::BindOnce(
           &PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI,
           weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 }
 
 void PKIMetadataComponentInstallerService::OnComponentReady(
@@ -822,6 +826,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 
+#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     const std::string& kp_config_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -840,14 +845,12 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
                                base::Seconds(proto->timestamp().seconds()) +
                                base::Nanoseconds(proto->timestamp().nanos());
 
-#if BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
   // Do not update the pins list with the component data if it's older than the
   // built in list.
   if (proto_timestamp <
       net::TransportSecurityState::GetBuiltInPinsListTimestamp()) {
     return;
   }
-#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
   network::mojom::PinListPtr pinlist_ptr = network::mojom::PinList::New();
 
@@ -872,6 +875,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
 
   network_service->UpdateKeyPinsList(std::move(pinlist_ptr), proto_timestamp);
 }
+#endif  // BUILDFLAG(CHROME_KEY_PINNING_SUPPORTED)
 
 void PKIMetadataComponentInstallerService::NotifyCTLogListConfigured() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

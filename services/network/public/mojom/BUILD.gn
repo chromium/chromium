@@ -1931,7 +1931,6 @@ mojom("mojom") {
     "default_credentials.mojom",
     "dhcp_wpad_url_client.mojom",
     "http_cache_backend_file_operations.mojom",
-    "key_pinning.mojom",
     "mdns_responder.mojom",
     "net_log.mojom",
     "network_annotation_monitor.mojom",
@@ -2000,6 +1999,11 @@ mojom("mojom") {
   if (is_ct_supported) {
     enabled_features += [ "is_ct_supported" ]
     sources += [ "ct_log_info.mojom" ]
+  }
+
+  if (chrome_key_pinning_supported) {
+    enabled_features += [ "chrome_key_pinning_supported" ]
+    sources += [ "key_pinning.mojom" ]
   }
 
   if (is_p2p_enabled) {
