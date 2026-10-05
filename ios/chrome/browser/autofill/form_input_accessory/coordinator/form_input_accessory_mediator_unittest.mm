@@ -27,7 +27,9 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -865,7 +867,8 @@ TEST_F(FormInputAccessoryMediatorTest,
 }
 
 // Tests that `updateWithNewWebState:` does not hide `atMemoryButtonHidden` when
-// AutofillAtMemory and SkipEligibility are enabled.
+// AutofillAtMemory and SkipEligibility are enabled and user consented to
+// Gemini.
 TEST_F(FormInputAccessoryMediatorTest,
        UpdateWithNewWebStateAtMemoryButtonNotHidden) {
   base::test::ScopedFeatureList feature_list;
@@ -876,6 +879,9 @@ TEST_F(FormInputAccessoryMediatorTest,
 
   autofill::TestAutofillClientIOS autofill_client(
       web_state_list_.GetActiveWebState(), nil);
+  autofill_client.GetPrefs()->registry()->RegisterBooleanPref(
+      prefs::kIOSBwgConsent, false);
+  gemini::UpdateUserConsentPrefs(true, autofill_client.GetPrefs());
 
   OCMExpect([consumer_ setAtMemoryButtonHidden:NO]);
 

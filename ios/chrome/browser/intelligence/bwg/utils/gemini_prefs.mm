@@ -40,7 +40,7 @@ FirstRunState CurrentFirstRunState(PrefService* prefs) {
   return FirstRunState::kPending;
 }
 
-bool DidUserConsentToGemini(PrefService* prefs) {
+bool DidUserConsentToGemini(const PrefService* prefs) {
   return prefs->GetBoolean(::prefs::kIOSBwgConsent);
 }
 

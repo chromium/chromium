@@ -42,6 +42,7 @@
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/personal_context/core/mock_personal_context_eligibility_service.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/model/autofill_agent_delegate.h"
@@ -50,8 +51,10 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/fake_gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
+#import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -77,6 +80,9 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+using personal_context::MockPersonalContextEligibilityService;
+using personal_context::PersonalContextEligibilityState;
 
 namespace autofill {
 
@@ -120,6 +126,16 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
         GeminiServiceFactory::GetInstance(),
         base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
           return std::make_unique<FakeGeminiService>();
+        }));
+    builder.AddTestingFactory(
+        IOSPersonalContextEligibilityServiceFactory::GetInstance(),
+        base::BindRepeating([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          auto service = std::make_unique<
+              testing::NiceMock<MockPersonalContextEligibilityService>>();
+          ON_CALL(*service, GetEligibilityState())
+              .WillByDefault(
+                  testing::Return(PersonalContextEligibilityState::kEligible));
+          return service;
         }));
     profile_ = std::move(builder).Build();
 
@@ -885,6 +901,21 @@ TEST_F(ChromeAutofillClientIOSTest,
       resetAutofillSuggestionsLoadingStates]);
   client().HideSuggestions(SuggestionHidingReason::kUserAborted, std::nullopt);
   EXPECT_OCMOCK_VERIFY(mock_form_input_accessory_handler);
+}
+
+// Test that `GetPersonalContextEligibilityState` requires Gemini consent.
+TEST_F(ChromeAutofillClientIOSTest,
+       GetPersonalContextEligibilityStateRequiresConsent) {
+  EXPECT_EQ(client().GetPersonalContextEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
+
+  gemini::UpdateUserConsentPrefs(true, profile()->GetPrefs());
+  EXPECT_EQ(client().GetPersonalContextEligibilityState(),
+            PersonalContextEligibilityState::kEligible);
+
+  gemini::UpdateUserConsentPrefs(false, profile()->GetPrefs());
+  EXPECT_EQ(client().GetPersonalContextEligibilityState(),
+            PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
 }  // namespace autofill

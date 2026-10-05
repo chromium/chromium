@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/metrics/model/google_groups_manager_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -114,6 +115,9 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+
+using personal_context::PersonalContextEligibilityService;
+using personal_context::PersonalContextEligibilityState;
 
 namespace autofill {
 
@@ -380,16 +384,22 @@ ChromeAutofillClientIOS::GetAtMemoryQueryService() {
   return IOSAtMemoryQueryServiceFactory::GetForProfile(profile_);
 }
 
-personal_context::PersonalContextEligibilityState
+PersonalContextEligibilityState
 ChromeAutofillClientIOS::GetPersonalContextEligibilityState() const {
-  personal_context::PersonalContextEligibilityService* service =
+  if (!profile_) {
+    return PersonalContextEligibilityState::kDisabledNotEligible;
+  }
+  const PrefService* prefs = profile_->GetPrefs();
+  if (!prefs || !gemini::DidUserConsentToGemini(prefs)) {
+    return PersonalContextEligibilityState::kDisabledNotEligible;
+  }
+  PersonalContextEligibilityService* service =
       GetPersonalContextEligibilityService();
   return service ? service->GetEligibilityState()
-                 : personal_context::PersonalContextEligibilityState::
-                       kDisabledNotEligible;
+                 : PersonalContextEligibilityState::kDisabledNotEligible;
 }
 
-personal_context::PersonalContextEligibilityService*
+PersonalContextEligibilityService*
 ChromeAutofillClientIOS::GetPersonalContextEligibilityService() const {
   return IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile_);
 }
