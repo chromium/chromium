@@ -53,6 +53,8 @@ class COMPONENT_EXPORT(ACTIONS) ActionList {
   bool empty() const { return children_.empty(); }
 
   BaseAction* AddAction(std::unique_ptr<BaseAction> action_item);
+  BaseAction* AddActionAt(std::unique_ptr<BaseAction> action_item,
+                          size_t index);
   std::unique_ptr<BaseAction> RemoveAction(BaseAction* action_item);
   // Clear the action list vector
   void Reset();
@@ -88,6 +90,15 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
   }
 
   template <typename T>
+  T* AddChildAt(std::unique_ptr<T> action_item, size_t index) {
+    DCHECK(!action_item->GetParent());
+    action_item->parent_ = this;
+    T* result = action_item.get();
+    AddChildAtInternal(std::move(action_item), index);
+    return result;
+  }
+
+  template <typename T>
   std::unique_ptr<T> RemoveChild(T* action_item) {
     DCHECK(action_item);
     DCHECK_EQ(action_item->GetParent(), this);
@@ -116,6 +127,8 @@ class COMPONENT_EXPORT(ACTIONS) BaseAction
   ActionList children_{this};
   PopulateChildActions populate_child_callback_;
   void AddChildInternal(std::unique_ptr<BaseAction> action_item);
+  void AddChildAtInternal(std::unique_ptr<BaseAction> action_item,
+                          size_t index);
 };
 
 // Class returned from ActionItem::BeginUpdate() in order to allow a "batch"

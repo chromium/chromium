@@ -58,6 +58,18 @@ BaseAction* ActionList::AddAction(std::unique_ptr<BaseAction> action_item) {
   return result;
 }
 
+BaseAction* ActionList::AddActionAt(std::unique_ptr<BaseAction> action_item,
+                                    size_t index) {
+  CHECK_LE(index, children_.size());
+  BaseAction* result = action_item.get();
+  children_.insert(children_.begin() + static_cast<ptrdiff_t>(index),
+                   std::move(action_item));
+  if (delegate_) {
+    delegate_->ActionListChanged();
+  }
+  return result;
+}
+
 std::unique_ptr<BaseAction> ActionList::RemoveAction(BaseAction* action_item) {
   auto result = std::find_if(
       children_.begin(), children_.end(),
@@ -116,6 +128,11 @@ void BaseAction::PopulateChildItems() {
 
 void BaseAction::AddChildInternal(std::unique_ptr<BaseAction> action_item) {
   children_.AddAction(std::move(action_item));
+}
+
+void BaseAction::AddChildAtInternal(std::unique_ptr<BaseAction> action_item,
+                                    size_t index) {
+  children_.AddActionAt(std::move(action_item), index);
 }
 
 BEGIN_METADATA_BASE(BaseAction)
