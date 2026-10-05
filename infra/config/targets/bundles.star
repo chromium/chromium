@@ -1073,7 +1073,7 @@ targets.bundle(
     per_test_modifications = {
         "bf_cache_browser_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 10,
+                shards = 20,
             ),
         ),
     },
