@@ -101,7 +101,7 @@ public class TopControlsLockCoordinatorTest {
     }
 
     @Test
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void testLockWhenOnLargeTabletAndStripVisible() {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         mTabStripVisibilitySupplier.set(StripVisibilityState.VISIBLE);
@@ -123,7 +123,7 @@ public class TopControlsLockCoordinatorTest {
     }
 
     @Test
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void testUnlockWhenStripHidden() {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         createCoordinator();
@@ -162,7 +162,7 @@ public class TopControlsLockCoordinatorTest {
     }
 
     @Test
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void testDeferredLocking() {
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(false);
         TopControlsLockCoordinator coordinator = createCoordinator();
@@ -190,7 +190,7 @@ public class TopControlsLockCoordinatorTest {
     }
 
     @Test
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void testNullDesktopWindowStateManager() {
         TopControlsLockCoordinator coordinator =
                 new TopControlsLockCoordinator(
@@ -207,7 +207,7 @@ public class TopControlsLockCoordinatorTest {
     }
 
     @Test
-    @Config(qualifiers = "sw720dp")
+    @Config(qualifiers = "sw1200dp")
     public void testDestroy() {
         TopControlsLockCoordinator coordinator = createCoordinator();
         verify(mDesktopWindowStateManager).addObserver(mAppHeaderObserverCaptor.capture());
