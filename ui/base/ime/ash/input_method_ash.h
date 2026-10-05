@@ -182,6 +182,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   bool IsPasswordOrNoneInputFieldFocused();
 
+  // Returns true if there is at least one physical key event currently being
+  // handled by the IME engine.
+  bool IsHandlingKeyEvent() const { return num_handling_key_events_ > 0; }
+
   // Sends a fake key event for IME composing without physical key events.
   // Returns true if the faked key event is stopped propagation.
   bool SendFakeProcessKeyEvent(bool pressed) const;
@@ -214,9 +218,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   // including dead key etc.
   ui::CharacterComposer character_composer_;
 
-  // Indicates whether currently is handling a physical key event.
+  // Number of physical key events currently in flight to the IME engine.
   // This is used in CommitText/UpdateCompositionText/etc.
-  bool handling_key_event_ = false;
+  size_t num_handling_key_events_ = 0;
 
   TypingSessionManager typing_session_manager_;
 

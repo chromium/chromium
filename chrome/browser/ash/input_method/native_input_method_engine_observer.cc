@@ -45,6 +45,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
@@ -1041,11 +1042,13 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
             Utf16ToCodepoint(character_composer_.composed_character()));
       }
       auto process_key_event_callback =
-          base::BindOnce([](mojom::KeyEventResult result) {
-            return result == mojom::KeyEventResult::kConsumedByIme
-                       ? ui::ime::KeyEventHandledState::kHandledByIME
-                       : ui::ime::KeyEventHandledState::kNotHandled;
-          }).Then(std::move(callback));
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              base::BindOnce([](mojom::KeyEventResult result) {
+                return result == mojom::KeyEventResult::kConsumedByIme
+                           ? ui::ime::KeyEventHandledState::kHandledByIME
+                           : ui::ime::KeyEventHandledState::kNotHandled;
+              }).Then(std::move(callback)),
+              mojom::KeyEventResult::kNeedsHandlingBySystem);
       input_method_->ProcessKeyEvent(std::move(key_event),
                                      std::move(process_key_event_callback));
     } else {

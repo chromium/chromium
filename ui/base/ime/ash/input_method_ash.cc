@@ -206,7 +206,7 @@ ui::EventDispatchDetails InputMethodAsh::DispatchKeyEvent(ui::KeyEvent* event) {
   // See http://crbug.com/1392491.
   dispatch_details_.reset();
 
-  handling_key_event_ = true;
+  ++num_handling_key_events_;
   GetEngine()->ProcessKeyEvent(
       *event, base::BindOnce(&InputMethodAsh::ProcessKeyEventDone,
                              weak_ptr_factory_.GetWeakPtr(),
@@ -250,7 +250,8 @@ void InputMethodAsh::ProcessKeyEventDone(
     dispatch_details_ = ProcessKeyEventPostIME(event, handled_state_to_process,
                                                /* stopped_propagation */ false);
   }
-  handling_key_event_ = false;
+  CHECK_GT(num_handling_key_events_, 0u);
+  --num_handling_key_events_;
 }
 
 void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
@@ -487,7 +488,7 @@ bool InputMethodAsh::SetComposingRange(
 
   // If we have pending key events, then delay the operation until
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
-  if (handling_key_event_) {
+  if (IsHandlingKeyEvent()) {
     composition_changed_ = true;
     pending_composition_range_ =
         PendingSetCompositionRange{composition_range, non_empty_text_spans};
@@ -516,7 +517,7 @@ void InputMethodAsh::SetAutocorrectRange(
 
   // If we have pending key events, then delay the operation until
   // |ProcessKeyEventPostIME|. Otherwise, process it immediately.
-  if (handling_key_event_) {
+  if (IsHandlingKeyEvent()) {
     if (pending_autocorrect_range_) {
       std::move(pending_autocorrect_range_->callback).Run(false);
     }
@@ -874,7 +875,7 @@ void InputMethodAsh::CommitText(
 
   // If we are not handling key event, do not bother sending text result if the
   // focused text input client does not support text input.
-  if (!handling_key_event_ && !IsTextInputTypeNone()) {
+  if (!IsHandlingKeyEvent() && !IsTextInputTypeNone()) {
     const base::WeakPtr<TextInputClient> prev_client =
         GetTextInputClient() ? GetTextInputClient()->AsWeakPtr() : nullptr;
     if (!SendFakeProcessKeyEvent(true)) {
@@ -924,7 +925,7 @@ void InputMethodAsh::UpdateCompositionText(const CompositionText& text,
     composing_text_ = true;
   }
 
-  if (!handling_key_event_) {
+  if (!IsHandlingKeyEvent()) {
     // If we receive a composition text without pending key event, then we need
     // to send it to the focused text input client directly.
     const base::WeakPtr<TextInputClient> prev_client =
@@ -950,7 +951,7 @@ void InputMethodAsh::HidePreeditText() {
   composition_changed_ = true;
   pending_composition_ = std::nullopt;
 
-  if (!handling_key_event_) {
+  if (!IsHandlingKeyEvent()) {
     const base::WeakPtr<TextInputClient> prev_client =
         GetTextInputClient() ? GetTextInputClient()->AsWeakPtr() : nullptr;
     if (prev_client && prev_client->HasCompositionText()) {
