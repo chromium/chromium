@@ -6391,7 +6391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabSearch.DismissalReason"
-    enum="TabSearchDismissalReason" expires_after="2026-11-15">
+    enum="TabSearchDismissalReason" expires_after="2027-04-05">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@google.com</owner>
   <owner>clank-growth@google.com</owner>
@@ -6415,7 +6415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TabSearch.SessionHadEmptyState" enum="Boolean"
-    expires_after="2026-11-15">
+    expires_after="2027-04-05">
   <owner>bjfong@google.com</owner>
   <owner>wylieb@google.com</owner>
   <owner>clank-growth@google.com</owner>
