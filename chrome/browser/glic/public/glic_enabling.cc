@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <ranges>
+#include <string_view>
 #include <utility>
 
 #include "base/byte_size.h"
@@ -83,42 +84,6 @@
 
 namespace glic {
 
-// Feature flag kGlicCountryFiltering controls whether country filtering is
-// applied client side. Two finch params are used to control this, both are a
-// comma separated string.
-// disabled_countries:
-//   - Optional, default to empty.
-//   - The country must not be in this list to be enabled.
-// enabled_countries:
-//   - Optional, default to kDefaultEnabledCountries.
-//   - If the size is 1 and the string is "*", then all countries are enabled.
-//   - Otherwise, the country must be in this list to be enabled.
-
-// Comma separated list of countries to enable Glic, by default, if country
-// filtering is enabled.
-
-#if BUILDFLAG(IS_ANDROID)
-constexpr char kDefaultEnabledCountries[] = "us,in";
-#else
-constexpr char kDefaultEnabledCountries[] =
-    // Phase 1
-    "us,ca,nz,in,"
-    // Phase 2
-    "as,au,bd,bn,bt,cc,ck,cx,fj,fm,gu,hk,hm,id,jp,kh,ki,kr,la,lk,mh,mm,mn,mo,"
-    "mp,mv,my,nc,nf,np,nr,nu,pf,pg,ph,pk,pn,pw,sb,sg,th,tk,tl,to,tv,tw,vn,vu,"
-    "wf,ws,"
-    // Phase 3a
-    "ag,ar,bb,bo,br,bs,bz,cl,co,cr,dm,do,ec,gd,gt,gy,hn,ht,jm,kn,lc,mx,ni,pa,"
-    "pe,py,sr,sv,tt,uy,vc,ve,"
-    // Phase 3b
-    "ae,am,ao,aq,az,ba,bf,bh,bi,bj,bw,cd,cf,cg,ci,cm,cv,dj,dz,eg,eh,er,et,ga,"
-    "ge,gh,gm,gn,gq,gw,il,iq,jo,ke,kg,km,kw,kz,lb,lr,ls,ly,ma,md,me,mg,mk,ml,"
-    "mr,mu,mw,mz,na,ne,ng,om,pr,ps,qa,rs,rw,sa,sc,sd,sl,sn,so,ss,st,sz,td,tg,"
-    "tj,tm,tn,tz,ua,ug,um,uz,vi,xk,ye,za,zm,zw,"
-    // Phase 4
-    "ai,bm,fk,gb,gg,gi,gs,im,io,je,ky,ms,sh,tc,vg";
-#endif
-
 // Feature flag kGlicLocaleFiltering controls whether locale filtering is
 // applied client side. Two finch params are used to control this, both are a
 // comma separated string.
@@ -164,10 +129,6 @@ namespace {
 
 constexpr int kExperimentalTriggeringVersion = 1;
 
-signin::Tribool CanUseGeminiInChrome(const AccountCapabilities& capabilities) {
-  return capabilities.can_use_gemini_in_chrome();
-}
-
 std::vector<std::string> GetFieldTrialParamAsSplitString(
     const base::Feature& feature,
     const std::string& param_name,
@@ -178,22 +139,26 @@ std::vector<std::string> GetFieldTrialParamAsSplitString(
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-bool EvaluateCountryEnablement(std::string_view permanent_country_code,
-                               std::string_view session_country_code) {
-  if (!base::FeatureList::IsEnabled(features::kGlicCountryFiltering)) {
-    base::UmaHistogramEnumeration(
-        "Glic.CountryFilteringResult2",
-        GlicFilteringResult::kAllowedFilteringDisabled);
-    return true;
-  }
+constexpr std::string_view kCountryFilteringResultAdultHistogram =
+    "Glic.CountryFilteringResult2.Adult";
+constexpr std::string_view kCountryFilteringResultMinorHistogram =
+    "Glic.CountryFilteringResult2.Minor";
+
+// Evaluates the enabled/disabled country lists configured via the params of
+// `feature`. Assumes that `feature` is enabled. The result is recorded to
+// `histogram_name`.
+bool EvaluateCountryLists(const base::Feature& feature,
+                          const char* default_enabled_countries,
+                          std::string_view histogram_name,
+                          std::string_view permanent_country_code,
+                          std::string_view session_country_code) {
+  CHECK(base::FeatureList::IsEnabled(feature));
   const std::vector<std::string> enabled_countries =
-      GetFieldTrialParamAsSplitString(features::kGlicCountryFiltering,
-                                      "enabled_countries",
-                                      kDefaultEnabledCountries);
+      GetFieldTrialParamAsSplitString(feature, "enabled_countries",
+                                      default_enabled_countries);
 
   const std::vector<std::string> disabled_countries =
-      GetFieldTrialParamAsSplitString(features::kGlicCountryFiltering,
-                                      "disabled_countries", "");
+      GetFieldTrialParamAsSplitString(feature, "disabled_countries", "");
 
   const bool use_session_country = base::FeatureList::IsEnabled(
       features::kGlicUseSessionCountryForFiltering);
@@ -209,30 +174,59 @@ bool EvaluateCountryEnablement(std::string_view permanent_country_code,
   if (std::ranges::any_of(disabled_countries, permanent_country_matches) ||
       (use_session_country &&
        std::ranges::any_of(disabled_countries, session_country_matches))) {
-    base::UmaHistogramEnumeration("Glic.CountryFilteringResult2",
+    base::UmaHistogramEnumeration(histogram_name,
                                   GlicFilteringResult::kBlockedInExclusionList);
     return false;
   }
 
   if (enabled_countries.size() == 1 && enabled_countries[0] == "*") {
     base::UmaHistogramEnumeration(
-        "Glic.CountryFilteringResult2",
-        GlicFilteringResult::kAllowedWildcardInclusion);
+        histogram_name, GlicFilteringResult::kAllowedWildcardInclusion);
     return true;
   }
 
   if (std::ranges::any_of(enabled_countries, permanent_country_matches) ||
       (use_session_country &&
        std::ranges::any_of(enabled_countries, session_country_matches))) {
-    base::UmaHistogramEnumeration("Glic.CountryFilteringResult2",
+    base::UmaHistogramEnumeration(histogram_name,
                                   GlicFilteringResult::kAllowedInInclusionList);
     return true;
   }
 
   base::UmaHistogramEnumeration(
-      "Glic.CountryFilteringResult2",
-      GlicFilteringResult::kBlockedNotInInclusionList);
+      histogram_name, GlicFilteringResult::kBlockedNotInInclusionList);
   return false;
+}
+
+bool EvaluateCountryEnablement(std::string_view permanent_country_code,
+                               std::string_view session_country_code) {
+  if (!base::FeatureList::IsEnabled(features::kGlicCountryFiltering)) {
+    base::UmaHistogramEnumeration(
+        kCountryFilteringResultAdultHistogram,
+        GlicFilteringResult::kAllowedFilteringDisabled);
+    return true;
+  }
+  return EvaluateCountryLists(features::kGlicCountryFiltering,
+                              kDefaultEnabledCountries,
+                              kCountryFilteringResultAdultHistogram,
+                              permanent_country_code, session_country_code);
+}
+
+// Country filtering for users who cannot use adult features (e.g. minors).
+bool EvaluateCountryEnablementMinor(std::string_view permanent_country_code,
+                                    std::string_view session_country_code) {
+  if (!base::FeatureList::IsEnabled(features::kGlicMinorCountryFiltering)) {
+    // Unlike the adult filter, minor access is only granted in countries that
+    // are explicitly enabled.
+    base::UmaHistogramEnumeration(
+        kCountryFilteringResultMinorHistogram,
+        GlicFilteringResult::kBlockedNotInInclusionList);
+    return false;
+  }
+  return EvaluateCountryLists(features::kGlicMinorCountryFiltering,
+                              kDefaultEnabledCountriesMinor,
+                              kCountryFilteringResultMinorHistogram,
+                              permanent_country_code, session_country_code);
 }
 
 bool GetLocaleEnablement(const GlicEnablingDelegate& delegate) {
@@ -477,15 +471,25 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
       }
 
       // Check account capabilities.
-      result.primary_account_is_capable = GlicEnabling::CanUseAdultFeatures(
-          primary_account.GetAccountCapabilities());
-      if (base::FeatureList::IsEnabled(
-              switches::kGlicEligibilitySeparateAccountCapability) &&
-          (CanUseGeminiInChrome(primary_account.GetAccountCapabilities()) !=
-           signin::Tribool::kUnknown)) {
+      //
+      // In countries enabled for minor users, CanUseGeminiInChrome (which
+      // covers both adults and minors) determines capability. Elsewhere, only
+      // adults are capable, so minor users outside minor-enabled countries are
+      // reported as not capable (rather than blocked by the country filter,
+      // which always reflects the adult country list).
+      const bool allowed_by_minor_country_filter =
+          country_override.has_value()
+              ? GlicEnabling::IsRetailDemoModeDesktop() ||
+                    EvaluateCountryEnablementMinor(country_override->first,
+                                                   country_override->second)
+              : global_enabling.IsCountryEnabledForMinorAccounts();
+      if (allowed_by_minor_country_filter) {
         result.primary_account_is_capable =
-            CanUseGeminiInChrome(primary_account.GetAccountCapabilities()) ==
-            signin::Tribool::kTrue;
+            primary_account.GetAccountCapabilities()
+                .can_use_gemini_in_chrome() == signin::Tribool::kTrue;
+      } else {
+        result.primary_account_is_capable = GlicEnabling::CanUseAdultFeatures(
+            primary_account.GetAccountCapabilities());
       }
 
       // Decide to still show the entry point if the user has previously
@@ -496,23 +500,6 @@ GlicEnabling::ProfileEnablement ComputeProfileEnablement(
           base::FeatureList::IsEnabled(
               features::kGlicAnchorEntryPointForOnboardedUsers)) {
         result.anchor_entrypoint_override_active = true;
-      }
-
-      // If the feature is overridden by a field trial, and the user's
-      // eligibility is known and different for the two capabilities, add them
-      // to a synthetic trial.
-      base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
-          switches::kGlicEligibilitySeparateAccountCapability);
-      if (field_trial &&
-          (CanUseGeminiInChrome(primary_account.GetAccountCapabilities()) ==
-           signin::Tribool::kTrue !=
-           GlicEnabling::CanUseAdultFeatures(
-               primary_account.GetAccountCapabilities()))) {
-        g_browser_process->GetFeatures()
-            ->glic_synthetic_trial_manager()
-            ->SetSyntheticExperimentState(
-                kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName,
-                field_trial->GetGroupNameWithoutActivation());
       }
 
       result.live_allowed = GlicEnabling::CanUseAdultFeatures(
@@ -586,6 +573,14 @@ bool GlicEnablingDelegate::GetCountryEnablement(
     std::string_view session_country_code) {
   return EvaluateCountryEnablement(permanent_country_code,
                                    session_country_code);
+}
+
+// static
+bool GlicEnablingDelegate::GetCountryEnablementForMinorAccounts(
+    std::string_view permanent_country_code,
+    std::string_view session_country_code) {
+  return EvaluateCountryEnablementMinor(permanent_country_code,
+                                        session_country_code);
 }
 
 std::string GlicEnablingDelegate::GetPermanentCountryCode() const {
@@ -842,24 +837,39 @@ bool GlicEnabling::IsOsVersionSupported() {
 }
 
 bool GlicGlobalEnabling::IsCountryEnabled() {
-  if (is_country_enabled_) {
+  return IsCountryEnabledImpl(&GlicEnablingDelegate::GetCountryEnablement,
+                              is_country_enabled_, last_checked_countries_);
+}
+
+bool GlicGlobalEnabling::IsCountryEnabledForMinorAccounts() {
+  return IsCountryEnabledImpl(
+      &GlicEnablingDelegate::GetCountryEnablementForMinorAccounts,
+      is_country_enabled_for_minor_accounts_,
+      last_checked_countries_for_minor_accounts_);
+}
+
+bool GlicGlobalEnabling::IsCountryEnabledImpl(
+    CountryEvaluator evaluate,
+    bool& is_enabled,
+    std::optional<LastCheckedCountries>& last_checked_countries) {
+  if (is_enabled) {
     return true;
   }
   if (GlicEnabling::IsRetailDemoModeDesktop()) {
-    is_country_enabled_ = true;
+    is_enabled = true;
     return true;
   }
   LastCheckedCountries current_countries{delegate_->GetPermanentCountryCode(),
                                          delegate_->GetSessionCountryCode()};
-  if (last_checked_countries_.has_value() &&
-      *last_checked_countries_ == current_countries) {
+  if (last_checked_countries.has_value() &&
+      *last_checked_countries == current_countries) {
     return false;
   }
-  last_checked_countries_ = current_countries;
+  last_checked_countries = current_countries;
 
-  is_country_enabled_ = GlicEnablingDelegate::GetCountryEnablement(
-      current_countries.permanent_country, current_countries.session_country);
-  return is_country_enabled_;
+  is_enabled = evaluate(current_countries.permanent_country,
+                        current_countries.session_country);
+  return is_enabled;
 }
 
 void GlicGlobalEnabling::UpdateStateForTesting(
@@ -868,6 +878,8 @@ void GlicGlobalEnabling::UpdateStateForTesting(
   locale_enablement_ = GetLocaleEnablement(*delegate_);
   is_country_enabled_ = false;
   last_checked_countries_.reset();
+  is_country_enabled_for_minor_accounts_ = false;
+  last_checked_countries_for_minor_accounts_.reset();
 }
 
 // static

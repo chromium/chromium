@@ -9021,23 +9021,6 @@
             ]
         }
     ],
-    "GlicEligibilitySeparateAccountCapability": [
-        {
-            "platforms": [
-                "chromeos",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "GlicEligibilitySeparateAccountCapability"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicEmbeddedPdfBytesExtraction": [
         {
             "platforms": [

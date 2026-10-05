@@ -412,11 +412,7 @@ GlicActorPolicyChecker::ComputeActOnWebCapability(bool disable_for_enterprise) {
         "exempted via cmdline `glic_actor_policy_control_exemption`");
   }
 
-  // If the main Glic check has been split to no longer use the
-  // can_use_model_execution_features capability (see
-  // kGlicEligibilitySeparateAccountCapability), then that capability must be
-  // checked here. This is because actuation currently implements stricter
-  // account checks.
+  // Actuation is currently restricted to users who can use adult features.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
   CHECK(identity_manager);

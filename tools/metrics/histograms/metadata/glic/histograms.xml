@@ -656,17 +656,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.CountryFilteringResult2" enum="GlicFilteringResult"
-    expires_after="2026-11-29">
+<histogram name="Glic.CountryFilteringResult2.{AccountType}"
+    enum="GlicFilteringResult" expires_after="2026-11-29">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
     Records the outcome of the country filtering check for Glic enablement.
-    Recorded when GetCountryEnablement is called during profile enablement
-    checks. Country enablement results use a custom caching strategy, so there
-    will be less samples recorded than calls to
-    GlicGlobalEnabling::IsCountryEnabled.
+    Recorded when GetCountryEnablement or GetCountryMinorEnablement is called
+    during profile enablement checks. The latter is evaluated for signed-in
+    accounts as part of the account capability check, to determine whether minor
+    users are eligible in the current country, and records
+    kBlockedNotInInclusionList if kGlicMinorCountryFiltering is disabled.
+    Country enablement results use a custom caching strategy, so there will be
+    less samples recorded than calls to GlicGlobalEnabling::IsCountryEnabled and
+    GlicGlobalEnabling::IsCountryMinorEnabled.
   </summary>
+  <token key="AccountType">
+    <variant name="Adult" summary="for adult accounts"/>
+    <variant name="Minor" summary="for minor accounts"/>
+  </token>
 </histogram>
 
 <histogram name="Glic.CUI.SubmitQuery.Latency{Outcome}" units="ms"

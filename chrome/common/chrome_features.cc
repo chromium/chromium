@@ -493,6 +493,10 @@ BASE_FEATURE(kGlicCountryFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicUseSessionCountryForFiltering,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
+// Controls country filtering for Glic for users who cannot use adult features
+// (e.g. minors). When disabled, such users are blocked in all countries.
+// See chrome/browser/glic/public/glic_enabling.h for more details.
+BASE_FEATURE(kGlicMinorCountryFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the bugfix where the unified FRE synchronizes cookies to the wrong
 // storage partition.

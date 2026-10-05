@@ -52,31 +52,63 @@ enum class ProfileReadyState : int32_t;
 enum class InvocationSource : int32_t;
 }  // namespace mojom
 
-// This synthetic field trial is registered for users who are affected by the
-// kGlicEligibilitySeparateAccountCapability feature.
+// Feature flag kGlicCountryFiltering controls whether country filtering is
+// applied client side. Two finch params are used to control this, both are a
+// comma separated string.
+// disabled_countries:
+//   - Optional, default to empty.
+//   - The country must not be in this list to be enabled.
+// enabled_countries:
+//   - Optional, default to kDefaultEnabledCountries (see glic_enabling.h).
+//   - If the size is 1 and the string is "*", then all countries are enabled.
+//   - Otherwise, the country must be in this list to be enabled.
+
+// Feature flag kGlicMinorCountryFiltering controls country filtering for users
+// who cannot use adult features (e.g. minors). It uses the same finch params as
+// kGlicCountryFiltering (disabled_countries, enabled_countries), with
+// enabled_countries defaulting to kDefaultEnabledCountriesMinor (see
+// glic_enabling.h). Unlike kGlicCountryFiltering, if the feature is disabled
+// then all countries are blocked for these users.
+
+// Comma separated list of countries to enable Glic, by default, if country
+// filtering (kGlicCountryFiltering) is enabled.
 //
-// Users who have a different value for the "old" and "new" account capability
-// are added to this synthetic field trial, with the group corresponding to
-// their field trial group for the main
-// (kGlicEligibilitySeparateAccountCapability) feature.
-//
-// For example:
-// - GlicEligibilitySeparateAccountCapabilityAffectedUsers:Control contains
-// clients in the Control group of main experiment, where at least one profile
-// has a different value for the "old" and "new" account capability.
-// - GlicEligibilitySeparateAccountCapabilityAffectedUsers:Enabled contains
-// clients in the Enabled group of the main experiment, where at least one
-// profile has a different value for the "old" and "new" account capability.
-//
-// Clients in the Control or Enabled groups of the main experiment, where all
-// profiles have the same value for the "old" and "new" account capability, are
-// not added to this synthetic field trial.
-//
-// This synthetic trial is re-evaluated in each session, and takes into account
-// only loaded profiles.
-inline constexpr char
-    kGlicEligibilitySeparateAccountCapabilitySyntheticTrialName[] =
-        "GlicEligibilitySeparateAccountCapabilityAffectedUsers";
+// When changing this list, consider whether kDefaultEnabledCountriesMinor
+// should also be updated. This is enforced by the GlicEnablingCountryListTest
+// change-detector test in glic_enabling_unittest.cc.
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kDefaultEnabledCountries[] = "us,in";
+#else
+inline constexpr char kDefaultEnabledCountries[] =
+    // Phase 1
+    "us,ca,nz,in,"
+    // Phase 2
+    "as,au,bd,bn,bt,cc,ck,cx,fj,fm,gu,hk,hm,id,jp,kh,ki,kr,la,lk,mh,mm,mn,mo,"
+    "mp,mv,my,nc,nf,np,nr,nu,pf,pg,ph,pk,pn,pw,sb,sg,th,tk,tl,to,tv,tw,vn,vu,"
+    "wf,ws,"
+    // Phase 3a
+    "ag,ar,bb,bo,br,bs,bz,cl,co,cr,dm,do,ec,gd,gt,gy,hn,ht,jm,kn,lc,mx,ni,pa,"
+    "pe,py,sr,sv,tt,uy,vc,ve,"
+    // Phase 3b
+    "ae,am,ao,aq,az,ba,bf,bh,bi,bj,bw,cd,cf,cg,ci,cm,cv,dj,dz,eg,eh,er,et,ga,"
+    "ge,gh,gm,gn,gq,gw,il,iq,jo,ke,kg,km,kw,kz,lb,lr,ls,ly,ma,md,me,mg,mk,ml,"
+    "mr,mu,mw,mz,na,ne,ng,om,pr,ps,qa,rs,rw,sa,sc,sd,sl,sn,so,ss,st,sz,td,tg,"
+    "tj,tm,tn,tz,ua,ug,um,uz,vi,xk,ye,za,zm,zw,"
+    // Phase 4
+    "ai,bm,fk,gb,gg,gi,gs,im,io,je,ky,ms,sh,tc,vg";
+#endif
+
+// Comma separated list of countries to enable Glic for users who cannot use
+// adult features (e.g. minors), by default, if minor country filtering
+// (kGlicMinorCountryFiltering) is enabled. Must be a subset of
+// kDefaultEnabledCountries.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+inline constexpr char kDefaultEnabledCountriesMinor[] =
+    "as,au,bd,bn,bt,ca,cc,ck,cx,fj,fm,gu,hk,hm,in,jp,kh,ki,la,lk,mh,mm,mn,mo,"
+    "mp,mv,my,nf,np,nr,nu,nz,pg,pk,pw,sb,tk,tl,to,tv,us,vu,ws";
+#else
+inline constexpr char kDefaultEnabledCountriesMinor[] = "";
+#endif
 
 // Delegate for GlicGlobalEnabling and GlicEnabling.
 class GlicEnablingDelegate {
@@ -98,6 +130,11 @@ class GlicEnablingDelegate {
   friend class GlicEnabling;
   static bool GetCountryEnablement(std::string_view permanent_country,
                                    std::string_view session_country);
+  // Same as GetCountryEnablement(), but for users who cannot use adult
+  // features (e.g. minors). Controlled by kGlicMinorCountryFiltering.
+  static bool GetCountryEnablementForMinorAccounts(
+      std::string_view permanent_country,
+      std::string_view session_country);
 };
 
 struct LastCheckedCountries {
@@ -128,15 +165,33 @@ class GlicGlobalEnabling {
   // Note that country checks are executed along profile-level checks because
   // country information may not be ready at startup and can change.
   bool IsCountryEnabled();
+  // Same as IsCountryEnabled(), but for users who cannot use adult features
+  // (e.g. minors).
+  bool IsCountryEnabledForMinorAccounts();
 
   void UpdateStateForTesting(
       std::unique_ptr<GlicEnablingDelegate> new_delegate);
 
  private:
+  using CountryEvaluator = bool (*)(std::string_view permanent_country,
+                                    std::string_view session_country);
+
+  // Shared implementation of IsCountryEnabled() and
+  // IsCountryEnabledForMinorAccounts(). Once `is_enabled` becomes true it
+  // remains true. Otherwise `evaluate` is re-run only when the current
+  // countries differ from `last_checked`.
+  bool IsCountryEnabledImpl(
+      CountryEvaluator evaluate,
+      bool& is_enabled,
+      std::optional<LastCheckedCountries>& last_checked_countries);
+
   std::unique_ptr<GlicEnablingDelegate> delegate_;
   std::optional<bool> locale_enablement_;
   bool is_country_enabled_ = false;
   std::optional<LastCheckedCountries> last_checked_countries_;
+  bool is_country_enabled_for_minor_accounts_ = false;
+  std::optional<LastCheckedCountries>
+      last_checked_countries_for_minor_accounts_;
 };
 
 // LINT.IfChange(RequiredExperimentalOptIn)

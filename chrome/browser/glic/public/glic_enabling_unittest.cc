@@ -4,13 +4,17 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include <algorithm>
+#include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -52,7 +56,6 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -111,8 +114,9 @@ class TestDelegate : public GlicEnablingDelegate {
   }
   std::string GetLocale() const override { return locale_; }
 
-  // Grants test access to protected base class method.
+  // Grants test access to protected base class methods.
   using GlicEnablingDelegate::GetCountryEnablement;
+  using GlicEnablingDelegate::GetCountryEnablementForMinorAccounts;
 
   void SetPermanentCountryCode(const std::string& country_code) {
     permanent_country_code_ = country_code;
@@ -218,7 +222,7 @@ TEST_F(GlicEnablingTest, CountryFilteringNotEnabled) {
   features.InitAndDisableFeature(features::kGlicCountryFiltering);
   EXPECT_TRUE(TestDelegate::GetCountryEnablement("zz", "zz"));
   histogram_tester_->ExpectUniqueSample(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedFilteringDisabled, 1);
 }
 
@@ -232,12 +236,12 @@ TEST_F(GlicEnablingTest,
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("zz", ""));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 3);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 3);
 }
 
 TEST_F(GlicEnablingTest,
@@ -250,12 +254,12 @@ TEST_F(GlicEnablingTest,
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("", "zz"));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 3);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 3);
 }
 
 TEST_F(GlicEnablingTest,
@@ -271,15 +275,15 @@ TEST_F(GlicEnablingTest,
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", ""));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 4);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 4);
 }
 
 TEST_F(GlicEnablingTest, CountryFilteringEnabledWithLists_SessionCountryCode) {
@@ -294,15 +298,15 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithLists_SessionCountryCode) {
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("", "qq"));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 4);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 4);
 }
 
 TEST_F(GlicEnablingTest,
@@ -319,15 +323,15 @@ TEST_F(GlicEnablingTest,
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "qq"));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedInExclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
 }
 
 TEST_F(GlicEnablingTest,
@@ -345,15 +349,15 @@ TEST_F(GlicEnablingTest,
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("qq", "qq"));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedInExclusionList, 1);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 2);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
 }
 
 TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
@@ -369,12 +373,143 @@ TEST_F(GlicEnablingTest, CountryFilteringEnabledWithStar) {
   EXPECT_FALSE(TestDelegate::GetCountryEnablement("us", "zz"));
 
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedWildcardInclusion, 2);
   histogram_tester_->ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedInExclusionList, 3);
-  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2", 5);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
+}
+
+TEST_F(GlicEnablingTest, CountryMinorFilteringNotEnabledBlocksAll) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kGlicMinorCountryFiltering);
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("us", "us"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("zz", "zz"));
+  histogram_tester_->ExpectUniqueSample(
+      "Glic.CountryFilteringResult2.Minor",
+      GlicFilteringResult::kBlockedNotInInclusionList, 2);
+}
+
+TEST_F(GlicEnablingTest, CountryMinorFilteringEnabledWithDefaultParams) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kGlicMinorCountryFiltering);
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("zz", "zz"));
+}
+
+TEST_F(GlicEnablingTest, CountryMinorFilteringEnabledWithLists) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kGlicMinorCountryFiltering,
+      {{"disabled_countries", "zz"}, {"enabled_countries", "us,uk,zz"}});
+
+  EXPECT_TRUE(TestDelegate::GetCountryEnablementForMinorAccounts("us", ""));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablementForMinorAccounts("", "UK"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("zz", "us"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("qq", "qq"));
+
+  histogram_tester_->ExpectBucketCount(
+      "Glic.CountryFilteringResult2.Minor",
+      GlicFilteringResult::kAllowedInInclusionList, 2);
+  histogram_tester_->ExpectBucketCount(
+      "Glic.CountryFilteringResult2.Minor",
+      GlicFilteringResult::kBlockedInExclusionList, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Glic.CountryFilteringResult2.Minor",
+      GlicFilteringResult::kBlockedNotInInclusionList, 1);
+  histogram_tester_->ExpectTotalCount("Glic.CountryFilteringResult2.Minor", 4);
+}
+
+TEST_F(GlicEnablingTest, CountryMinorFilteringEnabledWithStar) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeatureWithParameters(
+      features::kGlicMinorCountryFiltering,
+      {{"disabled_countries", "zz"}, {"enabled_countries", "*"}});
+
+  EXPECT_TRUE(TestDelegate::GetCountryEnablementForMinorAccounts("ru", "ru"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("zz", "zz"));
+}
+
+TEST_F(GlicEnablingTest, CountryMinorFilteringIndependentOfAdultFiltering) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{features::kGlicCountryFiltering, {{"enabled_countries", "us,ca"}}},
+       {features::kGlicMinorCountryFiltering, {{"enabled_countries", "us"}}}},
+      {});
+
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("ca", "ca"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("ca", "ca"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("us", "us"));
+  EXPECT_TRUE(TestDelegate::GetCountryEnablementForMinorAccounts("us", "us"));
+
+  // Disabling adult country filtering does not affect minor filtering.
+  base::test::ScopedFeatureList adult_filter_disabled;
+  adult_filter_disabled.InitAndDisableFeature(features::kGlicCountryFiltering);
+  EXPECT_TRUE(TestDelegate::GetCountryEnablement("ca", "ca"));
+  EXPECT_FALSE(TestDelegate::GetCountryEnablementForMinorAccounts("ca", "ca"));
+}
+
+base::flat_set<std::string> SplitCountryList(std::string_view country_list) {
+  return base::flat_set<std::string>(base::SplitString(
+      country_list, ", ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+}
+
+// The default minor country list must be a subset of the default country list.
+TEST(GlicEnablingCountryListTest, MinorCountriesAreSubsetOfAllCountries) {
+  const base::flat_set<std::string> all_countries =
+      SplitCountryList(kDefaultEnabledCountries);
+  const base::flat_set<std::string> minor_countries =
+      SplitCountryList(kDefaultEnabledCountriesMinor);
+
+  for (const std::string& country : minor_countries) {
+    EXPECT_TRUE(all_countries.contains(country))
+        << "Minor country '" << country
+        << "' is missing from kDefaultEnabledCountries.";
+  }
+}
+
+// Change detector for the countries where Glic is enabled by default for
+// adults only (i.e. in kDefaultEnabledCountries but not in
+// kDefaultEnabledCountriesMinor).
+//
+// If this test fails, kDefaultEnabledCountries or kDefaultEnabledCountriesMinor
+// has changed. Please consider whether the other list should also be updated
+// (e.g. whether a newly launched country should also be launched to minor
+// users), then update `kExpectedAdultOnlyCountries` below to match.
+TEST(GlicEnablingCountryListTest, AdultOnlyCountriesChangeDetector) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Minor access is enabled by default on ChromeOS, Mac, and Windows.
+  constexpr std::string_view kExpectedAdultOnlyCountries =
+      // Phase 2
+      "id,kr,nc,pf,ph,pn,sg,th,tw,vn,wf,"
+      // Phase 3a
+      "ag,ar,bb,bo,br,bs,bz,cl,co,cr,dm,do,ec,gd,gt,gy,hn,ht,jm,kn,lc,mx,ni,pa,"
+      "pe,py,sr,sv,tt,uy,vc,ve,"
+      // Phase 3b
+      "ae,am,ao,aq,az,ba,bf,bh,bi,bj,bw,cd,cf,cg,ci,cm,cv,dj,dz,eg,eh,er,et,ga,"
+      "ge,gh,gm,gn,gq,gw,il,iq,jo,ke,kg,km,kw,kz,lb,lr,ls,ly,ma,md,me,mg,mk,ml,"
+      "mr,mu,mw,mz,na,ne,ng,om,pr,ps,qa,rs,rw,sa,sc,sd,sl,sn,so,ss,st,sz,td,tg,"
+      "tj,tm,tn,tz,ua,ug,um,uz,vi,xk,ye,za,zm,zw,"
+      // Phase 4
+      "ai,bm,fk,gb,gg,gi,gs,im,io,je,ky,ms,sh,tc,vg";
+#else
+  // Minor access is not enabled by default on other platforms.
+  constexpr std::string_view kExpectedAdultOnlyCountries =
+      kDefaultEnabledCountries;
+#endif
+
+  const base::flat_set<std::string> all_countries =
+      SplitCountryList(kDefaultEnabledCountries);
+  const base::flat_set<std::string> minor_countries =
+      SplitCountryList(kDefaultEnabledCountriesMinor);
+
+  std::vector<std::string> adult_only_countries;
+  std::ranges::set_difference(all_countries, minor_countries,
+                              std::back_inserter(adult_only_countries));
+
+  EXPECT_THAT(adult_only_countries,
+              testing::UnorderedElementsAreArray(
+                  SplitCountryList(kExpectedAdultOnlyCountries)));
 }
 
 TEST_F(GlicEnablingTest, LocaleFilteringNotEnabled) {
@@ -486,6 +621,9 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
             features::kSmartRestartMetrics,
 #endif
         });
+    // By default, assume the user is in a country with minor access.
+    minor_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicMinorCountryFiltering, {{"enabled_countries", "*"}});
   }
   ~GlicEnablingProfileEligibilityTest() override = default;
 
@@ -546,6 +684,7 @@ class GlicEnablingProfileEligibilityTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList minor_feature_list_;
 #if BUILDFLAG(IS_CHROMEOS)
   ash::GlicUserSessionTestHelper glic_user_session_test_helper_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -566,7 +705,7 @@ TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -574,7 +713,7 @@ TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
   EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
 
   // 4. Become ineligible while signed in.
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -583,7 +722,7 @@ TEST_F(GlicEnablingProfileEligibilityTest, WasPreviouslyNotAllowedTest) {
   EXPECT_TRUE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
 
   // 6. Make them eligible again.
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
   EXPECT_FALSE(GlicEnabling::WasPreviouslyNotAllowed(profile()));
@@ -603,7 +742,7 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -617,7 +756,7 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -636,7 +775,7 @@ TEST_F(GlicEnablingProfileEligibilityTest,
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -648,8 +787,8 @@ TEST_F(GlicEnablingProfileEligibilityTest,
 
 TEST_F(GlicEnablingProfileEligibilityTest, IsEnabledForFirstRunProfileU18) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      switches::kGlicEligibilitySeparateAccountCapability);
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kGlicMinorCountryFiltering, {{"enabled_countries", "*"}});
 
   auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
@@ -713,7 +852,7 @@ class GlicEnablingProfileReadyStateTestBase
     AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
         "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
     signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                         account_info);
   }
@@ -808,7 +947,7 @@ class GlicEnablingAnchorEntryPointTestBase : public testing::Test {
     AccountInfo account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "test@example.com", signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
@@ -914,7 +1053,7 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   base::test::ScopedFeatureList features;
@@ -989,7 +1128,7 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   // When anchored, capability failures map to kIneligibleAccount.
@@ -1846,7 +1985,7 @@ class GlicEnablingGeminiEnterpriseSettingsTest
         params.is_enterprise ? "user@enterprise.com" : "user@gmail.com",
         signin::ConsentLevel::kSignin);
     AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
     if (params.is_enterprise) {
       account_info = AccountInfo::Builder(account_info)
                          .SetHostedDomain("enterprise.com")
@@ -2048,7 +2187,7 @@ TEST_F(GlicEnablingWebActuationToggleTest, CapabilityIneligible) {
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2061,7 +2200,7 @@ TEST_F(GlicEnablingWebActuationToggleTest, ManagedProfile_CannotActOnWeb) {
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2085,7 +2224,7 @@ TEST_F(GlicEnablingWebActuationToggleTest, ManagedProfile_CanActOnWeb) {
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2498,7 +2637,7 @@ TEST_F(GlicEnablingAnchorEntryPointCountryTest,
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(false);
+  SetGlicCapability(mutator, false);
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   // 2. Country filtering is also disabled (overridden to "zz" in SetUp).
@@ -2621,7 +2760,7 @@ TEST_F(GlicEnablingCountryCheckTest,
   TestDelegate* delegate = SetProfileCountryDelegate("zz", "zz");
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectUniqueSample(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
 
   // 2. Subsequent check with no change in the delegate's country. Enablement
@@ -2629,7 +2768,7 @@ TEST_F(GlicEnablingCountryCheckTest,
   // second time.
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectUniqueSample(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 1);
 
   // 3. Update permanent country to another disabled one ("yy") and checks
@@ -2638,9 +2777,9 @@ TEST_F(GlicEnablingCountryCheckTest,
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 2);
-  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 2);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 2);
 
   // 4. Update session country to another disabled one ("xx") and checks
   // country enablement twice. Should re-record kBlockedNotInInclusionList once.
@@ -2648,9 +2787,9 @@ TEST_F(GlicEnablingCountryCheckTest,
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 3);
-  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 3);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 3);
 
   // 5. Update country to an enabled one ("us"). Two country checks return true,
   // but only a single sample is recorded to another bucket of the histogram.
@@ -2658,9 +2797,9 @@ TEST_F(GlicEnablingCountryCheckTest,
   EXPECT_TRUE(global_enabling.IsCountryEnabled());
   EXPECT_TRUE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kAllowedInInclusionList, 1);
-  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 4);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 4);
 
   // 6. Reset cache and re-evaluate with "zz" again. Should re-record
   // kBlockedNotInInclusionList since cache was cleared.
@@ -2668,9 +2807,9 @@ TEST_F(GlicEnablingCountryCheckTest,
   global_enabling.UpdateStateForTesting(delegate->Clone());
   EXPECT_FALSE(global_enabling.IsCountryEnabled());
   histogram_tester.ExpectBucketCount(
-      "Glic.CountryFilteringResult2",
+      "Glic.CountryFilteringResult2.Adult",
       GlicFilteringResult::kBlockedNotInInclusionList, 4);
-  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2", 5);
+  histogram_tester.ExpectTotalCount("Glic.CountryFilteringResult2.Adult", 5);
 }
 
 TEST_F(GlicEnablingCountryCheckTest,
@@ -2685,7 +2824,7 @@ TEST_F(GlicEnablingCountryCheckTest,
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2710,7 +2849,7 @@ TEST_F(GlicEnablingCountryCheckTest,
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2721,6 +2860,155 @@ TEST_F(GlicEnablingCountryCheckTest,
   EXPECT_FALSE(enablement.ShouldShowGlicButton());
   EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
             mojom::ProfileReadyState::kIneligible);
+}
+
+// Tests that users who cannot use adult features (e.g. minors) are subject to
+// the kGlicMinorCountryFiltering country list, and adults to
+// kGlicCountryFiltering.
+class GlicEnablingMinorCountryCheckTest : public GlicEnablingCountryCheckTest {
+ public:
+  GlicEnablingMinorCountryCheckTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicRollout, {}},
+         {features::kGlicCountryFiltering, {{"enabled_countries", "us,ca"}}},
+         {features::kGlicMinorCountryFiltering, {{"enabled_countries", "us"}}}},
+        {});
+  }
+
+ protected:
+  void SignIn(bool is_adult) {
+    auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+    AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_gemini_in_chrome(true);
+    mutator.set_can_use_model_execution_features(is_adult);
+    signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                        account_info);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GlicEnablingMinorCountryCheckTest, MinorAllowedInMinorCountry) {
+  SetProfileCountryDelegate("us");
+  SignIn(/*is_adult=*/false);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_TRUE(enablement.primary_account_is_capable);
+  EXPECT_TRUE(enablement.allowed_by_country_filter);
+  EXPECT_TRUE(enablement.IsEnabled());
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest, MinorNotCapableInAdultOnlyCountry) {
+  SetProfileCountryDelegate("ca");
+  SignIn(/*is_adult=*/false);
+
+  // Minor users outside minor countries are reported as not capable, rather
+  // than blocked by the (adult) country filter.
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.primary_account_is_capable);
+  EXPECT_TRUE(enablement.allowed_by_country_filter);
+  EXPECT_FALSE(enablement.IsEnabled());
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kIneligible);
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest, AdultAllowedInAdultOnlyCountry) {
+  SetProfileCountryDelegate("ca");
+  SignIn(/*is_adult=*/true);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_TRUE(enablement.allowed_by_country_filter);
+  EXPECT_TRUE(enablement.IsEnabled());
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest, AdultBlockedInNonAdultCountry) {
+  SetProfileCountryDelegate("zz");
+  SignIn(/*is_adult=*/true);
+
+  EXPECT_FALSE(
+      GlicEnabling::EnablementForProfile(profile()).allowed_by_country_filter);
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest, SignedOutUsesAdultCountryList) {
+  SetProfileCountryDelegate("ca");
+
+  EXPECT_TRUE(
+      GlicEnabling::EnablementForProfile(profile()).allowed_by_country_filter);
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest,
+       IneligibleAccountUsesAdultCountryList) {
+  SetProfileCountryDelegate("ca");
+  auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+  AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+      "test@example.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info);
+  mutator.set_can_use_gemini_in_chrome(false);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                      account_info);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.primary_account_is_capable);
+  EXPECT_TRUE(enablement.allowed_by_country_filter);
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest,
+       MinorNotCapableEverywhereWhenMinorFilteringDisabled) {
+  base::test::ScopedFeatureList minor_filter_disabled;
+  minor_filter_disabled.InitAndDisableFeature(
+      features::kGlicMinorCountryFiltering);
+
+  SetProfileCountryDelegate("us");
+  SignIn(/*is_adult=*/false);
+
+  GlicEnabling::ProfileEnablement enablement =
+      GlicEnabling::EnablementForProfile(profile());
+  EXPECT_FALSE(enablement.primary_account_is_capable);
+  EXPECT_TRUE(enablement.allowed_by_country_filter);
+  EXPECT_FALSE(enablement.IsEnabled());
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest,
+       AdultUnaffectedWhenMinorFilteringDisabled) {
+  base::test::ScopedFeatureList minor_filter_disabled;
+  minor_filter_disabled.InitAndDisableFeature(
+      features::kGlicMinorCountryFiltering);
+
+  SetProfileCountryDelegate("us");
+  SignIn(/*is_adult=*/true);
+
+  EXPECT_TRUE(GlicEnabling::EnablementForProfile(profile()).IsEnabled());
+}
+
+TEST_F(GlicEnablingMinorCountryCheckTest, MinorCountryCheckCachedSeparately) {
+  auto& global_enabling =
+      g_browser_process->GetFeatures()->glic_global_enabling();
+
+  // "ca" is enabled for adults only.
+  TestDelegate* delegate = SetProfileCountryDelegate("ca");
+  EXPECT_TRUE(global_enabling.IsCountryEnabled());
+  EXPECT_FALSE(global_enabling.IsCountryEnabledForMinorAccounts());
+
+  // Moving to "us" enables minor access.
+  delegate->SetPermanentCountryCode("us");
+  EXPECT_TRUE(global_enabling.IsCountryEnabledForMinorAccounts());
+
+  // Once enabled, the minor result is sticky.
+  delegate->SetPermanentCountryCode("zz");
+  EXPECT_TRUE(global_enabling.IsCountryEnabledForMinorAccounts());
+
+  // Resetting clears the minor cache too.
+  global_enabling.UpdateStateForTesting(delegate->Clone());
+  EXPECT_FALSE(global_enabling.IsCountryEnabledForMinorAccounts());
+  EXPECT_FALSE(global_enabling.IsCountryEnabled());
 }
 
 class GlicEnablingRecoveryMetricsTest
@@ -2752,7 +3040,7 @@ TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromSignInRequired) {
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
   AccountCapabilitiesTestMutator mutator(&account_info);
-  mutator.set_can_use_model_execution_features(true);
+  SetGlicCapability(mutator, true);
   signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                       account_info);
 
@@ -2805,7 +3093,7 @@ TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromIneligibleAccount) {
               signin::ConsentLevel::kSignin));
   {
     AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(false);
+    SetGlicCapability(mutator, false);
     signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                         account_info);
   }
@@ -2817,7 +3105,7 @@ TEST_F(GlicEnablingRecoveryMetricsTest, RecoveryFromIneligibleAccount) {
   // 3. Recover by enabling capabilities
   {
     AccountCapabilitiesTestMutator mutator(&account_info);
-    mutator.set_can_use_model_execution_features(true);
+    SetGlicCapability(mutator, true);
     signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
                                         account_info);
   }

@@ -254,10 +254,7 @@ void SetGlicCapability(Profile* profile, bool enabled) {
 }
 
 void SetGlicCapability(AccountCapabilitiesTestMutator& mutator, bool enabled) {
-  if (base::FeatureList::IsEnabled(
-          switches::kGlicEligibilitySeparateAccountCapability)) {
-    mutator.set_can_use_gemini_in_chrome(enabled);
-  }
+  mutator.set_can_use_gemini_in_chrome(enabled);
   mutator.set_can_use_model_execution_features(enabled);
 }
 
@@ -268,16 +265,9 @@ ScopedGlicCapability::ScopedGlicCapability(Profile* profile, bool enabled)
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
 
-  if (base::FeatureList::IsEnabled(
-          switches::kGlicEligibilitySeparateAccountCapability)) {
-    original_enabled_ =
-        primary_account.GetAccountCapabilities().can_use_gemini_in_chrome() ==
-        signin::Tribool::kTrue;
-  } else {
-    original_enabled_ =
-        glic::GlicEnabling::CanUseAdultFeatures(
-            primary_account.GetAccountCapabilities());
-  }
+  original_enabled_ =
+      primary_account.GetAccountCapabilities().can_use_gemini_in_chrome() ==
+      signin::Tribool::kTrue;
 
   SetGlicCapability(profile_, enabled);
 }

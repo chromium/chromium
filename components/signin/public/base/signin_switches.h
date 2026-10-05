@@ -646,13 +646,6 @@ BASE_DECLARE_FEATURE_PARAM(int, kFullscreenSignInPromoUseDateInterval);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kGaiaAccountIdEnforcement);
 
-#if !BUILDFLAG(IS_IOS)
-// When enabled, GLIC will check a new CanUseGeminiInChrome account capability
-// to determine profile eligibility, instead of CanUseModelExecutionFeatures.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kGlicEligibilitySeparateAccountCapability);
-#endif
-
 // Feature to handle mdm errors on Enterprise and EDU accounts
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccounts);
