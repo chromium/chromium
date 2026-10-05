@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
@@ -105,7 +106,7 @@ class GlassFrameService : public BrowserCollectionObserver,
   std::map<BrowserWindowInterface*, base::CallbackListSubscription>
       fullscreen_subscriptions_;
   // Set of tracked normal browsers.
-  base::flat_set<BrowserWindowInterface*> tracked_browsers_;
+  base::flat_set<raw_ptr<BrowserWindowInterface>> tracked_browsers_;
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
