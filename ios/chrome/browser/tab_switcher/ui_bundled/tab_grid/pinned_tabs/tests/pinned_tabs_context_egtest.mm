@@ -118,9 +118,9 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 // Pins a regular tab using the context menu (other pinned tabs are NOT
 // present).
 - (void)testPinFirstTabFromContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
 
   // Create tabs.
@@ -153,9 +153,9 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 
 // Pins a regular tab using the context menu (other pinned tabs are present).
 - (void)testPinTabFromContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
 
   // Create tabs.
@@ -185,9 +185,9 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 
 // Unpins a pinned tab using the context menu (other pinned tabs are present).
 - (void)testUnpinTabFromContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
 
   // Create tabs.
@@ -217,9 +217,9 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 
 // Unpins last pinned tab using the context menu.
 - (void)testUnpinLastTabFromContextMenu {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
 
   // Create tabs.
@@ -245,6 +245,28 @@ void AssertPinnedCellMovedToGridView(NSString* tab_title) {
 
   // Check that the pinned tab was unpinned.
   AssertPinnedCellMovedToGridView(@"PinnedTab0");
+}
+
+// Tests that the "Pin Tab" context menu action is not available on iPhone Duo.
+- (void)testPinTabContextMenuDisabledOnDuo {
+  if (![ChromeEarlGrey isDuoSimulator]) {
+    EARL_GREY_TEST_SKIPPED(@"Test only runs on iPhone Duo simulator.");
+  }
+
+  CreateRegularTabs(1, self.testServer);
+
+  // Open the Tab Grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Long tap on the first regular tab.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForRegularCellWithTitle(
+                                          @"RegularTab0")]
+      performAction:grey_longPress()];
+
+  // "Pin Tab" context menu action should not be visible.
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
+                                          IDS_IOS_CONTENT_CONTEXT_PINTAB)]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

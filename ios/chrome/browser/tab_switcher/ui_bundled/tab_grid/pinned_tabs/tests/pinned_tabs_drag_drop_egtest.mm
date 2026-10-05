@@ -225,12 +225,50 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
       assertWithMatcher:grey_notVisible()];
 }
 
+// Checks that dragging a tab does not move it to pinned tabs on iPhone Duo.
+- (void)testDragRegularTabOnDuo {
+  if (![ChromeEarlGrey isDuoSimulator]) {
+    EARL_GREY_TEST_SKIPPED(@"Test only runs on iPhone Duo simulator.");
+  }
+
+  [ChromeEarlGreyUI openTabGrid];
+
+  // The pinned view should not be visible.
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_notVisible()];
+
+  [[EarlGrey selectElementWithMatcher:RegularCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+
+  // Try to drag the first cell in the pinned view.
+  DragDropCellInPinnedView(IdentifierForRegularCellAtIndex(0));
+
+  // Check that the cell has not been moved in the pinned view.
+  ConditionBlock condition = ^{
+    NSError* error1 = nil;
+    NSError* error2 = nil;
+
+    [[EarlGrey selectElementWithMatcher:RegularCellAtIndex(0)]
+        assertWithMatcher:grey_notNil()
+                    error:&error1];
+    [[EarlGrey selectElementWithMatcher:PinnedCellAtIndex(0)]
+        assertWithMatcher:grey_nil()
+                    error:&error2];
+
+    return !error1 && !error2;
+  };
+  GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"The Pinned Tabs feature is not disabled on iPhone Duo.");
+  [[EarlGrey selectElementWithMatcher:PinnedView()]
+      assertWithMatcher:grey_notVisible()];
+}
+
 // Checks that dragging a regular tab and dropping it in the pinned view moves
 // it in the pinned view.
 - (void)testDragRegularTabInPinnedView {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
 
   [ChromeEarlGreyUI openTabGrid];
@@ -271,9 +309,9 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
 // Checks that dragging a pinned tab and dropping it in the regular grid moves
 // it in the regular grid.
 - (void)testDragPinnedTabInRegularGrid {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
-                           @"supported on iPhone.");
+  if (![ChromeEarlGrey isPinnedTabsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"The Pinned Tabs feature is not enabled on this device.");
   }
   // TODO(crbug.com/40923015): Failing on iOS17, and iOS15.5 for
   // ios-simulator-noncq.

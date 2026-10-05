@@ -229,6 +229,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return self.isIPhoneIdiom;
 }
 
+- (BOOL)isPinnedTabsEnabled {
+  return [ChromeEarlGreyAppInterface isPinnedTabsEnabled];
+}
+
 - (BOOL)isCurrentLayoutBottomOmnibox {
   return [ChromeEarlGreyAppInterface isCurrentLayoutBottomOmnibox];
 }

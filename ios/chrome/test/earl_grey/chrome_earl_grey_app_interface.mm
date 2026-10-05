@@ -1480,6 +1480,9 @@ UIViewController* FindBrowserViewController(UIViewController* root) {
   return IsOverflowMenuNTPRefactorEnabled();
 }
 
++ (BOOL)isPinnedTabsEnabled {
+  return IsPinnedTabsEnabled();
+}
 
 #pragma mark - ContentSettings
 

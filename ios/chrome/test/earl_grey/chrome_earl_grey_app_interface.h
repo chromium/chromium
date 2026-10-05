@@ -637,6 +637,8 @@ enum class TipsNotificationType;
 // Returns whether overflow menu refactoring on the NTP is enabled.
 + (BOOL)isOverflowMenuNTPRefactorEnabled;
 
+// Returns whether the Pinned Tabs feature is enabled.
++ (BOOL)isPinnedTabsEnabled;
 
 #pragma mark - ContentSettings
 
