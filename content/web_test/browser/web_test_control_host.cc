@@ -1704,25 +1704,26 @@ void WebTestControlHost::WebTestRuntimeFlagsChanged(
   web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
       accumulated_web_test_runtime_flags_changes_);
 
-  base::flat_map<int, mojom::WebTestRenderFrame*> process_to_frame_map;
-
-  // Propagate the changes to all the renderer processes, we only
-  // need to send it once per process so we build a list of the first
-  // frame we find per process.
-  for (auto& item : web_test_render_frame_map_) {
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    if (item.first.child_id.GetUnsafeValue() == render_process_id) {
-      continue;
-    }
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    process_to_frame_map.emplace(item.first.child_id.GetUnsafeValue(),
-                                 item.second.get());
-  }
-
-  // Then we send the new flags to those frames.
-  for (auto [id, frame] : process_to_frame_map) {
-    frame->ReplicateWebTestRuntimeFlagsChanges(
-        changed_web_test_runtime_flags.Clone());
+  // Propagate the changes to all the other renderer processes. With
+  // RenderDocument, a process can have multiple frames where the previous
+  // frame is already swapped out in the renderer while a speculative frame is
+  // about to commit, so send the new flags to every live frame (including
+  // speculative ones) across all windows.
+  for (Shell* window : Shell::windows()) {
+    static_cast<WebContentsImpl*>(window->web_contents())
+        ->ForEachRenderFrameHostImplIncludingSpeculative(
+            [&](RenderFrameHostImpl* render_frame_host) {
+              if (!render_frame_host->IsRenderFrameLive()) {
+                return;
+              }
+              if (render_frame_host->GetProcess()->GetDeprecatedID() ==
+                  render_process_id) {
+                return;
+              }
+              GetWebTestRenderFrameRemote(render_frame_host)
+                  ->ReplicateWebTestRuntimeFlagsChanges(
+                      changed_web_test_runtime_flags.Clone());
+            });
   }
 }
 

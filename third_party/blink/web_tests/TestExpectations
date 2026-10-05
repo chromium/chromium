@@ -6840,9 +6840,6 @@ crbug.com/626703 external/wpt/clipboard-apis/async-promise-write-blobs-read-blob
 crbug.com/626703 crbug.com/378425954 external/wpt/webdriver/tests/bidi/script/add_preload_script/contexts.py [ Crash Failure Pass Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/script/add_preload_script/invalid.py [ Failure Pass ]
 
-# Disable to land revert
-crbug.com/40615943 http/tests/security/dataURL/xss-DENIED-to-data-url-in-foreign-domain-subframe-location-change.html [ Failure Pass ]
-
 # Gardener: 2024-01-19
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Skip Timeout ]
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
