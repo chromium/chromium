@@ -49,6 +49,7 @@ message TtcServerFrame {
     ServerErrorNotification server_error = 5;
     InterruptionNotice interrupted = 6;
     TurnComplete turn_complete = 7;
+    JournalEvent journal_event = 9;
   }
   // Server timestamp in milliseconds since the Unix epoch (Jan 1, 1970 UTC).
   // Represents the server-side clock time (Unix epoch, Jan 1, 1970 UTC) when
@@ -215,4 +216,46 @@ message ServerErrorNotification {
   }
   ErrorCode error_code = 1;
   string error_message = 2;
+}
+
+// Event recorded in the session journal for logging and debugging.
+message JournalEvent {
+  // Type of the journal event.
+  enum JournalEventType {
+    JOURNAL_EVENT_TYPE_UNSPECIFIED = 0;
+    JOURNAL_EVENT_TYPE_INSTANT = 1;
+    JOURNAL_EVENT_TYPE_ASYNC_BEGIN = 2;
+    JOURNAL_EVENT_TYPE_ASYNC_END = 3;
+    JOURNAL_EVENT_TYPE_CLOCK_SYNC = 4;
+  }
+
+  // Key-value detail entry for a journal event.
+  message JournalDetails {
+    string key = 1;
+    string value = 2;
+  }
+
+  // Timestamp in microseconds since the Unix epoch (Jan 1, 1970 UTC).
+  int64 timestamp_us = 1;
+
+  // Type of the journal event.
+  JournalEventType type = 2;
+
+  // Name of the event.
+  string name = 3;
+
+  // Specific key-value details associated with the event.
+  repeated JournalDetails details = 4;
+
+  // Identifier correlating an async begin event with its corresponding async
+  // end event. Must be set if and only if `type` is
+  // `JOURNAL_EVENT_TYPE_ASYNC_BEGIN` or `JOURNAL_EVENT_TYPE_ASYNC_END`.
+  int32 async_event_id = 5;
+
+  // Timestamp in microseconds since the Unix epoch (Jan 1, 1970 UTC) when the
+  // message was sent from the client *as recorded by the client's clock*. This
+  // value is sent back to the client along with the server clock received
+  // timestamp and is used to estimate the delta between clocks on client and
+  // server. Set only for `JOURNAL_EVENT_TYPE_CLOCK_SYNC`.
+  int64 sync_timestamp_us = 6;
 }
