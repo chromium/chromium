@@ -135,8 +135,7 @@ public class ListUtils {
             }
         }
 
-        if (item instanceof OfflineItemListItem) {
-            OfflineItemListItem offlineItem = (OfflineItemListItem) item;
+        if (item instanceof OfflineItemListItem offlineItem) {
             if (config.showDangerousItems
                     && DownloadUtils.shouldDisplayDownloadAsDangerous(
                             offlineItem.item.dangerType, offlineItem.item.state)) {
@@ -196,8 +195,8 @@ public class ListUtils {
 
     /** @return Whether the given {@link ListItem} can be grouped inside a card. */
     public static boolean canGroup(@Nullable ListItem listItem) {
-        if (!(listItem instanceof OfflineItemListItem)) return false;
-        return LegacyHelpers.isLegacyContentIndexedItem(((OfflineItemListItem) listItem).item.id);
+        if (!(listItem instanceof OfflineItemListItem offlineItem)) return false;
+        return LegacyHelpers.isLegacyContentIndexedItem(offlineItem.item.id);
     }
 
     /**

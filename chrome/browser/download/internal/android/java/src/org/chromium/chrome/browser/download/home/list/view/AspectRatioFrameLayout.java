@@ -71,8 +71,7 @@ public class AspectRatioFrameLayout extends FrameLayout {
         for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
 
-            if (!(view.getLayoutParams() instanceof LayoutParams)) continue;
-            LayoutParams params = (LayoutParams) view.getLayoutParams();
+            if (!(view.getLayoutParams() instanceof LayoutParams params)) continue;
 
             params.mRestorableWidth = params.mOriginalWidth;
             params.mRestorableHeight = params.mOriginalHeight;
@@ -106,8 +105,7 @@ public class AspectRatioFrameLayout extends FrameLayout {
         for (int i = 0; i < getChildCount(); i++) {
             View view = getChildAt(i);
 
-            if (!(view.getLayoutParams() instanceof LayoutParams)) continue;
-            LayoutParams params = (LayoutParams) view.getLayoutParams();
+            if (!(view.getLayoutParams() instanceof LayoutParams params)) continue;
             if (params.mOverrodeWidth) params.width = params.mRestorableWidth;
             if (params.mOverrodeHeight) params.height = params.mRestorableHeight;
             params.mOverrodeWidth = false;

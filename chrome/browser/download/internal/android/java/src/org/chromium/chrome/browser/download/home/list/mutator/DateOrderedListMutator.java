@@ -129,9 +129,8 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
     private void updateModelListItem(OfflineItem item) {
         for (int i = 0; i < mModel.size(); i++) {
             ListItem listItem = mModel.get(i);
-            if (!(listItem instanceof OfflineItemListItem)) continue;
+            if (!(listItem instanceof OfflineItemListItem existingItem)) continue;
 
-            OfflineItemListItem existingItem = (OfflineItemListItem) listItem;
             if (Objects.equals(item.id, existingItem.item.id)) {
                 existingItem.item = item;
                 mModel.update(i, existingItem);

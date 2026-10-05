@@ -74,8 +74,7 @@ public class PrefetchListPaginator implements DateOrderedListMutator.ListPaginat
     }
 
     private boolean isCardFooter(ListItem listItem) {
-        if (!(listItem instanceof ListItem.CardDividerListItem)) return false;
-        ListItem.CardDividerListItem item = (ListItem.CardDividerListItem) listItem;
+        if (!(listItem instanceof ListItem.CardDividerListItem item)) return false;
         return item.position == Position.BOTTOM;
     }
 }

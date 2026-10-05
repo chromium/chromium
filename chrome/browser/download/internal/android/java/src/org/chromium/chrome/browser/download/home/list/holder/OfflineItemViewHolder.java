@@ -282,8 +282,8 @@ class OfflineItemViewHolder extends ListItemViewHolder implements ListMenuDelega
         public void maybeResizeImage(@Nullable Drawable drawable) {
             Matrix matrix = null;
 
-            if (drawable instanceof BitmapDrawable) {
-                matrix = upscaleBitmapIfNecessary((BitmapDrawable) drawable);
+            if (drawable instanceof BitmapDrawable bitmapDrawable) {
+                matrix = upscaleBitmapIfNecessary(bitmapDrawable);
             }
 
             mImageView.setImageMatrix(matrix);

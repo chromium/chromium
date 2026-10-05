@@ -225,9 +225,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         @Override
         public boolean equals(@Nullable Object obj) {
             if (obj == this) return true;
-            if (!(obj instanceof DownloadProgressMessageUiData)) return false;
+            if (!(obj instanceof DownloadProgressMessageUiData other)) return false;
 
-            DownloadProgressMessageUiData other = (DownloadProgressMessageUiData) obj;
             return Objects.equals(id, other.id)
                     && TextUtils.equals(message, other.message)
                     && TextUtils.equals(description, other.description)
@@ -305,9 +304,8 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
         @Override
         public boolean equals(@Nullable Object obj) {
             if (obj == this) return true;
-            if (!(obj instanceof DownloadCount)) return false;
+            if (!(obj instanceof DownloadCount other)) return false;
 
-            DownloadCount other = (DownloadCount) obj;
             return inProgress == other.inProgress
                     && pending == other.pending
                     && failed == other.failed

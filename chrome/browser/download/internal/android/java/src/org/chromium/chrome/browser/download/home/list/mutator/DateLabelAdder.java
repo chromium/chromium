@@ -52,9 +52,9 @@ public class DateLabelAdder implements ListConsumer {
         OfflineItem previousItem = null;
         for (int i = 0; i < sortedList.size(); i++) {
             ListItem listItem = sortedList.get(i);
-            if (!(listItem instanceof OfflineItemListItem)) continue;
+            if (!(listItem instanceof OfflineItemListItem offlineItem)) continue;
 
-            OfflineItem currentItem = ((OfflineItemListItem) listItem).item;
+            OfflineItem currentItem = offlineItem.item;
             maybeAddSectionHeader(listWithHeaders, currentItem, previousItem);
             listWithHeaders.add(listItem);
             previousItem = currentItem;
