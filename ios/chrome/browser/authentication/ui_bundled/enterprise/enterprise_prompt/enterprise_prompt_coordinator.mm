@@ -65,39 +65,45 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 }
 
 - (void)stop {
-  [self dismissSignOutViewController];
-  self.viewController = nil;
+  [self dismissPromptViewController];
   [super stop];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [self.delegate hideEnterprisePrompForLearnMore:NO];
+  [self hideEnterprisePrompt];
 }
 
 - (void)confirmationAlertSecondaryAction {
-  [self.delegate hideEnterprisePrompForLearnMore:YES];
   [self openManagementPage];
+  [self hideEnterprisePrompt];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate hideEnterprisePrompForLearnMore:NO];
+  [self hideEnterprisePrompt];
 }
 
 #pragma mark - Private
 
 // Removes view controller from display.
-- (void)dismissSignOutViewController {
+- (void)dismissPromptViewController {
   if (self.viewController) {
     [self.baseViewController.presentedViewController
         dismissViewControllerAnimated:YES
                            completion:nil];
     self.viewController = nil;
   }
+}
+
+// Hides the enterprise prompt.
+- (void)hideEnterprisePrompt {
+  id<PolicyChangeCommands> policyChangeHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PolicyChangeCommands);
+  [policyChangeHandler hideEnterprisePrompt];
 }
 
 // Opens the management page in a new tab.

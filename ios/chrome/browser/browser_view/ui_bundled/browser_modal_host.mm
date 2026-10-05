@@ -220,7 +220,6 @@ const char kContextPanelDismissedHistogram[] =
                                 DriveFilePickerCommands,
                                 EnhancedCalendarCommands,
                                 EnterpriseCommands,
-                                EnterprisePromptCoordinatorDelegate,
                                 EphemeralThemePromoCommands,
                                 FileUploadPanelCommands,
                                 GoogleOneCommands,
@@ -406,7 +405,7 @@ const char kContextPanelDismissedHistogram[] =
   [self hideDriveFilePicker];
   [self hideEnhancedCalendarBottomSheet];
   [self dismissEnterpriseWarningDialog];
-  [self stopEnterprisePromptCoordinator];
+  [self hideEnterprisePrompt];
   [self hideEphemeralThemePromo];
   if (@available(iOS 18.4, *)) {
     [self hideFileUploadPanel];
@@ -473,13 +472,6 @@ const char kContextPanelDismissedHistogram[] =
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator.delegate = nil;
   _sendTabToSelfCoordinator = nil;
-}
-
-// Stops the Enterprise Prompt coordinator.
-- (void)stopEnterprisePromptCoordinator {
-  [_enterprisePromptCoordinator stop];
-  _enterprisePromptCoordinator.delegate = nil;
-  _enterprisePromptCoordinator = nil;
 }
 
 // Stops the sharing sheet.
@@ -1969,7 +1961,6 @@ const char kContextPanelDismissedHistogram[] =
         initWithBaseViewController:_baseViewController
                            browser:_browser
                         promptType:EnterprisePromptTypeForceSignOut];
-    _enterprisePromptCoordinator.delegate = self;
   }
   [_enterprisePromptCoordinator start];
 }
@@ -1982,7 +1973,6 @@ const char kContextPanelDismissedHistogram[] =
         initWithBaseViewController:_baseViewController
                            browser:_browser
                         promptType:EnterprisePromptTypeSyncDisabled];
-    _enterprisePromptCoordinator.delegate = self;
   }
   [_enterprisePromptCoordinator start];
 }
@@ -1998,7 +1988,6 @@ const char kContextPanelDismissedHistogram[] =
                              browser:_browser
                           promptType:
                               EnterprisePromptTypeRestrictAccountSignedOut];
-      _enterprisePromptCoordinator.delegate = self;
     }
     [_enterprisePromptCoordinator start];
   } else {
@@ -2013,11 +2002,9 @@ const char kContextPanelDismissedHistogram[] =
   }
 }
 
-#pragma mark - EnterprisePromptCoordinatorDelegate
-
-- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
-  // TODO(crbug.com/545535699): Use a command instead of a delegate.
-  [self stopEnterprisePromptCoordinator];
+- (void)hideEnterprisePrompt {
+  [_enterprisePromptCoordinator stop];
+  _enterprisePromptCoordinator = nil;
 }
 
 #pragma mark - PriceTrackedItemsCommands

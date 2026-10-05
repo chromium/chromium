@@ -10,15 +10,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-// Delegate for the coordinator.
-@protocol EnterprisePromptCoordinatorDelegate
-
-// Command to clean up the prompt. Stops the coordinator and sets it to
-// nil. `learnMore` is YES if the user tapped the "learn more" button.
-- (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore;
-
-@end
-
 // Coordinator for enterprise prompt alerts.
 @interface EnterprisePromptCoordinator : ChromeCoordinator
 
@@ -30,9 +21,6 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Delegate for dismissing the coordinator.
-@property(nonatomic, weak) id<EnterprisePromptCoordinatorDelegate> delegate;
 
 @end
 

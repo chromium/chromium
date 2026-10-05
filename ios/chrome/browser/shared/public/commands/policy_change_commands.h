@@ -22,6 +22,9 @@
 // shown immediately and stays on-screen until the user dismisses it.
 - (void)showRestrictAccountSignedOutPrompt;
 
+// Command to hide the enterprise prompt.
+- (void)hideEnterprisePrompt;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_POLICY_CHANGE_COMMANDS_H_
