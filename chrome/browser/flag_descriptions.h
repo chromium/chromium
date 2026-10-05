@@ -4100,11 +4100,6 @@ inline constexpr char kPaymentRequestRejectTooSmallWindowsDescription[] =
     "Reject Payment Request and Payment Handler dialogs if the browser window "
     "is too small to contain them.";
 
-inline constexpr char kPaymentHandlerCameraAccessName[] =
-    "Payment Handler Camera Access";
-inline constexpr char kPaymentHandlerCameraAccessDescription[] =
-    "Enables camera access in web-based Payment Handlers on desktop.";
-
 inline constexpr char kPaymentHandlerCameraAccessUxName[] =
     "Payment Handler Camera Access UX";
 inline constexpr char kPaymentHandlerCameraAccessUxDescription[] =

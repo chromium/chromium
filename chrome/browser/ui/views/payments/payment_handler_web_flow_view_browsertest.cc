@@ -941,8 +941,7 @@ class PaymentHandlerWebFlowViewCameraDisabledTest
  private:
   base::test::ScopedFeatureList feature_list_{
       {features::kPaymentRequestMandatoryPaymentAppUi},
-      {features::kPaymentHandlerCameraAccess,
-       features::kPaymentHandlerCameraAccessUx}};
+      {features::kPaymentHandlerCameraAccessUx}};
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraDisabledTest,
@@ -979,6 +978,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraDisabledTest,
   EXPECT_NE(nullptr, PaymentHandlerWebFlowViewController::FromWebContents(
                          payment_handler_contents));
   EXPECT_EQ(nullptr, web_flow_controller->GetPageInfoIconView());
+  EXPECT_NE(nullptr, top_view->GetViewByID(static_cast<int>(
+                         DialogViewID::PAYMENT_APP_HEADER_ICON)));
+  EXPECT_TRUE(bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
+                  payment_handler_contents)
+                  .anchor.IsNull());
 
   std::string result = content::EvalJs(payment_handler_contents, R"(
     navigator.mediaDevices.getUserMedia({video: true})
@@ -990,8 +994,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraDisabledTest,
 }
 
 class PaymentHandlerWebFlowViewCameraTest
-    : public PaymentRequestBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public PaymentRequestBrowserTestBase {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
@@ -1000,14 +1003,11 @@ class PaymentHandlerWebFlowViewCameraTest
 
  private:
   base::test::ScopedFeatureList feature_list_{
-      {GetParam() ? features::kPaymentHandlerCameraAccessUx
-                  : features::kPaymentHandlerCameraAccess,
-       features::kPaymentRequestMandatoryPaymentAppUi},
-      {GetParam() ? features::kPaymentHandlerCameraAccess
-                  : features::kPaymentHandlerCameraAccessUx}};
+      {features::kPaymentHandlerCameraAccessUx,
+       features::kPaymentRequestMandatoryPaymentAppUi}};
 };
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraAccessPreGrantedSuccess) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1036,21 +1036,14 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
       web_flow_controller->web_contents();
 
   // Ensure that the Payment Handler window has installed a
-  // OneTimePermissionsTrackerHelper on its webcontents, to support "Allow
-  // this time" permissions from a nested pop-up window to persist through
-  // this session.
+  // OneTimePermissionsTrackerHelper (to support "Allow this time" permissions
+  // from a nested pop-up window persisting through this session) and a
+  // PermissionRequestManager (for permission prompting and indicators) on its
+  // WebContents.
   EXPECT_NE(nullptr, OneTimePermissionsTrackerHelper::FromWebContents(
                          payment_handler_contents));
-
-  // kPaymentHandlerCameraAccessUx flag also initializes
-  // PermissionRequestManager for permission prompting and indicators.
-  if (GetParam()) {
-    EXPECT_NE(nullptr, permissions::PermissionRequestManager::FromWebContents(
-                           payment_handler_contents));
-  } else {
-    EXPECT_EQ(nullptr, permissions::PermissionRequestManager::FromWebContents(
-                           payment_handler_contents));
-  }
+  EXPECT_NE(nullptr, permissions::PermissionRequestManager::FromWebContents(
+                         payment_handler_contents));
 
   GURL payment_app_url = payment_handler_contents->GetLastCommittedURL();
   HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
@@ -1068,7 +1061,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_EQ("success", result);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
   InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
@@ -1110,7 +1103,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest, AudioAccessDenied) {
   EXPECT_EQ("NotSupportedError", result);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        AudioAndVideoAccessDenied) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1157,7 +1150,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_EQ("NotSupportedError", result);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraAccessBlocked) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1200,7 +1193,7 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
   EXPECT_EQ("NotAllowedError", result);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PaymentHandlerWebFlowViewCameraTest,
     PermissionPromptBubble_AnchorsToAppIconInPaymentHandler) {
   NavigateTo("/payment_handler.html");
@@ -1229,34 +1222,23 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* payment_handler_contents =
       web_flow_controller->web_contents();
 
-  if (GetParam()) {
-    views::View* page_info_icon = web_flow_controller->GetPageInfoIconView();
-    ASSERT_NE(nullptr, page_info_icon);
-    EXPECT_EQ(page_info_icon,
-              views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-                  PaymentHandlerWebFlowViewController::kAppIconElementId,
-                  views::ElementTrackerViews::GetContextForView(top_view)));
+  views::View* page_info_icon = web_flow_controller->GetPageInfoIconView();
+  ASSERT_NE(nullptr, page_info_icon);
+  EXPECT_EQ(page_info_icon,
+            views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+                PaymentHandlerWebFlowViewController::kAppIconElementId,
+                views::ElementTrackerViews::GetContextForView(top_view)));
 
-    bubble_anchor_util::AnchorConfiguration config =
-        bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
-            payment_handler_contents);
-    EXPECT_EQ(page_info_icon, config.anchor.GetIfView());
-    EXPECT_EQ(PaymentHandlerWebFlowViewController::kAppIconElementId,
-              config.highlighted_element);
-    EXPECT_EQ(views::BubbleBorder::TOP_LEFT, config.bubble_arrow);
-  } else {
-    EXPECT_EQ(nullptr, web_flow_controller->GetPageInfoIconView());
-    EXPECT_NE(nullptr, top_view->GetViewByID(static_cast<int>(
-                           DialogViewID::PAYMENT_APP_HEADER_ICON)));
-
-    bubble_anchor_util::AnchorConfiguration config =
-        bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
-            payment_handler_contents);
-    EXPECT_TRUE(config.anchor.IsNull());
-  }
+  bubble_anchor_util::AnchorConfiguration config =
+      bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
+          payment_handler_contents);
+  EXPECT_EQ(page_info_icon, config.anchor.GetIfView());
+  EXPECT_EQ(PaymentHandlerWebFlowViewController::kAppIconElementId,
+            config.highlighted_element);
+  EXPECT_EQ(views::BubbleBorder::TOP_LEFT, config.bubble_arrow);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        AppIconButton_OpensPaymentHandlerPageInfo) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1282,96 +1264,42 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
   auto* web_flow_controller =
       static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
 
-  if (GetParam()) {
-    views::View* page_info_icon = web_flow_controller->GetPageInfoIconView();
-    ASSERT_NE(nullptr, page_info_icon);
-    auto* location_icon_view =
-        views::AsViewClass<LocationIconView>(page_info_icon);
-    ASSERT_NE(nullptr, location_icon_view);
+  views::View* page_info_icon = web_flow_controller->GetPageInfoIconView();
+  ASSERT_NE(nullptr, page_info_icon);
+  auto* location_icon_view =
+      views::AsViewClass<LocationIconView>(page_info_icon);
+  ASSERT_NE(nullptr, location_icon_view);
 
-    views::test::ButtonTestApi(location_icon_view)
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), base::TimeTicks(),
-                                    ui::EF_LEFT_MOUSE_BUTTON,
-                                    ui::EF_LEFT_MOUSE_BUTTON));
+  views::test::ButtonTestApi(location_icon_view)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
 
-    views::BubbleDialogDelegateView* bubble =
-        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
-    ASSERT_NE(nullptr, bubble);
-    EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
-              PageInfoBubbleViewBase::GetShownBubbleType());
+  views::BubbleDialogDelegateView* bubble =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  ASSERT_NE(nullptr, bubble);
+  EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_PAGE_INFO,
+            PageInfoBubbleViewBase::GetShownBubbleType());
 
-    auto* page_info_bubble = static_cast<PageInfoBubbleView*>(bubble);
-    // Verify navigating to security sub-page and cookies sub-page does not
-    // crash.
-    page_info_bubble->OpenSecurityPage();
-    page_info_bubble->OpenCookiesPage();
+  auto* page_info_bubble = static_cast<PageInfoBubbleView*>(bubble);
+  // Verify navigating to security sub-page and cookies sub-page does not
+  // crash.
+  page_info_bubble->OpenSecurityPage();
+  page_info_bubble->OpenCookiesPage();
 
-    views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
-    // Verify clicking the app icon button a second time closes the bubble.
-    views::test::ButtonTestApi(location_icon_view)
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), base::TimeTicks(),
-                                    ui::EF_LEFT_MOUSE_BUTTON,
-                                    ui::EF_LEFT_MOUSE_BUTTON));
-    waiter.Wait();
-    EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
-  } else {
-    EXPECT_EQ(nullptr, web_flow_controller->GetPageInfoIconView());
-  }
+  views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
+  // Verify clicking the app icon button a second time closes the bubble.
+  views::test::ButtonTestApi(location_icon_view)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON));
+  waiter.Wait();
+  EXPECT_EQ(nullptr, PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerWebFlowViewCameraTest,
-                       PermissionPrompt_ShowsInPaymentHandlerWithoutCrash) {
-  NavigateTo("/payment_handler.html");
-  std::string method_name;
-  InstallPaymentApp("a.com", "/payment_handler_sw.js", &method_name);
-
-  ResetEventWaiterForSequence({DialogEvent::PROCESSING_SPINNER_SHOWN,
-                               DialogEvent::PROCESSING_SPINNER_HIDDEN,
-                               DialogEvent::DIALOG_OPENED,
-                               DialogEvent::LOADING_VIEW_SHOWN,
-                               DialogEvent::PAYMENT_HANDLER_WINDOW_OPENED,
-                               DialogEvent::LOADING_VIEW_HIDDEN,
-                               DialogEvent::PAYMENT_HANDLER_TITLE_SET});
-  ASSERT_EQ(
-      "success",
-      content::EvalJs(
-          GetActiveWebContents(),
-          content::JsReplace("launchWithoutWaitForResponse($1)", method_name)));
-  ASSERT_TRUE(WaitForObservedEvent());
-
-  views::View* top_view = test_api(dialog_view()).view_stack()->top();
-  auto* sheet_controller =
-      test_api(dialog_view()).controller_map()->at(top_view).get();
-  auto* web_flow_controller =
-      static_cast<PaymentHandlerWebFlowViewController*>(sheet_controller);
-  content::WebContents* payment_handler_contents =
-      web_flow_controller->web_contents();
-
-  if (GetParam()) {
-    auto* permission_manager =
-        permissions::PermissionRequestManager::FromWebContents(
-            payment_handler_contents);
-    ASSERT_NE(nullptr, permission_manager);
-
-    PermissionPromptWaiter prompt_waiter(permission_manager);
-
-    // Requesting permission inside Payment Handler must anchor to the app
-    // icon and show the prompt view without crashing.
-    permission_manager->AddRequest(
-        payment_handler_contents->GetPrimaryMainFrame(),
-        std::make_unique<permissions::MockPermissionRequest>(
-            payment_handler_contents->GetLastCommittedURL(),
-            permissions::RequestType::kCameraStream,
-            permissions::PermissionRequestGestureType::GESTURE));
-    prompt_waiter.WaitUntilPromptAdded();
-    EXPECT_TRUE(permission_manager->IsRequestInProgress());
-    permission_manager->FinalizeCurrentRequests();
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PaymentHandlerWebFlowViewCameraTest,
     OpenURLFromTab_RejectsCurrentTabAndRoutesNewTabToParent) {
   NavigateTo("/payment_handler.html");
@@ -1422,26 +1350,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_NE(nullptr, result);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PaymentHandlerWebFlowViewCameraTest,
-                         testing::Bool());
-
-class PaymentHandlerWebFlowViewCameraUxTest
-    : public PaymentRequestBrowserTestBase {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PaymentRequestBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      {features::kPaymentHandlerCameraAccessUx,
-       features::kPaymentRequestMandatoryPaymentAppUi},
-      {features::kPaymentHandlerCameraAccess}};
-};
-
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraInUseIndicator_TogglesOnVideoCapture) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1540,7 +1449,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
             web_flow_controller->GetPageInfoIconView());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraInUseIndicator_ExpandsAndAutoCollapses) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1632,7 +1541,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
   EXPECT_TRUE(test_api(web_flow_controller).location_icon_view()->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraInUseIndicator_UpdatesParentTabAlert) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1728,7 +1637,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
       tab_alert_controller->IsAlertActive(tabs::TabAlert::kVideoRecording));
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        CameraInUseIndicator_IgnoresForeignWebContents) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1795,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     PermissionPrompt_ShowsAnimatedRequestChipAndAnchorsBubble) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1867,7 +1776,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     PermissionPrompt_AllowCameraHidesPromptImmediatelyAndTransitionsToInUseIndicator) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -1984,7 +1893,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     BlockedCameraIndicator_DismissalLifecycleAndRepeatDismissal) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2113,7 +2022,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     BlockedCameraIndicator_PreBlockedCamera_ClickWhileExpandingOpensPageInfoAndHidesOnClose) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2208,7 +2117,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     BlockedCameraIndicator_ToInUseCapture_ResetsThemeAndIcon) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2330,7 +2239,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     BlockedCameraIndicator_RepeatRequestShowsCompactIconWithoutExpanding) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2422,7 +2331,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     PermissionPrompt_CollapsesActiveBlockedIndicatorAndExpandsPromptCleanly) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2515,7 +2424,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     CameraInUseIndicator_CaptureStopsImmediately_HoldsAndAutoHides) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2592,7 +2501,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     CameraInUseIndicator_CaptureRestartsDuringHold_ResumesWithoutFlicker) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2691,7 +2600,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    PaymentHandlerWebFlowViewCameraUxTest,
+    PaymentHandlerWebFlowViewCameraTest,
     CameraInUseIndicator_RepeatRequestShowsCompactIconWithoutExpanding) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2826,7 +2735,8 @@ IN_PROC_BROWSER_TEST_F(
         test_api(web_flow_controller).location_icon_view()->GetVisible());
   }
 }
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        IndicatorChip_TogglesPageInfoClosedOnSecondClick) {
   NavigateTo("/payment_handler.html");
   std::string method_name;
@@ -2917,7 +2827,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
   dialog_view()->CloseDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        PromptAction_Granted) {
   base::HistogramTester histogram_tester;
   NavigateTo("/payment_handler.html");
@@ -2967,7 +2877,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        PromptAction_Dismissed) {
   base::HistogramTester histogram_tester;
   NavigateTo("/payment_handler.html");
@@ -3017,7 +2927,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
                                       1);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        MediaAccessRequest_WindowClosedDuringPrompt) {
   base::HistogramTester histogram_tester;
   NavigateTo("/payment_handler.html");
@@ -3078,7 +2988,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
   histogram_tester.ExpectTotalCount("PaymentRequest.Camera.PromptAction", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        MediaAccessResponse_ErrorAndSystemMetrics) {
   base::HistogramTester histogram_tester;
   NavigateTo("/payment_handler.html");
@@ -3129,7 +3039,7 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
                                     expected_count);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraUxTest,
+IN_PROC_BROWSER_TEST_F(PaymentHandlerWebFlowViewCameraTest,
                        MediaAccessRequest_RecordsCameraMetrics) {
   base::HistogramTester histogram_tester;
   NavigateTo("/payment_handler.html");

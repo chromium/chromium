@@ -8111,11 +8111,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "payment-handler-camera-access",
-    "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "payment-handler-camera-access-ux",
     "owners": [ "luisantunes@google.com", "chrome-payments-eng@google.com" ],
     "expiry_milestone": 160

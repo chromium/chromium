@@ -342,9 +342,6 @@ void PaymentHandlerWebFlowViewController::FillContentView(
     permission_request_manager_observation_.Reset();
     permission_request_manager_observation_.Observe(
         permissions::PermissionRequestManager::FromWebContents(web_contents()));
-  } else if (base::FeatureList::IsEnabled(
-                 features::kPaymentHandlerCameraAccess)) {
-    OneTimePermissionsTrackerHelper::CreateForWebContents(web_contents());
   }
 
   // Enable modal dialogs for web-based payment handlers.
@@ -536,8 +533,7 @@ void PaymentHandlerWebFlowViewController::RequestMediaAccessPermission(
     content::WebContents* web_contents,
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback) {
-  // Currently we allow only video camera access (no audio), behind a
-  // default-disabled flag until we have appropriate UX to inform the user.
+  // Only allow video camera access (no audio).
   //
   // Note that this check assumes that content::MediaStreamRequest will not add
   // new 'types' in the future, as they will not be blocked by default. That
@@ -546,9 +542,7 @@ void PaymentHandlerWebFlowViewController::RequestMediaAccessPermission(
   if (request.video_type !=
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
       request.audio_type != blink::mojom::MediaStreamType::NO_SERVICE ||
-      !(base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess) ||
-        base::FeatureList::IsEnabled(
-            features::kPaymentHandlerCameraAccessUx))) {
+      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
     base::UmaHistogramBoolean("PaymentRequest.Camera.AccessRequested", false);
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
@@ -572,9 +566,7 @@ bool PaymentHandlerWebFlowViewController::CheckMediaAccessPermission(
     const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   if (type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
-      !(base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccess) ||
-        base::FeatureList::IsEnabled(
-            features::kPaymentHandlerCameraAccessUx))) {
+      !base::FeatureList::IsEnabled(features::kPaymentHandlerCameraAccessUx)) {
     return false;
   }
   return MediaCaptureDevicesDispatcher::GetInstance()

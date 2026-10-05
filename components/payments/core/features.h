@@ -97,9 +97,6 @@ BASE_DECLARE_FEATURE(kPaymentHandlerHtmlHeadThemeColor);
 // before resolving a success payment response.
 BASE_DECLARE_FEATURE(kPaymentRequestMandatoryPaymentAppUi);
 
-// Used to control whether camera access is allowed in Payment Handler windows.
-BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccess);
-
 // Used to control whether camera access with interactive permission prompt
 // and indicator is allowed in Payment Handler windows.
 BASE_DECLARE_FEATURE(kPaymentHandlerCameraAccessUx);
