@@ -286,7 +286,7 @@ class ThreadGroupProfilerTest : public testing::Test,
   std::optional<test::TaskEnvironment> task_environment_{
       std::in_place, test::TaskEnvironment::TimeSource::MOCK_TIME,
       test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC};
-  std::set<FakeWorkerThread*> active_workers_;
+  std::set<raw_ptr<FakeWorkerThread>> active_workers_;
   std::optional<ThreadGroupProfiler::ActiveCollection> active_collection_;
   std::map<PlatformThreadId, MockProfiler*> sampling_profilers_;
   int sampling_profilers_created_ = 0;
