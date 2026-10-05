@@ -4,9 +4,10 @@
 
 module contextual_tasks_toolbar.mojom;
 
-import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
 import "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom";
+import "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom";
 import "mojo/public/mojom/base/error.mojom";
+import "url/mojom/url.mojom";
 
 // Used by the WebUI page to bootstrap bi-directional communication between
 // the browser process and the toolbar WebUI.
@@ -42,6 +43,21 @@ interface PageHandler {
   // of threads from history. In response, the backend will send a
   // OPEN_THREADS_VIEW message to search to open the thread history natively.
   ShowThreadHistory();
+
+  // Called when a tab in the sources menu is clicked. This will first attempt
+  // to switch to a tab matching both the provided `tab_id` and `url`. If no
+  // such tab is found, it will then try to switch to a tab matching only the
+  // `url`. If still no matching tab is found, a new foreground tab will be
+  // opened with the provided `url`.
+  OnTabClickedFromSourcesMenu(int32 tab_id, url.mojom.Url url);
+
+  // Called when a file in the sources menu is clicked. The file associated with
+  // the `url` will be opened in a new tab in the current browser window.
+  OnFileClickedFromSourcesMenu(url.mojom.Url url);
+
+  // Called when an image in the sources menu is clicked. The image will be
+  // opened in a new tab in the current browser window.
+  OnImageClickedFromSourcesMenu(url.mojom.Url url);
 };
 
 // WebUI-side handler for requests from the browser.

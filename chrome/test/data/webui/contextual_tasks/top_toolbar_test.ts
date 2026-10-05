@@ -166,6 +166,43 @@ suite('TopToolbarTest', () => {
     });
 
 
+    test('handles tab sources menu interactions', async () => {
+      const tab = {
+        title: 'Sample Tab',
+        url: 'https://example/sample.html',
+        hasChromeTabData: false,
+        tabId: 1,
+      };
+      topToolbar.contextInfos = [{tab: tab}];
+      await microtasksFinished();
+
+      const sourcesButton =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#sources');
+      assertTrue(!!sourcesButton);
+      sourcesButton.click();
+      await microtasksFinished();
+
+      const sourcesMenuElement = topToolbar.$.sourcesMenu.get();
+      const crActionMenu =
+          sourcesMenuElement.shadowRoot.querySelector('cr-action-menu');
+      assertTrue(!!crActionMenu);
+      assertTrue(crActionMenu.open);
+
+      const headers = sourcesMenuElement.shadowRoot.querySelectorAll('.header');
+      assertEquals(1, headers.length);
+
+      // Click the first tab item.
+      const tabItem = sourcesMenuElement.shadowRoot.querySelector<HTMLElement>(
+          'cr-url-list-item.dropdown-item');
+      assertTrue(!!tabItem);
+      tabItem.click();
+
+      const [tabId, url] =
+          await toolbarProxy.handler.whenCalled('onTabClickedFromSourcesMenu');
+      assertEquals(1, tabId);
+      assertDeepEquals(url, tab.url);
+    });
+
     test('handles file sources menu interactions', async () => {
       const file = {
         title: 'Sample Document',
@@ -196,7 +233,7 @@ suite('TopToolbarTest', () => {
       fileItem.click();
 
       const url =
-          await proxy.handler.whenCalled('onFileClickedFromSourcesMenu');
+          await toolbarProxy.handler.whenCalled('onFileClickedFromSourcesMenu');
       assertDeepEquals(url, file.url);
     });
 
@@ -231,8 +268,8 @@ suite('TopToolbarTest', () => {
       assertTrue(!!imageItem);
       imageItem.click();
 
-      const url =
-          await proxy.handler.whenCalled('onImageClickedFromSourcesMenu');
+      const url = await toolbarProxy.handler.whenCalled(
+          'onImageClickedFromSourcesMenu');
       assertDeepEquals(url, image.url);
     });
 

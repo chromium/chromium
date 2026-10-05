@@ -780,37 +780,6 @@ TEST_F(ContextualTasksPageHandlerTest, MaybeTriggerPinningPromo_HideMenuOnAiPage
 }
 #endif
 
-TEST_F(ContextualTasksPageHandlerTest, OnTabClickedFromSourcesMenu) {
-  int32_t tab_id = 123;
-  GURL url(kExampleUrl);
-
-  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OnTabClickedFromSourcesMenu(tab_id, url, _))
-      .Times(1);
-
-  page_handler_->OnTabClickedFromSourcesMenu(tab_id, url);
-}
-
-TEST_F(ContextualTasksPageHandlerTest, OnFileClickedFromSourcesMenu) {
-  GURL url(kExamplePdfUrl);
-
-  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OnFileClickedFromSourcesMenu(url, _))
-      .Times(1);
-
-  page_handler_->OnFileClickedFromSourcesMenu(url);
-}
-
-TEST_F(ContextualTasksPageHandlerTest, OnImageClickedFromSourcesMenu) {
-  GURL url(kExampleUrl);
-
-  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              OnImageClickedFromSourcesMenu(url, _))
-      .Times(1);
-
-  page_handler_->OnImageClickedFromSourcesMenu(url);
-}
-
 TEST_F(ContextualTasksPageHandlerTest, OnWebviewMessage_HandshakeResponse) {
   lens::AimToClientMessage message;
   message.mutable_handshake_response();

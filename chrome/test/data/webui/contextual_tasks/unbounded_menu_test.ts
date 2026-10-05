@@ -7,26 +7,30 @@ import 'chrome://contextual-tasks/sources_menu.js';
 import 'chrome://contextual-tasks/overflow_menu.js';
 
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
 import type {UnboundedDialog} from 'chrome://contextual-tasks/utils.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
-import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('UnboundedMenuTest', () => {
   let topToolbar: TopToolbarElement;
   let proxy: TestContextualTasksBrowserProxy;
+  let toolbarProxy: TestToolbarBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     proxy = new TestContextualTasksBrowserProxy(
         'chrome://webui-test/contextual_tasks/test.html');
     BrowserProxyImpl.setInstance(proxy);
+    toolbarProxy = new TestToolbarBrowserProxy();
+    ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
 
     loadTimeData.overrideValues({
       contextManagementInComposeboxEnabled: false,
@@ -103,7 +107,7 @@ suite('UnboundedMenuTest', () => {
           'dialogEl should have unbounded attribute');
 
       const [tabId, url] =
-          await proxy.handler.whenCalled('onTabClickedFromSourcesMenu');
+          await toolbarProxy.handler.whenCalled('onTabClickedFromSourcesMenu');
       assertEquals(tabId, 1);
       assertDeepEquals(url, tab.url);
     });

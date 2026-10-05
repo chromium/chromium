@@ -15,8 +15,8 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
-import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
-import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import {getCss} from './sources_menu.css.js';
 import {getHtml} from './sources_menu.html.js';
 import {recordAction} from './utils.js';
@@ -48,7 +48,8 @@ export class SourcesMenuElement extends CrLitElement {
 
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private toolbarBrowserProxy_: ToolbarBrowserProxy =
+      ToolbarBrowserProxyImpl.getInstance();
 
   private isUnboundedMenuEnabled_: boolean =
       loadTimeData.valueExists('contextualTasksUnboundedMenuEnabled') &&
@@ -78,7 +79,7 @@ export class SourcesMenuElement extends CrLitElement {
 
     recordAction('ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
     const contextInfo = this.getContextInfoFromEvent_(e);
-    this.browserProxy_.handler.onTabClickedFromSourcesMenu(
+    this.toolbarBrowserProxy_.handler.onTabClickedFromSourcesMenu(
         contextInfo.tab!.tabId, contextInfo.tab!.url);
   }
 
@@ -86,14 +87,14 @@ export class SourcesMenuElement extends CrLitElement {
     this.close();
 
     const contextInfo = this.getContextInfoFromEvent_(e);
-    this.browserProxy_.handler.onFileClickedFromSourcesMenu(
+    this.toolbarBrowserProxy_.handler.onFileClickedFromSourcesMenu(
         contextInfo.file!.url);
   }
 
   protected onImageClick_(e: Event) {
     this.close();
     const contextInfo = this.getContextInfoFromEvent_(e);
-    this.browserProxy_.handler.onImageClickedFromSourcesMenu(
+    this.toolbarBrowserProxy_.handler.onImageClickedFromSourcesMenu(
         contextInfo.image!.url);
   }
 
