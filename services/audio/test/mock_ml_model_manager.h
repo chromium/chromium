@@ -28,6 +28,11 @@ class MockMlModelManager : public MlModelManager {
               GetModel,
               (mojom::MlModelType model_type),
               (override));
+  MOCK_METHOD(void,
+              InvalidateModel,
+              (mojom::MlModelType model_type,
+               scoped_refptr<media::MlModelHandle> failing_model),
+              (override));
 };
 
 }  // namespace audio

@@ -48,6 +48,8 @@ class VoiceIsolationHandler {
       const media::AudioBus& audio_bus,
       base::TimeTicks audio_capture_time,
       const media::AudioGlitchInfo& audio_glitch_info)>;
+  using InvalidateModelCallback =
+      base::OnceCallback<void(scoped_refptr<media::MlModelHandle>)>;
   using ErrorCallback = base::OnceClosure;
   using LogCallback = base::RepeatingCallback<void(std::string_view)>;
 
@@ -58,6 +60,10 @@ class VoiceIsolationHandler {
 
   // Attempts to create a VoiceIsolationHandler. Returns nullptr if a model is
   // not available from `ml_model_manager`.
+  //
+  // `ml_model_manager` must outlive the returned VoiceIsolationHandler: if
+  // background component creation fails, the handler calls
+  // `ml_model_manager.InvalidateModel()` passing its `MlModelHandle`.
   //
   // `error_callback`: Invoked asynchronously on the calling/owning sequence if
   // background component creation fails, notifying the caller (e.g.
@@ -125,6 +131,7 @@ class VoiceIsolationHandler {
       std::unique_ptr<media::AudioDebugRecorder> debug_recorder,
       const media::AudioParameters& output_params,
       DeliverProcessedAudioCallback deliver_processed_audio_callback,
+      InvalidateModelCallback invalidate_model_callback,
       ErrorCallback error_callback,
       LogCallback log_callback);
 
@@ -158,7 +165,9 @@ class VoiceIsolationHandler {
   const media::AudioParameters output_params_;
   const DeliverProcessedAudioCallback deliver_processed_audio_callback_;
 
-  // Null on the CreateForTesting() path, which never posts a creation task.
+  // Both null on the CreateForTesting() path, which never posts a creation
+  // task. Consumed by OnComponentCreated(), in this order.
+  InvalidateModelCallback invalidate_model_callback_;
   ErrorCallback error_callback_;
   const LogCallback log_callback_;
 

@@ -26,7 +26,7 @@ namespace audio {
 
 // Interface for providing Machine Learning models within the audio service.
 // This interface is used by components like the AudioProcessorHandler to access
-// // ML model information.
+// ML model information.
 class MlModelManager {
  public:
   virtual ~MlModelManager() = default;
@@ -37,6 +37,21 @@ class MlModelManager {
   // model manager.
   virtual scoped_refptr<media::MlModelHandle> GetModel(
       mojom::MlModelType model_type) = 0;
+
+  // Reports that `failing_model` failed runtime component/interpreter
+  // initialization. If it is still the model being served for `model_type`,
+  // stops serving it so later GetModel() calls return nullptr until a new
+  // model is set; otherwise (stale handle, unknown type, or null) no-op. Must
+  // be called on the same sequence as GetModel().
+  //
+  // Invalidation is scoped to the lifetime of this audio service process; the
+  // browser re-sends the model file when the service restarts.
+  // TODO(crbug.com/512016773): Consider notifying the browser process (e.g.
+  // AudioProcessMlModelForwarder) when a model is broken so that the file is
+  // not re-sent if the audio utility process restarts.
+  virtual void InvalidateModel(
+      mojom::MlModelType model_type,
+      scoped_refptr<media::MlModelHandle> failing_model) = 0;
 };
 
 // Implementation of the MlModelManager interface. This class receives model
@@ -46,7 +61,9 @@ class MlModelManager {
 // Current Behavior:
 // - Model files provided to SetModel() are loaded and cached for serving.
 // - GetModel() returns the last set and successfully loaded model.
-// - StopServingModel() stops Getmodel() from serving any previously set model.
+// - InvalidateModel() stops serving a model that failed at runtime until the
+//   next SetModel().
+// - StopServingModel() stops GetModel() from serving any previously set model.
 class MlModelManagerImpl : public MlModelManager, public mojom::MlModelManager {
  public:
   MlModelManagerImpl();
@@ -64,6 +81,9 @@ class MlModelManagerImpl : public MlModelManager, public mojom::MlModelManager {
   // MlModelManager implementation.
   scoped_refptr<media::MlModelHandle> GetModel(
       mojom::MlModelType model_type) override;
+  void InvalidateModel(
+      mojom::MlModelType model_type,
+      scoped_refptr<media::MlModelHandle> failing_model) override;
 
   bool HasPendingTasksForTesting() const;
 

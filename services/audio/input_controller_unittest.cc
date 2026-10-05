@@ -612,6 +612,15 @@ class TimeSourceInputControllerTestWithReferenceSignalProvider
 #endif
   }
 
+  ~TimeSourceInputControllerTestWithReferenceSignalProvider() override {
+    // `helper_` holds a raw_ptr to `controller_`; destroy it before
+    // `controller_`.
+    helper_.reset();
+    // `controller_` owns a VoiceIsolationHandler that holds
+    // base::Unretained(&ml_model_manager_); destroy it first.
+    this->controller_.reset();
+  }
+
  protected:
   void CreateAudioController() final {
     // Must use |this| to access template base class members:
@@ -1215,11 +1224,14 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 
 // Verifies that when an audio stream is created with voice isolation enabled
 // but component initialization fails asynchronously on the background
-// ThreadPool, InputController dispatches STREAM_ERROR to EventHandler::OnError
-// to terminate the stream.
-TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
-       VoiceIsolationAsyncStartupFailure_ReportsStreamError) {
-  // Configure audio processing with voice isolation enabled.
+// ThreadPool:
+// 1. InputController dispatches STREAM_ERROR to EventHandler::OnError to
+//    terminate the stream.
+// 2. The failing model is invalidated in MlModelManager so that subsequent
+//    stream creation calls do not repeatedly reload the broken model.
+TEST_F(
+    SystemTimeInputControllerTestWithReferenceSignalProvider,
+    VoiceIsolationAsyncStartupFailureReportsStreamErrorAndInvalidatesModel) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
 
@@ -1229,6 +1241,9 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   ON_CALL(ml_model_manager_,
           GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillByDefault(Return(failing_model));
+  EXPECT_CALL(ml_model_manager_,
+              InvalidateModel(mojom::MlModelType::kVoiceIsolationDenoiser,
+                              failing_model));
 
   EXPECT_CALL(event_handler_, OnCreated(_));
 
@@ -1250,11 +1265,13 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
 }
 
 // Verifies that if an audio input stream is closed via Close() before
-// asynchronous voice isolation initialization finishes on the ThreadPool,
-// the subsequent creation failure is safely dropped and does not dispatch
-// OnError to the EventHandler.
+// asynchronous voice isolation initialization finishes on the ThreadPool:
+// 1. The subsequent creation failure does not dispatch OnError to the
+//    EventHandler.
+// 2. The failing model is still invalidated: a broken model is broken
+//    regardless of whether the stream that discovered it is still open.
 TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
-       VoiceIsolationStartupFailureAfterClose_DoesNotDeliverError) {
+       VoiceIsolationStartupFailureAfterCloseInvalidatesModelWithoutError) {
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   processing_config_->settings.voice_isolation = true;
 
@@ -1263,6 +1280,9 @@ TEST_F(SystemTimeInputControllerTestWithReferenceSignalProvider,
   ON_CALL(ml_model_manager_,
           GetModel(mojom::MlModelType::kVoiceIsolationDenoiser))
       .WillByDefault(Return(failing_model));
+  EXPECT_CALL(ml_model_manager_,
+              InvalidateModel(mojom::MlModelType::kVoiceIsolationDenoiser,
+                              failing_model));
 
   EXPECT_CALL(event_handler_, OnCreated(_));
   EXPECT_CALL(event_handler_, OnError(_)).Times(0);

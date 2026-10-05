@@ -150,6 +150,28 @@ scoped_refptr<media::MlModelHandle> MlModelManagerImpl::GetModel(
   return it->second->model_;
 }
 
+void MlModelManagerImpl::InvalidateModel(
+    mojom::MlModelType model_type,
+    scoped_refptr<media::MlModelHandle> failing_model) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!failing_model) {
+    return;
+  }
+  auto it = models_.find(model_type);
+  if (it == models_.end()) {
+    return;
+  }
+  ServedModel& served_model = *it->second;
+  if (served_model.model_ != failing_model) {
+    return;
+  }
+
+  // Clear `model_` directly rather than calling StopServingModel() so that we
+  // don't destroy `served_model` and cancel any in-flight SetModel() task
+  // reading a newer model file on the ThreadPool.
+  served_model.model_ = nullptr;
+}
+
 bool MlModelManagerImpl::HasPendingTasksForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& [_, served_model] : models_) {
