@@ -370,11 +370,37 @@ bool IsGeminiEligibilityAblationEnabled() {
 
 BASE_FEATURE(kGeminiLive, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(bool,
+                   kGeminiLiveSkipIntro,
+                   &kGeminiLive,
+                   kGeminiLiveSkipIntroParam,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
+                   kGeminiLiveDisableIPH,
+                   &kGeminiLive,
+                   kGeminiLiveDisableIPHParam,
+                   false);
+
 bool IsGeminiLiveEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiLive);
+}
+
+bool ShouldSkipGeminiLiveIntro() {
+  if (!IsGeminiLiveEnabled()) {
+    return false;
+  }
+  return kGeminiLiveSkipIntro.Get();
+}
+
+bool IsGeminiLiveIPHDisabled() {
+  if (!IsGeminiLiveEnabled()) {
+    return false;
+  }
+  return kGeminiLiveDisableIPH.Get();
 }
 
 BASE_FEATURE(kGeminiLiveDormantReasons, base::FEATURE_DISABLED_BY_DEFAULT);

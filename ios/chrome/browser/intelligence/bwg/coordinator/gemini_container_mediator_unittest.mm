@@ -484,6 +484,39 @@ TEST_F(GeminiContainerMediatorTest,
   [mediator_ disconnect];
 }
 
+// Test that Live IPH and New badge are not triggered when
+// `kGeminiLiveDisableIPHParam` is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestGeminiLiveIPHAndNewBadgeDisabledByFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiLive, {{kGeminiLiveDisableIPHParam, "true"}}},
+       {kPageActionMenu, {}}},
+      {});
+
+  auto* mock_tracker = static_cast<feature_engagement::test::MockTracker*>(
+      feature_engagement::TrackerFactory::GetForProfile(profile_.get()));
+
+  EXPECT_CALL(*mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiLiveIPHFeature)))
+      .Times(0);
+  EXPECT_CALL(*mock_tracker,
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHiOSGeminiLiveNewBadgeFeature)))
+      .Times(0);
+
+  AppendActiveWebState();
+
+  GeminiConfiguration* config =
+      [mediator_ createGeminiConfigurationForActiveWebState:startup_state_
+                                         baseViewController:nil];
+  EXPECT_FALSE(config.shouldShowGeminiLiveIPH);
+  EXPECT_FALSE(config.shouldShowGeminiLiveNewBadge);
+
+  [mediator_ disconnect];
+}
+
 // Tests that suggestion chips are hidden when coming from
 // AppSwitcherAISummarization.
 TEST_F(GeminiContainerMediatorTest,

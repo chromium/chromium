@@ -2143,7 +2143,8 @@ bool GeminiBrowserAgent::HasGivenAllLivePermissions() const {
   }
 
   if (!gemini::DidUserConsentToGeminiLive(prefs) ||
-      !gemini::DidGeminiLiveIntroPlay(prefs) ||
+      (!gemini::DidGeminiLiveIntroPlay(prefs) &&
+       !ShouldSkipGeminiLiveIntro()) ||
       !prefs->GetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting)) {
     return false;
   }

@@ -602,7 +602,8 @@ class GeminiContainerMediatorTabHelperObserver
       feature_engagement::TrackerFactory::GetForProfile(_profile);
   // Only trigger and show the IPH/new badge if Gemini Live is available for
   // the current user.
-  if (tracker && gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile)) {
+  if (tracker && gemini::IsFeatureAvailable(gemini::Feature::kLive, _profile) &&
+      !IsGeminiLiveIPHDisabled()) {
     config.shouldShowGeminiLiveIPH = tracker->ShouldTriggerHelpUI(
         feature_engagement::kIPHiOSGeminiLiveIPHFeature);
     config.shouldShowGeminiLiveNewBadge = tracker->ShouldTriggerHelpUI(

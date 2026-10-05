@@ -1960,6 +1960,30 @@ TEST_F(GeminiBrowserAgentTest,
   [mock_device stopMocking];
 }
 
+// Test that `HasGivenAllLivePermissions` returns true without
+// `kIOSGeminiLiveIntroPlayed` when `kGeminiLiveSkipIntroParam` is enabled.
+TEST_F(GeminiBrowserAgentTest,
+       TestHasGivenAllLivePermissionsWithSkipIntroFlag) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{kGeminiLive, {{kGeminiLiveSkipIntroParam, "true"}}},
+       {kPageActionMenu, {}}},
+      {});
+
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveConsent, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveIntroPlayed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kIOSGeminiLiveMicrophoneSetting,
+                                   true);
+
+  id mock_device = OCMClassMock([AVCaptureDevice class]);
+  OCMStub([mock_device authorizationStatusForMediaType:AVMediaTypeAudio])
+      .andReturn(AVAuthorizationStatusAuthorized);
+
+  EXPECT_TRUE(HasGivenAllLivePermissions());
+
+  [mock_device stopMocking];
+}
+
 // Tests that Gemini quota info is refreshed when the app enters the foreground
 // and foreground quota refresh is enabled.
 TEST_F(GeminiBrowserAgentTest,
