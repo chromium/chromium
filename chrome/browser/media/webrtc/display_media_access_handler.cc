@@ -817,6 +817,7 @@ void DisplayMediaAccessHandler::OnDlpRestrictionChecked(
   if (!is_dlp_allowed) {
     RejectRequest(web_contents.get(),
                   MediaStreamRequestResult::DLP_PERMISSION_DENIED);
+    return;
   }
   AcceptRequest(web_contents.get(), media_id);
 }

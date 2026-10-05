@@ -483,6 +483,60 @@ TEST_F(DisplayMediaAccessHandlerTest, DlpRestricted) {
   EXPECT_EQ(0u, blink::CountDevices(devices));
 }
 
+TEST_F(DisplayMediaAccessHandlerTest, DlpRestrictedWithQueuedRequest) {
+  const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
+                                         content::DesktopMediaID::kFakeId);
+  SetTestFlags({{.expect_screens = true,
+                 .expect_windows = true,
+                 .expect_tabs = true,
+                 .expect_current_tab = false,
+                 .expect_audio = false,
+                 .picker_result = media_id},
+                {.expect_screens = true,
+                 .expect_windows = true,
+                 .expect_tabs = true,
+                 .expect_current_tab = false,
+                 .expect_audio = false,
+                 .picker_result =
+                     base::unexpected(blink::mojom::MediaStreamRequestResult::
+                                          PERMISSION_DENIED_BY_USER)}});
+
+  policy::MockDlpContentManager mock_dlp_content_manager;
+  policy::ScopedDlpContentObserverForTesting scoped_dlp_content_observer(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, CheckScreenShareRestriction)
+      .WillOnce([](const content::DesktopMediaID& media_id,
+                   const std::u16string& application_title,
+                   base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(/*should_proceed=*/false);
+      });
+
+  base::RunLoop wait_loop1;
+  base::RunLoop wait_loop2;
+  blink::mojom::MediaStreamRequestResult result1 =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::mojom::MediaStreamRequestResult result2 =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::mojom::StreamDevices devices1;
+  blink::mojom::StreamDevices devices2;
+
+  HandleRequest(MakeRequest(/*request_audio=*/false), &wait_loop1, &result1,
+                devices1);
+  HandleRequest(MakeRequest(/*request_audio=*/false), &wait_loop2, &result2,
+                devices2);
+
+  wait_loop1.Run();
+  wait_loop2.Run();
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+            result1);
+  EXPECT_EQ(0u, blink::CountDevices(devices1));
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED_BY_USER,
+            result2);
+  EXPECT_EQ(0u, blink::CountDevices(devices2));
+}
+
 TEST_F(DisplayMediaAccessHandlerTest, DlpNotRestricted) {
   const content::DesktopMediaID media_id(content::DesktopMediaID::TYPE_SCREEN,
                                          content::DesktopMediaID::kFakeId);
