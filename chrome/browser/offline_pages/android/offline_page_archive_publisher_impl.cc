@@ -130,7 +130,7 @@ void OfflinePageArchivePublisherImpl::UnpublishArchives(
 
   for (auto& id : publish_ids) {
     if (id.download_id == kArchivePublishedWithoutDownloadId) {
-      DCHECK(id.new_file_path.IsContentUri());
+      CHECK(id.new_file_path.IsContentUri(), base::NotFatalUntil::M161);
       base::DeleteFile(id.new_file_path);
     } else if (id.download_id != kArchiveNotPublished) {
       download_manager_ids.push_back(id.download_id);
@@ -182,7 +182,8 @@ OfflinePageArchivePublisherImpl::Delegate::AddCompletedDownload(
       Java_OfflinePageArchivePublisherBridge_addCompletedDownload(
           env, page_title, description, path, page.file_size, uri,
           std::string());
-  DCHECK_NE(download_id, kArchivePublishedWithoutDownloadId);
+  CHECK_NE(download_id, kArchivePublishedWithoutDownloadId,
+           base::NotFatalUntil::M161);
   if (download_id == kArchiveNotPublished)
     return PublishArchiveResult::Failure(
         SavePageResult::ADD_TO_DOWNLOAD_MANAGER_FAILED);

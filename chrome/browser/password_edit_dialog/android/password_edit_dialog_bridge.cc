@@ -22,7 +22,7 @@ PasswordEditDialog::~PasswordEditDialog() = default;
 std::unique_ptr<PasswordEditDialog> PasswordEditDialogBridge::Create(
     content::WebContents* web_contents,
     PasswordEditDialogBridgeDelegate* delegate) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   CHECK(delegate);
 
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
@@ -45,7 +45,7 @@ PasswordEditDialogBridge::PasswordEditDialogBridge(
 }
 
 PasswordEditDialogBridge::~PasswordEditDialogBridge() {
-  DCHECK(java_password_dialog_.is_null());
+  CHECK(java_password_dialog_.is_null(), base::NotFatalUntil::M161);
 }
 
 void PasswordEditDialogBridge::ShowPasswordEditDialog(

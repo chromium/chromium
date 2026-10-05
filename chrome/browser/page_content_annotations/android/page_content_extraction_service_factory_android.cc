@@ -19,7 +19,7 @@ namespace page_content_annotations {
 static ScopedJavaLocalRef<jobject>
 JNI_PageContentExtractionServiceFactory_GetForProfile(JNIEnv* env,
                                                       Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
   PageContentExtractionService* service =
       PageContentExtractionServiceFactory::GetForProfile(profile);
   return PageContentExtractionService::GetJavaObject(service);

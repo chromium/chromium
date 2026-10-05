@@ -108,7 +108,8 @@ OfflinePageTabHelper::OfflinePageTabHelper(tabs::TabInterface& tab,
     : content::WebContentsObserver(web_contents),
       mhtml_page_notifier_receivers_(web_contents, this),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M161);
 }
 
 OfflinePageTabHelper::~OfflinePageTabHelper() = default;
@@ -152,15 +153,17 @@ void OfflinePageTabHelper::NotifyMhtmlPageLoadAttempted(
                     OfflinePageTrustedState::UNTRUSTED;
 
   // We shouldn't have a trusted page without valid offline info and namespace.
-  DCHECK(!(!provisional_offline_info_.IsValid() && is_trusted));
+  CHECK(!(!provisional_offline_info_.IsValid() && is_trusted),
+        base::NotFatalUntil::M161);
 
   // If file is untrusted or we are missing the namespace, MHTML load result is
   // reported on the "untrusted" histogram.
   if (is_trusted) {
     // Ensure we have a non-empy namespace.
-    DCHECK(
-        provisional_offline_info_.offline_page &&
-        !provisional_offline_info_.offline_page->client_id.name_space.empty());
+    CHECK(provisional_offline_info_.offline_page &&
+              !provisional_offline_info_.offline_page->client_id.name_space
+                   .empty(),
+          base::NotFatalUntil::M161);
 
     // If we're here, we have valid offline info, so since the page is trusted,
     // we should not use the renderer's information.
@@ -253,8 +256,9 @@ void OfflinePageTabHelper::FinalizeOfflineInfo(
   } else if (navigated_url.SchemeIsHTTPOrHTTPS()) {
     // For http/https URL, commit the provisional offline info if any.
     if (provisional_offline_info_.IsValid()) {
-      DCHECK(EqualsIgnoringFragment(
-          navigated_url, provisional_offline_info_.offline_page->url));
+      CHECK(EqualsIgnoringFragment(navigated_url,
+                                   provisional_offline_info_.offline_page->url),
+            base::NotFatalUntil::M161);
       offline_info_ = std::move(provisional_offline_info_);
       provisional_offline_info_.Clear();
     }

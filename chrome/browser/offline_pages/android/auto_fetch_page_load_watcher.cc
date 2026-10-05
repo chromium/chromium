@@ -79,7 +79,7 @@ AutoFetchNavigationObserver::AutoFetchNavigationObserver(
       OfflinePageAutoFetcherServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext())
           ->page_load_watcher();
-  DCHECK(page_load_watcher_);
+  CHECK(page_load_watcher_, base::NotFatalUntil::M161);
 }
 
 AutoFetchNavigationObserver::~AutoFetchNavigationObserver() = default;
@@ -134,7 +134,7 @@ InternalImpl::InternalImpl(AutoFetchNotifier* notifier,
 InternalImpl::~InternalImpl() = default;
 
 void InternalImpl::RequestListInitialized(std::vector<RequestInfo> request) {
-  DCHECK(!requests_initialized_);
+  CHECK(!requests_initialized_, base::NotFatalUntil::M161);
   requests_initialized_ = true;
   requests_ = std::move(request);
 
@@ -148,8 +148,8 @@ void InternalImpl::RequestListInitialized(std::vector<RequestInfo> request) {
 }
 
 void InternalImpl::UpdateNotificationStateForAllRequests() {
-  DCHECK(requests_initialized_);
-  DCHECK(tab_model_ready_);
+  CHECK(requests_initialized_, base::NotFatalUntil::M161);
+  CHECK(tab_model_ready_, base::NotFatalUntil::M161);
   // Now that we have the full list of requests, we need to verify that the
   // notification state is correct. For instance, if a tab was closed or
   // naviagated away from the request URL, we need to trigger the in-progress

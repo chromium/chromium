@@ -38,7 +38,7 @@ TranslatePageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  DCHECK(!is_in_primary_page_);
+  CHECK(!is_in_primary_page_, base::NotFatalUntil::M161);
   is_in_primary_page_ = true;
   translate_metrics_logger_->OnPageLoadStart(started_in_foreground);
   return CONTINUE_OBSERVING;
@@ -107,7 +107,7 @@ void TranslatePageLoadMetricsObserver::OnComplete(
 
 void TranslatePageLoadMetricsObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(!is_in_primary_page_);
+  CHECK(!is_in_primary_page_, base::NotFatalUntil::M161);
   is_in_primary_page_ = true;
   translate_metrics_logger_->OnPageLoadStart(
       GetDelegate().GetVisibilityTracker().currently_in_foreground());

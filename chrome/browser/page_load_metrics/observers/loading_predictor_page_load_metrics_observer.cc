@@ -47,8 +47,8 @@ LoadingPredictorPageLoadMetricsObserver::
     : predictor_(predictor),
       predictor_tab_helper_(predictor_tab_helper),
       record_histogram_preconnectable_(false) {
-  DCHECK(predictor_);
-  DCHECK(predictor_tab_helper_);
+  CHECK(predictor_, base::NotFatalUntil::M161);
+  CHECK(predictor_tab_helper_, base::NotFatalUntil::M161);
 }
 
 LoadingPredictorPageLoadMetricsObserver::

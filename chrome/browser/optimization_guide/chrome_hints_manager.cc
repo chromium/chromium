@@ -74,11 +74,11 @@ ChromeHintsManager::ChromeHintsManager(
 }
 
 ChromeHintsManager::~ChromeHintsManager() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 }
 
 void ChromeHintsManager::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   HintsManager::Shutdown();
 
   NavigationPredictorKeyedService* navigation_predictor_service =
@@ -89,7 +89,7 @@ void ChromeHintsManager::Shutdown() {
 
 void ChromeHintsManager::OnPredictionUpdated(
     const NavigationPredictorKeyedService::Prediction& prediction) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!IsAllowedToFetchForNavigationPrediction(prediction)) {
     return;

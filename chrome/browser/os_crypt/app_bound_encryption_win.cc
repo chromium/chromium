@@ -227,7 +227,7 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
         flags);
   }
 
-  DCHECK(!ciphertext.empty());
+  CHECK(!ciphertext.empty(), base::NotFatalUntil::M161);
   base::win::AssertComInitialized();
   Microsoft::WRL::ComPtr<IElevator> elevator;
   last_error = ERROR_GEN_FAILURE;

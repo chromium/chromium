@@ -97,7 +97,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
         ManualFillingController::GetOrCreate(&GetWebContents());
   }
 
-  DCHECK(manual_filling_controller_);
+  CHECK(manual_filling_controller_, base::NotFatalUntil::M161);
   manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
       ShouldShowAction(true),
       autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
@@ -191,7 +191,7 @@ void PasswordGenerationControllerImpl::CreateForWebContentsForTesting(
         create_touch_to_fill_generation_controller) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
-  DCHECK(manual_filling_controller);
+  CHECK(manual_filling_controller, base::NotFatalUntil::M161);
 
   web_contents->SetUserData(
       UserDataKey(),

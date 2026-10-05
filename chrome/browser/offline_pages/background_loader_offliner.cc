@@ -71,8 +71,8 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
       network_bytes_(0LL),
       is_low_bar_met_(false),
       did_snapshot_on_last_retry_(false) {
-  DCHECK(offline_page_model_);
-  DCHECK(browser_context_);
+  CHECK(offline_page_model_, base::NotFatalUntil::M161);
+  CHECK(browser_context_, base::NotFatalUntil::M161);
   // When the offliner is created for test harness runs, the
   // |load_termination_listener_| will be set to nullptr, in order to prevent
   // crashing, adding a check here.
@@ -99,9 +99,9 @@ bool BackgroundLoaderOffliner::LoadAndSave(
     const SavePageRequest& request,
     CompletionCallback completion_callback,
     const ProgressCallback& progress_callback) {
-  DCHECK(completion_callback);
-  DCHECK(progress_callback);
-  DCHECK(offline_page_model_);
+  CHECK(completion_callback, base::NotFatalUntil::M161);
+  CHECK(progress_callback, base::NotFatalUntil::M161);
+  CHECK(offline_page_model_, base::NotFatalUntil::M161);
 
   if (pending_request_) {
     DVLOG(1) << "Already have pending request";
@@ -142,7 +142,7 @@ bool BackgroundLoaderOffliner::LoadAndSave(
 }
 
 bool BackgroundLoaderOffliner::Cancel(CancelCallback callback) {
-  DCHECK(pending_request_);
+  CHECK(pending_request_, base::NotFatalUntil::M161);
   // We ignore the case where pending_request_ is not set, but given the checks
   // in RequestCoordinator this should not happen.
   if (!pending_request_) {
@@ -177,7 +177,8 @@ void BackgroundLoaderOffliner::TerminateLoadIfInProgress() {
 
 bool BackgroundLoaderOffliner::HandleTimeout(int64_t request_id) {
   if (pending_request_) {
-    DCHECK(request_id == pending_request_->request_id());
+    CHECK(request_id == pending_request_->request_id(),
+          base::NotFatalUntil::M161);
     if (is_low_bar_met_ && (pending_request_->started_attempt_count() + 1 >=
                                 policy_->GetMaxStartedTries() ||
                             pending_request_->completed_attempt_count() + 1 >=

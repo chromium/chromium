@@ -178,7 +178,7 @@ void OmniboxSuggestionUsedMetricsObserver::OnComplete(
 
 void OmniboxSuggestionUsedMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  DCHECK(GetDelegate().DidCommit());
+  CHECK(GetDelegate().DidCommit(), base::NotFatalUntil::M161);
 
   RecordSearchLCP2Above2s();
 

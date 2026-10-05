@@ -118,8 +118,9 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SecurityStatePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // Only navigations committed to outermost frames are monitored.
-  DCHECK(navigation_handle->IsInPrimaryMainFrame() ||
-         navigation_handle->IsInPrerenderedMainFrame());
+  CHECK(navigation_handle->IsInPrimaryMainFrame() ||
+            navigation_handle->IsInPrerenderedMainFrame(),
+        base::NotFatalUntil::M161);
 
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     // Postpone initialization to activation.
@@ -215,8 +216,9 @@ void SecurityStatePageLoadMetricsObserver::OnComplete(
 }
 
 void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {
-  DCHECK_NE(GetDelegate().GetPrerenderingState(),
-            page_load_metrics::PrerenderingState::kInPrerendering);
+  CHECK_NE(GetDelegate().GetPrerenderingState(),
+           page_load_metrics::PrerenderingState::kInPrerendering,
+           base::NotFatalUntil::M161);
   if (!web_contents_) {
     return;
   }
@@ -228,15 +230,17 @@ void SecurityStatePageLoadMetricsObserver::DidChangeVisibleSecurityState() {
 void SecurityStatePageLoadMetricsObserver::RecordSecurityLevelHistogram(
     content::NavigationHandle* navigation_handle) {
   content::WebContents* web_contents = navigation_handle->GetWebContents();
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M161);
   Observe(web_contents);
 
   // Gather initial security level after all server redirects have been
   // resolved.
   web_contents_ = web_contents;
 
-  DCHECK_EQ(initial_security_level_, security_state::NONE);
-  DCHECK_EQ(current_security_level_, security_state::NONE);
+  CHECK_EQ(initial_security_level_, security_state::NONE,
+           base::NotFatalUntil::M161);
+  CHECK_EQ(current_security_level_, security_state::NONE,
+           base::NotFatalUntil::M161);
   initial_security_level_ =
       chrome_security_state::GetSecurityLevel(web_contents_);
   current_security_level_ = initial_security_level_;

@@ -16,7 +16,7 @@ namespace optimization_guide {
 // static
 ModelValidatorKeyedServiceFactory*
 ModelValidatorKeyedServiceFactory::GetInstance() {
-  DCHECK(ShouldStartModelValidator());
+  CHECK(ShouldStartModelValidator(), base::NotFatalUntil::M161);
   static base::NoDestructor<ModelValidatorKeyedServiceFactory> factory;
   return factory.get();
 }
@@ -33,7 +33,7 @@ ModelValidatorKeyedServiceFactory::ModelValidatorKeyedServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOwnInstance)
               .Build()) {
-  DCHECK(ShouldStartModelValidator());
+  CHECK(ShouldStartModelValidator(), base::NotFatalUntil::M161);
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }

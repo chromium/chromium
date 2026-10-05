@@ -68,7 +68,7 @@ class FromGWSPageLoadMetricsLogger {
 
   void SetNavigationStart(const base::TimeTicks navigation_start) {
     // Should be invoked at most once
-    DCHECK(navigation_start_.is_null());
+    CHECK(navigation_start_.is_null(), base::NotFatalUntil::M161);
     navigation_start_ = navigation_start;
   }
 

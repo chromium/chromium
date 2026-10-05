@@ -28,7 +28,7 @@ std::string BuildCredentialManagerNotificationMetricName(
 PasswordSyncControllerDelegateAndroid::PasswordSyncControllerDelegateAndroid(
     std::unique_ptr<PasswordSyncControllerDelegateBridge> bridge)
     : bridge_(std::move(bridge)) {
-  DCHECK(bridge_);
+  CHECK(bridge_, base::NotFatalUntil::M161);
   bridge_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 

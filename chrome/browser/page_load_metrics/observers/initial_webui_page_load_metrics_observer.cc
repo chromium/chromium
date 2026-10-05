@@ -297,7 +297,7 @@ void InitialWebUIPageLoadMetricsObserver::OnFailedProvisionalLoad(
   // for UMA histograms using the equivalent positive value. For consistency in
   // UKM, we convert to a positive value here.
   int64_t net_error_code = static_cast<int64_t>(failed_load_info.error) * -1;
-  DCHECK_GE(net_error_code, 0);
+  CHECK_GE(net_error_code, 0, base::NotFatalUntil::M161);
 
   ukm::builders::InitialWebUIPageLoad(GetDelegate().GetPageUkmSourceId())
       .SetNet_ErrorCode_OnFailedProvisionalLoad(net_error_code)
@@ -490,7 +490,7 @@ void InitialWebUIPageLoadMetricsObserver::RecordRendererUsageMetrics() {
 
 void InitialWebUIPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
     ukm::builders::InitialWebUIPageLoad& builder) {
-  DCHECK(!navigation_start_time_.is_null());
+  CHECK(!navigation_start_time_.is_null(), base::NotFatalUntil::M161);
 
   base::Time::Exploded exploded;
   navigation_start_time_.LocalExplode(&exploded);

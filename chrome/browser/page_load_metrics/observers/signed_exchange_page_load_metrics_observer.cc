@@ -17,7 +17,8 @@ const char kAmpProjectCdnHost[] = "cdn.ampproject.org";
 const char kWebPkgCacheHost[] = "webpkgcache.com";
 
 bool IsServedFromGoogleCache(content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->IsSignedExchangeInnerResponse());
+  CHECK(navigation_handle->IsSignedExchangeInnerResponse(),
+        base::NotFatalUntil::M161);
   const std::vector<GURL>& redirects = navigation_handle->GetRedirectChain();
   if (redirects.size() <= 1)
     return false;

@@ -156,8 +156,8 @@ void AMPPageLoadMetricsObserver::DidActivatePrerenderedPage(
   // Executes maybe postponed actions.
 
   if (current_main_frame_nav_info_) {
-    DCHECK_EQ(current_main_frame_nav_info_->ukm_source_id,
-              ukm::kInvalidSourceId);
+    CHECK_EQ(current_main_frame_nav_info_->ukm_source_id, ukm::kInvalidSourceId,
+             base::NotFatalUntil::M161);
     current_main_frame_nav_info_->ukm_source_id = ukm::ConvertToSourceId(
         navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
   }
@@ -369,7 +369,8 @@ void AMPPageLoadMetricsObserver::MaybeRecordLoadingBehaviorObserved() {
   // This can be postponed after prerender activation with metrics unmodified
   // because behavior flags are accumulated by PageLeadMetricsUpdateDispatcher.
 
-  DCHECK(!IsInPrerenderingBeforeActivation(GetDelegate()));
+  CHECK(!IsInPrerenderingBeforeActivation(GetDelegate()),
+        base::NotFatalUntil::M161);
 
   ukm::builders::AmpPageLoad builder(GetDelegate().GetPageUkmSourceId());
   bool should_record = false;
@@ -393,7 +394,8 @@ void AMPPageLoadMetricsObserver::MaybeRecordLoadingBehaviorObserved() {
 }
 
 void AMPPageLoadMetricsObserver::MaybeRecordAmpDocumentMetrics() {
-  DCHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart());
+  CHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart(),
+        base::NotFatalUntil::M161);
 
   if (current_main_frame_nav_info_ == nullptr ||
       current_main_frame_nav_info_->subframe_rfh == nullptr)
@@ -580,7 +582,8 @@ void AMPPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics(
     const page_load_metrics::InteractionToNextPaintCalculator&
         interaction_to_next_paint_calculator,
     ukm::builders::AmpPageLoad& builder) {
-  DCHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart());
+  CHECK(!GetDelegate().IsInPrerenderingBeforeActivationStart(),
+        base::NotFatalUntil::M161);
 
   if (!interaction_to_next_paint_calculator.num_user_interactions()) {
     return;

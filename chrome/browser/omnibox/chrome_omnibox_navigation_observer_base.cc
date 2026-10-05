@@ -285,7 +285,7 @@ void ChromeOmniboxNavigationObserverBase::DidFinishNavigation(
 
   // This is the navigation we've started ourselves in the primary main frame
   // of the WebContents.
-  DCHECK(navigation_handle->IsInPrimaryMainFrame());
+  CHECK(navigation_handle->IsInPrimaryMainFrame(), base::NotFatalUntil::M161);
 
   // Ignore navigations which didn't commit, or committed a page which bypassed
   // the network (e.g. about:blank).

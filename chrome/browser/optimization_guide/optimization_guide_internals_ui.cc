@@ -64,7 +64,7 @@ void OptimizationGuideInternalsUI::CreatePageHandler(
     mojo::PendingRemote<optimization_guide_internals::mojom::Page> page) {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* service = OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M161);
   OptimizationGuideLogger* optimization_guide_logger =
       service->GetOptimizationGuideLogger();
   optimization_guide_internals_page_handler_ =

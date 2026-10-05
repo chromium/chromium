@@ -39,7 +39,7 @@ PasswordManagerLifecycleHelperImpl::~PasswordManagerLifecycleHelperImpl() {
 }
 
 void PasswordManagerLifecycleHelperImpl::OnForegroundSessionStart(JNIEnv* env) {
-  DCHECK(foregrounding_callback_);
+  CHECK(foregrounding_callback_, base::NotFatalUntil::M161);
   foregrounding_callback_.Run();
 }
 

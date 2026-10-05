@@ -89,7 +89,7 @@ bool OptimizationGuideKeyedServiceFactory::ServiceIsNULLWhileTesting() const {
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_OptimizationGuideBridgeFactory_GetForProfile(JNIEnv* env,
                                                  Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M161);
 
   OptimizationGuideKeyedService* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

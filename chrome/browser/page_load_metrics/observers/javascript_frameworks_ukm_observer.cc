@@ -169,6 +169,6 @@ void JavascriptFrameworksUkmObserver::RecordJavascriptFrameworkPageLoad() {
 
 void JavascriptFrameworksUkmObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(is_in_prerendered_page_);
+  CHECK(is_in_prerendered_page_, base::NotFatalUntil::M161);
   is_in_prerendered_page_ = false;
 }

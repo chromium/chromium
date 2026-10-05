@@ -407,7 +407,7 @@ PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
     : lifecycle_helper_(std::move(lifecycle_helper)),
       bridge_helper_(std::move(bridge_helper)) {
-  DCHECK(bridge_helper_);
+  CHECK(bridge_helper_, base::NotFatalUntil::M161);
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -819,7 +819,7 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
 
   last_error_ = ActionableError::kNoError;
   reply->RecordMetrics(/*error=*/std::nullopt);
-  DCHECK(reply->Holds<LoginsOrErrorReply>());
+  CHECK(reply->Holds<LoginsOrErrorReply>(), base::NotFatalUntil::M161);
 
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),
@@ -835,7 +835,7 @@ void PasswordStoreAndroidBackend::OnLoginsChanged(
     return;  // Task cleaned up after returning from background.
   }
   reply->RecordMetrics(/*error=*/std::nullopt);
-  DCHECK(reply->Holds<PasswordChangesOrErrorReply>());
+  CHECK(reply->Holds<PasswordChangesOrErrorReply>(), base::NotFatalUntil::M161);
 
   last_error_ = ActionableError::kNoError;
   main_task_runner_->PostTask(
@@ -859,7 +859,8 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
       PasswordStoreBackendErrorType::kUncategorized);
 
   if (error.api_error_code.has_value()) {
-    DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
+    CHECK_EQ(AndroidBackendErrorType::kExternalError, error.type,
+             base::NotFatalUntil::M161);
     int api_error = error.api_error_code.value();
     reported_error.android_backend_api_error = api_error;
     auto api_error_code = static_cast<AndroidBackendAPIErrorCode>(api_error);

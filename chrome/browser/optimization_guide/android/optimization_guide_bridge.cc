@@ -47,7 +47,8 @@ ScopedJavaLocalRef<jbyteArray> ToJavaSerializedAnyMetadata(
     const optimization_guide::OptimizationMetadata& optimization_metadata) {
   // We do not expect the following metadatas to be populated for optimization
   // types getting called from Java.
-  DCHECK(!optimization_metadata.loading_predictor_metadata());
+  CHECK(!optimization_metadata.loading_predictor_metadata(),
+        base::NotFatalUntil::M161);
 
   if (optimization_metadata.any_metadata()) {
     std::string serialized;
@@ -167,7 +168,7 @@ void OptimizationGuideBridge::OnDeferredStartup(JNIEnv* env) {
 OptimizationGuideBridge::OptimizationGuideBridge(
     OptimizationGuideKeyedService* optimization_guide_keyed_service)
     : optimization_guide_keyed_service_(optimization_guide_keyed_service) {
-  DCHECK(optimization_guide_keyed_service_);
+  CHECK(optimization_guide_keyed_service_, base::NotFatalUntil::M161);
 }
 
 OptimizationGuideBridge::~OptimizationGuideBridge() = default;

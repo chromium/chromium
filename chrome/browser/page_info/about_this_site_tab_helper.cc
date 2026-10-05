@@ -40,7 +40,7 @@ AboutThisSiteTabHelper::AboutThisSiteTabHelper(
     : content::WebContentsObserver(web_contents),
       optimization_guide_decider_(optimization_guide_decider),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
-  DCHECK(optimization_guide_decider_);
+  CHECK(optimization_guide_decider_, base::NotFatalUntil::M161);
 }
 
 AboutThisSiteTabHelper::~AboutThisSiteTabHelper() = default;
@@ -56,7 +56,7 @@ AboutThisSiteTabHelper::GetAboutThisSiteMetadata() const {
 }
 
 void AboutThisSiteTabHelper::PrimaryPageChanged(content::Page& page) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   decision_ = optimization_guide::OptimizationGuideDecision::kUnknown;
   about_this_site_metadata_.reset();
 

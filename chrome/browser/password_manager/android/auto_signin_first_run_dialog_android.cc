@@ -89,7 +89,7 @@ void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env) {
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   // This dialog is not and should never be shown in incognito as it offers the
   // possibility to change user settings.
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M161);
   password_manager::PasswordManagerSettingsService* service =
       PasswordManagerSettingsServiceFactory::GetForProfile(profile);
   // The service can be null if the password manager is not available, but there

@@ -180,7 +180,7 @@ void OfflinePageURLLoader::TransferRawData() {
 void OfflinePageURLLoader::SetOfflinePageNavigationUIData(
     bool is_offline_page) {
   // This method should be called before the response data is received.
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M161);
 
   ChromeNavigationUIData* navigation_data =
       static_cast<ChromeNavigationUIData*>(navigation_ui_data_);
@@ -234,7 +234,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   // interact with URLLoaderThrottles. It might be incorrect to ignore
   // |resource_request| here, since it's the current request after
   // throttles.
-  DCHECK(!receiver_.is_bound());
+  CHECK(!receiver_.is_bound(), base::NotFatalUntil::M161);
   receiver_.Bind(std::move(receiver));
   receiver_.set_disconnect_handler(base::BindOnce(
       &OfflinePageURLLoader::OnMojoDisconnect, weak_ptr_factory_.GetWeakPtr()));
@@ -256,7 +256,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   if (redirect_headers.get()) {
     std::string redirected_url;
     bool is_redirect = redirect_headers->IsRedirect(&redirected_url);
-    DCHECK(is_redirect);
+    CHECK(is_redirect, base::NotFatalUntil::M161);
     response_head->headers = redirect_headers;
     response_head->encoded_data_length = 0;
     client_->OnReceiveRedirect(

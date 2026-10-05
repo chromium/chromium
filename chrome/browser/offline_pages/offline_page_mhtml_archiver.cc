@@ -61,8 +61,8 @@ void OfflinePageMHTMLArchiver::CreateArchive(
     const CreateArchiveParams& create_archive_params,
     content::WebContents* web_contents,
     CreateArchiveCallback callback) {
-  DCHECK(callback_.is_null());
-  DCHECK(!callback.is_null());
+  CHECK(callback_.is_null(), base::NotFatalUntil::M161);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M161);
   callback_ = std::move(callback);
 
   GenerateMHTML(archives_dir, web_contents, create_archive_params);
@@ -156,7 +156,8 @@ void OfflinePageMHTMLArchiver::DeleteFileAndReportFailure(
 }
 
 void OfflinePageMHTMLArchiver::ReportFailure(ArchiverResult result) {
-  DCHECK(result != ArchiverResult::SUCCESSFULLY_CREATED);
+  CHECK(result != ArchiverResult::SUCCESSFULLY_CREATED,
+        base::NotFatalUntil::M161);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback_), result, GURL(), base::FilePath(),

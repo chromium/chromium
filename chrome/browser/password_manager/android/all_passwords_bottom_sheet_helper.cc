@@ -33,7 +33,7 @@ void AllPasswordsBottomSheetHelper::SetLastFocusedFieldType(
 
 void AllPasswordsBottomSheetHelper::SetUpdateCallback(
     base::OnceClosure update_callback) {
-  DCHECK(update_callback);
+  CHECK(update_callback, base::NotFatalUntil::M161);
   update_callback_ = std::move(update_callback);
 }
 

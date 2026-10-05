@@ -56,7 +56,7 @@ void JavaBooleanCallbackAdapter(base::OnceCallback<void(bool)> callback,
 int TabIdFromDirectoryKey(const DirectoryKey& key) {
   int out;
   bool success = base::StringToInt(key.AsciiDirname(), &out);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M161);
   return out;
 }
 

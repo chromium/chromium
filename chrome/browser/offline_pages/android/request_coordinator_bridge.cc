@@ -115,7 +115,7 @@ static JNI_EXPORT void JNI_RequestCoordinatorBridge_SavePageLater(
     const std::string& client_id_str,
     const std::string& origin,
     bool user_requested) {
-  DCHECK(j_callback_obj);
+  CHECK(j_callback_obj, base::NotFatalUntil::M161);
 
   offline_pages::ClientId client_id;
   client_id.name_space = namespace_str;

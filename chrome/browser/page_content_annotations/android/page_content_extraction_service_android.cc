@@ -40,7 +40,7 @@ ScopedJavaLocalRef<jobject> PageContentExtractionService::GetJavaObject(
 PageContentExtractionServiceAndroid::PageContentExtractionServiceAndroid(
     PageContentExtractionService* service)
     : service_(service) {
-  DCHECK(service_);
+  CHECK(service_, base::NotFatalUntil::M161);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_PageContentExtractionService_create(
                            env, reinterpret_cast<int64_t>(this)));

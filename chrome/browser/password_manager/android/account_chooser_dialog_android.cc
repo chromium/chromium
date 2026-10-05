@@ -109,7 +109,7 @@ AccountChooserDialogAndroid::AccountChooserDialogAndroid(
       web_contents_(web_contents),
       client_(client),
       origin_(origin) {
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M161);
   passwords_data_.set_client(client);
   passwords_data_.OnRequestCredentials(std::move(local_credentials), origin);
   passwords_data_.set_credentials_callback(std::move(callback));

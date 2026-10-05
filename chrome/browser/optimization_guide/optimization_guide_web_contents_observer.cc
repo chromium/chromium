@@ -50,7 +50,7 @@ OptimizationGuideWebContentsObserver::OptimizationGuideWebContentsObserver(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<OptimizationGuideWebContentsObserver>(
           *web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   optimization_guide_keyed_service_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -63,8 +63,9 @@ OptimizationGuideWebContentsObserver::~OptimizationGuideWebContentsObserver() =
 OptimizationGuideNavigationData* OptimizationGuideWebContentsObserver::
     GetOrCreateOptimizationGuideNavigationData(
         content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(web_contents(), navigation_handle->GetWebContents());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_EQ(web_contents(), navigation_handle->GetWebContents(),
+           base::NotFatalUntil::M161);
 
   NavigationHandleData* navigation_handle_data =
       NavigationHandleData::GetOrCreateForNavigationHandle(*navigation_handle);
@@ -80,13 +81,13 @@ OptimizationGuideNavigationData* OptimizationGuideWebContentsObserver::
         navigation_handle_data->GetOptimizationGuideNavigationData();
   }
 
-  DCHECK(navigation_data);
+  CHECK(navigation_data, base::NotFatalUntil::M161);
   return navigation_data;
 }
 
 void OptimizationGuideWebContentsObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
@@ -103,7 +104,7 @@ void OptimizationGuideWebContentsObserver::DidStartNavigation(
 
 void OptimizationGuideWebContentsObserver::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
@@ -120,7 +121,7 @@ void OptimizationGuideWebContentsObserver::DidRedirectNavigation(
 
 void OptimizationGuideWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!IsValidOptimizationGuideNavigation(navigation_handle))
     return;
@@ -148,7 +149,7 @@ void OptimizationGuideWebContentsObserver::WebContentsDestroyed() {
 
 void OptimizationGuideWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!web_contents() || !web_contents()
                               ->GetPrimaryMainFrame()
                               ->GetLastCommittedURL()
@@ -175,8 +176,8 @@ void OptimizationGuideWebContentsObserver::
 void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
     optimization_guide::ChromeHintsManager* hints_manager,
     base::WeakPtr<content::Page> page) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(hints_manager);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK(hints_manager, base::NotFatalUntil::M161);
   if (!page)
     return;
 
@@ -198,7 +199,7 @@ void OptimizationGuideWebContentsObserver::FetchHintsUsingManager(
 void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
     std::unique_ptr<OptimizationGuideNavigationData> navigation_data,
     const std::vector<GURL>& navigation_redirect_chain) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (optimization_guide_keyed_service_) {
     optimization_guide_keyed_service_->OnNavigationFinish(
         navigation_redirect_chain);
@@ -216,7 +217,7 @@ void OptimizationGuideWebContentsObserver::NotifyNavigationFinish(
 }
 
 void OptimizationGuideWebContentsObserver::FlushLastNavigationData() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (!web_contents()) {
     return;
   }
@@ -227,11 +228,11 @@ void OptimizationGuideWebContentsObserver::FlushLastNavigationData() {
 void OptimizationGuideWebContentsObserver::AddURLsToBatchFetchBasedOnPrediction(
     std::vector<GURL> urls,
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (!this->web_contents())
     return;
-  DCHECK_EQ(this->web_contents(), web_contents);
+  CHECK_EQ(this->web_contents(), web_contents, base::NotFatalUntil::M161);
 
   PageData& page_data = GetPageData(web_contents->GetPrimaryPage());
   if (page_data.is_sent_batched_hints_request())
@@ -263,7 +264,7 @@ OptimizationGuideWebContentsObserver::PageData::~PageData() = default;
 
 void OptimizationGuideWebContentsObserver::PageData::InsertHintTargetUrls(
     const std::vector<GURL>& urls) {
-  DCHECK(!sent_batched_hints_request_);
+  CHECK(!sent_batched_hints_request_, base::NotFatalUntil::M161);
   for (const GURL& url : urls)
     hints_target_urls_.insert(url);
 }

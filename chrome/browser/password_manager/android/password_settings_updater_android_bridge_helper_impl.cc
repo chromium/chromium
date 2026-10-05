@@ -77,7 +77,7 @@ PasswordSettingsUpdaterAndroidBridgeHelperImpl::
 void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetConsumer(
     base::WeakPtr<Consumer> consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  DCHECK(receiver_bridge_);
+  CHECK(receiver_bridge_, base::NotFatalUntil::M161);
   receiver_bridge_->SetConsumer(consumer);
 }
 
@@ -85,7 +85,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
     std::optional<SyncingAccount> account,
     PasswordManagerSetting setting) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  DCHECK(dispatcher_bridge_);
+  CHECK(dispatcher_bridge_, base::NotFatalUntil::M161);
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordSettingsUpdaterAndroidDispatcherBridge::
@@ -99,7 +99,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetPasswordSettingValue(
     PasswordManagerSetting setting,
     bool value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  DCHECK(dispatcher_bridge_);
+  CHECK(dispatcher_bridge_, base::NotFatalUntil::M161);
   background_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PasswordSettingsUpdaterAndroidDispatcherBridge::

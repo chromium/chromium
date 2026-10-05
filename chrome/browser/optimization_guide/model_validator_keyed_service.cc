@@ -51,7 +51,7 @@ void WriteResponseToFile(
     return;
   }
   bool write_file_success = base::WriteFile(path, serialized_output);
-  DCHECK(write_file_success);
+  CHECK(write_file_success, base::NotFatalUntil::M161);
 }
 
 bool ShouldValidateModel() {
@@ -92,7 +92,7 @@ namespace optimization_guide {
 ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
     : profile_(profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(ShouldStartModelValidator());
+  CHECK(ShouldStartModelValidator(), base::NotFatalUntil::M161);
   auto* opt_guide_service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   if (!opt_guide_service) {
@@ -230,9 +230,9 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
 
 void ModelValidatorKeyedService::ExecuteModel(
     std::unique_ptr<optimization_guide::proto::ExecuteRequest> request) {
-  DCHECK(on_device_validation_session_);
+  CHECK(on_device_validation_session_, base::NotFatalUntil::M161);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M161);
 
   auto metadata = GetProtoFromAny(request->request_metadata());
   on_device_validation_session_->ExecuteModel(

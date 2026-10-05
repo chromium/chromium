@@ -46,7 +46,7 @@ void SetFaviconTask(Profile* profile,
                     const GURL& icon_url,
                     const std::vector<unsigned char>& image_data,
                     favicon_base::IconType icon_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(image_data);
   gfx::Size pixel_size(gfx::kFaviconSize, gfx::kFaviconSize);
   favicon::FaviconService* favicon_service =
@@ -103,7 +103,7 @@ PartnerBookmarksReader::PartnerBookmarksReader(
 PartnerBookmarksReader::~PartnerBookmarksReader() = default;
 
 void PartnerBookmarksReader::PartnerBookmarksCreationComplete(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(
       std::move(wip_partner_bookmarks_root_));
   wip_next_available_id_ = 0;
@@ -114,7 +114,7 @@ void PartnerBookmarksReader::Destroy(JNIEnv* env) {
 }
 
 void PartnerBookmarksReader::Reset(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
   wip_partner_bookmarks_root_.reset();
   wip_next_available_id_ = 0;
 }
@@ -131,7 +131,7 @@ int64_t PartnerBookmarksReader::AddPartnerBookmark(
     int32_t desired_favicon_size_px,
     const JavaRef<jobject>& j_callback) {
   if (!url.empty()) {
-    DCHECK(!is_folder);
+    CHECK(!is_folder, base::NotFatalUntil::M161);
   }
 
   int64_t node_id = 0;
@@ -367,7 +367,8 @@ void PartnerBookmarksReader::PrepareAndSetFavicon(
   {
     // Waiting is okay here because this is called from a background thread
     // in Java.
-    DCHECK(!::content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+    CHECK(!::content::BrowserThread::CurrentlyOn(BrowserThread::UI),
+          base::NotFatalUntil::M161);
     base::ScopedAllowBaseSyncPrimitives allow_sync;
     event.Wait();
   }

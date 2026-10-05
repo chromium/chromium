@@ -88,7 +88,7 @@ void UpdateDigest(
 
 OfflinePageModel* GetOfflinePageModel(
     content::WebContents::Getter web_contents_getter) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents = web_contents_getter.Run();
   return web_contents ? OfflinePageModelFactory::GetForBrowserContext(
@@ -100,7 +100,7 @@ OfflinePageModel* GetOfflinePageModel(
 void NotifyAvailableOfflinePagesOnUI(
     base::WeakPtr<OfflinePageRequestHandler> job,
     const std::vector<OfflinePageRequestHandler::Candidate>& candidates) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (job)
     job->OnOfflinePagesAvailable(candidates);
@@ -111,8 +111,9 @@ void FailedToFindOfflinePage(
     RequestResult request_error_result,
     OfflinePageRequestHandler::NetworkState network_state,
     base::WeakPtr<OfflinePageRequestHandler> job) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_NE(RequestResult::OFFLINE_PAGE_SERVED, request_error_result);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
+  CHECK_NE(RequestResult::OFFLINE_PAGE_SERVED, request_error_result,
+           base::NotFatalUntil::M161);
 
   NotifyAvailableOfflinePagesOnUI(
       job, std::vector<OfflinePageRequestHandler::Candidate>());
@@ -126,7 +127,7 @@ void SelectPagesForURLDone(
     base::WeakPtr<OfflinePageRequestHandler> job,
     content::WebContents::Getter web_contents_getter,
     const std::vector<OfflinePageItem>& offline_pages) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // Bail out if no page is found.
   if (offline_pages.empty()) {
@@ -163,7 +164,7 @@ void GetPageByOfflineIdDone(
     content::WebContents::Getter web_contents_getter,
     base::WeakPtr<OfflinePageRequestHandler> job,
     const OfflinePageItem* offline_page) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // If the found offline page does not match the request URL, fail.
   if (!offline_page || offline_page->url != url) {
@@ -186,7 +187,7 @@ void GetPagesToServeURL(
     content::WebContents::Getter web_contents_getter,
     OfflinePageRequestHandler::Delegate::TabIdGetter tab_id_getter,
     base::WeakPtr<OfflinePageRequestHandler> job) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   content::WebContents* web_contents = web_contents_getter.Run();
   if (!web_contents) {
@@ -237,7 +238,7 @@ void VisitTrustedOfflinePageOnUI(
     content::WebContents::Getter web_contents_getter,
     const OfflinePageItem& offline_page,
     bool archive_is_in_internal_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   // |web_contents_getter| is passed from IO thread. We need to check if
   // web contents is still valid.
@@ -258,7 +259,7 @@ void VisitTrustedOfflinePageOnUI(
   // the loaded offline page immediately.
   OfflinePageTabHelper* tab_helper =
       OfflinePageTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
+  CHECK(tab_helper, base::NotFatalUntil::M161);
   tab_helper->SetOfflinePage(
       offline_page, offline_header,
       archive_is_in_internal_dir
@@ -280,7 +281,7 @@ OfflinePageRequestHandler::OfflinePageRequestHandler(
       delegate_(delegate),
       network_state_(NetworkState::CONNECTED_NETWORK),
       candidate_index_(0) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   std::string offline_header_value =
       extra_request_headers.GetHeader(kOfflinePageHeader)
           .value_or(std::string());
@@ -293,7 +294,7 @@ OfflinePageRequestHandler::~OfflinePageRequestHandler() = default;
 
 OfflinePageRequestHandler::NetworkState
 OfflinePageRequestHandler::GetNetworkState() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (offline_header_.reason == OfflinePageHeader::Reason::NET_ERROR)
     return OfflinePageRequestHandler::NetworkState::FLAKY_NETWORK;
@@ -360,7 +361,7 @@ OfflinePageRequestHandler::GetRedirectHeaders() {
 }
 
 int OfflinePageRequestHandler::ReadRawData(net::IOBuffer* dest, int dest_size) {
-  DCHECK_NE(dest_size, 0);
+  CHECK_NE(dest_size, 0, base::NotFatalUntil::M161);
 
   auto result = stream_->Read(
       dest, dest_size,
@@ -410,7 +411,7 @@ void OfflinePageRequestHandler::OnTrustedOfflinePageFound() {
     DidOpenForServing(net::OK);
     return;
   }
-  DCHECK(!IsProcessingFileOrContentUrlIntent());
+  CHECK(!IsProcessingFileOrContentUrlIntent(), base::NotFatalUntil::M161);
 
   OpenFile(GetCurrentOfflinePage().file_path,
            base::BindRepeating(&OfflinePageRequestHandler::DidOpenForServing,
@@ -442,7 +443,8 @@ void OfflinePageRequestHandler::Redirect(const GURL& redirected_url) {
 
   fake_headers_for_redirect_ = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(header_string));
-  DCHECK(fake_headers_for_redirect_->IsRedirect(nullptr));
+  CHECK(fake_headers_for_redirect_->IsRedirect(nullptr),
+        base::NotFatalUntil::M161);
 
   delegate_->NotifyHeadersComplete(0);
 }
@@ -509,7 +511,7 @@ void OfflinePageRequestHandler::UpdateDigestOnBackground(
     scoped_refptr<net::IOBuffer> buffer,
     size_t len,
     base::OnceClosure digest_updated_callback) {
-  DCHECK_GT(len, 0u);
+  CHECK_GT(len, 0u, base::NotFatalUntil::M161);
 
   if (!archive_validator_)
     archive_validator_ = new ThreadSafeArchiveValidator();
@@ -644,7 +646,7 @@ void OfflinePageRequestHandler::DidReadForValidation(
 
 void OfflinePageRequestHandler::DidComputeActualDigestForValidation(
     const std::string& actual_digest) {
-  DCHECK(!GetCurrentOfflinePage().digest.empty());
+  CHECK(!GetCurrentOfflinePage().digest.empty(), base::NotFatalUntil::M161);
   bool is_trusted = actual_digest == GetCurrentOfflinePage().digest;
   OnFileValidationDone(is_trusted
                            ? FileValidationResult::FILE_VALIDATION_SUCCEEDED

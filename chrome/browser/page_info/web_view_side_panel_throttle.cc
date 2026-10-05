@@ -67,7 +67,8 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
                  bool should_run_async,
                  navigation_interception::InterceptNavigationThrottle::
                      ResultCallback result_callback) {
-                DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                                   base::NotFatalUntil::M161);
                 CHECK(!should_run_async);
                 auto* data = static_cast<WebViewSidePanelWebContentsUserData*>(
                     handle->GetWebContents()->GetUserData(

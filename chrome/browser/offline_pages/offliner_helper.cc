@@ -21,7 +21,8 @@ bool AreThirdPartyCookiesBlocked(content::BrowserContext* browser_context) {
 }
 
 bool IsNetworkPredictionDisabled(content::BrowserContext* browser_context) {
-  DCHECK(Profile::FromBrowserContext(browser_context)->GetPrefs());
+  CHECK(Profile::FromBrowserContext(browser_context)->GetPrefs(),
+        base::NotFatalUntil::M161);
   return prefetch::IsSomePreloadingEnabled(
              *Profile::FromBrowserContext(browser_context)->GetPrefs()) !=
          content::PreloadingEligibility::kEligible;
