@@ -855,8 +855,9 @@ void ArcBluetoothBridge::OnGattAttributeReadRequest(
     return;
   }
 
-  CHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end(),
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/569776355): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end());
 
   bluetooth_instance->RequestGattRead(
       mojom::BluetoothAddress::From(device->GetAddress()),
@@ -927,8 +928,9 @@ void ArcBluetoothBridge::OnGattAttributeWriteRequest(
                            std::move(error_callback))
           : base::BindOnce(&OnGattServerWrite, std::move(success_callback),
                            std::move(error_callback));
-  CHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end(),
-        base::NotFatalUntil::M160);
+  // TODO: CHECK-exclusion: Convert to a CHECK once we are confident it won't be
+  // triggered.
+  DCHECK(gatt_handle_.find(attribute->GetIdentifier()) != gatt_handle_.end());
   bluetooth_instance->RequestGattWrite(
       mojom::BluetoothAddress::From(device->GetAddress()),
       gatt_handle_[attribute->GetIdentifier()], offset, value, attribute_type,
