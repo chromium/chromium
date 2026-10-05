@@ -45,7 +45,7 @@ HWDataCollectionScreen::HWDataCollectionScreen(
     : BaseScreen(HWDataCollectionView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 HWDataCollectionScreen::~HWDataCollectionScreen() = default;

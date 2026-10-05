@@ -36,7 +36,7 @@ void FingerprintPowerButtonRaceDetector::FingerprintScanReceived(
 void FingerprintPowerButtonRaceDetector::HandleEventHappened(
     base::TimeTicks timestamp,
     EventType event_type) {
-  DCHECK_NE(event_type, EventType::NONE);
+  CHECK_NE(event_type, EventType::NONE, base::NotFatalUntil::M161);
   if (last_event_type_ != EventType::NONE && event_type != last_event_type_) {
     VLOG(0) << (timestamp - last_event_timestamp_ <= race_time_window_);
     base::UmaHistogramBoolean(

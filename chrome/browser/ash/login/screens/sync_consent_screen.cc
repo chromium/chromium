@@ -184,7 +184,7 @@ SyncConsentScreen::SyncConsentScreen(base::WeakPtr<SyncConsentScreenView> view,
     : BaseScreen(SyncConsentScreenView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 SyncConsentScreen::~SyncConsentScreen() = default;
@@ -199,7 +199,7 @@ void SyncConsentScreen::Init(const WizardContext& context) {
 }
 
 void SyncConsentScreen::Finish(Result result) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M161);
   profile_->GetPrefs()->SetBoolean(prefs::kRecordArcAppSyncMetrics, true);
   // Always set completed, even if the dialog was skipped (e.g. by policy).
   profile_->GetPrefs()->SetBoolean(prefs::kSyncOobeCompleted, true);
@@ -279,7 +279,7 @@ void SyncConsentScreen::HideImpl() {
 }
 
 void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
-  DCHECK(context());
+  CHECK(context(), base::NotFatalUntil::M161);
   UpdateScreen(*context());
 }
 
@@ -311,7 +311,7 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
 
 void SyncConsentScreen::OnTimeout() {
   is_timed_out_ = true;
-  DCHECK(context());
+  CHECK(context(), base::NotFatalUntil::M161);
   UpdateScreen(*context());
 }
 

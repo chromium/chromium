@@ -173,9 +173,10 @@ EnrollmentScreen::EnrollmentScreen(
 
 EnrollmentScreen::~EnrollmentScreen() {
   scoped_network_observation_.Reset();
-  DCHECK(!enrollment_launcher_ || g_browser_process->IsShuttingDown() ||
-         ash::BrowserController::GetInstance()->IsTryingToQuit() ||
-         DBusThreadManager::Get()->IsUsingFakes());
+  CHECK(!enrollment_launcher_ || g_browser_process->IsShuttingDown() ||
+            ash::BrowserController::GetInstance()->IsTryingToQuit() ||
+            DBusThreadManager::Get()->IsUsingFakes(),
+        base::NotFatalUntil::M161);
 }
 
 void EnrollmentScreen::SetEnrollmentConfig(
@@ -267,7 +268,8 @@ void EnrollmentScreen::OnAuthCleared(base::OnceClosure callback) {
 }
 
 void EnrollmentScreen::ShowSkipEnrollmentDialogue() {
-  DCHECK(effective_config_.is_license_packaged_with_device);
+  CHECK(effective_config_.is_license_packaged_with_device,
+        base::NotFatalUntil::M161);
   if (view_) {
     view_->ShowSkipConfirmationDialog();
   }

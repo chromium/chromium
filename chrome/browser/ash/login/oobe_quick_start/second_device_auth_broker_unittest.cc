@@ -521,15 +521,15 @@ using SecondDeviceAuthBrokerDeathTest = SecondDeviceAuthBrokerTest;
 
 TEST_F(SecondDeviceAuthBrokerDeathTest,
        SecondDeviceAuthBrokerValidatesDeviceId) {
-  EXPECT_DCHECK_DEATH(SecondDeviceAuthBroker(
+  EXPECT_CHECK_DEATH(SecondDeviceAuthBroker(
       /*device_id=*/std::string(), GetSharedURLLoaderFactory(),
       std::make_unique<attestation::MockAttestationFlow>()))
-      << "Using an empty device_id should DCHECK";
+      << "Using an empty device_id should CHECK";
 
-  EXPECT_DCHECK_DEATH(SecondDeviceAuthBroker(
+  EXPECT_CHECK_DEATH(SecondDeviceAuthBroker(
       /*device_id=*/std::string(65, '0'), GetSharedURLLoaderFactory(),
       std::make_unique<attestation::MockAttestationFlow>()))
-      << "Using a device_id of length greater than 64 should DCHECK";
+      << "Using a device_id of length greater than 64 should CHECK";
 }
 
 TEST_F(SecondDeviceAuthBrokerTest,

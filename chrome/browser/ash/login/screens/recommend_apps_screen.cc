@@ -115,7 +115,7 @@ void RecommendAppsScreen::OnInstall(base::ListValue apps) {
 bool RecommendAppsScreen::MaybeSkip(WizardContext& context) {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
-  DCHECK(user_manager->IsUserLoggedIn());
+  CHECK(user_manager->IsUserLoggedIn(), base::NotFatalUntil::M161);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (!arc::IsArcPlayStoreEnabledForProfile(profile)) {

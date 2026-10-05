@@ -193,10 +193,11 @@ EnrollmentLauncherImpl::EnrollmentLauncherImpl(
 }
 
 EnrollmentLauncherImpl::~EnrollmentLauncherImpl() {
-  DCHECK(
-      g_browser_process->IsShuttingDown() ||
-      oauth_status_ == OAUTH_NOT_STARTED ||
-      (oauth_status_ == OAUTH_FINISHED && (success_ || oauth_data_cleared_)));
+  CHECK(g_browser_process->IsShuttingDown() ||
+            oauth_status_ == OAUTH_NOT_STARTED ||
+            (oauth_status_ == OAUTH_FINISHED &&
+             (success_ || oauth_data_cleared_)),
+        base::NotFatalUntil::M161);
 }
 
 void EnrollmentLauncherImpl::Setup(
@@ -207,7 +208,7 @@ void EnrollmentLauncherImpl::Setup(
 }
 
 void EnrollmentLauncherImpl::EnrollUsingAuthCode(const std::string& auth_code) {
-  DCHECK(oauth_status_ == OAUTH_NOT_STARTED);
+  CHECK(oauth_status_ == OAUTH_NOT_STARTED, base::NotFatalUntil::M161);
   oauth_status_ = OAUTH_STARTED_WITH_AUTH_CODE;
   oauth_fetcher_ =
       policy::PolicyOAuth2TokenFetcher::CreateInstance(kOAuthConsumerName);
@@ -218,7 +219,7 @@ void EnrollmentLauncherImpl::EnrollUsingAuthCode(const std::string& auth_code) {
 }
 
 void EnrollmentLauncherImpl::EnrollUsingToken(const std::string& token) {
-  DCHECK(oauth_status_ != OAUTH_STARTED_WITH_TOKEN);
+  CHECK(oauth_status_ != OAUTH_STARTED_WITH_TOKEN, base::NotFatalUntil::M161);
   if (oauth_status_ == OAUTH_NOT_STARTED) {
     oauth_status_ = OAUTH_STARTED_WITH_TOKEN;
   }
@@ -273,10 +274,12 @@ void EnrollmentLauncherImpl::RevokeOAuth2Tokens() {
 }
 
 void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
-  DCHECK(auth_data_.empty() || auth_data_ == auth_data);
-  DCHECK(enrollment_config_.is_mode_attestation() ||
-         oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
-         oauth_status_ == OAUTH_STARTED_WITH_TOKEN);
+  CHECK(auth_data_.empty() || auth_data_ == auth_data,
+        base::NotFatalUntil::M161);
+  CHECK(enrollment_config_.is_mode_attestation() ||
+            oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
+            oauth_status_ == OAUTH_STARTED_WITH_TOKEN,
+        base::NotFatalUntil::M161);
 
   // Logging as "WARNING" to make sure it's preserved in the logs.
   LOG(WARNING) << "Enroll with token type: "
@@ -303,7 +306,7 @@ void EnrollmentLauncherImpl::DoEnroll(policy::DMAuth auth_data) {
 
   browser_policy_connector_ash_->ScheduleServiceInitialization(0);
 
-  DCHECK(!enrollment_handler_);
+  CHECK(!enrollment_handler_, base::NotFatalUntil::M161);
   policy::DeviceCloudPolicyManagerAsh* policy_manager =
       browser_policy_connector_ash_->GetDeviceCloudPolicyManager();
   // DeviceDMToken callback is empty here because for device policies this
@@ -395,7 +398,7 @@ void EnrollmentLauncherImpl::UpdateDeviceAttributes(
   // If we got here, we must have successfully run
   // GetDeviceAttributeUpdatePermission, which required a non-empty
   // GetDMAuthForDeviceAttributeUpdate result.
-  DCHECK(auth.has_value());
+  CHECK(auth.has_value(), base::NotFatalUntil::M161);
 
   client->UpdateDeviceAttributes(
       std::move(auth.value()), asset_id, location,

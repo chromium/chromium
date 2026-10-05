@@ -507,16 +507,16 @@ SecondDeviceAuthBroker::SecondDeviceAuthBroker(
       url_loader_factory_(std::move(url_loader_factory)),
       attestation_(std::move(attestation_flow)),
       weak_ptr_factory_(this) {
-  DCHECK(url_loader_factory_);
-  DCHECK(attestation_);
+  CHECK(url_loader_factory_, base::NotFatalUntil::M161);
+  CHECK(attestation_, base::NotFatalUntil::M161);
 
   // `device_id_` is used as the Common Name (CN) of Remote Attestation
   // certificates and hence, must be between 0 (exclusive) and 64 (inclusive)
   // characters. The current device ids satisfy this requirement. If this
   // changes in the future, use a hashing algorithm that can fit the longer
   // device id into 64 characters.
-  DCHECK(!device_id_.empty());
-  DCHECK_LE(device_id_.size(), 64UL);
+  CHECK(!device_id_.empty(), base::NotFatalUntil::M161);
+  CHECK_LE(device_id_.size(), 64UL, base::NotFatalUntil::M161);
 }
 
 SecondDeviceAuthBroker::~SecondDeviceAuthBroker() = default;

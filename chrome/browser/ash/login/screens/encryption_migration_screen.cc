@@ -217,7 +217,7 @@ EncryptionMigrationScreen::EncryptionMigrationScreen(
                  OobeScreenPriority::DEFAULT),
       OobeMojoBinder(this),
       view_(std::move(view)) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 EncryptionMigrationScreen::~EncryptionMigrationScreen() {
@@ -495,7 +495,7 @@ device::mojom::WakeLock* EncryptionMigrationScreen::GetWakeLock() {
   mojo::PendingReceiver<device::mojom::WakeLock> receiver =
       wake_lock_.BindNewPipeAndPassReceiver();
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
   content::GetDeviceService().BindWakeLockProvider(

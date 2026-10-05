@@ -52,7 +52,7 @@ void ManagementTransitionScreen::ShowImpl() {
                      weak_factory_.GetWeakPtr()));
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(!ProfileHelper::IsSigninProfile(profile));
+  CHECK(!ProfileHelper::IsSigninProfile(profile), base::NotFatalUntil::M161);
 
   registrar_.Init(profile->GetPrefs());
   registrar_.Add(

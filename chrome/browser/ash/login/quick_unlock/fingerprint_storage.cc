@@ -116,7 +116,8 @@ bool FingerprintStorage::HasRecord() const {
 }
 
 void FingerprintStorage::AddUnlockAttempt(base::TimeTicks timestamp) {
-  DCHECK_GE(timestamp, last_unlock_attempt_timestamp_);
+  CHECK_GE(timestamp, last_unlock_attempt_timestamp_,
+           base::NotFatalUntil::M161);
 
   ++unlock_attempt_count_;
   if (timestamp - last_unlock_attempt_timestamp_ < kRecentUnlockAttemptsDelta)
@@ -136,7 +137,8 @@ bool FingerprintStorage::ExceededUnlockAttempts() const {
 }
 
 int FingerprintStorage::GetRecentUnlockAttemptCount(base::TimeTicks timestamp) {
-  DCHECK_GE(timestamp, last_unlock_attempt_timestamp_);
+  CHECK_GE(timestamp, last_unlock_attempt_timestamp_,
+           base::NotFatalUntil::M161);
 
   if (timestamp - last_unlock_attempt_timestamp_ < kRecentUnlockAttemptsDelta)
     return recent_unlock_attempt_count_;

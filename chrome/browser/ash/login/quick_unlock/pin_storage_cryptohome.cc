@@ -144,7 +144,8 @@ std::optional<Key> PinStorageCryptohome::TransformPinKey(
   Key result = key;
   result.SetLabel(kCryptohomePinLabel);
 
-  DCHECK(key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN);
+  CHECK(key.GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN,
+        base::NotFatalUntil::M161);
   if (key.GetKeyType() != Key::KEY_TYPE_PASSWORD_PLAIN)
     return std::nullopt;
 
@@ -201,7 +202,7 @@ void PinStorageCryptohome::SetPin(std::unique_ptr<UserContext> user_context,
 
   // Possible TODO: Get rid of this requirement. pin_salt has a value if this
   // call is for migrating a pref pin to a cryptohome pin.
-  DCHECK(!pin_salt.has_value());
+  CHECK(!pin_salt.has_value(), base::NotFatalUntil::M161);
 
   cryptohome::PinSalt salt{PinBackend::ComputeSalt()};
   cryptohome::RawPin raw_pin{pin};
@@ -254,7 +255,7 @@ void PinStorageCryptohome::OnSystemSaltObtained(
   for (auto& callback : callbacks)
     std::move(callback).Run();
   // Verify no new callbacks have been added, since they will never run.
-  DCHECK(system_salt_callbacks_.empty());
+  CHECK(system_salt_callbacks_.empty(), base::NotFatalUntil::M161);
 }
 
 void PinStorageCryptohome::CanAuthenticate(
@@ -297,7 +298,7 @@ void PinStorageCryptohome::TryAuthenticate(
     ephemeral = user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
         user_context->GetAccountId());
   }
-  DCHECK(!ephemeral);
+  CHECK(!ephemeral, base::NotFatalUntil::M161);
 
   auto on_start_auth_session =
       base::BindOnce(&PinStorageCryptohome::TryAuthenticateWithAuthSession,
@@ -329,8 +330,9 @@ void PinStorageCryptohome::TryAuthenticateWithAuthSession(
     bool user_exists,
     std::unique_ptr<UserContext> user_context,
     std::optional<AuthenticationError> error) {
-  DCHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN);
-  DCHECK(user_exists);
+  CHECK_EQ(key.GetKeyType(), Key::KEY_TYPE_PASSWORD_PLAIN,
+           base::NotFatalUntil::M161);
+  CHECK(user_exists, base::NotFatalUntil::M161);
 
   if (error.has_value()) {
     std::move(callback).Run(std::move(user_context), std::move(error));

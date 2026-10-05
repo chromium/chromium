@@ -20,7 +20,7 @@ WrongHWIDScreen::WrongHWIDScreen(base::WeakPtr<WrongHWIDScreenView> view,
                  OobeScreenPriority::SCREEN_HARDWARE_ERROR),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 WrongHWIDScreen::~WrongHWIDScreen() = default;

@@ -103,7 +103,8 @@ std::string TargetDeviceBootstrapController::GetPhoneInstanceId() {
 base::WeakPtr<TargetDeviceBootstrapController>
 TargetDeviceBootstrapController::GetAsWeakPtrForClient() {
   // Only one client at a time should have a pointer.
-  DCHECK(!weak_ptr_factory_for_clients_.HasWeakPtrs());
+  CHECK(!weak_ptr_factory_for_clients_.HasWeakPtrs(),
+        base::NotFatalUntil::M161);
   return weak_ptr_factory_for_clients_.GetWeakPtr();
 }
 

@@ -490,7 +490,7 @@ void KioskLaunchController::InitializeKeyboard() {
 }
 
 void KioskLaunchController::InitializeLauncher() {
-  DCHECK(!app_launcher_);
+  CHECK(!app_launcher_, base::NotFatalUntil::M161);
 
   app_state_ = kInitLauncher;
   app_launcher_ = app_launcher_factory_.Run(profile_, kiosk_app_id(),
@@ -522,7 +522,7 @@ AppLaunchSplashScreen::Data KioskLaunchController::GetSplashScreenAppData() {
 }
 
 void KioskLaunchController::CleanUp() {
-  DCHECK(!cleaned_up_);
+  CHECK(!cleaned_up_, base::NotFatalUntil::M161);
   cleaned_up_ = true;
 
   splash_wait_timer_.Stop();
@@ -802,7 +802,7 @@ void KioskLaunchController::LaunchApp() {
     return;
   }
 
-  DCHECK(app_state_ == AppState::kInstalled);
+  CHECK(app_state_ == AppState::kInstalled, base::NotFatalUntil::M161);
   splash_wait_timer_.Stop();
   app_launcher_->LaunchApp();
 }

@@ -105,7 +105,8 @@ void FastPairAdvertiser::Factory::SetFactoryForTesting(
 
 FastPairAdvertiser::FastPairAdvertiser(
     scoped_refptr<device::BluetoothAdapter> adapter) {
-  DCHECK(adapter && adapter->IsPresent() && adapter->IsPowered());
+  CHECK(adapter && adapter->IsPresent() && adapter->IsPowered(),
+        base::NotFatalUntil::M161);
   adapter_ = adapter;
   quick_start_metrics_ = std::make_unique<QuickStartMetrics>();
 }
@@ -123,8 +124,9 @@ void FastPairAdvertiser::StartAdvertising(
     base::OnceCallback<void()> callback,
     base::OnceCallback<void()> error_callback,
     const AdvertisingId& advertising_id) {
-  DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
-  DCHECK(!advertisement_);
+  CHECK(adapter_->IsPresent() && adapter_->IsPowered(),
+        base::NotFatalUntil::M161);
+  CHECK(!advertisement_, base::NotFatalUntil::M161);
   RegisterAdvertisement(std::move(callback), std::move(error_callback),
                         advertising_id);
 }

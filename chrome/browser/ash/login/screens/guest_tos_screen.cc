@@ -118,7 +118,7 @@ void GuestTosScreen::OnAccept(bool enable_usage_stats) {
 }
 
 void GuestTosScreen::OnOobeGuestPrefWriteDone() {
-  DCHECK(exit_callback_);
+  CHECK(exit_callback_, base::NotFatalUntil::M161);
 
   exit_callback_.Run(Result::ACCEPT);
 }

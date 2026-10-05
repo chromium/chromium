@@ -24,7 +24,7 @@ SignInFatalErrorScreen::SignInFatalErrorScreen(
     : BaseScreen(SignInFatalErrorView::kScreenId, OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 SignInFatalErrorScreen::~SignInFatalErrorScreen() = default;
@@ -41,7 +41,7 @@ void SignInFatalErrorScreen::SetCustomError(const std::string& error_text,
                                             const std::string& help_link_text) {
   error_state_ = Error::kCustom;
   extra_error_info_ = base::DictValue();
-  DCHECK(!error_text.empty());
+  CHECK(!error_text.empty(), base::NotFatalUntil::M161);
   extra_error_info_.Set("errorText", error_text);
   if (!keyboard_hint.empty()) {
     extra_error_info_.Set("keyboardHint", keyboard_hint);

@@ -21,7 +21,7 @@ LocalStateErrorScreen::LocalStateErrorScreen(
     : BaseScreen(LocalStateErrorScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
       view_(std::move(view)) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 LocalStateErrorScreen::~LocalStateErrorScreen() = default;

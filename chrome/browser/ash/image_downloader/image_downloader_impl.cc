@@ -91,7 +91,7 @@ void ImageDownloaderImpl::Download(
     const AccountId& account_id,
     const net::HttpRequestHeaders& additional_headers,
     ash::ImageDownloader::DownloadCallback callback) {
-  DCHECK(account_id.is_valid());
+  CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
   // The download task will delete itself upon task completion.
   new DownloadTask(url, annotation_tag, account_id, additional_headers,
                    std::move(callback));

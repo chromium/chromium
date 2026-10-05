@@ -212,8 +212,9 @@ void NetworkUiController::ShowNetworkConfigureUI() {
 }
 
 void NetworkUiController::OnNetworkWaitTimeout() {
-  DCHECK(network_ui_state_ == NetworkUIState::kNotShowing ||
-         network_ui_state_ == NetworkUIState::kWaitingForNetwork);
+  CHECK(network_ui_state_ == NetworkUIState::kNotShowing ||
+            network_ui_state_ == NetworkUIState::kWaitingForNetwork,
+        base::NotFatalUntil::M161);
 
   net::NetworkChangeNotifier::ConnectionType connection_type =
       GetCurrentConnectionType();

@@ -35,7 +35,8 @@ const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
 const char HatsFinchHelper::kHistogramNameParam[] = "histogram_name";
 
 std::string HatsFinchHelper::GetTriggerID(const HatsConfig& hats_config) {
-  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  CHECK(base::FeatureList::IsEnabled(hats_config.feature),
+        base::NotFatalUntil::M161);
   return base::GetFieldTrialParamValueByFeature(hats_config.feature,
                                                 kTriggerIdParam);
 }
@@ -46,7 +47,8 @@ std::string HatsFinchHelper::GetTriggerID(const HatsConfig& hats_config) {
 // `histogram_name` parameter specified, no survey-specific UMA data will be
 // collected.
 std::string HatsFinchHelper::GetHistogramName(const HatsConfig& hats_config) {
-  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  CHECK(base::FeatureList::IsEnabled(hats_config.feature),
+        base::NotFatalUntil::M161);
   // Fetch the histogram name from the feature parameters, if it is assigned.
   // An empty string will be returned if the parameter is not set in Finch.
   // This value should be a valid histogram that has been registered in the
@@ -67,13 +69,15 @@ std::string HatsFinchHelper::GetHistogramName(const HatsConfig& hats_config) {
 
 std::string HatsFinchHelper::GetCustomClientDataAsString(
     const HatsConfig& hats_config) {
-  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  CHECK(base::FeatureList::IsEnabled(hats_config.feature),
+        base::NotFatalUntil::M161);
   return base::GetFieldTrialParamValueByFeature(hats_config.feature,
                                                 kCustomClientDataParam);
 }
 
 bool HatsFinchHelper::IsEnabledForGooglers(const HatsConfig& hats_config) {
-  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  CHECK(base::FeatureList::IsEnabled(hats_config.feature),
+        base::NotFatalUntil::M161);
   return base::GetFieldTrialParamByFeatureAsBool(
       hats_config.feature, kEnabledForGooglersParam, false);
 }

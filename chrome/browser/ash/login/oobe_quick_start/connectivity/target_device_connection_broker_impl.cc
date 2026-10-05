@@ -173,7 +173,7 @@ void TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper::
       device::BluetoothAdapterFactory::Get();
 
   // Bluetooth is always supported on the ChromeOS platform.
-  DCHECK(adapter_factory->IsBluetoothSupported());
+  CHECK(adapter_factory->IsBluetoothSupported(), base::NotFatalUntil::M161);
 
   adapter_factory->GetAdapter(std::move(callback));
 }

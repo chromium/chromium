@@ -226,7 +226,7 @@ void LocaleSwitchScreen::ShowImpl() {
   }
 
   user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(user->is_profile_created());
+  CHECK(user->is_profile_created(), base::NotFatalUntil::M161);
   if (user->GetType() == user_manager::UserType::kPublicAccount) {
     locale_ =
         user->GetProfilePrefs()->GetString(language::prefs::kApplicationLocale);
@@ -234,7 +234,7 @@ void LocaleSwitchScreen::ShowImpl() {
     return;
   }
 
-  DCHECK(user->HasGaiaAccount());
+  CHECK(user->HasGaiaAccount(), base::NotFatalUntil::M161);
 
   identity_manager_ =
       ash::IdentityManagerProvider::Get().Find(user->GetAccountId());

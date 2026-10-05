@@ -97,11 +97,12 @@ void EnterOldPasswordScreen::OnUserAction(const base::ListValue& args) {
 
 void EnterOldPasswordScreen::AttemptAuthentication(
     const std::string& old_password) {
-  DCHECK(!context()->user_context->GetAuthSessionId().empty());
+  CHECK(!context()->user_context->GetAuthSessionId().empty(),
+        base::NotFatalUntil::M161);
   auto* factor =
       context()->user_context->GetAuthFactorsConfiguration().FindFactorByType(
           cryptohome::AuthFactorType::kPassword);
-  DCHECK(factor);
+  CHECK(factor, base::NotFatalUntil::M161);
   auth_performer_->AuthenticateWithPassword(
       factor->ref().label().value(), old_password,
       std::move(context()->user_context),

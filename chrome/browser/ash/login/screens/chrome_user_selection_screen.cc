@@ -98,7 +98,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionDisplayNameChange(
   user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
-  DCHECK(account_id.is_valid());
+  CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
   const std::string& display_name = broker->GetDisplayName();
   if (display_name == public_session_display_names_[account_id])
     return;
@@ -131,7 +131,7 @@ void ChromeUserSelectionScreen::CheckForPublicSessionLocalePolicyChange(
   user_manager::KnownUser known_user(&local_state_.get());
   const AccountId account_id = known_user.GetAccountId(
       broker->user_id(), std::string() /* id */, AccountType::UNKNOWN);
-  DCHECK(account_id.is_valid());
+  CHECK(account_id.is_valid(), base::NotFatalUntil::M161);
   const policy::PolicyMap::Entry* entry =
       broker->core()->store()->policy_map().Get(policy::key::kSessionLocales);
 

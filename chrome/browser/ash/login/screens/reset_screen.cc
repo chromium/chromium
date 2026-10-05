@@ -164,7 +164,7 @@ ResetScreen::ResetScreen(PrefService* local_state,
               ? *g_tpm_firmware_update_checker
               : base::BindRepeating(
                     &tpm_firmware_update::GetAvailableUpdateModes)) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 ResetScreen::~ResetScreen() {

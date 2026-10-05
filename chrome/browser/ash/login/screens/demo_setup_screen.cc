@@ -62,7 +62,8 @@ void DemoSetupScreen::OnUserAction(const base::ListValue& args) {
 
 void DemoSetupScreen::StartEnrollment() {
   // Demo setup screen is only shown in OOBE.
-  DCHECK(DemoSetupController::IsOobeDemoSetupFlowInProgress());
+  CHECK(DemoSetupController::IsOobeDemoSetupFlowInProgress(),
+        base::NotFatalUntil::M161);
   DemoSetupController* demo_controller =
       WizardController::default_controller()->demo_setup_controller();
   demo_controller->Enroll(

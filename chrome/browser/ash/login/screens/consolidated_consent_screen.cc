@@ -174,7 +174,7 @@ ConsolidatedConsentScreen::ConsolidatedConsentScreen(
   if (!metrics_service_) {
     CHECK_IS_TEST();
   }
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 ConsolidatedConsentScreen::~ConsolidatedConsentScreen() {
@@ -388,7 +388,7 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
     // If user skips ToS then prefs::kArcEnabled is automatically reset in
     // ArcSessionManager.
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
 
     if (arc::IsArcTermsOfServiceOobeNegotiationNeeded()) {
       arc::SetArcPlayStoreEnabledForProfile(profile, true);
@@ -493,7 +493,7 @@ void ConsolidatedConsentScreen::RecordConsents(
 }
 
 void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
-  DCHECK(is_owner_.has_value());
+  CHECK(is_owner_.has_value(), base::NotFatalUntil::M161);
   // Attempt to disable pre-choice metrics if present.
   if (metrics::CrOSPreChoiceMetricsManager::Get()) {
     metrics::CrOSPreChoiceMetricsManager::Get()->Disable();

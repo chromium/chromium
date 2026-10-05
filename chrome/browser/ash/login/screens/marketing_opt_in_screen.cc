@@ -93,7 +93,7 @@ MarketingOptInScreen::MarketingOptInScreen(
       local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 MarketingOptInScreen::~MarketingOptInScreen() = default;
@@ -115,7 +115,7 @@ bool MarketingOptInScreen::MaybeSkip(WizardContext& context) {
 }
 
 void MarketingOptInScreen::ShowImpl() {
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M161);
 
   // Show a verbose legal footer for Canada. (https://crbug.com/40147627)
   const bool legal_footer_visible =
@@ -180,7 +180,7 @@ void MarketingOptInScreen::OnUserAction(const base::ListValue& args) {
 void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
   if (is_hidden())
     return;
-  DCHECK(initialized_);
+  CHECK(initialized_, base::NotFatalUntil::M161);
 
   // UMA Metrics & API call only when the toggle is visible
   if (email_opt_in_visible_) {
@@ -190,7 +190,7 @@ void MarketingOptInScreen::OnGetStarted(bool chromebook_email_opt_in) {
 
     // Store the user's preference regarding marketing emails
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M161);
     profile->GetPrefs()->SetBoolean(prefs::kOobeMarketingOptInChoice,
                                     chromebook_email_opt_in);
     if (chromebook_email_opt_in) {

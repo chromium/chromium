@@ -99,7 +99,7 @@ bool HasPolicyValue(const PrefService* pref_service,
 // kAny) by reading the policy value.
 bool IsFingerprintDisabledByPolicySinglePurpose(const PrefService* pref_service,
                                                 Purpose purpose) {
-  DCHECK(purpose != Purpose::kAny);
+  CHECK(purpose != Purpose::kAny, base::NotFatalUntil::M161);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
       HasPolicyValue(pref_service, purpose, kFactorsOptionFingerprint);
@@ -110,7 +110,7 @@ bool IsFingerprintDisabledByPolicySinglePurpose(const PrefService* pref_service,
 // kAny) by reading the policy value.
 bool IsPinDisabledByPolicySinglePurpose(const PrefService* pref_service,
                                         Purpose purpose) {
-  DCHECK(purpose != Purpose::kAny);
+  CHECK(purpose != Purpose::kAny, base::NotFatalUntil::M161);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
       HasPolicyValue(pref_service, purpose, kFactorsOptionPin) ||

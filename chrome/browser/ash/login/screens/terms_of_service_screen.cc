@@ -94,7 +94,7 @@ TermsOfServiceScreen::TermsOfServiceScreen(
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   CHECK(shared_url_loader_factory_);
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 TermsOfServiceScreen::~TermsOfServiceScreen() = default;

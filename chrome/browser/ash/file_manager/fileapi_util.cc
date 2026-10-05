@@ -367,7 +367,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
   // Obtains metadata for the non-native file |it|.
   void FillMetadataOnIOThread(Lifetime lifetime,
                               const FileChooserFileInfoList::iterator& it) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
     if (it == chooser_info_list_.end()) {
       content::GetUIThreadTaskRunner({})->PostTask(
@@ -400,7 +400,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
                                const FileChooserFileInfoList::iterator& it,
                                base::File::Error result,
                                const base::File::Info& file_info) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
 
     if (result != base::File::FILE_OK) {
       content::GetUIThreadTaskRunner({})->PostTask(
@@ -414,13 +414,13 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
 
     (*it)->get_file_system()->length = file_info.size;
     (*it)->get_file_system()->modification_time = file_info.last_modified;
-    DCHECK(!file_info.is_directory);
+    CHECK(!file_info.is_directory, base::NotFatalUntil::M161);
     FillMetadataOnIOThread(std::move(lifetime), it + 1);
   }
 
   // Returns a result to the |callback_|.
   void NotifyComplete(Lifetime /* lifetime */) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     // Move the list content so that the file systems are not revoked at the
     // destructor.
     std::move(callback_).Run(std::move(chooser_info_list_));
@@ -428,7 +428,7 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
 
   // Returns an empty list to the |callback_|.
   void NotifyError(Lifetime /* lifetime */) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
     std::move(callback_).Run(FileChooserFileInfoList());
   }
 
@@ -441,7 +441,7 @@ void CheckIfDirectoryExistsOnIoThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const storage::FileSystemURL& internal_url,
     storage::FileSystemOperationRunner::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   file_system_context->operation_runner()->DirectoryExists(internal_url,
                                                            std::move(callback));
 }
@@ -451,7 +451,7 @@ void GetMetadataForPathOnIoThread(
     const storage::FileSystemURL& internal_url,
     storage::FileSystemOperationRunner::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M161);
   file_system_context->operation_runner()->GetMetadata(internal_url, fields,
                                                        std::move(callback));
 }
@@ -479,7 +479,7 @@ void GenerateUnusedFilenameOnGotMetadata(
     base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
         callback,
     base::File::Error error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
   if (error == base::File::FILE_ERROR_NOT_FOUND) {
     std::move(callback).Run(std::move(trial_url));
     return;
@@ -601,7 +601,7 @@ void ConvertFileDefinitionListToEntryDefinitionList(
     const url::Origin& origin,
     const FileDefinitionList& file_definition_list,
     EntryDefinitionListCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   // The converter object destroys itself.
   new FileDefinitionListConverter(file_system_context, origin,
@@ -613,7 +613,7 @@ void ConvertFileDefinitionToEntryDefinition(
     const url::Origin& origin,
     const FileDefinition& file_definition,
     EntryDefinitionCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   FileDefinitionList file_definition_list;
   file_definition_list.push_back(file_definition);
@@ -657,10 +657,10 @@ void CheckIfDirectoryExists(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     const base::FilePath& directory_path,
     storage::FileSystemOperationRunner::StatusCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M161);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), directory_path);
 
@@ -676,10 +676,10 @@ void GetMetadataForPath(
     const base::FilePath& entry_path,
     storage::FileSystemOperationRunner::GetMetadataFieldSet fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
   auto* const backend = ash::FileSystemBackend::Get(*file_system_context);
-  DCHECK(backend);
+  CHECK(backend, base::NotFatalUntil::M161);
   const storage::FileSystemURL internal_url =
       backend->CreateInternalURL(file_system_context.get(), entry_path);
 

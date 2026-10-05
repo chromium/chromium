@@ -629,7 +629,7 @@ void UserSelectionScreen::CheckUserStatus(const AccountId& account_id) {
 }
 
 void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
-  DCHECK(!pending_focused_account_id_.has_value());
+  CHECK(!pending_focused_account_id_.has_value(), base::NotFatalUntil::M161);
   const session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
   if (session_state == session_manager::SessionState::ACTIVE) {
@@ -676,7 +676,8 @@ void UserSelectionScreen::HandleNoPodFocused() {
 }
 
 void UserSelectionScreen::OnAllowedInputMethodsChanged() {
-  DCHECK_EQ(display_type_, DisplayedScreen::SIGN_IN_SCREEN);
+  CHECK_EQ(display_type_, DisplayedScreen::SIGN_IN_SCREEN,
+           base::NotFatalUntil::M161);
   if (focused_pod_account_id_.is_valid()) {
     std::string user_input_method_id =
         lock_screen_utils::GetUserLastInputMethodId(local_state_.get(),
@@ -712,9 +713,11 @@ void UserSelectionScreen::SetAuthType(const AccountId& account_id,
     return;
   }
 
-  DCHECK(GetAuthType(account_id) !=
-             proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD ||
-         auth_type == proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD);
+  CHECK(
+      GetAuthType(account_id) !=
+              proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD ||
+          auth_type == proximity_auth::mojom::AuthType::FORCE_OFFLINE_PASSWORD,
+      base::NotFatalUntil::M161);
   user_auth_type_map_[account_id] = auth_type;
 
   LoginScreen::Get()->GetModel()->SetTapToUnlockEnabledForUser(
@@ -768,7 +771,7 @@ void UserSelectionScreen::EnableInput() {
 }
 
 void UserSelectionScreen::Unlock(const AccountId& account_id) {
-  DCHECK_EQ(GetScreenType(), LOCK_SCREEN);
+  CHECK_EQ(GetScreenType(), LOCK_SCREEN, base::NotFatalUntil::M161);
 
   // TODO(crbug.com/539761804): Avoid circular dependency.
   ScreenLockerController::Get().HideLockScreen();

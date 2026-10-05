@@ -164,7 +164,7 @@ HatsDialog::HatsDialog(const std::string& trigger_id,
                        const std::string& histogram_name,
                        const std::string& site_context)
     : trigger_id_(trigger_id), histogram_name_(histogram_name) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   set_allow_default_context_menu(false);
   set_can_close(true);

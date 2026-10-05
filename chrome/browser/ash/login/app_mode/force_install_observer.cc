@@ -34,7 +34,7 @@ base::TimeDelta g_installation_wait_time = kKioskExtensionWaitTime;
 
 extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
   auto* system = extensions::ExtensionSystem::Get(profile);
-  DCHECK(system);
+  CHECK(system, base::NotFatalUntil::M161);
 
   extensions::ExtensionService* service = system->extension_service();
   return service ? service->force_installed_tracker() : nullptr;

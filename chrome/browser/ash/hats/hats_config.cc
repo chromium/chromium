@@ -25,7 +25,8 @@ HatsConfig::HatsConfig(const base::Feature& feature,
       survey_last_interaction_timestamp_pref_name(nullptr),
       threshold_time(base::TimeDelta()),
       prioritized(false) {
-  DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
+  CHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold,
+        base::NotFatalUntil::M161);
 }
 
 HatsConfig::HatsConfig(
@@ -43,7 +44,8 @@ HatsConfig::HatsConfig(
           survey_last_interaction_timestamp_pref_name),
       threshold_time(threshold_time),
       prioritized(true) {
-  DCHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold);
+  CHECK(new_device_threshold.InDaysFloored() >= kMinDaysThreshold,
+        base::NotFatalUntil::M161);
 }
 
 // General Survey -- shown after login

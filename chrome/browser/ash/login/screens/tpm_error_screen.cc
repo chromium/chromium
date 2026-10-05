@@ -36,7 +36,8 @@ void TpmErrorScreen::ShowImpl() {
   // being blocked. we set this when showing screen as user may use the hardware
   // button to reboot insread of  clicking the UI button
   StartupUtils::SaveOobePendingScreen(local_state_.get(), "");
-  DCHECK(!context()->tpm_owned_error || !context()->tpm_dbus_error);
+  CHECK(!context()->tpm_owned_error || !context()->tpm_dbus_error,
+        base::NotFatalUntil::M161);
   if (context()->tpm_owned_error) {
     view_->SetTPMOwnedErrorStep();
   } else if (context()->tpm_dbus_error) {

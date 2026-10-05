@@ -70,7 +70,7 @@ bool ChromeLoginPerformer::RunTrustedCheck(base::OnceClosure callback) {
     // Another attempt will be invoked after verification completion.
     return false;
   } else {
-    DCHECK(status == CrosSettingsProvider::TRUSTED);
+    CHECK(status == CrosSettingsProvider::TRUSTED, base::NotFatalUntil::M161);
     // CrosSettingsProvider::TRUSTED
     std::move(callback).Run();
     return true;  // Some callback was called.
@@ -96,7 +96,7 @@ void ChromeLoginPerformer::DidRunTrustedCheck(base::OnceClosure* callback) {
     // Another attempt will be invoked after verification completion.
     return;
   } else {
-    DCHECK(status == CrosSettingsProvider::TRUSTED);
+    CHECK(status == CrosSettingsProvider::TRUSTED, base::NotFatalUntil::M161);
     std::move(*callback).Run();
   }
 }

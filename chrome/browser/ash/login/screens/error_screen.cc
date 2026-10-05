@@ -393,20 +393,23 @@ void ErrorScreen::OnRebootButtonClicked() {
 }
 
 void ErrorScreen::OnCancelButtonClicked() {
-  DCHECK(LoginDisplayHost::default_host()->HasUserPods());
+  CHECK(LoginDisplayHost::default_host()->HasUserPods(),
+        base::NotFatalUntil::M161);
   LoginDisplayHost::default_host()->HideOobeDialog();
   Hide();
 }
 
 void ErrorScreen::OnReloadGaiaClicked() {
-  DCHECK_EQ(parent_screen_, GaiaView::kScreenId.AsId());
+  CHECK_EQ(parent_screen_, GaiaView::kScreenId.AsId(),
+           base::NotFatalUntil::M161);
   WizardController::default_controller()
       ->GetScreen<GaiaScreen>()
       ->ReloadGaiaAuthenticator();
 }
 
 void ErrorScreen::OnContinueAppLaunchButtonClicked() {
-  DCHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId());
+  CHECK_EQ(parent_screen_, AppLaunchSplashScreenView::kScreenId.AsId(),
+           base::NotFatalUntil::M161);
   WizardController::default_controller()
       ->GetScreen<AppLaunchSplashScreen>()
       ->ContinueAppLaunch();

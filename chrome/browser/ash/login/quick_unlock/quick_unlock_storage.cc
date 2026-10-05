@@ -56,7 +56,7 @@ bool QuickUnlockStorage::HasStrongAuth() const {
 }
 
 base::Time QuickUnlockStorage::TimeOfNextStrongAuth() const {
-  DCHECK(!last_strong_auth_.is_null());
+  CHECK(!last_strong_auth_.is_null(), base::NotFatalUntil::M161);
   return last_strong_auth_ + GetStrongAuthTimeout(profile_->GetPrefs());
 }
 

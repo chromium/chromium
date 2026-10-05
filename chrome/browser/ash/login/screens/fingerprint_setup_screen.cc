@@ -76,7 +76,8 @@ constexpr int kMaxAllowedFingerprints = 3;
 
 // Determines what the newly added fingerprint's name should be.
 std::string GetDefaultFingerprintName(int enrolled_finger_count) {
-  DCHECK(enrolled_finger_count < kMaxAllowedFingerprints);
+  CHECK(enrolled_finger_count < kMaxAllowedFingerprints,
+        base::NotFatalUntil::M161);
   switch (enrolled_finger_count) {
     case 0:
       return l10n_util::GetStringUTF8(
@@ -120,7 +121,7 @@ FingerprintSetupScreen::FingerprintSetupScreen(
   content::GetDeviceService().BindFingerprint(
       fp_service_.BindNewPipeAndPassReceiver());
   fp_service_->AddFingerprintObserver(receiver_.BindNewPipeAndPassRemote());
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 FingerprintSetupScreen::~FingerprintSetupScreen() = default;
@@ -225,7 +226,8 @@ void FingerprintSetupScreen::OnSessionFailed() {
 }
 
 void FingerprintSetupScreen::StartAddingFinger() {
-  DCHECK(enrolled_finger_count_ < kMaxAllowedFingerprints);
+  CHECK(enrolled_finger_count_ < kMaxAllowedFingerprints,
+        base::NotFatalUntil::M161);
 
   enroll_session_started_ = true;
   fp_service_->StartEnrollSession(

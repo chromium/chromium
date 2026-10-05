@@ -379,7 +379,7 @@ void UpdateRequiredScreen::FinishExitUpdate(VersionUpdater::Result result) {
 }
 
 void UpdateRequiredScreen::Exit() {
-  DCHECK(!is_hidden());
+  CHECK(!is_hidden(), base::NotFatalUntil::M161);
   exit_callback_.Run();
 }
 

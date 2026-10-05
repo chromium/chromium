@@ -184,7 +184,7 @@ HatsNotificationController::HatsNotificationController(
     : profile_(profile),
       hats_config_(hats_config),
       product_specific_data_(product_specific_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   std::string histogram_name = HatsFinchHelper::GetHistogramName(*hats_config_);
   if (!histogram_name.empty()) {
@@ -208,13 +208,13 @@ HatsNotificationController::HatsNotificationController(
                                  base::flat_map<std::string, std::string>()) {}
 
 HatsNotificationController::~HatsNotificationController() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus", state_);
 }
 
 void HatsNotificationController::Initialize(bool is_new_device) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (is_new_device && !IsTestingEnabled(*hats_config_)) {
     // This device has been chosen for a survey, but it is too new. Instead
@@ -245,7 +245,7 @@ void HatsNotificationController::Initialize(bool is_new_device) {
 bool HatsNotificationController::ShouldShowSurveyToProfile(
     Profile* profile,
     const HatsConfig& hats_config) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (IsTestingEnabled(hats_config))
     return true;
@@ -331,7 +331,7 @@ std::string HatsNotificationController::
 void HatsNotificationController::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile_) << "Profile must NOT be null.";
 
   UpdateLastInteractionTime();
@@ -371,7 +371,7 @@ void HatsNotificationController::ShowDialog(const std::string& site_context) {
 
 // message_center::NotificationDelegate override:
 void HatsNotificationController::Close(bool by_user) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   if (by_user) {
     UpdateLastInteractionTime();
@@ -387,7 +387,7 @@ void HatsNotificationController::Close(bool by_user) {
 void HatsNotificationController::PortalStateChanged(
     const NetworkState* default_network,
     NetworkState::PortalState portal_state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile_) << "Profile must NOT be null.";
   VLOG(1) << "PortalStateChanged: default_network="
           << (default_network ? default_network->path() : "")
@@ -482,7 +482,7 @@ std::string HatsNotificationController::GetFormattedSiteContext(
 }
 
 void HatsNotificationController::UpdateLastInteractionTime() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   CHECK(profile_) << "Profile must NOT be null.";
 
   PrefService* pref_service = profile_->GetPrefs();

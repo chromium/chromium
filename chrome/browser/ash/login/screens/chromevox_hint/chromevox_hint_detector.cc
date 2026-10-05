@@ -22,7 +22,7 @@ const base::TimeDelta kChromeVoxHintIdleDuration = base::Seconds(20);
 ChromeVoxHintDetector::ChromeVoxHintDetector(const base::TickClock* clock,
                                              Observer* observer)
     : tick_clock_(clock), observer_(observer) {
-  DCHECK(observer_);
+  CHECK(observer_, base::NotFatalUntil::M161);
   StartIdleDetection();
 }
 

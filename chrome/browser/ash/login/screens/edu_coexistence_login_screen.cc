@@ -66,10 +66,10 @@ bool EduCoexistenceLoginScreen::MaybeSkip(WizardContext& context) {
 
 void EduCoexistenceLoginScreen::ShowImpl() {
   LoginDisplayHost* host = LoginDisplayHost::default_host();
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M161);
   OobeUI* oobe_ui = host->GetOobeUI();
-  DCHECK(oobe_ui);
-  DCHECK(!dialog_delegate_);
+  CHECK(oobe_ui, base::NotFatalUntil::M161);
+  CHECK(!dialog_delegate_, base::NotFatalUntil::M161);
 
   InlineLoginDialogOnboarding* dialog = InlineLoginDialogOnboarding::Show(
       oobe_ui->GetViewSize(),

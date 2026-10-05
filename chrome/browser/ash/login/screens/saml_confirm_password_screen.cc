@@ -128,7 +128,7 @@ void SamlConfirmPasswordScreen::SetContextAndPasswords(
     ::login::StringList scraped_saml_passwords) {
   user_context_ = std::move(user_context);
   scraped_saml_passwords_ = std::move(scraped_saml_passwords);
-  DCHECK_NE(scraped_saml_passwords_.size(), 1u);
+  CHECK_NE(scraped_saml_passwords_.size(), 1u, base::NotFatalUntil::M161);
 }
 
 void SamlConfirmPasswordScreen::ObtainContextAndStoreSamlPassword(

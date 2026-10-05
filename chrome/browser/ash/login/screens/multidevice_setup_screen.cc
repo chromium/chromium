@@ -53,7 +53,7 @@ MultiDeviceSetupScreen::MultiDeviceSetupScreen(
                  OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 MultiDeviceSetupScreen::~MultiDeviceSetupScreen() {
@@ -142,7 +142,7 @@ void MultiDeviceSetupScreen::ShowImpl() {
   multidevice_setup::OobeCompletionTracker* oobe_completion_tracker =
       multidevice_setup::OobeCompletionTrackerFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
-  DCHECK(oobe_completion_tracker);
+  CHECK(oobe_completion_tracker, base::NotFatalUntil::M161);
   oobe_completion_tracker->MarkOobeShown();
 }
 

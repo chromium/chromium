@@ -22,7 +22,7 @@ RemoteActivityNotificationScreen::RemoteActivityNotificationScreen(
                  OobeScreenPriority::DEFAULT),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 }
 
 RemoteActivityNotificationScreen::~RemoteActivityNotificationScreen() = default;

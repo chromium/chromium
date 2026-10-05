@@ -132,7 +132,7 @@ PinSetupScreen::PinSetupScreen(PrefService* local_state,
       auth_performer_(UserDataAuthClient::Get()),
       cryptohome_pin_engine_(local_state, &auth_performer_) {
   CHECK(local_state);
-  DCHECK(view_);
+  CHECK(view_, base::NotFatalUntil::M161);
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
       &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
