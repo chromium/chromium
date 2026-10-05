@@ -259,6 +259,71 @@ IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, CallbackNotified) {
   EXPECT_TRUE(GlassFrameEligibilityMatchesTabStrip(browser2));
 }
 
+IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest,
+                       CallbackOnlyNotifiedOnEligibilityChange) {
+  if (!features::IsGlassFrameEnabled()) {
+    GTEST_SKIP();
+  }
+
+  GlassFrameService* const glass_frame_service =
+      GlassFrameService::GetInstance();
+  BrowserWindowInterface* const browser1 = browser();
+  BrowserWindowInterface* const browser2 =
+      CreateBrowser(browser()->GetProfile());
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return glass_frame_service->IsBrowserWindowEligible(browser2); }));
+  ASSERT_FALSE(glass_frame_service->IsBrowserWindowEligible(browser1));
+
+  int browser1_notifications = 0;
+  base::CallbackListSubscription sub1 =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          browser1,
+          base::BindRepeating([](int* count, bool is_eligible) { ++(*count); },
+                              &browser1_notifications));
+
+  int browser2_notifications = 0;
+  base::CallbackListSubscription sub2 =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          browser2,
+          base::BindRepeating([](int* count, bool is_eligible) { ++(*count); },
+                              &browser2_notifications));
+
+  // Re-activating the already-eligible browser should not notify any callbacks.
+  glass_frame_service->OnBrowserActivated(browser2);
+  EXPECT_EQ(browser1_notifications, 0);
+  EXPECT_EQ(browser2_notifications, 0);
+
+  // Creating a third browser makes browser3 eligible and browser2 ineligible.
+  // browser1 was already ineligible so its callback should not be notified.
+  BrowserWindowInterface* const browser3 =
+      CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return glass_frame_service->IsBrowserWindowEligible(browser3); }));
+  EXPECT_EQ(browser1_notifications, 0);
+  EXPECT_EQ(browser2_notifications, 1);
+
+  int browser3_notifications = 0;
+  base::CallbackListSubscription sub3 =
+      glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+          browser3,
+          base::BindRepeating([](int* count, bool is_eligible) { ++(*count); },
+                              &browser3_notifications));
+
+  // Closing an ineligible browser (browser2) should not notify remaining
+  // browsers since their eligibility does not change.
+  CloseBrowserSynchronously(browser2);
+  EXPECT_EQ(browser1_notifications, 0);
+  EXPECT_EQ(browser3_notifications, 0);
+
+  // Closing the eligible browser (browser3) should make browser1 eligible and
+  // notify browser1's callback once.
+  CloseBrowserSynchronously(browser3);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return glass_frame_service->IsBrowserWindowEligible(browser1); }));
+  EXPECT_EQ(browser1_notifications, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(GlassFrameServiceInteractiveTest, LocalStatePref) {
   if (!features::IsGlassFrameEnabled()) {
     GTEST_SKIP();
