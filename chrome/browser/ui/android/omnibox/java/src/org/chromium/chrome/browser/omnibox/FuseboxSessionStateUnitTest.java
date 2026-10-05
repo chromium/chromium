@@ -243,6 +243,25 @@ public class FuseboxSessionStateUnitTest {
     }
 
     @Test
+    public void testActivate_ifDesktop_hubPageClassification_initialInputIsEmpty() {
+        AutocompleteInput input = activateDesktopSession(PageClassification.ANDROID_HUB);
+
+        assertEquals("", input.getInitialUserText());
+        assertEquals("", input.getUserText());
+        assertNull(input.getPreviewMatchUrl());
+    }
+
+    @Test
+    public void testActivate_ifDesktop_tabSearchPageClassification_initialInputIsEmpty() {
+        AutocompleteInput input =
+                activateDesktopSession(PageClassification.ANDROID_TAB_SEARCH_OVERLAY);
+
+        assertEquals("", input.getInitialUserText());
+        assertEquals("", input.getUserText());
+        assertNull(input.getPreviewMatchUrl());
+    }
+
+    @Test
     public void testDeactivate_setsDisabledState() {
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
@@ -279,5 +298,18 @@ public class FuseboxSessionStateUnitTest {
 
         GURL previewMatchUrl = session.getAutocompleteInput().getPreviewMatchUrl();
         assertNull(previewMatchUrl);
+    }
+
+    private AutocompleteInput activateDesktopSession(@PageClassification int pageClassification) {
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
+        UrlBarData.setShouldShowUrlForTesting(true);
+        doReturn(SAMPLE_PAGE_URL).when(mLocationBarDataProvider).getCurrentGurl();
+        doReturn(pageClassification)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(ContextUtils.getApplicationContext(), null, mProfileSupplier, null);
+        return session.getAutocompleteInput();
     }
 }
