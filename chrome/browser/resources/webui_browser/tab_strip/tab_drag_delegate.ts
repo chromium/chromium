@@ -75,6 +75,13 @@ export class TabDragDelegate {
   }
 
   onMouseDown(e: MouseEvent) {
+    // Only the primary button selects a tab and starts a drag, like
+    // Tab::OnMousePressed in the Views tab strip. A right click must only show
+    // the context menu and a middle click must not change the active tab.
+    if (e.button !== 0) {
+      return;
+    }
+
     // Prevent starting a drag if the user clicked the close button.
     const path = e.composedPath();
     const isCloseButton = path.some(
