@@ -51,8 +51,6 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback)
     : web_contents_(CHECK_DEREF(web_contents)),
-      driver_factory_(web_contents,
-                      /* client= */ this),
 #if BUILDFLAG(IS_ANDROID)
       facilitated_payments_controller_(
           std::make_unique<FacilitatedPaymentsController>(web_contents)),
@@ -60,6 +58,8 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
 #endif  // BUILDFLAG(IS_ANDROID)
       optimization_guide_decider_(optimization_guide_decider),
       is_cct_callback_(std::move(is_cct_callback)),
+      driver_factory_(web_contents,
+                      /* client= */ this),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
 #if BUILDFLAG(IS_ANDROID)
   pix_account_linking_manager_ =

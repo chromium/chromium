@@ -101,8 +101,9 @@ class ContentFacilitatedPaymentsDriverFactory
   // merchant on the Optimization Guide allowlist.
   bool IsEligibleForQrCodeDetection(const GURL& url) const;
 
-  // Owns the drivers, one for each render frame host. Should be empty at
-  // destruction time because its elements are erased in RenderFrameDeleted().
+  // Owns the drivers, one for each render frame host. Elements are erased in
+  // RenderFrameDeleted(), or destroyed with `this` when the owning
+  // `TabFeatures` is torn down before `WebContents`.
   base::flat_map<content::RenderFrameHost*,
                  std::unique_ptr<ContentFacilitatedPaymentsDriver>>
       driver_map_;

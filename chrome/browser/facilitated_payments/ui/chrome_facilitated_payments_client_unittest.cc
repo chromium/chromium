@@ -7,10 +7,13 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
+#include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -310,6 +313,25 @@ TEST_F(ChromeFacilitatedPaymentsClientTest,
       url::Origin::Create(GURL("https://example.com")));
 
   EXPECT_CALL(pix_account_linking_manager(), DismissPrompt());
+
+  client_.reset();
+}
+
+// Test that destroying the client while a driver with an active manager still
+// exists in `driver_factory_` (e.g. when `TabFeatures` is destroyed before
+// `WebContents`) safely dismisses the prompt before destroying the controller.
+TEST_F(ChromeFacilitatedPaymentsClientTest,
+       Destructor_DestroysDriversBeforeController) {
+  payments::facilitated::ContentFacilitatedPaymentsDriver* driver =
+      client_->GetFacilitatedPaymentsDriverForFrame(main_rfh());
+  ASSERT_NE(nullptr, driver);
+  driver->SetPixManagerForTesting(
+      std::make_unique<payments::facilitated::PixManager>(
+          client_.get(),
+          /*api_client_creator=*/base::NullCallback(),
+          &optimization_guide_decider_));
+
+  EXPECT_CALL(controller(), Dismiss());
 
   client_.reset();
 }

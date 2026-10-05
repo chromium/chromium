@@ -150,9 +150,6 @@ class ChromeFacilitatedPaymentsClient
 
   const raw_ref<content::WebContents> web_contents_;
 
-  payments::facilitated::ContentFacilitatedPaymentsDriverFactory
-      driver_factory_;
-
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
       facilitated_payments_network_interface_;
 
@@ -169,6 +166,13 @@ class ChromeFacilitatedPaymentsClient
       optimization_guide_decider_ = nullptr;
 
   base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback_;
+
+  // Declared after `facilitated_payments_controller_` and other client
+  // dependencies so that drivers (and their owned `PixManager` and
+  // `PaymentLinkManager` instances, which call `client_->DismissPrompt()` in
+  // their destructors) are destroyed before `facilitated_payments_controller_`.
+  payments::facilitated::ContentFacilitatedPaymentsDriverFactory
+      driver_factory_;
 
   ui::ScopedUnownedUserData<ChromeFacilitatedPaymentsClient>
       scoped_unowned_user_data_;
